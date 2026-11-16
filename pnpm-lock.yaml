@@ -930,6 +930,18 @@ importers:
       csso:
         specifier: ^5.0.5
         version: 5.0.5
+      embla-carousel:
+        specifier: 9.0.0-rc04
+        version: 9.0.0-rc04
+      embla-carousel-accessibility:
+        specifier: 9.0.0-rc04
+        version: 9.0.0-rc04(embla-carousel@9.0.0-rc04)
+      embla-carousel-auto-height:
+        specifier: 9.0.0-rc04
+        version: 9.0.0-rc04(embla-carousel@9.0.0-rc04)
+      embla-carousel-react:
+        specifier: 9.0.0-rc04
+        version: 9.0.0-rc04(react@19.3.1)
       filesize:
         specifier: ^11.0.29
         version: 11.0.32
@@ -963,9 +975,6 @@ importers:
       redraft:
         specifier: ^0.10.2
         version: 0.10.2
-      swiper:
-        specifier: ^14.3.0
-        version: 14.4.0
       usehooks-ts:
         specifier: ^3.1.1
         version: 3.1.1(react@19.3.1)
@@ -18543,10 +18552,6 @@ packages:
 
   swap-case@2.0.2:
     resolution: {integrity: sha512-kc6S2YS/2yXbtkSMunBtKdah4VFETZ8Oh6ONSmSd9bRxhqTrtARUCBUiWXH3xVPpvR7tz2CSnkuXVE42EcGnMw==}
-
-  swiper@14.4.0:
-    resolution: {integrity: sha512-6axnAuBsttFJe0gwsM5tT203/Bts0vcI+FwIX6dqFE4pUFVW6qrdRprNFQVxOYMW7V0S6A/KIqJ6JaPpNN2MCw==}
-    engines: {node: '>= 4.7.0'}
 
   symbol-observable@1.2.0:
     resolution: {integrity: sha512-e900nM8RRtGhlV36KGEU9k65K3mPb1WV70OdjfxlG2EAuM1noi/E/BaW/uMhL7bPEssK8QV57vN3esixjUvcXQ==}
@@ -38617,8 +38622,6 @@ snapshots:
   swap-case@2.0.2:
     dependencies:
       tslib: 2.9.1
-
-  swiper@14.4.0: {}
 
   symbol-observable@1.2.0: {}
 

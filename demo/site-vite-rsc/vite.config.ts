@@ -25,8 +25,6 @@ export default defineConfig({
                 noExternal: [
                     // CommonJS dependencies whose exports aren't detected by Node.js when imported from ESM
                     "prop-types",
-                    // Imports React without declaring it as peer dependency, it would get a separate React instance when externalized
-                    "swiper",
                 ],
             },
             optimizeDeps: { include: ["react-focus-lock > prop-types"] },

@@ -47,6 +47,10 @@
         "cache-manager": "^5.7.6",
         "clsx": "^2.1.1",
         "csso": "^5.0.5",
+        "embla-carousel": "9.0.0-rc04",
+        "embla-carousel-accessibility": "9.0.0-rc04",
+        "embla-carousel-auto-height": "9.0.0-rc04",
+        "embla-carousel-react": "9.0.0-rc04",
         "filesize": "^11.0.29",
         "hono": "^4.13.13",
         "mjml": "^4.18.0",
@@ -58,7 +62,6 @@
         "react-intl": "^7.1.14",
         "react-server-dom-webpack": "19.3.1",
         "redraft": "^0.10.2",
-        "swiper": "^14.3.0",
         "usehooks-ts": "^3.1.1",
         "zod": "^4.6.7"
     },

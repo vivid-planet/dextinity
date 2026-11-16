@@ -14,6 +14,7 @@ import {
     useState,
 } from "react";
 
+import { keysByContent } from "../../utils/keysByContent";
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { BulkActionBar, type BulkActionBarAction, type BulkActionBarLabels } from "../bulkActionBar/BulkActionBar";
 import { Checkbox } from "../checkbox/Checkbox";
@@ -1202,8 +1203,7 @@ export const DataGrid = forwardRef(function DataGrid<Row>(
 
     const renderBody = () => {
         if (loading) {
-            const placeholderIds = Array.from({ length: loadingRowCount }, (_, index) => `placeholder-${index}`);
-            return placeholderIds.map((placeholderId) => (
+            return keysByContent(Array.from({ length: loadingRowCount }, () => "placeholder")).map((placeholderId) => (
                 <tr key={placeholderId} className={styles.row} aria-hidden>
                     {reorderable && <td className={styles.gripCell} />}
                     {selectable && <td className={styles.checkboxCell} />}

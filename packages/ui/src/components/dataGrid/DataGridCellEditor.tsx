@@ -1,6 +1,6 @@
 import { Popover as BasePopover } from "@base-ui/react/popover";
 import { Select as BaseSelect } from "@base-ui/react/select";
-import { type KeyboardEvent, type ReactNode, useLayoutEffect, useRef } from "react";
+import { type KeyboardEvent, type PropsWithChildren, type ReactNode, useLayoutEffect, useRef } from "react";
 
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
 import { Icon } from "../icon/Icon";
@@ -191,7 +191,7 @@ export function DataGridCellEditor<Row>({
 /**
  * Why the edited value can't be saved, shown below the cell. Internal to `DataGrid`.
  */
-export function DataGridEditorError({ id, children }: { id: string; children: ReactNode }): ReactNode {
+export function DataGridEditorError({ id, children }: PropsWithChildren<{ id: string }>): ReactNode {
     const { anchor, anchorRef, container } = useThemePortalContainer<HTMLSpanElement>();
 
     return (

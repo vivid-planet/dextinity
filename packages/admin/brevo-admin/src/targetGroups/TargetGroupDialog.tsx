@@ -1,4 +1,4 @@
-import { useApolloClient } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
 import { Field, FinalForm, FinalFormInput, type FinalFormSubmitEvent, useStackSwitchApi } from "@dextinity/admin";
 import type { ContentScope } from "@dextinity/cms-admin";
 import type { FormApi } from "final-form";

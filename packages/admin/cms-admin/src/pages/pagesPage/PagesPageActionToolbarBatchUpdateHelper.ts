@@ -6,7 +6,7 @@ import type { GQLUpdatePageVisibilityMutation, GQLUpdatePageVisibilityMutationVa
 import type { GQLPageTreePageFragment } from "../pageTree/usePageTree";
 
 export const pageTreeBatchUpdateVisibility = async (
-    client: ApolloClient<unknown>,
+    client: ApolloClient,
     pageTreeNodes: GQLPageTreePageFragment[],
     visibility: GQLPageTreeNodeVisibility,
 ): Promise<void> => {
@@ -27,7 +27,7 @@ export const pageTreeBatchUpdateVisibility = async (
 };
 
 export const pageTreeBatchResetVisibility = async (
-    client: ApolloClient<unknown>,
+    client: ApolloClient,
     pageTreeNodesWithPreviousVisibility: Pick<GQLPageTreePageFragment, "id" | "visibility">[],
 ): Promise<void> => {
     await Promise.all(

@@ -1,21 +1,15 @@
 import { type PropsWithData, withPreview } from "@dextinity/site-nextjs";
+import { useIntl } from "@dextinity/site-nextjs/intl";
 import type { MediaGalleryBlockData } from "@src/blocks.generated";
 import { MediaBlock } from "@src/common/blocks/MediaBlock";
-import {
-    Carousel,
-    CarouselNextButton,
-    CarouselPreviousButton,
-    CarouselSlide,
-    CarouselStatus,
-    CarouselViewport,
-} from "@src/common/components/carousel/Carousel";
+import { Carousel, CarouselNextButton, CarouselPreviousButton, CarouselSlide, CarouselViewport } from "@src/common/components/carousel/Carousel";
 import { Typography } from "@src/common/components/Typography";
 import { PageLayout } from "@src/layout/PageLayout";
 import { AnimateBoxInOnScroll } from "@src/util/animations/AnimateBoxInOnScroll";
 import clsx from "clsx";
-import { useIntl } from "react-intl";
 
 import styles from "./MediaGalleryBlock.module.scss";
+import { MediaGalleryStatus } from "./MediaGalleryStatus";
 
 type MediaGalleryBlockProps = PropsWithData<MediaGalleryBlockData>;
 
@@ -41,7 +35,7 @@ export const MediaGalleryBlock = withPreview(
                         ))}
                     </CarouselViewport>
                 </AnimateBoxInOnScroll>
-                <CarouselStatus as={Typography} variant="paragraph300" className={styles.customPagination} />
+                <MediaGalleryStatus className={styles.customPagination} />
                 <CarouselNextButton className={clsx(styles.navigationButton, styles["navigationButton--next"])} />
             </Carousel>
         );

@@ -1,4 +1,5 @@
-import { gql, useApolloClient } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
 import { AsyncSelectField } from "@dextinity/admin";
 import { Image } from "@dextinity/admin-icons";
 import { type BlockInterface, BlocksFinalForm, createBlockSkeleton } from "@dextinity/cms-admin";
@@ -61,6 +62,10 @@ const ProductTeaserBlock: BlockInterface<ProductTeaserBlockData, State, ProductT
             variables: { id: output.productId },
         });
 
+        if (!data) {
+            return {};
+        }
+
         return {
             product: { id: data.product.id, title: data.product.title },
         };
@@ -79,7 +84,7 @@ const ProductTeaserBlock: BlockInterface<ProductTeaserBlockData, State, ProductT
                         const { data } = await client.query<GQLProductTeaserSelectQuery, GQLProductTeaserSelectQueryVariables>({
                             query: productTeaserSelectQuery,
                         });
-                        return data.products.nodes.map((node) => ({ id: node.id, title: node.title }));
+                        return (data?.products.nodes ?? []).map((node) => ({ id: node.id, title: node.title }));
                     }}
                     getOptionLabel={(option: ProductOption) => option.title}
                 />

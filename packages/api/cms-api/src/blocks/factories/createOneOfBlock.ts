@@ -1,8 +1,18 @@
 import type { Type } from "@nestjs/common";
 import { plainToInstance, Transform } from "class-transformer";
-import { ArrayMinSize, IsArray, IsIn, IsObject, ValidateIf, ValidateNested } from "class-validator";
+import {
+    ArrayMinSize,
+    IsArray,
+    IsIn,
+    IsObject,
+    Validate,
+    ValidateIf,
+    ValidateNested,
+    type ValidationArguments,
+    ValidatorConstraint,
+    type ValidatorConstraintInterface,
+} from "class-validator";
 
-import { IsNullable } from "../../common/validators/is-nullable.js";
 import {
     type Block,
     type BlockContext,
@@ -201,6 +211,22 @@ export function BaseOneOfBlockItemInput<BlockMap extends BaseBlockMap>({
     return OneOfBlockItemInput;
 }
 
+@ValidatorConstraint({ name: "isAttachedBlockType" })
+class IsAttachedBlockTypeConstraint implements ValidatorConstraintInterface {
+    validate(activeType: unknown, { object }: ValidationArguments): boolean {
+        if (activeType == null) {
+            return true;
+        }
+
+        const { attachedBlocks } = object as { attachedBlocks?: unknown };
+        return Array.isArray(attachedBlocks) && attachedBlocks.some((attachedBlock) => attachedBlock?.type === activeType);
+    }
+
+    defaultMessage({ value }: ValidationArguments): string {
+        return `activeType "${value}" has no matching entry in attachedBlocks`;
+    }
+}
+
 export function BaseOneOfBlockInput<
     BlockMap extends BaseBlockMap,
     Data extends BlockDataInterface = BlockDataInterface,
@@ -232,8 +258,10 @@ export function BaseOneOfBlockInput<
         @ValidateNested({ each: true })
         attachedBlocks: OneOfBlockInputInterface<BlockMap, Data, Input>["attachedBlocks"];
 
-        @IsNullable()
+        // An empty block has to name `null` explicitly, a missing value isn't accepted
+        @ValidateIf((_, activeType) => !allowEmpty || activeType !== null)
         @IsIn(supportedBlockTypes)
+        @Validate(IsAttachedBlockTypeConstraint)
         @BlockField({ type: "string", nullable: allowEmpty })
         activeType: string | null;
 

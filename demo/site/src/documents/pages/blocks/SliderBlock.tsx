@@ -1,4 +1,5 @@
 import { type PropsWithData, withPreview } from "@dextinity/site-nextjs";
+import { useIntl } from "@dextinity/site-nextjs/intl";
 import type { SliderBlockData } from "@src/blocks.generated";
 import { MediaBlock } from "@src/common/blocks/MediaBlock";
 import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
@@ -16,7 +17,6 @@ import { AnimateBoxInOnScroll } from "@src/util/animations/AnimateBoxInOnScroll"
 import { AnimateGroup } from "@src/util/animations/AnimateGroup";
 import { createImageSizes } from "@src/util/createImageSizes";
 import clsx from "clsx";
-import { useIntl } from "react-intl";
 
 import styles from "./SliderBlock.module.scss";
 

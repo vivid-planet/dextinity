@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client/react";
 import {
     Button,
     CrudMoreActionsMenu,
@@ -268,6 +268,7 @@ export function RedirectsGrid({ linkBlock, scope }: Props): JSX.Element {
         },
         context: LocalErrorScopeApolloContext,
         fetchPolicy: "cache-and-network",
+        notifyOnNetworkStatusChange: false,
     });
 
     if (error) {

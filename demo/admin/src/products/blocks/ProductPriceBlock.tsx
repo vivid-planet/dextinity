@@ -1,4 +1,5 @@
-import { gql, useApolloClient } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
 import { AsyncSelectField } from "@dextinity/admin";
 import { Tag } from "@dextinity/admin-icons";
 import { type BlockInterface, BlocksFinalForm, createBlockSkeleton } from "@dextinity/cms-admin";
@@ -67,6 +68,10 @@ const ProductPriceBlock: BlockInterface<ProductPriceBlockData, State, ProductPri
             variables: { id: output.productId },
         });
 
+        if (!data) {
+            return {};
+        }
+
         return {
             product: { id: data.product.id, title: data.product.title, price: data.product.price ?? undefined },
         };
@@ -85,7 +90,7 @@ const ProductPriceBlock: BlockInterface<ProductPriceBlockData, State, ProductPri
                         const { data } = await client.query<GQLProductPriceSelectQuery, GQLProductPriceSelectQueryVariables>({
                             query: productPriceSelectQuery,
                         });
-                        return data.products.nodes.map((node) => ({ id: node.id, title: node.title, price: node.price ?? undefined }));
+                        return (data?.products.nodes ?? []).map((node) => ({ id: node.id, title: node.title, price: node.price ?? undefined }));
                     }}
                     getOptionLabel={(option: ProductOption) => option.title}
                 />

@@ -1,4 +1,5 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import {
     CrudContextMenu,
     DataGridToolbar,
@@ -70,35 +71,35 @@ export const UserPermissionsUserGrid = ({ toolbarAction, rowAction, actionsColum
                 pinnable: false,
                 headerName: intl.formatMessage({ id: "dextinity.userPermissions.email", defaultMessage: "E-Mail" }),
             },
+            {
+                field: "actions",
+                headerName: "",
+                sortable: false,
+                filterable: false,
+                type: "actions",
+                align: "right",
+                pinned: "right",
+                disableExport: true,
+                renderCell: (params) => (
+                    <>
+                        <IconButton
+                            onClick={() => {
+                                stackApi.activatePage("edit", params.id.toString());
+                            }}
+                            color="primary"
+                        >
+                            <Edit />
+                        </IconButton>
+                        {isAllowed("impersonation") && (
+                            <CrudContextMenu>
+                                <ImpersonateMenuItem userId={params.row.id} />
+                            </CrudContextMenu>
+                        )}
+                    </>
+                ),
+            },
         ];
-    }, [intl]);
-    columns.push({
-        field: "actions",
-        headerName: "",
-        sortable: false,
-        filterable: false,
-        type: "actions",
-        align: "right",
-        pinned: "right",
-        disableExport: true,
-        renderCell: (params) => (
-            <>
-                <IconButton
-                    onClick={() => {
-                        stackApi.activatePage("edit", params.id.toString());
-                    }}
-                    color="primary"
-                >
-                    <Edit />
-                </IconButton>
-                {isAllowed("impersonation") && (
-                    <CrudContextMenu>
-                        <ImpersonateMenuItem userId={params.row.id} />
-                    </CrudContextMenu>
-                )}
-            </>
-        ),
-    });
+    }, [intl, stackApi, isAllowed]);
 
     const { data, loading, error } = useQuery<GQLUserGridQuery, GQLUserGridQueryVariables>(
         gql`
@@ -123,6 +124,7 @@ export const UserPermissionsUserGrid = ({ toolbarAction, rowAction, actionsColum
                 limit: dataGridProps.paginationModel.pageSize ?? 0,
                 sort: muiGridSortToGql(dataGridProps.sortModel),
             },
+            notifyOnNetworkStatusChange: false,
         },
     );
 

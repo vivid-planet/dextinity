@@ -1,4 +1,4 @@
-import { MockedProvider } from "@apollo/client/testing";
+import { MockedProvider } from "@apollo/client/testing/react";
 import { RouterMemoryRouter } from "@dextinity/admin";
 import type { Decorator } from "@storybook/react-vite";
 

@@ -1,4 +1,5 @@
-import { gql, useApolloClient, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client/react";
 import { Button, CancelButton, StackLink, Tooltip, useStackSwitchApi } from "@dextinity/admin";
 import { Play, Time } from "@dextinity/admin-icons";
 import {
@@ -65,7 +66,9 @@ export function CronJobsGrid() {
     const [cronJobToStart, setCronJobToStart] = useState<string>();
     const dialogOpen = Boolean(cronJobToStart);
 
-    const { data, loading, error } = useQuery<GQLKubernetesCronJobsQuery, GQLKubernetesCronJobsQueryVariables>(cronJobsQuery);
+    const { data, loading, error } = useQuery<GQLKubernetesCronJobsQuery, GQLKubernetesCronJobsQueryVariables>(cronJobsQuery, {
+        notifyOnNetworkStatusChange: false,
+    });
 
     if (error) {
         throw error;

@@ -5,7 +5,7 @@ import type { ContentScope } from "../../contentScope/Provider";
 
 export interface BlockContext {
     apiUrl: string;
-    apolloClient: ApolloClient<object>;
+    apolloClient: ApolloClient;
     damBasePath: string;
     pageTreeScope: ContentScope;
 }

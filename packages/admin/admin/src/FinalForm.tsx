@@ -1,4 +1,4 @@
-import { getApolloContext } from "@apollo/client";
+import { getApolloContext } from "@apollo/client/react";
 import {
     type Config,
     type Decorator,

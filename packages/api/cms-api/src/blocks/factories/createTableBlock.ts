@@ -96,7 +96,10 @@ export function createTableBlock({ richText: RichTextBlock }: CreateTableBlockOp
         cellValues: TableBlockRowColumnValueInput[] = [];
 
         transformToBlockData(): TableBlockRowData {
-            return blockInputToData(TableBlockRowData, this);
+            return plainToInstance(TableBlockRowData, {
+                ...this,
+                cellValues: this.cellValues.map((cellValue) => cellValue.transformToBlockData()),
+            });
         }
     }
 

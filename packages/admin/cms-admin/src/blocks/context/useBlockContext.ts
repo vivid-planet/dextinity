@@ -1,4 +1,4 @@
-import { useApolloClient } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
 import { useContext } from "react";
 
 import { useDextinityConfig } from "../../config/DextinityConfigContext";

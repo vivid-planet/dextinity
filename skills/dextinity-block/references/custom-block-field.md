@@ -83,7 +83,8 @@ The most common use case is selecting an entity via async search. This combines 
 ```tsx
 import { AsyncAutocompleteField } from "@dextinity/admin";
 import { BlocksFinalForm, createCompositeBlockField, useContentScope } from "@dextinity/cms-admin";
-import { gql, useApolloClient, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client/react";
 import { type ProductPickerBlockData } from "@src/blocks.generated";
 import { FormattedMessage } from "react-intl";
 
@@ -124,7 +125,7 @@ export const ProductPickerBlock = createCompositeBlock(
                                             query: productPickerBlockProductSelectQuery,
                                             variables: { scope, search },
                                         });
-                                        return data.products.nodes;
+                                        return data?.products.nodes ?? [];
                                     }}
                                     getOptionLabel={(option) => option.name}
                                 />
@@ -205,7 +206,7 @@ AdminComponent: ({ state, updateState }) => {
                         query: productPickerBlockProductSelectQuery,
                         variables: { scope, search },
                     });
-                    return data.products.nodes;
+                    return data?.products.nodes ?? [];
                 }}
                 getOptionLabel={(option) => option.name}
             />

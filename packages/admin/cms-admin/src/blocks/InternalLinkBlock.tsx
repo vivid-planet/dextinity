@@ -57,7 +57,7 @@ export const InternalLinkBlock: BlockInterface<InternalLinkBlockData, State, Int
             variables: { id: output.targetPageId },
         });
 
-        const targetPage = data.pageTreeNode ? { ...data.pageTreeNode, scope: pageTreeScope } : null;
+        const targetPage = data?.pageTreeNode ? { ...data.pageTreeNode, scope: pageTreeScope } : null;
 
         // TODO consider throwing an error
         return { targetPage, targetPageAnchor: output.targetPageAnchor };

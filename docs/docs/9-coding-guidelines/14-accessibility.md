@@ -2,7 +2,7 @@
 title: Accessibility
 ---
 
-The site of a Dextinity project aims to conform to [WCAG 2.1 Level AA](https://www.w3.org/TR/WCAG21/).
+The site of a Dextinity project and the components of `@dextinity/ui` aim to conform to [WCAG 2.1 Level AA](https://www.w3.org/TR/WCAG21/).
 
 ## POUR Principles
 

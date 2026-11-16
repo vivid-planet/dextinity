@@ -1,11 +1,12 @@
-import { ApolloClient, ApolloLink, ApolloProvider, createHttpLink, InMemoryCache } from "@apollo/client";
+import { ApolloClient, ApolloLink, HttpLink, InMemoryCache } from "@apollo/client";
+import { ApolloProvider } from "@apollo/client/react";
 import { createErrorDialogApolloLink } from "@dextinity/admin";
 import type { Decorator } from "@storybook/react-vite";
 
 const createApolloClient = (uri: string) => {
     const link = ApolloLink.from([
         createErrorDialogApolloLink(),
-        createHttpLink({
+        new HttpLink({
             uri,
         }),
     ]);
@@ -21,7 +22,7 @@ const createApolloClient = (uri: string) => {
     });
 };
 
-export function apolloStoryDecorator(clientOrUri: ApolloClient<any> | string): Decorator {
+export function apolloStoryDecorator(clientOrUri: ApolloClient | string): Decorator {
     return (Story) => {
         return (
             <ApolloProvider client={typeof clientOrUri == "string" ? createApolloClient(clientOrUri) : clientOrUri}>

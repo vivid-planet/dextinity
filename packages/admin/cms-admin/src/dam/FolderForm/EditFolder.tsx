@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client/react";
 import { FinalForm, Loading } from "@dextinity/admin";
 
 import { editFolderQuery, updateDamFolderMutation } from "./EditFolder.gql";

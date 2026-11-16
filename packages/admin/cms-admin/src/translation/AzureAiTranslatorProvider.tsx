@@ -1,4 +1,5 @@
-import { gql, useApolloClient } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
 import { ContentTranslationServiceProvider } from "@dextinity/admin";
 import type { ComponentProps, PropsWithChildren } from "react";
 
@@ -28,6 +29,9 @@ export const AzureAiTranslatorProvider = ({ children, enabled = false, ...rest }
                         input: { text, targetLanguage: language },
                     },
                 });
+                if (!data) {
+                    throw new Error("Failed to translate text");
+                }
                 return data.azureAiTranslate;
             }}
             batchTranslate={async function (texts: string[]): Promise<string[]> {
@@ -38,6 +42,9 @@ export const AzureAiTranslatorProvider = ({ children, enabled = false, ...rest }
                     },
                     fetchPolicy: "no-cache",
                 });
+                if (!data) {
+                    throw new Error("Failed to translate texts");
+                }
                 return data.azureAiTranslateBatch;
             }}
         >

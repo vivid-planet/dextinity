@@ -2,7 +2,6 @@ import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { type ClassProvider, type DynamicModule, Global, Module, type ModuleMetadata, type Type, type ValueProvider } from "@nestjs/common";
 
 import type { Block } from "../blocks/block.js";
-import { ExternalLinkBlock } from "../blocks/externalLink/external-link.block.js";
 import { createOneOfBlock, type OneOfBlock } from "../blocks/factories/createOneOfBlock.js";
 import { DependenciesResolverFactory } from "../dependencies/dependencies.resolver.factory.js";
 import { InternalLinkBlock, type InternalLinkBlockData, type InternalLinkBlockInput } from "../page-tree/blocks/internal-link.block.js";
@@ -13,12 +12,13 @@ import { DefaultRedirectTargetUrlService, type RedirectTargetUrlServiceInterface
 import { REDIRECTS_LINK_BLOCK, REDIRECTS_TARGET_URL_SERVICE } from "./redirects.constants.js";
 import { createRedirectsResolver } from "./redirects.resolver.js";
 import { RedirectsService } from "./redirects.service.js";
+import { RedirectsExternalLinkBlock } from "./redirects-external-link.block.js";
 import type { RedirectScopeInterface } from "./types.js";
 
 type CustomTargets = Record<string, Block>;
 
 export type RedirectsLinkBlock = OneOfBlock<
-    CustomTargets & { internal: Block<InternalLinkBlockData, InternalLinkBlockInput>; external: typeof ExternalLinkBlock }
+    CustomTargets & { internal: Block<InternalLinkBlockData, InternalLinkBlockInput>; external: typeof RedirectsExternalLinkBlock }
 >;
 
 interface Config extends Pick<ModuleMetadata, "imports"> {
@@ -32,7 +32,7 @@ export class RedirectsModule {
     static register({ customTargets, Scope, TargetUrlService = DefaultRedirectTargetUrlService, imports }: Config = {}): DynamicModule {
         const linkBlock = createOneOfBlock(
             {
-                supportedBlocks: { internal: InternalLinkBlock, external: ExternalLinkBlock, ...customTargets },
+                supportedBlocks: { internal: InternalLinkBlock, external: RedirectsExternalLinkBlock, ...customTargets },
                 allowEmpty: false,
             },
             {

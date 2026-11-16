@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/mail-react",
-    "version": "10.14.0",
+    "version": "10.15.0",
     "description": "Utilities for building HTML emails with React",
     "license": "BSD-2-Clause",
     "type": "module",
@@ -51,9 +51,9 @@
     "devDependencies": {
         "@dextinity/cli": "workspace:*",
         "@dextinity/eslint-config": "workspace:*",
-        "@storybook/addon-docs": "^10.6.5",
-        "@storybook/addon-vitest": "10.6.5",
-        "@storybook/react-vite": "^10.6.5",
+        "@storybook/addon-docs": "^10.6.6",
+        "@storybook/addon-vitest": "10.6.6",
+        "@storybook/react-vite": "^10.6.6",
         "@types/csso": "^5.0.5",
         "@types/mjml": "^5.0.0",
         "@types/mjml-browser": "^5.0.0",
@@ -65,14 +65,14 @@
         "eslint": "^9.39.5",
         "jsdom": "^31.0.0",
         "npm-run-all2": "^9.0.4",
-        "playwright": "^1.64.1",
+        "playwright": "^1.65.0",
         "prettier": "^3.9.10",
         "react": "^19.3.1",
         "react-dom": "^19.3.1",
         "rimraf": "^6.1.4",
-        "storybook": "^10.6.5",
+        "storybook": "^10.6.6",
         "typescript": "^6.0.3",
-        "vite": "^8.3.5",
+        "vite": "^8.3.6",
         "vitest": "^5.1.0"
     },
     "peerDependencies": {

@@ -6,10 +6,13 @@ import { createConfig } from "@src/config";
 import { useCallback, useContext, useEffect, useLayoutEffect, useRef } from "react";
 import { useDragDropManager } from "react-dnd";
 import { FormattedMessage, useIntl } from "react-intl";
-import { useLocation } from "react-router";
+import { useHistory, useLocation } from "react-router";
 
 import type { BridgeElement } from "./aiHubBridge";
 import { useAiMode } from "./AiModeContext";
+import { useAiModePageStateStore } from "./AiModePageStateContext";
+import { useAiModePageToolsStore } from "./AiModePageToolsContext";
+import { createAdminHostTools } from "./hostTools";
 import { ScriptLoader } from "./ScriptLoader";
 import { useTextSelectionStore } from "./textSelection";
 
@@ -57,40 +60,56 @@ export function AiModeFlyout() {
     const isMobile = useMediaQuery(theme.breakpoints.down("md"));
     const windowSize = useWindowSize();
     const intl = useIntl();
+    const history = useHistory();
     const location = useLocation();
-    const { scope } = useContentScope();
+    const { scope, match } = useContentScope();
     const user = useCurrentUser();
     useShareDragDropManagerWithChat();
 
     const bridgeRef = useRef<BridgeElement | null>(null);
+    const pageStateStore = useAiModePageStateStore();
+    const pageToolsStore = useAiModePageToolsStore();
     const textSelectionStore = useTextSelectionStore();
 
     const pushContext = useCallback(() => {
         bridgeRef.current?.bridge?.setContext({
             scope,
             pathname: location.pathname,
+            page: pageStateStore.getCurrent()?.metadata ?? null,
             selection: textSelectionStore.getCurrent(),
         });
-    }, [scope, location.pathname, textSelectionStore]);
+    }, [scope, location.pathname, pageStateStore, textSelectionStore]);
 
     // Read via a ref so that registerBridge, the ref callback of the chat, doesn't change on navigation. A new ref
-    // callback makes React detach and reattach the ref, which would register the MCP server again.
+    // callback makes React detach and reattach the ref, which would register the MCP server and the tools again.
     const pushContextRef = useRef(pushContext);
     pushContextRef.current = pushContext;
 
-    const registerBridge = useCallback((element: BridgeElement | null) => {
-        bridgeRef.current = element;
-        if (!element?.bridge) {
-            return;
-        }
+    const registerBridge = useCallback(
+        (element: BridgeElement | null) => {
+            bridgeRef.current = element;
+            if (!element?.bridge) {
+                return;
+            }
 
-        element.bridge.registerMcpServers([{ url: mcpServerUrl }]);
+            element.bridge.registerMcpServers([{ url: mcpServerUrl }]);
+            element.bridge.registerHostTools(
+                createAdminHostTools({
+                    history,
+                    scopeUrl: match.url,
+                    getPageState: () => pageStateStore.getCurrent(),
+                    getPageTools: () => pageToolsStore.getCurrent(),
+                    clearTextSelection: textSelectionStore.clear,
+                }),
+            );
 
-        pushContextRef.current();
-    }, []);
+            pushContextRef.current();
+        },
+        [history, match.url, pageStateStore, pageToolsStore, textSelectionStore],
+    );
 
     // The selection belongs to the page it was made on. Navigating while the chat has focus changes no selection the
-    // store would see, so it is forgotten here. Before the push below, which runs on the same navigation.
+    // store would see, e.g. with open_page, so it is forgotten here. Before the push below, which runs on the same navigation.
     useEffect(() => {
         textSelectionStore.clear();
     }, [textSelectionStore, location.pathname]);
@@ -100,19 +119,23 @@ export function AiModeFlyout() {
         pushContext();
     }, [pushContext]);
 
-    // Re-push (debounced) when the selection changes — dragging a selection changes it on every mouse move.
+    // Re-push (debounced) when the page state or the selection changes — block edits update the page state on
+    // every keystroke, and dragging a selection changes it on every mouse move.
     useEffect(() => {
         let timeout: number | undefined;
-        const unsubscribe = textSelectionStore.subscribe(() => {
+        const schedulePush = () => {
             window.clearTimeout(timeout);
             timeout = window.setTimeout(pushContext, contextPushDebounceMs);
-        });
+        };
+        const unsubscribePageState = pageStateStore.subscribe(schedulePush);
+        const unsubscribeTextSelection = textSelectionStore.subscribe(schedulePush);
 
         return () => {
-            unsubscribe();
+            unsubscribePageState();
+            unsubscribeTextSelection();
             window.clearTimeout(timeout);
         };
-    }, [textSelectionStore, pushContext]);
+    }, [pageStateStore, textSelectionStore, pushContext]);
 
     // Unmounted once closed, so the chat starts over with the next opening.
     return (

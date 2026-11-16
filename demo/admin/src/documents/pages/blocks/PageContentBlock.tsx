@@ -25,37 +25,41 @@ import { KeyFactsBlock } from "./KeyFactsBlock";
 import { SliderBlock } from "./SliderBlock";
 import { TeaserBlock } from "./TeaserBlock";
 
+export const pageContentBlocks = {
+    accordion: AccordionBlock,
+    anchor: AnchorBlock,
+    billboardTeaser: BillboardTeaserBlock,
+    space: SpaceBlock,
+    teaser: TeaserBlock,
+    richtext: StandaloneRichTextBlock,
+    heading: StandaloneHeadingBlock,
+    columns: ColumnsBlock,
+    callToActionList: StandaloneCallToActionListBlock,
+    keyFacts: KeyFactsBlock,
+    media: StandaloneMediaBlock,
+    contentGroup: ContentGroupBlock,
+    mediaGallery: MediaGalleryBlock,
+    slider: SliderBlock,
+
+    image: DamImageBlock,
+    newsDetail: NewsDetailBlock,
+    newsList: NewsListBlock,
+    layout: LayoutBlock,
+    textImage: TextImageBlock,
+    fullWidthImage: FullWidthImageBlock,
+    table: TableBlock,
+    pageTreeIndex: PageTreeIndexBlock,
+    contactForm: ContactFormBlock,
+};
+
+export const pageContentAdditionalItemFields = {
+    ...userGroupAdditionalItemFields,
+};
+
 export const PageContentBlock = createBlocksBlock({
     name: "PageContent",
-    supportedBlocks: {
-        accordion: AccordionBlock,
-        anchor: AnchorBlock,
-        billboardTeaser: BillboardTeaserBlock,
-        space: SpaceBlock,
-        teaser: TeaserBlock,
-        richtext: StandaloneRichTextBlock,
-        heading: StandaloneHeadingBlock,
-        columns: ColumnsBlock,
-        callToActionList: StandaloneCallToActionListBlock,
-        keyFacts: KeyFactsBlock,
-        media: StandaloneMediaBlock,
-        contentGroup: ContentGroupBlock,
-        mediaGallery: MediaGalleryBlock,
-        slider: SliderBlock,
-
-        image: DamImageBlock,
-        newsDetail: NewsDetailBlock,
-        newsList: NewsListBlock,
-        layout: LayoutBlock,
-        textImage: TextImageBlock,
-        fullWidthImage: FullWidthImageBlock,
-        table: TableBlock,
-        pageTreeIndex: PageTreeIndexBlock,
-        contactForm: ContactFormBlock,
-    },
-    additionalItemFields: {
-        ...userGroupAdditionalItemFields,
-    },
+    supportedBlocks: pageContentBlocks,
+    additionalItemFields: pageContentAdditionalItemFields,
     AdditionalItemContextMenuItems: ({ item, onChange, onMenuClose }) => {
         return <UserGroupContextMenuItem item={item} onChange={onChange} onMenuClose={onMenuClose} />;
     },

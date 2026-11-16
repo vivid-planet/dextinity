@@ -134,14 +134,16 @@ describe("AiModeFlyout", () => {
         expect(chat).not.toHaveAttribute("api-key");
     });
 
-    it("registers the MCP server of the API once, and pushes the new location on navigation", () => {
+    it("registers the MCP server of the API and the host tools once, and pushes the new location on navigation", () => {
         renderFlyout();
 
         expect(bridge.registerMcpServers).toHaveBeenCalledExactlyOnceWith([{ url: "https://admin.test/api/mcp" }]);
+        expect(bridge.registerHostTools).toHaveBeenCalledTimes(1);
 
         fireEvent.click(screen.getByRole("button", { name: "Open top menu" }));
 
         expect(bridge.registerMcpServers).toHaveBeenCalledTimes(1);
+        expect(bridge.registerHostTools).toHaveBeenCalledTimes(1);
         expect(bridge.setContext).toHaveBeenLastCalledWith(expect.objectContaining({ pathname: topMenuPath }));
     });
 

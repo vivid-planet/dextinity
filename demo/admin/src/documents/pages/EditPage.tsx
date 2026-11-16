@@ -29,10 +29,15 @@ import {
     useSiteConfig,
 } from "@dextinity/cms-admin";
 import { IconButton, Stack } from "@mui/material";
+import { useRegisterAiModePageState } from "@src/aiMode/AiModePageStateContext";
+import { useRegisterAiModePageTools } from "@src/aiMode/AiModePageToolsContext";
+import type { BlocksBlockChild } from "@src/aiMode/blockProps";
+import { summarizeBlockState, summarizeSeoBlockState } from "@src/aiMode/blockStateSummary";
+import { type EditBlocks, planBlockEdits } from "@src/aiMode/editBlocks";
 import { FormattedMessage, useIntl } from "react-intl";
-import { useRouteMatch } from "react-router";
+import { useLocation, useRouteMatch } from "react-router";
 
-import { PageContentBlock } from "./blocks/PageContentBlock";
+import { pageContentAdditionalItemFields, PageContentBlock, pageContentBlocks } from "./blocks/PageContentBlock";
 import { SeoBlock } from "./blocks/SeoBlock";
 import { StageBlock } from "./blocks/StageBlock";
 import type { GQLEditPageQuery, GQLEditPageQueryVariables, GQLUpdatePageMutation, GQLUpdatePageMutationVariables } from "./EditPage.generated";
@@ -140,7 +145,7 @@ const usePage = createUsePage({
 
 export const EditPage = ({ id }: Props) => {
     const intl = useIntl();
-    const { pageState, rootBlocksApi, hasChanges, loading, dialogs, pageSaveButton, handleSavePage, translateContent } = usePage({
+    const { pageState, setPageState, rootBlocksApi, hasChanges, loading, dialogs, pageSaveButton, handleSavePage, translateContent } = usePage({
         pageId: id,
     });
 
@@ -152,7 +157,82 @@ export const EditPage = ({ id }: Props) => {
 
     const blockContext = useBlockContext();
 
+    const location = useLocation();
     const tabRouteMatch = useRouteMatch<{ tab: string }>(`${match.path}/:tab`);
+
+    const document = pageState?.document;
+
+    const updateContentBlocks = (update: (blocks: BlocksBlockChild[]) => BlocksBlockChild[]) => {
+        setPageState((previous) => {
+            if (!previous?.document) {
+                return previous;
+            }
+
+            return {
+                ...previous,
+                document: {
+                    ...previous.document,
+                    content: {
+                        ...previous.document.content,
+                        // The steps keep the item fields of every block and give an inserted one the default values of
+                        // `pageContentAdditionalItemFields`, which the generic block child type doesn't know about.
+                        blocks: update(previous.document.content.blocks) as typeof previous.document.content.blocks,
+                    },
+                },
+            };
+        });
+    };
+
+    // Deliberately not memoized: useRegisterAiModePageTools re-registers on every render, so the
+    // agent always reaches the callback of the latest one — which is also the state it plans the
+    // batch against, as setPageState applies its updater later.
+    const editBlocks: EditBlocks = async ({ operations }) => {
+        const { apply, results } = await planBlockEdits({
+            blocks: document?.content.blocks ?? [],
+            operations,
+            supportedBlocks: pageContentBlocks,
+            additionalItemFields: pageContentAdditionalItemFields,
+            // PageContentBlock's name in block-meta, where the agent resolves the block schemas.
+            schemaRootBlockName: "PageContent",
+            blockContext,
+        });
+
+        // One update for the whole batch, so the page is marked as changed once rather than per
+        // operation. Its steps address the blocks by key rather than by the positions planned above,
+        // which come from the last render and may have moved on by the time the updater runs.
+        if (apply) {
+            updateContentBlocks(apply);
+        }
+
+        return { results };
+    };
+
+    useRegisterAiModePageTools(document ? { editBlocks } : null);
+
+    useRegisterAiModePageState(
+        pageState && document
+            ? {
+                  metadata: {
+                      pageTreeNodeId: id,
+                      documentType: document.__typename,
+                      documentId: document.id,
+                      path: pageState.path,
+                      activeTab: tabRouteMatch?.params.tab ?? "content",
+                      // Nested block editing is URL-driven, so the route below the active tab identifies the selected block.
+                      selectedBlockRoute:
+                          tabRouteMatch && location.pathname.length > tabRouteMatch.url.length
+                              ? location.pathname.slice(tabRouteMatch.url.length)
+                              : undefined,
+                      hasChanges: hasChanges ?? false,
+                  },
+                  getDocumentSummary: () => ({
+                      content: summarizeBlockState(PageContentBlock, document.content),
+                      stage: summarizeBlockState(StageBlock, document.stage),
+                      seo: summarizeSeoBlockState(SeoBlock, document.seo),
+                  }),
+              }
+            : null,
+    );
 
     if (pageState == null || pageState.document == null) {
         return null;

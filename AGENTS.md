@@ -207,6 +207,17 @@ Example:
 Fix description here
 ```
 
+## Migration guide
+
+Every breaking change needs a migration guide entry in the same pull request, so projects can upgrade to the next major. The guides are executed by AI coding agents (see `docs/docs/7-migration-guide/index.md`).
+
+- The guide for the upcoming major is `docs/docs/7-migration-guide/migration-from-v<current>-to-v<next>.md`, where `<current>` is the major version of the packages on `main` (e.g. `migration-from-v10-to-v11.md`). It only exists on `next`.
+- If the guide exists, extend it. If it doesn't, start it, copying the front matter (`sidebar_position: -<next>`), the "AI-Assisted Migration" info box with its sample prompt, and the "Work in progress" caution from the latest existing guide.
+- Add the entry to the section of the affected part of a project (`Root`, `Linting`, `API`, `Admin`, `Site`, `Mails`, `Agent features`, …), before that section's verification steps. Create the section if it doesn't exist yet.
+- Write the entry as an instruction an agent can follow in a project, not as a changelog entry: an imperative heading (e.g. "Rename `createCometTheme`"), a command to find the affected code (e.g. `grep -rn "createCometTheme" src`), and the change as a `diff` code block. If the change can't be done mechanically, say what the project needs to check or decide.
+- Describe the change from the project's perspective. Don't reference the Dextinity repository's internals, such as demo files or package source paths.
+- Keep the changeset for the breaking change as well. The changeset says what changed, the migration guide says how to update a project.
+
 ## Branches
 
 - `next` is protected and can't be pushed to directly. When a session targets `next` (e.g. it was started on `next` or a task asks for a breaking change), always create a new branch from `next` before committing, push that branch, and open the pull request against `next`.

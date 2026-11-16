@@ -8,7 +8,6 @@ import { StandaloneHeadingBlock } from "@src/common/blocks/StandaloneHeadingBloc
 import { StandaloneMediaBlock } from "@src/common/blocks/StandaloneMediaBlock";
 import { StandaloneRichTextBlock } from "@src/common/blocks/StandaloneRichTextBlock";
 import { TableBlock } from "@src/common/blocks/TableBlock";
-import { TipTapTableBlock } from "@src/common/blocks/TipTapTableBlock";
 import { ColumnsBlock } from "@src/documents/pages/blocks/ColumnsBlock";
 import { KeyFactsBlock } from "@src/documents/pages/blocks/KeyFactsBlock";
 import { TeaserBlock } from "@src/documents/pages/blocks/TeaserBlock";
@@ -36,7 +35,6 @@ const ContentGroupContentBlock = createBlocksBlock({
         media: StandaloneMediaBlock,
         mediaGallery: MediaGalleryBlock,
         table: TableBlock,
-        tipTapTable: TipTapTableBlock,
     },
 });
 

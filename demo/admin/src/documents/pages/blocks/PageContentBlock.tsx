@@ -11,8 +11,6 @@ import { StandaloneMediaBlock } from "@src/common/blocks/StandaloneMediaBlock";
 import { StandaloneRichTextBlock } from "@src/common/blocks/StandaloneRichTextBlock";
 import { TableBlock } from "@src/common/blocks/TableBlock";
 import { TextImageBlock } from "@src/common/blocks/TextImageBlock";
-import { TipTapRichTextBlock } from "@src/common/blocks/TipTapRichTextBlock";
-import { TipTapTableBlock } from "@src/common/blocks/TipTapTableBlock";
 import { NewsDetailBlock } from "@src/news/blocks/NewsDetailBlock";
 import { NewsListBlock } from "@src/news/blocks/NewsListBlock";
 import { userGroupAdditionalItemFields } from "@src/userGroups/userGroupAdditionalItemFields";
@@ -52,8 +50,6 @@ export const PageContentBlock = createBlocksBlock({
         textImage: TextImageBlock,
         fullWidthImage: FullWidthImageBlock,
         table: TableBlock,
-        tipTapTable: TipTapTableBlock,
-        tipTapRichText: TipTapRichTextBlock,
         pageTreeIndex: PageTreeIndexBlock,
         contactForm: ContactFormBlock,
     },

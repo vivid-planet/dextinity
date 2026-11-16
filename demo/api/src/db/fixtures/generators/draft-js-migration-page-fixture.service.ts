@@ -1,6 +1,7 @@
 import { type PageTreeNodeBaseCreateInput, PageTreeNodeVisibility, PageTreeService } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
+import { TextAlignment } from "@src/common/blocks/standalone-rich-text.block.js";
 import { PageContentBlock } from "@src/documents/pages/blocks/page-content.block.js";
 import { StageBlock } from "@src/documents/pages/blocks/stage.block.js";
 import { PageInput } from "@src/documents/pages/dto/page.input.js";
@@ -212,7 +213,7 @@ export class DraftJsMigrationPageFixtureService {
             .flush();
 
         // Bypass the RootBlockType custom column so the legacy DraftJS-shaped JSON lands in the DB
-        // unchanged. The on-read DraftJS→TipTap migration in TipTapRichTextBlock.blockDataFactory
+        // unchanged. The on-read DraftJS→TipTap migration in RichTextBlock.blockDataFactory
         // is what we want this fixture to exercise.
         const legacyPageContent = {
             data: {
@@ -220,8 +221,8 @@ export class DraftJsMigrationPageFixtureService {
                     {
                         key: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
                         visible: true,
-                        type: "tipTapRichText",
-                        props: { draftContent: legacyDraftJsContent },
+                        type: "richtext",
+                        props: { richText: { draftContent: legacyDraftJsContent }, textAlignment: TextAlignment.left },
                         userGroup: UserGroup.all,
                     },
                 ],

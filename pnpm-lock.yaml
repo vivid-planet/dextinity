@@ -779,9 +779,6 @@ importers:
       react-intl:
         specifier: ^12.1.4
         version: 12.1.5(@types/react@19.3.0)(react@19.3.1)
-      redraft:
-        specifier: ^0.10.2
-        version: 0.10.2
       usehooks-ts:
         specifier: ^3.1.1
         version: 3.1.1(react@19.3.1)

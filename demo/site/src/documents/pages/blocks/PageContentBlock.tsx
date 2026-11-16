@@ -14,8 +14,6 @@ import { StandaloneMediaBlock } from "@src/common/blocks/StandaloneMediaBlock";
 import { PageContentStandaloneRichTextBlock } from "@src/common/blocks/StandaloneRichTextBlock";
 import { TableBlock } from "@src/common/blocks/TableBlock";
 import { PageContentTextImageBlock } from "@src/common/blocks/TextImageBlock";
-import { PageContentTipTapRichTextBlock } from "@src/common/blocks/TipTapRichTextBlock";
-import { TipTapTableBlock } from "@src/common/blocks/TipTapTableBlock";
 import { BillboardTeaserBlock } from "@src/documents/pages/blocks/BillboardTeaserBlock";
 import { ColumnsBlock } from "@src/documents/pages/blocks/ColumnsBlock";
 import { ContentGroupBlock } from "@src/documents/pages/blocks/ContentGroupBlock";
@@ -49,8 +47,6 @@ const supportedBlocks: SupportedBlocks = {
     textImage: (props) => <PageContentTextImageBlock data={props} />,
     fullWidthImage: (props) => <FullWidthImageBlock data={props} />,
     table: (props) => <TableBlock data={props} />,
-    tipTapTable: (props) => <TipTapTableBlock data={props} />,
-    tipTapRichText: (props) => <PageContentTipTapRichTextBlock data={props} />,
     pageTreeIndex: (props) => <PageTreeIndexBlock data={props} />,
     contactForm: (props) => <LazyContactFormBlock data={props} />,
 };

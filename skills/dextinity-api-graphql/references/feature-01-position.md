@@ -193,6 +193,8 @@ Position is optional in input with `@Min(1)`:
 position?: number;
 ```
 
+If the entity's `position` property has an initializer (e.g. `position: number = 1`), pass it as `defaultValue` (`@Field(() => Int, { nullable: true, defaultValue: 1 })`); an initializer of `null` or `undefined` becomes `defaultValue: null`.
+
 ## Default sort
 
 Change default sort in Args to `position ASC` instead of `createdAt ASC`.

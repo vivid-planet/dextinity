@@ -2,12 +2,18 @@ import { Canvas, Meta } from "@storybook/addon-docs/blocks";
 
 import * as AllIconsStories from "./__stories__/AllIcons.stories";
 
-<Meta title="Theme/All icons" />
+<Meta title="Foundations/Icons/All icons" />
 
 # All icons
 
-Every icon that ships with `@dextinity/ui`, with its name for `<Icon name="…" />` and its search terms.
+Every icon that ships with `@dextinity/ui`, by category, with its name for `<Icon name="…" />` and its search terms. The icons are lines on a 24×24 grid with a 1.5 stroke and round ends, without duotone fills.
 
-See [Icon](?path=/docs/components-icon--docs) for how to use the `Icon` component. To replace or add icons, see [Customize icons](?path=/docs/theme-customize-icons--docs).
+See [Icon](?path=/docs/foundations-icons-icon--docs) for how to use the `Icon` component. To replace or add icons, see [Customize icons](?path=/docs/foundations-icons-customize-icons--docs).
 
 <Canvas of={AllIconsStories.AllIcons} sourceState="none" />
+
+## Deprecated names
+
+The names of the COMET icon set and the earlier names of `@dextinity/ui` still work and show the icon they point to. They are deprecated: use the name of the icon instead. To replace such an icon, set the variable of the icon, e.g. `--dextinity-icon-trash` for `delete`: it replaces the icon under both names. A variable set under the earlier name, e.g. `--dextinity-icon-delete`, still wins for that name.
+
+<Canvas of={AllIconsStories.DeprecatedNames} sourceState="none" />

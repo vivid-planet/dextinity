@@ -1,0 +1,10 @@
+.single {
+    inline-size: 180px;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: var(--dextinity-space-4);
+    max-inline-size: 720px;
+}

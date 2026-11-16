@@ -1,0 +1,345 @@
+@mixin hairline($color: var(--dextinity-color-line-strong)) {
+    box-shadow: inset 0 0 0 var(--dextinity-line-width) $color;
+}
+
+// The samples are the content, so a forced-colors theme keeps them
+@mixin keep-colors {
+    forced-color-adjust: none;
+}
+
+.label {
+    color: var(--dextinity-color-text-subtle);
+    font-size: var(--dextinity-typography-small-size);
+}
+
+.note {
+    color: var(--dextinity-color-text-subtle);
+    font-size: var(--dextinity-typography-small-size);
+}
+
+.code {
+    display: block;
+    padding: var(--dextinity-space-3) var(--dextinity-space-4);
+    border-radius: var(--dextinity-radius-item);
+    background: var(--dextinity-color-fill-subtle);
+    font-family: var(--dextinity-font-family-mono);
+    font-size: var(--dextinity-typography-mono-size);
+
+    @include hairline(var(--dextinity-color-line));
+}
+
+.bar {
+    block-size: var(--dextinity-space-3);
+    margin-block-start: var(--dextinity-space-1-5);
+    border-radius: var(--dextinity-radius-pill);
+
+    @include hairline;
+    @include keep-colors;
+}
+
+.largeBar {
+    block-size: var(--dextinity-space-8);
+    margin-block: var(--dextinity-space-1-5);
+    border-radius: var(--dextinity-radius-item);
+
+    @include hairline;
+    @include keep-colors;
+}
+
+// Axes
+
+.axes {
+    display: grid;
+    gap: var(--dextinity-space-4);
+}
+
+.axis {
+    display: grid;
+    grid-template-columns: var(--dextinity-space-12) minmax(0, 1fr);
+    gap: var(--dextinity-space-3);
+    align-items: start;
+}
+
+.axisLetter {
+    color: var(--dextinity-color-accent-text);
+    font-family: var(--dextinity-font-family-display);
+    font-size: var(--dextinity-typography-display-l-size);
+    font-weight: var(--dextinity-typography-display-font-weight);
+    line-height: 1;
+}
+
+.axisText {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-space-0-5);
+    min-inline-size: 0;
+
+    b {
+        font-weight: var(--dextinity-font-weight-semibold);
+    }
+
+    span {
+        color: var(--dextinity-color-text-subtle);
+        font-size: var(--dextinity-typography-small-size);
+    }
+}
+
+// Playground
+
+.playground {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: var(--dextinity-space-6);
+    align-items: start;
+}
+
+.controls {
+    display: grid;
+    gap: var(--dextinity-space-4);
+}
+
+.axisSlider {
+    position: relative;
+    display: grid;
+}
+
+.slider {
+    inline-size: 100%;
+    --dextinity-slider-track-height: var(--dextinity-space-2-5);
+    --dextinity-slider-thumb-size: var(--dextinity-space-4);
+}
+
+.gradientTrack {
+    @include hairline;
+    @include keep-colors;
+}
+
+.gradientIndicator {
+    background: transparent;
+}
+
+.axisValue {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-end: 0;
+    font-family: var(--dextinity-font-family-mono);
+    font-size: var(--dextinity-typography-mono-size);
+}
+
+.presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--dextinity-space-1-5);
+    align-items: center;
+
+    .label {
+        flex-basis: 100%;
+    }
+}
+
+.result {
+    display: grid;
+    gap: var(--dextinity-space-3);
+}
+
+.sample {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--dextinity-space-3);
+    block-size: calc(var(--dextinity-space-12) * 2.5);
+    padding: var(--dextinity-space-3) var(--dextinity-space-4);
+    border-radius: var(--dextinity-radius-field);
+
+    @include hairline;
+    @include keep-colors;
+
+    code {
+        font-family: var(--dextinity-font-family-mono);
+        font-size: var(--dextinity-typography-mono-size);
+    }
+
+    b {
+        font-family: var(--dextinity-font-family-display);
+        font-size: var(--dextinity-typography-display-l-size);
+        font-weight: var(--dextinity-font-weight-semibold);
+        line-height: 1;
+    }
+}
+
+.facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+    gap: var(--dextinity-space-3) var(--dextinity-space-4);
+    margin: 0;
+}
+
+.fact {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-space-1);
+
+    dt {
+        color: var(--dextinity-color-text-subtle);
+        font-size: var(--dextinity-typography-small-size);
+    }
+
+    dd {
+        display: flex;
+        flex-direction: column;
+        gap: var(--dextinity-space-1);
+        margin: 0;
+    }
+
+    code {
+        font-family: var(--dextinity-font-family-mono);
+        font-size: var(--dextinity-typography-mono-size);
+    }
+}
+
+.chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--dextinity-space-1);
+}
+
+// HSL and OKLCH
+
+.comparison {
+    display: grid;
+    grid-template-columns: minmax(0, 8rem) minmax(0, 1fr);
+    gap: var(--dextinity-space-2) var(--dextinity-space-3);
+    align-items: center;
+}
+
+.rowLabel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-space-0-5);
+
+    code {
+        color: var(--dextinity-color-text-subtle);
+        font-size: var(--dextinity-typography-small-size);
+    }
+}
+
+.cells {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(5rem, 1fr));
+    gap: var(--dextinity-space-1);
+}
+
+.cell {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--dextinity-space-2);
+    min-inline-size: 0;
+    padding: var(--dextinity-space-2);
+    border-radius: var(--dextinity-radius-item);
+    font-size: var(--dextinity-typography-small-size);
+
+    @include keep-colors;
+
+    code {
+        font-family: var(--dextinity-font-family-mono);
+    }
+}
+
+.gradients {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: var(--dextinity-space-4);
+    margin-block-start: var(--dextinity-space-6);
+
+    > div {
+        display: flex;
+        flex-direction: column;
+    }
+}
+
+// Brand hue
+
+.brandControls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+    gap: var(--dextinity-space-4);
+    align-items: end;
+    margin-block-end: var(--dextinity-space-4);
+
+    > :last-child {
+        justify-self: start;
+    }
+}
+
+.brandSample {
+    display: grid;
+    gap: var(--dextinity-space-4);
+}
+
+.brandComponents {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--dextinity-space-3);
+    align-items: center;
+}
+
+.scale {
+    display: grid;
+    grid-template-columns: repeat(11, minmax(0, 1fr));
+    gap: var(--dextinity-space-1);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.scaleStep {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--dextinity-space-0-5);
+    min-inline-size: 0;
+    color: var(--dextinity-color-text-subtle);
+    font-size: var(--dextinity-typography-small-size);
+
+    code {
+        font-family: var(--dextinity-font-family-mono);
+    }
+}
+
+.scaleSwatch {
+    align-self: stretch;
+    block-size: var(--dextinity-space-8);
+    border-radius: var(--dextinity-radius-item);
+
+    @include hairline(var(--dextinity-color-line));
+    @include keep-colors;
+}
+
+.scaleGamut {
+    color: var(--dextinity-color-warning-text);
+    font-family: var(--dextinity-font-family-mono);
+}
+
+.brandFooter {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: var(--dextinity-space-4);
+    align-items: start;
+    margin-block-start: var(--dextinity-space-4);
+}
+
+.checks {
+    display: grid;
+    gap: var(--dextinity-space-1-5);
+}
+
+@media (width <= 48rem) {
+    .comparison {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .scale {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+}

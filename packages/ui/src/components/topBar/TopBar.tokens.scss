@@ -1,0 +1,29 @@
+@mixin tokens {
+    // Glass bar over the content; solid in high contrast
+    --dextinity-top-bar-background: var(--dextinity-material-glass);
+    // Blur of the content behind the glass bar
+    --dextinity-top-bar-blur: var(--dextinity-material-blur);
+    // Edge highlight and drop shadow of the bar
+    --dextinity-top-bar-shadow: var(--dextinity-material-edge-shadow), var(--dextinity-shadow-2);
+    // Corner radius of the bar
+    --dextinity-top-bar-radius: var(--dextinity-radius-row);
+    // Space between the bar's edge and its content
+    --dextinity-top-bar-padding: 7px;
+    // Gap between the items in the bar
+    --dextinity-top-bar-gap: var(--dextinity-space-2-5);
+
+    // Height of the search field; follows the density
+    --dextinity-top-bar-search-height: var(--dextinity-density-control-height);
+    // Largest width of the search field
+    --dextinity-top-bar-search-max-width: 520px;
+    // Corner radius of the search field
+    --dextinity-top-bar-search-radius: var(--dextinity-radius-field);
+    // Fill of the search field
+    --dextinity-top-bar-search-background: var(--dextinity-material-glass-strong);
+    // Outline of the search field
+    --dextinity-top-bar-search-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-material-edge);
+    // Outline and shadow of the search field on hover
+    --dextinity-top-bar-search-shadow-hover: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-control-line), var(--dextinity-shadow-1);
+    // Color of the search field's icon and placeholder
+    --dextinity-top-bar-search-foreground: var(--dextinity-color-text-subtle);
+}

@@ -5,22 +5,25 @@ import { useState } from "react";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { MainNavigationItem } from "../MainNavigationItem";
+import mainNavigationItemTokens from "../MainNavigationItem.tokens.scss?raw";
 import styles from "./mainNavigationItem.module.scss";
 
 const iconOptions = {
     Dashboard: <Icon name="dashboard" />,
-    Settings: <Icon name="settings" />,
+    Settings: <Icon name="gear" />,
 };
 
 const meta = {
     component: MainNavigationItem,
-    title: "Components/MainNavigationItem",
+    title: "Shell/Navigation/MainNavigationItem",
+    parameters: { tokens: mainNavigationItemTokens },
     decorators: [themeDecorator],
     args: {
         children: "Dashboard",
         href: "#",
     },
     argTypes: {
+        href: { description: "The destination of the link the item renders as." },
         level: {
             control: "radio",
             options: [1, 2, 3],
@@ -64,7 +67,7 @@ export const Active: Story = {
 
 export const Expandable: Story = {
     args: {
-        icon: <Icon name="settings" />,
+        icon: <Icon name="gear" />,
         expandable: true,
         children: "Settings",
         href: undefined,

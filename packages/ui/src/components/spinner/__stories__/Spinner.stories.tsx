@@ -1,19 +1,22 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
+import { Button } from "../../button/Button";
 import { Spinner } from "../Spinner";
+import spinnerTokens from "../Spinner.tokens.scss?raw";
 
 const meta = {
     component: Spinner,
-    title: "Components/Spinner",
+    title: "Building blocks/Loading & save state/Spinner",
     decorators: [themeDecorator],
+    parameters: { tokens: spinnerTokens },
     args: {
         "aria-label": "Loading",
     },
     argTypes: {
         size: {
             control: "radio",
-            options: ["md", "lg", "xl"],
+            options: ["small", "md", "lg", "xl"],
         },
         className: { control: false },
         ref: { control: false },
@@ -24,7 +27,23 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
+/**
+ * **Rules**
+ *
+ * - Only in place, e.g. in the button or field that started the action. Never as a full-screen overlay.
+ * - Show nothing for the first 300 ms; most actions are faster.
+ * - When content is on its way, show a `Skeleton` in its shape instead.
+ */
 export const Default: Story = {};
+
+/**
+ * In dense places, e.g. a small button or a field.
+ */
+export const Small: Story = {
+    args: {
+        size: "small",
+    },
+};
 
 export const Large: Story = {
     args: {
@@ -36,4 +55,15 @@ export const ExtraLarge: Story = {
     args: {
         size: "xl",
     },
+};
+
+/**
+ * In the button that started the action: the `Button` shows the spinner itself with `loading`, at the same width.
+ */
+export const InButton: Story = {
+    render: () => (
+        <Button variant="contained" loading>
+            Save
+        </Button>
+    ),
 };

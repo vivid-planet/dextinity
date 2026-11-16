@@ -1,0 +1,56 @@
+@mixin tokens {
+    // Gap between stacked options
+    --dextinity-radio-group-option-gap: var(--dextinity-space-2);
+    // Space between options laid out in a row
+    --dextinity-radio-group-option-gap-horizontal: var(--dextinity-space-4);
+    // Gap between the circle and the option label
+    --dextinity-radio-group-label-gap: var(--dextinity-space-2);
+    // Opacity of a disabled option
+    --dextinity-radio-group-disabled-opacity: var(--dextinity-opacity-disabled);
+
+
+    // Diameter of the circle
+    --dextinity-radio-group-size: 17px;
+    // Width of the circle's outline
+    --dextinity-radio-group-line-width: var(--dextinity-line-width-strong);
+    // Fill of an unchecked circle
+    --dextinity-radio-group-background: var(--dextinity-color-surface);
+    // Outline of an unchecked circle
+    --dextinity-radio-group-line: var(--dextinity-color-control-line);
+    // Outline of a hovered circle
+    --dextinity-radio-group-line-hover: var(--dextinity-color-text-subtle);
+    // Outline of the circle when the group has an error
+    --dextinity-radio-group-line-error: var(--dextinity-color-danger);
+    // Fill of a checked circle
+    --dextinity-radio-group-background-checked: var(--dextinity-color-accent);
+    // Diameter of the dot inside a checked circle
+    --dextinity-radio-group-dot-size: 7px;
+    // Color of the dot inside a checked circle
+    --dextinity-radio-group-dot-color: var(--dextinity-color-accent-foreground);
+
+    // Color of the option label
+    --dextinity-radio-group-option-color: var(--dextinity-color-text);
+    // Size of the option label
+    --dextinity-radio-group-option-font-size: var(--dextinity-typography-body-size);
+    // Color of the description below an option label
+    --dextinity-radio-group-description-color: var(--dextinity-color-text-subtle);
+    // Size of the description below an option label
+    --dextinity-radio-group-description-font-size: var(--dextinity-typography-small-size);
+
+    // Space inside a card of the `card` variant
+    --dextinity-radio-group-card-padding: var(--dextinity-space-3);
+    // Corner radius of a card
+    --dextinity-radio-group-card-radius: var(--dextinity-radius-field);
+    // Minimum width of a card before the cards wrap
+    --dextinity-radio-group-card-min-width: 200px;
+    // Fill of an unchecked card
+    --dextinity-radio-group-card-background: var(--dextinity-color-surface-raised);
+    // Outline of an unchecked card
+    --dextinity-radio-group-card-line: var(--dextinity-color-line-strong);
+    // Outline of a hovered card
+    --dextinity-radio-group-card-line-hover: var(--dextinity-color-control-line);
+    // Fill of a checked card
+    --dextinity-radio-group-card-background-checked: var(--dextinity-color-accent-soft);
+    // Outline of a checked card
+    --dextinity-radio-group-card-line-checked: var(--dextinity-color-accent);
+}

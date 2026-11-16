@@ -1,0 +1,11 @@
+.gallery {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--dextinity-space-6);
+    max-inline-size: 420px;
+}
+
+.rowThumbnail {
+    inline-size: 72px;
+}

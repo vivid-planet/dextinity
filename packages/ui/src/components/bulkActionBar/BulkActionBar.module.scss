@@ -1,0 +1,100 @@
+@use "../../theme/forcedColors" as forced-colors;
+
+.root {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--dextinity-space-1);
+    box-sizing: border-box;
+    inline-size: max-content;
+    max-inline-size: 100%;
+    padding: var(--dextinity-bulk-action-bar-padding);
+    padding-inline-start: var(--dextinity-space-4);
+    border-radius: var(--dextinity-bulk-action-bar-radius);
+    background: var(--dextinity-bulk-action-bar-background);
+    box-shadow: var(--dextinity-bulk-action-bar-shadow);
+    color: var(--dextinity-bulk-action-bar-foreground);
+    font-family: var(--dextinity-font-family-text);
+    font-size: var(--dextinity-bulk-action-bar-font-size);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(calc(var(--dextinity-motion-distance) * 1.75));
+    transition:
+        transform var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing),
+        opacity var(--dextinity-motion-duration-medium);
+
+    --dextinity-icon-size: 15px;
+
+    &[data-open] {
+        opacity: 1;
+        pointer-events: auto;
+        transform: none;
+    }
+
+    @include forced-colors.edge;
+}
+
+.count {
+    margin-inline-end: var(--dextinity-space-3);
+    font-weight: var(--dextinity-font-weight-semibold);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.action,
+.clear {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--dextinity-space-2);
+    box-sizing: border-box;
+    block-size: var(--dextinity-bulk-action-bar-action-height);
+    border: 0;
+    border-radius: var(--dextinity-bulk-action-bar-action-radius);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    transition: background var(--dextinity-motion-duration-short);
+
+    &:hover {
+        background: var(--dextinity-bulk-action-bar-action-background-hover);
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-bulk-action-bar-focus-ring);
+        @include forced-colors.focus-ring(-2px);
+    }
+
+    &[data-disabled] {
+        opacity: var(--dextinity-bulk-action-bar-action-disabled-opacity);
+        cursor: default;
+        background: transparent;
+    }
+}
+
+.action {
+    padding-inline: var(--dextinity-space-3);
+    white-space: nowrap;
+
+    &[data-color="error"] {
+        color: var(--dextinity-bulk-action-bar-action-foreground-error);
+    }
+}
+
+.actionIcon {
+    display: inline-flex;
+
+    &[data-menu-indicator] {
+        margin-inline-start: calc(var(--dextinity-space-1) * -1);
+        opacity: var(--dextinity-bulk-action-bar-menu-indicator-opacity);
+
+        --dextinity-icon-size: var(--dextinity-icon-size-xxsmall);
+    }
+}
+
+.clear {
+    inline-size: var(--dextinity-bulk-action-bar-action-height);
+    margin-inline-start: var(--dextinity-space-1);
+}

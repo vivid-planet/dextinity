@@ -1,0 +1,66 @@
+@mixin tokens {
+    // Corner radius of the drop area
+    --dextinity-dropzone-radius: calc(var(--dextinity-radius-field) * 1.15);
+    // Padding inside the drop area
+    --dextinity-dropzone-padding: var(--dextinity-space-8);
+    // The dashed outline of the drop area
+    --dextinity-dropzone-outline: var(--dextinity-line-width-strong) dashed var(--dextinity-color-line-strong);
+    // Fill of the drop area
+    --dextinity-dropzone-background: transparent;
+    // Text color of the drop area
+    --dextinity-dropzone-foreground: var(--dextinity-color-text-subtle);
+    // Text color of the hint below the title
+    --dextinity-dropzone-hint-foreground: var(--dextinity-color-text-subtle);
+    // Size of the upload icon in the drop area
+    --dextinity-dropzone-icon-size: 26px;
+    // Color of the upload icon in the drop area
+    --dextinity-dropzone-icon-foreground: var(--dextinity-color-accent-text);
+    // Text color of the browse link
+    --dextinity-dropzone-browse-foreground: var(--dextinity-color-accent-text);
+    // Underline of the browse link until it is hovered
+    --dextinity-dropzone-browse-underline-color: color-mix(in oklch, currentcolor 40%, transparent);
+
+    // Fill of the drop area while files are dragged over it
+    --dextinity-dropzone-active-background: color-mix(in oklch, var(--dextinity-color-accent) 16%, transparent);
+    // Outline of the drop area while files are dragged over it
+    --dextinity-dropzone-active-shadow: inset 0 0 0 2px var(--dextinity-color-accent);
+    // Fill behind the overlay's content while files are dragged over it
+    --dextinity-dropzone-overlay-background: color-mix(in oklch, var(--dextinity-color-surface) 78%, transparent);
+
+    // Color of error messages and of failed uploads
+    --dextinity-dropzone-error-foreground: var(--dextinity-color-danger-text);
+    // Text size of the reason an upload failed, at the end of its row
+    --dextinity-dropzone-error-font-size: 12px;
+    // The dashed outline of a drop area with an error
+    --dextinity-dropzone-error-outline: var(--dextinity-line-width-strong) dashed var(--dextinity-color-danger);
+
+    // Gap between the parts of an upload row
+    --dextinity-dropzone-upload-gap: var(--dextinity-space-3);
+    // Corner radius of an upload row
+    --dextinity-dropzone-upload-radius: var(--dextinity-radius-control);
+    // Fill of an upload row
+    --dextinity-dropzone-upload-background: var(--dextinity-color-surface);
+    // Outline of an upload row
+    --dextinity-dropzone-upload-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line);
+    // Icon color of an upload in progress
+    --dextinity-dropzone-uploading-icon-foreground: var(--dextinity-color-accent-text);
+    // Height of an upload's progress bar
+    --dextinity-dropzone-progress-height: 4px;
+    // Fill of the progress bar's track
+    --dextinity-dropzone-progress-track: var(--dextinity-color-fill-track);
+    // Outline of the progress bar's track; only drawn in high contrast
+    --dextinity-dropzone-progress-track-shadow: 0 0 transparent;
+    // Fill of the progress bar's indicator
+    --dextinity-dropzone-progress-indicator: var(--dextinity-gradient-brand);
+
+    // Opacity of a disabled drop area
+    --dextinity-dropzone-disabled-opacity: 0.5;
+
+    // Corner radius of the browse link's focus ring
+    --dextinity-dropzone-browse-radius: 4px;
+}
+
+@mixin high-contrast-tokens {
+    --dextinity-dropzone-active-background: var(--dextinity-color-canvas);
+    --dextinity-dropzone-progress-track-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line);
+}

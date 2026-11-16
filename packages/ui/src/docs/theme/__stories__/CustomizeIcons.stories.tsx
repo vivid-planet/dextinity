@@ -6,7 +6,7 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import styles from "./replaceIconsInPart.module.scss";
 
 const meta = {
-    title: "Theme/Customize icons",
+    title: "Foundations/Icons/Customize icons",
     tags: ["!dev", "!autodocs", "!manifest"],
     decorators: [themeDecorator],
 } satisfies Meta;
@@ -17,10 +17,10 @@ export const ReplaceIconsInPart: StoryObj = {
     render: () => (
         <>
             <Typography>
-                Default: <Icon name="arrow-right" /> <Icon name="favorite" />
+                Default: <Icon name="arrow-right" /> <Icon name="star-fill" />
             </Typography>
             <Typography className={styles.projectIcons}>
-                Replaced: <Icon name="arrow-right" /> <Icon name="favorite" />
+                Replaced: <Icon name="arrow-right" /> <Icon name="star-fill" />
             </Typography>
         </>
     ),

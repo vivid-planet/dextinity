@@ -101,26 +101,6 @@ enum ActionLogType {
   Deleted
 }
 
-type ActionLogsUser {
-  id: ID!
-  name: String
-}
-
-type PaginatedActionLogs {
-  nodes: [ActionLog!]!
-  totalCount: Int!
-}
-
-type ContentScopeWithLabel {
-  scope: JSONObject!
-  label: JSONObject!
-}
-
-type ContentScopeDimension {
-  name: String!
-  label: String!
-}
-
 type UserPermissionsUser {
   id: String!
   name: String!
@@ -145,6 +125,26 @@ type CurrentUser {
   accountUrl: String
   permissionsForScope(scope: JSONObject!): [String!]!
   allowedContentScopes: [ContentScopeWithLabel!]!
+}
+
+type ActionLogsUser {
+  id: ID!
+  name: String
+}
+
+type PaginatedActionLogs {
+  nodes: [ActionLog!]!
+  totalCount: Int!
+}
+
+type ContentScopeWithLabel {
+  scope: JSONObject!
+  label: JSONObject!
+}
+
+type ContentScopeDimension {
+  name: String!
+  label: String!
 }
 
 type DamMediaAlternative {

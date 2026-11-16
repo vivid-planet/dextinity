@@ -1,5 +1,21 @@
 # @comet/admin-color-picker
 
+## 10.15.0
+
+### Patch Changes
+
+- @dextinity/admin@10.15.0
+    - @dextinity/admin-icons@10.15.0
+
+## 10.14.0
+
+### Patch Changes
+
+- Updated dependencies [1595266]
+- Updated dependencies [45cb8e2]
+    - @dextinity/admin-icons@10.14.0
+    - @dextinity/admin@10.14.0
+
 ## 10.13.1
 
 ### Patch Changes

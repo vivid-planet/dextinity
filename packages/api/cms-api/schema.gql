@@ -418,6 +418,7 @@ type Redirect {
   active: Boolean!
   activatedAt: DateTime
   generationType: RedirectGenerationType!
+  redirectType: RedirectType!
   createdAt: DateTime!
   updatedAt: DateTime!
   dependencies(offset: Int! = 0, limit: Int! = 25, filter: DependencyFilter, sort: [DependencySort!], forceRefresh: Boolean! = false): PaginatedDependencies!
@@ -431,6 +432,11 @@ enum RedirectSourceType {
 enum RedirectGenerationType {
   manual
   automatic
+}
+
+enum RedirectType {
+  temporary
+  permanent
 }
 
 input DependencyFilter {
@@ -607,6 +613,7 @@ input RedirectFilter {
   target: StringFilter
   active: BooleanFilter
   sourceType: RedirectSourceTypeEnumFilter
+  redirectType: RedirectTypeEnumFilter
   activatedAt: DateTimeFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
@@ -618,6 +625,12 @@ input RedirectSourceTypeEnumFilter {
   isAnyOf: [RedirectSourceType!]
   equal: RedirectSourceType
   notEqual: RedirectSourceType
+}
+
+input RedirectTypeEnumFilter {
+  isAnyOf: [RedirectType!]
+  equal: RedirectType
+  notEqual: RedirectType
 }
 
 input DateTimeFilter {
@@ -858,6 +871,7 @@ input RedirectInput {
   comment: String
   active: Boolean
   generationType: RedirectGenerationType!
+  redirectType: RedirectType
 }
 
 input RedirectUpdateActivenessInput {

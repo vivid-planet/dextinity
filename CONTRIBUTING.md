@@ -16,7 +16,7 @@ Pull requests with minor or patch changes should target the [`main`](https://git
 ## Pull requests
 
 > [!WARNING]
-> Please make sure to keep the pull request size at a minium!
+> Please make sure to keep the pull request size at a minimum!
 > Smaller pull requests are easier to review and tend to get merged faster.
 > Unrelated changes, refactorings, fixes etc. should be made in follow-up pull requests.
 

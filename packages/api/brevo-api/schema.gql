@@ -267,6 +267,7 @@ enum SendingState {
   DRAFT
   SENT
   SCHEDULED
+  FAILED
 }
 
 type PaginatedEmailCampaigns {

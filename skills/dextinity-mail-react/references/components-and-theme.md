@@ -365,6 +365,8 @@ Use `!important` when setting a custom link color — the responsive reset uses 
 
 Themed horizontal line, styled from `theme.divider` (base styles plus variants). Falls back to a built-in default when no theme is in scope; only `variant` requires a theme.
 
+A dark divider can almost disappear in dark mode, see [Keep a Line Visible](dark-mode.md#keep-a-line-visible).
+
 - **`MjmlDivider`** — inside `MjmlColumn`. Classes `.mjmlDivider`, `.mjmlDivider--{variant}`.
 - **`HtmlDivider`** — inside ending tags (`MjmlRaw`) or raw HTML. Classes `.htmlDivider`, `.htmlDivider--{variant}`.
 

@@ -21,6 +21,7 @@ import {
 } from "../block";
 import { BlockField } from "../decorators/field";
 import { BlockFactoryNameOrOptions } from "./types";
+import { withDefaultDescription } from "./withDefaultDescription";
 
 interface BlocksBlockItemDataInterface extends BlockData {
     key: string;
@@ -213,7 +214,14 @@ export function createBlocksBlock<BlockMap extends BaseBlockMap>(
         }
     }
 
-    return createBlock(BlocksBlockData, BlocksBlockInput, nameOrOptions);
+    return createBlock(
+        BlocksBlockData,
+        BlocksBlockInput,
+        withDefaultDescription(
+            nameOrOptions,
+            'A list of blocks of several types. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site), a `type` and the `props` of the block that type names in the `blocks` of the `props` field. The order of `blocks` is the display order. An empty block is `{"blocks":[]}`.',
+        ),
+    );
 }
 
 // internal helper

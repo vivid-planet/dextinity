@@ -69,6 +69,8 @@ export const MailTextBlock = withPreview<PropsWithData<MailTextBlockData>>(
 );
 ```
 
+The rich-text components have no root element of their own. For a rich text inside a column, pass the `className` to the rich-text component's `textClassName`: it puts the class on each of its text elements.
+
 A block without data of its own still needs its data passed, because in the block preview, the admin adds the block's route to it: `divider: (data) => <MailDividerBlock data={data} />`.
 
 The block preview page must pass the result of `useIFrameBridge` to `useRefToRegisterMailBlocksForPreview`, and put the ref it returns on the element that contains the mail HTML:

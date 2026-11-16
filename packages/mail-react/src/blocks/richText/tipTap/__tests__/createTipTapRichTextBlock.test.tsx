@@ -71,6 +71,14 @@ describe("createTipTapRichTextBlock", () => {
         expect(markup.match(/htmlText--bottomSpacing/g)).toHaveLength(1);
     });
 
+    it("sets the textClassName on every text component, including the one holding a list", () => {
+        const { MjmlTipTapRichTextBlock } = createTipTapRichTextBlock();
+        const data = createBlockData([createParagraph("Paragraph"), { type: "bulletList", content: [createListItem("Item")] }]);
+        const markup = renderWithTheme(<MjmlTipTapRichTextBlock data={data} textClassName="blockClass" />);
+
+        expect(markup.match(/<mj-text[^>]*class="[^"]*blockClass/g)).toHaveLength(2);
+    });
+
     it("uses the look of the picked style, or the `textBlocks` look when the style has none", () => {
         const { HtmlTipTapRichTextBlock } = createTipTapRichTextBlock({
             textBlocks: { "heading-1": { variant: "heading1" } },

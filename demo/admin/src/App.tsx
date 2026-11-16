@@ -85,6 +85,7 @@ export function App() {
             }}
             redirects={{
                 scopeParts: ["domain"],
+                enableRedirectType: true,
             }}
             dataGrid={{
                 component: DataGridPro,

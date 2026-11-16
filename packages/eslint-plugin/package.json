@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/eslint-plugin",
-    "version": "10.13.1",
+    "version": "10.15.0",
     "description": "A set of ESLint rules and configurations for Dextinity projects",
     "type": "commonjs",
     "main": "lib/index.js",
@@ -37,10 +37,10 @@
         "eslint-plugin-unused-imports": "^4.4.1",
         "globals": "^17.14.0",
         "npm-run-all2": "^9.0.4",
-        "prettier": "^3.9.10",
+        "prettier": "^3.10.1",
         "typescript": "^5.9.3",
-        "typescript-eslint": "^8.72.1",
-        "vitest": "^5.0.5"
+        "typescript-eslint": "^8.72.2",
+        "vitest": "^5.1.0"
     },
     "peerDependencies": {
         "eslint": ">=9",

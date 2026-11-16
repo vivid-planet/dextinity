@@ -1,5 +1,6 @@
 import { HttpResponse } from "msw";
-import { graphql } from "msw/graphql";
+
+import { graphqlApi } from "./graphqlApi";
 
 const alice = { __typename: "ActionLogsUser", id: "Alice", name: "Alice" };
 const bob = { __typename: "ActionLogsUser", id: "Bob", name: "Bob" };
@@ -98,14 +99,14 @@ const buildResponse = (filter?: MockFilter) => {
 };
 
 export const globalActionLogHandlers = [
-    graphql.query("GlobalActionLogGrid", () =>
+    graphqlApi.query("GlobalActionLogGrid", () =>
         HttpResponse.json({
             data: {
                 myActionLogs: buildResponse(),
             },
         }),
     ),
-    graphql.query("MyActionLogsDialog", ({ variables }) =>
+    graphqlApi.query("MyActionLogsDialog", ({ variables }) =>
         HttpResponse.json({
             data: {
                 myActionLogs: buildResponse(variables.filter as MockFilter | undefined),

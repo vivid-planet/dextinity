@@ -1,5 +1,6 @@
 import { HttpResponse } from "msw";
-import { graphql } from "msw/graphql";
+
+import { graphqlApi } from "./graphqlApi";
 
 const mockLogs = [
     {
@@ -95,7 +96,7 @@ const buildResponse = (filter?: MockFilter) => {
 };
 
 export const actionLogsHandlers = ["ActionLogs", "ActionLogDialog"].map((operationName) =>
-    graphql.query(operationName, ({ variables }) =>
+    graphqlApi.query(operationName, ({ variables }) =>
         HttpResponse.json({
             data: {
                 actionLogs: buildResponse(variables.filter as MockFilter | undefined),

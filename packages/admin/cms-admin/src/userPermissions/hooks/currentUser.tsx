@@ -1,6 +1,6 @@
 import { gql, useQuery } from "@apollo/client";
 import { Loading } from "@dextinity/admin";
-import { createContext, type PropsWithChildren, useContext } from "react";
+import { createContext, type PropsWithChildren, useCallback, useContext, useMemo } from "react";
 import { FormattedMessage } from "react-intl";
 
 import { type ContentScope, useContentScope } from "../../contentScope/Provider";
@@ -37,7 +37,28 @@ export interface CurrentUserInterface {
     }[];
 }
 
-export const CurrentUserProvider = ({ isAllowed, children }: PropsWithChildren<{ isAllowed?: CurrentUserContext["isAllowed"] }>) => {
+const defaultIsAllowed = (user: CurrentUserInterface, permission: Permission, contentScope?: ContentScope) => {
+    if (user.email === undefined) {
+        return false;
+    }
+    return user.permissions.some(
+        (p) =>
+            p.permission === permission &&
+            (!contentScope ||
+                p.contentScopes.some((cs) =>
+                    // A wildcard ("*") dimension in the user's content scopes allows any value for that dimension;
+                    // null and undefined are treated the same, matching the server-side check.
+                    Object.entries(contentScope).every(
+                        ([scope, value]) => cs[scope] === "*" || cs[scope] === value || (cs[scope] == null && value == null),
+                    ),
+                )),
+    );
+};
+
+export const CurrentUserProvider = ({
+    isAllowed = defaultIsAllowed,
+    children,
+}: PropsWithChildren<{ isAllowed?: CurrentUserContext["isAllowed"] }>) => {
     const { data, error } = useQuery<GQLCurrentUserQuery>(gql`
         query CurrentUser {
             currentUser {
@@ -62,6 +83,33 @@ export const CurrentUserProvider = ({ isAllowed, children }: PropsWithChildren<{
         }
     `);
 
+    const currentUser = data?.currentUser;
+
+    const context = useMemo<CurrentUserContext | undefined>(() => {
+        if (!currentUser) {
+            return undefined;
+        }
+
+        return {
+            currentUser: {
+                id: currentUser.id,
+                name: currentUser.name,
+                email: currentUser.email,
+                permissions: currentUser.permissions.map((p) => ({
+                    permission: p.permission as Permission,
+                    contentScopes: p.contentScopes,
+                })),
+                authenticatedUser: currentUser.authenticatedUser
+                    ? { name: currentUser.authenticatedUser.name, email: currentUser.authenticatedUser.email }
+                    : null,
+                allowedContentScopes: currentUser.allowedContentScopes.map((acs) => ({ scope: acs.scope, label: acs.label })),
+                impersonated: !!currentUser.impersonated,
+                accountUrl: currentUser.accountUrl || undefined,
+            },
+            isAllowed,
+        };
+    }, [currentUser, isAllowed]);
+
     if (error) {
         return (
             <FormattedMessage
@@ -72,46 +120,9 @@ export const CurrentUserProvider = ({ isAllowed, children }: PropsWithChildren<{
         );
     }
 
-    if (!data) {
+    if (!context) {
         return <Loading behavior="fillPageHeight" />;
     }
-
-    const context: CurrentUserContext = {
-        currentUser: {
-            id: data.currentUser.id,
-            name: data.currentUser.name,
-            email: data.currentUser.email,
-            permissions: data.currentUser.permissions.map((p) => ({
-                permission: p.permission as Permission,
-                contentScopes: p.contentScopes,
-            })),
-            authenticatedUser: data.currentUser.authenticatedUser
-                ? { name: data.currentUser.authenticatedUser.name, email: data.currentUser.authenticatedUser.email }
-                : null,
-            allowedContentScopes: data.currentUser.allowedContentScopes.map((acs) => ({ scope: acs.scope, label: acs.label })),
-            impersonated: !!data.currentUser.impersonated,
-            accountUrl: data.currentUser.accountUrl || undefined,
-        },
-        isAllowed:
-            isAllowed ??
-            ((user: CurrentUserInterface, permission: Permission, contentScope?: ContentScope) => {
-                if (user.email === undefined) {
-                    return false;
-                }
-                return user.permissions.some(
-                    (p) =>
-                        p.permission === permission &&
-                        (!contentScope ||
-                            p.contentScopes.some((cs) =>
-                                // A wildcard ("*") dimension in the user's content scopes allows any value for that dimension;
-                                // null and undefined are treated the same, matching the server-side check.
-                                Object.entries(contentScope).every(
-                                    ([scope, value]) => cs[scope] === "*" || cs[scope] === value || (cs[scope] == null && value == null),
-                                ),
-                            )),
-                );
-            }),
-    };
 
     return <CurrentUserContext.Provider value={context}>{children}</CurrentUserContext.Provider>;
 };
@@ -129,6 +140,7 @@ export function useUserPermissionCheck(): (permission: Permission) => boolean {
     if (!context) {
         throw new Error("CurrentUser not found. Make sure CurrentUserContext exists.");
     }
-    const contentScope = useContentScope();
-    return (permission) => context.isAllowed(context.currentUser, permission, contentScope.scope);
+    const { scope } = useContentScope();
+
+    return useCallback((permission: Permission) => context.isAllowed(context.currentUser, permission, scope), [context, scope]);
 }

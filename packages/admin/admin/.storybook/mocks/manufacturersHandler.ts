@@ -1,4 +1,6 @@
-import { graphql, HttpResponse } from "msw";
+import { HttpResponse } from "msw";
+
+import { graphqlApi } from "./graphqlApi";
 
 export type Manufacturer = { id: string; name: string };
 
@@ -10,7 +12,7 @@ export const manufacturers: Manufacturer[] = [
     { id: "5", name: "Apex Industries" },
 ];
 
-export const manufacturersQueryHandler = graphql.query<{ manufacturers: Manufacturer[] }, { search?: string }>(
+export const manufacturersQueryHandler = graphqlApi.query<{ manufacturers: Manufacturer[] }, { search?: string }>(
     "Manufacturers",
     ({ variables }) => {
         const search = variables.search?.toLowerCase() ?? "";

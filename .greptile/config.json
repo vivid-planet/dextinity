@@ -5,7 +5,7 @@
         "enabled": true,
         "riskCeiling": "medium",
         "filters": {
-            "includeAuthors": ["VPS-Obi", "VPS-thodax", "nsams", "fraxachun", "VPS-Ricky", "vps-manuel-blum"],
+            "includeAuthors": ["VPS-Obi", "VPS-thodax", "nsams", "fraxachun", "VPS-Ricky", "vps-manuel-blum", "kaufmo"],
             "excludePaths": [
                 "rules/coding-guidelines/**",
                 "docs/docs/9-coding-guidelines/**",
@@ -17,6 +17,7 @@
         }
     },
     "ignoreKeywords": "Merge main\nMerge `main`\nMerge next\nMerge `next`\nMerge feature/\nMerge `feature/",
+    "disabledLabels": ["skip-greptile-review"],
     "excludeAuthors": ["vivid-planet-bot", "github-actions[bot]", "renovate[bot]"],
     "ignorePatterns": "pnpm-lock.yaml\n**/CHANGELOG.md\nCHANGELOG.old.md\n**/__snapshots__/**\n**/generated/**\n**/schema.gql\n**/block-meta.json"
 }

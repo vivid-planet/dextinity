@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { type ReactNode, useState } from "react";
+import { type PropsWithChildren, useState } from "react";
 import { expect, waitFor } from "storybook/test";
 
 import { createDamVideoBlock, type DamVideoBlockState } from "../createDamVideoBlock";
@@ -13,7 +13,7 @@ function StatePreview({ state }: { state: DamVideoBlockState }) {
     );
 }
 
-function StoryWrapper({ children, state }: { children: ReactNode; state: DamVideoBlockState }) {
+function StoryWrapper({ children, state }: PropsWithChildren<{ state: DamVideoBlockState }>) {
     return (
         <>
             {children}

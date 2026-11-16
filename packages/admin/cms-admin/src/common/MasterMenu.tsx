@@ -136,18 +136,28 @@ export function useMenuFromMasterMenuData(items: MasterMenuData): MenuItem[] {
     return items.filter(checkPermission).map(mapFn);
 }
 
+function countNavigableMenuItems(menuItems: MenuItem[]): number {
+    return menuItems.reduce((count, menuItem) => {
+        if (menuItem.type === "group" || menuItem.type === "collapsible") {
+            return count + countNavigableMenuItems(menuItem.items);
+        }
+        return count + 1;
+    }, 0);
+}
+
 export const MasterMenu = ({ menu, permanentMenuMinWidth = 1024 }: MasterMenuProps) => {
     const menuItems = useMenuFromMasterMenuData(menu);
+    const hasMultipleMenuItems = countNavigableMenuItems(menuItems) > 1;
     const { setHasMultipleMenuItems } = useMainNavigation();
     const windowSize = useWindowSize();
     const match = useRouteMatch();
     const useTemporaryMenu: boolean = windowSize.width < permanentMenuMinWidth;
 
     useEffect(() => {
-        setHasMultipleMenuItems(menuItems.length > 1);
-    }, [menuItems.length, setHasMultipleMenuItems]);
+        setHasMultipleMenuItems(hasMultipleMenuItems);
+    }, [hasMultipleMenuItems, setHasMultipleMenuItems]);
 
-    if (menuItems.length <= 1) {
+    if (!hasMultipleMenuItems) {
         return null;
     }
 

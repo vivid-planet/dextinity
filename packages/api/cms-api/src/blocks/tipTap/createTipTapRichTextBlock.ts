@@ -715,9 +715,6 @@ function joinText(node: JSONContent): string {
     return (node.text ?? "") + (node.content ?? []).map(joinText).join("");
 }
 
-/**
- * @experimental
- */
 export function createTipTapRichTextBlock(
     options: CreateTipTapRichTextBlockOptions = {},
     nameOrOptions: BlockFactoryNameOrOptions = "TipTapRichText",

@@ -1,7 +1,7 @@
 import { createRichTextBlock, MjmlColumn, MjmlSection, type PropsWithData, withPreview } from "@dextinity/mail-react";
 import type { PhoneLinkBlockData, RichTextBlockData } from "@src/blocks.generated";
 
-const { MjmlRichTextBlock } = createRichTextBlock({
+export const { MjmlRichTextBlock } = createRichTextBlock({
     blockTypes: {
         title: { variant: "title" },
         header: { variant: "header" },

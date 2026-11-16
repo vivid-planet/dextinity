@@ -56,7 +56,11 @@ export function FinalFormDebug() {
         >
             {(formState) => (
                 <Alert severity="info" title="Debug Final Form State:">
-                    <Box paddingTop={2}>
+                    <Box
+                        sx={{
+                            paddingTop: 2,
+                        }}
+                    >
                         <Button onClick={() => setIsExpanded(!isExpanded)} variant="outlined" size="small">
                             {isExpanded ? "Collapse" : "Expand"}
                         </Button>

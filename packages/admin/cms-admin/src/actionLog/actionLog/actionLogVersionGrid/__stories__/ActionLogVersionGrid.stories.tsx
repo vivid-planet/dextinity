@@ -1,7 +1,6 @@
 import { useDataGridRemote, usePersistentColumnState } from "@dextinity/admin";
 import type { GridSortModel } from "@mui/x-data-grid";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { MemoryRouter } from "react-router";
 
 import { ActionLogVersionGrid } from "../ActionLogVersionGrid";
 import type { GQLActionLogVersionGridFragment } from "../ActionLogVersionGrid.gql.generated";
@@ -69,13 +68,6 @@ function sortLikeServer(actionLogs: typeof mockActionLogs | undefined, sortModel
 type Story = StoryObj<typeof ActionLogVersionGrid>;
 const meta: Meta<typeof ActionLogVersionGrid> = {
     component: ActionLogVersionGrid,
-    decorators: [
-        (Story) => (
-            <MemoryRouter>
-                <Story />
-            </MemoryRouter>
-        ),
-    ],
     tags: ["!autodocs"],
     title: "actionLog/actionLog/actionLogVersionGrid/ActionLogVersionGrid",
 };

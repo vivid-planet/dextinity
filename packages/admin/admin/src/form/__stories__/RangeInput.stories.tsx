@@ -44,13 +44,21 @@ export default {
 export const RangeInput = () => {
     return (
         <>
-            <Box marginBottom={4}>
+            <Box
+                sx={{
+                    marginBottom: 4,
+                }}
+            >
                 <Toolbar>
                     <ToolbarTitleItem>Final Form Range Input</ToolbarTitleItem>
                 </Toolbar>
             </Box>
             <div style={{ width: 400 }}>
-                <Box marginBottom={4}>
+                <Box
+                    sx={{
+                        marginBottom: 4,
+                    }}
+                >
                     <Card variant="outlined">
                         <CardContent>
                             <Typography variant="h3" gutterBottom>
@@ -86,7 +94,11 @@ export const RangeInput = () => {
                     </Card>
                 </Box>
 
-                <Box marginBottom={4}>
+                <Box
+                    sx={{
+                        marginBottom: 4,
+                    }}
+                >
                     <Card variant="outlined">
                         <CardContent>
                             <Typography variant="h3" gutterBottom>
@@ -120,7 +132,11 @@ export const RangeInput = () => {
                         </CardContent>
                     </Card>
                 </Box>
-                <Box marginBottom={4}>
+                <Box
+                    sx={{
+                        marginBottom: 4,
+                    }}
+                >
                     <Card variant="outlined">
                         <CardContent>
                             <Typography variant="h3" gutterBottom>
@@ -155,7 +171,11 @@ export const RangeInput = () => {
                         </CardContent>
                     </Card>
                 </Box>
-                <Box marginBottom={4}>
+                <Box
+                    sx={{
+                        marginBottom: 4,
+                    }}
+                >
                     <Card variant="outlined">
                         <CardContent>
                             <Typography variant="h3" gutterBottom>

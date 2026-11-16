@@ -1,11 +1,10 @@
-import type { EntityManager } from "@mikro-orm/core";
-import type { EntityRepository } from "@mikro-orm/postgresql";
+import type { EntityManager } from "@mikro-orm/postgresql";
 import { Logger } from "@nestjs/common";
 import type { Transporter } from "nodemailer";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import type { MailerLog } from "./entities/mailer-log.entity";
-import { MailerService } from "./mailer.service";
+import { MailerLog } from "./entities/mailer-log.entity.js";
+import { MailerService } from "./mailer.service.js";
 
 describe("MailerService.sendMail", () => {
     afterEach(() => {
@@ -14,24 +13,19 @@ describe("MailerService.sendMail", () => {
 
     function createService({ nativeDelete }: { nativeDelete: () => Promise<number> }) {
         const mailerTransport = { sendMail: vi.fn().mockResolvedValue({ messageId: "message-id" }) } as unknown as Transporter;
-        const mailerLogRepository = { nativeDelete: vi.fn(nativeDelete) } as unknown as EntityRepository<MailerLog<unknown>>;
+        const entityManager = { nativeDelete: vi.fn(nativeDelete) } as unknown as EntityManager;
 
-        const service = new MailerService(
-            { defaultFrom: "sender@example.com" },
-            mailerTransport,
-            null as unknown as EntityManager,
-            mailerLogRepository,
-        );
+        const service = new MailerService({ defaultFrom: "sender@example.com" }, mailerTransport, entityManager);
 
-        return { service, mailerLogRepository };
+        return { service, entityManager };
     }
 
     it("deletes outdated mail logs", async () => {
-        const { service, mailerLogRepository } = createService({ nativeDelete: () => Promise.resolve(1) });
+        const { service, entityManager } = createService({ nativeDelete: () => Promise.resolve(1) });
 
         await service.sendMail({ to: "recipient@example.com", subject: "Subject", text: "Text", logMail: false });
 
-        expect(mailerLogRepository.nativeDelete).toHaveBeenCalledWith({ createdAt: { $lt: expect.any(Date) } });
+        expect(entityManager.nativeDelete).toHaveBeenCalledWith(MailerLog, { createdAt: { $lt: expect.any(Date) } });
     });
 
     it("logs instead of rejecting when deleting outdated mail logs fails", async () => {

@@ -1,12 +1,12 @@
-import { Type } from "@nestjs/common";
+import type { Type } from "@nestjs/common";
 import { ArgsType, Field } from "@nestjs/graphql";
 import { Type as TransformerType } from "class-transformer";
 import { IsOptional, IsString, ValidateNested } from "class-validator";
 
-import { OffsetBasedPaginationArgs } from "../../common/pagination/offset-based.args";
-import { PageTreeNodeCategory, ScopeInterface } from "../types";
-import { EmptyPageTreeNodeScope } from "./empty-page-tree-node-scope";
-import { PageTreeNodeSort } from "./page-tree-node.sort";
+import { OffsetBasedPaginationArgs } from "../../common/pagination/offset-based.args.js";
+import type { PageTreeNodeCategory, ScopeInterface } from "../types.js";
+import { EmptyPageTreeNodeScope } from "./empty-page-tree-node-scope.js";
+import { PageTreeNodeSort } from "./page-tree-node.sort.js";
 
 interface PaginatedPageTreeNodesArgsInterface {
     scope: ScopeInterface;

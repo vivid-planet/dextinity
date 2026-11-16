@@ -1,7 +1,7 @@
-import { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
+import type { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
-import { RichTextBlock } from "@src/common/blocks/rich-text.block";
-import { faker } from "@src/db/fixtures/faker";
+import type { RichTextBlock } from "@src/common/blocks/rich-text.block.js";
+import { faker } from "@src/db/fixtures/faker.js";
 
 @Injectable()
 export class RichTextBlockFixtureService {

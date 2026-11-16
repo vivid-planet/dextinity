@@ -1,4 +1,5 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { Button, FillSpace, Toolbar, ToolbarActions, useFocusAwarePolling } from "@dextinity/admin";
 import { ArrowRight, Close, Delete } from "@dextinity/admin-icons";
 import {
@@ -156,7 +157,7 @@ export default function PageTreeSelectDialog({ value, onChange, open, onClose, d
         // When the selected page is expanded we scroll to the selected page
         if (selectedPageId) {
             const index = pagesToRender.findIndex((c) => c.id === selectedPageId);
-            if (index) {
+            if (index !== -1) {
                 refList.current?.scrollToRow({ index, align: "smart" });
             }
         }
@@ -176,19 +177,22 @@ export default function PageTreeSelectDialog({ value, onChange, open, onClose, d
 
     return (
         <Dialog
-            PaperProps={{
-                sx: {
-                    minHeight: "80vh",
-                    maxHeight: "80vh",
-                },
-            }}
             open={open}
             onClose={onClose}
             fullWidth
             maxWidth="xl"
-            TransitionProps={{
-                onEnter: handelOnEnterDialog,
-                onEntered: handelOnEnteredDialog,
+            slotProps={{
+                transition: {
+                    onEnter: handelOnEnterDialog,
+                    onEntered: handelOnEnteredDialog,
+                },
+
+                paper: {
+                    sx: {
+                        minHeight: "80vh",
+                        maxHeight: "80vh",
+                    },
+                },
             }}
         >
             <StyledDialogTitle>

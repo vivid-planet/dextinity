@@ -1,10 +1,10 @@
-import { BaseEntity, Entity, OptionalProps, PrimaryKey, PrimaryKeyProp } from "@mikro-orm/core";
-import { Index, Property } from "@mikro-orm/postgresql";
+import { BaseEntity, OptionalProps, PrimaryKeyProp } from "@mikro-orm/core";
+import { Entity, Index, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
 import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
 import { GraphQLJSONObject } from "graphql-scalars";
 import { v7 } from "uuid";
 
-import { ContentScope } from "../../user-permissions/interfaces/content-scope.interface";
+import type { ContentScope } from "../../user-permissions/interfaces/content-scope.interface.js";
 
 @Entity()
 @ObjectType()

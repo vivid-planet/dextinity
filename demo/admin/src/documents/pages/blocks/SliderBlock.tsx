@@ -20,21 +20,10 @@ const SliderItemBlock = createCompositeBlock({
     },
 });
 
-const SliderListBlock = createListBlock({
-    name: "SliderList",
-    block: SliderItemBlock,
-    itemName: <FormattedMessage id="sliderListBlock.itemName" defaultMessage="Item" />,
-    itemsName: <FormattedMessage id="sliderListBlock.itemsName" defaultMessage="Items" />,
-});
-
-export const SliderBlock = createCompositeBlock({
+export const SliderBlock = createListBlock({
     name: "Slider",
     displayName: <FormattedMessage id="sliderBlock.displayName" defaultMessage="Slider" />,
-    category: BlockCategory.Layout,
-    blocks: {
-        sliderList: {
-            title: <FormattedMessage id="sliderBlock.sliderListBlock.title" defaultMessage="Slider List" />,
-            block: SliderListBlock,
-        },
-    },
+    block: SliderItemBlock,
+    itemName: <FormattedMessage id="sliderBlock.itemName" defaultMessage="Item" />,
+    itemsName: <FormattedMessage id="sliderBlock.itemsName" defaultMessage="Items" />,
 });

@@ -1,14 +1,14 @@
 import type { IncomingMessage } from "http";
 import { describe, expect, it, vi } from "vitest";
 
-import { FocalPoint } from "../../../file-utils/focal-point.enum";
-import type { DamConfig } from "../../dam.config";
-import type { FileInterface } from "../../files/entities/file.entity";
-import type { DamFileImage } from "../../files/entities/file-image.entity";
-import type { FilesService } from "../../files/files.service";
-import type { ImageInterface } from "../dto/image.interface";
-import { FileImagesResolver } from "../file-image.resolver";
-import { ImagesService } from "../images.service";
+import { FocalPoint } from "../../../file-utils/focal-point.enum.js";
+import type { DamConfig } from "../../dam.config.js";
+import type { FileInterface } from "../../files/entities/file.entity.js";
+import type { DamFileImage } from "../../files/entities/file-image.entity.js";
+import type { FilesService } from "../../files/files.service.js";
+import type { ImageInterface } from "../dto/image.interface.js";
+import { FileImagesResolver } from "../file-image.resolver.js";
+import { ImagesService } from "../images.service.js";
 
 function createImageFile(id: string): FileInterface {
     return {

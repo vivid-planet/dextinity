@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { containsAllScopes } from "./contains-all-scopes";
+import { containsAllScopes } from "./contains-all-scopes.js";
 
 describe("containsAllScopes", () => {
     it("accepts equal scopes regardless of their order", () => {

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { transformToBlockSave } from "../block";
-import { YouTubeVideoBlock } from "./you-tube-video.block";
+import { transformToBlockSave } from "../block.js";
+import { YouTubeVideoBlock } from "./you-tube-video.block.js";
 
 describe("YouTubeVideoBlock migrations", () => {
     it("migrates block instances that were never migrated", () => {

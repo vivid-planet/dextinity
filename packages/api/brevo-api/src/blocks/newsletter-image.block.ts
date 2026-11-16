@@ -1,12 +1,12 @@
 import {
     BlockData,
-    BlockDataInterface,
+    type BlockDataInterface,
     BlockInput,
     blockInputToData,
     ChildBlock,
     ChildBlockInput,
     createBlock,
-    ExtractBlockInput,
+    type ExtractBlockInput,
     PixelImageBlock,
 } from "@dextinity/cms-api";
 

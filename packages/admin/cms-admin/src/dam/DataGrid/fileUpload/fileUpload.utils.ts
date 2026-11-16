@@ -1,6 +1,6 @@
 import { fromEvent } from "file-selector";
 import { COMMON_MIME_TYPES } from "file-selector/mime";
-import * as mimedb from "mime-db";
+import mimedb from "mime-db";
 import type { Accept, DropzoneOptions } from "react-dropzone";
 
 // Browsers leave the MIME type empty for some files, e.g. Firefox for files in an uploaded folder, and the API rejects

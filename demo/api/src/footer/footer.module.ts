@@ -2,10 +2,10 @@ import { DependenciesResolverFactory } from "@dextinity/cms-api";
 import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { Module } from "@nestjs/common";
 
-import { FooterScope } from "./dto/footer-scope";
-import { Footer } from "./entities/footer.entity";
-import { FooterResolver } from "./generated/footer.resolver";
-import { FootersService } from "./generated/footers.service";
+import { FooterScope } from "./dto/footer-scope.js";
+import { Footer } from "./entities/footer.entity.js";
+import { FooterResolver } from "./generated/footer.resolver.js";
+import { FootersService } from "./generated/footers.service.js";
 
 @Module({
     imports: [MikroOrmModule.forFeature([Footer, FooterScope])],

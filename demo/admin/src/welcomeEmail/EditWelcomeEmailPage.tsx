@@ -1,4 +1,5 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client/react";
 import {
     Alert,
     Button,
@@ -11,6 +12,7 @@ import {
     ToolbarActions,
     ToolbarTitleItem,
     Tooltip,
+    useCurrentRouteMatch,
     useSnackbarApi,
 } from "@dextinity/admin";
 import { OpenNewTabAlternative, Send } from "@dextinity/admin-icons";
@@ -29,10 +31,9 @@ import {
 } from "@dextinity/cms-admin";
 import { Snackbar } from "@mui/material";
 import type { WelcomeEmailContentBlockInput } from "@src/blocks.generated";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 import { type JSX, useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
-import { useRouteMatch } from "react-router";
 
 import { WelcomeEmailContentBlock } from "./blocks/WelcomeEmailContentBlock";
 import {
@@ -56,7 +57,7 @@ export function EditWelcomeEmailPage(): JSX.Element | null {
     const [welcomeEmailState, setWelcomeEmailState] = useState<BlockState<typeof WelcomeEmailContentBlock>>(WelcomeEmailContentBlock.defaultValues());
     const [hasChanges, setHasChanges] = useState(false);
     const [referenceContent, setReferenceContent] = useState<WelcomeEmailContentBlockInput | null>(null);
-    const match = useRouteMatch();
+    const routeUrl = useCurrentRouteMatch()?.url ?? "";
     const previewApi = useBlockPreview();
     const blockContext = useBlockContext();
 
@@ -64,6 +65,7 @@ export function EditWelcomeEmailPage(): JSX.Element | null {
 
     const { data, refetch, loading } = useQuery<GQLWelcomeEmailQuery, GQLWelcomeEmailQueryVariables>(welcomeEmailQuery, {
         variables: { scope },
+        notifyOnNetworkStatusChange: false,
     });
 
     const saveConflict = useSaveConflictQuery<GQLCheckForChangesWelcomeEmailQuery, GQLCheckForChangesWelcomeEmailQueryVariables>(
@@ -129,7 +131,7 @@ export function EditWelcomeEmailPage(): JSX.Element | null {
     }, [data]);
 
     useEffect(() => {
-        const equal = isEqual(referenceContent, welcomeEmailState ? WelcomeEmailContentBlock.state2Output(welcomeEmailState) : null);
+        const equal = deepEqual(referenceContent, welcomeEmailState ? WelcomeEmailContentBlock.state2Output(welcomeEmailState) : null);
         setHasChanges(!equal);
     }, [welcomeEmailState, referenceContent]);
 
@@ -176,7 +178,7 @@ export function EditWelcomeEmailPage(): JSX.Element | null {
 
     const previewState = WelcomeEmailContentBlock.createPreviewState(welcomeEmailState, {
         ...blockContext,
-        parentUrl: match.url,
+        parentUrl: routeUrl,
         showVisibleOnly: previewApi.showOnlyVisible,
     });
 

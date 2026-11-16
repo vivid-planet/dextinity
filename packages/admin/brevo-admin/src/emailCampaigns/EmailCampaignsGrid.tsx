@@ -1,4 +1,5 @@
-import { gql, useApolloClient, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client/react";
 import {
     Button,
     CrudContextMenu,
@@ -100,7 +101,7 @@ function EmailCampaignsGridToolbar() {
             </ToolbarItem>
             <ToolbarFillSpace />
             <ToolbarActions>
-                <Button startIcon={<AddIcon />} component={StackLink} pageName="add" payload="add" variant="primary">
+                <Button startIcon={<AddIcon />} component={StackLink} nativeButton={false} pageName="add" payload="add" variant="primary">
                     <FormattedMessage id="dextinity.emailCampaign.newEmailCampaign" defaultMessage="New email campaign" />
                 </Button>
             </ToolbarActions>
@@ -129,6 +130,7 @@ export function EmailCampaignsGrid({
         },
         { value: "DRAFT", label: intl.formatMessage({ id: "dextinity.emailCampaign.draft", defaultMessage: "Draft" }) },
         { value: "SCHEDULED", label: intl.formatMessage({ id: "dextinity.emailCampaign.scheduled", defaultMessage: "Scheduled" }) },
+        { value: "FAILED", label: intl.formatMessage({ id: "dextinity.emailCampaign.failed", defaultMessage: "Failed" }) },
     ];
 
     const columns: GridColDef<GQLEmailCampaignsListFragment>[] = [
@@ -190,18 +192,18 @@ export function EmailCampaignsGrid({
 
                 return (
                     <>
-                        {row.sendingState !== "SENT" && !isScheduledDateInPast && (
-                            <IconButton component={StackLink} pageName="edit" payload={row.id}>
+                        {row.sendingState !== "SENT" && (row.sendingState === "FAILED" || !isScheduledDateInPast) && (
+                            <IconButton component={StackLink} nativeButton={false} pageName="edit" payload={row.id}>
                                 <Edit color="primary" />
                             </IconButton>
                         )}
                         {row.sendingState === "SENT" && (
-                            <IconButton component={StackLink} pageName="statistics" payload={row.id}>
+                            <IconButton component={StackLink} nativeButton={false} pageName="statistics" payload={row.id}>
                                 <Statistics color="primary" />
                             </IconButton>
                         )}
                         {(row.sendingState === "SENT" || (row.sendingState == "SCHEDULED" && isScheduledDateInPast)) && (
-                            <IconButton component={StackLink} pageName="view" payload={row.id}>
+                            <IconButton component={StackLink} nativeButton={false} pageName="view" payload={row.id}>
                                 <Visible color="primary" />
                             </IconButton>
                         )}
@@ -249,6 +251,7 @@ export function EmailCampaignsGrid({
             limit: dataGridProps.paginationModel.pageSize,
             sort: muiGridSortToGql(dataGridProps.sortModel),
         },
+        notifyOnNetworkStatusChange: false,
     });
     const rowCount = useBufferedRowCount(data?.brevoEmailCampaigns.totalCount);
     if (error) {

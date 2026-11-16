@@ -1,4 +1,5 @@
-import { gql, useApolloClient, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client/react";
 import {
     Button,
     CrudContextMenu,
@@ -56,7 +57,7 @@ function ProductTagsGridToolbar() {
             <GridToolbarQuickFilter />
             <GridFilterButton />
             <FillSpace />
-            <Button responsive startIcon={<AddIcon />} component={StackLink} pageName="add" payload="add">
+            <Button responsive startIcon={<AddIcon />} component={StackLink} nativeButton={false} pageName="add" payload="add">
                 <FormattedMessage id="productTag.productTagsGrid.newEntry" defaultMessage="New Product Tag" />
             </Button>
         </DataGridToolbar>
@@ -85,7 +86,7 @@ export function ProductTagsGrid() {
             renderCell: (params) => {
                 return (
                     <>
-                        <IconButton color="primary" component={StackLink} pageName="edit" payload={params.row.id}>
+                        <IconButton color="primary" component={StackLink} nativeButton={false} pageName="edit" payload={params.row.id}>
                             <EditIcon />
                         </IconButton>
                         <CrudContextMenu
@@ -111,6 +112,7 @@ export function ProductTagsGrid() {
             limit: dataGridProps.paginationModel.pageSize,
             sort: muiGridSortToGql(dataGridProps.sortModel, columns),
         },
+        notifyOnNetworkStatusChange: false,
     });
     const rowCount = useBufferedRowCount(data?.productTags.totalCount);
     if (error) {

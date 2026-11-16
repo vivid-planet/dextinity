@@ -4,14 +4,16 @@ on:
     pull_request:
         paths:
             - renovate.json
-            - renovate.json5
+            - renovate/**
+            - .github/workflows/validate-renovate-config.yml
         branches:
             - main
             - next
     push:
         paths:
             - renovate.json
-            - renovate.json5
+            - renovate/**
+            - .github/workflows/validate-renovate-config.yml
         branches:
             - main
             - next
@@ -38,4 +40,4 @@ jobs:
                   registry-url: "https://registry.npmjs.org"
 
             - name: Validate renovate config
-              run: npx --yes --package renovate -- renovate-config-validator
+              run: npx --yes --package renovate -- renovate-config-validator --strict --no-global renovate.json renovate/*.json

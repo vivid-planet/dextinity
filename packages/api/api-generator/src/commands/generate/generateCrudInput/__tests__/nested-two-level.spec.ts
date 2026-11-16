@@ -1,11 +1,12 @@
-import { BaseEntity, Collection, defineConfig, Entity, ManyToOne, MikroORM, OneToMany, PrimaryKey, Property, Ref } from "@mikro-orm/postgresql";
+import { Entity, ManyToOne, OneToMany, PrimaryKey, Property, ReflectMetadataProvider } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, Collection, defineConfig, MikroORM, type Ref } from "@mikro-orm/postgresql";
 import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
 import { randomUUID } from "crypto";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { generateInputHandling } from "../../generateCrud/generate-crud";
-import { testPermission } from "../../utils/test-helper";
-import { generateCrudInput } from "../generate-crud-input";
+import { generateInputHandling } from "../../generateCrud/generate-crud.js";
+import { testPermission } from "../../utils/test-helper.js";
+import { generateCrudInput } from "../generate-crud-input.js";
 
 @Entity()
 export class Foo extends BaseEntity {
@@ -53,8 +54,8 @@ describe("nested two level", () => {
         LazyMetadataStorage.load();
         orm = await MikroORM.init(
             defineConfig({
+                metadataProvider: ReflectMetadataProvider,
                 dbName: "test-db",
-                connect: false,
                 entities: [Foo, Bar, Baz],
             }),
         );
@@ -66,14 +67,14 @@ describe("nested two level", () => {
     //Foo -> Bar -> Baz
     //foo.bars[].bazs[]
     it("input dto should reference the correct import", async () => {
-        const out = await generateCrudInput({ requiredPermission: testPermission }, orm.em.getMetadata().get("Foo"));
+        const out = await generateCrudInput({ requiredPermission: testPermission }, orm.em.getMetadata().getByClassName("Foo"));
         const fooInputDto = out.find((f) => f.name == "dto/foo.input.ts");
         if (!fooInputDto) {
             throw new Error();
         }
 
         expect(fooInputDto.content).toContain(`bars: FooNestedBarInput[];`);
-        expect(fooInputDto.content).toContain(`import { FooNestedBarInput } from "./foo-nested-bar.input";`);
+        expect(fooInputDto.content).toContain(`import { FooNestedBarInput } from "./foo-nested-bar.input.js";`);
     });
     it("create input handling should work", async () => {
         const { code, imports } = generateInputHandling(
@@ -82,7 +83,7 @@ describe("nested two level", () => {
                 inputName: "input",
                 assignEntityCode: `const foo = this.entityManager.create(Foo, {`,
             },
-            orm.em.getMetadata().get("Foo"),
+            orm.em.getMetadata().getByClassName("Foo"),
             { requiredPermission: testPermission },
             __dirname,
         );
@@ -96,7 +97,7 @@ describe("nested two level", () => {
                 inputName: "input",
                 assignEntityCode: `foo.assign({`,
             },
-            orm.em.getMetadata().get("Foo"),
+            orm.em.getMetadata().getByClassName("Foo"),
             { requiredPermission: testPermission },
             __dirname,
         );

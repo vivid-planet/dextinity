@@ -1,12 +1,12 @@
-import { Type } from "@nestjs/common";
+import type { Type } from "@nestjs/common";
 import { Field, InputType } from "@nestjs/graphql";
 import { Transform } from "class-transformer";
-import { IsEnum, IsOptional, ValidateNested, ValidationArguments } from "class-validator";
+import { IsEnum, IsOptional, ValidateNested, type ValidationArguments } from "class-validator";
 import { GraphQLJSONObject } from "graphql-scalars";
 
-import { Block, BlockInputInterface, ExtractBlockInput } from "../../blocks/block";
-import { RedirectGenerationType, RedirectSourceType } from "../redirects.enum";
-import { IsValidRedirectSource } from "../validators/isValidRedirectSource";
+import type { Block, BlockInputInterface, ExtractBlockInput } from "../../blocks/block.js";
+import { RedirectGenerationType, RedirectSourceType, RedirectType } from "../redirects.enum.js";
+import { IsValidRedirectSource } from "../validators/isValidRedirectSource.js";
 
 export interface RedirectInputInterface {
     sourceType: RedirectSourceType;
@@ -15,6 +15,7 @@ export interface RedirectInputInterface {
     comment?: string;
     active?: boolean;
     generationType: RedirectGenerationType;
+    redirectType?: RedirectType;
 }
 
 export interface RedirectValidationArguments extends ValidationArguments {
@@ -49,6 +50,11 @@ export class RedirectInputFactory {
             @IsEnum(RedirectGenerationType)
             @Field(() => RedirectGenerationType)
             generationType: RedirectGenerationType;
+
+            @IsOptional()
+            @IsEnum(RedirectType)
+            @Field(() => RedirectType, { nullable: true })
+            redirectType?: RedirectType;
         }
 
         return RedirectInput;

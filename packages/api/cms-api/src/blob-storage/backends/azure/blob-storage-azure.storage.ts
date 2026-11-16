@@ -2,8 +2,8 @@ import { type BlobHTTPHeaders, BlobServiceClient, RestError, StorageSharedKeyCre
 import { Logger } from "@nestjs/common";
 import { Readable } from "stream";
 
-import type { BlobStorageBackendInterface, CreateFileOptions, StorageMetaData } from "../blob-storage-backend.interface";
-import type { BlobStorageAzureConfig } from "./blob-storage-azure.config";
+import type { BlobStorageBackendInterface, CreateFileOptions, StorageMetaData } from "../blob-storage-backend.interface.js";
+import type { BlobStorageAzureConfig } from "./blob-storage-azure.config.js";
 
 export class BlobStorageAzureStorage implements BlobStorageBackendInterface {
     private readonly logger = new Logger(BlobStorageAzureStorage.name);

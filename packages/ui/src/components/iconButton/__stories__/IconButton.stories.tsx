@@ -1,0 +1,104 @@
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { expect, fn, userEvent } from "storybook/test";
+
+import { themeDecorator } from "../../../storybook/themeDecorator";
+import { Icon } from "../../icon/Icon";
+import { IconButton } from "../IconButton";
+
+const iconOptions = {
+    Favorite: <Icon name="favorite" />,
+    Delete: <Icon name="delete" />,
+};
+
+const meta = {
+    component: IconButton,
+    title: "Components/IconButton",
+    decorators: [themeDecorator],
+    args: {
+        "aria-label": "Add to favorites",
+        children: <Icon name="favorite" />,
+        onClick: fn(),
+    },
+    argTypes: {
+        variant: {
+            control: "radio",
+            options: ["contained", "outlined", "text"],
+        },
+        color: {
+            control: "select",
+            options: ["primary", "secondary", "error", "success"],
+        },
+        size: {
+            control: "radio",
+            options: ["default", "small"],
+        },
+        children: {
+            control: "select",
+            options: Object.keys(iconOptions),
+            mapping: iconOptions,
+        },
+        className: { control: false },
+        slots: { control: false },
+        slotProps: { control: false },
+    },
+} satisfies Meta<typeof IconButton>;
+
+export default meta;
+
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {};
+
+export const Outlined: Story = {
+    args: {
+        variant: "outlined",
+    },
+};
+
+export const Text: Story = {
+    args: {
+        variant: "text",
+    },
+};
+
+export const Secondary: Story = {
+    args: {
+        color: "secondary",
+    },
+};
+
+export const Error: Story = {
+    args: {
+        color: "error",
+        "aria-label": "Delete",
+        children: <Icon name="delete" />,
+    },
+};
+
+export const Success: Story = {
+    args: {
+        color: "success",
+    },
+};
+
+export const Small: Story = {
+    args: {
+        size: "small",
+    },
+};
+
+export const Disabled: Story = {
+    args: {
+        disabled: true,
+    },
+};
+
+export const Loading: Story = {
+    args: {
+        loading: true,
+    },
+    play: async ({ args, canvas }) => {
+        await userEvent.click(canvas.getByRole("button"));
+        await expect(args.onClick).not.toHaveBeenCalled();
+    },
+};

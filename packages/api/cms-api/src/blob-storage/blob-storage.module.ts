@@ -1,9 +1,9 @@
-import { DynamicModule, Global, Module } from "@nestjs/common";
+import { type DynamicModule, Global, Module } from "@nestjs/common";
 
-import { BlobStorageBackendService } from "./backends/blob-storage-backend.service";
-import { BlobStorageConfig } from "./blob-storage.config";
-import { BLOB_STORAGE_CONFIG } from "./blob-storage.constants";
-import { ScaledImagesCacheService } from "./cache/scaled-images-cache.service";
+import { BlobStorageBackendService } from "./backends/blob-storage-backend.service.js";
+import type { BlobStorageConfig } from "./blob-storage.config.js";
+import { BLOB_STORAGE_CONFIG } from "./blob-storage.constants.js";
+import { ScaledImagesCacheService } from "./cache/scaled-images-cache.service.js";
 
 @Global()
 @Module({})

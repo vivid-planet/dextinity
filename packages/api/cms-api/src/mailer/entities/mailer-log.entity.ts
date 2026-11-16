@@ -1,10 +1,10 @@
-import { Enum } from "@mikro-orm/core";
-import { ArrayType, BaseEntity, Entity, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
+import { Entity, Enum, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
+import { ArrayType, BaseEntity, OptionalProps } from "@mikro-orm/postgresql";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
 import { randomUUID } from "crypto";
 import type { SendMailOptions as MailOptions, SentMessageInfo } from "nodemailer";
 
-import { MailerLogStatus } from "./mailer-log-status.enum";
+import { MailerLogStatus } from "./mailer-log-status.enum.js";
 
 @ObjectType()
 @Entity()

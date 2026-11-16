@@ -18,7 +18,11 @@ export default {
 export const _FinalFormFileSelect = {
     render: () => {
         return (
-            <Box maxWidth={1600}>
+            <Box
+                sx={{
+                    maxWidth: 1600,
+                }}
+            >
                 <Form<FormValues>
                     onSubmit={(values) => {
                         //

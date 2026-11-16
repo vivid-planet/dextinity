@@ -1,5 +1,7 @@
-import { gql, useApolloClient } from "@apollo/client";
-import { MockedProvider, type MockedResponse } from "@apollo/client/testing";
+import { gql } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
+import type { MockLink } from "@apollo/client/testing";
+import { MockedProvider } from "@apollo/client/testing/react";
 import { Field, FinalForm, FinalFormInput, FormSection, SaveButton, useFormApiRef } from "@dextinity/admin";
 import type { FunctionComponent } from "react";
 
@@ -71,7 +73,7 @@ export const SubmitMutationBestPractices = () => {
         }
     `;
 
-    const mocks: Array<MockedResponse> = [
+    const mocks: Array<MockLink.MockedResponse> = [
         {
             request: {
                 query: updateUserMutation,

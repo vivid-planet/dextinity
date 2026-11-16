@@ -22,7 +22,11 @@ export const RteDisable = {
 
         return (
             <>
-                <Box marginBottom={4}>
+                <Box
+                    sx={{
+                        marginBottom: 4,
+                    }}
+                >
                     <Toolbar>
                         <FillSpace />
                         <ToolbarActions>
@@ -30,7 +34,11 @@ export const RteDisable = {
                         </ToolbarActions>
                     </Toolbar>
                 </Box>
-                <Box marginBottom={4}>
+                <Box
+                    sx={{
+                        marginBottom: 4,
+                    }}
+                >
                     <Card variant="outlined">
                         <CardContent>
                             <Rte value={editorState} onChange={setEditorState} ref={editorRef} disabled={disabled} />

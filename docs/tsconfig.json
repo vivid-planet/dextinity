@@ -1,6 +1,9 @@
 {
     "compilerOptions": {
-        "baseUrl": "."
+        "baseUrl": null,
+        "noUncheckedSideEffectImports": false,
+        "strict": false,
+        "types": ["*"]
     },
     "extends": "@docusaurus/tsconfig"
 }

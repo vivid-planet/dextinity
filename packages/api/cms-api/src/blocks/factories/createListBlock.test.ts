@@ -1,8 +1,8 @@
 import { validate } from "class-validator";
 import { describe, expect, it } from "vitest";
 
-import { ExternalLinkBlock } from "../externalLink/external-link.block";
-import { createListBlock } from "./createListBlock";
+import { ExternalLinkBlock } from "../externalLink/external-link.block.js";
+import { createListBlock } from "./createListBlock.js";
 
 const ListBlock = createListBlock({ block: ExternalLinkBlock }, "ListBlockValidationTest");
 

@@ -1,7 +1,7 @@
 import { createBlocksBlock, DamImageBlock } from "@dextinity/cms-api";
-import { HeadingBlock } from "@src/common/blocks/heading.block";
-import { RichTextBlock } from "@src/common/blocks/rich-text.block";
-import { TextImageBlock } from "@src/common/blocks/text-image.block";
+import { HeadingBlock } from "@src/common/blocks/heading.block.js";
+import { RichTextBlock } from "@src/common/blocks/rich-text.block.js";
+import { TextImageBlock } from "@src/common/blocks/text-image.block.js";
 
 export const NewsContentBlock = createBlocksBlock(
     {

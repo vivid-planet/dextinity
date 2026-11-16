@@ -76,7 +76,12 @@ export const YouTubeVideoBlock: BlockInterface<YouTubeVideoBlockData, State, You
         const isInPaper = useBlockAdminComponentPaper();
 
         return (
-            <Box padding={isInPaper ? 3 : 0} pb={0}>
+            <Box
+                sx={{
+                    padding: isInPaper ? 3 : 0,
+                    pb: 0,
+                }}
+            >
                 <SelectPreviewComponent>
                     <BlocksFinalForm onSubmit={updateState} initialValues={state}>
                         <Field
@@ -98,7 +103,10 @@ export const YouTubeVideoBlock: BlockInterface<YouTubeVideoBlockData, State, You
                         <PixelImageBlock.AdminComponent
                             state={state.previewImage}
                             updateState={(setStateAction) => {
-                                updateState({ ...state, previewImage: resolveNewState({ prevState: state.previewImage, setStateAction }) });
+                                updateState((prevState) => ({
+                                    ...prevState,
+                                    previewImage: resolveNewState({ prevState: prevState.previewImage, setStateAction }),
+                                }));
                             }}
                         />
                     </BlockAdminComponentSection>

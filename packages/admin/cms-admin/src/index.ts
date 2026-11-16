@@ -31,6 +31,7 @@ export { type BlockContext } from "./blocks/context/BlockContext";
 export { BlockContextProvider } from "./blocks/context/BlockContextProvider";
 export { useBlockContext } from "./blocks/context/useBlockContext";
 export { createDamVideoBlock } from "./blocks/createDamVideoBlock";
+export { createExternalLinkBlock } from "./blocks/createExternalLinkBlock";
 export { createImageLinkBlock } from "./blocks/createImageLinkBlock";
 export { createLinkBlock } from "./blocks/createLinkBlock";
 export type { RichTextBlockFactoryOptions } from "./blocks/createRichTextBlock";
@@ -94,7 +95,6 @@ export { EditImageDialog } from "./blocks/image/EditImageDialog";
 export { InternalLinkBlock } from "./blocks/InternalLinkBlock";
 export { PhoneLinkBlock } from "./blocks/PhoneLinkBlock";
 export { PixelImageBlock } from "./blocks/PixelImageBlock";
-export { SpaceBlock } from "./blocks/SpaceBlock";
 export { SvgImageBlock } from "./blocks/SvgImageBlock";
 export type {
     TipTapInlineStyle,
@@ -142,7 +142,7 @@ export { UserHeaderItem } from "./common/header/UserHeaderItem";
 export type { TextMatch } from "./common/MarkedMatches";
 export { MarkedMatches } from "./common/MarkedMatches";
 export { findTextMatches } from "./common/MarkedMatches";
-export type { MasterMenuData, MasterMenuProps } from "./common/MasterMenu";
+export type { MasterMenuData, MasterMenuProps, MasterMenuRoute } from "./common/MasterMenu";
 export { MasterMenu, useMenuFromMasterMenuData } from "./common/MasterMenu";
 export type { MasterMenuRoutesProps } from "./common/MasterMenuRoutes";
 export { MasterMenuRoutes, useRoutePropsFromMasterMenuData } from "./common/MasterMenuRoutes";
@@ -159,7 +159,15 @@ export { ContentScopeIndicator } from "./contentScope/ContentScopeIndicator";
 export { ContentScopeSelect } from "./contentScope/ContentScopeSelect";
 export { ContentScopeControls } from "./contentScope/Controls";
 export { NoContentScopeFallback } from "./contentScope/noContentScopeFallback/NoContentScopeFallback";
-export type { ContentScope, ContentScopeProviderProps, ContentScopeValues, UseContentScopeApi } from "./contentScope/Provider";
+export type {
+    ContentScope,
+    ContentScopeLocation,
+    ContentScopeMatch,
+    ContentScopePath,
+    ContentScopeProviderProps,
+    ContentScopeValues,
+    UseContentScopeApi,
+} from "./contentScope/Provider";
 export { ContentScopeProvider, useContentScope } from "./contentScope/Provider";
 export type { ContentScopeConfigProps } from "./contentScope/useContentScopeConfig";
 export { useContentScopeConfig } from "./contentScope/useContentScopeConfig";

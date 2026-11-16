@@ -6,7 +6,6 @@ export default defineConfig([
     ...eslintConfigReact,
     {
         rules: {
-            "@calm/react-intl/missing-formatted-message": "off",
             "react/jsx-no-literals": "off",
         },
     },

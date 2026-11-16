@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
-import { User } from "./interfaces/user";
-import { UserPermissionsService } from "./user-permissions.service";
+import type { User } from "./interfaces/user.js";
+import { UserPermissionsService } from "./user-permissions.service.js";
 
 @Injectable()
 export class UserPermissionsPublicService {

@@ -1,6 +1,6 @@
 import {
     BlockData,
-    BlockDataInterface,
+    type BlockDataInterface,
     BlockField,
     BlockInput,
     blockInputToData,
@@ -8,10 +8,10 @@ import {
     ChildBlockInput,
     createBlock,
     createListBlock,
-    ExtractBlockInput,
+    type ExtractBlockInput,
 } from "@dextinity/cms-api";
-import { MediaGalleryItemBlock } from "@src/common/blocks/media-gallery-item.block";
-import { MediaAspectRatios } from "@src/util/mediaAspectRatios";
+import { MediaGalleryItemBlock } from "@src/common/blocks/media-gallery-item.block.js";
+import { MediaAspectRatios } from "@src/util/mediaAspectRatios.js";
 import { IsEnum } from "class-validator";
 
 export const MediaGalleryListBlock = createListBlock({ block: MediaGalleryItemBlock }, "MediaGalleryList");

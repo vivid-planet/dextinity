@@ -1,13 +1,13 @@
-import type { BooleanFilter } from "../common/filter/boolean.filter";
-import type { DateTimeFilter } from "../common/filter/date-time.filter";
-import type { EnumFilterInterface } from "../common/filter/enum.filter.factory";
-import type { StringFilter } from "../common/filter/string.filter";
-import type { RedirectFilter } from "./dto/redirects.filter";
-import type { RedirectInterface } from "./entities/redirect-entity.factory";
+import type { BooleanFilter } from "../common/filter/boolean.filter.js";
+import type { DateTimeFilter } from "../common/filter/date-time.filter.js";
+import type { EnumFilterInterface } from "../common/filter/enum.filter.factory.js";
+import type { StringFilter } from "../common/filter/string.filter.js";
+import type { RedirectFilter } from "./dto/redirects.filter.js";
+import type { RedirectInterface } from "./entities/redirect-entity.factory.js";
 
 export type FilterableRedirect = Pick<
     RedirectInterface,
-    "generationType" | "source" | "sourceType" | "active" | "createdAt" | "updatedAt" | "activatedAt"
+    "generationType" | "source" | "sourceType" | "redirectType" | "active" | "createdAt" | "updatedAt" | "activatedAt"
 > & {
     target?: string;
 };
@@ -44,6 +44,10 @@ export function redirectMatchesFilter(redirect: FilterableRedirect, filter: Redi
 
     if (filter.sourceType) {
         matches = (matches ?? true) && enumMatchesFilter(redirect.sourceType, filter.sourceType);
+    }
+
+    if (filter.redirectType) {
+        matches = (matches ?? true) && enumMatchesFilter(redirect.redirectType, filter.redirectType);
     }
 
     if (filter.createdAt) {

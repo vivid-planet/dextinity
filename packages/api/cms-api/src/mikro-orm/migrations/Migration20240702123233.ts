@@ -1,5 +1,5 @@
 import { Migration } from "@mikro-orm/migrations";
-import * as mimedb from "mime-db";
+import mimedb from "mime-db";
 
 const getValidExtensionsForMimetype = (mimetype: string) => {
     let supportedExtensions: readonly string[] | undefined;

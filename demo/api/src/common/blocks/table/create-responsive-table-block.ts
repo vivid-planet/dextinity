@@ -1,19 +1,19 @@
 import {
     type Block,
     BlockData,
-    BlockDataInterface,
+    type BlockDataInterface,
     BlockField,
     BlockInput,
     blockInputToData,
     ChildBlock,
     ChildBlockInput,
     createBlock,
-    ExtractBlockInput,
+    type ExtractBlockInput,
     typeSafeBlockMigrationPipe,
 } from "@dextinity/cms-api";
 import { IsEnum } from "class-validator";
 
-import { WrapTableContentMigration } from "./migrations/1-wrap-table-content.migration";
+import { WrapTableContentMigration } from "./migrations/1-wrap-table-content.migration.js";
 
 export enum ResponsiveBehavior {
     scrollSideways = "scrollSideways",

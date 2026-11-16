@@ -37,7 +37,11 @@ export const SaveAsHtml = {
 
         return (
             <>
-                <Box marginBottom={4}>
+                <Box
+                    sx={{
+                        marginBottom: 4,
+                    }}
+                >
                     <Card variant="outlined">
                         <CardContent>
                             <Rte value={editorState} onChange={setEditorState} />

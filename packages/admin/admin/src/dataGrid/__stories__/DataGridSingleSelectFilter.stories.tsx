@@ -53,7 +53,11 @@ export const BasicSingleSelect = {
                 <Box component="h4" sx={{ mb: 2 }}>
                     Basic SingleSelect Filter
                 </Box>
-                <Box height={500}>
+                <Box
+                    sx={{
+                        height: 500,
+                    }}
+                >
                     <DataGrid
                         rows={rows}
                         columns={columns}
@@ -117,7 +121,11 @@ export const WithCustomLabels = {
                 <Box component="h4" sx={{ mb: 2 }}>
                     SingleSelect with Custom Labels
                 </Box>
-                <Box height={500}>
+                <Box
+                    sx={{
+                        height: 500,
+                    }}
+                >
                     <DataGrid
                         rows={rows}
                         columns={columns}
@@ -172,7 +180,11 @@ export const WithLongLabels = {
                 <Box component="h4" sx={{ mb: 2 }}>
                     SingleSelect with Long Labels
                 </Box>
-                <Box height={500}>
+                <Box
+                    sx={{
+                        height: 500,
+                    }}
+                >
                     <DataGrid
                         rows={rows}
                         columns={columns}
@@ -230,7 +242,11 @@ export const WithManyOptions = {
                 <Box component="h4" sx={{ mb: 2 }}>
                     SingleSelect with Many Options
                 </Box>
-                <Box height={500}>
+                <Box
+                    sx={{
+                        height: 500,
+                    }}
+                >
                     <DataGrid
                         rows={rows}
                         columns={columns}
@@ -288,7 +304,11 @@ export const WithCustomCellContent = {
                 <Box component="h4" sx={{ mb: 2 }}>
                     SingleSelect with Custom Cell Content
                 </Box>
-                <Box height={500}>
+                <Box
+                    sx={{
+                        height: 500,
+                    }}
+                >
                     <DataGrid
                         rows={rows}
                         columns={columns}
@@ -355,7 +375,11 @@ export const MultipleSingleSelectColumns = {
                 <Box component="h4" sx={{ mb: 2 }}>
                     Multiple SingleSelect Columns
                 </Box>
-                <Box height={500}>
+                <Box
+                    sx={{
+                        height: 500,
+                    }}
+                >
                     <DataGrid
                         rows={rows}
                         columns={columns}
@@ -433,7 +457,11 @@ export const DifferentDensityModes = {
                 <Box component="h4" sx={{ mb: 2 }}>
                     SingleSelect Filter - {density} Density
                 </Box>
-                <Box height={500}>
+                <Box
+                    sx={{
+                        height: 500,
+                    }}
+                >
                     <DataGrid
                         density={density}
                         rows={rows}

@@ -160,7 +160,13 @@ export const MultiplePickers: Story = {
         });
 
         return (
-            <Box display="flex" flexDirection="column" gap={4}>
+            <Box
+                sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 4,
+                }}
+            >
                 <Typography variant="h5">Shift Schedule</Typography>
                 <DateTimeRangePicker {...args} label="Morning Shift" fullWidth value={shift1} onChange={setShift1} />
                 <DateTimeRangePicker {...args} label="Evening Shift" fullWidth value={shift2} onChange={setShift2} />

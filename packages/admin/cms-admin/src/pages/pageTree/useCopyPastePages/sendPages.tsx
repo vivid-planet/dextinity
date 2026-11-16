@@ -1,6 +1,6 @@
 import { type ApolloClient, gql } from "@apollo/client";
 import { LocalErrorScopeApolloContext } from "@dextinity/admin";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 import type { ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
 import { v4 as uuid } from "uuid";
@@ -36,7 +36,7 @@ export interface SendPagesOptions {
 }
 
 interface SendPagesDependencies {
-    client: ApolloClient<unknown>;
+    client: ApolloClient;
     scope: ContentScope;
     documentTypes: PageTreeConfig["documentTypes"];
     apiUrl: string;
@@ -180,7 +180,7 @@ export async function sendPages(
             }
 
             // 3a. Replace unhandled dependencies with undefined (when copying to another scope)
-            if (sourcePage.document && !isEqual(sourceContentScope, targetContentScope)) {
+            if (sourcePage.document && !deepEqual(sourceContentScope, targetContentScope)) {
                 const unhandledDependencies = unhandledDependenciesFromDocument(documentType, sourcePage.document, {
                     existingReplacements: dependencyReplacements,
                     hasDamScope,
@@ -253,7 +253,7 @@ function unhandledDependenciesFromDocument(
                 return false;
             }
 
-            if (isEqual(dependency.data?.damFile?.scope, targetDamScope)) {
+            if (deepEqual(dependency.data?.damFile?.scope, targetDamScope)) {
                 // Source and target DAM scope are the same, so no need to handle this dependency
                 return false;
             }

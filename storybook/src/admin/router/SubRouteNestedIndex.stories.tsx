@@ -1,23 +1,23 @@
 import { SubRouteIndexRoute, useSubRoutePrefix } from "@dextinity/admin";
 import { useEffect, useState } from "react";
-import { Redirect, Route, Switch, useLocation } from "react-router";
-import { Link } from "react-router-dom";
+import { Link, Navigate, Route, Routes, useLocation, useMatch } from "react-router";
 
 import { storyRouterDecorator } from "../../story-router.decorator";
 
 function Cmp1() {
     const urlPrefix = useSubRoutePrefix();
+    const subMatch = useMatch({ path: `${urlPrefix}/sub`, end: false });
+
     return (
         <div>
-            <Switch>
-                <Route path={`${urlPrefix}/sub`}>
-                    <p>Cmp1-Sub</p>
-                </Route>
+            {subMatch ? (
+                <p>Cmp1-Sub</p>
+            ) : (
                 <SubRouteIndexRoute>
                     <p>Cmp1-Index</p>
                     <Link to={`${urlPrefix}/sub`}>to-cmp1-sub</Link>
                 </SubRouteIndexRoute>
-            </Switch>
+            )}
         </div>
     );
 }
@@ -25,12 +25,9 @@ function Cmp1() {
 function Story() {
     return (
         <div>
-            <Switch>
-                <SubRouteIndexRoute>
-                    <Cmp1 />
-                </SubRouteIndexRoute>
-                <Route path="/sub">Sub</Route>
-            </Switch>
+            <SubRouteIndexRoute>
+                <Cmp1 />
+            </SubRouteIndexRoute>
         </div>
     );
 }
@@ -57,14 +54,10 @@ export const SubrouteNestedIndex = {
         return (
             <>
                 <Path />
-                <Switch>
-                    <Route exact path="/">
-                        <Redirect to="/foo" />
-                    </Route>
-                    <Route path="/foo">
-                        <Story />
-                    </Route>
-                </Switch>
+                <Routes>
+                    <Route index element={<Navigate to="/foo" replace />} />
+                    <Route path="/foo/*" element={<Story />} />
+                </Routes>
             </>
         );
     },

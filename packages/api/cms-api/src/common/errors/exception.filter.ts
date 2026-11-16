@@ -1,17 +1,18 @@
 import {
-    ArgumentsHost,
+    type ArgumentsHost,
     BadRequestException,
     Catch,
-    ExceptionFilter as NestExceptionFilter,
+    type ExceptionFilter as NestExceptionFilter,
     HttpException,
     InternalServerErrorException,
     Logger,
 } from "@nestjs/common";
-import { ErrorHttpStatusCode } from "@nestjs/common/utils/http-error-by-code.util";
-import { Response } from "express";
+import type { ErrorHttpStatusCode } from "@nestjs/common/utils/http-error-by-code.util";
+import type { Response } from "express";
 
-import { DextinityException } from "./dextinity.exception";
-import { DextinityValidationException } from "./validation.exception";
+import { DextinityException } from "./dextinity.exception.js";
+import { formatValidationErrors } from "./format-validation-errors.js";
+import { DextinityValidationException } from "./validation.exception.js";
 
 @Catch()
 export class ExceptionFilter implements NestExceptionFilter {
@@ -32,7 +33,7 @@ export class ExceptionFilter implements NestExceptionFilter {
             };
 
             if (exception instanceof DextinityValidationException) {
-                errorObject.validationErrors = exception.errors;
+                errorObject.validationErrors = formatValidationErrors(exception.errors ?? []);
             }
 
             statusCode = 400;

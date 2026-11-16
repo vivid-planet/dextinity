@@ -1,5 +1,3 @@
-"use client";
-
 import { type AnchorHTMLAttributes, cloneElement, type ReactElement } from "react";
 
 import type { DamFileDownloadLinkBlockData } from "../blocks.generated";

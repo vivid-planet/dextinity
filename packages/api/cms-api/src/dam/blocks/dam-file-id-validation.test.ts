@@ -1,8 +1,8 @@
 import { validate } from "class-validator";
 import { describe, expect, it } from "vitest";
 
-import { PixelImageBlock } from "./pixel-image.block";
-import { SvgImageBlock } from "./svg-image.block";
+import { PixelImageBlock } from "./pixel-image.block.js";
+import { SvgImageBlock } from "./svg-image.block.js";
 
 describe.each([
     ["PixelImageBlock", PixelImageBlock],

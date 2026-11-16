@@ -17,7 +17,7 @@ RUN --mount=type=cache,id=dextinity-demo-deploy-preview-pnpm-store,target=/pnpm-
 COPY --chown=node:node . .
 # CI=true makes copy-project-files.js copy instead of symlink.
 RUN node copy-project-files.js && sh demo/admin/intl-update.sh
-RUN pnpm --recursive --filter='dextinity-demo-admin^...' run build
+RUN NODE_OPTIONS=--max-old-space-size=4096 pnpm --recursive --filter='dextinity-demo-admin^...' run build
 
 WORKDIR /app/demo/admin
 RUN NODE_OPTIONS=--max-old-space-size=4096 pnpm run build

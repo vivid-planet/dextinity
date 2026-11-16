@@ -51,7 +51,12 @@ export const LayoutVariants: Story = {
                 }}
             >
                 {() => (
-                    <Stack spacing={5} p={5}>
+                    <Stack
+                        spacing={5}
+                        sx={{
+                            p: 5,
+                        }}
+                    >
                         <FieldSet title="Single line CheckboxField">
                             <CheckboxField
                                 name="singleLineHorizontal"

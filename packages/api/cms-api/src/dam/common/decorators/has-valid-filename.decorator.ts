@@ -1,13 +1,12 @@
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityRepository } from "@mikro-orm/postgresql";
+import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
-import { registerDecorator, ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface } from "class-validator";
+import { registerDecorator, type ValidationArguments, ValidatorConstraint, type ValidatorConstraintInterface } from "class-validator";
 import { basename, extname } from "path";
 
-import { slugifyFilename } from "../../../file-utils/files.utils";
-import { UpdateFileInput } from "../../files/dto/file.input";
-import { UpdateDamFileArgs } from "../../files/dto/update-dam-file.args";
-import { FILE_ENTITY, FileInterface } from "../../files/entities/file.entity";
+import { slugifyFilename } from "../../../file-utils/files.utils.js";
+import type { UpdateFileInput } from "../../files/dto/file.input.js";
+import type { UpdateDamFileArgs } from "../../files/dto/update-dam-file.args.js";
+import { resolveFileEntity } from "../../files/entities/resolve-dam-entity.js";
 
 export const HasValidFilename = () => {
     // eslint-disable-next-line @typescript-eslint/no-wrapper-object-types
@@ -29,7 +28,7 @@ interface HasValidFilenameValidationArguments extends ValidationArguments {
 export class HasValidFilenameConstraint implements ValidatorConstraintInterface {
     errorMessage: string | undefined;
 
-    constructor(@InjectRepository(FILE_ENTITY) private readonly filesRepository: EntityRepository<FileInterface>) {}
+    constructor(private readonly entityManager: EntityManager) {}
 
     async validate(value: UpdateFileInput, validationArguments: HasValidFilenameValidationArguments): Promise<boolean> {
         if (value.name === undefined) {
@@ -51,7 +50,7 @@ export class HasValidFilenameConstraint implements ValidatorConstraintInterface 
         }
 
         const id = validationArguments.object.id;
-        const file = await this.filesRepository.findOneOrFail({ id });
+        const file = await this.entityManager.findOneOrFail(resolveFileEntity(), { id });
 
         const oldExtension = extname(file.name);
 

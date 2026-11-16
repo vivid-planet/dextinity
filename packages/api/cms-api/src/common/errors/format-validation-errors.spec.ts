@@ -2,14 +2,22 @@ import { plainToInstance, Transform, Type } from "class-transformer";
 import { IsEnum, IsInt, IsString, validate, ValidateNested } from "class-validator";
 import { describe, expect, it } from "vitest";
 
-import { BlockData, BlockDataInterface, BlockInput, BlockInputInterface, blockInputToData, createBlock, ExtractBlockInput } from "../../blocks/block";
-import { ChildBlock } from "../../blocks/decorators/child-block";
-import { ChildBlockInput } from "../../blocks/decorators/child-block-input";
-import { BlockField } from "../../blocks/decorators/field";
-import { createBlocksBlock } from "../../blocks/factories/createBlocksBlock";
-import { createOneOfBlock } from "../../blocks/factories/createOneOfBlock";
-import { composeBlocks } from "../../blocks/helpers/composeBlocks";
-import { formatValidationErrors } from "./format-validation-errors";
+import {
+    BlockData,
+    type BlockDataInterface,
+    BlockInput,
+    type BlockInputInterface,
+    blockInputToData,
+    createBlock,
+    type ExtractBlockInput,
+} from "../../blocks/block.js";
+import { ChildBlock } from "../../blocks/decorators/child-block.js";
+import { ChildBlockInput } from "../../blocks/decorators/child-block-input.js";
+import { BlockField } from "../../blocks/decorators/field.js";
+import { createBlocksBlock } from "../../blocks/factories/createBlocksBlock.js";
+import { createOneOfBlock } from "../../blocks/factories/createOneOfBlock.js";
+import { composeBlocks } from "../../blocks/helpers/composeBlocks.js";
+import { formatValidationErrors } from "./format-validation-errors.js";
 
 enum SpaceSize {
     small = "small",

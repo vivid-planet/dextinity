@@ -11,7 +11,7 @@ import {
     useTableQuery,
 } from "@dextinity/admin";
 import { Grid } from "@mui/material";
-import { Redirect, Route, Switch, useLocation } from "react-router";
+import { Navigate, Route, Routes, useLocation } from "react-router";
 
 import type { Launch, LaunchesPastResult } from "../../../.storybook/mocks/handlers";
 import { apolloStoryDecorator } from "../../apollo-story.decorator";
@@ -138,13 +138,9 @@ export default {
 
 export const BesidesFormSelectionHooks = () => {
     return (
-        <Switch>
-            <Route exact path="/">
-                <Redirect to="/foo" />
-            </Route>
-            <Route path="/foo">
-                <Story />
-            </Route>
-        </Switch>
+        <Routes>
+            <Route index element={<Navigate to="/foo" replace />} />
+            <Route path="/foo/*" element={<Story />} />
+        </Routes>
     );
 };

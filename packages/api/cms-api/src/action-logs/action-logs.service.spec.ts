@@ -2,12 +2,12 @@ import { createMock } from "@golevelup/ts-vitest";
 import { Logger, type Type } from "@nestjs/common";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { DiscoverService } from "../dependencies/discover.service";
-import { DisablePermissionCheck, RequiredPermission } from "../user-permissions/decorators/required-permission.decorator";
-import { ScopedEntity } from "../user-permissions/decorators/scoped-entity.decorator";
-import type { Permission } from "../user-permissions/user-permissions.types";
-import { ActionLogs } from "./action-logs.decorator";
-import { ActionLogsService } from "./action-logs.service";
+import { DiscoverService } from "../dependencies/discover.service.js";
+import { DisablePermissionCheck, RequiredPermission } from "../user-permissions/decorators/required-permission.decorator.js";
+import { ScopedEntity } from "../user-permissions/decorators/scoped-entity.decorator.js";
+import type { Permission } from "../user-permissions/user-permissions.types.js";
+import { ActionLogs } from "./action-logs.decorator.js";
+import { ActionLogsService } from "./action-logs.service.js";
 
 @ActionLogs()
 @RequiredPermission("news" as Permission)
@@ -60,18 +60,14 @@ class DisablesPermissionCheck {}
 @ActionLogs()
 class WithoutPermission {}
 
-const createService = (discoverService = createMock<DiscoverService>()) => new ActionLogsService(createMock(), createMock(), discoverService);
+const createService = (discoverService: DiscoverService = createMock<DiscoverService>()) =>
+    new ActionLogsService(createMock(), createMock(), discoverService);
 
 describe("ActionLogsService.onModuleInit", () => {
     const initWith = (entity: Type<unknown>, { hasScopeProperty = false }: { hasScopeProperty?: boolean } = {}) =>
-        createService(
-            createMock<DiscoverService>({
-                discoverTargetEntities: () =>
-                    [{ entity, metadata: { properties: hasScopeProperty ? { scope: {} } : {} } }] as unknown as ReturnType<
-                        DiscoverService["discoverTargetEntities"]
-                    >,
-            }),
-        ).onModuleInit();
+        createService({
+            discoverTargetEntities: () => [{ entity, metadata: { properties: hasScopeProperty ? { scope: {} } : {} } }],
+        } as unknown as DiscoverService).onModuleInit();
 
     it("accepts an entity with a scope property", () => {
         expect(() => initWith(WithScopeProperty, { hasScopeProperty: true })).not.toThrow();

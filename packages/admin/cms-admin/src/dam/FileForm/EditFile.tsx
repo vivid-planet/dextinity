@@ -1,4 +1,4 @@
-import { useApolloClient, useQuery } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client/react";
 import {
     FieldSet,
     FillSpace,
@@ -18,12 +18,13 @@ import {
 import { Card, CardContent, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { format } from "date-fns";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 import { type ReactNode, useCallback } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 import ReactSplit from "react-split";
 
+import { fullCropArea } from "../../common/image/cropArea";
 import { useContentScope } from "../../contentScope/Provider";
 import { useDependenciesConfig } from "../../dependencies/dependenciesConfig";
 import { DependentsList } from "../../dependencies/DependentsList";
@@ -134,13 +135,18 @@ const EditFileInner = ({ file, id, contentScopeIndicator }: EditFileInnerProps) 
                     width: null,
                     height: null,
                 };
-            } else {
+            } else if (values.crop.width && values.crop.height) {
                 cropArea = {
                     focalPoint: values.focalPoint,
                     x: values.crop.x,
                     y: values.crop.y,
-                    width: values.crop.width ? Math.ceil(values.crop.width) : undefined,
-                    height: values.crop.height ? Math.ceil(values.crop.height) : undefined,
+                    width: Math.ceil(values.crop.width),
+                    height: Math.ceil(values.crop.height),
+                };
+            } else {
+                cropArea = {
+                    focalPoint: values.focalPoint,
+                    ...fullCropArea,
                 };
             }
 
@@ -192,7 +198,7 @@ const EditFileInner = ({ file, id, contentScopeIndicator }: EditFileInnerProps) 
                     durationTo: file.license?.durationTo ? format(new Date(file.license.durationTo), "yyyy-MM-dd") : undefined,
                 },
             }}
-            initialValuesEqual={(prevValues, newValues) => isEqual(prevValues, newValues)}
+            initialValuesEqual={(prevValues, newValues) => deepEqual(prevValues, newValues)}
         >
             {() => (
                 <>

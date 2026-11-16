@@ -2,8 +2,10 @@ import { getSchema } from "@tiptap/core";
 import { validate } from "class-validator";
 import { describe, expect, it } from "vitest";
 
-import { ExternalLinkBlock } from "../externalLink/external-link.block";
-import { createLinkBlock } from "../factories/createLinkBlock";
+import { BlockMetaFieldKind } from "../block.js";
+import { getBlocksMeta } from "../blocks-meta.js";
+import { ExternalLinkBlock } from "../externalLink/external-link.block.js";
+import { createLinkBlock } from "../factories/createLinkBlock.js";
 import {
     buildExtensions,
     createTipTapRichTextBlock,
@@ -13,7 +15,7 @@ import {
     type TipTapRichTextBlockDataInterface,
     type TipTapRichTextBlockInputInterface,
     type TipTapTextBlock,
-} from "./createTipTapRichTextBlock";
+} from "./createTipTapRichTextBlock.js";
 
 const paragraphOnly: TipTapTextBlock[] = [{ name: "paragraph", tag: "p" }];
 
@@ -502,6 +504,47 @@ describe("createTipTapRichTextBlock validation", () => {
             });
             const errors = await validate(input);
             expect(errors).toHaveLength(0);
+        });
+    });
+
+    describe("textAlign", () => {
+        const contentAligned = (textAlign: unknown) => ({
+            type: "doc",
+            content: [{ type: "textBlock", attrs: { textAlign }, content: [{ type: "text", text: "Aligned" }] }],
+        });
+
+        it("should reject a textAlign attribute when textAlign is disabled", async () => {
+            const block = createTipTapRichTextBlock(onlyFeatures(), "TestTextAlignDisabled");
+            const errors = await validate(block.blockInputFactory({ tipTapContent: contentAligned("center") }));
+            expect(errors).toHaveLength(1);
+        });
+
+        describe("enabled", () => {
+            const block = createTipTapRichTextBlock(onlyFeatures({ textAlign: true }), "TestTextAlign");
+
+            it.each(["left", "center", "right", "justify", null])("should accept textAlign %s", async (textAlign) => {
+                const errors = await validate(block.blockInputFactory({ tipTapContent: contentAligned(textAlign) }));
+                expect(errors).toHaveLength(0);
+            });
+
+            it.each(["start", "middle", 1])("should reject textAlign %s", async (textAlign) => {
+                const errors = await validate(block.blockInputFactory({ tipTapContent: contentAligned(textAlign) }));
+                expect(errors).toHaveLength(1);
+            });
+        });
+
+        describe("enabled for some alignments", () => {
+            const block = createTipTapRichTextBlock(onlyFeatures({ textAlign: { left: true, center: true, right: false } }), "TestTextAlignSome");
+
+            it.each(["left", "center", null])("should accept textAlign %s", async (textAlign) => {
+                const errors = await validate(block.blockInputFactory({ tipTapContent: contentAligned(textAlign) }));
+                expect(errors).toHaveLength(0);
+            });
+
+            it.each(["right", "justify"])("should reject textAlign %s", async (textAlign) => {
+                const errors = await validate(block.blockInputFactory({ tipTapContent: contentAligned(textAlign) }));
+                expect(errors).toHaveLength(1);
+            });
         });
     });
 
@@ -1784,6 +1827,61 @@ describe("createTipTapRichTextBlock block typing", () => {
 
         expect(input.tipTapContent.type).toBe("doc");
         expect(blockData.tipTapContent.type).toBe("doc");
+    });
+});
+
+describe("createTipTapRichTextBlock block meta", () => {
+    const LinkBlock = createLinkBlock({ supportedBlocks: { external: ExternalLinkBlock } }, "TestMetaLink");
+    const childBlocks = { externalLink: { block: ExternalLinkBlock, display: "block" as const } };
+
+    it("should include the link block and the child blocks in the block meta", () => {
+        const block = createTipTapRichTextBlock({ link: LinkBlock, childBlocks }, "TestMetaWithLink");
+
+        const expectedFields = [
+            {
+                name: "tipTapContent",
+                kind: BlockMetaFieldKind.TipTapRichTextBlock,
+                childBlocks: { externalLink: ExternalLinkBlock },
+                linkBlock: LinkBlock,
+                tipTap: expect.any(Object),
+                nullable: false,
+            },
+        ];
+
+        expect(block.blockMeta.fields).toEqual(expectedFields);
+        expect(block.blockInputMeta.fields).toEqual(expectedFields);
+    });
+
+    it("should include the link block name in the generated block meta", () => {
+        const block = createTipTapRichTextBlock({ link: LinkBlock, childBlocks }, "TestMetaGenerated");
+
+        const blockMeta = getBlocksMeta([block]).find(({ name }) => name === "TestMetaGenerated");
+
+        expect(blockMeta?.fields).toEqual([
+            {
+                name: "tipTapContent",
+                kind: "TipTapRichTextBlock",
+                childBlocks: { externalLink: "ExternalLink" },
+                linkBlock: "TestMetaLink",
+                tipTap: expect.any(Object),
+                nullable: false,
+            },
+        ]);
+    });
+
+    it("should omit the link when links are disabled", () => {
+        const block = createTipTapRichTextBlock({}, "TestMetaWithoutLink");
+
+        expect(block.blockMeta.fields).toEqual([
+            {
+                name: "tipTapContent",
+                kind: BlockMetaFieldKind.TipTapRichTextBlock,
+                childBlocks: {},
+                linkBlock: undefined,
+                tipTap: expect.any(Object),
+                nullable: false,
+            },
+        ]);
     });
 });
 

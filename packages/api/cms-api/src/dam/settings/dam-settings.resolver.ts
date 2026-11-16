@@ -1,18 +1,18 @@
 import { EntityManager } from "@mikro-orm/postgresql";
-import { Type } from "@nestjs/common";
+import type { Type } from "@nestjs/common";
 import { Args, Mutation, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 
-import { DextinityEntityNotFoundException } from "../../common/errors/entity-not-found.exception";
-import { DextinityValidationException } from "../../common/errors/validation.exception";
-import { contentScopesAreEqual } from "../../user-permissions/content-scopes-are-equal";
-import { RequiredPermission } from "../../user-permissions/decorators/required-permission.decorator";
-import { EmptyDamScope } from "../files/dto/empty-dam-scope";
-import { FileInterface } from "../files/entities/file.entity";
-import { FilesService } from "../files/files.service";
-import { DamScopeInterface } from "../types";
-import { damSettingsByScope } from "./dam-settings-by-scope";
-import { DamSettingsInput } from "./dto/dam-settings.input";
-import { DamSettings } from "./entities/dam-settings.entity";
+import { DextinityEntityNotFoundException } from "../../common/errors/entity-not-found.exception.js";
+import { DextinityValidationException } from "../../common/errors/validation.exception.js";
+import { contentScopesAreEqual } from "../../user-permissions/content-scopes-are-equal.js";
+import { RequiredPermission } from "../../user-permissions/decorators/required-permission.decorator.js";
+import { EmptyDamScope } from "../files/dto/empty-dam-scope.js";
+import type { FileInterface } from "../files/entities/file.entity.js";
+import { FilesService } from "../files/files.service.js";
+import type { DamScopeInterface } from "../types.js";
+import { damSettingsByScope } from "./dam-settings-by-scope.js";
+import { DamSettingsInput } from "./dto/dam-settings.input.js";
+import { DamSettings } from "./entities/dam-settings.entity.js";
 
 export function createDamSettingsResolver({
     File,

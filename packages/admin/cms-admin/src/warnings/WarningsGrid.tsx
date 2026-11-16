@@ -1,4 +1,5 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import {
     dataGridDateTimeColumn,
     DataGridToolbar,
@@ -18,7 +19,7 @@ import {
 import { Chip } from "@mui/material";
 import type { GridFilterModel } from "@mui/x-data-grid";
 import { capitalCase } from "change-case";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import { useContentScope } from "../contentScope/Provider";
@@ -188,7 +189,7 @@ export function WarningsGrid({ showAllScopes = false }: WarningsGridProps) {
                 if (typeof value === "object" && value !== null) {
                     // Check if there is a scope value in the options, if so, return the label
                     const scope = scopeValueOptions.find((scope) => {
-                        return isEqual(JSON.parse(scope.value), value);
+                        return deepEqual(JSON.parse(scope.value), value);
                     });
                     if (scope) {
                         return scope.label;
@@ -250,6 +251,7 @@ export function WarningsGrid({ showAllScopes = false }: WarningsGridProps) {
             limit: dataGridProps.paginationModel.pageSize,
             sort: muiGridSortToGql(dataGridProps.sortModel, columns),
         },
+        notifyOnNetworkStatusChange: false,
     });
     const rowCount = useBufferedRowCount(data?.warnings.totalCount);
     if (error) {

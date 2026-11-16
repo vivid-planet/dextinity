@@ -12,7 +12,7 @@ interface AvatarStyleProps {
     backgroundColor?: string;
 }
 
-export const AvatarStyled = styled(Avatar)<AvatarStyleProps>`
+export const AvatarStyled = styled(Avatar, { shouldForwardProp: (prop) => prop !== "backgroundColor" })<AvatarStyleProps>`
     background-color: ${({ backgroundColor }) => {
         return backgroundColor;
     }};

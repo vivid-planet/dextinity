@@ -1,10 +1,9 @@
 import { MikroORM } from "@mikro-orm/core";
-import { NestFactory } from "@nestjs/core";
-import { repl } from "@nestjs/core/repl";
+import { NestFactory, repl } from "@nestjs/core";
 import type { NestExpressApplication } from "@nestjs/platform-express";
 
-import { AppModule } from "./app.module";
-import { createConfig } from "./config/config";
+import { AppModule } from "./app.module.js";
+import { createConfig } from "./config/config.js";
 
 async function bootstrap() {
     if (process.env.NODE_ENV === "production") {

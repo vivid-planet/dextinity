@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { Dialog, InlineAlert, muiGridSortToGql, useDataGridRemote, usePersistentColumnState } from "@dextinity/admin";
 import { useEffect, useMemo, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";

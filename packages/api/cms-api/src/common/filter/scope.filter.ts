@@ -1,9 +1,9 @@
 import { Field, InputType } from "@nestjs/graphql";
 import { GraphQLJSONObject } from "graphql-scalars";
 
-import { ContentScope } from "../../user-permissions/interfaces/content-scope.interface";
-import { IsNullable } from "../validators/is-nullable";
-import { IsUndefinable } from "../validators/is-undefinable";
+import type { ContentScope } from "../../user-permissions/interfaces/content-scope.interface.js";
+import { IsNullable } from "../validators/is-nullable.js";
+import { IsUndefinable } from "../validators/is-undefinable.js";
 
 @InputType({ isAbstract: true })
 export class ScopeFilter {

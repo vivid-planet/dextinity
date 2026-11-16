@@ -25,7 +25,11 @@ export const RteCustomized = {
 
         return (
             <>
-                <Box marginBottom={4}>
+                <Box
+                    sx={{
+                        marginBottom: 4,
+                    }}
+                >
                     <Card variant="outlined">
                         <CardContent>
                             <Typography gutterBottom>

@@ -1,9 +1,9 @@
 import { createParamDecorator, type ExecutionContext } from "@nestjs/common";
 import type { IncomingHttpHeaders } from "http";
 
-import { BlockVisibility } from "../../blocks/types";
-import { PageTreeNodeVisibility } from "../../page-tree/types";
-import { getRequestFromExecutionContext } from "./utils";
+import { BlockVisibility } from "../../blocks/types.js";
+import { PageTreeNodeVisibility } from "../../page-tree/types.js";
+import { getRequestFromExecutionContext } from "./utils.js";
 
 export interface RequestContextInterface {
     includeInvisiblePages?: Array<PageTreeNodeVisibility.Archived | PageTreeNodeVisibility.Unpublished>;

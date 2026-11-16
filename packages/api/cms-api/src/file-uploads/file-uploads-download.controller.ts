@@ -1,5 +1,4 @@
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityRepository } from "@mikro-orm/postgresql";
+import { EntityManager } from "@mikro-orm/postgresql";
 import {
     BadRequestException,
     Controller,
@@ -11,35 +10,35 @@ import {
     NotFoundException,
     Param,
     Res,
-    Type,
+    type Type,
     UnsupportedMediaTypeException,
 } from "@nestjs/common";
-import { Response } from "express";
+import type { Response } from "express";
 import mime from "mime";
 import { PassThrough, Readable } from "stream";
 
-import { DisableDextinityGuards } from "../auth/decorators/disable-dextinity-guards.decorator";
-import { BlobStorageBackendService } from "../blob-storage/backends/blob-storage-backend.service";
-import { ScaledImagesCacheService } from "../blob-storage/cache/scaled-images-cache.service";
-import { createHashedPath } from "../blob-storage/utils/create-hashed-path.util";
-import { calculatePartialRanges } from "../file-utils/files.utils";
-import { ALL_TYPES, BASIC_TYPES, MODERN_TYPES } from "../file-utils/images.constants";
-import { getSupportedMimeType } from "../file-utils/images.util";
-import { Extension, ResizingType } from "../imgproxy/imgproxy.enum";
-import { ImgproxyService } from "../imgproxy/imgproxy.service";
-import { RequiredPermission } from "../user-permissions/decorators/required-permission.decorator";
-import { DownloadParams, HashDownloadParams, HashImageParams, ImageParams } from "./dto/file-uploads-download.params";
-import { FileUpload } from "./entities/file-upload.entity";
-import { FileUploadsConfig } from "./file-uploads.config";
-import { FILE_UPLOADS_CONFIG } from "./file-uploads.constants";
-import { FileUploadsService } from "./file-uploads.service";
+import { DisableDextinityGuards } from "../auth/decorators/disable-dextinity-guards.decorator.js";
+import { BlobStorageBackendService } from "../blob-storage/backends/blob-storage-backend.service.js";
+import { ScaledImagesCacheService } from "../blob-storage/cache/scaled-images-cache.service.js";
+import { createHashedPath } from "../blob-storage/utils/create-hashed-path.util.js";
+import { calculatePartialRanges } from "../file-utils/files.utils.js";
+import { ALL_TYPES, BASIC_TYPES, MODERN_TYPES } from "../file-utils/images.constants.js";
+import { getSupportedMimeType } from "../file-utils/images.util.js";
+import { Extension, ResizingType } from "../imgproxy/imgproxy.enum.js";
+import { ImgproxyService } from "../imgproxy/imgproxy.service.js";
+import { RequiredPermission } from "../user-permissions/decorators/required-permission.decorator.js";
+import { type DownloadParams, HashDownloadParams, HashImageParams, type ImageParams } from "./dto/file-uploads-download.params.js";
+import { FileUpload } from "./entities/file-upload.entity.js";
+import type { FileUploadsConfig } from "./file-uploads.config.js";
+import { FILE_UPLOADS_CONFIG } from "./file-uploads.constants.js";
+import { FileUploadsService } from "./file-uploads.service.js";
 
 export function createFileUploadsDownloadController(options: { public: boolean }): Type<unknown> {
     @Controller("file-uploads")
     class BaseFileUploadsDownloadController {
         protected readonly logger = new Logger(BaseFileUploadsDownloadController.name);
         constructor(
-            @InjectRepository(FileUpload) private readonly fileUploadsRepository: EntityRepository<FileUpload>,
+            private readonly entityManager: EntityManager,
             @Inject(BlobStorageBackendService) private readonly blobStorageBackendService: BlobStorageBackendService,
             @Inject(FILE_UPLOADS_CONFIG) private readonly config: FileUploadsConfig,
             private readonly fileUploadsService: FileUploadsService,
@@ -49,7 +48,7 @@ export function createFileUploadsDownloadController(options: { public: boolean }
 
         @Get(":hash/:id/:timeout")
         async download(@Param() { hash, ...params }: HashDownloadParams, @Res() res: Response, @Headers("range") range?: string): Promise<void> {
-            const file = await this.fileUploadsRepository.findOne(params.id);
+            const file = await this.entityManager.findOne(FileUpload, params.id);
 
             if (!file) {
                 throw new NotFoundException();
@@ -61,7 +60,7 @@ export function createFileUploadsDownloadController(options: { public: boolean }
 
         @Get("preview/:hash/:id/:timeout")
         async preview(@Param() { hash, ...params }: HashDownloadParams, @Res() res: Response, @Headers("range") range?: string): Promise<void> {
-            const file = await this.fileUploadsRepository.findOne(params.id);
+            const file = await this.entityManager.findOne(FileUpload, params.id);
 
             if (!file) {
                 throw new NotFoundException();
@@ -158,7 +157,7 @@ export function createFileUploadsDownloadController(options: { public: boolean }
                 throw new GoneException();
             }
 
-            const file = await this.fileUploadsRepository.findOne(params.id);
+            const file = await this.entityManager.findOne(FileUpload, params.id);
 
             if (!file) {
                 throw new NotFoundException();

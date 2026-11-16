@@ -3,17 +3,17 @@ import { plainToInstance } from "class-transformer";
 import type { Response } from "express";
 import { describe, expect, it, vi } from "vitest";
 
-import type { ScaledImagesCacheService } from "../../../blob-storage/cache/scaled-images-cache.service";
-import { FocalPoint } from "../../../file-utils/focal-point.enum";
-import { ImgproxyBuilder } from "../../../imgproxy/imgproxy.builder";
-import type { ImgproxyService } from "../../../imgproxy/imgproxy.service";
-import type { DamConfig } from "../../dam.config";
-import type { FileInterface } from "../../files/entities/file.entity";
-import type { FilesService } from "../../files/files.service";
-import { HashImageParams } from "../dto/image.params";
-import type { ImageCropArea } from "../entities/image-crop-area.entity";
-import { createImagesController } from "../images.controller";
-import { ImagesService } from "../images.service";
+import type { ScaledImagesCacheService } from "../../../blob-storage/cache/scaled-images-cache.service.js";
+import { FocalPoint } from "../../../file-utils/focal-point.enum.js";
+import { ImgproxyBuilder } from "../../../imgproxy/imgproxy.builder.js";
+import type { ImgproxyService } from "../../../imgproxy/imgproxy.service.js";
+import type { DamConfig } from "../../dam.config.js";
+import type { FileInterface } from "../../files/entities/file.entity.js";
+import type { FilesService } from "../../files/files.service.js";
+import { HashImageParams } from "../dto/image.params.js";
+import type { ImageCropArea } from "../entities/image-crop-area.entity.js";
+import { createImagesController } from "../images.controller.js";
+import { ImagesService } from "../images.service.js";
 
 interface ImagesControllerForTest {
     smartCroppedImage(params: HashImageParams, accept: string, res: Response): Promise<void>;

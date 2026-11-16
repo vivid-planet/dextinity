@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 
-import { BrevoTransactionalMailsController } from "./brevo-transactional-mails.controller";
+import { BrevoTransactionalMailsController } from "./brevo-transactional-mails.controller.js";
 
 @Module({
     controllers: [BrevoTransactionalMailsController],

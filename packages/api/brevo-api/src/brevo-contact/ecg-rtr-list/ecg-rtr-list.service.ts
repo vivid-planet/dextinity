@@ -1,8 +1,8 @@
 import { Inject, Injectable } from "@nestjs/common";
 import crypto from "crypto";
 
-import { BrevoModuleConfig } from "../../config/brevo-module.config";
-import { BREVO_MODULE_CONFIG } from "../../config/brevo-module.constants";
+import type { BrevoModuleConfig } from "../../config/brevo-module.config.js";
+import { BREVO_MODULE_CONFIG } from "../../config/brevo-module.constants.js";
 
 @Injectable()
 export class EcgRtrListService {

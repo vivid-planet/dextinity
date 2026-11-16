@@ -115,7 +115,13 @@ export const MultiplePickers: Story = {
         const [afternoon, setAfternoon] = useState<TimeRange | undefined>({ start: "13:00", end: "17:00" });
 
         return (
-            <Box display="flex" flexDirection="column" gap={4}>
+            <Box
+                sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 4,
+                }}
+            >
                 <Typography variant="h5">Opening Hours</Typography>
                 <TimeRangePicker {...args} label="Morning" fullWidth value={morning} onChange={setMorning} />
                 <TimeRangePicker {...args} label="Afternoon" fullWidth value={afternoon} onChange={setAfternoon} />

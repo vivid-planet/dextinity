@@ -1,4 +1,5 @@
-import { gql, useMutation } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useMutation } from "@apollo/client/react";
 import { UndoSnackbar, useSnackbarApi } from "@dextinity/admin";
 import { ChevronDown } from "@dextinity/admin-icons";
 import { Chip, ListItemIcon, Menu, MenuItem } from "@mui/material";
@@ -15,6 +16,7 @@ import { usePageTreeContext } from "./usePageTreeContext";
 export const updatePageVisibilityMutation = gql`
     mutation UpdatePageVisibility($id: ID!, $input: PageTreeNodeUpdateVisibilityInput!) {
         updatePageTreeNodeVisibility(id: $id, input: $input) {
+            __typename
             id
             visibility
             path

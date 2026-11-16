@@ -1,9 +1,9 @@
 import { MikroOrmModule } from "@mikro-orm/nestjs";
-import { DynamicModule, Module, Type } from "@nestjs/common";
-import { EmailCampaignScopeInterface } from "src/types";
+import { type DynamicModule, Module, type Type } from "@nestjs/common";
 
-import { BlacklistedContactsService } from "./blacklisted-contacts.service";
-import { BlacklistedContactsInterface } from "./entity/blacklisted-contacts.entity.factory";
+import type { EmailCampaignScopeInterface } from "../types.js";
+import { BlacklistedContactsService } from "./blacklisted-contacts.service.js";
+import type { BlacklistedContactsInterface } from "./entity/blacklisted-contacts.entity.factory.js";
 
 interface BlacklistedContactsModuleConfig {
     BrevoBlacklistedContacts?: Type<BlacklistedContactsInterface>;

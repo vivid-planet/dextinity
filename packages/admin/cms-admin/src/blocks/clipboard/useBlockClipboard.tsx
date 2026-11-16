@@ -1,5 +1,5 @@
 import { readClipboardText, writeClipboardText } from "@dextinity/admin";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 import type { ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
 
@@ -105,7 +105,7 @@ function useBlockClipboard({ supports }: UseBlockClipboardOptions): BlockClipboa
 
         const files = blocks
             .flatMap((block) => block.dependencies ?? [])
-            .filter((dependency) => dependency.targetGraphqlObjectType === "DamFile" && !isEqual(dependency.scope, damScope));
+            .filter((dependency) => dependency.targetGraphqlObjectType === "DamFile" && !deepEqual(dependency.scope, damScope));
 
         if (files.length === 0) {
             return [];
@@ -209,7 +209,7 @@ function useBlockClipboard({ supports }: UseBlockClipboardOptions): BlockClipboa
             };
         }
 
-        const isPastingIntoOtherContentScope = !isEqual(transformedContent.contentScope, contentScope);
+        const isPastingIntoOtherContentScope = !deepEqual(transformedContent.contentScope, contentScope);
         const blocks: ClipboardBlock[] = [];
 
         for (const { clipboardBlock, blockInterface } of clipboardBlocks) {

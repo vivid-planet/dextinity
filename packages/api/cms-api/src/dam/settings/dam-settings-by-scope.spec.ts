@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { damSettingsByScope } from "./dam-settings-by-scope";
+import { damSettingsByScope } from "./dam-settings-by-scope.js";
 
 describe("damSettingsByScope", () => {
     it("matches the whole scope instead of single scope parts", () => {

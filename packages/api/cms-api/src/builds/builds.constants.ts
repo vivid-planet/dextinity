@@ -1,4 +1,4 @@
-import { LABEL_PREFIX } from "../kubernetes/kubernetes.constants";
+import { LABEL_PREFIX } from "../kubernetes/kubernetes.constants.js";
 
 export const BUILDS_MODULE_OPTIONS = "builds-module-options";
 export const BUILDS_CONFIG = "builds-config";

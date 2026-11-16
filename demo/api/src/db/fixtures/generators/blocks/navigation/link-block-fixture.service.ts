@@ -1,7 +1,7 @@
-import { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
+import type { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
-import { LinkBlock } from "@src/common/blocks/link.block";
-import { faker } from "@src/db/fixtures/faker";
+import type { LinkBlock } from "@src/common/blocks/link.block.js";
+import { faker } from "@src/db/fixtures/faker.js";
 
 const urls = ["https://vivid-planet.com/", "https://github.com/", "https://gitlab.com", "https://stackoverflow.com/"];
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { getDamFileCategory } from "./dam-file-category";
+import { getDamFileCategory } from "./dam-file-category.js";
 
 describe("getDamFileCategory", () => {
     it("categorizes SVG images separately from pixel images", () => {

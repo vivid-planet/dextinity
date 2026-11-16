@@ -1,9 +1,9 @@
 import { type ObjectQuery, raw } from "@mikro-orm/postgresql";
 
-import { filtersToMikroOrmQuery } from "../common/filter/mikro-orm";
-import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
-import type { ActionLogFilter } from "./dto/action-log.filter";
-import type { ActionLog } from "./entities/action-log.entity";
+import { filtersToMikroOrmQuery } from "../common/filter/mikro-orm.js";
+import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface.js";
+import type { ActionLogFilter } from "./dto/action-log.filter.js";
+import type { ActionLog } from "./entities/action-log.entity.js";
 
 export function actionLogFilterToWhere(filter: ActionLogFilter): ObjectQuery<ActionLog> {
     const andConditions: ObjectQuery<ActionLog>[] = [];

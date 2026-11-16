@@ -1,4 +1,5 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { FillSpace, MainContent, StackLink, Toolbar, ToolbarBackButton, ToolbarTitleItem, Tooltip } from "@dextinity/admin";
 import { List } from "@dextinity/admin-icons";
 import { IconButton } from "@mui/material";
@@ -80,6 +81,7 @@ export function JobsGrid(props: JobsGridProps) {
     const { data, loading, error } = useQuery<GQLKubernetesJobsQuery, GQLKubernetesJobsQueryVariables>(jobsQuery, {
         variables: { cronJobName: cronJob },
         pollInterval: 10 * 1000,
+        notifyOnNetworkStatusChange: false,
     });
 
     if (error) {
@@ -112,7 +114,7 @@ export function JobsGrid(props: JobsGridProps) {
                         {
                             field: "runtime",
                             headerName: intl.formatMessage({ id: "dextinity.pages.jobs.runtime", defaultMessage: "Runtime" }),
-                            flex: 1,
+                            flex: 2,
                             ...disableFieldOptions,
                             valueGetter: (params, row) => {
                                 return {
@@ -135,7 +137,7 @@ export function JobsGrid(props: JobsGridProps) {
                             headerName: "",
                             renderCell: ({ row }) => (
                                 <Tooltip title={<FormattedMessage id="dextinity.pages.jobs.showLogs" defaultMessage="Show logs" />}>
-                                    <IconButton component={StackLink} pageName="logs" payload={row.name}>
+                                    <IconButton component={StackLink} nativeButton={false} pageName="logs" payload={row.name}>
                                         <List color="primary" />
                                     </IconButton>
                                 </Tooltip>

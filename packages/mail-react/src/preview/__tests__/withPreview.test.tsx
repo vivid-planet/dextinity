@@ -19,8 +19,8 @@ const TextBlock = withPreview<PropsWithData<{ text: string; adminMeta?: { route:
 );
 
 describe("withPreview", () => {
-    it("adds the admin route and label to the class names the block receives", () => {
-        const { html } = renderMailHtml(
+    it("adds the admin route and label to the class names the block receives", async () => {
+        const { html } = await renderMailHtml(
             <MjmlMailRoot>
                 <TextBlock data={{ text: "Hello", adminMeta: { route: "/edit/blocks#text" } }} className="custom" />
             </MjmlMailRoot>,
@@ -29,13 +29,13 @@ describe("withPreview", () => {
         expect(html).toContain("custom dextinity-preview-route:%2Fedit%2Fblocks%23text dextinity-preview-label:Two%20List%20Sizes");
     });
 
-    it("leaves the mail unchanged when the block has no admin route", () => {
-        const { html } = renderMailHtml(
+    it("leaves the mail unchanged when the block has no admin route", async () => {
+        const { html } = await renderMailHtml(
             <MjmlMailRoot>
                 <TextBlock data={{ text: "Hello" }} />
             </MjmlMailRoot>,
         );
-        const { html: htmlWithoutPreview } = renderMailHtml(
+        const { html: htmlWithoutPreview } = await renderMailHtml(
             <MjmlMailRoot>
                 <MjmlSection>
                     <MjmlColumn>

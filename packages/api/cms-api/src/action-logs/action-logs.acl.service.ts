@@ -5,15 +5,15 @@ import {
     DisablePermissionCheck,
     REQUIRED_PERMISSION_METADATA_KEY,
     type RequiredPermissionMetadata,
-} from "../user-permissions/decorators/required-permission.decorator";
-import type { CurrentUser } from "../user-permissions/dto/current-user";
-import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
-import { ACCESS_CONTROL_SERVICE } from "../user-permissions/user-permissions.constants";
-import { UserPermissionsService } from "../user-permissions/user-permissions.service";
-import type { AccessControlServiceInterface, Permission, SystemUser } from "../user-permissions/user-permissions.types";
-import { ActionLogsService } from "./action-logs.service";
-import { ActionLog } from "./entities/action-log.entity";
-import { entityChecksScope } from "./entity-checks-scope";
+} from "../user-permissions/decorators/required-permission.decorator.js";
+import type { CurrentUser } from "../user-permissions/dto/current-user.js";
+import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface.js";
+import { ACCESS_CONTROL_SERVICE } from "../user-permissions/user-permissions.constants.js";
+import { UserPermissionsService } from "../user-permissions/user-permissions.service.js";
+import type { AccessControlServiceInterface, Permission, SystemUser } from "../user-permissions/user-permissions.types.js";
+import { ActionLogsService } from "./action-logs.service.js";
+import { ActionLog } from "./entities/action-log.entity.js";
+import { entityChecksScope } from "./entity-checks-scope.js";
 
 @Injectable()
 export class ActionLogsAclService {

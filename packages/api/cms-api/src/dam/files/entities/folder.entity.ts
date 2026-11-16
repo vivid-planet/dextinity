@@ -1,22 +1,12 @@
-import {
-    ArrayType,
-    BaseEntity,
-    Cascade,
-    Embedded,
-    Entity,
-    Index,
-    ManyToOne,
-    OneToMany,
-    OptionalProps,
-    PrimaryKey,
-    Property,
-} from "@mikro-orm/postgresql";
-import { Type } from "@nestjs/common";
+import { Embedded, Entity, Index, ManyToOne, OneToMany, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
+import { ArrayType, BaseEntity, Cascade, OptionalProps } from "@mikro-orm/postgresql";
+import type { Type } from "@nestjs/common";
 import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
 import { randomUUID } from "crypto";
 
-import { DamScopeInterface } from "../../types";
-import { FileInterface } from "./file.entity";
+import type { DamScopeInterface } from "../../types.js";
+import type { FileInterface } from "./file.entity.js";
+import { resolveFileEntity, resolveFolderEntity } from "./resolve-dam-entity.js";
 
 export interface FolderInterface extends BaseEntity {
     [OptionalProps]?:
@@ -52,7 +42,7 @@ export function createFolderEntity({ Scope }: { Scope?: Type<DamScopeInterface> 
         name: string;
 
         @ManyToOne({
-            entity: "DamFolder",
+            entity: () => resolveFolderEntity(),
             inversedBy: (folder: FolderInterface) => folder.children,
             joinColumn: "parentId",
             nullable: true,
@@ -60,7 +50,7 @@ export function createFolderEntity({ Scope }: { Scope?: Type<DamScopeInterface> 
         })
         parent: FolderInterface | null;
 
-        @OneToMany("DamFolder", (folder: FolderInterface) => folder.parent)
+        @OneToMany(() => resolveFolderEntity(), (folder: FolderInterface) => folder.parent)
         children: FolderInterface[];
 
         @Property({ persist: false })
@@ -84,7 +74,7 @@ export function createFolderEntity({ Scope }: { Scope?: Type<DamScopeInterface> 
         @Field()
         isInboxFromOtherScope: boolean = false;
 
-        @OneToMany("DamFile", (file: FileInterface) => file.folder)
+        @OneToMany(() => resolveFileEntity(), (file: FileInterface) => file.folder)
         files: FileInterface[];
 
         @Property({ columnType: "timestamp with time zone" })

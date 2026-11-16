@@ -60,7 +60,7 @@ const MainMenuItems = () => {
                                     header: "",
                                     cellProps: { align: "right" },
                                     render: (item) => (
-                                        <IconButton component={StackLink} color="primary" pageName="edit" payload={item.node.id}>
+                                        <IconButton component={StackLink} nativeButton={false} color="primary" pageName="edit" payload={item.node.id}>
                                             <Edit />
                                         </IconButton>
                                     ),

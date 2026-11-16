@@ -1,13 +1,12 @@
-import { MikroOrmModule } from "@mikro-orm/nestjs";
-import { DynamicModule, Module, Type } from "@nestjs/common";
+import { type DynamicModule, Module, type Type } from "@nestjs/common";
 
-import { BrevoApiModule } from "../brevo-api/brevo-api.module";
-import { ConfigModule } from "../config/config.module";
-import { BrevoContactFilterAttributesInterface, EmailCampaignScopeInterface } from "../types";
-import { TargetGroupInputFactory } from "./dto/target-group-input.factory";
-import { TargetGroupInterface } from "./entity/target-group-entity.factory";
-import { createTargetGroupsResolver } from "./target-group.resolver";
-import { TargetGroupsService } from "./target-groups.service";
+import { BrevoApiModule } from "../brevo-api/brevo-api.module.js";
+import { ConfigModule } from "../config/config.module.js";
+import type { BrevoContactFilterAttributesInterface, EmailCampaignScopeInterface } from "../types.js";
+import { TargetGroupInputFactory } from "./dto/target-group-input.factory.js";
+import type { TargetGroupInterface } from "./entity/target-group-entity.factory.js";
+import { createTargetGroupsResolver } from "./target-group.resolver.js";
+import { TargetGroupsService } from "./target-groups.service.js";
 
 interface TargetGroupModuleConfig {
     Scope: Type<EmailCampaignScopeInterface>;
@@ -28,7 +27,7 @@ export class TargetGroupModule {
 
         return {
             module: TargetGroupModule,
-            imports: [ConfigModule, BrevoApiModule, MikroOrmModule.forFeature(["BrevoTargetGroup"])],
+            imports: [ConfigModule, BrevoApiModule],
             providers: [TargetGroupResolver, TargetGroupsService],
             exports: [TargetGroupsService],
         };

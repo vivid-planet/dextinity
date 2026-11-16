@@ -3,9 +3,9 @@ import type { EntityManager } from "@mikro-orm/core";
 import { Logger } from "@nestjs/common";
 import { pipeline, type Readable, Transform } from "stream";
 
-import { ProductImporterInput } from "./product-importer.input";
-import { ProductPersistPipe } from "./product-persist.pipe";
-import { ProductPrePersistPipe } from "./product-pre-persist.pipe";
+import { ProductImporterInput } from "./product-importer.input.js";
+import { ProductPersistPipe } from "./product-persist.pipe.js";
+import { ProductPrePersistPipe } from "./product-pre-persist.pipe.js";
 
 export class ProductImporter {
     private readonly logger = new Logger(ProductImporter.name);

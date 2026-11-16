@@ -244,10 +244,7 @@ non-generated service for specific functionality:
 // Generated; don't touch this!
 @Injectable()
 export class ProductsService {
-    constructor(
-        private readonly entityManager: EntityManager,
-        @InjectRepository(Product) private readonly repository: EntityRepository<Product>,
-    ) {}
+    constructor(private readonly entityManager: EntityManager) {}
 
     // ...
 }

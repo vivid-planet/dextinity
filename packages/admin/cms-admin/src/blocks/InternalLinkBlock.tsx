@@ -57,7 +57,7 @@ export const InternalLinkBlock: BlockInterface<InternalLinkBlockData, State, Int
             variables: { id: output.targetPageId },
         });
 
-        const targetPage = data.pageTreeNode ? { ...data.pageTreeNode, scope: pageTreeScope } : undefined;
+        const targetPage = data?.pageTreeNode ? { ...data.pageTreeNode, scope: pageTreeScope } : undefined;
 
         // TODO consider throwing an error
         return { targetPage, targetPageAnchor: output.targetPageAnchor };
@@ -132,7 +132,11 @@ export const InternalLinkBlock: BlockInterface<InternalLinkBlockData, State, Int
                     >
                         <Field name="targetPage" component={FinalFormPageTreeSelect} fullWidth fieldContainerProps={{ fieldMargin: "never" }} />
                         <Divider />
-                        <Box padding={3}>
+                        <Box
+                            sx={{
+                                padding: 3,
+                            }}
+                        >
                             <Field
                                 name="targetPageAnchor"
                                 label={<FormattedMessage id="dextinity.blocks.internalLink.anchor.label" defaultMessage="Anchor" />}

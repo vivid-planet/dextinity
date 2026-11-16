@@ -1,4 +1,5 @@
-import { gql, useMutation } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useMutation } from "@apollo/client/react";
 import { RowActionsItem, RowActionsMenu } from "@dextinity/admin";
 import { MovePage } from "@dextinity/admin-icons";
 import { FormattedMessage } from "react-intl";

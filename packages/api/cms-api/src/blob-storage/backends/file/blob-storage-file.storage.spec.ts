@@ -4,7 +4,7 @@ import * as path from "path";
 import { Readable } from "stream";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { BlobStorageFileStorage } from "./blob-storage-file.storage";
+import { BlobStorageFileStorage } from "./blob-storage-file.storage.js";
 
 function streamToBuffer(stream: Readable): Promise<Buffer> {
     return new Promise((resolve, reject) => {

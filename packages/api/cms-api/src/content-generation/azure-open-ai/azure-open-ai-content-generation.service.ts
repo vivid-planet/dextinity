@@ -1,12 +1,12 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { plainToInstance } from "class-transformer";
 import { validateSync } from "class-validator";
-import type { AzureOpenAI } from "openai";
+import type { AzureOpenAI } from "openai" with { "resolution-mode": "import" };
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 
-import { FilesService } from "../../dam/files/files.service";
-import { ContentGenerationServiceInterface, SeoTags } from "../content-generation-service.interface";
-import { AZURE_OPEN_AI_CONTENT_GENERATION_SERVICE_CONFIG } from "./azure-open-ai.constants";
+import { FilesService } from "../../dam/files/files.service.js";
+import { type ContentGenerationServiceInterface, SeoTags } from "../content-generation-service.interface.js";
+import { AZURE_OPEN_AI_CONTENT_GENERATION_SERVICE_CONFIG } from "./azure-open-ai.constants.js";
 
 export type AzureOpenAiContentGenerationServiceConfig = AzureOpenAiConfig | ConfigByMethod;
 

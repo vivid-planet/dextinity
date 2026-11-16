@@ -1,4 +1,5 @@
-import { BaseEntity, Entity, Index, PrimaryKey, Property, Unique } from "@mikro-orm/postgresql";
+import { Entity, Index, PrimaryKey, Property, Unique } from "@mikro-orm/decorators/legacy";
+import { BaseEntity } from "@mikro-orm/postgresql";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
 import { randomUUID } from "crypto";
 

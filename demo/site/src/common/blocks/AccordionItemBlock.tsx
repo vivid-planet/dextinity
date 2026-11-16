@@ -1,39 +1,22 @@
-import { BlocksBlock, type PropsWithData, type SupportedBlocks, usePreview, withPreview } from "@dextinity/site-nextjs";
-import type { AccordionContentBlockData, AccordionItemBlockData } from "@src/blocks.generated";
-import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
-import { SpaceBlock } from "@src/common/blocks/SpaceBlock";
-import { StandaloneCallToActionListBlock } from "@src/common/blocks/StandaloneCallToActionListBlock";
-import { StandaloneHeadingBlock } from "@src/common/blocks/StandaloneHeadingBlock";
+"use client";
+
+import { type PropsWithData, usePreview, withPreview } from "@dextinity/site-nextjs";
+import type { AccordionItemBlockData } from "@src/blocks.generated";
 import clsx from "clsx";
-import { useId } from "react";
+import { type ReactNode, useId } from "react";
 
 import { Typography } from "../components/Typography";
 import { SvgUse } from "../helpers/SvgUse";
 import styles from "./AccordionItemBlock.module.scss";
-import { TextImageBlock } from "./TextImageBlock";
 
-const supportedBlocks: SupportedBlocks = {
-    richtext: (props) => <RichTextBlock data={props} />,
-    heading: (props) => <StandaloneHeadingBlock data={props} />,
-    space: (props) => <SpaceBlock data={props} />,
-    callToActionList: (props) => <StandaloneCallToActionListBlock data={props} />,
-    textImage: (props) => <TextImageBlock data={props} />,
-};
-
-const AccordionContentBlock = withPreview(
-    ({ data: { blocks } }: PropsWithData<AccordionContentBlockData>) => {
-        return <BlocksBlock data={{ blocks }} supportedBlocks={supportedBlocks} />;
-    },
-    { label: "Accordion Content" },
-);
-
-type AccordionItemBlockProps = PropsWithData<AccordionItemBlockData> & {
+type AccordionItemBlockProps = PropsWithData<Omit<AccordionItemBlockData, "content">> & {
+    content: ReactNode;
     isExpanded: boolean;
     onChange: () => void;
 };
 
 export const AccordionItemBlock = withPreview(
-    ({ data: { title, content, titleHtmlTag }, isExpanded, onChange }: AccordionItemBlockProps) => {
+    ({ data: { title, titleHtmlTag }, content, isExpanded, onChange }: AccordionItemBlockProps) => {
         const headlineId = useId();
         const contentId = useId();
         const { previewType } = usePreview();
@@ -55,9 +38,7 @@ export const AccordionItemBlock = withPreview(
                         aria-labelledby={headlineId}
                         className={clsx(styles.contentWrapper, isExpanded && styles["contentWrapper--expanded"])}
                     >
-                        <div className={styles.contentWrapperInner}>
-                            <AccordionContentBlock data={content} />
-                        </div>
+                        <div className={styles.contentWrapperInner}>{content}</div>
                     </section>
                 )}
             </>

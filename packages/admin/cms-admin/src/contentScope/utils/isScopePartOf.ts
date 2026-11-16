@@ -1,4 +1,4 @@
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 
 import type { ContentScope } from "../Provider";
 
@@ -9,5 +9,5 @@ import type { ContentScope } from "../Provider";
  * the content scope consists of domain and language.
  */
 export function isScopePartOf(scope: ContentScope, otherScope: ContentScope): boolean {
-    return Object.entries(scope).every(([dimension, value]) => isEqual(otherScope[dimension], value));
+    return Object.entries(scope).every(([dimension, value]) => deepEqual(otherScope[dimension], value));
 }

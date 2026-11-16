@@ -1,0 +1,94 @@
+.showcase {
+    display: grid;
+    gap: var(--dextinity-unit-4);
+    margin-block: var(--dextinity-unit-8);
+
+    @media (min-width: 600px) {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-unit-4);
+
+    > :last-child {
+        flex-grow: 1;
+    }
+}
+
+.card,
+.taskCard {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-unit-3);
+    padding: var(--dextinity-unit-5);
+    border-radius: var(--dextinity-brand-radius-card);
+}
+
+.card {
+    border: 1px solid var(--dextinity-color-border-subtle);
+    background-color: var(--dextinity-color-background-default);
+}
+
+.taskCard {
+    background-color: var(--dextinity-color-action-primary-default);
+    color: var(--dextinity-color-foreground-on-accent);
+}
+
+.taskDate,
+.taskTitle,
+.taskMeta {
+    color: inherit;
+}
+
+.taskDate {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--dextinity-unit-1);
+}
+
+.taskMeta {
+    opacity: 0.85;
+}
+
+.chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--dextinity-unit-2);
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-unit-1);
+}
+
+.actions {
+    display: flex;
+    margin-block-start: auto;
+    justify-content: flex-end;
+    gap: var(--dextinity-unit-2);
+}
+
+.list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.recordRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--dextinity-unit-2);
+}
+
+.iconActions {
+    display: flex;
+}
+
+.muted {
+    color: var(--dextinity-color-foreground-muted);
+}

@@ -49,7 +49,15 @@ const Page = () => {
                         </Button>
                     </Tooltip>
                     <Tooltip title="Open the edit page">
-                        <Button sx={{ m: 2 }} startIcon={<Edit />} variant="secondary" component={StackLink} pageName="edit" payload="example-id">
+                        <Button
+                            sx={{ m: 2 }}
+                            startIcon={<Edit />}
+                            variant="secondary"
+                            component={StackLink}
+                            nativeButton={false}
+                            pageName="edit"
+                            payload="example-id"
+                        >
                             Edit existing item
                         </Button>
                     </Tooltip>

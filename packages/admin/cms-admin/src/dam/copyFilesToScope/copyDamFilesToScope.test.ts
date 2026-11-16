@@ -28,7 +28,7 @@ function createMockApolloClient({ existingCopies = {} }: { existingCopies?: Reco
         }
     });
 
-    return { client: { query, mutate } as unknown as ApolloClient<unknown>, query, mutate };
+    return { client: { query, mutate } as unknown as ApolloClient, query, mutate };
 }
 
 const targetDamScope = { domain: "secondary" };

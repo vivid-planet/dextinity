@@ -1,0 +1,16 @@
+:root[data-storybook-brand="crimson"] {
+    --dextinity-brand-radius-control: var(--dextinity-radius-full);
+    --dextinity-brand-radius-control-small: var(--dextinity-radius-full);
+    --dextinity-brand-radius-forms: var(--dextinity-radius-xs);
+    --dextinity-brand-radius-surface: var(--dextinity-radius-sm);
+    --dextinity-brand-radius-modal: var(--dextinity-radius-md);
+    --dextinity-brand-radius-tooltip: var(--dextinity-radius-xs);
+
+    --dextinity-brand-font-family-sans: var(--dextinity-font-family-source-sans-pro);
+
+    @each $step in 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950 {
+        --dextinity-brand-color-primary-#{$step}: var(--dextinity-color-sky-#{$step});
+        --dextinity-brand-color-danger-#{$step}: var(--dextinity-color-coral-#{$step});
+        --dextinity-brand-color-info-#{$step}: var(--dextinity-color-sky-#{$step});
+    }
+}

@@ -2,6 +2,7 @@ import { CodegenConfig } from "@graphql-codegen/cli";
 
 const config: CodegenConfig = {
     schema: "schema.gql",
+    noSilentErrors: false,
     generates: {
         "./src/graphql.generated.ts": {
             plugins: ["typescript"],
@@ -11,6 +12,12 @@ const config: CodegenConfig = {
                 },
                 enumsAsTypes: true,
                 namingConvention: "keep",
+                scalars: {
+                    DateTime: "string",
+                    JSONObject: "any",
+                    EmailCampaignContentBlockData: "unknown",
+                    EmailCampaignContentBlockInput: "unknown",
+                },
                 typesPrefix: "GQL",
             },
         },
@@ -23,11 +30,15 @@ const config: CodegenConfig = {
                 baseTypesPath: "graphql.generated.ts",
             },
             config: {
-                avoidOptionals: {
-                    field: true,
-                },
                 enumsAsTypes: true,
                 namingConvention: "keep",
+                scalars: {
+                    ID: "string",
+                    DateTime: "string",
+                    JSONObject: "any",
+                    EmailCampaignContentBlockData: "unknown",
+                    EmailCampaignContentBlockInput: "unknown",
+                },
                 typesPrefix: "GQL",
             },
             plugins: ["named-operations-object", "typescript-operations"],

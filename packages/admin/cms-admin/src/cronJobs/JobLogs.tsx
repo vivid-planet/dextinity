@@ -1,4 +1,5 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { Loading, StackPageTitle } from "@dextinity/admin";
 import { Box, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
@@ -54,11 +55,19 @@ export function JobLogs(props: { jobName: string }) {
                 }
             />
             {logs ? (
-                <Box paddingLeft={4}>
+                <Box
+                    sx={{
+                        paddingLeft: 4,
+                    }}
+                >
                     <LogsContainer>{logs}</LogsContainer>
                 </Box>
             ) : (
-                <Box padding={4}>
+                <Box
+                    sx={{
+                        padding: 4,
+                    }}
+                >
                     <Typography>
                         <FormattedMessage
                             id="dextinity.cronJobs.noLogs"

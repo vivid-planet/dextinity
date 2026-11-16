@@ -1,13 +1,13 @@
-import { Type } from "@nestjs/common";
+import type { Type } from "@nestjs/common";
 import { ArgsType, Field } from "@nestjs/graphql";
 import { Type as TransformerType } from "class-transformer";
 import { IsBoolean, IsEnum, IsOptional, IsString, ValidateNested } from "class-validator";
 
-import { SortArgs } from "../../common/sorting/sort.args";
-import { SortDirection } from "../../common/sorting/sort-direction.enum";
-import { RedirectGenerationType } from "../redirects.enum";
-import { RedirectScopeInterface } from "../types";
-import { EmptyRedirectScope } from "./empty-redirect-scope";
+import { SortArgs } from "../../common/sorting/sort.args.js";
+import type { SortDirection } from "../../common/sorting/sort-direction.enum.js";
+import { RedirectGenerationType } from "../redirects.enum.js";
+import type { RedirectScopeInterface } from "../types.js";
+import { EmptyRedirectScope } from "./empty-redirect-scope.js";
 
 interface RedirectsArgsInterface {
     scope: RedirectScopeInterface;

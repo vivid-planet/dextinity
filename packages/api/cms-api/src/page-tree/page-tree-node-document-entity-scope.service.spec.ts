@@ -2,10 +2,10 @@ import { createMock } from "@golevelup/ts-vitest";
 import type { EntityManager } from "@mikro-orm/postgresql";
 import { describe, expect, it, vi } from "vitest";
 
-import type { DocumentInterface } from "../document/dto/document-interface";
-import { AttachedDocument } from "./entities/attached-document.entity";
-import type { PageTreeService } from "./page-tree.service";
-import { PageTreeNodeDocumentEntityScopeService } from "./page-tree-node-document-entity-scope.service";
+import type { DocumentInterface } from "../document/dto/document-interface.js";
+import { AttachedDocument } from "./entities/attached-document.entity.js";
+import type { PageTreeService } from "./page-tree.service.js";
+import { PageTreeNodeDocumentEntityScopeService } from "./page-tree-node-document-entity-scope.service.js";
 
 const scope = { domain: "main", language: "en" };
 const document = { id: "document-1" } as DocumentInterface;

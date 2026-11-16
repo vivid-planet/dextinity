@@ -263,10 +263,11 @@ Clients turn plain-text mail addresses, URLs and phone numbers into links of the
 
 ### Dark Mode Repaints Colors, Not Most Images
 
-In dark mode, Gmail iOS, Yahoo Mail on the web, classic Outlook, Outlook on the web, Outlook iOS and Outlook Mac change the colors of the mail but leave most images alone. So a color that must stay is safest inside an image. Gmail Android is the exception: it inverts images with few colors that it shows at about `64px` or less.
+In dark mode, Gmail iOS, Yahoo Mail on the web, classic Outlook, Outlook on the web, Outlook iOS and Outlook Mac change the colors of the mail but leave most images alone. So a color that must stay is safest inside an image. Gmail Android is the exception: it inverts images with few colors that phones show at about `55px` or less.
 
 - Keep a background color: set `background-color` and a `background-image` of a `100×100` px solid PNG in the same color. Use this technique behind images only, not behind text: some clients keep the background but still change the text color, so the text disappears.
 - Keep a logo readable: put a light background into the image file of the logo, not behind it. Some Gmail Android phones invert only the logo or only a separate background; in one image, both change together. On a dark section, put a background image in the section color behind the logo only, not behind the whole section (Gmail iOS, Outlook on the web).
+- Keep a line visible: draw it as a border on a cell with a light background, not as a dark background like `MjmlDivider` and `HtmlDivider` do.
 - Classic Outlook ignores CSS background images; use a VML shape with `fillcolor` there.
 
 → For per-client behavior, placement rules and size limits, read [`references/dark-mode.md`](references/dark-mode.md).
@@ -676,7 +677,7 @@ Use `renderMailHtml` to convert the React tree to final HTML for sending:
 import { MjmlMailRoot, MjmlSection, MjmlColumn, MjmlText } from "@dextinity/mail-react";
 import { renderMailHtml } from "@dextinity/mail-react/server";
 
-const { html, mjmlWarnings } = renderMailHtml(
+const { html, mjmlWarnings } = await renderMailHtml(
     <MjmlMailRoot theme={theme}>
         <MjmlSection indent>
             <MjmlColumn>
@@ -690,8 +691,8 @@ const { html, mjmlWarnings } = renderMailHtml(
 - **Server** (`@dextinity/mail-react/server`) — uses `mjml`, requires Node.js
 - **Client** (`@dextinity/mail-react/client`) — uses `mjml-browser`, works without `fs`
 - `renderMailHtml` is **not** on the main `@dextinity/mail-react` barrel — always import from `/server` or `/client`
-- Returns `{ html: string; mjmlWarnings: MjmlWarning[] }` — warnings are collected, not thrown
-- The server `renderMailHtml` turns off `mj-include` by default, because an include can read files on the server. To use it, pass `{ ignoreIncludes: false }`.
+- Async — returns a promise of `{ html: string; mjmlWarnings: MjmlWarning[] }`; warnings are collected, not thrown
+- The server `renderMailHtml` turns off `mj-include` by default, because an include can read files on the server. To use it, pass `{ ignoreIncludes: false }` together with a `filePath` or `includePath` directory, and include files by a relative path inside it — MJML denies absolute paths and paths outside these directories.
 - A framework that bundles server code (Next.js) must list `mjml` in the application's own `package.json` too, or rendering fails at runtime
 - Nothing imports it directly — add `mjml` to `ignoreDependencies` in `knip.json` rather than removing it as unused
 
@@ -700,7 +701,7 @@ const { html, mjmlWarnings } = renderMailHtml(
 When generating emails outside Storybook (e.g., in a mail template's `generateMail` method), always log `mjmlWarnings` in development to catch structural issues early:
 
 ```tsx
-const { html, mjmlWarnings } = renderMailHtml(/* ... */);
+const { html, mjmlWarnings } = await renderMailHtml(/* ... */);
 
 if (process.env.NODE_ENV === "development" && mjmlWarnings.length) {
     console.warn(`${mjmlWarnings.length} MJML Warnings`, mjmlWarnings);
@@ -728,6 +729,7 @@ export const MailTextBlock = withPreview<PropsWithData<MailTextBlockData>>(
 );
 ```
 
+- The rich-text components have no root element of their own: for a rich text inside a column, pass the `className` to the `textClassName` of `MjmlRichTextBlock` or `MjmlTipTapRichTextBlock`, which put it on each of their text elements.
 - Register a block without data of its own with its data anyway, `divider: (data) => <MailDividerBlock data={data} />`, or it gets no route.
 - The block preview page must put the ref from `useRefToRegisterMailBlocksForPreview(useIFrameBridge())` on the element that contains the mail HTML.
 

@@ -2,8 +2,8 @@ import { type User, UserPermissions } from "@dextinity/cms-api";
 import { Test, type TestingModule } from "@nestjs/testing";
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { AccessControlService } from "./access-control.service";
-import { staticUsers } from "./static-users";
+import { AccessControlService } from "./access-control.service.js";
+import { staticUsers } from "./static-users.js";
 
 describe("AccessControlService", () => {
     let service: AccessControlService;

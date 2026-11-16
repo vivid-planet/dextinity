@@ -1,6 +1,6 @@
-import type { BlockDataInterface } from "../block";
-import { visitBlocksBreadthFirst } from "./visit-blocks-breadth-first";
-import { visitBlocksDepthFirst } from "./visit-blocks-depth-first";
+import type { BlockDataInterface } from "../block.js";
+import { visitBlocksBreadthFirst } from "./visit-blocks-breadth-first.js";
+import { visitBlocksDepthFirst } from "./visit-blocks-depth-first.js";
 
 export class FlatBlockNode {
     name: string;

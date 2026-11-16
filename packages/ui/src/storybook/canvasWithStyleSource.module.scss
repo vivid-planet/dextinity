@@ -1,0 +1,60 @@
+.root {
+    display: flex;
+    flex-direction: column;
+    margin: 25px 0 40px;
+
+    :global(.sbdocs-preview) {
+        margin: 0;
+    }
+
+    :global(.sbdocs-preview-actions) {
+        order: 1;
+        margin: 0;
+    }
+
+    &:has(.codePanel) :global(.sbdocs-preview) {
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+}
+
+.codePanel {
+    overflow: hidden;
+    border: 1px solid rgb(38 85 115 / 15%);
+    border-top: 0;
+    border-radius: 0 0 4px 4px;
+    background-color: #222;
+
+    :global(.docblock-source) {
+        margin: 0;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+    }
+}
+
+.tabList {
+    display: flex;
+    border-bottom: 1px solid rgb(255 255 255 / 10%);
+}
+
+.tab {
+    padding: 10px 16px 8px;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: none;
+    color: rgb(255 255 255 / 60%);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+
+    &:hover {
+        color: #fff;
+    }
+
+    &[aria-pressed="true"] {
+        border-bottom-color: #029cfd;
+        color: #fff;
+    }
+}

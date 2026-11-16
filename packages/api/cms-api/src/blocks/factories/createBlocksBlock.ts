@@ -1,26 +1,27 @@
-import { Type } from "@nestjs/common";
+import type { Type } from "@nestjs/common";
 import { plainToInstance, Transform } from "class-transformer";
 import { Allow, IsArray, IsBoolean, IsIn, IsObject, IsString, ValidateIf, ValidateNested } from "class-validator";
 
 import {
-    Block,
-    BlockContext,
+    type Block,
+    type BlockContext,
     BlockData,
-    BlockDataInterface,
+    type BlockDataInterface,
     BlockInput,
-    BlockInputInterface,
+    type BlockInputInterface,
     blockInputToData,
-    ChildBlockInfo,
+    type ChildBlockInfo,
     createBlock,
-    ExtractBlockInput,
-    ExtractBlockInputFactoryProps,
+    type ExtractBlockInput,
+    type ExtractBlockInputFactoryProps,
     isBlockDataInterface,
     isBlockInputInterface,
-    SimpleBlockInputInterface,
-    TraversableTransformBlockResponse,
-} from "../block";
-import { BlockField } from "../decorators/field";
-import { BlockFactoryNameOrOptions } from "./types";
+    type SimpleBlockInputInterface,
+    type TraversableTransformBlockResponse,
+} from "../block.js";
+import { BlockField } from "../decorators/field.js";
+import type { BlockFactoryNameOrOptions } from "./types.js";
+import { withDefaultDescription } from "./withDefaultDescription.js";
 
 interface BlocksBlockItemDataInterface extends BlockData {
     key: string;
@@ -213,7 +214,14 @@ export function createBlocksBlock<BlockMap extends BaseBlockMap>(
         }
     }
 
-    return createBlock(BlocksBlockData, BlocksBlockInput, nameOrOptions);
+    return createBlock(
+        BlocksBlockData,
+        BlocksBlockInput,
+        withDefaultDescription(
+            nameOrOptions,
+            'A list of blocks of several types. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site), a `type` and the `props` of the block that type names in the `blocks` of the `props` field. The order of `blocks` is the display order. An empty block is `{"blocks":[]}`.',
+        ),
+    );
 }
 
 // internal helper

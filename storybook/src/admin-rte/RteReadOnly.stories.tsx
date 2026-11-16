@@ -30,7 +30,11 @@ export const RteReadonly = {
 
         return (
             <>
-                <Box marginBottom={4}>
+                <Box
+                    sx={{
+                        marginBottom: 4,
+                    }}
+                >
                     <Card variant="outlined">
                         <CardContent>
                             <RteReadOnly value={editorState} options={rteOptions} />

@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { MemoryRouter } from "react-router";
 
 import { ActionLogCompare } from "../ActionLogCompare";
 
@@ -26,13 +25,6 @@ const mockVersion2 = {
 type Story = StoryObj<typeof ActionLogCompare>;
 const meta: Meta<typeof ActionLogCompare> = {
     component: ActionLogCompare,
-    decorators: [
-        (Story) => (
-            <MemoryRouter>
-                <Story />
-            </MemoryRouter>
-        ),
-    ],
     tags: ["!autodocs"],
     title: "actionLog/components/actionLogCompare/ActionLogCompare",
     args: {

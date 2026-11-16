@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { validateNotModified } from "../validateNotModified";
+import { validateNotModified } from "../validateNotModified.js";
 
 describe("validateNotModified", () => {
     it("should succeed - document not modified", async () => {

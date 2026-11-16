@@ -1,7 +1,7 @@
 import { Brevo, BrevoError } from "@getbrevo/brevo";
 import { describe, expect, it } from "vitest";
 
-import { handleBrevoError, isErrorFromBrevo } from "./brevo-api.utils";
+import { handleBrevoError, isErrorFromBrevo } from "./brevo-api.utils.js";
 
 describe("brevo-api.utils", () => {
     describe("isErrorFromBrevo", () => {

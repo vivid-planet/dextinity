@@ -1,17 +1,17 @@
 import {
     BlockData,
-    BlockDataInterface,
+    type BlockDataInterface,
     BlockField,
     BlockInput,
     blockInputToData,
     ChildBlock,
     ChildBlockInput,
     createBlock,
-    ExtractBlockInput,
+    type ExtractBlockInput,
 } from "@dextinity/cms-api";
 import { IsEnum } from "class-validator";
 
-import { RichTextBlock } from "./rich-text.block";
+import { RichTextBlock } from "./rich-text.block.js";
 
 export enum TextAlignment {
     left = "left",

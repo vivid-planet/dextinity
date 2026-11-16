@@ -2,7 +2,7 @@ import { AffectedEntity, RequiredPermission } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Args, ID, Query, Resolver } from "@nestjs/graphql";
 
-import { News } from "./entities/news.entity";
+import { News } from "./entities/news.entity.js";
 
 @Resolver(() => News)
 @RequiredPermission("news")

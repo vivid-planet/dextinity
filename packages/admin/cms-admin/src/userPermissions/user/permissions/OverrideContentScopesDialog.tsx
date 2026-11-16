@@ -1,4 +1,5 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client/react";
 import { Button, CancelButton, DeleteDialog, type GridColDef } from "@dextinity/admin";
 import { Add, Delete } from "@dextinity/admin-icons";
 import {
@@ -12,7 +13,7 @@ import {
     IconButton,
     Switch,
 } from "@mui/material";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 import { useState } from "react";
 import { FormattedMessage } from "react-intl";
 
@@ -115,7 +116,7 @@ export const OverrideContentScopesDialog = ({ permissionId, userId, handleDialog
     };
 
     const handleAddScope = async (scope: ContentScope) => {
-        if (!contentScopes.some((contentScope) => isEqual(contentScope, scope))) {
+        if (!contentScopes.some((contentScope) => deepEqual(contentScope, scope))) {
             await persist({ overrideContentScopes: overrideContentScopesEnabled, contentScopes: [...contentScopes, scope] });
         }
     };
@@ -123,7 +124,7 @@ export const OverrideContentScopesDialog = ({ permissionId, userId, handleDialog
     const handleDeleteScope = async (scope: ContentScope) => {
         await persist({
             overrideContentScopes: overrideContentScopesEnabled,
-            contentScopes: contentScopes.filter((contentScope) => !isEqual(contentScope, scope)),
+            contentScopes: contentScopes.filter((contentScope) => !deepEqual(contentScope, scope)),
         });
     };
 

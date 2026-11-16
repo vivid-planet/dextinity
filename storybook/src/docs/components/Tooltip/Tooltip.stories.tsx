@@ -8,7 +8,13 @@ export default {
 export const BasicTooltip = {
     render: () => {
         return (
-            <Grid container justifyContent="center" spacing={4}>
+            <Grid
+                container
+                spacing={4}
+                sx={{
+                    justifyContent: "center",
+                }}
+            >
                 <Grid>
                     <Tooltip title="This is a basic tooltip">
                         <div>Hover over me</div>
@@ -24,7 +30,13 @@ export const BasicTooltip = {
 export const TooltipColors = {
     render: () => {
         return (
-            <Grid container justifyContent="center" spacing={4}>
+            <Grid
+                container
+                spacing={4}
+                sx={{
+                    justifyContent: "center",
+                }}
+            >
                 <Grid>
                     <Tooltip title="This is a light tooltip" color="light">
                         <div>Hover over me - light</div>

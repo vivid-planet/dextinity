@@ -3,11 +3,11 @@ import { Type } from "class-transformer";
 import { IsObject, IsString, ValidateNested } from "class-validator";
 import { GraphQLJSONObject } from "graphql-scalars";
 
-import { OffsetBasedPaginationArgs } from "../../common/pagination/offset-based.args";
-import { IsUndefinable } from "../../common/validators/is-undefinable";
-import { ContentScope } from "../../user-permissions/interfaces/content-scope.interface";
-import { ActionLogFilter } from "./action-log.filter";
-import { ActionLogSort } from "./action-log.sort";
+import { OffsetBasedPaginationArgs } from "../../common/pagination/offset-based.args.js";
+import { IsUndefinable } from "../../common/validators/is-undefinable.js";
+import type { ContentScope } from "../../user-permissions/interfaces/content-scope.interface.js";
+import { ActionLogFilter } from "./action-log.filter.js";
+import { ActionLogSort } from "./action-log.sort.js";
 
 @ArgsType()
 export class ActionLogsArgs extends OffsetBasedPaginationArgs {

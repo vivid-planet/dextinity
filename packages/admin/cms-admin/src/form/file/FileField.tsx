@@ -1,4 +1,4 @@
-import { useApolloClient } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
 import { Alert, useSnackbarApi } from "@dextinity/admin";
 import { Assets, Delete, MoreVertical } from "@dextinity/admin-icons";
 import { Box, Divider, Grid, IconButton, List, Snackbar, Typography } from "@mui/material";
@@ -68,8 +68,18 @@ const SingleFileField = ({ buttonText, input, allowedMimetypes, preview, menuAct
         return (
             <>
                 <BlockAdminComponentPaper disablePadding>
-                    <Box padding={3}>
-                        <Grid container alignItems="center" spacing={3}>
+                    <Box
+                        sx={{
+                            padding: 3,
+                        }}
+                    >
+                        <Grid
+                            container
+                            spacing={3}
+                            sx={{
+                                alignItems: "center",
+                            }}
+                        >
                             {preview && <Grid>{preview}</Grid>}
                             <Grid size="grow">
                                 <Typography variant="subtitle1">{damFile.name}</Typography>
@@ -123,7 +133,9 @@ const SingleFileField = ({ buttonText, input, allowedMimetypes, preview, menuAct
                         },
                     });
 
-                    input.onChange(data.damFile);
+                    if (data) {
+                        input.onChange(data.damFile);
+                    }
                 }}
             />
         </>
@@ -155,6 +167,10 @@ const MultiFileFieldInner = ({ buttonText, input, allowedMimetypes, preview, men
                 query: damFileFieldFilesByIdsQuery,
                 variables: { ids: fileIds, limit: fileIds.length, scope: damScope },
             });
+
+            if (!data) {
+                throw new Error("Failed to load files");
+            }
 
             const sortedFiles = [...data.damFilesList.nodes].sort((a, b) => fileIds.indexOf(a.id) - fileIds.indexOf(b.id));
             input.onChange(sortedFiles);

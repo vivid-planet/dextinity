@@ -56,6 +56,10 @@ export const DamFileDownloadLinkBlock: BlockInterface<DamFileDownloadLinkBlockDa
             variables: { id: output.fileId },
         });
 
+        if (!data) {
+            return ret;
+        }
+
         const { damFile } = data;
 
         ret.file = {

@@ -1,7 +1,7 @@
-import { Type } from "@nestjs/common";
+import type { Type } from "@nestjs/common";
 import { Field, ObjectType } from "@nestjs/graphql";
 
-import { FileInterface } from "../entities/file.entity";
+import type { FileInterface } from "../entities/file.entity.js";
 
 export interface CopyFilesResponseInterface {
     mappedFiles: Array<MappedFileInterface>;

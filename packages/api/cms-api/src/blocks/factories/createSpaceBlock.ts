@@ -1,8 +1,16 @@
 import { IsEnum } from "class-validator";
 
-import { Block, BlockData, BlockDataInterface, BlockInput, blockInputToData, createBlock, SimpleBlockInputInterface } from "../block";
-import { BlockField } from "../decorators/field";
-import { BlockFactoryNameOrOptions } from "./types";
+import {
+    type Block,
+    BlockData,
+    type BlockDataInterface,
+    BlockInput,
+    blockInputToData,
+    createBlock,
+    type SimpleBlockInputInterface,
+} from "../block.js";
+import { BlockField } from "../decorators/field.js";
+import type { BlockFactoryNameOrOptions } from "./types.js";
 
 interface CreateSpaceBlockOptions<SpacingOptions extends string[] | Record<string, string>> {
     spacing: SpacingOptions;

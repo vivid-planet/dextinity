@@ -1,23 +1,24 @@
 import { createMock } from "@golevelup/ts-vitest";
-import { Entity, EntityManager, PostgreSqlDriver, PrimaryKey } from "@mikro-orm/postgresql";
+import { Entity, PrimaryKey } from "@mikro-orm/decorators/legacy";
+import { EntityManager, PostgreSqlDriver } from "@mikro-orm/postgresql";
 import { BadRequestException, ForbiddenException } from "@nestjs/common";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { DiscoverService } from "../dependencies/discover.service";
-import { AbstractAccessControlService } from "../user-permissions/access-control.service";
-import { DisablePermissionCheck, RequiredPermission } from "../user-permissions/decorators/required-permission.decorator";
-import { ScopedEntity } from "../user-permissions/decorators/scoped-entity.decorator";
-import { CurrentUser } from "../user-permissions/dto/current-user";
-import { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
-import { UserPermissionsService } from "../user-permissions/user-permissions.service";
-import { Permission } from "../user-permissions/user-permissions.types";
-import { ActionLogsAclService } from "./action-logs.acl.service";
-import { ActionLogs } from "./action-logs.decorator";
-import { ActionLogsResolver } from "./action-logs.resolver";
-import { ActionLogsService } from "./action-logs.service";
-import { ActionLogsUserLoaderService } from "./action-logs-user-loader.service";
-import { ActionLog } from "./entities/action-log.entity";
-import { PreviousActionLogLoaderService } from "./previous-action-log-loader.service";
+import { DiscoverService } from "../dependencies/discover.service.js";
+import { AbstractAccessControlService } from "../user-permissions/access-control.service.js";
+import { DisablePermissionCheck, RequiredPermission } from "../user-permissions/decorators/required-permission.decorator.js";
+import { ScopedEntity } from "../user-permissions/decorators/scoped-entity.decorator.js";
+import { CurrentUser } from "../user-permissions/dto/current-user.js";
+import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface.js";
+import { UserPermissionsService } from "../user-permissions/user-permissions.service.js";
+import type { Permission } from "../user-permissions/user-permissions.types.js";
+import { ActionLogsAclService } from "./action-logs.acl.service.js";
+import { ActionLogs } from "./action-logs.decorator.js";
+import { ActionLogsResolver } from "./action-logs.resolver.js";
+import { ActionLogsService } from "./action-logs.service.js";
+import { ActionLogsUserLoaderService } from "./action-logs-user-loader.service.js";
+import { ActionLog } from "./entities/action-log.entity.js";
+import { PreviousActionLogLoaderService } from "./previous-action-log-loader.service.js";
 
 @Entity()
 @ActionLogs()

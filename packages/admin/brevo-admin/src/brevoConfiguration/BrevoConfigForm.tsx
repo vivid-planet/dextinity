@@ -1,5 +1,7 @@
-import { gql, useApolloClient, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client/react";
 import {
+    Alert,
     Field,
     FillSpace,
     FinalForm,
@@ -7,6 +9,7 @@ import {
     FinalFormSaveButton,
     type FinalFormSubmitEvent,
     Loading,
+    LocalErrorScopeApolloContext,
     MainContent,
     NumberField,
     TextField,
@@ -23,6 +26,7 @@ import type { FormApi } from "final-form";
 import { type ReactElement, type ReactNode, useMemo } from "react";
 import { FormattedMessage } from "react-intl";
 
+import type { GQLBrevoConfig } from "../graphql.generated";
 import {
     brevoConfigFormQuery,
     createBrevoConfigMutation,
@@ -74,6 +78,7 @@ export function BrevoConfigForm({ scope }: FormProps): ReactElement {
 
     const { data, error, loading, refetch } = useQuery<GQLBrevoConfigFormQuery, GQLBrevoConfigFormQueryVariables>(brevoConfigFormQuery, {
         variables: { scope },
+        notifyOnNetworkStatusChange: false,
     });
 
     const mode = data?.brevoConfig?.id ? "edit" : "add";
@@ -84,6 +89,7 @@ export function BrevoConfigForm({ scope }: FormProps): ReactElement {
         loading: senderLoading,
     } = useQuery<GQLSendersSelectQuery, GQLSendersSelectQueryVariables>(sendersSelectQuery, {
         variables: { scope },
+        context: LocalErrorScopeApolloContext,
     });
 
     const {
@@ -92,6 +98,7 @@ export function BrevoConfigForm({ scope }: FormProps): ReactElement {
         loading: doubleOptInTemplatesLoading,
     } = useQuery<GQLDoubleOptInTemplatesSelectQuery, GQLDoubleOptInTemplatesSelectQueryVariables>(doubleOptInTemplatesSelectQuery, {
         variables: { scope },
+        context: LocalErrorScopeApolloContext,
     });
 
     const senderOptions =
@@ -151,13 +158,16 @@ export function BrevoConfigForm({ scope }: FormProps): ReactElement {
                     }
                 }
             `;
-            const { data } = await client.query({
+            const { data: updatedData } = await client.query<
+                { brevoConfig: Pick<GQLBrevoConfig, "updatedAt"> | null },
+                GQLBrevoConfigFormQueryVariables
+            >({
                 query,
                 variables: { scope },
                 fetchPolicy: "no-cache",
             });
 
-            return resolveHasSaveConflict(data?.brevoConfig?.updatedAt, data.updatedAt);
+            return resolveHasSaveConflict(data?.brevoConfig?.updatedAt, updatedData?.brevoConfig?.updatedAt);
         },
         formApiRef,
         loadLatestVersion: async () => {
@@ -212,12 +222,28 @@ export function BrevoConfigForm({ scope }: FormProps): ReactElement {
         }
     };
 
-    if (error || senderError || doubleOptInTemplatesError) {
-        throw error ?? senderError ?? doubleOptInTemplatesError;
+    if (error) {
+        throw error;
     }
 
     if (loading || senderLoading || doubleOptInTemplatesLoading) {
         return <Loading behavior="fillPageHeight" />;
+    }
+
+    if (senderError || doubleOptInTemplatesError) {
+        return (
+            <MainContent>
+                <Alert
+                    severity="error"
+                    title={<FormattedMessage id="dextinity.brevoConfig.brevoRequestFailed.title" defaultMessage="Couldn't load data from Brevo" />}
+                >
+                    <FormattedMessage
+                        id="dextinity.brevoConfig.brevoRequestFailed.description"
+                        defaultMessage="Make sure a valid Brevo API key is configured and the API's IP address is authorized in Brevo."
+                    />
+                </Alert>
+            </MainContent>
+        );
     }
 
     const validateUnsubscriptionPageId = (value: string) => {

@@ -1,14 +1,14 @@
 import { describe, expect, it, vi } from "vitest";
 
-import type { BlockContext } from "../../blocks/block";
-import type { FileInterface } from "../files/entities/file.entity";
-import type { FilesService } from "../files/files.service";
-import { type DamFileDownloadLinkBlockData, OpenFileTypeMethod } from "./dam-file-download-link.block";
-import { DamFileDownloadLinkBlockTransformerService } from "./dam-file-download-link-block-transformer.service";
-import type { SvgImageBlockData } from "./svg-image.block";
-import { SvgImageBlockTransformerService } from "./svg-image-block-transformer.service";
-import type { DamVideoBlockData } from "./video/dam-video.block";
-import { DamVideoBlockTransformerService } from "./video/dam-video-block-transformer.service";
+import type { BlockContext } from "../../blocks/block.js";
+import type { FileInterface } from "../files/entities/file.entity.js";
+import type { FilesService } from "../files/files.service.js";
+import { type DamFileDownloadLinkBlockData, OpenFileTypeMethod } from "./dam-file-download-link.block.js";
+import { DamFileDownloadLinkBlockTransformerService } from "./dam-file-download-link-block-transformer.service.js";
+import type { SvgImageBlockData } from "./svg-image.block.js";
+import { SvgImageBlockTransformerService } from "./svg-image-block-transformer.service.js";
+import type { DamVideoBlockDataInterface } from "./video/createDamVideoBlock.js";
+import { DamVideoBlockTransformerService } from "./video/dam-video-block-transformer.service.js";
 
 const context = { includeInvisibleContent: false, previewDamUrls: false } as BlockContext;
 
@@ -76,7 +76,7 @@ describe("DamFileDownloadLinkBlockTransformerService", () => {
 });
 
 describe("DamVideoBlockTransformerService", () => {
-    const block = { damFileId: "video" } as DamVideoBlockData;
+    const block = { damFileId: "video" } as DamVideoBlockDataInterface;
     const video = createFile("video", [
         { id: "caption-en", language: "en", type: "captions", alternative: createFile("captions-en") },
         { id: "caption-de", language: "de", type: "captions", alternative: createFile("captions-de") },

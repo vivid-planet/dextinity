@@ -193,7 +193,13 @@ const ProductDetailsPage = ({ productId }: ProductDetailsProps) => {
                                         width: 86,
                                         renderCell: (params) => {
                                             return (
-                                                <IconButton color="primary" component={StackLink} pageName="stocksEdit" payload={params.row.id}>
+                                                <IconButton
+                                                    color="primary"
+                                                    component={StackLink}
+                                                    nativeButton={false}
+                                                    pageName="stocksEdit"
+                                                    payload={params.row.id}
+                                                >
                                                     <Edit />
                                                 </IconButton>
                                             );
@@ -271,7 +277,13 @@ export function EditDialogInRouterTabsWithinStack() {
                                         width: 86,
                                         renderCell: (params) => {
                                             return (
-                                                <IconButton color="primary" component={StackLink} pageName="productEdit" payload={params.row.id}>
+                                                <IconButton
+                                                    color="primary"
+                                                    component={StackLink}
+                                                    nativeButton={false}
+                                                    pageName="productEdit"
+                                                    payload={params.row.id}
+                                                >
                                                     <Edit />
                                                 </IconButton>
                                             );

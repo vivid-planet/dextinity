@@ -78,7 +78,7 @@ export function Tabs(inProps: TabsProps) {
         tabComponent: TabComponent = MuiTab,
         defaultIndex,
         tabsState,
-        ScrollButtonComponent = TabScrollButton,
+        slots,
         slotProps,
         ...restProps
     } = useThemeProps({ props: inProps, name: "DextinityAdminTabs" });
@@ -115,7 +115,7 @@ export function Tabs(inProps: TabsProps) {
             <StyledTabs
                 value={value}
                 onChange={handleChange}
-                ScrollButtonComponent={ScrollButtonComponent}
+                slots={{ scrollButtons: TabScrollButton, ...slots }}
                 scrollButtons="auto"
                 variant="scrollable"
                 {...slotProps?.tabs}

@@ -76,7 +76,12 @@ export const VimeoVideoBlock: BlockInterface<VimeoVideoBlockData, State, VimeoVi
         const isInPaper = useBlockAdminComponentPaper();
 
         return (
-            <Box padding={isInPaper ? 3 : 0} pb={0}>
+            <Box
+                sx={{
+                    padding: isInPaper ? 3 : 0,
+                    pb: 0,
+                }}
+            >
                 <SelectPreviewComponent>
                     <BlocksFinalForm onSubmit={updateState} initialValues={state}>
                         <Field
@@ -94,10 +99,10 @@ export const VimeoVideoBlock: BlockInterface<VimeoVideoBlockData, State, VimeoVi
                         <PixelImageBlock.AdminComponent
                             state={state.previewImage}
                             updateState={(setStateAction) => {
-                                updateState({
-                                    ...state,
-                                    previewImage: resolveNewState({ prevState: state.previewImage, setStateAction }),
-                                });
+                                updateState((prevState) => ({
+                                    ...prevState,
+                                    previewImage: resolveNewState({ prevState: prevState.previewImage, setStateAction }),
+                                }));
                             }}
                         />
                     </BlockAdminComponentSection>

@@ -1,17 +1,7 @@
 import { defineConfig, globalIgnores } from "eslint/config";
-import eslintConfigReact from "@dextinity/eslint-config/future/react.js";
+import eslintConfigJson from "@dextinity/eslint-config/json.js";
 
 export default defineConfig([
-    globalIgnores([
-        "schema.json",
-        "src/fragmentTypes.json",
-        "dist/**",
-        "src/**/*.generated.ts",
-        "src/**/generated/**",
-        "block-meta.json",
-        "lang/**",
-        "lang-compiled/**",
-        "lang-extracted/**",
-    ]),
-    ...eslintConfigReact,
+    globalIgnores(["schema.json", "src/fragmentTypes.json", "dist/**", "block-meta.json", "lang/**", "lang-compiled/**", "lang-extracted/**"]),
+    ...eslintConfigJson,
 ]);

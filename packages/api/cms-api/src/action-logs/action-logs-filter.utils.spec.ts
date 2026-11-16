@@ -1,9 +1,9 @@
 import { RawQueryFragment } from "@mikro-orm/postgresql";
 import { describe, expect, it } from "vitest";
 
-import { NumberFilter } from "../common/filter/number.filter";
-import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
-import { actionLogFilterToWhere } from "./action-logs-filter.utils";
+import { NumberFilter } from "../common/filter/number.filter.js";
+import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface.js";
+import { actionLogFilterToWhere } from "./action-logs-filter.utils.js";
 
 // The key of a `raw()` condition holds a running index, so it's replaced by its parameters to compare whole queries.
 function withReadableRawKeys(where: unknown): unknown {
@@ -14,9 +14,9 @@ function withReadableRawKeys(where: unknown): unknown {
         return where;
     }
     return Object.fromEntries(
-        Object.entries(where).map(([key, value]) => {
-            const rawFragment = RawQueryFragment.getKnownFragment(key, false);
-            return [rawFragment ? `raw(${rawFragment.params.join(", ")})` : key, withReadableRawKeys(value)];
+        Reflect.ownKeys(where).map((key) => {
+            const rawFragment = RawQueryFragment.getKnownFragment(key);
+            return [rawFragment ? `raw(${rawFragment.params.join(", ")})` : key, withReadableRawKeys((where as Record<PropertyKey, unknown>)[key])];
         }),
     );
 }

@@ -2,7 +2,7 @@ import type { LoggerService } from "@nestjs/common";
 import { validate } from "class-validator";
 import { Transform as StreamTransform, type TransformCallback } from "stream";
 
-import type { ImporterPipe, PipeData, PipeMetadata, ValidationError } from "../importer-pipe.type";
+import type { ImporterPipe, PipeData, PipeMetadata, ValidationError } from "../importer-pipe.type.js";
 
 export class DataValidatorPipe implements ImporterPipe {
     getPipe(runLogger: LoggerService) {

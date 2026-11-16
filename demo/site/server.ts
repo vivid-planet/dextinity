@@ -1,3 +1,4 @@
+import { createBuildAssetsStorage, serveBuildAsset } from "@dextinity/site-nextjs/build-assets";
 import { createServer } from "http";
 import next from "next";
 import { parse } from "url";
@@ -8,7 +9,6 @@ const dev = process.env.NODE_ENV !== "production";
 const host = process.env.SERVER_HOST ?? "localhost";
 const port = parseInt(process.env.SITE_PORT || "3000", 10);
 const cdnOriginCheckSecret = process.env.CDN_ORIGIN_CHECK_SECRET;
-
 // when using middleware `hostname` and `port` must be provided below
 const app = next({ dev, hostname: host, port, webpack: true });
 
@@ -19,6 +19,20 @@ app.prepare().then(async () => {
         await import("./tracing.dev.ts");
     }
     const handle = withMetrics(app.getRequestHandler());
+    const buildAssetsStorage = process.env.BUILD_ASSETS_S3_BUCKET
+        ? await createBuildAssetsStorage({
+              driver: "s3",
+              s3: {
+                  bucket: process.env.BUILD_ASSETS_S3_BUCKET,
+                  region: process.env.BUILD_ASSETS_S3_REGION,
+                  endpoint: process.env.BUILD_ASSETS_S3_ENDPOINT,
+                  credentials: {
+                      accessKeyId: process.env.BUILD_ASSETS_S3_ACCESS_KEY_ID ?? "",
+                      secretAccessKey: process.env.BUILD_ASSETS_S3_SECRET_ACCESS_KEY ?? "",
+                  },
+              },
+          })
+        : undefined;
 
     createServer(async (req, res) => {
         try {
@@ -33,6 +47,17 @@ app.prepare().then(async () => {
                     res.end();
                     return;
                 }
+            }
+
+            if (
+                await serveBuildAsset({
+                    req,
+                    res,
+                    storage: buildAssetsStorage,
+                    storageKeyPrefix: "demo-site",
+                })
+            ) {
+                return;
             }
 
             let maxAge: string | undefined;

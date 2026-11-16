@@ -1,15 +1,15 @@
 import { Inject, UseGuards } from "@nestjs/common";
 import { Args, Query, Resolver } from "@nestjs/graphql";
 
-import { GetCurrentUser } from "../auth/decorators/get-current-user.decorator";
-import { KubernetesService } from "../kubernetes/kubernetes.service";
-import { KubernetesAuthenticationGuard } from "../kubernetes/kubernetes-authentication.guard";
-import { RequiredPermission } from "../user-permissions/decorators/required-permission.decorator";
-import { CurrentUser } from "../user-permissions/dto/current-user";
-import { ACCESS_CONTROL_SERVICE } from "../user-permissions/user-permissions.constants";
-import { AccessControlServiceInterface } from "../user-permissions/user-permissions.types";
-import { Job } from "./dto/job.object";
-import { JobsService } from "./jobs.service";
+import { GetCurrentUser } from "../auth/decorators/get-current-user.decorator.js";
+import { KubernetesService } from "../kubernetes/kubernetes.service.js";
+import { KubernetesAuthenticationGuard } from "../kubernetes/kubernetes-authentication.guard.js";
+import { RequiredPermission } from "../user-permissions/decorators/required-permission.decorator.js";
+import { CurrentUser } from "../user-permissions/dto/current-user.js";
+import { ACCESS_CONTROL_SERVICE } from "../user-permissions/user-permissions.constants.js";
+import type { AccessControlServiceInterface } from "../user-permissions/user-permissions.types.js";
+import { Job } from "./dto/job.object.js";
+import { JobsService } from "./jobs.service.js";
 
 @Resolver(() => Job)
 @RequiredPermission(["cronJobs"], { skipScopeCheck: true })

@@ -62,7 +62,7 @@ export const TemporaryDrawer = createComponentSlot(MuiDrawer)<MainNavigationClas
             }
         }
 
-        .${drawerClasses.paperAnchorLeft} {
+        &.${drawerClasses.anchorLeft} .${drawerClasses.paper} {
             border-right: none;
         }
     `,
@@ -96,7 +96,7 @@ export const PermanentDrawer = createComponentSlot(MuiDrawer)<MainNavigationClas
             }
         }
 
-        .${drawerClasses.paperAnchorLeft} {
+        &.${drawerClasses.anchorLeft} .${drawerClasses.paper} {
             border-right: none;
         }
     `,

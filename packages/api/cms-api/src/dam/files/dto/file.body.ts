@@ -1,10 +1,10 @@
-import { Type } from "@nestjs/common";
+import type { Type } from "@nestjs/common";
 import { plainToInstance, Transform, Type as ClassTransformerType } from "class-transformer";
 import { IsNotEmpty, IsOptional, IsString, ValidateIf, ValidateNested } from "class-validator";
 
-import { ImageCropAreaInput } from "../../images/dto/image-crop-area.input";
-import { DamScopeInterface } from "../../types";
-import { LicenseInput } from "./file.input";
+import { ImageCropAreaInput } from "../../images/dto/image-crop-area.input.js";
+import type { DamScopeInterface } from "../../types.js";
+import { LicenseInput } from "./file.input.js";
 
 export interface UploadFileBodyInterface {
     scope: DamScopeInterface;

@@ -1,5 +1,5 @@
 import {
-    BlockDataInterface,
+    type BlockDataInterface,
     blockToMikroOrmFullText,
     DocumentInterface,
     PageTreeNodeDocumentEntityScopeService,
@@ -9,13 +9,14 @@ import {
     RootBlockType,
     ScopedEntity,
 } from "@dextinity/cms-api";
-import { BaseEntity, Entity, FullTextType, Index, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
+import { Entity, Index, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, FullTextType, OptionalProps } from "@mikro-orm/postgresql";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
 import { randomUUID } from "crypto";
 
-import { PageContentBlock } from "../blocks/page-content.block";
-import { SeoBlock } from "../blocks/seo.block";
-import { StageBlock } from "../blocks/stage.block";
+import { PageContentBlock } from "../blocks/page-content.block.js";
+import { SeoBlock } from "../blocks/seo.block.js";
+import { StageBlock } from "../blocks/stage.block.js";
 
 @Entity()
 @ObjectType({

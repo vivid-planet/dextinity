@@ -1,10 +1,20 @@
-import { AnyEntity, ChangeSet, ChangeSetType, EntityManager, EventSubscriber, FlushEventArgs, PostgreSqlDriver, raw } from "@mikro-orm/postgresql";
+import {
+    type AnyEntity,
+    ChangeSet,
+    ChangeSetType,
+    type EntityClass,
+    EntityManager,
+    type EventSubscriber,
+    type FlushEventArgs,
+    PostgreSqlDriver,
+    raw,
+} from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
 
-import { UserPermissionsStorageService } from "../user-permissions/user-permissions-storage.service";
-import { ACTION_LOGS_METADATA_KEY, ActionLogMetadata } from "./action-logs.decorator";
-import { ActionLogsService } from "./action-logs.service";
-import { ActionLog } from "./entities/action-log.entity";
+import { UserPermissionsStorageService } from "../user-permissions/user-permissions-storage.service.js";
+import { ACTION_LOGS_METADATA_KEY, type ActionLogMetadata } from "./action-logs.decorator.js";
+import { ActionLogsService } from "./action-logs.service.js";
+import { ActionLog } from "./entities/action-log.entity.js";
 
 @Injectable()
 export class ActionLogsSubscriber implements EventSubscriber {
@@ -32,7 +42,7 @@ export class ActionLogsSubscriber implements EventSubscriber {
 
     async createLog(changeSet: ChangeSet<AnyEntity>): Promise<ActionLog | null> {
         const entityName = changeSet.entity.constructor.name;
-        const entityMetadata = this.entityManager.getMetadata(entityName);
+        const entityMetadata = this.entityManager.getMetadata(changeSet.entity.constructor as EntityClass<AnyEntity>);
         if (!entityMetadata) {
             return null;
         }

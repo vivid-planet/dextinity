@@ -1,29 +1,29 @@
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityManager, EntityRepository, wrap } from "@mikro-orm/postgresql";
-import { NotFoundException, Type } from "@nestjs/common";
+import { EntityManager, wrap } from "@mikro-orm/postgresql";
+import { NotFoundException, type Type } from "@nestjs/common";
 import { Args, Context, ID, Mutation, ObjectType, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 import { IncomingMessage } from "http";
 import { basename, extname } from "path";
 
-import { GetCurrentUser } from "../../auth/decorators/get-current-user.decorator";
-import { SkipBuild } from "../../builds/skip-build.decorator";
-import { PaginatedResponseFactory } from "../../common/pagination/paginated-response.factory";
-import { slugifyFilename } from "../../file-utils/files.utils";
-import { AffectedEntity } from "../../user-permissions/decorators/affected-entity.decorator";
-import { RequiredPermission } from "../../user-permissions/decorators/required-permission.decorator";
-import { CurrentUser } from "../../user-permissions/dto/current-user";
-import { DamScopeInterface } from "../types";
-import { DamMediaAlternative } from "./dam-media-alternatives/entities/dam-media-alternative.entity";
-import { CopyFilesResponseInterface, createCopyFilesResponseType } from "./dto/copyFiles.types";
-import { EmptyDamScope } from "./dto/empty-dam-scope";
-import { createFileArgs, FileArgsInterface, MoveDamFilesArgs } from "./dto/file.args";
-import { FilenameInput, FilenameResponse } from "./dto/filename.args";
-import { createFindCopiesOfFileInScopeArgs, FindCopiesOfFileInScopeArgsInterface } from "./dto/find-copies-of-file-in-scope.args";
-import { UpdateDamFileArgs } from "./dto/update-dam-file.args";
-import { FileInterface } from "./entities/file.entity";
-import { DamFileImage } from "./entities/file-image.entity";
-import { FolderInterface } from "./entities/folder.entity";
-import { FilesService } from "./files.service";
+import { GetCurrentUser } from "../../auth/decorators/get-current-user.decorator.js";
+import { SkipBuild } from "../../builds/skip-build.decorator.js";
+import { PaginatedResponseFactory } from "../../common/pagination/paginated-response.factory.js";
+import { slugifyFilename } from "../../file-utils/files.utils.js";
+import { AffectedEntity } from "../../user-permissions/decorators/affected-entity.decorator.js";
+import { RequiredPermission } from "../../user-permissions/decorators/required-permission.decorator.js";
+import { CurrentUser } from "../../user-permissions/dto/current-user.js";
+import type { DamScopeInterface } from "../types.js";
+import { DamMediaAlternative } from "./dam-media-alternatives/entities/dam-media-alternative.entity.js";
+import { type CopyFilesResponseInterface, createCopyFilesResponseType } from "./dto/copyFiles.types.js";
+import { EmptyDamScope } from "./dto/empty-dam-scope.js";
+import { createFileArgs, type FileArgsInterface, MoveDamFilesArgs } from "./dto/file.args.js";
+import { FilenameInput, FilenameResponse } from "./dto/filename.args.js";
+import { createFindCopiesOfFileInScopeArgs, type FindCopiesOfFileInScopeArgsInterface } from "./dto/find-copies-of-file-in-scope.args.js";
+import { UpdateDamFileArgs } from "./dto/update-dam-file.args.js";
+import type { FileInterface } from "./entities/file.entity.js";
+import { DamFileImage } from "./entities/file-image.entity.js";
+import type { FolderInterface } from "./entities/folder.entity.js";
+import { resolveFileEntity, resolveFolderEntity } from "./entities/resolve-dam-entity.js";
+import { FilesService } from "./files.service.js";
 
 export function createFilesResolver({
     File,
@@ -57,8 +57,6 @@ export function createFilesResolver({
     class FilesResolver {
         constructor(
             private readonly filesService: FilesService,
-            @InjectRepository("DamFile") private readonly filesRepository: EntityRepository<FileInterface>,
-            @InjectRepository("DamFolder") private readonly foldersRepository: EntityRepository<FolderInterface>,
             private readonly entityManager: EntityManager,
         ) {}
 
@@ -102,10 +100,10 @@ export function createFilesResolver({
         ): Promise<FileInterface[]> {
             let targetFolder = null;
             if (targetFolderId !== null) {
-                targetFolder = await this.foldersRepository.findOneOrFail(targetFolderId);
+                targetFolder = await this.entityManager.findOneOrFail(resolveFolderEntity(), targetFolderId);
             }
 
-            const files = await this.filesRepository.find({ id: { $in: fileIds } });
+            const files = await this.entityManager.find(resolveFileEntity(), { id: { $in: fileIds } });
 
             return this.filesService.moveBatch(files, targetFolder);
         }
@@ -132,10 +130,10 @@ export function createFilesResolver({
         @AffectedEntity(File)
         @SkipBuild()
         async archiveDamFile(@Args("id", { type: () => ID }) id: string): Promise<FileInterface> {
-            const entity = await this.filesRepository.findOneOrFail(id);
+            const entity = await this.entityManager.findOneOrFail(resolveFileEntity(), id);
             entity.archived = true;
 
-            await this.entityManager.persistAndFlush(entity);
+            await this.entityManager.persist(entity).flush();
             return entity;
         }
 
@@ -143,7 +141,7 @@ export function createFilesResolver({
         @AffectedEntity(File, { idArg: "ids" })
         @SkipBuild()
         async archiveDamFiles(@Args("ids", { type: () => [ID] }) ids: string[]): Promise<FileInterface[]> {
-            const entities = await this.filesRepository.find({ id: { $in: ids } });
+            const entities = await this.entityManager.find(resolveFileEntity(), { id: { $in: ids } });
 
             for (const entity of entities) {
                 entity.archived = true;
@@ -157,10 +155,10 @@ export function createFilesResolver({
         @AffectedEntity(File)
         @SkipBuild()
         async restoreDamFile(@Args("id", { type: () => ID }) id: string): Promise<FileInterface> {
-            const entity = await this.filesRepository.findOneOrFail(id);
+            const entity = await this.entityManager.findOneOrFail(resolveFileEntity(), id);
             entity.archived = false;
 
-            await this.entityManager.persistAndFlush(entity);
+            await this.entityManager.persist(entity).flush();
             return entity;
         }
 
@@ -168,7 +166,7 @@ export function createFilesResolver({
         @AffectedEntity(File, { idArg: "ids" })
         @SkipBuild()
         async restoreDamFiles(@Args("ids", { type: () => [ID] }) ids: string[]): Promise<FileInterface[]> {
-            const entities = await this.filesRepository.find({ id: { $in: ids } });
+            const entities = await this.entityManager.find(resolveFileEntity(), { id: { $in: ids } });
 
             for (const entity of entities) {
                 entity.archived = false;

@@ -1,19 +1,20 @@
-import { Embedded, Entity, Enum, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
-import { Type } from "@nestjs/common";
+import { Embedded, Entity, Enum, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
+import { OptionalProps } from "@mikro-orm/postgresql";
+import type { Type } from "@nestjs/common";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
 import { randomUUID } from "crypto";
 import { GraphQLJSONObject } from "graphql-scalars";
 
-import { Block, BlockDataInterface } from "../../blocks/block";
-import { RootBlock } from "../../blocks/decorators/root-block";
-import { RootBlockEntity } from "../../blocks/decorators/root-block-entity";
-import { RootBlockType } from "../../blocks/root-block-type";
-import { EntityInfo } from "../../entity-info/entity-info.decorator";
-import { RedirectGenerationType, RedirectSourceType } from "../redirects.enum";
-import { RedirectScopeInterface } from "../types";
+import type { Block, BlockDataInterface } from "../../blocks/block.js";
+import { RootBlock } from "../../blocks/decorators/root-block.js";
+import { RootBlockEntity } from "../../blocks/decorators/root-block-entity.js";
+import { RootBlockType } from "../../blocks/root-block-type.js";
+import { EntityInfo } from "../../entity-info/entity-info.decorator.js";
+import { RedirectGenerationType, RedirectSourceType, RedirectType } from "../redirects.enum.js";
+import type { RedirectScopeInterface } from "../types.js";
 
 export interface RedirectInterface {
-    [OptionalProps]?: "createdAt" | "updatedAt" | "active";
+    [OptionalProps]?: "createdAt" | "updatedAt" | "active" | "redirectType";
     id: string;
     sourceType: RedirectSourceType;
     source: string;
@@ -22,6 +23,7 @@ export interface RedirectInterface {
     active: boolean;
     activatedAt?: Date;
     generationType: RedirectGenerationType;
+    redirectType: RedirectType;
     createdAt: Date;
     updatedAt: Date;
     scope?: RedirectScopeInterface;
@@ -33,7 +35,7 @@ export class RedirectEntityFactory {
         @Entity({ abstract: true })
         @ObjectType({ isAbstract: true })
         class RedirectBase implements RedirectInterface {
-            [OptionalProps]?: "createdAt" | "updatedAt" | "active";
+            [OptionalProps]?: "createdAt" | "updatedAt" | "active" | "redirectType";
 
             @PrimaryKey({ columnType: "uuid" })
             @Field(() => ID)
@@ -75,6 +77,10 @@ export class RedirectEntityFactory {
             @Enum(() => RedirectGenerationType)
             @Field(() => RedirectGenerationType)
             generationType: RedirectGenerationType;
+
+            @Enum(() => RedirectType)
+            @Field(() => RedirectType)
+            redirectType: RedirectType = RedirectType.temporary;
 
             @Property({
                 columnType: "timestamp with time zone",

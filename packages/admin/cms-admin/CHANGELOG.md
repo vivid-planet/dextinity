@@ -1,5 +1,182 @@
 # @comet/cms-admin
 
+## 10.15.0
+
+### Minor Changes
+
+- c6ce8a8: Allow choosing the fallback image for invalid licenses before blocking is activated
+
+    The DAM's "Settings" action is now shown whenever the license feature is enabled, not only when `blockFilesWithInvalidLicense` is set.
+    This allows editors to prepare the fallback image before blocking files with invalid licenses is activated.
+    While blocking is disabled, the settings page shows a notice that the fallback image isn't used yet and that the website administrator needs to be contacted to activate it.
+
+- 41492ce: Add `createExternalLinkBlock` factory
+
+    The `ExternalLinkBlock` always has the options "Open in new window" and "No follow" besides the URL, even where neither has an effect. The factory disables an option by passing `false`, both are enabled by default. A disabled option is neither offered in the editor nor part of the block: it is absent from `block-meta.json` and the generated types, and sending it as input is rejected by validation. `ExternalLinkBlock` is now created from the factory and still exported, so this is non-breaking.
+
+    **Example**
+
+    ```ts
+    // API
+    import { createExternalLinkBlock } from "@dextinity/cms-api";
+
+    export const UrlLinkBlock = createExternalLinkBlock({ openInNewWindow: false, noFollow: false }, "UrlLink");
+    ```
+
+    ```tsx
+    // Admin
+    import { createExternalLinkBlock } from "@dextinity/cms-admin";
+
+    export const UrlLinkBlock = createExternalLinkBlock({ name: "UrlLink", openInNewWindow: false, noFollow: false });
+    ```
+
+    Create the API and the admin block with the same name and the same options disabled, and add a site component.
+
+    A block created by the API factory carries the migrations shipped with the `ExternalLinkBlock` as vendor migrations, so it can replace the `ExternalLinkBlock` in an existing project: it reads the content the `ExternalLinkBlock` stored, and its own migrations start with version 1. Values stored for a disabled option aren't passed on to the admin or the site, and are dropped the next time an editor saves the block.
+
+    **Redirects no longer offer "Open in new window" and "No follow"**
+
+    A redirect resolves to an HTTP redirect, which has neither a `target` nor a `rel` attribute, so both options were without effect there. The external target of redirects is now a `RedirectsExternalLink` block without them, in the API and the admin. Stored redirects load as before.
+
+### Patch Changes
+
+- d9c1a9b: Fix images breaking with "Missing crop dimensions"
+
+    Clicking into the crop area without dragging cleared the selected crop area in the DAM's crop settings and in the image block's crop dialog. Saving afterwards stored a crop area that had a focal point but no dimensions. Such a crop area cannot be cropped: images using it fail to render with `Missing crop dimensions` when `aspectRatio="inherit"` is used, and their image URLs resolve to an invalid crop.
+
+    Crop areas without usable dimensions are now rejected by the API, existing ones in the DAM are reset to the full image by a migration, and existing ones in image blocks fall back to the DAM's crop settings.
+
+- @dextinity/admin@10.15.0
+    - @dextinity/admin-icons@10.15.0
+    - @dextinity/admin-rte@10.15.0
+
+## 10.14.0
+
+### Minor Changes
+
+- da2f8e6: Show a "No pages yet" message in `PagesPage` when the page tree is empty
+- 5db7734: Add an optional redirect type to choose between temporary and permanent redirects
+
+    Redirects have a new `redirectType` field (`temporary` or `permanent`), which defaults to `temporary` for new and existing redirects.
+    The site must handle the redirect type, so the setting is hidden in the admin by default. To enable it, first respect the redirect type in the site:
+
+    ```tsx
+    const { redirectBySource } = await graphQLFetch(/* query including redirectBySource { target redirectType } */);
+
+    if (redirectBySource.redirectType === "permanent") {
+        permanentRedirect(destination); // 308
+    } else {
+        redirect(destination); // 307
+    }
+    ```
+
+    Then enable the setting in the admin:
+
+    ```tsx title="App.tsx"
+    <DextinityConfigProvider
+        redirects={{
+            scopeParts: ["domain"],
+            enableRedirectType: true,
+        }}
+    >
+    ```
+
+    The redirect type only applies to path redirects.
+
+- 1595266: Add a `textAlign` option to `createTipTapRichTextBlock`
+
+    Editors can align paragraphs and headings left, center, right, or justified, using the toolbar or the shortcuts `Mod-Shift-L`, `Mod-Shift-E`, `Mod-Shift-R`, and `Mod-Shift-J`.
+    The alignment is stored in the text block's `textAlign` attribute.
+    The option is disabled by default and must be enabled in both the API and the Admin:
+
+    ```ts
+    createTipTapRichTextBlock({ textAlign: true });
+    ```
+
+    To enable only some of the alignments, pass an object:
+
+    ```ts
+    createTipTapRichTextBlock({ textAlign: { left: true, center: true } });
+    ```
+
+    `renderTipTapRichText` renders the alignment as the text block's `text-align` style.
+    A custom `textBlock` handler has to apply `node.attrs.textAlign` itself.
+
+### Patch Changes
+
+- de4cc90: Prevent lost updates when several forms in a block change before the next render
+
+    `createFinalFormBlock` resolved each update against the field value of the render that created the handler.
+    When two forms in the block saved one after the other before the next render, for instance after a text edit and a link type change in a `createTextLinkBlock`, the second update overwrote the first one, and both changes could be lost.
+    The preview image of `createDamVideoBlock`, `YouTubeVideoBlock` and `VimeoVideoBlock` had the same problem together with the video options form.
+
+- de4cc90: Prevent an endless autosave loop in `BlocksFinalForm`
+
+    `BlocksFinalForm` scheduled an autosave on every render while the form was dirty, and each autosave called the `onSubmit` of the render that scheduled it.
+    In large blocks, these outdated autosaves wrote old block states, which made other forms dirty again, and the admin stopped responding.
+    Now each form has at most one pending autosave, which calls the latest `onSubmit` and only runs when the form values changed since the last autosave.
+
+- c586a3d: Fix page tree crashing when switching the category while a search without matches is active
+- def6e3e: Fix the page select dialog crashing when it opens with a selected page that isn't in the list yet
+- e6909e2: Prevent the runtime of a job from being truncated in the jobs grid of the CronJobs module
+
+    The runtime column is now as wide as in the CronJobs grid and the publisher, so start time, completion time and duration fit without being cut off.
+
+- e131e00: Show an error inside `LatestBuildsDashboardWidget` when the builds can't be loaded
+
+    Previously, a failing `builds` query replaced the whole dashboard with an error and opened the global error dialog. On deployments without Kubernetes, where the query is always forbidden, the dialog wrongly reported an expired login session.
+
+- Updated dependencies [1595266]
+- Updated dependencies [45cb8e2]
+    - @dextinity/admin-icons@10.14.0
+    - @dextinity/admin@10.14.0
+    - @dextinity/admin-rte@10.14.0
+
+## 10.13.1
+
+### Patch Changes
+
+- Updated dependencies [b6fde8f]
+    - @dextinity/admin@10.13.1
+    - @dextinity/admin-rte@10.13.1
+    - @dextinity/admin-icons@10.13.1
+
+## 10.13.0
+
+### Minor Changes
+
+- ad3f6d5: Make blocking files with an invalid license opt-in with `blockFilesWithInvalidLicense`
+
+    A project decides whether files whose license has expired or isn't valid yet are blocked. While the option is off, which is the default, such files are delivered as before blocking was added: their URLs don't answer `410 Gone`, blocks don't hide them or replace them with the fallback image, and the DAM hides its "Settings" action, where the fallback image is chosen.
+
+    A project that blocks such files since blocking was added needs to enable the option in the API and in the Admin:
+
+    ```ts
+    DamModule.register({
+        damConfig: {
+            enableLicenseFeature: true,
+            blockFilesWithInvalidLicense: true,
+            // ...
+        },
+    });
+    ```
+
+    ```tsx
+    <DextinityConfigProvider dam={{ enableLicenseFeature: true, blockFilesWithInvalidLicense: true /* ... */ }}>
+    ```
+
+### Patch Changes
+
+- 46a1a08: Render list items in `createTipTapRichTextBlock` through the list's `element`
+
+    The editor ignored the `element` of `orderedList` and `unorderedList`. A list item was rendered through the style its text block kept from before it was turned into a list item, or as a plain `p` without a style.
+    A text block in a list item is now rendered through the list's style, then the list's `element`, then the text block's style, then the text block's `element`.
+
+- b16df0b: Update `react-hotkeys-hook` to v5
+    - @dextinity/admin@10.13.0
+    - @dextinity/admin-icons@10.13.0
+    - @dextinity/admin-rte@10.13.0
+
 ## 10.12.0
 
 ### Minor Changes

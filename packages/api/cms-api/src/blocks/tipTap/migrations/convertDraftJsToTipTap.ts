@@ -1,8 +1,8 @@
 import type { JSONContent } from "@tiptap/core";
 
-import type { Block } from "../../block";
-import type { TipTapResolvedOptions } from "../createTipTapRichTextBlock";
-import { findTextBlockForTag, type TipTapResolvedStyledNode, type TipTapResolvedTextBlock, type TipTapTextBlockTag } from "../textBlocks";
+import type { Block } from "../../block.js";
+import type { TipTapResolvedOptions } from "../createTipTapRichTextBlock.js";
+import { findTextBlockForTag, type TipTapResolvedStyledNode, type TipTapResolvedTextBlock, type TipTapTextBlockTag } from "../textBlocks.js";
 
 interface DraftJsInlineStyleRange {
     style: string;

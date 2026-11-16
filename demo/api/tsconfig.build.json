@@ -1,7 +1,8 @@
 {
     "compilerOptions": {
         "inlineSources": true,
-        "sourceRoot": "/dist"
+        "sourceRoot": "/dist",
+        "tsBuildInfoFile": "./dist/tsconfig.build.tsbuildinfo"
     },
     "exclude": ["**/*.stories.tsx", "**/*.stories.ts"],
     "extends": "./tsconfig.json",

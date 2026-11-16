@@ -1,14 +1,14 @@
 import { UseGuards } from "@nestjs/common";
 import { Query, Resolver } from "@nestjs/graphql";
 
-import { GetCurrentUser } from "../auth/decorators/get-current-user.decorator";
-import { LABEL_ANNOTATION } from "../kubernetes/kubernetes.constants";
-import { KubernetesAuthenticationGuard } from "../kubernetes/kubernetes-authentication.guard";
-import { getAnnotation } from "../kubernetes/kubernetes-metadata";
-import { RequiredPermission } from "../user-permissions/decorators/required-permission.decorator";
-import { CurrentUser } from "../user-permissions/dto/current-user";
-import { BuildTemplatesService } from "./build-templates.service";
-import { BuildTemplateObject } from "./dto/build-template.object";
+import { GetCurrentUser } from "../auth/decorators/get-current-user.decorator.js";
+import { LABEL_ANNOTATION } from "../kubernetes/kubernetes.constants.js";
+import { KubernetesAuthenticationGuard } from "../kubernetes/kubernetes-authentication.guard.js";
+import { getAnnotation } from "../kubernetes/kubernetes-metadata.js";
+import { RequiredPermission } from "../user-permissions/decorators/required-permission.decorator.js";
+import { CurrentUser } from "../user-permissions/dto/current-user.js";
+import { BuildTemplatesService } from "./build-templates.service.js";
+import { BuildTemplateObject } from "./dto/build-template.object.js";
 
 @Resolver(() => BuildTemplateObject)
 @RequiredPermission(["builds"], { skipScopeCheck: true }) // Scopes are checked in Code

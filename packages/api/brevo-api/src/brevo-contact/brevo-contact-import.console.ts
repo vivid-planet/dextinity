@@ -1,17 +1,18 @@
-import { CreateRequestContext, EntityRepository, MikroORM } from "@mikro-orm/core";
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { Inject, Logger, Type } from "@nestjs/common";
+import { resolveEntityClass } from "@dextinity/cms-api";
+import { MikroORM } from "@mikro-orm/core";
+import { CreateRequestContext } from "@mikro-orm/decorators/legacy";
+import { EntityManager } from "@mikro-orm/postgresql";
+import { Inject, Logger, type Type } from "@nestjs/common";
 import { isUUID, validateSync } from "class-validator";
 import { InvalidOptionArgumentError } from "commander";
 import * as fs from "fs";
 import { Command, CommandRunner, Option } from "nest-commander";
-import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
 
-import { BrevoContactImportService } from "../brevo-contact/brevo-contact-import.service";
-import { BrevoModuleConfig } from "../config/brevo-module.config";
-import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
-import { TargetGroupInterface } from "../target-group/entity/target-group-entity.factory";
-import { EmailCampaignScopeInterface } from "../types";
+import type { BrevoConfigInterface } from "../brevo-config/entities/brevo-config-entity.factory.js";
+import { BrevoContactImportService } from "../brevo-contact/brevo-contact-import.service.js";
+import type { BrevoModuleConfig } from "../config/brevo-module.config.js";
+import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants.js";
+import type { EmailCampaignScopeInterface } from "../types.js";
 
 interface CommandOptions {
     path: string;
@@ -32,8 +33,7 @@ export function createBrevoContactImportConsole({ Scope }: { Scope: Type<EmailCa
             private readonly orm: MikroORM, // necessary for @CreateRequestContext() to work
             @Inject(BREVO_MODULE_CONFIG) private readonly config: BrevoModuleConfig,
             private readonly brevoContactImportService: BrevoContactImportService,
-            @InjectRepository("BrevoTargetGroup") private readonly targetGroupRepository: EntityRepository<TargetGroupInterface>,
-            @InjectRepository("BrevoConfig") private readonly brevoConfigRepository: EntityRepository<BrevoConfigInterface>,
+            private readonly entityManager: EntityManager,
         ) {
             super();
         }
@@ -112,7 +112,7 @@ export function createBrevoContactImportConsole({ Scope }: { Scope: Type<EmailCa
         }
 
         async validateRedirectUrl(urlToValidate: string, scope: Type<EmailCampaignScopeInterface>): Promise<boolean> {
-            const configForScope = await this.brevoConfigRepository.findOneOrFail({ scope });
+            const configForScope = await this.entityManager.findOneOrFail(resolveEntityClass<BrevoConfigInterface>("BrevoConfig"), { scope });
 
             if (!configForScope) {
                 throw Error("Scope does not exist");

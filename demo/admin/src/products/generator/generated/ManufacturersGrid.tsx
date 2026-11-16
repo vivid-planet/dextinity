@@ -11,8 +11,8 @@ import { FormattedMessage } from "react-intl";
 import { FormattedNumber } from "react-intl";
 import { useIntl } from "react-intl";
 import { gql } from "@apollo/client";
-import { useApolloClient } from "@apollo/client";
-import { useQuery } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
+import { useQuery } from "@apollo/client/react";
 import { Button } from "@dextinity/admin";
 import { CrudContextMenu } from "@dextinity/admin";
 import { DataGridToolbar } from "@dextinity/admin";
@@ -86,7 +86,7 @@ function ManufacturersGridToolbar() {
             <GridToolbarQuickFilter />
             <GridFilterButton />
             <FillSpace />
-            <Button responsive startIcon={<AddIcon />} component={StackLink} pageName="add" payload="add">
+            <Button responsive startIcon={<AddIcon />} component={StackLink} nativeButton={false} pageName="add" payload="add">
                 <FormattedMessage id="manufacturer.manufacturersGridFuture.newEntry" defaultMessage="Add Manufacturer" />
             </Button>
         </DataGridToolbar>
@@ -311,7 +311,7 @@ export function ManufacturersGrid() {
                 renderCell: (params) => {
                     return (
                         <>
-                            <IconButton color="primary" component={StackLink} pageName="edit" payload={params.row.id}>
+                            <IconButton color="primary" component={StackLink} nativeButton={false} pageName="edit" payload={params.row.id}>
                                 <EditIcon />
                             </IconButton>
                             <CrudContextMenu
@@ -339,6 +339,7 @@ export function ManufacturersGrid() {
             offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize,
             limit: dataGridProps.paginationModel.pageSize,
         },
+        notifyOnNetworkStatusChange: false,
     });
     const rowCount = useBufferedRowCount(data?.manufacturers.totalCount);
     if (error) throw error;

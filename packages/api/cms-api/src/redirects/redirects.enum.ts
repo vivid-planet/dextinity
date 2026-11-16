@@ -11,3 +11,9 @@ export enum RedirectGenerationType {
     automatic = "automatic",
 }
 registerEnumType(RedirectGenerationType, { name: "RedirectGenerationType" });
+
+export enum RedirectType {
+    temporary = "temporary",
+    permanent = "permanent",
+}
+registerEnumType(RedirectType, { name: "RedirectType" });

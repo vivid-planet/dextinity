@@ -1,5 +1,5 @@
-import type { findHooksService } from "../utils/find-hooks-service";
-import type { Imports } from "../utils/generate-imports-code";
+import type { findHooksService } from "../utils/find-hooks-service.js";
+import type { Imports } from "../utils/generate-imports-code.js";
 
 export function generatePayloadObjectTypes({
     hooksService,

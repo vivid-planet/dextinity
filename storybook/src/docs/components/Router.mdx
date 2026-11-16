@@ -4,17 +4,19 @@ import { Meta } from "@storybook/addon-docs/blocks";
 
 # Router
 
-Dextinity Admin makes use of [react-router](https://reactrouter.com/web) and extends it.
+Dextinity Admin makes use of [React Router](https://reactrouter.com/) and extends it.
 
-## `BrowserRouter`
+## `RouterBrowserRouter` and `RouterMemoryRouter`
 
-Use this component just like from react-router.
+Use these components instead of the routers from React Router. Inside them, use React Router as usual, e.g. `<Routes>`, `<Route path="products/*" element={...} />`, `<Navigate replace />` and `useNavigate()`.
 
-It provides the following additions to react-router:
+They provide the following additions to React Router:
 
-- shows a confirmation dialog as mui Dialog
-- supports multiple `Prompt`s
+- shows a confirmation dialog as MUI Dialog
+- supports multiple `RouterPrompt`s
+
+`RouterMemoryRouter` can be nested inside another router, e.g. in a dialog. Its location and prompts are isolated from the outer router.
 
 ## `RouterPrompt`
 
-Similar to react-router `Prompt`, supports multiple instances.
+Asks the user for confirmation before navigating away, supports multiple instances. Use it instead of React Router's `useBlocker`, which must not be used inside the Dextinity routers.

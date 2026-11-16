@@ -2,8 +2,8 @@ import { Field, ID, InputType } from "@nestjs/graphql";
 import { IsArray, IsBoolean, IsDate, IsObject, IsOptional, IsString, IsUUID } from "class-validator";
 import { GraphQLJSONObject } from "graphql-scalars";
 
-import { ContentScope } from "../interfaces/content-scope.interface";
-import { CombinedPermission, Permission } from "../user-permissions.types";
+import type { ContentScope } from "../interfaces/content-scope.interface.js";
+import { CombinedPermission, type Permission } from "../user-permissions.types.js";
 
 @InputType()
 export class UserPermissionOverrideContentScopesInput {

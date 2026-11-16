@@ -45,8 +45,17 @@ export function UserHeaderItem(props: PropsWithChildren<UserHeaderItemProps>) {
             startIcon={isMobile ? undefined : accountIcon}
             dropdownArrow={isMobile ? null : undefined}
         >
-            <Box width={300} padding={0}>
-                <Box padding={4}>
+            <Box
+                sx={{
+                    width: 300,
+                    padding: 0,
+                }}
+            >
+                <Box
+                    sx={{
+                        padding: 4,
+                    }}
+                >
                     <LoggedInInfo variant="caption">
                         <FormattedMessage id="dextinity.logged.in" defaultMessage="Logged in as" />
                     </LoggedInInfo>
@@ -69,11 +78,21 @@ export function UserHeaderItem(props: PropsWithChildren<UserHeaderItemProps>) {
                 )}
                 {children && (
                     <>
-                        <Box padding={4}>{children}</Box>
+                        <Box
+                            sx={{
+                                padding: 4,
+                            }}
+                        >
+                            {children}
+                        </Box>
                         <Divider />
                     </>
                 )}
-                <Box padding={4}>
+                <Box
+                    sx={{
+                        padding: 4,
+                    }}
+                >
                     <SignOutButton fullWidth variant="contained" />
                     <MenuFooter>
                         <Typography variant="caption" color={theme.palette.grey[400]}>{`Version: v${version}`}</Typography>

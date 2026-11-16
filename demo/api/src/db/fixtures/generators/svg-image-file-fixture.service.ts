@@ -1,6 +1,6 @@
-import { createFileUploadInputFromUrl, FileInterface, FilesService } from "@dextinity/cms-api";
+import { createFileUploadInputFromUrl, type FileInterface, FilesService } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
-import { DamScope } from "@src/dam/dto/dam-scope";
+import type { DamScope } from "@src/dam/dto/dam-scope.js";
 import path from "path";
 
 @Injectable()

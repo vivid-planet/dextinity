@@ -1,9 +1,9 @@
-import { MailTemplate, MailTemplateInterface } from "@dextinity/cms-api";
-import { TranslationService } from "@src/translation/translation.service";
+import { MailTemplate, type MailTemplateInterface } from "@dextinity/cms-api";
+import { TranslationService } from "@src/translation/translation.service.js";
 import { IntlProvider } from "react-intl";
 
-import { exampleSupportInfo } from "./exampleSupportInfo";
-import { Mail, type MailProps } from "./Mail";
+import { exampleSupportInfo } from "./exampleSupportInfo.js";
+import { Mail, type MailProps } from "./Mail.js";
 
 @MailTemplate()
 export class ProductPublishedMail implements MailTemplateInterface<MailProps> {
@@ -15,7 +15,7 @@ export class ProductPublishedMail implements MailTemplateInterface<MailProps> {
         const { renderMailHtml } = await import("@dextinity/mail-react/server");
 
         const intl = await this.translationService.getIntl(props.recipient.language);
-        const { html, mjmlWarnings } = renderMailHtml(
+        const { html, mjmlWarnings } = await renderMailHtml(
             <IntlProvider {...intl}>
                 <Mail {...props} />
             </IntlProvider>,

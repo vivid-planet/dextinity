@@ -42,7 +42,7 @@ services:
             retries: 5
 
     imgproxy:
-        image: mirror.gcr.io/darthsim/imgproxy:v3
+        image: mirror.gcr.io/darthsim/imgproxy:v4
         pull_policy: weekly
         restart: unless-stopped
         environment:

@@ -1,5 +1,49 @@
 # @comet/mail-react
 
+## 10.15.0
+
+No changes in this release.
+
+## 10.14.0
+
+### Minor Changes
+
+- 7a80dfc: Add a `textClassName` prop to the rich-text components of `createRichTextBlock` and `createTipTapRichTextBlock`
+
+    The components put the class on each text element they render.
+    The rich-text components have no root element of their own, so for a rich text inside a column, pass the class from `withPreview` this way to make it selectable in the block preview:
+
+    ```tsx
+    <MjmlRichTextBlock data={data} textClassName={className} />
+    ```
+
+### Patch Changes
+
+- d1393a0: Stop joining the children of `MjmlStyle`, `MjmlComment`, `MjmlConditionalComment`, and `MjmlYahooStyle` with commas
+
+    With several children, for example a list of rules from `.map()` or text with expressions, these components put a comma between them.
+    In a stylesheet, the comma makes the next rule invalid, and mail clients ignore that rule without an error.
+
+    ```tsx
+    <MjmlStyle>{[".a{color:red}", ".b{color:blue}"]}</MjmlStyle>
+    ```
+
+    - Before: `<mj-style>.a{color:red},.b{color:blue}</mj-style>`
+    - After: `<mj-style>.a{color:red}.b{color:blue}</mj-style>`
+
+    ```tsx
+    <MjmlComment>
+        Built with {appName} at {buildDate}
+    </MjmlComment>
+    ```
+
+    - Before: `<!--Built with ,Newsletter, at ,2026-11-04-->`
+    - After: `<!--Built with Newsletter at 2026-11-04-->`
+
+## 10.13.1
+
+## 10.13.0
+
 ## 10.12.0
 
 ## 10.11.0

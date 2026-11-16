@@ -1,10 +1,10 @@
-import { Type } from "@nestjs/common";
+import type { Type } from "@nestjs/common";
 import { ArgsType, Field, ID } from "@nestjs/graphql";
 import { IsString, ValidateNested } from "class-validator";
 
-import { IsUndefinable } from "../../../common/validators/is-undefinable";
-import { ImageCropAreaInput } from "../../images/dto/image-crop-area.input";
-import { DamScopeInterface } from "../../types";
+import { IsUndefinable } from "../../../common/validators/is-undefinable.js";
+import { ImageCropAreaInput } from "../../images/dto/image-crop-area.input.js";
+import type { DamScopeInterface } from "../../types.js";
 
 export interface FindCopiesOfFileInScopeArgsInterface {
     id: string;

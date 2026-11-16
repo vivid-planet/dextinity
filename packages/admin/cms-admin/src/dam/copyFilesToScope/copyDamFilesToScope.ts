@@ -1,5 +1,5 @@
 import { type ApolloClient, gql } from "@apollo/client";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 
 import type { ReplaceDependencyObject } from "../../blocks/types";
 import type { GQLImageCropAreaInput } from "../../graphql.generated";
@@ -41,7 +41,7 @@ export interface DamFileToCopy {
 }
 
 interface CopyDamFilesToScopeOptions {
-    client: ApolloClient<unknown>;
+    client: ApolloClient;
     files: DamFileToCopy[];
     targetDamScope: Record<string, unknown>;
     updateProgress?: (progressFromZeroToOne: number) => void;
@@ -70,7 +70,7 @@ export async function copyDamFilesToScope({
         if (!handledFileIds.has(file.id)) {
             handledFileIds.add(file.id);
 
-            if (!isEqual(file.scope, targetDamScope)) {
+            if (!deepEqual(file.scope, targetDamScope)) {
                 // TODO eventually handle multiple files in one request for better performance
                 const { data } = await client.query<GQLFindCopiesOfFileInScopeQuery, GQLFindCopiesOfFileInScopeQueryVariables>({
                     query: findCopiesOfFileInScopeQuery,
@@ -81,7 +81,7 @@ export async function copyDamFilesToScope({
                     },
                 });
 
-                if (data.findCopiesOfFileInScope.length > 0) {
+                if (data && data.findCopiesOfFileInScope.length > 0) {
                     replacements.push({ type: "DamFile", originalId: file.id, replaceWithId: data.findCopiesOfFileInScope[0].id });
                 } else {
                     filesToCopy.push(file);
@@ -96,7 +96,7 @@ export async function copyDamFilesToScope({
     if (filesToCopy.length > 0) {
         const sourceScopes: Record<string, unknown>[] = [];
         for (const { scope } of filesToCopy) {
-            if (scope && Object.keys(scope).length > 0 && !sourceScopes.some((sourceScope) => isEqual(sourceScope, scope))) {
+            if (scope && Object.keys(scope).length > 0 && !sourceScopes.some((sourceScope) => deepEqual(sourceScope, scope))) {
                 sourceScopes.push(scope);
             }
         }

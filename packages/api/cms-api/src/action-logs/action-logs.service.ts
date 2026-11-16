@@ -2,13 +2,13 @@ import { type AnyEntity, EntityManager, type EntityMetadata, type EntityName } f
 import { Injectable, Logger, type OnModuleInit, type Type } from "@nestjs/common";
 import { ModuleRef } from "@nestjs/core";
 
-import { DiscoverService } from "../dependencies/discover.service";
-import { REQUIRED_PERMISSION_METADATA_KEY, type RequiredPermissionMetadata } from "../user-permissions/decorators/required-permission.decorator";
-import { SCOPED_ENTITY_METADATA_KEY, type ScopedEntityMeta } from "../user-permissions/decorators/scoped-entity.decorator";
-import { getScopesForScopedEntity } from "../user-permissions/get-scopes-for-scoped-entity";
-import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
-import { ACTION_LOGS_METADATA_KEY } from "./action-logs.decorator";
-import { entityChecksScope } from "./entity-checks-scope";
+import { DiscoverService } from "../dependencies/discover.service.js";
+import { REQUIRED_PERMISSION_METADATA_KEY, type RequiredPermissionMetadata } from "../user-permissions/decorators/required-permission.decorator.js";
+import { SCOPED_ENTITY_METADATA_KEY, type ScopedEntityMeta } from "../user-permissions/decorators/scoped-entity.decorator.js";
+import { getScopesForScopedEntity } from "../user-permissions/get-scopes-for-scoped-entity.js";
+import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface.js";
+import { ACTION_LOGS_METADATA_KEY } from "./action-logs.decorator.js";
+import { entityChecksScope } from "./entity-checks-scope.js";
 
 @Injectable()
 export class ActionLogsService implements OnModuleInit {

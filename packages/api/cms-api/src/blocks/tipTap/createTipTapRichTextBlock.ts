@@ -7,39 +7,38 @@ import { plainToInstance } from "class-transformer";
 import { registerDecorator, validate, type ValidationOptions } from "class-validator";
 
 import {
-    Block,
+    type Block,
     BlockData,
-    BlockDataFactory,
-    BlockDataInterface,
-    BlockInputFactory,
-    BlockInputInterface,
+    type BlockDataFactory,
+    type BlockDataInterface,
+    type BlockInputFactory,
+    type BlockInputInterface,
     type BlockMetaTipTap,
     type BlockMetaTipTapStyledNode,
-    ChildBlockInfo,
-    registerBlock,
-} from "../block";
-import { AnnotationBlockMeta, BlockField } from "../decorators/field";
-import { BlockFactoryNameOrOptions } from "../factories/types";
-import { withDefaultDescription } from "../factories/withDefaultDescription";
-import { strictBlockDataFactoryDecorator } from "../helpers/strictBlockDataFactoryDecorator";
-import { strictBlockInputFactoryDecorator } from "../helpers/strictBlockInputFactoryDecorator";
-import { createAppliedMigrationsBlockDataFactoryDecorator } from "../migrations/createAppliedMigrationsBlockDataFactoryDecorator";
-import { BlockDataMigrationVersion } from "../migrations/decorators/BlockDataMigrationVersion";
-import type { MigrateVendorOptions } from "../migrations/types";
-import type { SearchText, WeightedSearchText } from "../search/get-search-text";
-import { applyDefaultTextBlockStyles } from "./applyDefaultTextBlockStyles";
-import { CmsBlock, CmsInlineBlock } from "./extensions/CmsBlock";
-import { CmsLink } from "./extensions/CmsLink";
-import { InlineStyleMark } from "./extensions/InlineStyleMark";
-import { NonBreakingSpace } from "./extensions/NonBreakingSpace";
-import { Placeholder } from "./extensions/Placeholder";
-import { SoftHyphen } from "./extensions/SoftHyphen";
-import { createTextBlock } from "./extensions/TextBlock";
-import { TextBlockListItem } from "./extensions/TextBlockListItem";
-import { buildDraftJsToTipTapMigration } from "./migrations/buildDraftJsToTipTapMigration";
-import { buildNoopMigration } from "./migrations/buildNoopMigration";
-import { buildTextBlockNodeMigration } from "./migrations/buildTextBlockNodeMigration";
-import { assertDraftJsHeadingsAreUnambiguous, type ListItemMapping, type TextBlockMapping } from "./migrations/convertDraftJsToTipTap";
+    type ChildBlockInfo,
+} from "../block.js";
+import { AnnotationBlockMeta, BlockField } from "../decorators/field.js";
+import type { BlockFactoryNameOrOptions } from "../factories/types.js";
+import { withDefaultDescription } from "../factories/withDefaultDescription.js";
+import { strictBlockDataFactoryDecorator } from "../helpers/strictBlockDataFactoryDecorator.js";
+import { strictBlockInputFactoryDecorator } from "../helpers/strictBlockInputFactoryDecorator.js";
+import { createAppliedMigrationsBlockDataFactoryDecorator } from "../migrations/createAppliedMigrationsBlockDataFactoryDecorator.js";
+import { BlockDataMigrationVersion } from "../migrations/decorators/BlockDataMigrationVersion.js";
+import type { MigrateVendorOptions } from "../migrations/types.js";
+import type { SearchText, WeightedSearchText } from "../search/get-search-text.js";
+import { applyDefaultTextBlockStyles } from "./applyDefaultTextBlockStyles.js";
+import { CmsBlock, CmsInlineBlock } from "./extensions/CmsBlock.js";
+import { CmsLink } from "./extensions/CmsLink.js";
+import { InlineStyleMark } from "./extensions/InlineStyleMark.js";
+import { NonBreakingSpace } from "./extensions/NonBreakingSpace.js";
+import { Placeholder } from "./extensions/Placeholder.js";
+import { SoftHyphen } from "./extensions/SoftHyphen.js";
+import { createTextBlock, resolveTextAlign, type TipTapTextAlign } from "./extensions/TextBlock.js";
+import { TextBlockListItem } from "./extensions/TextBlockListItem.js";
+import { buildDraftJsToTipTapMigration } from "./migrations/buildDraftJsToTipTapMigration.js";
+import { buildNoopMigration } from "./migrations/buildNoopMigration.js";
+import { buildTextBlockNodeMigration } from "./migrations/buildTextBlockNodeMigration.js";
+import { assertDraftJsHeadingsAreUnambiguous, type ListItemMapping, type TextBlockMapping } from "./migrations/convertDraftJsToTipTap.js";
 import {
     defaultTextBlocks,
     findDefaultTextBlock,
@@ -55,10 +54,10 @@ import {
     type TipTapResolvedTextBlock,
     type TipTapTextBlock,
     unorderedListName,
-} from "./textBlocks";
-import { containsInvalidTextBlock, getListNestingDepth } from "./tipTapValidation";
+} from "./textBlocks.js";
+import { containsInvalidTextBlock, getListNestingDepth } from "./tipTapValidation.js";
 
-export type { TipTapTextBlock, TipTapTextBlockStyle, TipTapTextBlockTag } from "./textBlocks";
+export type { TipTapTextBlock, TipTapTextBlockStyle, TipTapTextBlockTag } from "./textBlocks.js";
 export type { JSONContent as TipTapRichTextBlockContent } from "@tiptap/core";
 
 /**
@@ -79,6 +78,7 @@ export interface TipTapResolvedOptions {
     defaultTextBlock: TipTapResolvedTextBlock;
     orderedList: false | TipTapResolvedList;
     unorderedList: false | TipTapResolvedList;
+    textAlign: TipTapTextAlign[];
     nonBreakingSpace: boolean;
     softHyphen: boolean;
     link: boolean;
@@ -158,6 +158,14 @@ export interface CreateTipTapRichTextBlockOptions {
      */
     unorderedList?: boolean | TipTapListOptions;
     /**
+     * Enables aligning text blocks left, center, right or justified, stored in the content's
+     * `textAlign` attribute. Defaults to `false`. Pass an object such as `{ left: true, center: true }`
+     * to enable only some of the alignments.
+     *
+     * Must match the Admin's `textAlign`, otherwise the API rejects content the editor produces.
+     */
+    textAlign?: boolean | Partial<Record<TipTapTextAlign, boolean>>;
+    /**
      * Enables non-breaking spaces. Defaults to `true`.
      */
     nonBreakingSpace?: boolean;
@@ -233,6 +241,7 @@ export function resolveTipTapOptions({
     defaultTextBlock,
     orderedList,
     unorderedList,
+    textAlign = false,
     nonBreakingSpace = true,
     softHyphen = true,
     link,
@@ -256,6 +265,7 @@ export function resolveTipTapOptions({
         // Lists are enabled by default, but cannot exist without a paragraph to build their items from.
         orderedList: resolveList({ list: orderedList ?? hasParagraph, name: orderedListName }),
         unorderedList: resolveList({ list: unorderedList ?? hasParagraph, name: unorderedListName }),
+        textAlign: resolveTextAlign(textAlign),
         nonBreakingSpace,
         softHyphen,
         link: !!link,
@@ -542,6 +552,7 @@ function IsTipTapContent(
         defaultTextBlock,
         orderedList,
         unorderedList,
+        textAlign,
     }: {
         inlineStyles: TipTapInlineStyle[];
         linkBlock?: Block;
@@ -553,6 +564,7 @@ function IsTipTapContent(
         defaultTextBlock: TipTapResolvedTextBlock;
         orderedList: false | TipTapResolvedList;
         unorderedList: false | TipTapResolvedList;
+        textAlign: TipTapTextAlign[];
     },
     validationOptions?: ValidationOptions,
 ) {
@@ -598,7 +610,16 @@ function IsTipTapContent(
                         }
 
                         // Enforce the configured text blocks
-                        if (containsInvalidTextBlock({ content: value as JSONContent, textBlocks, defaultTextBlock, orderedList, unorderedList })) {
+                        if (
+                            containsInvalidTextBlock({
+                                content: value as JSONContent,
+                                textBlocks,
+                                defaultTextBlock,
+                                orderedList,
+                                unorderedList,
+                                textAlign,
+                            })
+                        ) {
                             return false;
                         }
 
@@ -781,7 +802,7 @@ export function createTipTapRichTextBlock(
 
     @BlockDataMigrationVersion(migrate?.version, migrateVendor?.version)
     class TipTapRichTextBlockData extends BlockData implements TipTapRichTextBlockDataInterface {
-        @BlockField({ type: "tipTapRichTextBlock", childBlocks, tipTap })
+        @BlockField({ type: "tipTapRichTextBlock", childBlocks, linkBlock: LinkBlock, tipTap })
         tipTapContent: JSONContent;
 
         searchText(): SearchText[] {
@@ -844,8 +865,9 @@ export function createTipTapRichTextBlock(
             defaultTextBlock: resolvedOptions.defaultTextBlock,
             orderedList: resolvedOptions.orderedList,
             unorderedList: resolvedOptions.unorderedList,
+            textAlign: resolvedOptions.textAlign,
         })
-        @BlockField({ type: "tipTapRichTextBlock", childBlocks, tipTap })
+        @BlockField({ type: "tipTapRichTextBlock", childBlocks, linkBlock: LinkBlock, tipTap })
         tipTapContent: JSONContent;
 
         transformToBlockData(): TipTapRichTextBlockData {
@@ -902,8 +924,6 @@ export function createTipTapRichTextBlock(
         blockMeta: new AnnotationBlockMeta(TipTapRichTextBlockData),
         blockInputMeta: new AnnotationBlockMeta(TipTapRichTextBlockInput),
     };
-
-    registerBlock(TipTapRichTextBlock);
 
     return TipTapRichTextBlock;
 }

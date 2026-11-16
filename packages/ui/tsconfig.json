@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "jsx": "react-jsx",
+        "module": "preserve",
+        "moduleResolution": "bundler",
+        "outDir": "lib",
+        "paths": {
+            "vitest": ["./node_modules/vitest"]
+        },
+        "rootDir": ".",
+        "strict": true,
+        "target": "esnext",
+        "verbatimModuleSyntax": true
+    },
+    "exclude": ["node_modules", "lib"],
+    "extends": "../../tsconfig.core.json",
+    "include": ["./src", "./.storybook", "./vite.config.mts", "./vitest.setup.ts"]
+}

@@ -1,18 +1,18 @@
 import type { Brevo } from "@getbrevo/brevo";
 
 interface BrevoStatistics {
-    uniqueClicks: number;
-    clickers: number;
-    complaints: number;
-    delivered: number;
-    sent: number;
-    softBounces: number;
-    hardBounces: number;
-    uniqueViews: number;
-    trackableViews: number;
+    uniqueClicks: number | null;
+    clickers: number | null;
+    complaints: number | null;
+    delivered: number | null;
+    sent: number | null;
+    softBounces: number | null;
+    hardBounces: number | null;
+    uniqueViews: number | null;
+    trackableViews: number | null;
     estimatedViews?: number;
-    unsubscriptions: number;
-    viewed: number;
+    unsubscriptions: number | null;
+    viewed: number | null;
 }
 
 export interface BrevoApiCampaign {

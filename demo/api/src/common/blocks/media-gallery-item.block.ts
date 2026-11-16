@@ -1,16 +1,16 @@
 import {
     BlockData,
-    BlockDataInterface,
+    type BlockDataInterface,
     BlockField,
     BlockInput,
     blockInputToData,
     ChildBlock,
     ChildBlockInput,
     createBlock,
-    ExtractBlockInput,
+    type ExtractBlockInput,
     IsUndefinable,
 } from "@dextinity/cms-api";
-import { MediaBlock } from "@src/common/blocks/media.block";
+import { MediaBlock } from "@src/common/blocks/media.block.js";
 import { IsString } from "class-validator";
 
 class MediaGalleryItemBlockData extends BlockData {

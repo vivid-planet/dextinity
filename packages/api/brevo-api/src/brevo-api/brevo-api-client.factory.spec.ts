@@ -2,8 +2,8 @@ import { BrevoClient } from "@getbrevo/brevo";
 import { Test, type TestingModule } from "@nestjs/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
-import { BrevoApiClientFactory } from "./brevo-api-client.factory";
+import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants.js";
+import { BrevoApiClientFactory } from "./brevo-api-client.factory.js";
 
 describe("BrevoApiClientFactory", () => {
     let factory: BrevoApiClientFactory;

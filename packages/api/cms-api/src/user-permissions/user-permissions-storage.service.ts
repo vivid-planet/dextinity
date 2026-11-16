@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { AsyncLocalStorage } from "async_hooks";
 
-import { UserPermissionsStorage } from "./user-permissions-storage.interface";
+import type { UserPermissionsStorage } from "./user-permissions-storage.interface.js";
 
 @Injectable()
 export class UserPermissionsStorageService {

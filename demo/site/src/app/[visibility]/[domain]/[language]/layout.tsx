@@ -1,4 +1,5 @@
 import { gql } from "@dextinity/site-nextjs";
+import { setServerIntl } from "@dextinity/site-nextjs/server";
 import { Footer } from "@src/layout/footer/Footer";
 import { footerFragment } from "@src/layout/footer/Footer.fragment";
 import { Header } from "@src/layout/header/Header";
@@ -51,6 +52,7 @@ export default async function Layout({ children, params }: LayoutProps<"/[visibi
     );
 
     const messages = await loadMessages(language);
+    setServerIntl(language, messages);
 
     if (footer) {
         footer.content = await recursivelyLoadBlockData({

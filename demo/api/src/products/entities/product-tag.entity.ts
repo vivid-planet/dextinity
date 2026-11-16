@@ -1,10 +1,11 @@
 import { CrudField, CrudGenerator } from "@dextinity/cms-api";
-import { BaseEntity, Collection, Entity, ManyToMany, OneToMany, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
+import { Entity, ManyToMany, OneToMany, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, Collection, OptionalProps } from "@mikro-orm/postgresql";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
 import { randomUUID } from "crypto";
 
-import { Product } from "./product.entity";
-import { ProductToTag } from "./product-to-tag.entity";
+import { Product } from "./product.entity.js";
+import { ProductToTag } from "./product-to-tag.entity.js";
 
 @ObjectType()
 @Entity()

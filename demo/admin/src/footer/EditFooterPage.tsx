@@ -1,5 +1,16 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
-import { FillSpace, MainContent, messages, SaveButton, Stack, StackToolbar, ToolbarActions, ToolbarTitleItem } from "@dextinity/admin";
+import { gql } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client/react";
+import {
+    FillSpace,
+    MainContent,
+    messages,
+    SaveButton,
+    Stack,
+    StackToolbar,
+    ToolbarActions,
+    ToolbarTitleItem,
+    useCurrentRouteMatch,
+} from "@dextinity/admin";
 import {
     BlockAdminComponentRoot,
     BlockPreviewWithTabs,
@@ -14,10 +25,9 @@ import {
     useSiteConfig,
 } from "@dextinity/cms-admin";
 import type { FooterContentBlockInput } from "@src/blocks.generated";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 import { type JSX, useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
-import { useRouteMatch } from "react-router";
 
 import { FooterContentBlock } from "./blocks/FooterContentBlock";
 import {
@@ -36,7 +46,7 @@ export function EditFooterPage(): JSX.Element | null {
     const [footerState, setFooterState] = useState<BlockState<typeof FooterContentBlock>>(FooterContentBlock.defaultValues());
     const [hasChanges, setHasChanges] = useState(false);
     const [referenceContent, setReferenceContent] = useState<FooterContentBlockInput | null>(null);
-    const match = useRouteMatch();
+    const routeUrl = useCurrentRouteMatch()?.url ?? "";
     const previewApi = useBlockPreview();
     const blockContext = useBlockContext();
 
@@ -46,6 +56,7 @@ export function EditFooterPage(): JSX.Element | null {
         variables: {
             scope,
         },
+        notifyOnNetworkStatusChange: false,
     });
 
     const saveConflict = useSaveConflictQuery<GQLCheckForChangesFooterQuery, GQLCheckForChangesFooterQueryVariables>(
@@ -89,7 +100,7 @@ export function EditFooterPage(): JSX.Element | null {
     }, [data]);
 
     useEffect(() => {
-        const equal = isEqual(referenceContent, footerState ? FooterContentBlock.state2Output(footerState) : null);
+        const equal = deepEqual(referenceContent, footerState ? FooterContentBlock.state2Output(footerState) : null);
         setHasChanges(!equal);
     }, [footerState, referenceContent]);
 
@@ -123,7 +134,7 @@ export function EditFooterPage(): JSX.Element | null {
 
     const previewState = FooterContentBlock.createPreviewState(footerState, {
         ...blockContext,
-        parentUrl: match.url,
+        parentUrl: routeUrl,
         showVisibleOnly: previewApi.showOnlyVisible,
     });
 

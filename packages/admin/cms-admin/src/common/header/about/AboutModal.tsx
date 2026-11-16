@@ -27,7 +27,7 @@ export function AboutModal({ open, onClose, logo = <DextinityLogo sx={{ fontSize
     const buildInformation = useBuildInformation();
 
     return (
-        <Modal open={open} onClose={onClose} closeAfterTransition BackdropComponent={Backdrop}>
+        <Modal open={open} onClose={onClose} closeAfterTransition slots={{ backdrop: Backdrop }}>
             <Dialog open onClose={onClose}>
                 <DialogTitle>
                     <DialogTitleContent>
@@ -43,7 +43,11 @@ export function AboutModal({ open, onClose, logo = <DextinityLogo sx={{ fontSize
                 <DialogContent>
                     <LogoContainer>{logo}</LogoContainer>
                     <VersionContainer>
-                        <Typography fontWeight={500}>{`v${version}`}</Typography>
+                        <Typography
+                            sx={{
+                                fontWeight: 500,
+                            }}
+                        >{`v${version}`}</Typography>
                         {buildInformation?.number && buildInformation.commitHash && (
                             <Typography>
                                 <FormattedMessage
@@ -67,7 +71,7 @@ export function AboutModal({ open, onClose, logo = <DextinityLogo sx={{ fontSize
                     </Typography>
 
                     <Link href="https://www.vivid-planet.com" target="_blank" underline="hover">
-                        {/* eslint-disable-next-line @calm/react-intl/missing-formatted-message,react/jsx-no-literals */}
+                        {/* eslint-disable-next-line react/jsx-no-literals */}
                         <Typography>www.vivid-planet.com</Typography>
                     </Link>
                 </DialogContent>

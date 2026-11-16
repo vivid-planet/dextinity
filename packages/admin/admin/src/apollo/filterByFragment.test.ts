@@ -111,6 +111,43 @@ describe("filterByFragment", () => {
         it("can filter data for fragments with variables", () => {
             expect(filterByFragment(fragmentWithAVariable, data, { foo: true })).toEqual(filteredData);
         });
+
+        it("omits fields excluded by @include", () => {
+            expect(filterByFragment(fragmentWithAVariable, data, { foo: false })).toEqual({ alias: "Bob", height: 1.89 });
+        });
+
+        it("omits fields excluded by @skip", () => {
+            const fragmentWithSkip = gql`
+                fragment foo on Foo {
+                    alias: name
+                    height(unit: METERS)
+                    avatar @skip(if: $foo) {
+                        square
+                    }
+                }
+            `;
+
+            expect(filterByFragment(fragmentWithSkip, data, { foo: true })).toEqual({ alias: "Bob", height: 1.89 });
+            expect(filterByFragment(fragmentWithSkip, data, { foo: false })).toEqual(filteredData);
+        });
+
+        it("can filter data for named fragment spreads", () => {
+            const fragmentWithSpread = gql`
+                fragment foo on Foo {
+                    alias: name
+                    height(unit: METERS)
+                    avatar {
+                        ...avatarFields
+                    }
+                }
+
+                fragment avatarFields on Avatar {
+                    square
+                }
+            `;
+
+            expect(filterByFragment(fragmentWithSpread, data)).toEqual(filteredData);
+        });
     });
 
     describe("with a single fragment", () => {

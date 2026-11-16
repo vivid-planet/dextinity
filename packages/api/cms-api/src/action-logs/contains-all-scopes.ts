@@ -1,6 +1,6 @@
 import { isDeepStrictEqual } from "node:util";
 
-import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
+import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface.js";
 
 export function containsAllScopes(scopes: ContentScope[] | undefined | null, requiredScopes: ContentScope[] | undefined | null): boolean {
     if (!scopes || !requiredScopes) {

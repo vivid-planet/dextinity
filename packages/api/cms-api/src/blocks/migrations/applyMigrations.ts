@@ -1,6 +1,6 @@
 import type { ClassConstructor } from "class-transformer";
 
-import type { BlockMigrationInterface, BlockMigrationVersionField, MigrateOptions, MigrateVendorOptions, VersionDataInterface } from "./types";
+import type { BlockMigrationInterface, BlockMigrationVersionField, MigrateOptions, MigrateVendorOptions, VersionDataInterface } from "./types.js";
 
 interface ApplyMigrationsOptions {
     migrations?: ClassConstructor<BlockMigrationInterface>[];

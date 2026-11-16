@@ -1,14 +1,14 @@
-import { CanActivate, ExecutionContext, Inject, Injectable, Logger, UnauthorizedException } from "@nestjs/common";
+import { type CanActivate, type ExecutionContext, Inject, Injectable, Logger, UnauthorizedException } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
-import { GqlContextType, GqlExecutionContext } from "@nestjs/graphql";
-import { Request } from "express";
+import { type GqlContextType, GqlExecutionContext } from "@nestjs/graphql";
+import type { Request } from "express";
 
-import { CurrentUser } from "../../user-permissions/dto/current-user";
-import { User } from "../../user-permissions/interfaces/user";
-import { UserPermissionsService } from "../../user-permissions/user-permissions.service";
-import { SystemUser } from "../../user-permissions/user-permissions.types";
-import { DISABLE_DEXTINITY_GUARDS_METADATA_KEY } from "../decorators/disable-dextinity-guards.decorator";
-import { AuthServiceInterface, SKIP_AUTH_SERVICE } from "../util/auth-service.interface";
+import type { CurrentUser } from "../../user-permissions/dto/current-user.js";
+import type { User } from "../../user-permissions/interfaces/user.js";
+import { UserPermissionsService } from "../../user-permissions/user-permissions.service.js";
+import type { SystemUser } from "../../user-permissions/user-permissions.types.js";
+import { DISABLE_DEXTINITY_GUARDS_METADATA_KEY } from "../decorators/disable-dextinity-guards.decorator.js";
+import { type AuthServiceInterface, SKIP_AUTH_SERVICE } from "../util/auth-service.interface.js";
 
 @Injectable()
 export class DextinityAuthGuard implements CanActivate {

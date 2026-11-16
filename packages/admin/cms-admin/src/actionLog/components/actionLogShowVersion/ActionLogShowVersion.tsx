@@ -53,7 +53,7 @@ export const ActionLogShowVersion: FunctionComponent<ActionLogShowVersionProps> 
     return (
         <Root>
             {onClickShowVersionHistory && (
-                <Box marginBottom={4}>
+                <Box sx={{ marginBottom: 4 }}>
                     <Button onClick={onClickShowVersionHistory} startIcon={<ArrowLeft />} variant="primary">
                         <FormattedMessage defaultMessage="Show Version History" id="actionLog.actionLogCompare.showVersionHistory" />
                     </Button>

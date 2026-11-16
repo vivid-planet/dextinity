@@ -1,4 +1,5 @@
-import { gql, useApolloClient, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client/react";
 import { CancelButton, DatePickerField, Field, FinalForm, FinalFormSelect, FormSection, Loading, SaveButton, TextField } from "@dextinity/admin";
 import {
     // eslint-disable-next-line no-restricted-imports
@@ -79,6 +80,7 @@ export const PermissionDialog = ({ userId, permissionId, handleDialogClose }: Fo
                 }
             }
             fragment UserPermissionDialog on UserPermission {
+                __typename
                 permission
                 source
                 validFrom

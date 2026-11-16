@@ -1,6 +1,6 @@
 import "react-image-crop/dist/ReactCrop.css";
 
-import { useApolloClient } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
 import { CancelButton, Field, FormSection, messages, SaveButton } from "@dextinity/admin";
 import { OpenNewTab } from "@dextinity/admin-icons";
 import {
@@ -19,11 +19,12 @@ import {
     Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 import type { ChangeEvent } from "react";
 import { Form } from "react-final-form";
 import { FormattedMessage } from "react-intl";
 
+import { fullCropArea } from "../../common/image/cropArea";
 import { ImageCrop } from "../../common/image/ImageCrop";
 import { useContentScope } from "../../contentScope/Provider";
 import { CropSettingsFields } from "../../dam/FileForm/CropSettingsFields";
@@ -90,13 +91,18 @@ export function EditImageDialog({ image, initialValues, onSubmit, onClose, inher
                     width: undefined,
                     height: undefined,
                 };
-            } else {
+            } else if (values.crop.width && values.crop.height) {
                 cropArea = {
-                    focalPoint: values.focalPoint ?? undefined,
+                    focalPoint: values.focalPoint,
                     x: values.crop.x,
                     y: values.crop.y,
-                    width: values.crop.width ? Math.ceil(values.crop.width) : undefined,
-                    height: values.crop.height ? Math.ceil(values.crop.height) : undefined,
+                    width: Math.ceil(values.crop.width),
+                    height: Math.ceil(values.crop.height),
+                };
+            } else {
+                cropArea = {
+                    focalPoint: values.focalPoint,
+                    ...fullCropArea,
                 };
             }
 
@@ -117,13 +123,18 @@ export function EditImageDialog({ image, initialValues, onSubmit, onClose, inher
                     y: initialValues.cropArea?.y ?? 0,
                 },
             }}
-            initialValuesEqual={isEqual}
+            initialValuesEqual={deepEqual}
         >
             {({ handleSubmit, values }) => (
                 <Dialog open onClose={onClose} maxWidth={false}>
                     <DialogFormWrapper onSubmit={handleSubmit}>
                         <DialogTitle>
-                            <Grid container justifyContent="space-between">
+                            <Grid
+                                container
+                                sx={{
+                                    justifyContent: "space-between",
+                                }}
+                            >
                                 <Grid>
                                     <Typography>
                                         <FormattedMessage
@@ -163,7 +174,12 @@ export function EditImageDialog({ image, initialValues, onSubmit, onClose, inher
                             <div>
                                 {inheritedDamSettings !== undefined && (
                                     <>
-                                        <Box padding={8} paddingTop={0}>
+                                        <Box
+                                            sx={{
+                                                padding: 8,
+                                                paddingTop: 0,
+                                            }}
+                                        >
                                             <FormSection
                                                 title={<FormattedMessage id="dextinity.blocks.image.dam" defaultMessage="DAM" />}
                                                 disableMarginBottom
@@ -184,12 +200,21 @@ export function EditImageDialog({ image, initialValues, onSubmit, onClose, inher
                                         </Box>
 
                                         {entityDependencyMap["DamFile"] && damFileId && (
-                                            <Box padding={7} paddingTop={0}>
+                                            <Box
+                                                sx={{
+                                                    padding: 7,
+                                                    paddingTop: 0,
+                                                }}
+                                            >
                                                 <>
                                                     <Typography variant="subtitle1">
                                                         <FormattedMessage id="dextinity.blocks.image.damPath" defaultMessage="DAM Path: " />
                                                     </Typography>
-                                                    <Typography mb={2}>
+                                                    <Typography
+                                                        sx={{
+                                                            mb: 2,
+                                                        }}
+                                                    >
                                                         <DamPathLazy fileId={damFileId} />
                                                     </Typography>
                                                 </>
@@ -213,7 +238,11 @@ export function EditImageDialog({ image, initialValues, onSubmit, onClose, inher
                                         <Divider sx={{ marginLeft: 8, marginRight: 8 }} />
                                     </>
                                 )}
-                                <Box padding={8}>
+                                <Box
+                                    sx={{
+                                        padding: 8,
+                                    }}
+                                >
                                     <CropSettingsFields disabled={inheritedDamSettings === undefined ? false : values.useInheritedDamSettings} />
                                 </Box>
                             </div>

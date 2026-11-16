@@ -2,7 +2,7 @@ import { Command } from "commander";
 import { readFile, writeFile } from "fs/promises";
 import { format, resolveConfig } from "prettier";
 
-import type { BlockMeta, BlockMetaField } from "../BlockMeta";
+import type { BlockMeta, BlockMetaField } from "../BlockMeta.js";
 
 let content = "";
 let isTipTapNodeTypeUsed = false;
@@ -49,6 +49,8 @@ function writeFieldType(field: BlockMetaField, blockNamePostfix: string) {
         if (field.array) {
             content += "[]";
         }
+    } else if (field.kind === "RichTextBlock") {
+        content += "unknown";
     } else if (field.kind === "TipTapRichTextBlock") {
         isTipTapNodeTypeUsed = true;
         content += "TipTapNode";

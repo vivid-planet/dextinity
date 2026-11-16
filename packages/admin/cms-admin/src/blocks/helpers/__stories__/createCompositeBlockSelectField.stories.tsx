@@ -17,7 +17,7 @@ export const Basic = () => {
         blocks: {
             variant: {
                 title: "Variant",
-                block: createCompositeBlockSelectField({
+                block: createCompositeBlockSelectField<"primary" | "secondary" | "tertiary">({
                     defaultValue: "primary",
                     options: [
                         { value: "primary", label: "Primary" },
@@ -46,7 +46,7 @@ export const WithIcon = () => {
         blocks: {
             density: {
                 title: "Density",
-                block: createCompositeBlockSelectField({
+                block: createCompositeBlockSelectField<"compact" | "standard" | "comfortable">({
                     defaultValue: "compact",
                     options: [
                         {

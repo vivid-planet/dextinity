@@ -1,7 +1,7 @@
 import { Field, InputType, ObjectType } from "@nestjs/graphql";
 
-import { IsUndefinable } from "../../../common/validators/is-undefinable";
-import { DamScopeInterface } from "../../types";
+import { IsUndefinable } from "../../../common/validators/is-undefinable.js";
+import type { DamScopeInterface } from "../../types.js";
 
 @ObjectType("DamScope")
 @InputType("DamScopeInput")

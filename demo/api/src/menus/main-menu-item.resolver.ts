@@ -3,16 +3,16 @@ import {
     PageTreeNodeVisibility,
     PageTreeService,
     RequestContext,
-    RequestContextInterface,
+    type RequestContextInterface,
     RequiredPermission,
     validateNotModified,
 } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Args, ID, Mutation, Query, Resolver } from "@nestjs/graphql";
-import { PageTreeNode } from "@src/page-tree/entities/page-tree-node.entity";
+import type { PageTreeNode } from "@src/page-tree/entities/page-tree-node.entity.js";
 
-import { MainMenuItemInput } from "./dto/main-menu-item.input";
-import { MainMenuItem } from "./entities/main-menu-item.entity";
+import { MainMenuItemInput } from "./dto/main-menu-item.input.js";
+import { MainMenuItem } from "./entities/main-menu-item.entity.js";
 
 @Resolver(() => MainMenuItem)
 @RequiredPermission(["pageTree"])
@@ -62,14 +62,16 @@ export class MainMenuItemResolver {
             }
 
             existingItem.assign({ content: input.content ? input.content.transformToBlockData() : null });
-            await this.entityManager.persistAndFlush(existingItem);
+            await this.entityManager.persist(existingItem).flush();
         } else {
-            await this.entityManager.persistAndFlush(
-                this.entityManager.create(MainMenuItem, {
-                    node: node as unknown as PageTreeNode,
-                    content: input.content ? input.content.transformToBlockData() : null,
-                }),
-            );
+            await this.entityManager
+                .persist(
+                    this.entityManager.create(MainMenuItem, {
+                        node: node as unknown as PageTreeNode,
+                        content: input.content ? input.content.transformToBlockData() : null,
+                    }),
+                )
+                .flush();
         }
 
         return this.entityManager.findOneOrFail(MainMenuItem, { node: node.id });

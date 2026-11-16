@@ -3,11 +3,11 @@ import { Transform } from "class-transformer";
 import { validate, ValidateNested } from "class-validator";
 import { describe, expect, it } from "vitest";
 
-import { BlockData, BlockInput, BlockInputInterface, blockInputToData, createBlock } from "./block";
-import { createLinkBlock } from "./factories/createLinkBlock";
-import { createListBlock } from "./factories/createListBlock";
-import { createRichTextBlock } from "./factories/createRichTextBlock";
-import { createTipTapRichTextBlock } from "./tipTap/createTipTapRichTextBlock";
+import { BlockData, BlockInput, type BlockInputInterface, blockInputToData, createBlock } from "./block.js";
+import { createLinkBlock } from "./factories/createLinkBlock.js";
+import { createListBlock } from "./factories/createListBlock.js";
+import { createRichTextBlock } from "./factories/createRichTextBlock.js";
+import { createTipTapRichTextBlock } from "./tipTap/createTipTapRichTextBlock.js";
 
 // A block without any class-validator decorators, e.g. a block without fields.
 // class-validator's `forbidUnknownValues` (enabled by default since v0.14) rejects such classes unless they have validation metadata.

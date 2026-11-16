@@ -7,7 +7,8 @@ We use [nest-commander](https://nest-commander.jaymcdoniel.dev/) to create conso
 ## Defining Commands
 
 ```ts title="Demo console command"
-import { CreateRequestContext, MikroORM } from "@mikro-orm/postgresql";
+import { CreateRequestContext } from "@mikro-orm/decorators/legacy";
+import { MikroORM } from "@mikro-orm/postgresql";
 import { Injectable, Logger } from "@nestjs/common";
 import { Command, CommandRunner } from "nest-commander";
 

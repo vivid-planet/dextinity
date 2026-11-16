@@ -1,13 +1,13 @@
-import { EntityManager, FilterQuery } from "@mikro-orm/postgresql";
-import { Type } from "@nestjs/common";
+import { EntityManager, type FilterQuery } from "@mikro-orm/postgresql";
+import type { Type } from "@nestjs/common";
 import { Args, Int, Query, Resolver } from "@nestjs/graphql";
 
-import { RequiredPermission } from "../../user-permissions/decorators/required-permission.decorator";
-import { EmptyPageTreeNodeScope } from "../dto/empty-page-tree-node-scope";
-import { PageTreeService } from "../page-tree.service";
-import { PageTreeReadApiService } from "../page-tree-read-api.service";
-import { PageTreeNodeInterface, ScopeInterface } from "../types";
-import { PageTreeNodeFullText } from "./entities/page-tree-node-full-text.object";
+import { RequiredPermission } from "../../user-permissions/decorators/required-permission.decorator.js";
+import { EmptyPageTreeNodeScope } from "../dto/empty-page-tree-node-scope.js";
+import { PageTreeService } from "../page-tree.service.js";
+import { PageTreeReadApiService } from "../page-tree-read-api.service.js";
+import type { PageTreeNodeInterface, ScopeInterface } from "../types.js";
+import { PageTreeNodeFullText } from "./entities/page-tree-node-full-text.object.js";
 
 export function createFullTextResolver({
     PageTreeNode,

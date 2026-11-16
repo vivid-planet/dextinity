@@ -2,13 +2,13 @@ import { Field, InputType } from "@nestjs/graphql";
 import { Type } from "class-transformer";
 import { IsBoolean, ValidateNested } from "class-validator";
 
-import { DateTimeFilter } from "../../common/filter/date-time.filter";
-import { IdFilter } from "../../common/filter/id.filter";
-import { NumberFilter } from "../../common/filter/number.filter";
-import { ScopeFilter } from "../../common/filter/scope.filter";
-import { StringFilter } from "../../common/filter/string.filter";
-import { IsNullable } from "../../common/validators/is-nullable";
-import { IsUndefinable } from "../../common/validators/is-undefinable";
+import { DateTimeFilter } from "../../common/filter/date-time.filter.js";
+import { IdFilter } from "../../common/filter/id.filter.js";
+import { NumberFilter } from "../../common/filter/number.filter.js";
+import { ScopeFilter } from "../../common/filter/scope.filter.js";
+import { StringFilter } from "../../common/filter/string.filter.js";
+import { IsNullable } from "../../common/validators/is-nullable.js";
+import { IsUndefinable } from "../../common/validators/is-undefinable.js";
 
 @InputType({ isAbstract: true })
 class ActionLogScopeFilter extends ScopeFilter {

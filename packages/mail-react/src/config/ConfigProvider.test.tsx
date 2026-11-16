@@ -26,8 +26,8 @@ describe("useConfig", () => {
 });
 
 describe("MjmlMailRoot config integration", () => {
-    it("makes the config value available to descendants via useConfig", () => {
-        const { html, mjmlWarnings } = renderMailHtml(
+    it("makes the config value available to descendants via useConfig", async () => {
+        const { html, mjmlWarnings } = await renderMailHtml(
             <MjmlMailRoot config={{ testKey: { value: "from-root" } }}>
                 <MjmlSection>
                     <MjmlColumn>
@@ -43,8 +43,8 @@ describe("MjmlMailRoot config integration", () => {
         expect(html).toContain('data-config-value="from-root"');
     });
 
-    it("does not shadow an outer ConfigProvider when no config prop is passed", () => {
-        const { html, mjmlWarnings } = renderMailHtml(
+    it("does not shadow an outer ConfigProvider when no config prop is passed", async () => {
+        const { html, mjmlWarnings } = await renderMailHtml(
             <ConfigProvider config={{ testKey: { value: "from-outer" } }}>
                 <MjmlMailRoot>
                     <MjmlSection>

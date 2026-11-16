@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsString } from "class-validator";
 
-import { BlockData, BlockInput, blockInputToData, createBlock } from "../../../block";
-import { BlockField } from "../../../decorators/field";
+import { BlockData, BlockInput, blockInputToData, createBlock } from "../../../block.js";
+import { BlockField } from "../../../decorators/field.js";
 
 class CBlockData extends BlockData {
     @BlockField()

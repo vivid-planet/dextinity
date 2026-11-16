@@ -1,34 +1,33 @@
-import type { ObjectQuery } from "@mikro-orm/core/typings";
-import { type AnyEntity, EntityManager, PostgreSqlDriver, raw } from "@mikro-orm/postgresql";
+import { type AnyEntity, EntityManager, type ObjectQuery, PostgreSqlDriver, raw } from "@mikro-orm/postgresql";
 import { BadRequestException, ForbiddenException, Inject, type Type } from "@nestjs/common";
 import { Args, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 
-import { GetCurrentUser } from "../auth/decorators/get-current-user.decorator";
-import { gqlSortToMikroOrmOrderBy } from "../common/filter/mikro-orm";
+import { GetCurrentUser } from "../auth/decorators/get-current-user.decorator.js";
+import { gqlSortToMikroOrmOrderBy } from "../common/filter/mikro-orm.js";
 import {
     DisablePermissionCheck,
     REQUIRED_PERMISSION_METADATA_KEY,
     RequiredPermission,
-    RequiredPermissionMetadata,
-} from "../user-permissions/decorators/required-permission.decorator";
-import { CurrentUser } from "../user-permissions/dto/current-user";
-import { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
-import { ACCESS_CONTROL_SERVICE } from "../user-permissions/user-permissions.constants";
-import { UserPermissionsService } from "../user-permissions/user-permissions.service";
-import { AccessControlServiceInterface, Permission, SystemUser } from "../user-permissions/user-permissions.types";
-import { ActionLogsAclService } from "./action-logs.acl.service";
-import { ActionLogsService } from "./action-logs.service";
-import { actionLogFilterToWhere } from "./action-logs-filter.utils";
-import { ActionLogsUserLoaderService } from "./action-logs-user-loader.service";
-import { containsAllScopes } from "./contains-all-scopes";
-import { ActionLogType } from "./dto/action-log-type.enum";
-import { ActionLogsArgs } from "./dto/action-logs.args";
-import { ActionLogsUser } from "./dto/action-logs-user";
-import { MyActionLogsArgs } from "./dto/my-action-logs.args";
-import { PaginatedActionLogs } from "./dto/paginated-action-logs";
-import { ActionLog } from "./entities/action-log.entity";
-import { entityChecksScope } from "./entity-checks-scope";
-import { PreviousActionLogLoaderService } from "./previous-action-log-loader.service";
+    type RequiredPermissionMetadata,
+} from "../user-permissions/decorators/required-permission.decorator.js";
+import { CurrentUser } from "../user-permissions/dto/current-user.js";
+import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface.js";
+import { ACCESS_CONTROL_SERVICE } from "../user-permissions/user-permissions.constants.js";
+import { UserPermissionsService } from "../user-permissions/user-permissions.service.js";
+import type { AccessControlServiceInterface, Permission, SystemUser } from "../user-permissions/user-permissions.types.js";
+import { ActionLogsAclService } from "./action-logs.acl.service.js";
+import { ActionLogsService } from "./action-logs.service.js";
+import { actionLogFilterToWhere } from "./action-logs-filter.utils.js";
+import { ActionLogsUserLoaderService } from "./action-logs-user-loader.service.js";
+import { containsAllScopes } from "./contains-all-scopes.js";
+import { ActionLogType } from "./dto/action-log-type.enum.js";
+import { ActionLogsArgs } from "./dto/action-logs.args.js";
+import { ActionLogsUser } from "./dto/action-logs-user.js";
+import { MyActionLogsArgs } from "./dto/my-action-logs.args.js";
+import { PaginatedActionLogs } from "./dto/paginated-action-logs.js";
+import { ActionLog } from "./entities/action-log.entity.js";
+import { entityChecksScope } from "./entity-checks-scope.js";
+import { PreviousActionLogLoaderService } from "./previous-action-log-loader.service.js";
 
 @Resolver(() => ActionLog)
 export class ActionLogsResolver {

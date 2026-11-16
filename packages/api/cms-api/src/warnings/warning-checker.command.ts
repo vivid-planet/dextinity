@@ -1,24 +1,27 @@
-import { CreateRequestContext, EntityClass, MikroORM } from "@mikro-orm/core";
-import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
+import { type EntityClass, MikroORM } from "@mikro-orm/core";
+import { CreateRequestContext } from "@mikro-orm/decorators/legacy";
+import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
 import { ModuleRef, Reflector } from "@nestjs/core";
 import { Command, CommandRunner } from "nest-commander";
 
-import { Block, BlockData, BlockWarning, BlockWarningsServiceInterface } from "../blocks/block";
-import { FlatBlocks } from "../blocks/flat-blocks/flat-blocks";
-import { isInjectableService } from "../common/helper/is-injectable-service.helper";
-import { DiscoverService } from "../dependencies/discover.service";
-import { SCOPED_ENTITY_METADATA_KEY, ScopedEntityMeta } from "../user-permissions/decorators/scoped-entity.decorator";
-import { getScopesForScopedEntity } from "../user-permissions/get-scopes-for-scoped-entity";
-import { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
-import { CREATE_WARNINGS_METADATA_KEY, CreateWarningsFunction, CreateWarningsMeta } from "./decorators/create-warnings.decorator";
-import { Warning } from "./entities/warning.entity";
-import { WarningService } from "./warning.service";
+import type { Block, BlockData, BlockWarning, BlockWarningsServiceInterface } from "../blocks/block.js";
+import { FlatBlocks } from "../blocks/flat-blocks/flat-blocks.js";
+import { isInjectableService } from "../common/helper/is-injectable-service.helper.js";
+import { DiscoverService } from "../dependencies/discover.service.js";
+import { SCOPED_ENTITY_METADATA_KEY, type ScopedEntityMeta } from "../user-permissions/decorators/scoped-entity.decorator.js";
+import { getScopesForScopedEntity } from "../user-permissions/get-scopes-for-scoped-entity.js";
+import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface.js";
+import { CREATE_WARNINGS_METADATA_KEY, type CreateWarningsFunction, type CreateWarningsMeta } from "./decorators/create-warnings.decorator.js";
+import { Warning } from "./entities/warning.entity.js";
+import { WarningService } from "./warning.service.js";
 
 interface RootBlockEntityData {
     primaryKey: string;
     tableName: string;
     className: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    entity: EntityClass<any>;
     hasScope: boolean;
     rootBlockData: Array<{ block: Block; column: string }>;
 }
@@ -50,17 +53,17 @@ export class WarningCheckerCommand extends CommandRunner {
         const startDate = new Date();
 
         for (const data of this.groupRootBlockDataByEntity()) {
-            const { tableName, className, rootBlockData, hasScope } = data;
+            const { tableName, entity: rootBlockEntity, rootBlockData, hasScope } = data;
 
             const queryBuilderLimit = 100;
-            const baseQueryBuilder = this.entityManager.createQueryBuilder(className);
+            const baseQueryBuilder = this.entityManager.createQueryBuilder(rootBlockEntity);
 
             const selectFields = [`${data.primaryKey} as id`, ...rootBlockData.map(({ column }) => column)];
             if (hasScope) {
                 selectFields.push("scope");
             }
 
-            baseQueryBuilder.select(selectFields).from(tableName).limit(queryBuilderLimit);
+            baseQueryBuilder.select(selectFields).limit(queryBuilderLimit);
             let rootBlocks: RootBlockData[] = [];
             let offset = 0;
 
@@ -75,7 +78,7 @@ export class WarningCheckerCommand extends CommandRunner {
                         const blockData = rootBlock[column] as BlockData;
 
                         if (!scope) {
-                            const entity = this.orm.getMetadata().get(className).class;
+                            const entity = rootBlockEntity;
                             const scoped = this.reflector.getAllAndOverride<ScopedEntityMeta>(SCOPED_ENTITY_METADATA_KEY, [entity]);
 
                             if (scoped) {
@@ -142,11 +145,9 @@ export class WarningCheckerCommand extends CommandRunner {
         const metadataStorage = this.orm.em.getMetadata();
 
         for (const entity of entities) {
-            const entityMetadata = metadataStorage.get(entity.name);
+            const entityMetadata = metadataStorage.get(entity);
             const createWarnings = this.reflector.getAllAndOverride<CreateWarningsMeta>(CREATE_WARNINGS_METADATA_KEY, [entity]);
             if (createWarnings) {
-                const repository = this.entityManager.getRepository(entity);
-
                 if (isInjectableService(createWarnings)) {
                     const service = this.moduleRef.get(createWarnings, { strict: false });
 
@@ -165,7 +166,7 @@ export class WarningCheckerCommand extends CommandRunner {
                         }
                     } else {
                         await this.processEntityWarningsIndividually({
-                            repository,
+                            entity,
                             createWarnings: (entity) => service.createWarnings(entity),
                             rootEntityName: entity.name,
                             rootPrimaryKey: entityMetadata.primaryKeys[0],
@@ -173,7 +174,7 @@ export class WarningCheckerCommand extends CommandRunner {
                     }
                 } else {
                     await this.processEntityWarningsIndividually({
-                        repository,
+                        entity,
                         createWarnings,
                         rootEntityName: entity.name,
                         rootPrimaryKey: entityMetadata.primaryKeys[0],
@@ -187,13 +188,13 @@ export class WarningCheckerCommand extends CommandRunner {
     }
 
     private async processEntityWarningsIndividually({
-        repository,
+        entity,
         createWarnings,
         rootEntityName,
         rootPrimaryKey,
     }: {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        repository: EntityRepository<any>;
+        entity: EntityClass<any>;
         createWarnings: CreateWarningsFunction;
         rootEntityName: string;
         rootPrimaryKey: string;
@@ -202,7 +203,7 @@ export class WarningCheckerCommand extends CommandRunner {
         const limit = 50;
         let offset = 0;
         do {
-            rows = await repository.find({}, { limit, offset });
+            rows = await this.entityManager.find(entity, {}, { limit, offset });
             offset += limit;
 
             for (const row of rows) {
@@ -225,7 +226,7 @@ export class WarningCheckerCommand extends CommandRunner {
         const rootBlockEntityData = new Map<string, RootBlockEntityData>();
 
         for (const {
-            metadata: { tableName, className, primaryKeys, definedProperties },
+            metadata: { tableName, className, class: entityClass, primaryKeys, definedProperties },
             block,
             column,
         } of this.discoverService.discoverRootBlocks()) {
@@ -235,6 +236,7 @@ export class WarningCheckerCommand extends CommandRunner {
                 rootBlockEntityData.set(key, {
                     tableName,
                     className,
+                    entity: entityClass,
                     hasScope: "scope" in definedProperties,
                     rootBlockData: [],
                     primaryKey: primaryKeys[0],

@@ -25,7 +25,12 @@ export const IconWithTooltip: Story = {
 
 export const StatusIndicators: Story = {
     render: () => (
-        <Stack py={5} spacing={5}>
+        <Stack
+            spacing={5}
+            sx={{
+                py: 5,
+            }}
+        >
             <Tooltip title="Success variant" placement="top-start" color="success">
                 <StatusSuccessSolid color="success" />
             </Tooltip>
@@ -59,7 +64,13 @@ export const StackedTooltipsFromDesign: Story = {
         }, []);
 
         return (
-            <Stack pb={12} spacing={16} direction="row">
+            <Stack
+                spacing={16}
+                direction="row"
+                sx={{
+                    pb: 12,
+                }}
+            >
                 <Tooltip title="Title" description="Notification Text" color="light" placement="bottom-start" open={showTooltips}>
                     <Chip label="Light" sx={{ width: 140 }} />
                 </Tooltip>
@@ -83,7 +94,13 @@ export const FeedbackTooltipsFromDesign: Story = {
         }, []);
 
         return (
-            <Stack pb={8} spacing={12} direction="row">
+            <Stack
+                spacing={12}
+                direction="row"
+                sx={{
+                    pb: 8,
+                }}
+            >
                 <Tooltip title="Notification text" color="dark" placement="bottom-start" open={showTooltips}>
                     <Chip label="Dark" sx={{ width: 70 }} />
                 </Tooltip>
@@ -150,7 +167,13 @@ export const TooltipsWithCustomContent: Story = {
         );
 
         return (
-            <Stack pb={32} spacing={24} direction="row">
+            <Stack
+                spacing={24}
+                direction="row"
+                sx={{
+                    pb: 32,
+                }}
+            >
                 <Tooltip customContent={customElementsContent} color="light" open={showTooltips}>
                     <Chip label="Custom elements" sx={{ width: 150 }} />
                 </Tooltip>
@@ -173,7 +196,17 @@ export const FocusTest: Story = {
         <>
             <Typography variant="h4">Without tooltip (standalone elements)</Typography>
             <Typography variant="overline">Only the button should be focusable</Typography>
-            <Stack p={2} mt={2} mb={8} spacing={12} direction="row" alignItems="center" sx={{ backgroundColor: "#f0f0f0" }}>
+            <Stack
+                spacing={12}
+                direction="row"
+                sx={{
+                    p: 2,
+                    mt: 2,
+                    mb: 8,
+                    alignItems: "center",
+                    backgroundColor: "#f0f0f0",
+                }}
+            >
                 <Typography>Typography</Typography>
                 <Chip label="Chip" />
                 <Button>Button</Button>
@@ -181,7 +214,17 @@ export const FocusTest: Story = {
             </Stack>
             <Typography variant="h4">With tooltip</Typography>
             <Typography variant="overline">All elements should be focusable</Typography>
-            <Stack p={2} mt={2} mb={8} spacing={12} direction="row" alignItems="center" sx={{ backgroundColor: "#f0f0f0" }}>
+            <Stack
+                spacing={12}
+                direction="row"
+                sx={{
+                    p: 2,
+                    mt: 2,
+                    mb: 8,
+                    alignItems: "center",
+                    backgroundColor: "#f0f0f0",
+                }}
+            >
                 <Tooltip title="Hello Tooltip">
                     <Typography>Typography</Typography>
                 </Tooltip>
@@ -197,7 +240,17 @@ export const FocusTest: Story = {
             </Stack>
             <Typography variant="h4">With tooltip and disabled tabindex</Typography>
             <Typography variant="overline">Nothing should be focusable</Typography>
-            <Stack p={2} mt={2} mb={8} spacing={12} direction="row" alignItems="center" sx={{ backgroundColor: "#f0f0f0" }}>
+            <Stack
+                spacing={12}
+                direction="row"
+                sx={{
+                    p: 2,
+                    mt: 2,
+                    mb: 8,
+                    alignItems: "center",
+                    backgroundColor: "#f0f0f0",
+                }}
+            >
                 <Tooltip title="Hello Tooltip" tabIndex={-1}>
                     <Typography>Typography</Typography>
                 </Tooltip>

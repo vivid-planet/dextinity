@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client/react";
 import {
     Button,
     CrudMoreActionsMenu,
@@ -37,6 +37,7 @@ import { BlockPreviewContent } from "../blocks/common/blockRow/BlockPreviewConte
 import type { BlockInterface } from "../blocks/types";
 import { DataGrid } from "../dataGrid/DataGrid";
 import RedirectActiveness from "./RedirectActiveness";
+import { useRedirectsConfig } from "./redirectsConfig";
 import { deleteRedirectMutation, deleteRedirectsMutation, paginatedRedirectsQuery } from "./RedirectsGrid.gql";
 import {
     type GQLDeleteRedirectsMutation,
@@ -72,7 +73,7 @@ function RedirectsGridToolbar({ selectedIds = [], onDeleteSelected }: RedirectsG
                     },
                 ]}
             />
-            <Button startIcon={<AddIcon />} component={StackLink} pageName="add" payload="add">
+            <Button startIcon={<AddIcon />} component={StackLink} nativeButton={false} pageName="add" payload="add">
                 <FormattedMessage id="dextinity.pages.redirects.add" defaultMessage="New redirect" />
             </Button>
         </DataGridToolbar>
@@ -83,6 +84,7 @@ export function RedirectsGrid({ linkBlock, scope }: Props): JSX.Element {
     const intl = useIntl();
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const { enableRedirectType } = useRedirectsConfig();
 
     const [deleteRedirects] = useMutation<GQLDeleteRedirectsMutation, GQLDeleteRedirectsMutationVariables>(deleteRedirectsMutation, {
         refetchQueries: [namedOperations.Query.PaginatedRedirects],
@@ -112,6 +114,23 @@ export function RedirectsGrid({ linkBlock, scope }: Props): JSX.Element {
                 defaultMessage: "Automatic",
             }),
             value: "automatic",
+        },
+    ];
+
+    const redirectTypeOptions = [
+        {
+            label: intl.formatMessage({
+                id: "dextinity.pages.redirects.redirect.redirectType.temporary",
+                defaultMessage: "Standard",
+            }),
+            value: "temporary",
+        },
+        {
+            label: intl.formatMessage({
+                id: "dextinity.pages.redirects.redirect.redirectType.permanent",
+                defaultMessage: "Permanent",
+            }),
+            value: "permanent",
         },
     ];
 
@@ -164,6 +183,26 @@ export function RedirectsGrid({ linkBlock, scope }: Props): JSX.Element {
             valueOptions: typeOptions,
             width: 130,
         },
+        ...(enableRedirectType
+            ? [
+                  {
+                      field: "redirectType",
+                      headerName: intl.formatMessage({
+                          id: "dextinity.pages.redirects.redirect.redirectType",
+                          defaultMessage: "Redirect type",
+                      }),
+                      renderCell: (params) =>
+                          params.row.sourceType === "path" ? (
+                              <Typography>{redirectTypeOptions.find((option) => option.value === params.value)?.label}</Typography>
+                          ) : null,
+                      sortable: false,
+                      filterOperators: getGridSingleSelectOperators(),
+                      type: "singleSelect",
+                      valueOptions: redirectTypeOptions,
+                      width: 160,
+                  } satisfies GridColDef,
+              ]
+            : []),
         {
             field: "active",
             headerName: intl.formatMessage({
@@ -191,7 +230,7 @@ export function RedirectsGrid({ linkBlock, scope }: Props): JSX.Element {
             headerName: "",
             renderCell: (params) => (
                 <IconWrapper>
-                    <IconButton color="primary" component={StackLink} pageName="edit" payload={params.id.toString()}>
+                    <IconButton color="primary" component={StackLink} nativeButton={false} pageName="edit" payload={params.id.toString()}>
                         <Edit />
                     </IconButton>
                     <TableDeleteButton
@@ -229,6 +268,7 @@ export function RedirectsGrid({ linkBlock, scope }: Props): JSX.Element {
         },
         context: LocalErrorScopeApolloContext,
         fetchPolicy: "cache-and-network",
+        notifyOnNetworkStatusChange: false,
     });
 
     if (error) {

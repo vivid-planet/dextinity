@@ -1,6 +1,5 @@
-import { useMutation } from "@apollo/client";
-import type { ApolloError } from "@apollo/client/errors";
-import type { FetchResult } from "@apollo/client/link/core";
+import type { ApolloClient, ErrorLike } from "@apollo/client";
+import { useMutation } from "@apollo/client/react";
 
 import type { BlockInterface } from "../blocks/types";
 import type { GQLRedirectInput } from "../graphql.generated";
@@ -12,13 +11,17 @@ import {
     updateRedirectMutation,
 } from "./RedirectForm";
 
-const convertRedirectFormToApiInput = ({ sourceType, source, target, comment }: FormValues, linkBlock: BlockInterface): GQLRedirectInput => {
+const convertRedirectFormToApiInput = (
+    { sourceType, source, target, comment, redirectType }: FormValues,
+    linkBlock: BlockInterface,
+): GQLRedirectInput => {
     const apiInput: GQLRedirectInput = {
         sourceType,
         source,
         target: linkBlock.state2Output(target),
         comment,
         generationType: "manual",
+        redirectType,
     };
 
     return apiInput;
@@ -30,8 +33,8 @@ export const useSubmitMutation = (
     linkBlock: BlockInterface,
     scope: Record<string, unknown>,
 ): [
-    (values: FormValues) => Promise<FetchResult<GQLCreateRedirectMutation | GQLUpdateRedirectMutation>>,
-    { loading: boolean; error: ApolloError | undefined },
+    (values: FormValues) => Promise<ApolloClient.MutateResult<GQLCreateRedirectMutation | GQLUpdateRedirectMutation>>,
+    { loading: boolean; error: ErrorLike | undefined },
 ] => {
     const [create, { loading: createLoading, error: createError }] = useMutation<GQLCreateRedirectMutation>(createRedirectMutation);
     const [update, { loading: updateLoading, error: updateError }] = useMutation<GQLUpdateRedirectMutation>(updateRedirectMutation);

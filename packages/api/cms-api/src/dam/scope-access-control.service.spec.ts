@@ -1,11 +1,11 @@
 import { Test } from "@nestjs/testing";
 import { describe, expect, it, vi } from "vitest";
 
-import type { CurrentUser } from "../user-permissions/dto/current-user";
-import { ACCESS_CONTROL_SERVICE } from "../user-permissions/user-permissions.constants";
-import type { AccessControlServiceInterface } from "../user-permissions/user-permissions.types";
-import { DAM_DISABLE_SCOPE_ACCESS_CONTROL } from "./dam.constants";
-import { DamScopeAccessControlService } from "./scope-access-control.service";
+import type { CurrentUser } from "../user-permissions/dto/current-user.js";
+import { ACCESS_CONTROL_SERVICE } from "../user-permissions/user-permissions.constants.js";
+import type { AccessControlServiceInterface } from "../user-permissions/user-permissions.types.js";
+import { DAM_DISABLE_SCOPE_ACCESS_CONTROL } from "./dam.constants.js";
+import { DamScopeAccessControlService } from "./scope-access-control.service.js";
 
 const user = { id: "1" } as CurrentUser;
 const scope = { domain: "main" };

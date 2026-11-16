@@ -1,7 +1,7 @@
 import { Field, RadioGroupField, SelectField } from "@dextinity/admin";
 import { Box, Divider, ToggleButton as MuiToggleButton, ToggleButtonGroup as MuiToggleButtonGroup } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 import { type Dispatch, type ReactNode, type SetStateAction, useCallback, useMemo } from "react";
 import { FormattedMessage, type MessageDescriptor } from "react-intl";
 
@@ -353,7 +353,7 @@ export const createOneOfBlock = <T extends boolean = boolean>(
                         const newSelectedBlock = getActiveBlock(newState);
 
                         if (previousSelectedBlock.block && previousSelectedBlock.state && newSelectedBlock.type !== previousSelectedBlock.type) {
-                            if (isEqual(previousSelectedBlock.block.defaultValues(), previousSelectedBlock.state.props)) {
+                            if (deepEqual(previousSelectedBlock.block.defaultValues(), previousSelectedBlock.state.props)) {
                                 newState = {
                                     ...newState,
                                     attachedBlocks: newState.attachedBlocks.filter((c) => c.type !== previousSelectedBlock.state.type),
@@ -389,7 +389,11 @@ export const createOneOfBlock = <T extends boolean = boolean>(
             return (
                 <SelectPreviewComponent>
                     <HiddenInSubroute>
-                        <Box paddingBottom={isInPaper ? 0 : 3}>
+                        <Box
+                            sx={{
+                                paddingBottom: isInPaper ? 0 : 3,
+                            }}
+                        >
                             <BlocksFinalForm<{ blockType: string }>
                                 onSubmit={({ blockType }) => {
                                     handleBlockSelect(blockType);
@@ -400,7 +404,11 @@ export const createOneOfBlock = <T extends boolean = boolean>(
                             >
                                 {variant === "select" && (
                                     <>
-                                        <Box padding={isInPaper ? 3 : 0}>
+                                        <Box
+                                            sx={{
+                                                padding: isInPaper ? 3 : 0,
+                                            }}
+                                        >
                                             <SelectField name="blockType" options={options} fullWidth required />
                                         </Box>
                                         {isInPaper && activeBlock.block && <Divider />}
@@ -408,7 +416,13 @@ export const createOneOfBlock = <T extends boolean = boolean>(
                                 )}
                                 {variant === "radio" && (
                                     <>
-                                        <Box display="flex" flexDirection="column" padding={3}>
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                padding: 3,
+                                            }}
+                                        >
                                             <RadioGroupField name="blockType" fullWidth options={options} />
                                         </Box>
                                         {activeBlock.block && <Divider />}
@@ -416,7 +430,11 @@ export const createOneOfBlock = <T extends boolean = boolean>(
                                 )}
                                 {variant === "toggle" && (
                                     <>
-                                        <Box padding={isInPaper ? 3 : 0}>
+                                        <Box
+                                            sx={{
+                                                padding: isInPaper ? 3 : 0,
+                                            }}
+                                        >
                                             <Field name="blockType" fullWidth>
                                                 {({ input: { value, onChange } }) => (
                                                     <ToggleButtonGroup
@@ -444,7 +462,11 @@ export const createOneOfBlock = <T extends boolean = boolean>(
                         </Box>
                     </HiddenInSubroute>
                     {activeBlock.block && activeBlock.state ? (
-                        <Box padding={isInPaper && !activeBlock.block.definesOwnPadding ? 3 : 0}>
+                        <Box
+                            sx={{
+                                padding: isInPaper && !activeBlock.block.definesOwnPadding ? 3 : 0,
+                            }}
+                        >
                             <HoverPreviewComponent key={activeBlock.type} componentSlug={`#${activeBlock.type}`}>
                                 <activeBlock.block.AdminComponent
                                     state={activeBlock.state.props}

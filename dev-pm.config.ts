@@ -140,6 +140,18 @@ export default defineConfig({
             group: ["storybook", "docs"],
         },
 
+        //group dextinity-ui
+        {
+            name: "dextinity-ui",
+            script: "pnpm --filter @dextinity/ui run dev",
+            group: ["dextinity-ui"],
+        },
+        {
+            name: "storybook-dextinity-ui",
+            script: "pnpm --filter @dextinity/ui run storybook",
+            group: ["storybook", "docs"],
+        },
+
         //group brevo
         {
             name: "brevo-api",
@@ -272,13 +284,19 @@ export default defineConfig({
             script: "pnpm --filter dextinity-demo-site run css:types:watch",
             group: ["demo-site", "demo"],
         },
+        {
+            name: "demo-site-storybook",
+            script: "pnpm --filter dextinity-demo-site run storybook",
+            group: ["demo-site", "demo"],
+            waitOn: waitOnPackages("@dextinity/site-nextjs"),
+        },
 
         // group docs
         {
             name: "storybook",
             script: "pnpm --filter dextinity-storybook run storybook",
             group: ["storybook", "docs"],
-            waitOn: ["tcp:26646", "tcp:26647", "tcp:6066"], // storybook-dextinity-admin, storybook-dextinity-cms-admin, storybook-dextinity-mail-react
+            waitOn: ["tcp:26646", "tcp:26647", "tcp:6066", "tcp:26648"], // storybook-dextinity-admin, storybook-dextinity-cms-admin, storybook-dextinity-mail-react, storybook-dextinity-ui
         },
         {
             name: "docs",

@@ -2,7 +2,7 @@ import {
     DisablePermissionCheck,
     REQUIRED_PERMISSION_METADATA_KEY,
     type RequiredPermissionMetadata,
-} from "../user-permissions/decorators/required-permission.decorator";
+} from "../user-permissions/decorators/required-permission.decorator.js";
 
 export function entityChecksScope(entity: object): boolean {
     const metadata = Reflect.getMetadata(REQUIRED_PERMISSION_METADATA_KEY, entity) as RequiredPermissionMetadata | undefined;

@@ -3,8 +3,9 @@
 exports[`Form Scope > generates prop for scope 1`] = `
 "
     import { FormattedMessage } from "react-intl";
-import { useApolloClient } from "@apollo/client";
-import { useQuery } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
+import { useQuery } from "@apollo/client/react";
+import { skipToken } from "@apollo/client/react";
 import { gql } from "@apollo/client";
 import { CheckboxField } from "@dextinity/admin";
 import { Field } from "@dextinity/admin";
@@ -46,7 +47,7 @@ import { GQLCreateProductMutationVariables } from "./ProductForm.gql.generated";
 import { updateProductMutation } from "./ProductForm.gql";
 import { GQLUpdateProductMutation } from "./ProductForm.gql.generated";
 import { GQLUpdateProductMutationVariables } from "./ProductForm.gql.generated";
-    import isEqual from "lodash.isequal";
+    import { deepEqual } from "fast-equals";
 
     
 
@@ -72,7 +73,7 @@ scope: GQLProductScope;
         
         const { data, error, loading, refetch } = useQuery<GQLProductQuery, GQLProductQueryVariables>(
             productQuery,
-            id ? { variables: { id } } : { skip: true },
+            id ? { variables: { id }, notifyOnNetworkStatusChange: false } : skipToken,
         );
         
 
@@ -149,7 +150,7 @@ scope: GQLProductScope;
                 onSubmit={handleSubmit}
                 mode={mode}
                 initialValues={initialValues}
-                initialValuesEqual={isEqual} //required to compare block data correctly
+                initialValuesEqual={deepEqual} //required to compare block data correctly
                 subscription={{  }}
             >
                 {() => (
@@ -182,8 +183,9 @@ scope: GQLProductScope;
 exports[`Form Scope > uses scope from context by default 1`] = `
 "
     import { FormattedMessage } from "react-intl";
-import { useApolloClient } from "@apollo/client";
-import { useQuery } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
+import { useQuery } from "@apollo/client/react";
+import { skipToken } from "@apollo/client/react";
 import { gql } from "@apollo/client";
 import { CheckboxField } from "@dextinity/admin";
 import { Field } from "@dextinity/admin";
@@ -226,7 +228,7 @@ import { GQLCreateProductMutationVariables } from "./ProductForm.gql.generated";
 import { updateProductMutation } from "./ProductForm.gql";
 import { GQLUpdateProductMutation } from "./ProductForm.gql.generated";
 import { GQLUpdateProductMutationVariables } from "./ProductForm.gql.generated";
-    import isEqual from "lodash.isequal";
+    import { deepEqual } from "fast-equals";
 
     
 
@@ -251,7 +253,7 @@ id?: string;
         
         const { data, error, loading, refetch } = useQuery<GQLProductQuery, GQLProductQueryVariables>(
             productQuery,
-            id ? { variables: { id } } : { skip: true },
+            id ? { variables: { id }, notifyOnNetworkStatusChange: false } : skipToken,
         );
         
 
@@ -328,7 +330,7 @@ id?: string;
                 onSubmit={handleSubmit}
                 mode={mode}
                 initialValues={initialValues}
-                initialValuesEqual={isEqual} //required to compare block data correctly
+                initialValuesEqual={deepEqual} //required to compare block data correctly
                 subscription={{  }}
             >
                 {() => (
@@ -361,8 +363,9 @@ id?: string;
 exports[`Form Scope > uses scope from context with custom naming 1`] = `
 "
     import { FormattedMessage } from "react-intl";
-import { useApolloClient } from "@apollo/client";
-import { useQuery } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
+import { useQuery } from "@apollo/client/react";
+import { skipToken } from "@apollo/client/react";
 import { gql } from "@apollo/client";
 import { CheckboxField } from "@dextinity/admin";
 import { Field } from "@dextinity/admin";
@@ -405,7 +408,7 @@ import { GQLCreateProductMutationVariables } from "./ProductForm.gql.generated";
 import { updateProductMutation } from "./ProductForm.gql";
 import { GQLUpdateProductMutation } from "./ProductForm.gql.generated";
 import { GQLUpdateProductMutationVariables } from "./ProductForm.gql.generated";
-    import isEqual from "lodash.isequal";
+    import { deepEqual } from "fast-equals";
 
     
 
@@ -430,7 +433,7 @@ id?: string;
         
         const { data, error, loading, refetch } = useQuery<GQLProductQuery, GQLProductQueryVariables>(
             productQuery,
-            id ? { variables: { id } } : { skip: true },
+            id ? { variables: { id }, notifyOnNetworkStatusChange: false } : skipToken,
         );
         
 
@@ -507,7 +510,7 @@ id?: string;
                 onSubmit={handleSubmit}
                 mode={mode}
                 initialValues={initialValues}
-                initialValuesEqual={isEqual} //required to compare block data correctly
+                initialValuesEqual={deepEqual} //required to compare block data correctly
                 subscription={{  }}
             >
                 {() => (

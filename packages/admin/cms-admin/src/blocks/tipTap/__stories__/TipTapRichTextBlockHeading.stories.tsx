@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { type ReactNode, useState } from "react";
+import { type PropsWithChildren, useState } from "react";
 import { expect, waitFor, within } from "storybook/test";
 
 import {
@@ -18,7 +18,7 @@ function StatePreview({ state }: { state: TipTapRichTextBlockState }) {
     );
 }
 
-function StoryWrapper({ children, state }: { children: ReactNode; state: TipTapRichTextBlockState }) {
+function StoryWrapper({ children, state }: PropsWithChildren<{ state: TipTapRichTextBlockState }>) {
     return (
         <>
             {children}

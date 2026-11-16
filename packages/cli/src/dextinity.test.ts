@@ -2,9 +2,10 @@ import { execFileSync } from "child_process";
 import fs from "fs";
 import os from "os";
 import { join } from "path";
+import { fileURLToPath } from "url";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-const executable = join(__dirname, "../bin/dextinity.js");
+const executable = fileURLToPath(new URL("../bin/dextinity.js", import.meta.url));
 
 describe("dextinity executable", () => {
     let workingDirectory: string;

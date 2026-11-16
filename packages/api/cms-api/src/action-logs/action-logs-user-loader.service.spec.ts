@@ -1,9 +1,9 @@
 import { createMock } from "@golevelup/ts-vitest";
 import { describe, expect, it, vi } from "vitest";
 
-import type { User } from "../user-permissions/interfaces/user";
-import type { UserPermissionsService } from "../user-permissions/user-permissions.service";
-import { ActionLogsUserLoaderService } from "./action-logs-user-loader.service";
+import type { User } from "../user-permissions/interfaces/user.js";
+import type { UserPermissionsService } from "../user-permissions/user-permissions.service.js";
+import { ActionLogsUserLoaderService } from "./action-logs-user-loader.service.js";
 
 const userA: User = { id: "a", name: "User A", email: "a@example.com" };
 

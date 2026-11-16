@@ -30,7 +30,12 @@ const SingleFileSelectStory = ({ noBackground, hasExistingFiles }: StoryProps) =
     const [tooManyFilesSelected, setTooManyFilesSelected] = useState(false);
 
     return (
-        <Box padding={4} sx={{ backgroundColor: noBackground ? "transparent" : "white" }}>
+        <Box
+            sx={{
+                padding: 4,
+                backgroundColor: noBackground ? "transparent" : "white",
+            }}
+        >
             <Typography variant="h6" gutterBottom>
                 Single File Select
             </Typography>
@@ -75,7 +80,12 @@ const MultipleFileSelectStory = ({ noBackground, hasExistingFiles }: StoryProps)
     const maxNumberOfFiles = 4;
 
     return (
-        <Box padding={4} sx={{ backgroundColor: noBackground ? "transparent" : "white" }}>
+        <Box
+            sx={{
+                padding: 4,
+                backgroundColor: noBackground ? "transparent" : "white",
+            }}
+        >
             <Typography variant="h6" gutterBottom>
                 Multiple File Select
             </Typography>

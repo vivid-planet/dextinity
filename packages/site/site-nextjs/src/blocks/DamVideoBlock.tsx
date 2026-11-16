@@ -1,3 +1,5 @@
+"use client";
+
 import { DamVideoBlock as SiteReactDamVideoBlock, type VideoPreviewImageProps } from "@dextinity/site-react";
 import type { ComponentProps } from "react";
 

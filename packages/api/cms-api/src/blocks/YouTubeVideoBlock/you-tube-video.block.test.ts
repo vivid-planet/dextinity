@@ -4,7 +4,7 @@ import { transformToBlockSave } from "../block.js";
 import { YouTubeVideoBlock } from "./you-tube-video.block.js";
 
 const emptyVideoSettings = { autoplay: null, showControls: null, loop: null };
-const emptyPreviewImage = { damFileId: null, cropArea: null };
+const emptyPreviewImage = { damFileId: null, cropArea: null, $$coreVersion: 1 };
 
 describe("YouTubeVideoBlock migrations", () => {
     it("migrates block instances that were never migrated", () => {
@@ -15,6 +15,7 @@ describe("YouTubeVideoBlock migrations", () => {
             ...emptyVideoSettings,
             previewImage: emptyPreviewImage,
             $$vendorVersion: 2,
+            $$coreVersion: 1,
         });
     });
 
@@ -27,6 +28,7 @@ describe("YouTubeVideoBlock migrations", () => {
                 ...emptyVideoSettings,
                 previewImage: emptyPreviewImage,
                 $$vendorVersion: 2,
+                $$coreVersion: 1,
             });
         });
 
@@ -39,6 +41,7 @@ describe("YouTubeVideoBlock migrations", () => {
                 ...emptyVideoSettings,
                 previewImage: { ...previewImage, ...emptyPreviewImage },
                 $$vendorVersion: 2,
+                $$coreVersion: 1,
             });
         });
     });

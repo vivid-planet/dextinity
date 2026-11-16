@@ -103,7 +103,7 @@ title: string | null;
 
 The generated Admin and Site types declare the field as `title: string | null`, so check for absence with `!title` or `title === null`, not `title === undefined`. Default values in destructuring (`{ title = "" }`) don't apply to `null`; use `title ?? ""` instead. Use `null` as the Admin default value of an optional field.
 
-Block data saved without an optional field (e.g., before the field was added) is loaded with the field set to `null`, and the `migrateBlocks` command persists it, so adding an optional field needs no block migration.
+Adding an optional field to an existing block needs a block migration that sets the field to `null` in the existing data (see [migration.md](migration.md)).
 
 ---
 

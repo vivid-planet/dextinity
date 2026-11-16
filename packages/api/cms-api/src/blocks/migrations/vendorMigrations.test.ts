@@ -276,6 +276,7 @@ describe("block extending a block with vendor migrations", () => {
             subtitle: null,
             $$version: 1,
             $$vendorVersion: 1,
+            $$coreVersion: 1,
         });
     });
 
@@ -285,6 +286,7 @@ describe("block extending a block with vendor migrations", () => {
             subtitle: null,
             $$version: 1,
             $$vendorVersion: 1,
+            $$coreVersion: 1,
         });
     });
 
@@ -309,6 +311,7 @@ describe("block extending a block with vendor migrations", () => {
         expect(transformToBlockSave(LibraryBlock.blockDataFactory({ text: "hello" }))).toEqual({
             text: "hello+vendor1",
             $$vendorVersion: 1,
+            $$coreVersion: 1,
         });
     });
 });
@@ -356,6 +359,7 @@ describe("block with vendor migrations", () => {
             text: "hello+vendor1+own1+own2",
             $$version: 2,
             $$vendorVersion: 1,
+            $$coreVersion: 1,
         });
     });
 

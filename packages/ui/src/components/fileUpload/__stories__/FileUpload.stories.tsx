@@ -34,10 +34,10 @@ type FileUploadStoryArgs = FileUploadProps & FieldStoryArgs;
 
 /**
  * Binds the value to its story arg, so the Controls panel drives it and a change on the canvas updates the arg. The `Field` around it,
- * with `layout="group"`, adds the label, help, and validation message.
+ * with `layout="group"`, adds the label, info, and validation message.
  */
 function ControlledFileUpload({ storyId, ...args }: FileUploadStoryArgs & { storyId: string }) {
-    const { field, control } = splitFieldArgs(args);
+    const { field, control } = splitFieldArgs(args, ["description"]);
     const [value, setValue] = useControlledArg(control, "value", { id: storyId });
     return (
         <StoryField field={field} layout="group">
@@ -85,12 +85,13 @@ const meta = {
         onChange: fn(),
         onUpload: simulateUpload,
         onUploadingChange: fn(),
-        hint: "PDF or image up to 5 MB",
+        description: "PDF or image up to 5 MB",
         accept: "application/pdf,image/*",
         maxSize: 5_000_000,
     },
     argTypes: {
         ...groupFieldArgTypes,
+        description: { control: "text" },
         multiple: { control: "boolean" },
         disabled: { control: "boolean" },
         readOnly: { control: "boolean" },
@@ -112,7 +113,7 @@ type Story = StoryObj<typeof meta>;
  * One file: the drop area makes way for it until it is removed.
  *
  * **Rules**
- * - Say what can be uploaded in `hint`.
+ * - Say what can be uploaded in `description`.
  * - Let a failed upload be tried again instead of making the user choose the file again.
  */
 export const Default: Story = {
@@ -178,7 +179,7 @@ export const MaxFiles: Story = {
         multiple: true,
         maxFiles: 3,
         label: "Gallery images",
-        hint: "Up to 3 images",
+        description: "Up to 3 images",
         accept: "image/*",
         value: [
             { id: "1", name: "team-offsite.jpg", size: 2_400_000, url: "#", thumbnailUrl: landscapeImage },

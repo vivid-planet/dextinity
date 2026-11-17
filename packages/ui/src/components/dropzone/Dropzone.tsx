@@ -104,7 +104,7 @@ export interface DropzoneProps extends Omit<HTMLAttributes<HTMLDivElement>, "cla
      */
     overlay?: boolean;
     /** What can be uploaded, e.g. "Images, PDF, video up to 200 MB". */
-    hint?: ReactNode;
+    description?: ReactNode;
     /** A message about rejected files or a failed upload. */
     error?: ReactNode;
     /** The uploads in progress or just finished, listed below the drop area. */
@@ -152,7 +152,7 @@ export const Dropzone = forwardRef<HTMLDivElement, DropzoneProps>(function Dropz
         disabled = false,
         overlay = false,
         children,
-        hint,
+        description,
         error,
         uploads = [],
         labels: labelsProp,
@@ -279,15 +279,15 @@ export const Dropzone = forwardRef<HTMLDivElement, DropzoneProps>(function Dropz
                 ) : (
                     <>
                         <span className={styles.title}>{labels.title}</span>
-                        <span className={styles.hint}>
+                        <span className={styles.description}>
                             {labels.or}{" "}
                             <button type="button" className={styles.browse} disabled={disabled}>
                                 {labels.browse}
                             </button>
-                            {hint != null && (
+                            {description != null && (
                                 <>
                                     <span aria-hidden="true">{" · "}</span>
-                                    {hint}
+                                    {description}
                                 </>
                             )}
                         </span>

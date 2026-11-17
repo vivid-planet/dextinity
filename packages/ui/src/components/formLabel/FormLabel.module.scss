@@ -1,4 +1,4 @@
-@use "helpButton";
+@use "infoButton";
 
 .root {
     display: inline-flex;
@@ -25,6 +25,6 @@
     color: var(--dextinity-form-label-required-color);
 }
 
-.helpButton {
-    @include helpButton.button;
+.infoButton {
+    @include infoButton.button;
 }

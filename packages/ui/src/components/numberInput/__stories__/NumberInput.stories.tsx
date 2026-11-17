@@ -71,7 +71,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * Put it in a `Field` for the label, help, and validation message: `<Field label="Quantity"><NumberInput … /></Field>`.
+ * Put it in a `Field` for the label, description, and validation message: `<Field label="Quantity"><NumberInput … /></Field>`.
  *
  * **Rules**
  * - Always controlled: `value` + `onChange`, `null` while the field is empty.
@@ -113,7 +113,7 @@ export const Price: Story = {
  * `min` and `max` limit the value; the step buttons stop at the limits, and an entry outside is corrected when the field loses focus.
  */
 export const MinMax: Story = {
-    args: { label: "Columns", value: 4, min: 1, max: 4, helperText: "Between 1 and 4." },
+    args: { label: "Columns", value: 4, min: 1, max: 4, description: "Between 1 and 4." },
     play: async ({ args, canvas }) => {
         await expect(canvas.getByRole("button", { name: "Increase" })).toBeDisabled();
         const input = canvas.getByRole("textbox", { name: "Columns" });

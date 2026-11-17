@@ -91,8 +91,8 @@ export interface CheckboxGroupProps<Value extends string = string>
 
 /**
  * Chooses any number of options, all visible at once, optionally grouped in a hierarchy, e.g. the domains and languages of content scopes.
- * Put it in a `Field` with `layout="group"` for a label, help, and a validation message: the field's label names the group. On its own,
- * name it with `aria-label`.
+ * Put it in a `Field` with `layout="group"` for a label, description, and a validation message: the field's label names the group. On its
+ * own, name it with `aria-label`.
  */
 export const CheckboxGroup = forwardRef(function CheckboxGroup<Value extends string = string>(
     {

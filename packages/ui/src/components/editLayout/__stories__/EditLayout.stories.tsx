@@ -138,7 +138,7 @@ function JobAdFields() {
                     <p>These details appear in the list and on job boards.</p>
                 </div>
                 <div className={styles.fields}>
-                    <Field className={styles.full} label="Title" required helperText="Use gender-inclusive wording.">
+                    <Field className={styles.full} label="Title" required description="Use gender-inclusive wording.">
                         <Input name="title" value={title} onChange={(event) => setTitle(event.target.value)} />
                     </Field>
                     <Field label="Location">
@@ -153,7 +153,7 @@ function JobAdFields() {
                             ]}
                         />
                     </Field>
-                    <Field label="Salary from" suffix="€ gross / year" helperText="Required in Austria.">
+                    <Field label="Salary from" suffix="€ gross / year" description="Required in Austria.">
                         <Input name="salary" value={salary} onChange={(event) => setSalary(event.target.value)} />
                     </Field>
                 </div>

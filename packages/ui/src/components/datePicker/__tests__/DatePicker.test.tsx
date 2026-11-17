@@ -50,7 +50,7 @@ describe("DatePicker", () => {
 
     it("shows a typing error in the surrounding field's message", async () => {
         render(
-            <Field label="Published on" helperText="The day the article went live.">
+            <Field label="Published on" description="The day the article went live.">
                 <DatePicker name="publishedOn" value={null} onChange={vi.fn()} locale="de-AT" />
             </Field>,
         );

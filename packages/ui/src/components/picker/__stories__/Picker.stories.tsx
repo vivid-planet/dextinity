@@ -156,7 +156,7 @@ export default meta;
 type Story = StoryObj<PickerStoryArgs>;
 
 /**
- * Put it in a `Field` for the label, help, and validation message: `<Field label="Link target"><Picker … /></Field>`.
+ * Put it in a `Field` for the label, description, and validation message: `<Field label="Link target"><Picker … /></Field>`.
  *
  * **Rules**
  * - Use it for values chosen in a picker the application provides, e.g. a dialog with the page tree or the assets; for a list of

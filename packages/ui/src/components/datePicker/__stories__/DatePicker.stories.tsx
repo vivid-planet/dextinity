@@ -78,13 +78,13 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * Put it in a `Field` for the label, help, and validation message: `<Field label="Published on"><DatePicker … /></Field>`. Typed text that
- * is no valid day shows its error in the field's message.
+ * Put it in a `Field` for the label, description, and validation message: `<Field label="Published on"><DatePicker … /></Field>`. Typed
+ * text that is no valid day shows its error in the field's message.
  *
  * **Rules**
  * - Always controlled: `value` + `onChange`. The value is a day as `YYYY-MM-DD`, without time and time zone, so it is the same day
  *   for everyone; use `DateTimePicker` for an instant.
- * - Typing is as valid as the calendar: show the expected format in `placeholder` or `helperText` where users may not know it.
+ * - Typing is as valid as the calendar: show the expected format in `placeholder` or `description` where users may not know it.
  * - Limit the choice with `min` and `max` rather than validating after the fact.
  */
 export const Default: Story = {
@@ -177,7 +177,7 @@ export const Placeholder: Story = {
  * shows an error with the limits.
  */
 export const MinAndMax: Story = {
-    args: { locale: "en-GB", min: "2026-11-03", max: "2026-11-20", helperText: "Between 3 and 20 November" },
+    args: { locale: "en-GB", min: "2026-11-03", max: "2026-11-20", description: "Between 3 and 20 November" },
     play: async ({ args, canvas }) => {
         await userEvent.click(canvas.getByRole("button", { name: "Choose date" }));
         const grid = await screen.findByRole("grid");

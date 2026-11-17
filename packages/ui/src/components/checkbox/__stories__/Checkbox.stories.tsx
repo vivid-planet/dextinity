@@ -9,7 +9,7 @@ import { Checkbox, type CheckboxProps } from "../Checkbox";
 import checkboxTokens from "../Checkbox.tokens.scss?raw";
 import styles from "./Checkbox.stories.module.scss";
 
-type CheckboxStoryArgs = CheckboxProps & Pick<FieldStoryArgs, "required" | "helperText" | "validationMessage" | "state">;
+type CheckboxStoryArgs = CheckboxProps & Pick<FieldStoryArgs, "required" | "description" | "validationMessage" | "state">;
 
 /**
  * Binds the checkbox to the `checked` arg in both directions. With a field arg, it puts the checkbox in a `Field` with `layout="group"`.
@@ -104,7 +104,7 @@ const meta = {
     },
     argTypes: {
         required: fieldArgTypes.required,
-        helperText: fieldArgTypes.helperText,
+        description: fieldArgTypes.description,
         validationMessage: fieldArgTypes.validationMessage,
         state: fieldArgTypes.state,
         className: { control: false },

@@ -83,8 +83,8 @@ export interface SliderProps
 }
 
 /**
- * Picks a value in a range, e.g. the size of thumbnails. For a visible label, help, or a validation message, put it in a `Field` with
- * `layout="group"`; on its own, name it with `aria-label`.
+ * Picks a value in a range, e.g. the size of thumbnails. For a visible label, description, or a validation message, put it in a `Field`
+ * with `layout="group"`; on its own, name it with `aria-label`.
  */
 export const Slider = forwardRef<HTMLDivElement, SliderProps>(function Slider(
     {

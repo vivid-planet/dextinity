@@ -107,12 +107,12 @@ type Story = StoryObj<typeof meta>;
 
 /**
  * An `Input` in the frame makes a complete text field: it takes the label, message, and state from the field. Every other control works
- * the same way, e.g. `Select`, `DatePicker`, or `Textarea`: the controls have no label, help, or validation props of their own. A custom
- * control gets the props that connect it to its label and message from the `children` function.
+ * the same way, e.g. `Select`, `DatePicker`, or `Textarea`: the controls have no label, description, or validation props of their own. A
+ * custom control gets the props that connect it to its label and message from the `children` function.
  *
  * **Rules**
  * - Keep the label visible; a placeholder is never the only label.
- * - Help sits below the field and stays visible.
+ * - The description sits below the field and stays visible.
  */
 export const Default: Story = {
     play: async ({ canvas }) => {
@@ -122,9 +122,9 @@ export const Default: Story = {
     },
 };
 
-export const HelperText: Story = {
+export const Description: Story = {
     args: {
-        helperText: "Use gender-neutral wording.",
+        description: "Use gender-neutral wording.",
     },
     play: async ({ canvas }) => {
         await expect(canvas.getByRole("textbox")).toHaveAccessibleDescription("Use gender-neutral wording.");
@@ -132,19 +132,19 @@ export const HelperText: Story = {
 };
 
 /**
- * `helpText` adds an info button right after the label. Hover, keyboard focus, or a tap shows the text in a tooltip, and it describes
- * the control and the button for assistive technology. The button is named "More information"; translate it with `labels.helpText`, and
- * change its icon with `slots.helpIcon` or `slotProps.helpIcon`.
+ * `info` adds an info button right after the label. Hover, keyboard focus, or a tap shows the text in a tooltip, and it describes
+ * the control and the button for assistive technology. The button is named "More information"; translate it with `labels.infoButton`, and
+ * change its icon with `slots.infoIcon` or `slotProps.infoIcon`.
  *
- * **helpText or helperText?**
- * - `helpText` is background most users don't need, e.g. where a value is used. It stays hidden until asked for.
- * - `helperText` is what everyone needs to fill in the field, e.g. the expected format. It is always visible below the field.
+ * **`info` or `description`?**
+ * - `info` is background most users don't need, e.g. where a value is used. It stays hidden until asked for.
+ * - `description` is what everyone needs to fill in the field, e.g. the expected format. It is always visible below the field.
  */
-export const HelpText: Story = {
+export const Info: Story = {
     args: {
         label: "Meta title",
-        helpText: "Shown in search results and when the page is shared.",
-        helperText: "Up to 60 characters.",
+        info: "Shown in search results and when the page is shared.",
+        description: "Up to 60 characters.",
     },
     play: async ({ canvas }) => {
         const control = canvas.getByRole("textbox", { name: "Meta title" });
@@ -175,7 +175,7 @@ export const HelpText: Story = {
 export const AnyControl: Story = {
     render: () => (
         <div className={styles.stack}>
-            <Field label="Location" helperText="Where the job is based." required>
+            <Field label="Location" description="Where the job is based." required>
                 <Select
                     name="location"
                     value="vienna"
@@ -189,7 +189,7 @@ export const AnyControl: Story = {
             <Field label="Start date" state="error" validationMessage="Choose a day in the future.">
                 <DatePicker name="startDate" value="2026-01-12" onChange={() => undefined} locale="en-GB" />
             </Field>
-            <Field label="Employment" layout="group" helpText="Part-time is up to 30 hours a week.">
+            <Field label="Employment" layout="group" info="Part-time is up to 30 hours a week.">
                 <RadioGroup
                     value="full-time"
                     onChange={() => undefined}
@@ -228,7 +228,7 @@ export const Required: Story = {
 };
 
 /**
- * In the `error`, `warning`, and `success` states, the `validationMessage` replaces the help.
+ * In the `error`, `warning`, and `success` states, the `validationMessage` replaces the `description`.
  *
  * **Rules**
  * - Say what is missing and how to fix it.
@@ -237,7 +237,7 @@ export const Required: Story = {
 export const Error: Story = {
     args: {
         state: "error",
-        helperText: "Use gender-neutral wording.",
+        description: "Use gender-neutral wording.",
         validationMessage: "Enter a title.",
         children: <TextInput />,
     },
@@ -326,7 +326,7 @@ export const PrefixAndSuffix: Story = {
 export const CustomControl: Story = {
     args: {
         label: "Image quality",
-        helperText: "Higher values make larger files.",
+        description: "Higher values make larger files.",
         children: (control) => <RangeControl {...control} />,
     },
 };
@@ -339,7 +339,7 @@ export const StackedLayout: Story = {
     args: {
         label: "Description",
         layout: "stacked",
-        helperText: "Shown on the job posting.",
+        description: "Shown on the job posting.",
         children: (control) => <EditorControl {...control} />,
     },
     play: async ({ canvas }) => {

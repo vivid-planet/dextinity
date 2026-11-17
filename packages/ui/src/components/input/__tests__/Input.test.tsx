@@ -79,7 +79,7 @@ describe("Input", () => {
 
     it("takes its label, description, and state from a surrounding Field", () => {
         render(
-            <Field label="Title" helperText="Use gender-neutral wording." required disabled state="error">
+            <Field label="Title" description="Use gender-neutral wording." required disabled state="error">
                 <Input name="title" value="" onChange={() => {}} />
             </Field>,
         );

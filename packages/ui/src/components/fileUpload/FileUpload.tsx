@@ -109,7 +109,7 @@ export interface FileUploadProps
     /** The maximum number of files with `multiple`. The drop area hides once it is reached. */
     maxFiles?: number;
     /** What can be uploaded, shown in the drop area, e.g. "PDF up to 10 MB". */
-    hint?: ReactNode;
+    description?: ReactNode;
     /**
      * Prevents uploading and removing files. Ignored inside a `Field`, which takes it from its own `disabled`.
      *
@@ -166,7 +166,7 @@ export const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(function F
         maxSize,
         multiple = false,
         maxFiles,
-        hint,
+        description,
         disabled: disabledProp,
         readOnly: readOnlyProp,
         getErrorMessage,
@@ -388,7 +388,7 @@ export const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(function F
         >
             {showsDropzone && (
                 <Dropzone
-                    hint={hint}
+                    description={description}
                     {...slotProps?.dropzone}
                     className={clsx(styles.dropzone, slotProps?.dropzone?.className)}
                     accept={accept}

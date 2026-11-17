@@ -3,23 +3,23 @@ import { type ComponentPropsWithRef, type ElementType, type ReactNode, useRef, u
 
 import { Tooltip, type TooltipOpenChangeReason } from "../tooltip/Tooltip";
 
-export const defaultHelpTextButtonLabel = "More information";
+export const defaultInfoButtonLabel = "More information";
 
-interface HelpTextButtonProps {
-    helpText: ReactNode;
-    /** Id of the hidden copy of the help text, for the control's `aria-describedby`. */
-    helpTextId: string;
-    /** Props of the button, including the class of the caller's `helpButton` slot, which styles it with the `helpButton` mixin. */
+interface InfoButtonProps {
+    info: ReactNode;
+    /** Id of the hidden copy of the info, for the control's `aria-describedby`. */
+    infoId: string;
+    /** Props of the button, including the class of the caller's `infoButton` slot, which styles it with the `infoButton` mixin. */
     buttonProps: ComponentPropsWithRef<"button">;
     IconSlot: ElementType;
     iconProps: object;
 }
 
 /**
- * The info button after a label. Hover, keyboard focus, and a tap show the help text in a tooltip; a hidden copy of the text describes
+ * The info button after a label. Hover, keyboard focus, and a tap show the info in a tooltip; a hidden copy of the text describes
  * the control and the button for assistive technology.
  */
-export function HelpTextButton({ helpText, helpTextId, buttonProps, IconSlot, iconProps }: HelpTextButtonProps) {
+export function InfoButton({ info, infoId, buttonProps, IconSlot, iconProps }: InfoButtonProps) {
     const [open, setOpen] = useState(false);
     const pointerTypeRef = useRef<string | undefined>(undefined);
     const openedByTapRef = useRef(false);
@@ -36,7 +36,7 @@ export function HelpTextButton({ helpText, helpTextId, buttonProps, IconSlot, ic
     // A tap on a touch screen neither hovers nor focuses the button visibly, so a press opens the tooltip as well
     const ownProps: ComponentPropsWithRef<"button"> = {
         type: "button",
-        "aria-describedby": helpTextId,
+        "aria-describedby": infoId,
         onPointerDown: (event) => {
             pointerTypeRef.current = event.pointerType;
         },
@@ -48,13 +48,13 @@ export function HelpTextButton({ helpText, helpTextId, buttonProps, IconSlot, ic
 
     return (
         <>
-            <Tooltip content={helpText} open={open} onOpenChange={handleOpenChange} closeOnClick={false}>
+            <Tooltip content={info} open={open} onOpenChange={handleOpenChange} closeOnClick={false}>
                 <button {...mergeProps<"button">(ownProps, buttonProps)}>
                     <IconSlot {...iconProps} />
                 </button>
             </Tooltip>
-            <span id={helpTextId} hidden>
-                {helpText}
+            <span id={infoId} hidden>
+                {info}
             </span>
         </>
     );

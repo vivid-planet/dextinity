@@ -27,22 +27,22 @@ export function FormLabelLabelSlotTypeContract() {
 afterEach(cleanup);
 
 describe("FormLabel", () => {
-    it("keeps the asterisk and the help button out of the accessible name of the labeled field", () => {
+    it("keeps the asterisk and the info button out of the accessible name of the labeled field", () => {
         render(
             <>
-                <FormLabel htmlFor="title" required helpText="Shown in search results." helpTextId="title-help">
+                <FormLabel htmlFor="title" required info="Shown in search results." infoId="title-info">
                     Title
                 </FormLabel>
-                <input id="title" aria-describedby="title-help" />
+                <input id="title" aria-describedby="title-info" />
             </>,
         );
 
         expect(screen.getByRole("textbox", { name: "Title" })).toHaveAccessibleDescription("Shown in search results.");
     });
 
-    it("puts a focusable info button right after the label that shows the help text in a tooltip on a tap", async () => {
+    it("puts a focusable info button right after the label that shows the info in a tooltip on a tap", async () => {
         render(
-            <FormLabel htmlFor="title" helpText="Shown in search results." labels={{ helpText: "Mehr Informationen" }}>
+            <FormLabel htmlFor="title" info="Shown in search results." labels={{ infoButton: "Mehr Informationen" }}>
                 Title
             </FormLabel>,
         );

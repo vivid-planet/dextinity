@@ -113,15 +113,15 @@ export const Search: Story = {
 function TitleField() {
     const [title, setTitle] = useState("");
     return (
-        <Field label="Title" required helperText="Use gender-neutral wording." counter={`${title.length} / 60`}>
+        <Field label="Title" required description="Use gender-neutral wording." counter={`${title.length} / 60`}>
             <Input name="title" value={title} maxLength={60} onChange={(event) => setTitle(event.target.value)} />
         </Field>
     );
 }
 
 /**
- * In a `Field`, the input takes the field's label, help, and state, and the field draws the box: together they make a complete text
- * field. Set the label, help, validation, prefix, and suffix on the `Field`.
+ * In a `Field`, the input takes the field's label, description, and state, and the field draws the box: together they make a complete text
+ * field. Set the label, description, validation, prefix, and suffix on the `Field`.
  */
 export const InField: Story = {
     render: () => <TitleField />,

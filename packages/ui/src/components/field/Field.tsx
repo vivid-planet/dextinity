@@ -2,7 +2,7 @@ import { clsx } from "clsx";
 import { type ElementType, forwardRef, type HTMLAttributes, type MouseEvent, type ReactNode, useCallback, useId, useState } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
-import { defaultHelpTextButtonLabel, HelpTextButton } from "../formLabel/HelpTextButton";
+import { defaultInfoButtonLabel, InfoButton } from "../formLabel/InfoButton";
 import { Icon } from "../icon/Icon";
 import { Spinner } from "../spinner/Spinner";
 import styles from "./Field.module.scss";
@@ -45,8 +45,8 @@ export interface FieldControlProps {
  * Texts of the field, for translation.
  */
 export interface FieldLabels {
-    /** Accessible name of the info button that shows the `helpText`. */
-    helpText: string;
+    /** Accessible name of the info button that shows the `info`. */
+    infoButton: string;
     /**
      * Read as the description of a required control whose role can't be marked as required, e.g. a `CheckboxGroup` or the button of a
      * `Picker`. Other controls are marked with `aria-required`.
@@ -56,20 +56,20 @@ export interface FieldLabels {
 
 interface FieldSlots {
     /**
-     * Element for the `helpIcon` slot, the icon of the button that shows the `helpText`.
+     * Element for the `infoIcon` slot, the icon of the button that shows the `info`.
      *
      * @defaultValue `Icon` named `info`
      */
-    helpIcon?: ElementType;
+    infoIcon?: ElementType;
 }
 
 interface FieldSlotProps {
     /** Props for the `label` slot. */
     label?: SlotPropsValue<FieldOwnerState, "label">;
-    /** Props for the `helpButton` slot, the info button after the label that shows the `helpText`. */
-    helpButton?: SlotPropsValue<FieldOwnerState, "button">;
-    /** Props for the `helpIcon` slot, e.g. another icon `name`. */
-    helpIcon?: SlotPropsValue<FieldOwnerState, typeof Icon>;
+    /** Props for the `infoButton` slot, the info button after the label that shows the `info`. */
+    infoButton?: SlotPropsValue<FieldOwnerState, "button">;
+    /** Props for the `infoIcon` slot, e.g. another icon `name`. */
+    infoIcon?: SlotPropsValue<FieldOwnerState, typeof Icon>;
     /** Props for the `box` slot, the bordered area around the control. */
     box?: SlotPropsValue<FieldOwnerState, "div">;
     /** Props for the `prefix` slot. */
@@ -81,7 +81,7 @@ interface FieldSlotProps {
 }
 
 /**
- * Props shared by every field: label, help, validation, state, and size.
+ * Props shared by every field: label, info, description, validation, state, and size.
  */
 export interface FieldBaseProps {
     /**
@@ -97,12 +97,18 @@ export interface FieldBaseProps {
     required?: boolean;
     /**
      * Extra explanation behind an info button after the label, shown in a tooltip on hover, keyboard focus, and tap, and read as the
-     * control's description. Use it for background most users don't need; what everyone needs belongs in `helperText`.
+     * control's description. Use it for background most users don't need; what everyone needs belongs in `description`.
      */
-    helpText?: ReactNode;
-    /** Permanent help below the field, always visible. */
-    helperText?: ReactNode;
-    /** Message for the `state`. Replaces the help while the state is `success`, `warning`, or `error`. Say what is missing and how to fix it. */
+    info?: ReactNode;
+    /**
+     * What everyone needs to fill in the field, e.g. the expected format, shown below the field. A validation message replaces it; the
+     * `description` of a `Switch` in the field stays.
+     */
+    description?: ReactNode;
+    /**
+     * Message for the `state`. Replaces the `description` while the state is `success`, `warning`, or `error`. Say what is missing and
+     * how to fix it.
+     */
     validationMessage?: ReactNode;
     /**
      * Validation state, shown by the field's line and message color.
@@ -182,7 +188,7 @@ function hasContent(node: ReactNode) {
 }
 
 /**
- * The frame of a form field: label, required star, help text, actions, the bordered box with prefix and suffix, help, and validation
+ * The frame of a form field: label, required star, info, actions, the bordered box with prefix and suffix, description, and validation
  * message. Put any control in it, e.g. `<Field label="Title"><Input /></Field>`: the control takes the field's id, label, message,
  * and state. Wrap a custom control in it to get the same look and accessible connections, e.g. a third-party editor with
  * `layout="stacked"`.
@@ -191,8 +197,8 @@ export const Field = forwardRef<HTMLDivElement, FieldProps>(function Field(
     {
         label,
         required = false,
-        helpText,
-        helperText,
+        info,
+        description,
         validationMessage,
         state: stateProp = "default",
         disabled = false,
@@ -217,10 +223,10 @@ export const Field = forwardRef<HTMLDivElement, FieldProps>(function Field(
     const generatedId = useId();
     const controlId = controlIdProp ?? `${generatedId}control`;
     const labelId = `${generatedId}label`;
-    const helpTextId = `${generatedId}help`;
+    const infoId = `${generatedId}info`;
     const messageId = `${generatedId}message`;
     const requiredId = `${generatedId}required`;
-    const labels: FieldLabels = { helpText: defaultHelpTextButtonLabel, required: "Required", ...labelsProp };
+    const labels: FieldLabels = { infoButton: defaultInfoButtonLabel, required: "Required", ...labelsProp };
 
     const [actionPending, setActionPending] = useState(false);
     const [actionContent, setActionContent] = useState<ReactNode>(null);
@@ -242,15 +248,15 @@ export const Field = forwardRef<HTMLDivElement, FieldProps>(function Field(
 
     const shownValidationMessage = controlError ?? validationMessage;
     const showsValidation = state !== "default" && hasContent(shownValidationMessage);
-    const message = showsValidation ? shownValidationMessage : helperText;
+    const message = showsValidation ? shownValidationMessage : description;
     const hasMessage = hasContent(message);
     const hasLabel = hasContent(label);
-    const hasHelpText = hasContent(helpText);
+    const hasInfo = hasContent(info);
 
     const control: FieldControlProps = {
         id: controlId,
         "aria-labelledby": hasLabel ? labelId : undefined,
-        "aria-describedby": clsx(hasHelpText && helpTextId, hasMessage && messageId) || undefined,
+        "aria-describedby": clsx(hasInfo && infoId, hasMessage && messageId) || undefined,
         "aria-invalid": state === "error" ? true : undefined,
         "aria-required": required ? true : undefined,
         "aria-busy": ownerState.loading ? true : undefined,
@@ -287,14 +293,14 @@ export const Field = forwardRef<HTMLDivElement, FieldProps>(function Field(
         slotProps: slotProps?.label,
         ownerState,
     });
-    const helpButtonProps = resolveSlotProps<FieldOwnerState, "button", "button">({
-        ownProps: { className: styles.helpButton, "aria-label": labels.helpText },
-        slotProps: slotProps?.helpButton,
+    const infoButtonProps = resolveSlotProps<FieldOwnerState, "button", "button">({
+        ownProps: { className: styles.infoButton, "aria-label": labels.infoButton },
+        slotProps: slotProps?.infoButton,
         ownerState,
     });
-    const helpIconProps = resolveSlotProps<FieldOwnerState, typeof Icon, typeof Icon>({
+    const infoIconProps = resolveSlotProps<FieldOwnerState, typeof Icon, typeof Icon>({
         ownProps: { name: "info" },
-        slotProps: slotProps?.helpIcon,
+        slotProps: slotProps?.infoIcon,
         ownerState,
     });
     const boxProps = resolveSlotProps<FieldOwnerState, "div", "div">({
@@ -325,7 +331,7 @@ export const Field = forwardRef<HTMLDivElement, FieldProps>(function Field(
         </>
     );
     const controlContent = typeof children === "function" ? children(control) : children;
-    const hasLabelRow = hasLabel || hasHelpText || counter != null || actions != null;
+    const hasLabelRow = hasLabel || hasInfo || counter != null || actions != null;
 
     return (
         <FieldContext.Provider value={contextValue}>
@@ -351,13 +357,13 @@ export const Field = forwardRef<HTMLDivElement, FieldProps>(function Field(
                                     {labelContent}
                                 </label>
                             ))}
-                        {hasHelpText && (
-                            <HelpTextButton
-                                helpText={helpText}
-                                helpTextId={helpTextId}
-                                buttonProps={helpButtonProps}
-                                IconSlot={slots?.helpIcon ?? Icon}
-                                iconProps={helpIconProps}
+                        {hasInfo && (
+                            <InfoButton
+                                info={info}
+                                infoId={infoId}
+                                buttonProps={infoButtonProps}
+                                IconSlot={slots?.infoIcon ?? Icon}
+                                iconProps={infoIconProps}
                             />
                         )}
                         {counter != null && <span className={styles.counter}>{counter}</span>}

@@ -86,13 +86,6 @@ export default defineConfig({
             script: "pnpm --filter @dextinity/cms-api run generate-block-meta:watch",
             group: ["cms-api", "cms"],
         },
-        // api-generator
-        {
-            name: "api-generator",
-            script: "pnpm --filter @dextinity/api-generator run dev",
-            group: ["cms-api", "cms"],
-            waitOn: waitOnPackages("@dextinity/cms-api"),
-        },
 
         //group site-nextjs
         {

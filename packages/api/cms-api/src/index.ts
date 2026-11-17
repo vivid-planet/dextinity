@@ -125,17 +125,7 @@ export { BuildsService } from "./builds/builds.service.js";
 export { AutoBuildStatus } from "./builds/dto/auto-build-status.object.js";
 export { ChangesSinceLastBuild } from "./builds/entities/changes-since-last-build.entity.js";
 export { SKIP_BUILD_METADATA_KEY, SkipBuild } from "./builds/skip-build.decorator.js";
-export {
-    CRUD_GENERATOR_METADATA_KEY,
-    CRUD_SINGLE_GENERATOR_METADATA_KEY,
-    CrudField,
-    type CrudFieldOptions,
-    CrudGenerator,
-    type CrudGeneratorHooksService,
-    type CrudGeneratorOptions,
-    CrudSingleGenerator,
-    type CrudSingleGeneratorOptions,
-} from "./common/decorators/crud-generator.decorator.js";
+export { CrudField, type CrudFieldOptions } from "./common/decorators/crud-generator.decorator.js";
 export { getRequestContextHeadersFromRequest, RequestContext, type RequestContextInterface } from "./common/decorators/request-context.decorator.js";
 export { getRequestFromExecutionContext } from "./common/decorators/utils.js";
 export { CorePermission } from "./common/enum/core-permission.enum.js";

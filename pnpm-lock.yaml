@@ -1890,76 +1890,6 @@ importers:
 
   packages/agent-features: {}
 
-  packages/api/api-generator:
-    dependencies:
-      '@dextinity/cms-api':
-        specifier: workspace:*
-        version: link:../cms-api
-      chokidar:
-        specifier: ^6.0.0
-        version: 6.0.0
-      commander:
-        specifier: ^15.1.0
-        version: 15.1.0
-      pluralize:
-        specifier: ^8.0.0
-        version: 8.0.0
-      ts-morph:
-        specifier: ^28.0.0
-        version: 28.0.0
-      typescript:
-        specifier: ^6.0.3
-        version: 6.0.3
-    devDependencies:
-      '@dextinity/eslint-config':
-        specifier: workspace:*
-        version: link:../../eslint-config
-      '@mikro-orm/cli':
-        specifier: ^7.2.0
-        version: 7.2.5(dataloader@2.2.3)
-      '@mikro-orm/core':
-        specifier: ^7.2.0
-        version: 7.2.5(dataloader@2.2.3)
-      '@mikro-orm/decorators':
-        specifier: ^7.2.0
-        version: 7.2.5(@mikro-orm/core@7.2.5(dataloader@2.2.3))(reflect-metadata@0.2.2)
-      '@mikro-orm/postgresql':
-        specifier: ^7.2.0
-        version: 7.2.5(@mikro-orm/core@7.2.5(dataloader@2.2.3))
-      '@nestjs/graphql':
-        specifier: ^14.0.1
-        version: 14.0.3(@nestjs/common@12.2.0(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1))(@nestjs/core@12.2.0)(class-transformer@0.5.1)(class-validator@0.15.1)(graphql@16.15.0)(reflect-metadata@0.2.2)(ts-morph@28.0.0)(typescript@6.0.3)
-      '@types/node':
-        specifier: ^24.19.2
-        version: 24.19.2
-      '@types/pluralize':
-        specifier: ^0.0.33
-        version: 0.0.33
-      class-validator:
-        specifier: ^0.15.1
-        version: 0.15.1
-      eslint:
-        specifier: ^9.39.5
-        version: 9.39.5(jiti@2.7.0)(supports-color@8.1.1)
-      npm-run-all2:
-        specifier: ^9.0.4
-        version: 9.0.4
-      prettier:
-        specifier: ^3.10.1
-        version: 3.10.1
-      reflect-metadata:
-        specifier: ^0.2.2
-        version: 0.2.2
-      rimraf:
-        specifier: ^6.1.4
-        version: 6.1.4
-      unplugin-swc:
-        specifier: ^2.0.0
-        version: 2.0.0(@swc/core@1.16.22(@swc/helpers@0.5.23))(esbuild@0.28.2)(rolldown@1.2.16)(rollup@4.68.4)(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.107.1)(terser@5.51.2)(yaml@2.9.1))(webpack@5.112.2(@swc/core@1.16.22(@swc/helpers@0.5.23))(clean-css@5.3.3)(cssnano@6.1.2(postcss@8.5.32))(csso@5.0.5)(esbuild@0.28.2)(html-minifier-terser@7.2.0)(lightningcss@1.33.0)(postcss@8.5.32)(sharp@0.35.5(@types/node@24.19.2))(svgo@3.3.5)(uglify-js@3.19.3))
-      vitest:
-        specifier: ^5.1.0
-        version: 5.1.0(@opentelemetry/api@1.10.0)(@types/node@24.19.2)(@vitest/browser-playwright@5.1.0)(@vitest/ui@5.1.0)(jsdom@31.0.0(@noble/hashes@1.8.0))(msw@3.0.5(@types/node@24.19.2)(graphql@16.15.0)(supports-color@8.1.1)(typescript@6.0.3)(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.107.1)(terser@5.51.2)(yaml@2.9.1)))(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.107.1)(terser@5.51.2)(yaml@2.9.1))
-
   packages/api/brevo-api:
     dependencies:
       '@dextinity/cms-api':
@@ -10595,9 +10525,6 @@ packages:
   '@types/picomatch@4.0.3':
     resolution: {integrity: sha512-iG0T6+nYJ9FAPmx9SsUlnwcq1ZVRuCXcVEvWnntoPlrOpwtSTKNDC9uVAxTsC3PUvJ+99n4RpAcNgBbHX3JSnQ==}
 
-  '@types/pluralize@0.0.33':
-    resolution: {integrity: sha512-JOqsl+ZoCpP4e8TDke9W79FDcSgPAR0l6pixx2JHkhnRjvShyYiAYw2LVsnA7K08Y6DeOnaU6ujmENO4os/cYg==}
-
   '@types/prismjs@1.26.6':
     resolution: {integrity: sha512-vqlvI7qlMvcCBbVe0AKAb4f97//Hy0EBTaiW8AalRnG/xAN5zOiWWyrNqNXeq8+KAuvRewjCVY1+IPxk4RdNYw==}
 
@@ -11720,10 +11647,6 @@ packages:
   chokidar@5.0.0:
     resolution: {integrity: sha512-TQMmc3w+5AxjpL8iIiwebF73dRDF4fBIieAqGn9RGCWaEVwQ6Fb2cGe31Yns0RRIzii5goJ1Y7xbMwo1TxMplw==}
     engines: {node: '>= 20.19.0'}
-
-  chokidar@6.0.0:
-    resolution: {integrity: sha512-Ec2Z7wpcKBiMpR7DxteoqS/sq5G5d2A4fpxzPv6+fD7xNNdrTghn7L11YwV5EN1B3i72Erc3XVT5FkWIDx90+A==}
-    engines: {node: '>= 22.22'}
 
   chrome-trace-event@1.0.4:
     resolution: {integrity: sha512-rNjApaLzuwaOTjCiT8lSDdGN1APCiqkChLMJxJPWLunPAt5fy8xgU9/jNOchV84wfIxrA0lRQB7oCT8jrn/wrQ==}
@@ -28161,6 +28084,7 @@ snapshots:
       minimatch: 10.2.6
       path-browserify: 1.0.1
       tinyglobby: 0.2.17
+    optional: true
 
   '@tybys/wasm-util@0.10.4':
     dependencies:
@@ -28590,8 +28514,6 @@ snapshots:
       pg-types: 2.2.0
 
   '@types/picomatch@4.0.3': {}
-
-  '@types/pluralize@0.0.33': {}
 
   '@types/prismjs@1.26.6': {}
 
@@ -30129,10 +30051,6 @@ snapshots:
     dependencies:
       readdirp: 5.1.1
 
-  chokidar@6.0.0:
-    dependencies:
-      readdirp: 5.1.1
-
   chrome-trace-event@1.0.4: {}
 
   ci-info@3.9.0: {}
@@ -30230,7 +30148,8 @@ snapshots:
       raw-body: 2.5.3
       type-is: 1.6.18
 
-  code-block-writer@13.0.3: {}
+  code-block-writer@13.0.3:
+    optional: true
 
   collapse-white-space@2.1.0: {}
 
@@ -38806,6 +38725,7 @@ snapshots:
     dependencies:
       '@ts-morph/common': 0.29.0
       code-block-writer: 13.0.3
+    optional: true
 
   tsconfck@3.1.6(typescript@6.0.3):
     optionalDependencies:

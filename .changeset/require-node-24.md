@@ -6,7 +6,6 @@
 "@dextinity/admin-icons": major
 "@dextinity/admin-rte": major
 "@dextinity/agent-features": major
-"@dextinity/api-generator": major
 "@dextinity/brevo-admin": major
 "@dextinity/brevo-api": major
 "@dextinity/cli": major

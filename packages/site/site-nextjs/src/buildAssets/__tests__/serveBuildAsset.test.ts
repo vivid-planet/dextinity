@@ -36,6 +36,8 @@ describe("serveBuildAsset", () => {
                 return undefined;
             }),
             putFile: vi.fn(),
+            listFiles: vi.fn(),
+            deleteFiles: vi.fn(),
         };
 
         server = createServer(async (req, res) => {

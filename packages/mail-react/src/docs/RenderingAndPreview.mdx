@@ -1,0 +1,129 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta
+    title="Docs/Rendering and Preview"
+    summary="renderMailHtml on the server or client, use in the Mail Templates Module, MJML warnings, the Storybook addon, writing stories, and cross-client testing."
+/>
+
+# Rendering and Preview
+
+This page shows how to render a mail to HTML, and how to preview and test it.
+
+## Rendering to HTML
+
+Use `renderMailHtml` to convert the React tree to final HTML for sending:
+
+```tsx
+import { MjmlMailRoot, MjmlSection, MjmlColumn, MjmlText } from "@dextinity/mail-react";
+import { renderMailHtml } from "@dextinity/mail-react/server";
+
+const { html, mjmlWarnings } = await renderMailHtml(
+    <MjmlMailRoot theme={theme}>
+        <MjmlSection indent>
+            <MjmlColumn>
+                <MjmlText>Hello, world!</MjmlText>
+            </MjmlColumn>
+        </MjmlSection>
+    </MjmlMailRoot>,
+);
+```
+
+- **Server** (`@dextinity/mail-react/server`) — uses `mjml`, requires Node.js
+- **Client** (`@dextinity/mail-react/client`) — uses `mjml-browser`, works without `fs`
+- `renderMailHtml` is **not** on the main `@dextinity/mail-react` barrel — always import from `/server` or `/client`
+- Async — returns a promise of `{ html: string; mjmlWarnings: MjmlWarning[] }`; warnings are collected, not thrown
+- The server `renderMailHtml` turns off `mj-include` by default, because an include can read files on the server. To use it, pass `{ ignoreIncludes: false }` together with a `filePath` or `includePath` directory, and include files by a relative path inside it — MJML denies absolute paths and paths outside these directories.
+- Outside Storybook, wrap content in `MjmlMailRoot` yourself (the Storybook decorator handles it automatically).
+
+## Using It in the Mail Templates Module
+
+With the [Mail Templates Module](https://cms-docs.dextinity.com/docs/features-modules/mail-templates-module/), call `renderMailHtml` in the `generateMail` method of the `.mail.tsx` file. See [Using React](https://cms-docs.dextinity.com/docs/features-modules/mail-templates-module/#using-react) for a complete example.
+
+For the `config.pixelImageBlock` that the pixel-image blocks need, see [Blocks › Configuration](?path=/docs/docs-blocks--docs#configuration).
+
+## Logging MJML Warnings
+
+When generating emails outside Storybook (e.g., in a mail template's `generateMail` method), always log `mjmlWarnings` in development to catch structural issues early:
+
+```tsx
+const { html, mjmlWarnings } = await renderMailHtml(/* ... */);
+
+if (process.env.NODE_ENV === "development" && mjmlWarnings.length) {
+    console.warn(`${mjmlWarnings.length} MJML Warnings`, mjmlWarnings);
+}
+```
+
+**Never log MJML warnings in production.** These warnings flag structural MJML issues (e.g., content outside the section → column → content hierarchy) and are useful during development, but the rendered HTML is always produced successfully regardless of warnings. In rare cases, achieving a specific layout intentionally requires a technically invalid MJML structure — logging these in production would spam error trackers like Sentry with noise that cannot be acted upon.
+
+## Block Preview in the Admin
+
+See [Blocks › Block Preview in the Admin](?path=/docs/docs-blocks--docs#block-preview-in-the-admin).
+
+## Previewing in Storybook
+
+### Setup
+
+Add the addon to `.storybook/main.ts`:
+
+```ts
+const config = {
+    addons: [
+        // ... other addons
+        "@dextinity/mail-react/storybook",
+    ],
+};
+```
+
+This single entry auto-configures:
+
+- A **decorator** that wraps each story in `MjmlMailRoot`, converts MJML to HTML, and displays the rendered email
+- A **Copy Mail HTML** toolbar button for copying rendered HTML to the clipboard
+- A **Use Public Image URLs** toggle that replaces image sources with public placeholders — useful for testing on external services (Litmus, Email on Acid) that can't reach localhost
+- An **MJML Warnings** panel for debugging validation issues
+
+### Writing Stories
+
+Stories only define the email content — the decorator handles `MjmlMailRoot`. Every story should render the actual component being demonstrated (not just surrounding context):
+
+```tsx
+import { MjmlColumn, MjmlSection, MjmlText } from "@dextinity/mail-react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
+
+const config: Meta = { title: "Mails/WelcomeEmail" };
+export default config;
+
+export const Basic: StoryObj = {
+    render: () => (
+        <MjmlSection indent>
+            <MjmlColumn>
+                <MjmlText>Hello from my first email!</MjmlText>
+            </MjmlColumn>
+        </MjmlSection>
+    ),
+};
+```
+
+Pass a custom theme via `parameters.theme`:
+
+```tsx
+export const CustomTheme: StoryObj = {
+    parameters: { theme: createTheme({ sizes: { bodyWidth: 500 } }) },
+    render: () => (
+        <MjmlSection indent>
+            <MjmlColumn>
+                <MjmlText>Narrower email at 500px</MjmlText>
+            </MjmlColumn>
+        </MjmlSection>
+    ),
+};
+```
+
+### Development Workflow
+
+1. Write email templates as Storybook stories
+2. Preview rendered HTML in the Storybook canvas
+3. Check the **MJML Warnings** panel for validation issues
+
+## Cross-Client Testing
+
+Storybook previews show how the email renders in a web browser, but email clients vary dramatically. Use services like [Litmus](https://www.litmus.com/) or [Email on Acid](https://www.emailonacid.com/) to test the rendered HTML across real email clients and devices. The **Copy Mail HTML** button and **Use Public Image URLs** toggle in Storybook are designed for this workflow.

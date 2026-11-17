@@ -5,3 +5,8 @@
 
 [build.environment]
   NODE_OPTIONS = "--max-old-space-size=4096"
+
+[[redirects]]
+  from = "/docs/features-modules/building-html-emails/*"
+  to = "/docs/features-modules/building-html-emails/"
+  status = 301

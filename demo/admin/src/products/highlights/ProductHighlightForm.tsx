@@ -32,14 +32,14 @@ import {
 import type {
     GQLCreateProductHighlightMutation,
     GQLCreateProductHighlightMutationVariables,
-    GQLProductHighlightFormHandmadeDetailsFragment,
+    GQLProductHighlightFormDetailsFragment,
     GQLProductHighlightQuery,
     GQLProductHighlightQueryVariables,
     GQLUpdateProductHighlightMutation,
     GQLUpdateProductHighlightMutationVariables,
 } from "./ProductHighlightForm.gql.generated";
 
-type FormValues = GQLProductHighlightFormHandmadeDetailsFragment & {
+type FormValues = GQLProductHighlightFormDetailsFragment & {
     productCategory?: { id: string; label: string };
 };
 interface FormProps {
@@ -58,7 +58,7 @@ export function ProductHighlightForm({ id }: FormProps) {
         () =>
             data?.productHighlight
                 ? {
-                      ...filterByFragment<GQLProductHighlightFormHandmadeDetailsFragment>(productHighlightFormFragment, data.productHighlight),
+                      ...filterByFragment<GQLProductHighlightFormDetailsFragment>(productHighlightFormFragment, data.productHighlight),
                       productCategory: data.productHighlight.product.category,
                   }
                 : {},

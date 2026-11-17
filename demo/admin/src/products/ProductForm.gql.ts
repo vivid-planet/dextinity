@@ -2,7 +2,7 @@ import { gql } from "@apollo/client";
 import { damFileFieldFragment, finalFormFileUploadFragment } from "@dextinity/cms-admin";
 
 export const productFormFragment = gql`
-    fragment ProductFormManual on Product {
+    fragment ProductForm on Product {
         title
         slug
         description
@@ -55,7 +55,7 @@ export const productQuery = gql`
         product(id: $id) {
             id
             updatedAt
-            ...ProductFormManual
+            ...ProductForm
         }
     }
     ${productFormFragment}
@@ -67,7 +67,7 @@ export const createProductMutation = gql`
             product {
                 id
                 updatedAt
-                ...ProductFormManual
+                ...ProductForm
             }
             errors {
                 code
@@ -83,7 +83,7 @@ export const updateProductMutation = gql`
         updateProduct(id: $id, input: $input) {
             id
             updatedAt
-            ...ProductFormManual
+            ...ProductForm
         }
     }
     ${productFormFragment}

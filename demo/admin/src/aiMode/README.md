@@ -43,7 +43,7 @@ The tools themselves, however, run in the strategy's own RPC pipeline, where non
 
 A refusal is an expected outcome of a tool call, so a tool returns it as an error result with the reason (`errorResult`, `notSignedInResult`) rather than throwing: the agent can act on "You may not read the page tree of this scope", but not on the "Internal server error" the MCP layer makes of an exception.
 
-`get_page` returns the page as its editor sees it: with hidden blocks, unpublished and archived link targets, and DAM URLs that work before the page is published. The block transformers read that visibility from the headers of the GraphQL request, which a call in the RPC pipeline doesn't have, so `get_page` resolves them per call with the headers of the admin's requests.
+`get_page` returns the page as its editor sees it: with hidden blocks, unpublished and archived link targets, and DAM URLs that work before the page is published. The block transformers read that visibility from the headers of the GraphQL request, which a call in the RPC pipeline doesn't have, so `get_page` resolves them per call with the headers of the admin's requests. The registered request also has to carry its context ID (`REQUEST_CONTEXT_ID`), as the GraphQL module's does: `BlocksTransformerService` resolves the transformers' services under the context ID it finds on the request, and without it they would get a context without these headers.
 
 The server is stateless, so any replica of the API can answer a call.
 

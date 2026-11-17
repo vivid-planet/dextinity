@@ -2,7 +2,7 @@ import { clsx } from "clsx";
 import { type ElementType, forwardRef, type HTMLAttributes, type MouseEvent, type ReactNode, useCallback, useId, useState } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
-import { defaultInfoButtonLabel, InfoButton } from "../formLabel/InfoButton";
+import { defaultInfoButtonLabel, InfoButton } from "../fieldLabel/InfoButton";
 import { Icon } from "../icon/Icon";
 import { Spinner } from "../spinner/Spinner";
 import styles from "./Field.module.scss";

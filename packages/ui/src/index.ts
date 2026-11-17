@@ -93,6 +93,7 @@ export {
 export { type FieldSize, type FieldState } from "./components/field/Field";
 export { type FieldLayout } from "./components/field/Field";
 export { FieldActions, type FieldActionsLabels, type FieldActionsOwnerState, type FieldActionsProps } from "./components/fieldActions/FieldActions";
+export { FieldLabel, type FieldLabelLabels, type FieldLabelOwnerState, type FieldLabelProps } from "./components/fieldLabel/FieldLabel";
 export { formatFileSize } from "./components/fileUpload/fileSize";
 export type { FileUploadContext, FileUploadFile, FileUploadLabels } from "./components/fileUpload/FileUpload";
 export { FileUpload, type FileUploadOwnerState, type FileUploadProps, type FileUploadSlotProps } from "./components/fileUpload/FileUpload";
@@ -109,7 +110,6 @@ export {
     type FocalPointPickerSlotProps,
 } from "./components/focalPointPicker/FocalPointPicker";
 export { FormHelperText, type FormHelperTextOwnerState, type FormHelperTextProps } from "./components/formHelperText/FormHelperText";
-export { FormLabel, type FormLabelLabels, type FormLabelOwnerState, type FormLabelProps } from "./components/formLabel/FormLabel";
 export { Icon, type IconOwnerState, type IconProps } from "./components/icon/Icon";
 export type { DefaultIconName, DefaultIconRegistry, DeprecatedIconAlias, IconName, IconRegistry } from "./components/icon/iconRegistry";
 export { IconButton, type IconButtonOwnerState, type IconButtonProps } from "./components/iconButton/IconButton";

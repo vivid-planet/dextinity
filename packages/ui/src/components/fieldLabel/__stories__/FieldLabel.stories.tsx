@@ -2,14 +2,14 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, screen, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import { FormLabel } from "../FormLabel";
-import formLabelTokens from "../FormLabel.tokens.scss?raw";
-import styles from "./formLabel.module.scss";
+import { FieldLabel } from "../FieldLabel";
+import fieldLabelTokens from "../FieldLabel.tokens.scss?raw";
+import styles from "./fieldLabel.module.scss";
 
 const meta = {
-    component: FormLabel,
-    title: "Building blocks/Form fields/FormLabel",
-    parameters: { tokens: formLabelTokens },
+    component: FieldLabel,
+    title: "Building blocks/Form fields/FieldLabel",
+    parameters: { tokens: fieldLabelTokens },
     decorators: [themeDecorator],
     args: {
         children: "Label",
@@ -22,7 +22,7 @@ const meta = {
         slotProps: { control: false },
         ref: { control: false },
     },
-} satisfies Meta<typeof FormLabel>;
+} satisfies Meta<typeof FieldLabel>;
 
 export default meta;
 

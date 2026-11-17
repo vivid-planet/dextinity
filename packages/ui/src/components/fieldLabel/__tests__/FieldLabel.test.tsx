@@ -2,7 +2,7 @@ import { act, cleanup, fireEvent, render, screen } from "@testing-library/react"
 import type { LabelHTMLAttributes } from "react";
 import { afterEach, describe, expect, it } from "vitest";
 
-import { FormLabel } from "../FormLabel";
+import { FieldLabel } from "../FieldLabel";
 
 function CustomLabel(props: LabelHTMLAttributes<HTMLLabelElement>) {
     return <label {...props} />;
@@ -12,27 +12,27 @@ function CustomLabel(props: LabelHTMLAttributes<HTMLLabelElement>) {
  * Compile-time contract for the label slot. Never rendered — it exists so
  * `tsc` fails if the typing regresses.
  */
-export function FormLabelLabelSlotTypeContract() {
+export function FieldLabelLabelSlotTypeContract() {
     return (
         <>
-            <FormLabel slots={{ label: CustomLabel }}>Label</FormLabel>
+            <FieldLabel slots={{ label: CustomLabel }}>Label</FieldLabel>
             {/* @ts-expect-error the slot receives a ref typed for a label, which an output does not accept */}
-            <FormLabel slots={{ label: "output" }}>Label</FormLabel>
+            <FieldLabel slots={{ label: "output" }}>Label</FieldLabel>
             {/* @ts-expect-error the slot receives `htmlFor`, which a legend does not accept */}
-            <FormLabel slots={{ label: "legend" }}>Label</FormLabel>
+            <FieldLabel slots={{ label: "legend" }}>Label</FieldLabel>
         </>
     );
 }
 
 afterEach(cleanup);
 
-describe("FormLabel", () => {
+describe("FieldLabel", () => {
     it("keeps the asterisk and the info button out of the accessible name of the labeled field", () => {
         render(
             <>
-                <FormLabel htmlFor="title" required info="Shown in search results." infoId="title-info">
+                <FieldLabel htmlFor="title" required info="Shown in search results." infoId="title-info">
                     Title
-                </FormLabel>
+                </FieldLabel>
                 <input id="title" aria-describedby="title-info" />
             </>,
         );
@@ -42,9 +42,9 @@ describe("FormLabel", () => {
 
     it("puts a focusable info button right after the label that shows the info in a tooltip on a tap", async () => {
         render(
-            <FormLabel htmlFor="title" info="Shown in search results." labels={{ infoButton: "Mehr Informationen" }}>
+            <FieldLabel htmlFor="title" info="Shown in search results." labels={{ infoButton: "Mehr Informationen" }}>
                 Title
-            </FormLabel>,
+            </FieldLabel>,
         );
 
         const button = screen.getByRole("button", { name: "Mehr Informationen" });
@@ -58,9 +58,9 @@ describe("FormLabel", () => {
 
     it("puts the owner state, `className` and `style` on the element around the label, and other props on the label", () => {
         render(
-            <FormLabel id="title-label" error required className="consumer-class" style={{ marginBlockEnd: "4px" }}>
+            <FieldLabel id="title-label" error required className="consumer-class" style={{ marginBlockEnd: "4px" }}>
                 Title
-            </FormLabel>,
+            </FieldLabel>,
         );
 
         const label = screen.getByText("Title");
@@ -76,9 +76,9 @@ describe("FormLabel", () => {
 
     it("merges `slotProps.root` into the element around the label without dropping its classes", () => {
         render(
-            <FormLabel className="consumer-class" slotProps={{ root: { title: "Root", className: "slot-class" } }}>
+            <FieldLabel className="consumer-class" slotProps={{ root: { title: "Root", className: "slot-class" } }}>
                 Title
-            </FormLabel>,
+            </FieldLabel>,
         );
 
         const root = screen.getByText("Title").parentElement;
@@ -86,7 +86,7 @@ describe("FormLabel", () => {
             root?.title,
             root?.className.includes("consumer-class"),
             root?.className.includes("slot-class"),
-            root?.className.includes("dextinityFormLabel"),
+            root?.className.includes("dextinityFieldLabel"),
         ]).toStrictEqual(["Root", true, true, true]);
     });
 });

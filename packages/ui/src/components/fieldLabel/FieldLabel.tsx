@@ -14,7 +14,7 @@ import {
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Icon } from "../icon/Icon";
-import styles from "./FormLabel.module.scss";
+import styles from "./FieldLabel.module.scss";
 import { defaultInfoButtonLabel, InfoButton } from "./InfoButton";
 
 const requiredMarker = "*";
@@ -24,20 +24,20 @@ type LabelElement = ElementType<{ htmlFor?: string; ref?: Ref<HTMLLabelElement> 
 /**
  * The resolved configuration that influences the component's appearance or behavior.
  */
-export type FormLabelOwnerState = {
+export type FieldLabelOwnerState = {
     required: boolean;
     error: boolean;
 };
 
 /**
- * Texts of the form label, for translation.
+ * Texts of the field label, for translation.
  */
-export interface FormLabelLabels {
+export interface FieldLabelLabels {
     /** Accessible name of the info button that shows the `info`. */
     infoButton: string;
 }
 
-interface FormLabelSlots<Label extends LabelElement, RequiredMarker extends ElementType, InfoIcon extends ElementType> {
+interface FieldLabelSlots<Label extends LabelElement, RequiredMarker extends ElementType, InfoIcon extends ElementType> {
     /**
      * Element for the `label` slot.
      *
@@ -58,20 +58,20 @@ interface FormLabelSlots<Label extends LabelElement, RequiredMarker extends Elem
     infoIcon?: InfoIcon;
 }
 
-interface FormLabelSlotProps<Label extends LabelElement, RequiredMarker extends ElementType, InfoIcon extends ElementType> {
+interface FieldLabelSlotProps<Label extends LabelElement, RequiredMarker extends ElementType, InfoIcon extends ElementType> {
     /** Props for the element around the label, other than `className` and `style`. */
-    root?: SlotPropsValue<FormLabelOwnerState, "span">;
+    root?: SlotPropsValue<FieldLabelOwnerState, "span">;
     /** Props for the `label` slot. */
-    label?: SlotPropsValue<FormLabelOwnerState, Label>;
+    label?: SlotPropsValue<FieldLabelOwnerState, Label>;
     /** Props for the `required` slot. */
-    required?: SlotPropsValue<FormLabelOwnerState, RequiredMarker>;
+    required?: SlotPropsValue<FieldLabelOwnerState, RequiredMarker>;
     /** Props for the `infoButton` slot, the info button after the label that shows the `info`. */
-    infoButton?: SlotPropsValue<FormLabelOwnerState, "button">;
+    infoButton?: SlotPropsValue<FieldLabelOwnerState, "button">;
     /** Props for the `infoIcon` slot. */
-    infoIcon?: SlotPropsValue<FormLabelOwnerState, InfoIcon>;
+    infoIcon?: SlotPropsValue<FieldLabelOwnerState, InfoIcon>;
 }
 
-export interface FormLabelProps<
+export interface FieldLabelProps<
     Label extends LabelElement = "label",
     RequiredMarker extends ElementType = "span",
     InfoIcon extends ElementType = typeof Icon,
@@ -102,29 +102,29 @@ export interface FormLabelProps<
      */
     infoId?: string;
     /** Texts of the label, for translation. */
-    labels?: Partial<FormLabelLabels>;
+    labels?: Partial<FieldLabelLabels>;
     /** Added alongside the component's own classes on the element around the label. */
     className?: string;
     /** Inline styles for the element around the label. */
     style?: CSSProperties;
     /** Sets which element a named inner part renders as. */
-    slots?: FormLabelSlots<Label, RequiredMarker, InfoIcon>;
+    slots?: FieldLabelSlots<Label, RequiredMarker, InfoIcon>;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
-    slotProps?: FormLabelSlotProps<Label, RequiredMarker, InfoIcon>;
+    slotProps?: FieldLabelSlotProps<Label, RequiredMarker, InfoIcon>;
 }
 
 /**
- * Names a form field, for a custom layout without `Field`. `Field` renders its own label with the same look.
+ * Names a form field. For a control without a `Field`; `Field` renders its own label with the same look.
  *
  * `children`: The label text.
  */
-export const FormLabel: <
+export const FieldLabel: <
     Label extends LabelElement = "label",
     RequiredMarker extends ElementType = "span",
     InfoIcon extends ElementType = typeof Icon,
 >(
-    props: FormLabelProps<Label, RequiredMarker, InfoIcon> & RefAttributes<HTMLLabelElement>,
-) => ReactNode = forwardRef(function FormLabel<
+    props: FieldLabelProps<Label, RequiredMarker, InfoIcon> & RefAttributes<HTMLLabelElement>,
+) => ReactNode = forwardRef(function FieldLabel<
     Label extends LabelElement = "label",
     RequiredMarker extends ElementType = "span",
     InfoIcon extends ElementType = typeof Icon,
@@ -141,39 +141,39 @@ export const FormLabel: <
         slotProps,
         children,
         ...restProps
-    }: FormLabelProps<Label, RequiredMarker, InfoIcon>,
+    }: FieldLabelProps<Label, RequiredMarker, InfoIcon>,
     ref: ForwardedRef<HTMLLabelElement>,
 ) {
     const generatedInfoId = `${useId()}info`;
     const infoId = infoIdProp ?? generatedInfoId;
-    const labels: FormLabelLabels = { infoButton: defaultInfoButtonLabel, ...labelsProp };
-    const ownerState: FormLabelOwnerState = { required: required === true, error: error === true };
+    const labels: FieldLabelLabels = { infoButton: defaultInfoButtonLabel, ...labelsProp };
+    const ownerState: FieldLabelOwnerState = { required: required === true, error: error === true };
 
     const LabelSlot: ElementType = slots?.label ?? "label";
     const RequiredSlot: ElementType = slots?.required ?? "span";
 
-    const labelProps = resolveSlotProps<FormLabelOwnerState, Label, "label">({
+    const labelProps = resolveSlotProps<FieldLabelOwnerState, Label, "label">({
         ownProps: { ...restProps, ref, className: styles.label },
         slotProps: slotProps?.label,
         ownerState,
     });
-    const requiredProps = resolveSlotProps<FormLabelOwnerState, RequiredMarker, "span">({
+    const requiredProps = resolveSlotProps<FieldLabelOwnerState, RequiredMarker, "span">({
         ownProps: { className: styles.required, "aria-hidden": true, children: requiredMarker },
         slotProps: slotProps?.required,
         ownerState,
     });
-    const infoButtonProps = resolveSlotProps<FormLabelOwnerState, "button", "button">({
+    const infoButtonProps = resolveSlotProps<FieldLabelOwnerState, "button", "button">({
         ownProps: { className: styles.infoButton, "aria-label": labels.infoButton },
         slotProps: slotProps?.infoButton,
         ownerState,
     });
-    const infoIconProps = resolveSlotProps<FormLabelOwnerState, InfoIcon, typeof Icon>({
+    const infoIconProps = resolveSlotProps<FieldLabelOwnerState, InfoIcon, typeof Icon>({
         ownProps: { name: "info" },
         slotProps: slotProps?.infoIcon,
         ownerState,
     });
 
-    const rootProps = resolveSlotProps<FormLabelOwnerState, "span", "span">({
+    const rootProps = resolveSlotProps<FieldLabelOwnerState, "span", "span">({
         ownProps: { className: clsx(styles.root, className), style },
         slotProps: slotProps?.root,
         ownerState,

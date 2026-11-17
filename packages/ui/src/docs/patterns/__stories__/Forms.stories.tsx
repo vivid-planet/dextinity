@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { Button } from "../../../components/button/Button";
+import { FieldLabel } from "../../../components/fieldLabel/FieldLabel";
 import { FormHelperText } from "../../../components/formHelperText/FormHelperText";
-import { FormLabel } from "../../../components/formLabel/FormLabel";
 import { Input } from "../../../components/input/Input";
 import { Typography } from "../../../components/typography/Typography";
 import { themeDecorator } from "../../../storybook/themeDecorator";
@@ -21,9 +21,9 @@ type Story = StoryObj<typeof meta>;
 export const Field: Story = {
     render: () => (
         <div className={styles.field}>
-            <FormLabel htmlFor="field-title" required>
+            <FieldLabel htmlFor="field-title" required>
                 Title
-            </FormLabel>
+            </FieldLabel>
             <Input id="field-title" required aria-describedby="field-title-hint" />
             <FormHelperText id="field-title-hint">Shown in the browser tab and in search results.</FormHelperText>
         </div>
@@ -39,15 +39,15 @@ export const Form: Story = {
                 </Typography>
                 <div className={styles.row}>
                     <div className={styles.field}>
-                        <FormLabel htmlFor="form-title" required>
+                        <FieldLabel htmlFor="form-title" required>
                             Title
-                        </FormLabel>
+                        </FieldLabel>
                         <Input id="form-title" required defaultValue="About us" />
                     </div>
                     <div className={styles.field}>
-                        <FormLabel htmlFor="form-slug" required>
+                        <FieldLabel htmlFor="form-slug" required>
                             Slug
-                        </FormLabel>
+                        </FieldLabel>
                         <Input id="form-slug" required defaultValue="about-us" />
                     </div>
                 </div>
@@ -57,7 +57,7 @@ export const Form: Story = {
                     Search engines
                 </Typography>
                 <div className={styles.field}>
-                    <FormLabel htmlFor="form-meta-title">Meta title</FormLabel>
+                    <FieldLabel htmlFor="form-meta-title">Meta title</FieldLabel>
                     <Input id="form-meta-title" aria-describedby="form-meta-title-hint" />
                     <FormHelperText id="form-meta-title-hint">Leave empty to use the title.</FormHelperText>
                 </div>
@@ -75,16 +75,16 @@ export const Validation: Story = {
         <form className={styles.form} onSubmit={(event) => event.preventDefault()}>
             <div className={styles.fields}>
                 <div className={styles.field}>
-                    <FormLabel htmlFor="validation-slug" required error>
+                    <FieldLabel htmlFor="validation-slug" required error>
                         Slug
-                    </FormLabel>
+                    </FieldLabel>
                     <Input id="validation-slug" required status="error" defaultValue="About us" aria-describedby="validation-slug-error" />
                     <FormHelperText id="validation-slug-error" error>
                         Use only lowercase letters, digits, and hyphens.
                     </FormHelperText>
                 </div>
                 <div className={styles.field}>
-                    <FormLabel htmlFor="validation-meta-title">Meta title</FormLabel>
+                    <FieldLabel htmlFor="validation-meta-title">Meta title</FieldLabel>
                     <Input
                         id="validation-meta-title"
                         status="warning"
@@ -94,7 +94,7 @@ export const Validation: Story = {
                     <FormHelperText id="validation-meta-title-hint">Search engines may cut titles longer than 60 characters.</FormHelperText>
                 </div>
                 <div className={styles.field}>
-                    <FormLabel htmlFor="validation-domain">Domain</FormLabel>
+                    <FieldLabel htmlFor="validation-domain">Domain</FieldLabel>
                     <Input id="validation-domain" status="success" defaultValue="example.com" aria-describedby="validation-domain-hint" />
                     <FormHelperText id="validation-domain-hint">The domain points to this website.</FormHelperText>
                 </div>

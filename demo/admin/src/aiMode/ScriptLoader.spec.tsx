@@ -8,9 +8,23 @@ const scriptSrc = "https://ai-hub.test/ai-hub-chat.mjs";
 
 const findScripts = () => document.querySelectorAll<HTMLScriptElement>(`script[src="${scriptSrc}"]`);
 
+// `ScriptLoader` counts failed attempts per `src` for the lifetime of the module, so each spec of a failure has a `src`
+// of its own.
+const failingScriptSrc = (name: string) => `https://ai-hub.test/${name}.mjs`;
+
+const findScriptById = (src: string) => document.getElementById(src);
+
+const getScriptById = (src: string) => {
+    const script = findScriptById(src);
+    if (!(script instanceof HTMLScriptElement)) {
+        throw new Error(`No script for ${src}`);
+    }
+    return script;
+};
+
 describe("ScriptLoader", () => {
     afterEach(() => {
-        for (const script of findScripts()) {
+        for (const script of document.querySelectorAll('script[src^="https://ai-hub.test/"]')) {
             script.remove();
         }
     });
@@ -67,6 +81,45 @@ describe("ScriptLoader", () => {
         expect(screen.queryByText("Chat")).not.toBeInTheDocument();
 
         fireEvent.load(findScripts()[0]);
+
+        expect(screen.getByText("Chat")).toBeInTheDocument();
+    });
+
+    it("renders the error fallback instead of the children when the script fails to load, and removes the script", () => {
+        const src = failingScriptSrc("fails-once");
+        renderAdmin(
+            <ScriptLoader src={src} errorFallback={<p>Failed</p>}>
+                <p>Chat</p>
+            </ScriptLoader>,
+        );
+
+        fireEvent.error(getScriptById(src));
+
+        expect(screen.getByText("Failed")).toBeInTheDocument();
+        expect(screen.queryByText("Chat")).not.toBeInTheDocument();
+        expect(findScriptById(src)).toBeNull();
+    });
+
+    it("requests the script from another URL on the next mount after it failed to load, as the browser keeps the failed module", () => {
+        const src = failingScriptSrc("fails-then-loads");
+        const first = renderAdmin(
+            <ScriptLoader src={src}>
+                <p>Chat</p>
+            </ScriptLoader>,
+        );
+        fireEvent.error(getScriptById(src));
+        first.unmount();
+
+        renderAdmin(
+            <ScriptLoader src={src}>
+                <p>Chat</p>
+            </ScriptLoader>,
+        );
+
+        const retriedScript = getScriptById(src);
+        expect(retriedScript).toHaveAttribute("src", `${src}?retry=1`);
+
+        fireEvent.load(retriedScript);
 
         expect(screen.getByText("Chat")).toBeInTheDocument();
     });

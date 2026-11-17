@@ -191,4 +191,18 @@ describe("AiModeFlyout", () => {
 
         expect(getReactDndGlobalInstance()).toBe(otherInstance);
     });
+
+    it("tells the user that the chat couldn't be loaded when its script fails", () => {
+        document.getElementById(scriptSrc)?.remove();
+        renderFlyout();
+
+        const script = document.getElementById(scriptSrc);
+        if (!script) {
+            throw new Error("The flyout added no script for the chat");
+        }
+        fireEvent.error(script);
+
+        expect(screen.getByRole("alert")).toHaveTextContent("The chat couldn't be loaded.");
+        expect(document.querySelector("ai-hub-chat")).toBeNull();
+    });
 });

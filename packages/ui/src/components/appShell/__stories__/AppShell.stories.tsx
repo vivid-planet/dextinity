@@ -20,8 +20,8 @@ import appShellTokens from "../AppShell.tokens.scss?raw";
 import styles from "./AppShell.stories.module.scss";
 
 function StoryNav() {
-    const [activeId, setActiveId] = useState("job-ads");
-    const [expanded, setExpanded] = useState(getSideNavAncestorIds(sideNavGroups, "job-ads"));
+    const [currentId, setCurrentId] = useState("job-ads");
+    const [expandedIds, setExpandedIds] = useState(getSideNavAncestorIds(sideNavGroups, "job-ads"));
     return (
         <SideNav
             logo={<ProductLogo />}
@@ -29,12 +29,12 @@ function StoryNav() {
             title="Career portal"
             subtitle="Example Ltd · Production"
             groups={sideNavGroups}
-            activeId={activeId}
-            expanded={expanded}
-            onExpandedChange={setExpanded}
+            currentId={currentId}
+            expandedIds={expandedIds}
+            onExpandedIdsChange={setExpandedIds}
             onNavigate={(item, event) => {
                 event.preventDefault();
-                setActiveId(item.id);
+                setCurrentId(item.id);
             }}
         />
     );

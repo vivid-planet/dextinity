@@ -305,7 +305,7 @@ type Story = StoryObj<typeof meta>;
  */
 export const Default: Story = {
     render: () => (
-        <PageTypeShell activeId="redirects">
+        <PageTypeShell currentId="redirects">
             <RedirectsPage initialOpenId="r2" />
         </PageTypeShell>
     ),
@@ -316,7 +316,7 @@ export const Default: Story = {
  */
 export const CloseWithEscape: Story = {
     render: () => (
-        <PageTypeShell activeId="redirects">
+        <PageTypeShell currentId="redirects">
             <RedirectsPage initialOpenId="r2" />
         </PageTypeShell>
     ),
@@ -344,7 +344,7 @@ export const CloseWithEscape: Story = {
  */
 export const Closed: Story = {
     render: () => (
-        <PageTypeShell activeId="redirects">
+        <PageTypeShell currentId="redirects">
             <RedirectsPage />
         </PageTypeShell>
     ),

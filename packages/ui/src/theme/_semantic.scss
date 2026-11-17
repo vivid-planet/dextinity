@@ -97,7 +97,7 @@ $danger-hue: var(--dextinity-brand-danger-hue);
         --dextinity-color-accent: oklch(0.52 #{$primary-chroma} #{$primary-hue});
         // Text and icons on an accent fill
         --dextinity-color-accent-foreground: oklch(1 0 0);
-        // Accent-colored text and icons on a surface, e.g. links and the active navigation entry
+        // Accent-colored text and icons on a surface, e.g. links and the current navigation entry
         --dextinity-color-accent-text: oklch(0.45 #{$primary-chroma} #{$primary-hue});
         // Soft accent tint, e.g. a selected item or a focus halo
         --dextinity-color-accent-soft: oklch(0.955 calc(#{$primary-chroma} * 0.2) #{$primary-hue});

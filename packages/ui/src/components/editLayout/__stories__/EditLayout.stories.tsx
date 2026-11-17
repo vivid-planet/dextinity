@@ -339,7 +339,7 @@ function EditPage({
     if (!inShell) {
         return layout;
     }
-    return <PageTypeShell activeId={kind === "page" ? "page-tree" : "job-ads"}>{layout}</PageTypeShell>;
+    return <PageTypeShell currentId={kind === "page" ? "page-tree" : "job-ads"}>{layout}</PageTypeShell>;
 }
 
 function Wireframe({ label, variant, regions }: { label: string; variant: Variant; regions: [string, string, string][] }) {

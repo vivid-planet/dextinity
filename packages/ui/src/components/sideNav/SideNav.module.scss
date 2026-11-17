@@ -192,12 +192,12 @@
         font-size: var(--dextinity-typography-small-size);
     }
 
-    &[data-active],
-    &[data-active]:hover {
-        background: var(--dextinity-side-nav-item-active-background);
-        color: var(--dextinity-side-nav-item-active-foreground);
+    &[data-current],
+    &[data-current]:hover {
+        background: var(--dextinity-side-nav-item-current-background);
+        color: var(--dextinity-side-nav-item-current-foreground);
         font-weight: var(--dextinity-font-weight-semibold);
-        box-shadow: var(--dextinity-side-nav-item-active-shadow);
+        box-shadow: var(--dextinity-side-nav-item-current-shadow);
         @include forced-colors.selected;
 
         .itemIcon {
@@ -205,7 +205,7 @@
         }
     }
 
-    &[data-active]:focus-visible {
+    &[data-current]:focus-visible {
         box-shadow: var(--dextinity-focus-ring);
         @include forced-colors.focus-ring;
     }
@@ -234,7 +234,7 @@
         opacity: var(--dextinity-side-nav-flyout-marker-opacity);
     }
 
-    .root[data-collapsed] &[aria-expanded="true"]:not([data-active]) {
+    .root[data-collapsed] &[aria-expanded="true"]:not([data-current]) {
         background: var(--dextinity-side-nav-item-background-hover);
     }
 }
@@ -264,7 +264,7 @@
 }
 
 // The sub-entries clip their content to animate opening and closing. Room around them, taken back by a negative margin, keeps the focus
-// ring and the active entry's shadow from being cut off at the edges of the clip.
+// ring and the current entry's shadow from being cut off at the edges of the clip.
 $children-room: 4px;
 $children-room-end: 12px;
 

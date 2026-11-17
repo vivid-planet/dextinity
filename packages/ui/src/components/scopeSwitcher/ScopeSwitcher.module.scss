@@ -155,10 +155,10 @@
 
     &[data-checked],
     &[aria-current="true"] {
-        background: var(--dextinity-scope-switcher-option-selected-background);
-        color: var(--dextinity-scope-switcher-option-selected-foreground);
+        background: var(--dextinity-scope-switcher-option-current-background);
+        color: var(--dextinity-scope-switcher-option-current-foreground);
         font-weight: var(--dextinity-font-weight-semibold);
-        box-shadow: var(--dextinity-scope-switcher-option-selected-shadow);
+        box-shadow: var(--dextinity-scope-switcher-option-current-shadow);
         @include forced-colors.selected;
     }
 
@@ -216,7 +216,7 @@
     cursor: pointer;
 
     &:hover {
-        background: var(--dextinity-scope-switcher-option-selected-background);
+        background: var(--dextinity-scope-switcher-option-current-background);
     }
 
     &:focus-visible {

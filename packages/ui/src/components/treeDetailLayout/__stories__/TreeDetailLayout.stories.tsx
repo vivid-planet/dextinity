@@ -308,7 +308,7 @@ type Story = StoryObj<typeof meta>;
  */
 export const Default: Story = {
     render: (args) => (
-        <PageTypeShell activeId="page-tree">
+        <PageTypeShell currentId="page-tree">
             <PageTreePage surface={args.surface} />
         </PageTypeShell>
     ),

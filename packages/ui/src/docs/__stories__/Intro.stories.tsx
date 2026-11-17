@@ -30,7 +30,7 @@ export const Showcase: Story = {
             { name: "Assets", icon: <Icon name="images" /> },
             { name: "Target groups", icon: <Icon name="target-group" /> },
         ];
-        const [activePage, setActivePage] = useState("Pages");
+        const [currentPage, setCurrentPage] = useState("Pages");
 
         return (
             <div className={styles.showcase}>
@@ -72,8 +72,8 @@ export const Showcase: Story = {
                                 <li key={name}>
                                     <MainNavigationItem
                                         icon={icon}
-                                        active={name === activePage}
-                                        render={<button type="button" onClick={() => setActivePage(name)} />}
+                                        current={name === currentPage}
+                                        render={<button type="button" onClick={() => setCurrentPage(name)} />}
                                     >
                                         {name}
                                     </MainNavigationItem>

@@ -79,7 +79,7 @@ type Story = StoryObj<typeof meta>;
 
 /**
  * Put it in a `Field` for the label, description, and validation message: `<Field label="Published on"><DatePicker … /></Field>`. Typed
- * text that is no valid day shows its error in the field's message.
+ * text that is no valid day shows its error as the field's validation message.
  *
  * **Rules**
  * - Always controlled: `value` + `onChange`. The value is a day as `YYYY-MM-DD`, without time and time zone, so it is the same day

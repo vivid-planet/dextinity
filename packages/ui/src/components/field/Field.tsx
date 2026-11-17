@@ -101,17 +101,19 @@ export interface FieldBaseProps {
      */
     info?: ReactNode;
     /**
-     * What everyone needs to fill in the field, e.g. the expected format, shown below the field. A validation message replaces it; the
-     * `description` of a `Switch` in the field stays.
+     * What everyone needs to fill in the field, e.g. the expected format, shown below the field. A shown validation message takes its
+     * place. Without one, it stays and takes the color of the `state`. The `description` of a `Switch` in the field always stays.
      */
     description?: ReactNode;
     /**
-     * Message for the `state`. Replaces the `description` while the state is `success`, `warning`, or `error`. Say what is missing and
-     * how to fix it.
+     * The result of validating the value, shown in place of the `description` while the `state` is `success`, `warning`, or `error`,
+     * and not shown in the `default` state. An error that the control finds itself, e.g. typed text that is no date, shows in its place.
+     * Say what is missing and how to fix it.
      */
     validationMessage?: ReactNode;
     /**
-     * Validation state, shown by the field's line and message color.
+     * Validation state, shown by the color of the field's line and of the text below the field: the validation message, or the
+     * `description` without one. A control that finds an error itself sets it to `error`.
      *
      * @defaultValue `"default"`
      */

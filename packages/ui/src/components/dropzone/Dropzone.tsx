@@ -103,9 +103,12 @@ export interface DropzoneProps extends Omit<HTMLAttributes<HTMLDivElement>, "cla
      * @defaultValue `false`
      */
     overlay?: boolean;
-    /** What can be uploaded, e.g. "Images, PDF, video up to 200 MB". */
+    /** What can be uploaded, e.g. "Images, PDF, video up to 200 MB". It stays when an `error` shows. */
     description?: ReactNode;
-    /** A message about rejected files or a failed upload. */
+    /**
+     * A message about rejected files or a failed upload, shown below the drop area next to the `description`. Only the validation
+     * message of a `Field` replaces a description.
+     */
     error?: ReactNode;
     /** The uploads in progress or just finished, listed below the drop area. */
     uploads?: ReadonlyArray<DropzoneUpload>;

@@ -108,7 +108,10 @@ export interface FileUploadProps
     multiple?: boolean;
     /** The maximum number of files with `multiple`. The drop area hides once it is reached. */
     maxFiles?: number;
-    /** What can be uploaded, shown in the drop area, e.g. "PDF up to 10 MB". */
+    /**
+     * What can be uploaded, shown in the drop area, e.g. "PDF up to 10 MB". It stays when a file is rejected or fails, and when the
+     * `Field` around the upload shows a validation message, which replaces only the field's own `description`.
+     */
     description?: ReactNode;
     /**
      * Prevents uploading and removing files. Ignored inside a `Field`, which takes it from its own `disabled`.

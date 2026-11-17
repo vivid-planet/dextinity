@@ -194,7 +194,7 @@ export const Required: Story = {
 };
 
 /**
- * The field's message sits below the switch and describes it: `<Field layout="group" state="error" validationMessage="…"><Switch>…</Switch></Field>`.
+ * The field's validation message sits below the switch and describes it: `<Field layout="group" state="error" validationMessage="…"><Switch>…</Switch></Field>`.
  *
  * **Rules**
  * - Say what is missing and how to fix it.

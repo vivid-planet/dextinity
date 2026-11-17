@@ -48,7 +48,7 @@ describe("DatePicker", () => {
         expect(screen.getByRole("button", { name: "Choose date" })).toBeDisabled();
     });
 
-    it("shows a typing error in the surrounding field's message", async () => {
+    it("shows a typing error as the surrounding field's validation message", async () => {
         render(
             <Field label="Published on" description="The day the article went live.">
                 <DatePicker name="publishedOn" value={null} onChange={vi.fn()} locale="de-AT" />

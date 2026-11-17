@@ -189,7 +189,7 @@ export const MaxFiles: Story = {
 };
 
 /**
- * A required upload shows the field's message below the files.
+ * A required upload shows the field's validation message below the files.
  */
 export const ValidationError: Story = {
     args: { required: true, state: "error", validationMessage: "Attach the signed contract." },

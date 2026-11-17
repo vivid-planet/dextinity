@@ -112,7 +112,7 @@ type Story = StoryObj<typeof meta>;
  *
  * **Rules**
  * - Keep the label visible; a placeholder is never the only label.
- * - The description sits below the field and stays visible.
+ * - The description sits below the field. A validation message takes its place.
  */
 export const Default: Story = {
     play: async ({ canvas }) => {
@@ -138,7 +138,8 @@ export const Description: Story = {
  *
  * **`info` or `description`?**
  * - `info` is background most users don't need, e.g. where a value is used. It stays hidden until asked for.
- * - `description` is what everyone needs to fill in the field, e.g. the expected format. It is always visible below the field.
+ * - `description` is what everyone needs to fill in the field, e.g. the expected format. It is visible below the field until a
+ *   validation message takes its place.
  */
 export const Info: Story = {
     args: {
@@ -228,7 +229,8 @@ export const Required: Story = {
 };
 
 /**
- * In the `error`, `warning`, and `success` states, the `validationMessage` replaces the `description`.
+ * In the `error`, `warning`, and `success` states, the `validationMessage` replaces the `description`. Without a `validationMessage`,
+ * the `description` stays and takes the color of the state. In the `default` state, the `validationMessage` doesn't show.
  *
  * **Rules**
  * - Say what is missing and how to fix it.

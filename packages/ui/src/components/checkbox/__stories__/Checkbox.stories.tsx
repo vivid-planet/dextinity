@@ -231,7 +231,7 @@ export const Required: Story = {
 };
 
 /**
- * The field's message sits below the checkbox and describes it: `<Field layout="group" state="error" validationMessage="…"><Checkbox>…</Checkbox></Field>`.
+ * The field's validation message sits below the checkbox and describes it: `<Field layout="group" state="error" validationMessage="…"><Checkbox>…</Checkbox></Field>`.
  *
  * **Rules**
  * - Say what is missing and how to fix it.

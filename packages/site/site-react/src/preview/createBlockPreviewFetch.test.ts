@@ -67,7 +67,7 @@ describe("createBlockPreviewFetch", () => {
     it("doesn't add the X-Block-Preview header to a cross-origin Request input", async () => {
         const { blockPreviewFetch, getSentHeaders } = setup("jwt");
 
-        await blockPreviewFetch(new Request("https://tiles.openfreemap.org/styles/positron"));
+        await blockPreviewFetch(new Request("https://example.com/api/data"));
 
         expect(getSentHeaders().has("X-Block-Preview")).toBe(false);
     });
@@ -75,7 +75,7 @@ describe("createBlockPreviewFetch", () => {
     it("doesn't add the X-Block-Preview header to a cross-origin URL", async () => {
         const { blockPreviewFetch, getSentHeaders } = setup("jwt");
 
-        await blockPreviewFetch("https://tiles.openfreemap.org/styles/positron");
+        await blockPreviewFetch("https://example.com/api/data");
 
         expect(getSentHeaders().has("X-Block-Preview")).toBe(false);
     });

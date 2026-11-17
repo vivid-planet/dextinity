@@ -1,11 +1,11 @@
-import { MasterLayoutContext, useWindowSize } from "@dextinity/admin";
+import { Alert, MasterLayoutContext, useWindowSize } from "@dextinity/admin";
 import { useContentScope, useCurrentUser } from "@dextinity/cms-admin";
 import { Slide, useMediaQuery, useTheme } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { createConfig } from "@src/config";
 import { useCallback, useContext, useEffect, useLayoutEffect, useRef } from "react";
 import { useDragDropManager } from "react-dnd";
-import { useIntl } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 import { useLocation } from "react-router";
 
 import type { BridgeElement } from "./aiHubBridge";
@@ -118,7 +118,17 @@ export function AiModeFlyout() {
     return (
         <Slide direction="left" in={isOpen} mountOnEnter unmountOnExit>
             <Root sx={{ top: headerHeight }}>
-                <ScriptLoader src={config.aiHubWebComponentScriptSrc}>
+                <ScriptLoader
+                    src={config.aiHubWebComponentScriptSrc}
+                    errorFallback={
+                        <ErrorAlert severity="error">
+                            <FormattedMessage
+                                id="aiMode.chatLoadError"
+                                defaultMessage="The chat couldn't be loaded. Close the AI Companion and open it again to retry."
+                            />
+                        </ErrorAlert>
+                    }
+                >
                     <ai-hub-chat
                         ref={registerBridge}
                         api-url={aiHubProxyUrl}
@@ -155,4 +165,8 @@ const Root = styled("aside")(({ theme }) => ({
         width: "100%",
         height: "100%",
     },
+}));
+
+const ErrorAlert = styled(Alert)(({ theme }) => ({
+    margin: theme.spacing(2),
 }));

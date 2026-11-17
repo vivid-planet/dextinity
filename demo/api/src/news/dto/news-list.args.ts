@@ -1,9 +1,9 @@
 import { OffsetBasedPaginationArgs, SortDirection } from "@dextinity/cms-api";
 import { ArgsType, Field } from "@nestjs/graphql";
+import { NewsContentScope } from "@src/news/entities/news.entity.js";
 import { Type } from "class-transformer";
 import { IsOptional, IsString, ValidateNested } from "class-validator";
 
-import { NewsContentScope } from "../entities/news.entity.js";
 import { NewsFilter } from "./news.filter.js";
 import { NewsSort, NewsSortField } from "./news.sort.js";
 

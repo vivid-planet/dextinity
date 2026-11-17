@@ -1,10 +1,9 @@
 import { type BlockInputInterface, DamImageBlock, isBlockInputInterface, IsSlug, PartialType, RootBlockInputScalar } from "@dextinity/cms-api";
 import { Field, InputType } from "@nestjs/graphql";
+import { NewsContentBlock } from "@src/news/blocks/news-content.block.js";
+import { NewsCategory, NewsStatus } from "@src/news/entities/news.entity.js";
 import { Transform } from "class-transformer";
 import { IsDate, IsEnum, IsNotEmpty, IsString, ValidateNested } from "class-validator";
-
-import { NewsContentBlock } from "../blocks/news-content.block.js";
-import { NewsCategory, NewsStatus } from "../entities/news.entity.js";
 
 @InputType()
 export class NewsInput {

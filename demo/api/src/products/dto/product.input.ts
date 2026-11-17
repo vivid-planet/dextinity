@@ -8,12 +8,12 @@ import {
     RootBlockInputScalar,
 } from "@dextinity/cms-api";
 import { Field, ID, InputType } from "@nestjs/graphql";
+import { ProductDimensions, ProductDiscounts, ProductPriceRange, ProductStatus } from "@src/products/entities/product.entity.js";
+import { ProductType } from "@src/products/entities/product-type.enum.js";
 import { Transform, Type } from "class-transformer";
 import { IsArray, IsBoolean, IsDate, IsDateString, IsEnum, IsNotEmpty, IsNumber, IsString, IsUUID, ValidateNested } from "class-validator";
 import { GraphQLLocalDate } from "graphql-scalars";
 
-import { ProductDimensions, ProductDiscounts, ProductPriceRange, ProductStatus } from "../entities/product.entity.js";
-import { ProductType } from "../entities/product-type.enum.js";
 import { ProductNestedProductColorInput } from "./product-nested-product-color.input.js";
 import { ProductNestedProductStatisticsInput } from "./product-nested-product-statistics.input.js";
 import { ProductNestedProductToTagInput } from "./product-nested-product-to-tag.input.js";

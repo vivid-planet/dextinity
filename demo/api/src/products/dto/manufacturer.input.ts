@@ -1,11 +1,10 @@
 import { IsNullable, PartialType } from "@dextinity/cms-api";
 import { Field, InputType } from "@nestjs/graphql";
+import { Coordinates } from "@src/products/coordinates.type.js";
+import { Address, AddressAsEmbeddable } from "@src/products/entities/manufacturer.entity.js";
+import { ProductType } from "@src/products/entities/product-type.enum.js";
 import { Type } from "class-transformer";
 import { IsEnum, IsNotEmpty, IsString, ValidateNested } from "class-validator";
-
-import { Coordinates } from "../coordinates.type.js";
-import { Address, AddressAsEmbeddable } from "../entities/manufacturer.entity.js";
-import { ProductType } from "../entities/product-type.enum.js";
 
 @InputType()
 export class ManufacturerInput {

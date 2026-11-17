@@ -630,7 +630,40 @@ if (process.env.TRACING == "production") {
 
 Update every other place that starts the API with `node dist/main`, for instance the command of your Docker image or deployment. Without `--import`, the API starts without tracing.
 
-If `console.ts` also loads the tracing (for instance to shut the SDK down before the process exits), preload it in the console scripts as well, and import the SDK from the preloaded module instead of loading it in `console.ts`:
+If `console.ts` also loads the tracing (for instance to shut the SDK down before the process exits), export the SDK from the tracing files and from `tracing.ts`:
+
+```ts title="api/src/tracing.ts"
+export const sdk =
+    process.env.TRACING == "production"
+        ? (await import("./tracing.production.js")).sdk
+        : process.env.TRACING == "dev"
+          ? (await import("./tracing.dev.js")).sdk
+          : undefined;
+```
+
+```diff title="api/src/tracing.dev.ts"
+  sdk.start();
+
+  await waitForAllMessagesAcknowledged();
++
++ export { sdk };
+```
+
+Import it in `console.ts` instead of loading the tracing there. The preloaded module and the import resolve to the same module, so the SDK is only started once:
+
+```diff title="api/src/console.ts"
+- let tracing: any;
+- if (process.env.TRACING == "dev") {
+-     tracing = import("./tracing.dev");
+- }
++ import { sdk } from "./tracing.js";
+
+  // ...
+- await (await tracing)?.sdk?.shutdown();
++ await sdk?.shutdown();
+```
+
+Then preload the tracing in the console scripts as well:
 
 ```diff title="api/package.json"
 {

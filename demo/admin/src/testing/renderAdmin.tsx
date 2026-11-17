@@ -1,7 +1,7 @@
 import { MuiThemeProvider, RouterMemoryRouter } from "@dextinity/admin";
 import { createTheme } from "@src/theme";
 import { render, type RenderResult } from "@testing-library/react";
-import type { ReactElement } from "react";
+import { type ReactElement, StrictMode } from "react";
 import { IntlProvider } from "react-intl";
 
 const theme = createTheme([]);
@@ -12,13 +12,18 @@ const theme = createTheme([]);
  *
  * `useCurrentUser` throws without its provider and says so. `useContentScope` does not: it falls back to a default
  * context and parses the scope out of `route`.
+ *
+ * `isStrictMode` wraps the whole tree in `StrictMode`, as `loader.tsx` does. Further down the tree, it doesn't run the
+ * effects a second time.
  */
-export function renderAdmin(ui: ReactElement, { route = "/" }: { route?: string } = {}): RenderResult {
-    return render(
+export function renderAdmin(ui: ReactElement, { route = "/", isStrictMode = false }: { route?: string; isStrictMode?: boolean } = {}): RenderResult {
+    const tree = (
         <IntlProvider locale="en">
             <MuiThemeProvider theme={theme}>
                 <RouterMemoryRouter initialEntries={[route]}>{ui}</RouterMemoryRouter>
             </MuiThemeProvider>
-        </IntlProvider>,
+        </IntlProvider>
     );
+
+    return render(isStrictMode ? <StrictMode>{tree}</StrictMode> : tree);
 }

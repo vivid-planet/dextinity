@@ -32,6 +32,8 @@ export interface ToolbarButtonProps extends Omit<ButtonHTMLAttributes<HTMLButton
     selected?: boolean;
     /** Called with the new state when the toggle is clicked. */
     onSelectedChange?: (selected: boolean) => void;
+    /** Called when the button is clicked. */
+    onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
     /**
      * Prevents interaction with the button. It stays focusable inside the toolbar.
      *

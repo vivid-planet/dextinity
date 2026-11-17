@@ -94,6 +94,8 @@ export interface ButtonProps<
      * @defaultValue `"button"`
      */
     type?: ButtonHTMLAttributes<HTMLButtonElement>["type"];
+    /** Called when the button is clicked. */
+    onClick?: BaseButton.Props["onClick"];
     /**
      * Shows a spinner in place of the start icon and ignores clicks. Without a start icon, the spinner covers the label, so the
      * button keeps its width.

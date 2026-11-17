@@ -33,6 +33,8 @@ export interface PopoverProps extends Omit<HTMLAttributes<HTMLDivElement>, "clas
     onOpenChange: (open: boolean) => void;
     /** A short heading above the content, which also names the popover. Without it, set `aria-label`. */
     title?: string;
+    /** Names the popover when it has no `title`. */
+    "aria-label"?: string;
     /**
      * The preferred position next to the trigger. The popover flips when there isn't enough room.
      *

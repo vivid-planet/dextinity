@@ -94,6 +94,8 @@ export interface IconButtonProps<Icon extends ElementType = "span", LoadingSpinn
      * @defaultValue `"button"`
      */
     type?: ButtonHTMLAttributes<HTMLButtonElement>["type"];
+    /** Called when the button is clicked. */
+    onClick?: BaseButton.Props["onClick"];
     /**
      * Shows a spinner in place of the icon and ignores clicks.
      *

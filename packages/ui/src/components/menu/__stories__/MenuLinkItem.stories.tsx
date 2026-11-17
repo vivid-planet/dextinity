@@ -60,10 +60,7 @@ const meta = {
         },
         className: { control: false },
         slotProps: { control: false },
-        render: {
-            control: false,
-            description: "Replaces the rendered `<a>` element, e.g. with a router's link component, which receives the link's props.",
-        },
+        render: { control: false },
     },
 } satisfies Meta<typeof MenuLinkItem>;
 

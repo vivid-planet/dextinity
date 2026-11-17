@@ -23,7 +23,6 @@ const meta = {
         href: "#",
     },
     argTypes: {
-        href: { description: "The destination of the link the item renders as." },
         level: {
             control: "radio",
             options: [1, 2, 3],

@@ -54,7 +54,6 @@ const meta = {
         onClick: fn(),
     },
     argTypes: {
-        onClick: { description: "Runs the action on click, Enter, and Space; the menu then closes." },
         color: {
             control: "radio",
             options: ["default", "error"],

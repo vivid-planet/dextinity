@@ -85,6 +85,8 @@ export interface MainNavigationItemProps<
     Label extends ElementType = "span",
     ExpandIcon extends ExpandIconElementType = typeof Icon,
 > extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "className" | "children"> {
+    /** The destination of the link the item renders as. */
+    href?: string;
     /** The icon to render before the label. */
     icon?: ReactNode;
     /**

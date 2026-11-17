@@ -11,6 +11,8 @@ export { AppHeaderMenuButton, type AppHeaderMenuButtonClassKey, type AppHeaderMe
 export { buildCreateRestMutation, buildDeleteRestMutation, buildUpdateRestMutation } from "./buildRestMutation";
 export { readClipboardText } from "./clipboard/readClipboardText";
 export { writeClipboardText } from "./clipboard/writeClipboardText";
+export { type Breadcrumb, Breadcrumbs, type BreadcrumbsProps } from "./common/breadcrumbs/Breadcrumbs";
+export { type BreadcrumbsClassKey } from "./common/breadcrumbs/Breadcrumbs.slots";
 export { Button, type ButtonClassKey, type ButtonProps } from "./common/buttons/Button";
 export { CancelButton, type CancelButtonClassKey, type CancelButtonProps } from "./common/buttons/cancel/CancelButton";
 export { ClearInputButton, type ClearInputButtonClassKey, type ClearInputButtonProps } from "./common/buttons/clearinput/ClearInputButton";
@@ -119,7 +121,7 @@ export { DeleteMutation } from "./DeleteMutation";
 export { EditDialog, useEditDialog } from "./editDialog/EditDialog";
 export { EditDialogApiContext, type IEditDialogApi, useEditDialogApi } from "./editDialog/EditDialogApiContext";
 export { ErrorBoundary, type ErrorBoundaryClassKey, type ErrorBoundaryProps } from "./error/errorboundary/ErrorBoundary";
-export { RouteWithErrorBoundary } from "./error/errorboundary/RouteWithErrorBoundary";
+export { RouteWithErrorBoundary, type RouteWithErrorBoundaryProps } from "./error/errorboundary/RouteWithErrorBoundary";
 export { createErrorDialogApolloLink } from "./error/errordialog/createErrorDialogApolloLink";
 export { ErrorDialog, type ErrorDialogOptions, type ErrorDialogProps } from "./error/errordialog/ErrorDialog";
 export { ErrorDialogHandler } from "./error/errordialog/ErrorDialogHandler";
@@ -212,14 +214,15 @@ export { MasterLayout, type MasterLayoutClassKey, type MasterLayoutProps } from 
 export { MasterLayoutContext } from "./mui/MasterLayoutContext";
 export { MuiThemeProvider } from "./mui/ThemeProvider";
 export { renderFinalFormChildren } from "./renderFinalFormChildren";
-export { RouterBrowserRouter } from "./router/BrowserRouter";
+export { RouterBrowserRouter, type RouterBrowserRouterProps } from "./router/BrowserRouter";
 export { RouterConfirmationDialog, type RouterConfirmationDialogClassKey, type RouterConfirmationDialogProps } from "./router/ConfirmationDialog";
 export { RouterContext } from "./router/Context";
-export { ForcePromptRoute } from "./router/ForcePromptRoute";
-export { RouterMemoryRouter } from "./router/MemoryRouter";
+export { ForcePromptRoute, type ForcePromptRouteProps } from "./router/ForcePromptRoute";
+export { type CurrentRouteMatch, useCurrentRouteMatch } from "./router/internal/routeContext";
+export { RouterMemoryRouter, type RouterMemoryRouterProps } from "./router/MemoryRouter";
 export { RouterPrompt } from "./router/Prompt";
 export { RouterPromptHandler, type SaveAction } from "./router/PromptHandler";
-export { SubRoute, SubRouteIndexRoute, useSubRoutePrefix } from "./router/SubRoute";
+export { SubRoute, SubRouteIndexRoute, type SubRouteIndexRouteChildrenProps, useSubRoutePrefix } from "./router/SubRoute";
 export { RowActionsItem, type RowActionsItemProps } from "./rowActions/RowActionsItem";
 export { RowActionsMenu, type RowActionsMenuProps } from "./rowActions/RowActionsMenu";
 export {

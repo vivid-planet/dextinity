@@ -22,12 +22,12 @@ Use the `showAllScopes` prop on `WarningsPage` and `LatestWarningsDashboardWidge
 <LatestWarningsDashboardWidget showAllScopes />
 ```
 
-For `WarningsPage`, the masterMenu entry needs a `render` function instead of `component` to pass the prop:
+For `WarningsPage`, pass the prop in the `element` of the masterMenu entry:
 
 ```tsx
 route: {
     path: "/system/warnings",
-    render: () => <WarningsPage showAllScopes />,
+    element: <WarningsPage showAllScopes />,
 }
 ```
 
@@ -74,7 +74,7 @@ To make the warnings accessible in the admin panel, add the following entry to t
     primary: <FormattedMessage id="menu.warnings" defaultMessage="Warnings" />,
     route: {
         path: "/system/warnings",
-        component: WarningsPage,
+        element: <WarningsPage />,
     },
     requiredPermission: "warnings",
 }
@@ -156,18 +156,18 @@ class NewsBlockData extends BlockData {
 export class NewsBlockWarningsService implements BlockWarningsServiceInterface<NewsBlockData> {
     constructor(private readonly entityManager: EntityManager) {}
 
-    async createWarnings(block: NewsBlockData): Promise<BlockWarning[]> {
-        const warnings: BlockWarning[] = [];
-
-        if (block.id) {
-            const news = await this.entityManager.findOne(News, { id: block.id });
-            if (!news) {
-                warnings.push({ severity: "high", message: "invalidNewsTarget" });
-            }
-        } else {
-            warnings.push({ severity: "high", message: "missingNewsTarget" });
+    async warnings(block: NewsBlockData): Promise<BlockWarning[]> {
+        if (!block.id) {
+            return [];
         }
-        return warnings;
+
+        const news = await this.entityManager.findOne(News, { id: block.id });
+
+        if (!news) {
+            return [{ severity: "high", message: "invalidNewsTarget" }];
+        }
+
+        return [];
     }
 }
 ```

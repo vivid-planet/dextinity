@@ -2,7 +2,6 @@ import { AppHeader, AppHeaderMenuButton, MainNavigation, MainNavigationItemRoute
 import { Dashboard } from "@dextinity/admin-icons";
 import { useTheme } from "@mui/material";
 import type { ComponentType } from "react";
-import { Route } from "react-router";
 
 export function masterLayoutDecorator() {
     const MasterHeader = () => (
@@ -35,13 +34,9 @@ export function masterLayoutDecorator() {
 export function stackRouteDecorator(topLevelTitle = "Example Page") {
     return (Story: ComponentType) => {
         return (
-            <Route
-                render={() => (
-                    <Stack topLevelTitle={topLevelTitle}>
-                        <Story />
-                    </Stack>
-                )}
-            />
+            <Stack topLevelTitle={topLevelTitle}>
+                <Story />
+            </Stack>
         );
     };
 }

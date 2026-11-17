@@ -1,0 +1,16 @@
+// Keyframes that several components share. Include a mixin at the top level of a module stylesheet, then refer to the animation
+// by the mixin's name in that stylesheet.
+
+/// Slides the bar of an indeterminate progress indicator across its track. The bar is 30% of the track wide, so it starts just
+/// before the track and ends just after it.
+@mixin indeterminate {
+    @keyframes indeterminate {
+        from {
+            transform: translateX(-100%);
+        }
+
+        to {
+            transform: translateX(340%);
+        }
+    }
+}

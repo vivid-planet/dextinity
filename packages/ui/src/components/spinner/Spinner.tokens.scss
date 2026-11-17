@@ -1,0 +1,14 @@
+@mixin tokens {
+    // Color of the spinner
+    --dextinity-spinner-color: var(--dextinity-color-accent);
+    // Duration of one full turn
+    --dextinity-spinner-duration: 1s;
+    // Size of a small spinner, e.g. inside a field
+    --dextinity-spinner-size-small: var(--dextinity-icon-size-xsmall);
+    // Size of the default spinner
+    --dextinity-spinner-size-md: var(--dextinity-icon-size-small);
+    // Size of a large spinner, e.g. over a loading preview
+    --dextinity-spinner-size-lg: 32px;
+    // Size of the largest spinner
+    --dextinity-spinner-size-xl: 64px;
+}

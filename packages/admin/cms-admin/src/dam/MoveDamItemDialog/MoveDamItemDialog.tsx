@@ -1,5 +1,5 @@
-import { useApolloClient, useQuery } from "@apollo/client";
-import type { FetchResult } from "@apollo/client/link/core";
+import type { ApolloClient } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client/react";
 import { Button, SaveButton } from "@dextinity/admin";
 import { Move, Reset } from "@dextinity/admin-icons";
 import {
@@ -100,7 +100,7 @@ const MoveDamItemDialogInner = ({
         const fileIds = damItemsToMove.filter((item) => item.type === "file").map((item) => item.id);
         const folderIds = damItemsToMove.filter((item) => item.type === "folder").map((item) => item.id);
 
-        const mutations: Array<Promise<FetchResult>> = [];
+        const mutations: Array<Promise<ApolloClient.MutateResult<unknown, "all">>> = [];
 
         if (fileIds.length > 0) {
             mutations.push(
@@ -130,7 +130,7 @@ const MoveDamItemDialogInner = ({
         }
 
         const promiseResults = await Promise.all(mutations);
-        const hasErrors = promiseResults.filter((result) => result.errors !== undefined).length > 0;
+        const hasErrors = promiseResults.filter((result) => result.error !== undefined).length > 0;
 
         if (hasErrors) {
             handleHasErrors?.(hasErrors);

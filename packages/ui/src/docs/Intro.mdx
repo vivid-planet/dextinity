@@ -1,10 +1,14 @@
-import { Meta } from "@storybook/addon-docs/blocks";
+import { Meta, Story } from "@storybook/addon-docs/blocks";
+
+import * as IntroStories from "./__stories__/Intro.stories";
 
 <Meta title="Intro" />
 
 # @dextinity/ui
 
 `@dextinity/ui` is a UI-only React component library, built on `@base-ui/react` and CSS Modules.
+
+<Story of={IntroStories.Showcase} />
 
 ## Experimental
 
@@ -46,4 +50,4 @@ export function App() {
 }
 ```
 
-To use the theme in your own styles, or to customize it, see [Theme → Overview](?path=/docs/theme-overview--docs).
+To use the theme in your own styles, or to customize it, see [Foundations → Theme → Overview](?path=/docs/foundations-theme-overview--docs).

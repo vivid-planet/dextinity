@@ -1,0 +1,25 @@
+// The light field the glass sits on in the app frame
+.field {
+    padding: var(--dextinity-space-6);
+    background:
+        radial-gradient(60% 80% at 10% 0%, var(--dextinity-material-field-1), transparent 70%),
+        radial-gradient(50% 70% at 90% 100%, var(--dextinity-material-field-2), transparent 70%),
+        radial-gradient(40% 60% at 70% 20%, var(--dextinity-material-field-3), transparent 70%), var(--dextinity-color-canvas);
+}
+
+.stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-space-panel-gap);
+}
+
+.rows {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+        padding: 10px 14px;
+        box-shadow: inset 0 calc(var(--dextinity-line-width) * -1) 0 var(--dextinity-color-line);
+    }
+}

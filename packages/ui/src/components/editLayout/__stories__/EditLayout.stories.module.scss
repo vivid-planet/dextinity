@@ -1,0 +1,236 @@
+.muted {
+    color: var(--dextinity-color-text-subtle);
+    font-size: 13px;
+}
+
+.metaLine {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: center;
+    font-size: 13px;
+}
+
+.editorStatus {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 4px 2px 8px;
+}
+
+.sections {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    padding-block-start: 16px;
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-density-form-gap);
+}
+
+.sectionHead {
+    h3 {
+        margin: 0;
+        font-size: var(--dextinity-typography-section-size);
+        font-weight: var(--dextinity-typography-section-font-weight);
+    }
+
+    p {
+        margin: 4px 0 0;
+        color: var(--dextinity-color-text-subtle);
+        font-size: 13px;
+    }
+}
+
+.fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+    gap: var(--dextinity-density-form-gap);
+}
+
+.full {
+    grid-column: 1 / -1;
+}
+
+.aside {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-space-panel-gap);
+}
+
+.asideBody {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.dangerActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.narrow {
+    max-inline-size: 720px;
+}
+
+.wireframes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+}
+
+.wireframe {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+    padding: 12px;
+    border-radius: var(--dextinity-radius-field);
+    background: color-mix(in oklch, var(--dextinity-color-text) 3%, transparent);
+    box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line);
+
+    figcaption {
+        font-weight: 500;
+    }
+}
+
+.wireframeFrame {
+    display: grid;
+    grid-template-rows: auto 110px;
+    gap: 6px;
+    padding: 8px;
+    border-radius: var(--dextinity-radius-item);
+    background: color-mix(in oklch, var(--dextinity-color-text) 4%, transparent);
+
+    &[data-variant="page"] {
+        grid-template-columns: 1.3fr 1fr;
+        grid-template-areas: "header header" "preview panel";
+    }
+
+    &[data-variant="form"] {
+        grid-template-columns: 1fr;
+        grid-template-areas: "header" "panel";
+    }
+
+    &[data-variant="formWithPreview"] {
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas: "header header" "panel preview";
+    }
+
+    &[data-variant="formWithBlocks"] {
+        grid-template-columns: 1fr 1.15fr;
+        grid-template-areas: "header header" "preview panel";
+    }
+}
+
+.wireframeRegion {
+    display: flex;
+    gap: 5px;
+    align-items: flex-start;
+    min-inline-size: 0;
+    padding: 5px 7px;
+    border-radius: 6px;
+    background: var(--dextinity-color-surface);
+    box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line);
+    color: var(--dextinity-color-text-subtle);
+    font-family: var(--dextinity-font-family-mono);
+    font-size: 10.5px;
+    line-height: 16px;
+
+    &[data-area="header"] {
+        grid-area: header;
+        background: transparent;
+        box-shadow: none;
+        outline: 1px dashed var(--dextinity-color-line-strong);
+        outline-offset: -1px;
+    }
+
+    &[data-area="preview"] {
+        grid-area: preview;
+    }
+
+    &[data-area="panel"] {
+        grid-area: panel;
+        background: var(--dextinity-color-accent-soft);
+        box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--dextinity-color-accent) 45%, transparent);
+    }
+}
+
+.wireframeNumber {
+    display: grid;
+    flex: none;
+    place-items: center;
+    inline-size: 16px;
+    block-size: 16px;
+    border-radius: 50%;
+    background: var(--dextinity-color-accent);
+    color: var(--dextinity-color-accent-foreground);
+    font-size: 9.5px;
+    font-weight: 600;
+}
+
+// The previewed site has its own design, independent of the admin theme
+.site {
+    min-block-size: 100%;
+    background: #fbfaf7;
+    color: #1d1f24;
+    font-family: Georgia, serif;
+    font-size: 15px;
+    line-height: 1.55;
+}
+
+.siteHeader {
+    display: flex;
+    gap: 22px;
+    align-items: center;
+    padding: 14px 26px;
+    border-block-end: 1px solid #e6e2da;
+    background: #fff;
+    font-family: system-ui, sans-serif;
+}
+
+.siteLogo {
+    font-weight: 700;
+}
+
+.siteNav {
+    display: flex;
+    gap: 18px;
+    margin-inline-start: auto;
+    color: #646a73;
+    font-size: 14px;
+}
+
+.siteStage {
+    aspect-ratio: 21 / 8;
+    min-block-size: 200px;
+    background: linear-gradient(#4b8acb, #b4bdf2);
+}
+
+.siteMain {
+    padding: 22px 26px;
+
+    h1 {
+        margin: 0 0 0.4em;
+        font-size: 36px;
+        font-weight: 500;
+        line-height: 1.15;
+    }
+}
+
+.siteJob {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-block-start: 1px solid #e6e2da;
+
+    span:last-child {
+        color: #646a73;
+        font-family: system-ui, sans-serif;
+        font-size: 13px;
+    }
+}

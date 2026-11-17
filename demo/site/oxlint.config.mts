@@ -4,7 +4,7 @@ import { defineConfig } from "oxlint";
 export default defineConfig({
     extends: [nextjsConfig],
     plugins: nextjsConfig.plugins,
-    ignorePatterns: ["**/*.generated.ts", ".next/**", "public/**", "lang/**", "lang-compiled/**", "lang-extracted/**"],
+    ignorePatterns: ["**/*.generated.ts", ".next/**", "public/**", "storybook-static/**", "lang/**", "lang-compiled/**", "lang-extracted/**"],
     overrides: [
         {
             files: ["next.config.*"],

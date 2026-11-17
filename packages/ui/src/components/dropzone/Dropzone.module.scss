@@ -1,0 +1,210 @@
+@use "../../theme/forcedColors" as forced-colors;
+@use "../../theme/keyframes";
+
+.root {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-space-3);
+    font-family: var(--dextinity-font-family-text);
+    font-size: var(--dextinity-typography-body-size);
+    color: var(--dextinity-color-text);
+
+    &[data-dragging] .zone {
+        background: var(--dextinity-dropzone-active-background);
+        box-shadow: var(--dextinity-dropzone-active-shadow);
+        outline-color: transparent;
+        @include forced-colors.edge(2px, Highlight);
+    }
+
+    &[data-error] .zone {
+        outline: var(--dextinity-dropzone-error-outline);
+    }
+
+    &[data-disabled] .zone {
+        opacity: var(--dextinity-dropzone-disabled-opacity);
+        cursor: not-allowed;
+    }
+
+    &[data-overlay] {
+        display: block;
+
+        .zone {
+            position: absolute;
+            z-index: 1;
+            inset: 0;
+            justify-content: center;
+            background: var(--dextinity-dropzone-overlay-background);
+            backdrop-filter: blur(var(--dextinity-material-blur));
+            outline: none;
+            opacity: 0;
+            pointer-events: none;
+            cursor: default;
+            transition: opacity var(--dextinity-motion-duration-short) var(--dextinity-motion-easing);
+        }
+
+        &[data-dragging] .zone {
+            opacity: 1;
+            background: var(--dextinity-dropzone-overlay-background);
+        }
+
+        .error,
+        .uploads {
+            margin-block-start: var(--dextinity-space-3);
+        }
+    }
+}
+
+.zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--dextinity-space-2);
+    padding: var(--dextinity-dropzone-padding);
+    border-radius: var(--dextinity-dropzone-radius);
+    background: var(--dextinity-dropzone-background);
+    outline: var(--dextinity-dropzone-outline);
+    outline-offset: calc(-1 * var(--dextinity-line-width-strong));
+    color: var(--dextinity-dropzone-foreground);
+    text-align: center;
+    cursor: pointer;
+    transition:
+        background var(--dextinity-motion-duration-short),
+        box-shadow var(--dextinity-motion-duration-short);
+}
+
+.icon {
+    color: var(--dextinity-dropzone-icon-foreground);
+
+    --dextinity-icon-size: var(--dextinity-dropzone-icon-size);
+}
+
+.title {
+    font-weight: var(--dextinity-font-weight-semibold);
+}
+
+.hint {
+    color: var(--dextinity-dropzone-hint-foreground);
+    font-size: var(--dextinity-typography-ui-size);
+}
+
+.browse {
+    padding: 0;
+    border: 0;
+    border-radius: var(--dextinity-dropzone-browse-radius);
+    background: none;
+    color: var(--dextinity-dropzone-browse-foreground);
+    font: inherit;
+    text-decoration: underline;
+    text-decoration-color: var(--dextinity-dropzone-browse-underline-color);
+    text-underline-offset: var(--dextinity-link-underline-offset);
+    cursor: pointer;
+
+    &:hover {
+        text-decoration-color: currentcolor;
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
+    }
+
+    &:disabled {
+        cursor: not-allowed;
+    }
+}
+
+.input {
+    display: none;
+}
+
+.error {
+    margin: 0;
+    color: var(--dextinity-dropzone-error-foreground);
+    font-size: var(--dextinity-typography-ui-size);
+}
+
+.uploads {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.upload {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) minmax(80px, 40%);
+    align-items: center;
+    gap: var(--dextinity-dropzone-upload-gap);
+    padding: var(--dextinity-space-2) var(--dextinity-space-3);
+    border-radius: var(--dextinity-dropzone-upload-radius);
+    background: var(--dextinity-dropzone-upload-background);
+    box-shadow: var(--dextinity-dropzone-upload-shadow);
+    font-size: var(--dextinity-typography-ui-size);
+
+    &[data-status="done"] .uploadName {
+        grid-column: span 2;
+    }
+
+    &[data-status="uploading"] .uploadIcon {
+        color: var(--dextinity-dropzone-uploading-icon-foreground);
+    }
+
+    &[data-status="error"] .uploadIcon {
+        color: var(--dextinity-dropzone-error-foreground);
+    }
+
+    @include forced-colors.edge;
+}
+
+.uploadIcon {
+    color: var(--dextinity-color-text-subtle);
+
+    --dextinity-icon-size: var(--dextinity-icon-size-small);
+}
+
+.uploadName {
+    overflow: hidden;
+    font-weight: var(--dextinity-font-weight-medium);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.uploadError {
+    color: var(--dextinity-dropzone-error-foreground);
+    font-size: var(--dextinity-dropzone-error-font-size);
+    text-align: end;
+}
+
+.progress {
+    display: block;
+}
+
+.track {
+    block-size: var(--dextinity-dropzone-progress-height);
+    overflow: hidden;
+    border-radius: var(--dextinity-radius-pill);
+    background: var(--dextinity-dropzone-progress-track);
+    box-shadow: var(--dextinity-dropzone-progress-track-shadow);
+
+    @include forced-colors.edge;
+}
+
+.indicator {
+    block-size: 100%;
+    border-radius: inherit;
+    background: var(--dextinity-dropzone-progress-indicator);
+    transition: inline-size var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
+
+    .progress[data-indeterminate] & {
+        inline-size: 30%;
+        animation: indeterminate var(--dextinity-progress-bar-indeterminate-duration) var(--dextinity-motion-easing) infinite;
+    }
+
+    @include forced-colors.fill(Highlight);
+}
+
+@include keyframes.indeterminate;

@@ -1,11 +1,10 @@
 import { Add, Edit } from "@dextinity/admin-icons";
 import { IconButton } from "@mui/material";
 import { DataGrid, type GridSlotsComponent } from "@mui/x-data-grid";
-import { createMemoryHistory } from "history";
 import { type ReactNode, type RefObject, useRef } from "react";
 import { useIntl } from "react-intl";
-import { Router } from "react-router";
-import { cleanup, render, screen, waitFor } from "test-utils";
+import type { Location } from "react-router";
+import { cleanup, LocationSpy, render, screen, waitFor } from "test-utils";
 import { afterEach, describe, expect, it } from "vitest";
 
 import { Button } from "../common/buttons/Button";
@@ -127,24 +126,33 @@ describe("EditDialog with Stack, Router Tabs and Grid", () => {
         );
     }
 
+    function renderEditDialogInRouterTabs() {
+        let currentLocation: Location | undefined;
+        const rendered = render(
+            <>
+                <EditDialogInRouterTabs />
+                <LocationSpy
+                    onChange={(location) => {
+                        currentLocation = location;
+                    }}
+                />
+            </>,
+            { initialEntries: ["/", "/products"], initialIndex: 0 },
+        );
+        return { rendered, getPathname: () => currentLocation?.pathname };
+    }
+
     afterEach(cleanup);
 
     it("should not open edit dialog when navigating to the products page", async () => {
-        const history = createMemoryHistory({
-            initialEntries: ["/", "/products"],
-            initialIndex: 0,
-        });
+        const { rendered, getPathname } = renderEditDialogInRouterTabs();
 
-        const rendered = render(
-            <Router history={history}>
-                <EditDialogInRouterTabs />
-            </Router>,
-        );
-
-        expect(history.location.pathname).toBe("/");
+        expect(getPathname()).toBe("/");
         rendered.getByText("Products").click();
         expect(screen.getByText("Products")).toBeInTheDocument();
-        expect(history.location.pathname).toBe("/products");
+        await waitFor(() => {
+            expect(getPathname()).toBe("/products");
+        });
 
         // Check that the Edit Dialog is not open, there was a bug that was fixed
         // where the edit dialog was open when navigating to a different tab
@@ -152,23 +160,14 @@ describe("EditDialog with Stack, Router Tabs and Grid", () => {
     });
 
     it("should open product add dialog when clicking on Add product button in grid toolbar", async () => {
-        const history = createMemoryHistory({
-            initialEntries: ["/", "/products"],
-            initialIndex: 0,
-        });
-
-        const rendered = render(
-            <Router history={history}>
-                <EditDialogInRouterTabs />
-            </Router>,
-        );
+        const { rendered } = renderEditDialogInRouterTabs();
 
         rendered.getByText("Products").click();
         await waitFor(() => {
             expect(screen.getByText("Products")).toBeInTheDocument();
         });
 
-        expect(rendered.getByText("Add product")).toBeInTheDocument();
+        expect(await rendered.findByText("Add product")).toBeInTheDocument();
         rendered.getByText("Add product").click();
         await waitFor(() => {
             expect(screen.getByText("Add a new product")).toBeInTheDocument();
@@ -176,31 +175,22 @@ describe("EditDialog with Stack, Router Tabs and Grid", () => {
     });
 
     it("should stay on the products page when closing the edit dialog", async () => {
-        const history = createMemoryHistory({
-            initialEntries: ["/", "/products"],
-            initialIndex: 0,
-        });
+        const { rendered, getPathname } = renderEditDialogInRouterTabs();
 
-        const rendered = render(
-            <Router history={history}>
-                <EditDialogInRouterTabs />
-            </Router>,
-        );
-
-        expect(history.location.pathname).toBe("/");
+        expect(getPathname()).toBe("/");
         expect(screen.getByText("Customers Page")).toBeInTheDocument();
 
         rendered.getByText("Products").click();
         await waitFor(() => {
             expect(rendered.getByText("Add product")).toBeInTheDocument();
         });
-        expect(history.location.pathname).toBe("/products");
+        expect(getPathname()).toBe("/products");
 
         rendered.getByText("Add product").click();
         await waitFor(() => {
             expect(screen.getByText("Add a new product")).toBeInTheDocument();
         });
-        expect(history.location.pathname).toBe("/products/add");
+        expect(getPathname()).toBe("/products/add");
 
         rendered.getByText("Cancel").click();
 
@@ -211,7 +201,7 @@ describe("EditDialog with Stack, Router Tabs and Grid", () => {
             expect(screen.queryByText("Add a new product")).not.toBeInTheDocument();
         });
 
-        expect(history.location.pathname).toBe("/products");
+        expect(getPathname()).toBe("/products");
         expect(screen.queryByText("Customers Page")).not.toBeInTheDocument();
     });
 });

@@ -1,0 +1,60 @@
+@mixin tokens {
+    // Gap between the dot and the label
+    --dextinity-status-indicator-gap: var(--dextinity-space-2);
+    // Size of the label
+    --dextinity-status-indicator-font-size: var(--dextinity-typography-ui-size);
+    // Weight of the statuses that need attention: critical and running
+    --dextinity-status-indicator-font-weight-emphasized: var(--dextinity-font-weight-semibold);
+    // Diameter of the dot; also how far the running pulse spreads
+    --dextinity-status-indicator-dot-size: 7px;
+    // Soft ring around the dot; off in high contrast, where the soft colors are transparent
+    --dextinity-status-indicator-halo-width: 3px;
+    // Appended to the critical status so it doesn't rely on color alone; "!" in high contrast
+    --dextinity-status-indicator-critical-mark: "";
+
+    // Dot of the published status
+    --dextinity-status-indicator-published-dot: var(--dextinity-color-success);
+    // Halo around the dot of the published status
+    --dextinity-status-indicator-published-halo: var(--dextinity-color-success-soft);
+    // Label color of the published status
+    --dextinity-status-indicator-published-foreground: var(--dextinity-color-text-subtle);
+    // Dot of the unpublished status
+    --dextinity-status-indicator-unpublished-dot: var(--dextinity-color-control-line);
+    // Label color of the unpublished status
+    --dextinity-status-indicator-unpublished-foreground: var(--dextinity-color-text-subtle);
+    // Hollow ring of the archived status
+    --dextinity-status-indicator-archived-dot: var(--dextinity-color-control-line);
+    // Label color of the archived status
+    --dextinity-status-indicator-archived-foreground: var(--dextinity-color-text-subtle);
+    // Dot of the warning status
+    --dextinity-status-indicator-warning-dot: var(--dextinity-color-warning);
+    // Halo around the dot of the warning status
+    --dextinity-status-indicator-warning-halo: var(--dextinity-color-warning-soft);
+    // Label color of the warning status
+    --dextinity-status-indicator-warning-foreground: var(--dextinity-color-text);
+    // Dot of the critical status
+    --dextinity-status-indicator-critical-dot: var(--dextinity-color-danger);
+    // Halo around the dot of the critical status
+    --dextinity-status-indicator-critical-halo: var(--dextinity-color-danger-soft);
+    // Label color of the critical status
+    --dextinity-status-indicator-critical-foreground: var(--dextinity-color-danger-text);
+    // Dot of the info status
+    --dextinity-status-indicator-info-dot: var(--dextinity-color-info);
+    // Halo around the dot of the info status
+    --dextinity-status-indicator-info-halo: var(--dextinity-color-info-soft);
+    // Label color of the info status
+    --dextinity-status-indicator-info-foreground: var(--dextinity-color-text-subtle);
+    // Dot of the running status
+    --dextinity-status-indicator-running-dot: var(--dextinity-gradient-brand);
+    // Pulses out from the dot while running; still with reduced motion
+    --dextinity-status-indicator-running-pulse: var(--dextinity-color-accent-glow);
+    // Label color of the running status
+    --dextinity-status-indicator-running-foreground: var(--dextinity-color-accent-text);
+
+    // Weight of the mark after the label of a critical status
+    --dextinity-status-indicator-mark-font-weight: 700;
+}
+
+@mixin high-contrast-tokens {
+    --dextinity-status-indicator-critical-mark: "!";
+}

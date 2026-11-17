@@ -4,6 +4,7 @@ export enum SendingState {
     DRAFT = "DRAFT",
     SENT = "SENT",
     SCHEDULED = "SCHEDULED",
+    FAILED = "FAILED",
 }
 
 registerEnumType(SendingState, {

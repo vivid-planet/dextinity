@@ -1,4 +1,4 @@
-import { useApolloClient, useMutation } from "@apollo/client";
+import { useApolloClient, useMutation } from "@apollo/client/react";
 import { DateTimePickerField, Field, FinalFormSelect, SaveButton, Tooltip, useAsyncOptionsProps, useStackSwitchApi } from "@dextinity/admin";
 import { Info, Newsletter } from "@dextinity/admin-icons";
 import { BlockAdminComponentPaper, BlockAdminComponentSectionGroup, type ContentScope } from "@dextinity/cms-admin";
@@ -45,13 +45,12 @@ export const SendManagerFields = ({ isCampaignCreated, scope, id, isSendable }: 
     const [isSendEmailCampaignNowDialogOpen, setIsSendEmailCampaignNowDialogOpen] = useState(false);
 
     const selectAsyncMultipleProps = useAsyncOptionsProps(async () => {
-        return (
-            await apolloClient.query<GQLTargetGroupsSelectQuery, GQLTargetGroupsSelectQueryVariables>({
-                query: targetGroupsSelectQuery,
-                variables: { scope },
-                fetchPolicy: "network-only",
-            })
-        ).data.brevoTargetGroups.nodes;
+        const { data } = await apolloClient.query<GQLTargetGroupsSelectQuery, GQLTargetGroupsSelectQueryVariables>({
+            query: targetGroupsSelectQuery,
+            variables: { scope },
+            fetchPolicy: "network-only",
+        });
+        return data?.brevoTargetGroups.nodes ?? [];
     });
 
     const [sendEmailCampaignNow, { loading: sendEmailCampaignNowLoading, error: sendEmailCampaignNowError }] = useMutation<

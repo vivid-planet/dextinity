@@ -14,7 +14,7 @@ function disableJsxParsing() {
     };
 }
 
-module.exports = function (api) {
+export default function (api) {
     // Opt-in instead of Babel's default, which enables the development JSX transform whenever NODE_ENV isn't set.
     // A build that misses NODE_ENV would otherwise publish packages that import the dev-only `react/jsx-dev-runtime`.
     const isDevelopment = api.cache.using(() => process.env.NODE_ENV === "development");
@@ -69,4 +69,4 @@ module.exports = function (api) {
             },
         ],
     };
-};
+}

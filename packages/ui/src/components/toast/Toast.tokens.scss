@@ -1,0 +1,60 @@
+@mixin tokens {
+    // Fill of the toast: the text color, inverted so the toast stands out on any surface
+    --dextinity-toast-background: var(--dextinity-color-text);
+    // Text color of the toast
+    --dextinity-toast-foreground: var(--dextinity-color-canvas);
+    // Corner radius of the toast
+    --dextinity-toast-radius: var(--dextinity-radius-field);
+    // Drop shadow of the toast
+    --dextinity-toast-shadow: var(--dextinity-shadow-3);
+    // Top and bottom padding of the toast
+    --dextinity-toast-padding-block: var(--dextinity-space-2);
+    // Padding before the icon and message
+    --dextinity-toast-padding-inline-start: 14px;
+    // Padding after the action and close button
+    --dextinity-toast-padding-inline-end: var(--dextinity-space-2);
+    // Gap between the icon, the message and the actions
+    --dextinity-toast-gap: var(--dextinity-space-3);
+    // Minimum height of the toast
+    --dextinity-toast-min-height: 44px;
+    // Text size of the message
+    --dextinity-toast-font-size: 13.5px;
+    // Size of the tone icon
+    --dextinity-toast-icon-size: var(--dextinity-icon-size-small);
+    // Icon color of a success toast
+    --dextinity-toast-success-icon-color: var(--dextinity-color-success);
+    // Icon color of an error toast
+    --dextinity-toast-error-icon-color: var(--dextinity-color-danger);
+    // Icon color of a warning toast
+    --dextinity-toast-warning-icon-color: var(--dextinity-color-warning);
+    // Icon color of an info toast
+    --dextinity-toast-info-icon-color: var(--dextinity-color-info);
+
+    // Height of the action button
+    --dextinity-toast-action-height: 28px;
+    // Horizontal padding of the action button
+    --dextinity-toast-action-padding: var(--dextinity-space-2-5);
+    // Corner radius of the action button
+    --dextinity-toast-action-radius: var(--dextinity-radius-item);
+    // Fill of the action button
+    --dextinity-toast-action-background: color-mix(in oklch, var(--dextinity-color-canvas) 15%, transparent);
+    // Fill of the action button on hover
+    --dextinity-toast-action-background-hover: color-mix(in oklch, var(--dextinity-color-canvas) 25%, transparent);
+
+    // Distance of the toast stack from the bottom of the viewport
+    --dextinity-toast-viewport-offset: 24px;
+    // Distance from the bottom while a bulk action bar is open, so the toasts don't cover it
+    --dextinity-toast-viewport-offset-above-bulk-action-bar: calc(
+        var(--dextinity-toast-viewport-offset) + var(--dextinity-bulk-action-bar-action-height) + 2 * var(--dextinity-bulk-action-bar-padding) +
+            var(--dextinity-space-2)
+    );
+}
+
+@mixin dark-tokens {
+    // The inverted toast is light here, and the tone colors are made for a dark background, so they are darkened toward the toast's
+    // foreground to stand out on it
+    --dextinity-toast-success-icon-color: color-mix(in oklab, var(--dextinity-color-success) 55%, var(--dextinity-toast-foreground));
+    --dextinity-toast-error-icon-color: color-mix(in oklab, var(--dextinity-color-danger) 60%, var(--dextinity-toast-foreground));
+    --dextinity-toast-warning-icon-color: color-mix(in oklab, var(--dextinity-color-warning) 50%, var(--dextinity-toast-foreground));
+    --dextinity-toast-info-icon-color: color-mix(in oklab, var(--dextinity-color-info) 55%, var(--dextinity-toast-foreground));
+}

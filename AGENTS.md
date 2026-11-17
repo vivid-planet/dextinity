@@ -110,6 +110,14 @@ Demo frontend site (Next.js)
 - Start using `pnpm exec dev-pm start @demo-site`
 - access at: http://localhost:3000/
 
+**Site Storybook:**
+Storybook for the demo site components (Vite, `@storybook/nextjs-vite`)
+
+- Start using `pnpm exec dev-pm start demo-site-storybook`
+- access at: http://localhost:26648/
+- stories live in `__stories__` folders next to the component
+- run the story tests with `pnpm --filter dextinity-demo-site run test:storybook`
+
 ### dev-pm
 
 Use dev-pm for managing demo processes:
@@ -203,6 +211,11 @@ Example:
 Fix description here
 ```
 
+## Branches
+
+- `next` is protected and can't be pushed to directly. When a session targets `next` (e.g. it was started on `next` or a task asks for a breaking change), always create a new branch from `next` before committing, push that branch, and open the pull request against `next`.
+- Name branches that merge one branch into another `merge-<source>-into-<target>`, replacing `/` with `-`, e.g. `merge-main-into-next` or `merge-next-into-feature-new-block`. The labeler workflow relies on the `merge-main-`/`merge-next-` prefix.
+
 ## Commit messages
 
 - Do not use Conventional Commits.
@@ -220,6 +233,10 @@ Fix description here
 - Keep the length proportional to the change. A one-line fix gets a paragraph, not a report.
 - The description becomes the message of the squashed commit. See CONTRIBUTING.md#pull-requests.
 - After opening a pull request, always check its description and rewrite it to follow these rules, also when the pull request was created by a tool or UI that generated the description.
+
+## Pull request labels
+
+- When opening a pull request from a feature branch (`feature/…`) or a `merge-main-…`/`merge-next-…` branch, add the `skip-greptile-review` label when creating it. The labeler workflow sets it as well, but may run after Greptile has already started its review.
 
 ## Pull request comments
 

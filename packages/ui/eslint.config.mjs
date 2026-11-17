@@ -12,7 +12,7 @@ export default defineConfig([
     },
     ...storybook.configs["flat/recommended"],
     {
-        files: ["src/**/*.stories.tsx", "src/storybook/**/*.tsx", "src/**/*.test.ts", "src/**/*.test.tsx"],
+        files: ["src/**/*.stories.tsx", "src/**/*.test.ts", "src/**/*.test.tsx", "src/storybook/**"],
         rules: {
             "react/jsx-no-literals": "off",
         },

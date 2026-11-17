@@ -1,4 +1,5 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { useBufferedRowCount, useDataGridRemote, usePersistentColumnState } from "@dextinity/admin";
 import { type BlockInterface, createBlockSkeleton, useContentScope } from "@dextinity/cms-admin";
 import { Box } from "@mui/material";
@@ -40,7 +41,7 @@ export const NewsListBlock: BlockInterface<NewsListBlockData, State, NewsListBlo
                     title
                 }
             `,
-            { variables: { scope } },
+            { variables: { scope }, notifyOnNetworkStatusChange: false },
         );
         const rowCount = useBufferedRowCount(data?.newsList.totalCount);
 

@@ -45,7 +45,7 @@ src/**/*.scss.d.ts
 public/sitemap.xml
 public/robots.txt
 
-tsconfig.tsbuildinfo
+*.tsbuildinfo
 
 src/dextinity-config.json
 persisted-queries.json
@@ -54,3 +54,6 @@ lang
 lang-extracted
 lang-compiled
 /dist
+
+# storybook
+/storybook-static

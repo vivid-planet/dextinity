@@ -29,9 +29,9 @@ export function FeaturesButtonGroup(inProps: IProps) {
         slotProps,
         ...restProps
     } = useThemeProps({ props: inProps, name: "DextinityAdminRteFeaturesButtonGroup" });
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [anchorEl, setAnchorEl] = useState<null | Element>(null);
 
-    const handleMoreOptionsClick = (event: MouseEvent<HTMLButtonElement>) => {
+    const handleMoreOptionsClick = (event: MouseEvent) => {
         setAnchorEl(event.currentTarget);
     };
 

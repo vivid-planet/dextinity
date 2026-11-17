@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Redirect, Route, Switch } from "react-router";
+import { Navigate, Route, Routes } from "react-router";
 
 import { StackBreadcrumbs } from "../breadcrumbs/StackBreadcrumbs";
 import { StackPage } from "../Page";
@@ -96,14 +96,10 @@ export const _StackPageTitle = () => {
     return (
         <div>
             <p>This story is mainly for testing the StackPageTitle component under various situations.</p>
-            <Switch>
-                <Route exact path="/">
-                    <Redirect to="/foo" />
-                </Route>
-                <Route path="/foo">
-                    <Story />
-                </Route>
-            </Switch>
+            <Routes>
+                <Route index element={<Navigate to="/foo" replace />} />
+                <Route path="/foo/*" element={<Story />} />
+            </Routes>
         </div>
     );
 };

@@ -19,6 +19,7 @@ import { Migration20250317131301 } from "./Migration20250317131301.js";
 import { Migration20250321132034 } from "./Migration20250321132034.js";
 import { Migration20250703155205 } from "./Migration20250703155205.js";
 import { Migration20261102163117 } from "./Migration20261102163117.js";
+import { Migration20261105133500 } from "./Migration20261105133500.js";
 
 export const migrationsList: MigrationObject[] = [
     { name: "Migration20240115095733", class: Migration20240115095733 },
@@ -40,4 +41,5 @@ export const migrationsList: MigrationObject[] = [
     { name: "Migration20250317131301", class: Migration20250317131301 },
     { name: "Migration20250703155205", class: Migration20250703155205 },
     { name: "Migration20261102163117", class: Migration20261102163117 },
+    { name: "Migration20261105133500", class: Migration20261105133500 },
 ];

@@ -1,0 +1,74 @@
+// The frame (label, box, message) comes from the Field tokens.
+@mixin tokens {
+    // Text color of the placeholder in the field
+    --dextinity-date-picker-placeholder-color: var(--dextinity-field-placeholder);
+    // Icon color of the calendar and clear buttons in the field
+    --dextinity-date-picker-button-color: var(--dextinity-color-text-subtle);
+    // Icon color of a hovered calendar or clear button
+    --dextinity-date-picker-button-color-hover: var(--dextinity-color-text);
+    // Fill of a hovered calendar or clear button
+    --dextinity-date-picker-button-background-hover: color-mix(in oklch, var(--dextinity-color-text) 7%, transparent);
+    // Color of the separator between a range's start and end, or the date and time
+    --dextinity-date-picker-separator-color: var(--dextinity-color-text-subtle);
+
+    // Fill of the calendar popup
+    --dextinity-date-picker-popup-background: var(--dextinity-color-surface);
+    // Corner radius of the calendar popup
+    --dextinity-date-picker-popup-radius: var(--dextinity-radius-field);
+    // Outline and shadow of the calendar popup
+    --dextinity-date-picker-popup-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line-strong), var(--dextinity-shadow-3);
+    // Padding inside the calendar popup
+    --dextinity-date-picker-popup-padding: var(--dextinity-space-3);
+
+    // Text size of the month and year heading in the calendar
+    --dextinity-date-picker-heading-font-size: 13.5px;
+    // Height of the buttons in the calendar header, and width of its previous and next buttons
+    --dextinity-date-picker-header-control-size: 30px;
+    // Height of the year menu in the calendar header before it scrolls
+    --dextinity-date-picker-year-menu-max-height: 240px;
+    // Text color of the weekday names above the days
+    --dextinity-date-picker-weekday-color: var(--dextinity-color-text-subtle);
+
+    // Width and height of a day cell in the calendar
+    --dextinity-date-picker-day-size: 34px;
+    // Corner radius of a day cell
+    --dextinity-date-picker-day-radius: calc(9px * var(--dextinity-brand-radius-factor));
+    // Text size of a day number
+    --dextinity-date-picker-day-font-size: var(--dextinity-typography-ui-size);
+    // Fill of a hovered day
+    --dextinity-date-picker-day-background-hover: color-mix(in oklch, var(--dextinity-color-text) 7%, transparent);
+    // Fill of a selected day, and of a range's start and end
+    --dextinity-date-picker-day-background-selected: var(--dextinity-color-accent);
+    // Text color of a selected day
+    --dextinity-date-picker-day-foreground-selected: var(--dextinity-color-accent-foreground);
+    // Ring around a selected day; visible in high contrast
+    --dextinity-date-picker-day-shadow-selected: 0 0 transparent;
+    // Fill of the days between a range's start and end
+    --dextinity-date-picker-day-background-range: var(--dextinity-color-accent-soft);
+    // Text color of the days between a range's start and end
+    --dextinity-date-picker-day-foreground-range: var(--dextinity-color-accent-text);
+    // Lines marking the days between a range's start and end; visible in high contrast
+    --dextinity-date-picker-day-shadow-range: 0 0 transparent;
+    // Color of the mark below today's number
+    --dextinity-date-picker-today-color: var(--dextinity-color-accent);
+
+    // Height of the DateTimePicker's list of times before it scrolls
+    --dextinity-date-picker-time-list-max-height: 264px;
+    // Minimum width of the DateTimePicker's list of times
+    --dextinity-date-picker-time-list-min-width: 120px;
+    // Padding inside the DateTimePicker's list of times
+    --dextinity-date-picker-time-list-padding: var(--dextinity-space-1-5);
+
+    // Opacity of a day that can't be selected
+    --dextinity-date-picker-day-disabled-opacity: 0.36;
+    // Opacity of the line between the date and time fields of the DateTimePicker
+    --dextinity-date-picker-separator-opacity: 0.6;
+}
+
+@mixin high-contrast-tokens {
+    --dextinity-date-picker-day-shadow-selected: inset 0 0 0 2px var(--dextinity-color-focus);
+    // The soft range fill is black, so lines above and below mark the range instead
+    --dextinity-date-picker-day-shadow-range:
+        inset 0 var(--dextinity-line-width) 0 var(--dextinity-color-text),
+        inset 0 calc(var(--dextinity-line-width) * -1) 0 var(--dextinity-color-text);
+}

@@ -123,7 +123,11 @@ function resolveBlockTypeProps({
         return context.textBlockStyles[textBlockStyle];
     }
 
-    return (textBlock && context.textBlocks[textBlock]) ?? {};
+    if (textBlock !== undefined && context.textBlocks[textBlock] !== undefined) {
+        return context.textBlocks[textBlock];
+    }
+
+    return {};
 }
 
 function applyMarks({

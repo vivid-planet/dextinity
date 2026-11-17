@@ -1,4 +1,5 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { Field, FinalForm, FinalFormInput, FinalFormSelect, Loading } from "@dextinity/admin";
 import type { FormApi } from "final-form";
 import { type FunctionComponent, useMemo } from "react";

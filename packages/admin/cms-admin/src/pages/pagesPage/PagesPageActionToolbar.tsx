@@ -1,4 +1,4 @@
-import { useApolloClient } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
 import { Button, Tooltip, UndoSnackbar, useSnackbarApi } from "@dextinity/admin";
 import { Archive, Copy, Delete, Offline, Online, Paste, ThreeDotSaving, Translate, TreeCollapseAll } from "@dextinity/admin-icons";
 import { Checkbox, Grid, IconButton, useTheme } from "@mui/material";

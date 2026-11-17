@@ -1,6 +1,6 @@
 import { RuleTester } from "eslint";
 
-import noNextPublicEnv from "./no-next-public-env";
+import noNextPublicEnv from "./no-next-public-env.js";
 
 const ruleTester = new RuleTester();
 

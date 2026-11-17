@@ -1,4 +1,5 @@
-import { gql, useApolloClient, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client/react";
 import {
     Button,
     CrudContextMenu,
@@ -129,6 +130,7 @@ export function EmailCampaignsGrid({
         },
         { value: "DRAFT", label: intl.formatMessage({ id: "dextinity.emailCampaign.draft", defaultMessage: "Draft" }) },
         { value: "SCHEDULED", label: intl.formatMessage({ id: "dextinity.emailCampaign.scheduled", defaultMessage: "Scheduled" }) },
+        { value: "FAILED", label: intl.formatMessage({ id: "dextinity.emailCampaign.failed", defaultMessage: "Failed" }) },
     ];
 
     const columns: GridColDef<GQLEmailCampaignsListFragment>[] = [
@@ -190,7 +192,7 @@ export function EmailCampaignsGrid({
 
                 return (
                     <>
-                        {row.sendingState !== "SENT" && !isScheduledDateInPast && (
+                        {row.sendingState !== "SENT" && (row.sendingState === "FAILED" || !isScheduledDateInPast) && (
                             <IconButton component={StackLink} nativeButton={false} pageName="edit" payload={row.id}>
                                 <Edit color="primary" />
                             </IconButton>
@@ -249,6 +251,7 @@ export function EmailCampaignsGrid({
             limit: dataGridProps.paginationModel.pageSize,
             sort: muiGridSortToGql(dataGridProps.sortModel),
         },
+        notifyOnNetworkStatusChange: false,
     });
     const rowCount = useBufferedRowCount(data?.brevoEmailCampaigns.totalCount);
     if (error) {

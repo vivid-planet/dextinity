@@ -1,0 +1,10 @@
+.tiles {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    max-inline-size: 720px;
+}
+
+.area {
+    max-inline-size: 620px;
+}

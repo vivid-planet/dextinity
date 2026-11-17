@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/brevo-admin",
-    "version": "10.14.0",
+    "version": "10.15.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/vivid-planet/dextinity",
@@ -44,10 +44,10 @@
         "@dextinity/admin-icons": "workspace:*",
         "@dextinity/cms-admin": "workspace:*",
         "date-fns": "^4.4.0",
-        "react-dropzone": "^20.1.4"
+        "react-dropzone": "^20.2.0"
     },
     "devDependencies": {
-        "@apollo/client": "^3.14.1",
+        "@apollo/client": "^4.3.5",
         "@babel/cli": "^8.0.6",
         "@babel/core": "^8.0.10",
         "@dextinity/admin-babel-preset": "workspace:*",
@@ -66,11 +66,10 @@
         "@mui/x-date-pickers": "^9.15.0",
         "@types/react": "^19.3.0",
         "@types/react-dom": "^19.3.0",
-        "@types/react-router": "^5.1.20",
         "chokidar-cli": "^3.0.0",
         "eslint": "^9.39.5",
         "final-form": "^4.20.10",
-        "graphql": "^16.14.2",
+        "graphql": "^16.15.0",
         "prettier": "^3.9.10",
         "react": "^19.3.1",
         "react-dnd": "^16.0.1",
@@ -78,12 +77,12 @@
         "react-dom": "^19.3.1",
         "react-final-form": "^6.5.9",
         "react-intl": "^12.1.4",
-        "react-router": "^5.3.4",
-        "react-router-dom": "^5.3.4",
+        "react-router": "^8.5.1",
+        "rxjs": "^7.8.2",
         "typescript": "^6.0.3"
     },
     "peerDependencies": {
-        "@apollo/client": "^3.7.0",
+        "@apollo/client": "^4.0.0",
         "@emotion/react": "^11.5.0",
         "@emotion/styled": "^11.3.0",
         "@mui/material": "^9.0.0",
@@ -92,14 +91,14 @@
         "@mui/x-date-pickers": "^9.0.0",
         "final-form": "^4.0.0",
         "graphql": "^15.0.0 || ^16.0.0",
-        "react": "^18.0.0 || ^19.0.0",
+        "react": "^19.2.7",
         "react-dnd": "^16.0.0",
         "react-dnd-html5-backend": "^16.0.0",
-        "react-dom": "^18.0.0 || ^19.0.0",
+        "react-dom": "^19.2.7",
         "react-final-form": "^6.0.0",
         "react-intl": "^12.0.0",
-        "react-router": "^5.0.0",
-        "react-router-dom": "^5.0.0"
+        "react-router": "^8.0.0",
+        "rxjs": "^7.3.0"
     },
     "engines": {
         "node": ">=24.15.0"

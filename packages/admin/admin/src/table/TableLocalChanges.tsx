@@ -11,7 +11,7 @@ export async function submitChangesWithMutation(options: {
     changes: { [id: string]: object };
     variables?: object;
     updateMutation: DocumentNode;
-    client: ApolloClient<any>;
+    client: ApolloClient;
 }) {
     for (const id of Object.keys(options.changes)) {
         await options.client.mutate({

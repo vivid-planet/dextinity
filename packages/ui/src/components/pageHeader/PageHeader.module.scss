@@ -1,0 +1,80 @@
+@use "../../theme/textStyles" as text-styles;
+
+.root {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--dextinity-page-header-gap);
+    font-family: var(--dextinity-font-family-text);
+
+    &[data-variant="compact"] {
+        --dextinity-page-header-gap: var(--dextinity-page-header-compact-gap);
+        --dextinity-page-header-label-spacing: var(--dextinity-page-header-compact-label-spacing);
+        --dextinity-page-header-title-font-size: var(--dextinity-page-header-compact-title-font-size);
+        --dextinity-page-header-subtitle-spacing: var(--dextinity-page-header-compact-subtitle-spacing);
+
+        align-items: center;
+
+        .title {
+            line-height: 1.15;
+        }
+    }
+
+    &[data-has-back] .heading {
+        display: grid;
+        grid-template-areas:
+            ". label"
+            "back title"
+            ". subtitle";
+        grid-template-columns: auto minmax(0, 1fr);
+        align-items: center;
+        column-gap: var(--dextinity-page-header-back-gap);
+    }
+}
+
+.heading {
+    min-inline-size: 0;
+}
+
+.labelLine {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--dextinity-space-2);
+    margin-block-end: var(--dextinity-page-header-label-spacing);
+    color: var(--dextinity-page-header-label-color);
+    grid-area: label;
+    @include text-styles.label;
+}
+
+.back {
+    grid-area: back;
+}
+
+.title {
+    grid-area: title;
+    margin: 0;
+    color: var(--dextinity-page-header-title-color);
+    font-family: var(--dextinity-font-family-display);
+    font-size: var(--dextinity-page-header-title-font-size);
+    font-weight: var(--dextinity-typography-display-font-weight);
+    line-height: var(--dextinity-typography-display-l-line-height);
+    letter-spacing: var(--dextinity-typography-display-letter-spacing);
+    text-transform: var(--dextinity-typography-display-text-transform);
+}
+
+.subtitle {
+    grid-area: subtitle;
+    margin-block-start: var(--dextinity-page-header-subtitle-spacing);
+    color: var(--dextinity-page-header-subtitle-color);
+    font-size: var(--dextinity-typography-body-size);
+    line-height: var(--dextinity-typography-body-line-height);
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--dextinity-page-header-actions-gap);
+}

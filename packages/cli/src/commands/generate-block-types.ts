@@ -2,7 +2,7 @@ import { Command } from "commander";
 import { readFile, writeFile } from "fs/promises";
 import { format, resolveConfig } from "prettier";
 
-import type { BlockMeta, BlockMetaField } from "../BlockMeta";
+import type { BlockMeta, BlockMetaField } from "../BlockMeta.js";
 
 let content = "";
 let isTipTapNodeTypeUsed = false;

@@ -104,13 +104,13 @@ The following object needs to be added to the `masterMenuData` array in `src/com
 ```typescript
 import { CustomerPage } from "@src/customers/CustomerPage";
 
-    {
+{
     type: "route",
-        primary: <FormattedMessage id="menu.customerPage" defaultMessage="CustomerPage" />,
-        icon: <Wrench />,
-        route: {
+    primary: <FormattedMessage id="menu.customerPage" defaultMessage="CustomerPage" />,
+    icon: <Wrench />,
+    route: {
         path: "/customers",
-            component: CustomerPage,
+        element: <CustomerPage />,
     },
 },
 ```

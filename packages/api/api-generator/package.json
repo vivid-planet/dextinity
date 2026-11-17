@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/api-generator",
-    "version": "10.14.0",
+    "version": "10.15.0",
     "description": "Dextinity API Generator CLI tool",
     "repository": {
         "directory": "packages/api/api-generator",
@@ -42,7 +42,7 @@
     "dependencies": {
         "@dextinity/cms-api": "workspace:*",
         "chokidar": "^6.0.0",
-        "commander": "^15.0.0",
+        "commander": "^15.1.0",
         "pluralize": "^8.0.0",
         "ts-morph": "^28.0.0",
         "typescript": "^6.0.3"

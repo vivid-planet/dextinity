@@ -1,40 +1,43 @@
 import { RouterMemoryRouter } from "@dextinity/admin";
 import type { Decorator } from "@storybook/react-vite";
-import type { Action, History, UnregisterCallback } from "history";
-import { type PropsWithChildren, type ReactNode, useEffect } from "react";
-import { type MemoryRouterProps, Route, type RouteComponentProps } from "react-router";
+import { useEffect, useRef } from "react";
+import { type InitialEntry, useLocation, useNavigationType } from "react-router";
 import { action } from "storybook/actions";
 
-const StoryRouter = ({ children, routerProps }: { children: ReactNode; routerProps?: MemoryRouterProps }) => {
-    return (
-        <RouterMemoryRouter {...routerProps}>
-            <Route render={(props) => <HistoryWatcher {...props}>{children}</HistoryWatcher>} />
-        </RouterMemoryRouter>
-    );
-};
+declare module "storybook/internal/csf" {
+    interface Parameters {
+        router?: {
+            initialEntries?: InitialEntry[];
+            initialIndex?: number;
+        };
+    }
+}
 
-function HistoryWatcher({ history, children }: PropsWithChildren<RouteComponentProps>) {
+function NavigationActionLogger() {
+    const location = useLocation();
+    const navigationType = useNavigationType();
+    const previousLocationKey = useRef(location.key);
+
     useEffect(() => {
-        const onHistoryChanged: History.LocationListener = (location, historyAction: Action) => {
-            const path = location.pathname;
-            action(historyAction ? historyAction : (location as any).action)(path);
-        };
-        const unlisten: UnregisterCallback = history.listen(onHistoryChanged);
+        if (previousLocationKey.current === location.key) {
+            return;
+        }
+        previousLocationKey.current = location.key;
+        action(navigationType)(location.pathname);
+    }, [location, navigationType]);
 
-        return () => {
-            unlisten();
-        };
-    }, [history]);
-
-    return <>{children}</>;
+    return null;
 }
 
 export function storyRouterDecorator(): Decorator {
-    return (Story) => {
+    return (Story, context) => {
+        const routerParams = context.parameters.router;
+
         return (
-            <StoryRouter>
+            <RouterMemoryRouter initialEntries={routerParams?.initialEntries} initialIndex={routerParams?.initialIndex}>
+                <NavigationActionLogger />
                 <Story />
-            </StoryRouter>
+            </RouterMemoryRouter>
         );
     };
 }

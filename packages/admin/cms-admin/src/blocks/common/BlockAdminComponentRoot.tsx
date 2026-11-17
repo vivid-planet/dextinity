@@ -1,5 +1,5 @@
 import { Stack, StackBreadcrumbs } from "@dextinity/admin";
-import { styled } from "@mui/material/styles";
+import { css, styled } from "@mui/material/styles";
 import type { PropsWithChildren, ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
 
@@ -12,22 +12,25 @@ const BlockAdminComponentRoot = (props: PropsWithChildren<Props>) => {
 
     return (
         <Stack topLevelTitle={title}>
-            <StackBreadcrumbs
-                sx={({ palette, spacing }) => ({
-                    paddingTop: 0,
-                    paddingBottom: spacing(4),
-                    position: "sticky",
-                    zIndex: 15,
-                    backgroundColor: palette.background.default,
-                    top: 0,
-                })}
-            />
+            <StickyBreadcrumbs>
+                <StackBreadcrumbs />
+            </StickyBreadcrumbs>
             <ChildrenContainer>{children}</ChildrenContainer>
         </Stack>
     );
 };
 
 export { BlockAdminComponentRoot };
+
+const StickyBreadcrumbs = styled("div")(
+    ({ theme }) => css`
+        position: sticky;
+        top: 0;
+        z-index: 15;
+        padding-bottom: ${theme.spacing(4)};
+        background-color: ${theme.palette.background.default};
+    `,
+);
 
 const ChildrenContainer = styled("div")`
     .DextinityAdminRte-root > .DextinityAdminRteToolbar-root,

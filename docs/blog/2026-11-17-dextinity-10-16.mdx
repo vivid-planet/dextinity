@@ -1,0 +1,141 @@
+---
+slug: dextinity-10-16
+title: "Dextinity 10.16: Leaner video blocks, stable TipTap and CRUD skills for your coding agent"
+authors: [dextinity]
+tags: [release]
+image: /img/blog/release-10-16/highlights-poster.jpg
+description: Dextinity 10.16 brings video blocks that only offer what your website uses, a stable TipTap rich text editor, CRUD skills for coding agents and a bunch of fixes editors will notice.
+---
+
+<video
+    src="/img/blog/release-10-16/highlights.mp4"
+    poster="/img/blog/release-10-16/highlights-poster.jpg"
+    autoPlay
+    muted
+    loop
+    playsInline
+    controls
+    style={{ width: "100%", borderRadius: 12 }}
+/>
+
+Dextinity 10.16 is just around the corner! 🚀 This release makes video blocks leaner, declares the TipTap rich text editor ready for production, and teaches your coding agent how to build complete CRUD features the Dextinity way. On top of that, editors get a handful of fixes that make everyday work smoother.
+
+<!-- truncate -->
+
+## Highlights
+
+### Video blocks that only offer what your website uses
+
+Until now, every video from the asset manager came with the full package: autoplay, loop, show controls and a preview image. Even if your website ignored half of it, editors still saw those settings, and the CMS stored them anyway.
+
+With the new `createDamVideoBlock` factory, you simply switch off what you don't need. Editors only see the settings that actually do something, and the stored data stays clean.
+
+<video src="/img/blog/release-10-16/dam-video-block.mp4" autoPlay muted loop playsInline controls style={{ width: "100%", borderRadius: 12 }} />
+
+Use the same options in the API and the Admin:
+
+```ts
+// API
+export const TeaserVideoBlock = createDamVideoBlock({ controls: false, previewImage: false }, "TeaserVideo");
+```
+
+```tsx
+// Admin
+export const TeaserVideoBlock = createDamVideoBlock({ name: "TeaserVideo", controls: false, previewImage: false });
+```
+
+Good to know:
+
+- The existing `DamVideoBlock` keeps working exactly as before, so there's nothing to migrate.
+- Existing content is safe: values stored before you switched an option off are still readable. They're dropped the next time an editor saves the block.
+- The old `supports` option of the Admin factory is deprecated. Replace it together with the API block.
+
+### TipTap rich text is now stable 🎉
+
+The TipTap Rich Text Block has graduated from "experimental". `createTipTapRichTextBlock` and `renderTipTapRichText` now follow regular semantic versioning, so no more surprise breaking changes in minor releases. If you've been waiting for the green light to use the modern editor in production: this is it.
+
+<video src="/img/blog/release-10-16/tiptap-stable.mp4" autoPlay muted loop playsInline controls style={{ width: "100%", borderRadius: 12 }} />
+
+### CRUD features from a single sentence
+
+Coding agents are great at writing code, but they don't know our conventions. The new agent skills fix that. Describe your entity in one sentence, and your agent builds the API and the admin UI in the same style as our generators:
+
+> Create CRUD for a `BlogPost` entity with title, content (rich text), author (string), and publishedAt (date).
+
+![The dextinity-crud skill plans first, then runs one skill per phase and validates and commits each phase](/img/blog/release-10-16/crud-skills.jpg)
+
+`dextinity-crud` shows you a plan first and waits for your OK. It then runs one skill per phase, checks each phase with lint and `tsc`, and commits it separately, so you can review every step. Each skill also works on its own, for example when you just want to add a column to an existing data grid:
+
+| Skill                      | What it does                                                         |
+| -------------------------- | -------------------------------------------------------------------- |
+| `dextinity-api-graphql`    | GraphQL resolver, DTOs and permission for an entity                  |
+| `dextinity-admin-enum`     | Translated labels, chips and form fields for enums                   |
+| `dextinity-admin-datagrid` | Data grid with server-side filtering, sorting, search and pagination |
+| `dextinity-admin-form`     | Edit form with create and edit modes and save conflict detection     |
+| `dextinity-admin-pages`    | Page navigation with stacks, tabs and edit dialogs                   |
+
+Check out the [agent skills docs](/docs/agent-skills/) to get started.
+
+## Security fix: preview token stays at home
+
+The block preview adds a special header to requests going to the preview's own host. When a request was made in a certain way (with a `Request` object), the header was added to **every** request, including requests to other websites. That header contains the content scope token. Besides leaking the token, it also broke third-party services that don't accept the header, for example map styles loaded by MapLibre.
+
+Now the header is only sent where it belongs. We recommend updating soon.
+
+## Fixes editors will notice
+
+### Failed uploads no longer get stuck
+
+If the Wi-Fi dropped or the VPN hiccuped during a file upload, the file stayed in the "loading" state forever, with no hint that something went wrong. Now the upload is clearly marked as failed, and you can remove the file and try again.
+
+<video src="/img/blog/release-10-16/upload-error.mp4" autoPlay muted loop playsInline controls style={{ width: "100%", borderRadius: 12 }} />
+
+### Copied pages keep their order
+
+When you copied several pages with subpages and pasted them, for example into another language, the pasted pages ended up in a random order. Now they appear in exactly the same order as in the original page tree.
+
+<video src="/img/blog/release-10-16/pagetree-copy-order.mp4" autoPlay muted loop playsInline controls style={{ width: "100%", borderRadius: 12 }} />
+
+### Redirect types say what they do
+
+"Standard" vs. "Permanent": what does "Standard" actually mean? The label now reads **Standard (Temporary)**, so it's clear right away which one to pick.
+
+<video src="/img/blog/release-10-16/redirect-label.mp4" autoPlay muted loop playsInline controls style={{ width: "100%", borderRadius: 12 }} />
+
+### License tags fit in narrow columns
+
+In the asset manager, tags like "License expires in …" were cut off on both sides when the column was too narrow, so the warning icon disappeared. Now the icon always stays visible and the text ends with "…". The tags also look like the other chips in the admin.
+
+![License tags before and after: the warning icon is no longer cut off](/img/blog/release-10-16/dam-license-chips.jpg)
+
+### The menu shows up for users with a single group
+
+Users whose pages were all inside one menu group got no navigation at all. The menu now counts the pages inside groups, so these users see their menu again.
+
+## For developers and ops
+
+- **Old build assets are cleaned up**: `dextinity-upload-build-assets` now deletes the build assets of older uploads and keeps the last 10 by default (configurable with `--keep-builds`). The storage needs to allow listing and deleting files. Assets uploaded before this version aren't cleaned up automatically, so delete them manually once all instances run builds uploaded with 10.16.
+- **Table block validation**: The API now validates the columns, rows and cells of `createTableBlock`, for instance rejecting `javascript:` links in cells.
+- **More reliable Brevo campaigns**: Campaigns interrupted by an API restart are marked as `FAILED` instead of staying `SCHEDULED` forever, campaigns beyond the first page of Brevo's list are found, and campaigns are cached per scope.
+- **One-of blocks keep their extra fields**, such as a link's title, in `output2State`.
+- **`useUserPermissionCheck` returns a stable callback**, so it works as a `useMemo`/`useCallback` dependency.
+- **No more duplicate actions column** in `UserPermissionsUserGrid`.
+- **Mail React**: Full-width pixel image blocks request a valid image width, and `renderMailHtml` no longer crashes on font families with quotes.
+- **Agent skills**: The `dextinity-mail-react` skill now reads the usage guide from the `@dextinity/mail-react` Storybook.
+
+## Dependency updates
+
+We keep the dependencies fresh, so you don't have to. Here are the most notable updates in this release:
+
+| Area                    | Updated to                                                                                                                 |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| 🧱 **Frameworks**       | Next.js `16.4.6` · NestJS `11.2.10` · MikroORM `6.6.18` · Apollo Server `5.5.2`                                            |
+| 🎨 **UI & editor**      | MUI `8.29.6` · TipTap `3.34.0` · React Hook Form `7.92.0` · react-dropzone `20.2.0`                                        |
+| 🔒 **Security & infra** | DOMPurify `3.4.18` · jose `6.2.17` · AWS SDK `3.1169.0` · OpenTelemetry `0.301.2` · Sentry `11.12.0` · Nodemailer `10.5.0` |
+| 🛠️ **Tooling**          | Vite `8.3.8` · Storybook `10.6.7` · Playwright `1.65.1` · pnpm `12.21.0` · Stylelint `18` · msw `3`                        |
+
+The major updates of Stylelint and msw only affect our own development setup, so your project isn't affected.
+
+---
+
+That's it for 10.16! As always, the full list of changes is in the [changelogs on GitHub](https://github.com/vivid-planet/dextinity/pull/7189). Happy building! 💙

@@ -1,10 +1,10 @@
 import { clsx } from "clsx";
-import { type ComponentPropsWithoutRef, forwardRef } from "react";
+import { type ComponentPropsWithoutRef, forwardRef, type ReactNode } from "react";
 
 import type { ThemeBrand, ThemeColorScheme, ThemeDensity } from "../../theme/types";
 import styles from "./Theme.module.scss";
 
-export interface ThemeProps extends ComponentPropsWithoutRef<"div"> {
+export interface ThemeProps extends Omit<ComponentPropsWithoutRef<"div">, "className" | "children"> {
     /**
      * The active color scheme.
      *
@@ -24,6 +24,8 @@ export interface ThemeProps extends ComponentPropsWithoutRef<"div"> {
      * @defaultValue `"standard"`
      */
     density?: ThemeDensity;
+    /** The application, or the section of it, that takes the theme. */
+    children?: ReactNode;
     /** Added alongside the component's own classes. */
     className?: string;
 }

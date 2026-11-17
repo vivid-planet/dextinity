@@ -1,6 +1,6 @@
 import { Popover as BasePopover } from "@base-ui/react/popover";
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type PropsWithChildren, type ReactElement, type RefObject } from "react";
+import { forwardRef, type HTMLAttributes, type ReactElement, type ReactNode, type RefObject } from "react";
 
 import { popupCollisionPadding } from "../../utils/popupCollisionPadding";
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
@@ -24,7 +24,7 @@ export interface PopoverSlotProps {
     title?: SlotPropsValue<PopoverOwnerState, typeof BasePopover.Title>;
 }
 
-export interface PopoverProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "title">, PropsWithChildren {
+export interface PopoverProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "title"> {
     /** The element that opens the popover on click. It must accept a ref and event handlers. */
     trigger: ReactElement;
     /** Whether the popover is open. */
@@ -41,6 +41,8 @@ export interface PopoverProps extends Omit<HTMLAttributes<HTMLDivElement>, "clas
     placement?: PopoverPlacement;
     /** The element focused when the popover opens. Without it, the first focusable element gets focus. */
     initialFocus?: RefObject<HTMLElement | null>;
+    /** The content, e.g. a slider or a few settings. */
+    children?: ReactNode;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
@@ -50,8 +52,6 @@ export interface PopoverProps extends Omit<HTMLAttributes<HTMLDivElement>, "clas
 /**
  * A small panel at its trigger for a few related controls, e.g. simulating the time of day. It closes on Escape and on a
  * click outside; the page stays usable.
- *
- * `children`: The content, e.g. a slider or a few settings.
  */
 export const Popover = forwardRef<HTMLDivElement, PopoverProps>(function Popover(
     { trigger, children, open, onOpenChange, title, placement = "bottom-start", initialFocus, className, slotProps, ...restProps },

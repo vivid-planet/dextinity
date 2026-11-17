@@ -5,7 +5,6 @@ import {
     type ElementType,
     type ForwardedRef,
     forwardRef,
-    type PropsWithChildren,
     type ReactNode,
     type RefAttributes,
     type SyntheticEvent,
@@ -64,8 +63,7 @@ export interface ButtonProps<
     StartIcon extends ElementType = "span",
     EndIcon extends ElementType = "span",
     LoadingSpinner extends ElementType = typeof Spinner,
->
-    extends Omit<BaseButton.Props, "className" | "ref">, PropsWithChildren {
+> extends Omit<BaseButton.Props, "className" | "children" | "ref"> {
     /**
      * Visual emphasis: `contained` for the main action, `outlined` and `text` for less important ones.
      *
@@ -103,6 +101,8 @@ export interface ButtonProps<
      * @defaultValue `false`
      */
     loading?: boolean;
+    /** The label: a verb for the action, e.g. "Save". */
+    children?: ReactNode;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Sets which element a named inner part renders as. */
@@ -123,8 +123,6 @@ function preventDefault(event: SyntheticEvent) {
 
 /**
  * A button for triggering actions.
- *
- * `children`: The label: a verb for the action, e.g. "Save".
  */
 export const Button: <
     StartIcon extends ElementType = "span",

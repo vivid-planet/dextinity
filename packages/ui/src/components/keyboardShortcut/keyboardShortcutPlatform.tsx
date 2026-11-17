@@ -1,4 +1,4 @@
-import { createContext, type PropsWithChildren, useContext, useMemo, useSyncExternalStore } from "react";
+import { createContext, type ReactNode, useContext, useMemo, useSyncExternalStore } from "react";
 
 import type { KeyboardShortcutLabels } from "./formatKeyboardShortcut";
 
@@ -25,11 +25,13 @@ interface KeyboardShortcutContextValue {
 
 const KeyboardShortcutContext = createContext<KeyboardShortcutContextValue>({});
 
-export interface KeyboardShortcutProviderProps extends PropsWithChildren {
+export interface KeyboardShortcutProviderProps {
     /** Shows and matches shortcuts for this platform instead of the detected one, e.g. in tests or screenshots. */
     platform?: KeyboardShortcutPlatform;
     /** The spoken names of keys for every `KeyboardShortcut` inside, e.g. translated ones. */
     labels?: Partial<KeyboardShortcutLabels>;
+    /** The part of the application whose keyboard shortcuts take the platform and the key names. */
+    children: ReactNode;
 }
 
 /**

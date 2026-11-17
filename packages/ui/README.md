@@ -67,6 +67,8 @@ export interface ButtonProps {
      * @defaultValue `"contained"`
      */
     variant?: "contained" | "outlined" | "text";
+    /** The label: a verb for the action, e.g. "Save". */
+    children?: ReactNode;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Sets which element a named inner part renders as. */
@@ -75,6 +77,8 @@ export interface ButtonProps {
     slotProps?: ButtonSlotProps;
 }
 ```
+
+An exported component that takes `children` declares the prop in its props interface with TSDoc, as `Button` does above, so the props table shows its description. The interface omits `children` from the props it extends and doesn't use `PropsWithChildren`, and the component comment doesn't describe `children`. The prop is required when the component shows nothing useful without it.
 
 A change that makes a comment inaccurate updates it in the same change.
 

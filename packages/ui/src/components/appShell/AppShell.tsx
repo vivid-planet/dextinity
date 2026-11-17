@@ -4,7 +4,6 @@ import {
     forwardRef,
     type HTMLAttributes,
     type KeyboardEvent as ReactKeyboardEvent,
-    type PropsWithChildren,
     type ReactNode,
     useCallback,
     useEffect,
@@ -59,7 +58,7 @@ export interface AppShellSlotProps {
     main?: SlotPropsValue<AppShellOwnerState, "main">;
 }
 
-export interface AppShellProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children">, PropsWithChildren {
+export interface AppShellProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children"> {
     /** The navigation, usually a `SideNav` without `collapsed` and `onCollapsedChange`, which then follows the shell. */
     nav: ReactNode;
     /**
@@ -87,6 +86,8 @@ export interface AppShellProps extends Omit<HTMLAttributes<HTMLDivElement>, "cla
     disableKeyboardShortcuts?: boolean;
     /** The built-in texts. */
     labels?: Partial<AppShellLabels>;
+    /** The page: page header, then panels. */
+    children?: ReactNode;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
@@ -97,8 +98,6 @@ export interface AppShellProps extends Omit<HTMLAttributes<HTMLDivElement>, "cla
  * The frame of every admin app: navigation, top bar, and content, as glass panels over the ambient light field. It stays in place
  * when the page changes and adapts to the window width: the navigation collapses to icons, then moves into a drawer. On medium
  * windows, the collapsed navigation can still be expanded; it then lies over the content instead of pushing it aside.
- *
- * `children`: The page: page header, then panels.
  */
 export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppShell(
     {

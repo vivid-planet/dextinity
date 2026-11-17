@@ -39,6 +39,9 @@ const meta = {
         children: "Content",
     },
     argTypes: {
+        title: { control: "text" },
+        description: { control: "text" },
+        children: { control: false },
         variant: { control: "radio", options: ["glass", "solid"] },
         padding: { control: "radio", options: ["default", "none"] },
         actions: { control: "select", options: Object.keys(actionOptions), mapping: actionOptions },

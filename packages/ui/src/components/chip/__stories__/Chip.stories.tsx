@@ -22,6 +22,7 @@ const meta = {
         children: "Label",
     },
     argTypes: {
+        children: { control: "text" },
         variant: {
             control: "radio",
             options: ["contained", "outlined"],

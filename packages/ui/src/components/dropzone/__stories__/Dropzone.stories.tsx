@@ -25,6 +25,8 @@ const meta = {
         description: "Images, PDF, video up to 200 MB",
     },
     argTypes: {
+        description: { control: "text" },
+        error: { control: "text" },
         multiple: { control: "boolean" },
         disabled: { control: "boolean" },
         overlay: { control: "boolean" },

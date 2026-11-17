@@ -23,6 +23,7 @@ const meta = {
         onClick: fn((event) => event.preventDefault()),
     },
     argTypes: {
+        children: { control: "text" },
         color: { control: "radio", options: ["secondary", "accent"] },
         startIcon: { control: "select", options: Object.keys(iconOptions), mapping: iconOptions },
         endIcon: { control: "select", options: Object.keys(iconOptions), mapping: iconOptions },

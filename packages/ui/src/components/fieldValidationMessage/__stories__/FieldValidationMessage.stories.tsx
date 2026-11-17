@@ -14,6 +14,7 @@ const meta = {
         children: "Enter a title",
     },
     argTypes: {
+        children: { control: "text" },
         state: { control: "radio", options: ["error", "warning", "success"] },
         className: { control: false },
         slots: { control: false },

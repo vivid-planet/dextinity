@@ -24,6 +24,7 @@ const meta = {
         children: "Section",
     },
     argTypes: {
+        children: { control: "text" },
         action: {
             control: "select",
             options: Object.keys(actionOptions),

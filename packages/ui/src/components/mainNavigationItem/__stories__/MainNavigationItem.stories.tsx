@@ -23,6 +23,7 @@ const meta = {
         href: "#",
     },
     argTypes: {
+        children: { control: "text" },
         level: {
             control: "radio",
             options: [1, 2, 3],

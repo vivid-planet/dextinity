@@ -19,6 +19,8 @@ const meta = {
         meta: "JPG · 2.4 MB",
     },
     argTypes: {
+        title: { control: "text" },
+        meta: { control: "text" },
         type: { control: "select", options: ["image", "video", "document", "folder"] },
         ratio: { control: "radio", options: ["4:3", "1:1", "original"] },
         badges: { control: "check", options: ["missingAlt"] },

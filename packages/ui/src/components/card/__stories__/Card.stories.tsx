@@ -110,6 +110,7 @@ const meta = {
         className: styles.card,
     },
     argTypes: {
+        meta: { control: "text" },
         actions: { control: "select", options: Object.keys(actionsOptions), mapping: actionsOptions },
         children: { control: false },
         className: { control: false },

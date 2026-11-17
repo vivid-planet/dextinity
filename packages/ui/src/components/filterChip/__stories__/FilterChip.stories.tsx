@@ -94,6 +94,7 @@ const meta = {
         onClick: fn(),
     },
     argTypes: {
+        children: { control: "text" },
         startAdornment: { control: "select", options: Object.keys(adornmentOptions), mapping: adornmentOptions },
         endAdornment: { control: "select", options: Object.keys(adornmentOptions), mapping: adornmentOptions },
         className: { control: false },

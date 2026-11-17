@@ -24,6 +24,7 @@ const meta = {
         onClick: fn(),
     },
     argTypes: {
+        children: { control: "text" },
         variant: {
             control: "radio",
             options: ["contained", "outlined", "text"],

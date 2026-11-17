@@ -58,6 +58,7 @@ const meta = {
         onConfirm: fn(),
     },
     argTypes: {
+        children: { control: false },
         color: {
             control: "radio",
             options: ["default", "error"],

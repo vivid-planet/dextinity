@@ -26,6 +26,7 @@ const meta = {
         children: "The quick brown fox jumps over the lazy dog",
     },
     argTypes: {
+        children: { control: "text" },
         variant: {
             control: "select",
             options: ["displayXl", "displayL", "title", "section", "body", "small", "label", "mono"],

@@ -216,6 +216,7 @@ Stories use [Component Story Format 3](https://storybook.js.org/docs/api/csf), t
 const meta = {
     component: Button,
     args: { children: "Button", onClick: fn() },
+    argTypes: { children: { control: "text" } },
 } satisfies Meta<typeof Button>;
 
 export default meta;
@@ -231,7 +232,9 @@ Each declared prop is exposed as a control through `argTypes`, by kind:
 
 - **Boolean** — a toggle.
 - **Enum** — `radio` for three options or fewer, `select` for more.
-- **`ReactNode`** — a `select` whose `options` are labels and whose `mapping` resolves each to the node. The built-in empty choice covers the unset case.
+- **Text** — a `ReactNode` prop that holds text, such as a label, a title, a description, or the text `children` of a `Button` — `control: "text"`.
+- **Elements** — a `ReactNode` prop that holds an icon, an adornment, or an action — a `select` whose `options` are labels and whose `mapping` resolves each to the element. The built-in empty choice covers the unset case.
+- **Regions and other content** — a prop that holds composed content, such as a layout region, a footer, or `children` that are other components; a prop that takes only an element, such as `Tooltip`'s `children`; and a union with a render function, such as `Field`'s `children` — `control: false`.
 - **Override-API props** (`className`, `slots`, `slotProps`, `ref`, `render`) — `control: false`, keeping the prop-table row without an unusable control.
 - **Event handlers** — `fn()` from `storybook/test`, so calls show in the Actions panel and an interaction test can verify the handler ran.
 

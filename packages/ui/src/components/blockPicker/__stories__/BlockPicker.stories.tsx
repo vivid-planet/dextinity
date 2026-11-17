@@ -54,6 +54,7 @@ const meta = {
         onSelect: fn(),
     },
     argTypes: {
+        children: { control: false },
         items: { control: false },
         categories: { control: false },
         labels: { control: false },

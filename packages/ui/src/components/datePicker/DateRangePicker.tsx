@@ -6,6 +6,7 @@ import type { FieldOwnerState } from "../field/Field";
 import { Icon } from "../icon/Icon";
 import { CalendarPopover } from "./CalendarPopover";
 import { type DatePickerCalendarProps, type DatePickerLabels, defaultDatePickerLabels } from "./DatePicker";
+import { type DateRangePosition, disabledDayBetween, disabledRangeDay, disabledRangeEnd } from "./dateRange";
 import styles from "./DateRangePicker.module.scss";
 import { formatDate, isIsoDate, type IsoDate, localeWeekStart } from "./dateValues";
 import { readTypedDay } from "./typedDay";
@@ -27,9 +28,26 @@ export interface DateRangePickerLabels extends DatePickerLabels {
     start: string;
     /** Accessible name of the end input, read after the field's label. */
     end: string;
+    /** Shown for a typed end before the start. */
+    endBeforeStart: string;
+    /** Shown in the end input for a start that `isDateDisabled` disables as the start, with the formatted day. */
+    dateDisabledAsStart: (date: string) => string;
+    /** Shown in the start input for an end that `isDateDisabled` disables as the end, with the formatted day. */
+    dateDisabledAsEnd: (date: string) => string;
+    /** Shown for a typed start or end whose range contains a day that `isDateDisabled` disables between the ends, with the formatted day. */
+    rangeIncludesDisabledDate: (date: string) => string;
 }
 
-const defaultLabels: DateRangePickerLabels = { ...defaultDatePickerLabels, openCalendar: "Choose dates", start: "Start", end: "End" };
+const defaultLabels: DateRangePickerLabels = {
+    ...defaultDatePickerLabels,
+    openCalendar: "Choose dates",
+    start: "Start",
+    end: "End",
+    endBeforeStart: "The end is before the start.",
+    dateDisabledAsStart: (date) => `${date} can't be chosen as the start.`,
+    dateDisabledAsEnd: (date) => `${date} can't be chosen as the end.`,
+    rangeIncludesDisabledDate: (date) => `The range can't include ${date}.`,
+};
 
 /**
  * The resolved configuration that influences the component's appearance or behavior.
@@ -38,13 +56,20 @@ export type DateRangePickerOwnerState = FieldOwnerState & {
     clearable: boolean;
 };
 
-export interface DateRangePickerProps extends DatePickerCalendarProps, PureControlProps {
+export interface DateRangePickerProps extends Omit<DatePickerCalendarProps, "isDateDisabled">, PureControlProps {
     /** Field name. Describes the data, not the UI. */
     name: string;
     /** The range, or `null` for none. Always controlled. */
     value: DateRange | null;
     /** Called with the new range, or `null` when both ends are removed; set `value` from it. A range never ends before it starts. */
     onChange: (value: DateRange | null) => void;
+    /**
+     * Disables days in addition to `min` and `max`, e.g. weekends or holidays. Called with each day as `YYYY-MM-DD` and where it would lie
+     * in the range: `"start"`, `"end"`, or `"between"` for the days strictly between the ends. A rule that ignores the position therefore
+     * also disables every range that contains a disabled day; return `false` for `"between"` to allow such ranges. A `value` it disables
+     * shows no error; validate the value in the form.
+     */
+    isDateDisabled?: (date: string, position: DateRangePosition) => boolean;
     /** Shown in each input while it is empty, e.g. the expected format. */
     placeholder?: string;
     /**
@@ -66,8 +91,8 @@ function toRange(start: IsoDate | null, end: IsoDate | null): DateRange | null {
 
 /**
  * A range of days, typed in the locale's format or chosen in a calendar: the first click chooses the start, the second the end. Typed
- * text is read on blur or Enter; text that is no valid day, or a day that can't be chosen, stays in its input with an error and leaves
- * the value unchanged until it is corrected.
+ * text is read on blur or Enter; text that is no valid day, a day that can't be chosen, or an end before the start stays in its input
+ * with an error and leaves the value unchanged until it is corrected.
  */
 export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps>(function DateRangePicker(
     {
@@ -117,15 +142,50 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
     const { disabled, readOnly } = useControlState(disabledProp, readOnlyProp);
     const editable = !disabled && !readOnly;
 
-    const readDay = (text: string, apply: (day: IsoDate | null) => void) => {
-        const typed = readTypedDay(text, { locale, min, max, isDateDisabled, labels });
+    const readTypedText = (text: string) => readTypedDay(text, { locale, min, max, isDateDisabled: undefined, labels });
+
+    const disabledDayMessage = (day: { date: IsoDate; position: DateRangePosition }, typedPosition: "start" | "end") => {
+        const formattedDay = formatDate(day.date, locale);
+        if (day.position === "between") {
+            return labels.rangeIncludesDisabledDate(formattedDay);
+        }
+        if (day.position === typedPosition) {
+            return labels.dateDisabled(formattedDay);
+        }
+        return day.position === "start" ? labels.dateDisabledAsStart(formattedDay) : labels.dateDisabledAsEnd(formattedDay);
+    };
+
+    const readDay = (text: string, position: "start" | "end", otherDraft: { text: string; error: string | undefined; reset: () => void }) => {
+        const typed = readTypedText(text);
         if (typed.error != null) {
             return typed.error;
         }
-        apply(typed.day);
+        const otherTypedDay = otherDraft.error == null ? undefined : readTypedText(otherDraft.text).day;
+        const otherDay = otherTypedDay === undefined ? (position === "start" ? end : start) : otherTypedDay;
+        const nextRange = position === "start" ? { start: typed.day, end: otherDay } : { start: otherDay, end: typed.day };
+        const typedDays = [typed.day, otherTypedDay];
+        const disabledDay = disabledRangeDay(
+            nextRange,
+            isDateDisabled && ((date, dayPosition) => (dayPosition === "between" || typedDays.includes(date)) && isDateDisabled(date, dayPosition)),
+        );
+        if (disabledDay != null) {
+            return disabledDayMessage(disabledDay, position);
+        }
+        if (nextRange.start != null && nextRange.end != null && nextRange.end < nextRange.start) {
+            return labels.endBeforeStart;
+        }
+        if (otherTypedDay !== undefined) {
+            otherDraft.reset();
+        }
+        onChange(nextRange.start == null && nextRange.end == null ? null : nextRange);
     };
-    const startDraft = useTextDraft(start == null ? "" : formatDate(start, locale), (text) => readDay(text, (day) => onChange(toRange(day, end))));
-    const endDraft = useTextDraft(end == null ? "" : formatDate(end, locale), (text) => readDay(text, (day) => onChange(toRange(start, day))));
+    const startDraft = useTextDraft(start == null ? "" : formatDate(start, locale), (text) => readDay(text, "start", endDraft));
+    const endDraft = useTextDraft(end == null ? "" : formatDate(end, locale), (text) => readDay(text, "end", startDraft));
+    const disabledDayBetweenPendingStartAnd =
+        pendingStart == null || isDateDisabled == null ? undefined : disabledDayBetween(pendingStart, isDateDisabled);
+    const isCalendarDayDisabled = (day: IsoDate) =>
+        disabledRangeEnd(pendingStart == null ? { start: day, end: null } : toRange(pendingStart, day), isDateDisabled) != null ||
+        disabledDayBetweenPendingStartAnd?.(day) !== undefined;
 
     const draftError = startDraft.error ?? endDraft.error;
 
@@ -238,7 +298,7 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
                         }}
                         min={min}
                         max={max}
-                        isDateDisabled={isDateDisabled}
+                        isDateDisabled={isCalendarDayDisabled}
                         locale={locale}
                         weekStartsOn={weekStartsOn ?? localeWeekStart(locale)}
                         months={months}

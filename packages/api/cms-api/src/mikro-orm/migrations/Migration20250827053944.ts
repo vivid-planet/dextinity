@@ -10,7 +10,7 @@ export class Migration20250827053944 extends Migration {
   }
 
   override async down(): Promise<void> {
-    this.addSql('drop table "ActionLog";');
+    throw new Error("Unsupported");
   }
 
 }

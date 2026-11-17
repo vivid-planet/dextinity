@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import type { PropsWithChildren } from "react";
+import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
@@ -15,31 +15,10 @@ const iconOptions = {
     Trash: <Icon name="trash" />,
 };
 
-function InOpenMenu({ children }: PropsWithChildren) {
-    return (
-        <Menu
-            open
-            onOpenChange={() => {}}
-            trigger={
-                <Button variant="outlined" color="secondary">
-                    Actions
-                </Button>
-            }
-        >
-            {children}
-        </Menu>
-    );
-}
-
 const meta = {
     component: MenuItem,
     title: "Building blocks/Menus & messages/MenuItem",
     decorators: [
-        (Story) => (
-            <InOpenMenu>
-                <Story />
-            </InOpenMenu>
-        ),
         themeDecorator,
         (Story) => (
             <div className={styles.stage}>
@@ -65,6 +44,22 @@ const meta = {
         slots: { control: false },
         slotProps: { control: false },
     },
+    render: (args) => {
+        const [isMenuOpen, setIsMenuOpen] = useState(true);
+        return (
+            <Menu
+                open={isMenuOpen}
+                onOpenChange={setIsMenuOpen}
+                trigger={
+                    <Button variant="outlined" color="secondary">
+                        Actions
+                    </Button>
+                }
+            >
+                <MenuItem {...args} />
+            </Menu>
+        );
+    },
 } satisfies Meta<typeof MenuItem>;
 
 export default meta;
@@ -75,9 +70,13 @@ type Story = StoryObj<typeof meta>;
  * An action in a `Menu`. Label it with a verb.
  */
 export const Default: Story = {
-    play: async ({ args }) => {
+    play: async ({ args, canvas }) => {
         await userEvent.click(await screen.findByRole("menuitem", { name: "Duplicate" }));
         await waitFor(() => expect(args.onClick).toHaveBeenCalled());
+        await waitFor(() => expect(screen.queryByRole("menu")).toBeNull());
+
+        await userEvent.click(canvas.getByRole("button", { name: "Actions" }));
+        await screen.findByRole("menuitem", { name: "Duplicate" });
     },
 };
 

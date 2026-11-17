@@ -15,9 +15,10 @@ import {
 type TextEdit = { start: number; end: number; text: string };
 
 /**
- * Adds parameters to each story with a `render` function:
+ * Adds parameters to each story, for the code that its docs show:
  *
- * - `renderSource`: the function's body as written in the story file, with `useState` in place of the story-only `useControlledArg`.
+ * - `renderSource`: the body of the `render` function that the story renders with, with `useState` in place of the story-only
+ *   `useControlledArg`.
  * - `styleSource`: the `.module.scss` files that the body uses.
  */
 export function storyCodePlugin(): Plugin {
@@ -36,7 +37,7 @@ export function storyCodePlugin(): Plugin {
             );
             const storyParametersAssignments = storyExportsOf(storyFile).flatMap(({ exportName, storyObject }) => {
                 const renderSource = renderSources.get(exportName);
-                const renderBody = renderBodyOf(storyObject);
+                const renderBody = renderBodyOf(storyObject, storyFile);
                 if (renderSource === undefined || !renderBody) {
                     return [];
                 }
@@ -105,7 +106,7 @@ function isArgsSpread(attribute: ts.JsxAttributeLike) {
 }
 
 function renderSourceOf(storyObject: ts.ObjectLiteralExpression, sourceFile: ts.SourceFile) {
-    const body = renderBodyOf(storyObject);
+    const body = renderBodyOf(storyObject, sourceFile);
     if (!body) {
         return undefined;
     }

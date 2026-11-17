@@ -14,6 +14,22 @@ export function metaNameOf(sourceFile: ts.SourceFile) {
     return defaultExport && ts.isIdentifier(defaultExport) ? defaultExport.text : undefined;
 }
 
+export function metaObjectOf(sourceFile: ts.SourceFile) {
+    const defaultExport = sourceFile.statements.find(ts.isExportAssignment)?.expression;
+    if (!defaultExport) {
+        return undefined;
+    }
+    const metaName = metaNameOf(sourceFile);
+    if (metaName === undefined) {
+        return unwrapObjectLiteral(defaultExport);
+    }
+    const metaDeclaration = sourceFile.statements
+        .filter(ts.isVariableStatement)
+        .flatMap((statement) => statement.declarationList.declarations)
+        .find((declaration) => ts.isIdentifier(declaration.name) && declaration.name.text === metaName);
+    return metaDeclaration?.initializer && unwrapObjectLiteral(metaDeclaration.initializer);
+}
+
 export function storyExportsOf(sourceFile: ts.SourceFile) {
     return sourceFile.statements
         .filter(isExportedVariableStatement)
@@ -22,18 +38,58 @@ export function storyExportsOf(sourceFile: ts.SourceFile) {
         .filter((storyExport) => storyExport !== undefined);
 }
 
-export function renderBodyOf(storyObject: ts.ObjectLiteralExpression) {
-    const renderProperty = findProperty(storyObject, "render");
-    if (!renderProperty) {
+/**
+ * Returns the body of the `render` function that a story renders with: its own, the one of another story in the file that it
+ * names (`render: Other.render`) or spreads (`...Other`), or the meta's.
+ */
+export function renderBodyOf(storyObject: ts.ObjectLiteralExpression, sourceFile: ts.SourceFile): ts.ConciseBody | undefined {
+    const declaredRenderBody = declaredRenderBodyOf(storyObject, sourceFile);
+    if (declaredRenderBody === "unknown") {
         return undefined;
     }
+    if (declaredRenderBody === "meta") {
+        const meta = metaObjectOf(sourceFile);
+        return meta && meta !== storyObject ? renderBodyOf(meta, sourceFile) : undefined;
+    }
+    return declaredRenderBody;
+}
+
+function declaredRenderBodyOf(storyObject: ts.ObjectLiteralExpression, sourceFile: ts.SourceFile): ts.ConciseBody | "meta" | "unknown" {
+    for (const property of [...storyObject.properties].reverse()) {
+        if (ts.isSpreadAssignment(property)) {
+            const spreadStory = localStoryObjectOf(property.expression, sourceFile);
+            const spreadRenderBody = spreadStory ? declaredRenderBodyOf(spreadStory, sourceFile) : "unknown";
+            if (spreadRenderBody !== "meta") {
+                return spreadRenderBody;
+            }
+        } else if (property.name && ts.isIdentifier(property.name) && property.name.text === "render") {
+            return ownRenderBodyOf(property, sourceFile);
+        }
+    }
+    return "meta";
+}
+
+function ownRenderBodyOf(renderProperty: ts.ObjectLiteralElementLike, sourceFile: ts.SourceFile): ts.ConciseBody | "meta" | "unknown" {
     if (ts.isMethodDeclaration(renderProperty)) {
-        return renderProperty.body;
+        return renderProperty.body ?? "unknown";
     }
-    if (ts.isPropertyAssignment(renderProperty) && isFunctionLiteral(renderProperty.initializer)) {
-        return renderProperty.initializer.body;
+    if (!ts.isPropertyAssignment(renderProperty)) {
+        return "unknown";
     }
-    return undefined;
+    const { initializer } = renderProperty;
+    if (isFunctionLiteral(initializer)) {
+        return initializer.body;
+    }
+    const referencedStory =
+        ts.isPropertyAccessExpression(initializer) && initializer.name.text === "render" && localStoryObjectOf(initializer.expression, sourceFile);
+    return referencedStory ? declaredRenderBodyOf(referencedStory, sourceFile) : "unknown";
+}
+
+function localStoryObjectOf(expression: ts.Expression, sourceFile: ts.SourceFile) {
+    if (!ts.isIdentifier(expression)) {
+        return undefined;
+    }
+    return storyExportsOf(sourceFile).find(({ exportName }) => exportName === expression.text)?.storyObject;
 }
 
 /**
@@ -92,7 +148,7 @@ function storyExportOf(declaration: ts.VariableDeclaration) {
     return { exportName: declaration.name.text, storyObject };
 }
 
-export function unwrapObjectLiteral(expression: ts.Expression): ts.ObjectLiteralExpression | undefined {
+function unwrapObjectLiteral(expression: ts.Expression): ts.ObjectLiteralExpression | undefined {
     if (ts.isObjectLiteralExpression(expression)) {
         return expression;
     }

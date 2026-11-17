@@ -3,7 +3,7 @@ import { isValidElement } from "react";
 import { childrenPlaceholder } from "./childrenPlaceholder";
 
 type RenderSourceContext = {
-    parameters: { renderSource?: unknown; docs?: { source?: { type?: string } } };
+    parameters: { renderSource?: unknown };
     args: Record<string, unknown>;
     argTypes: Record<string, { mapping?: Record<string, unknown> }>;
 };
@@ -17,10 +17,9 @@ const childrenPlaceholderPattern = new RegExp(`>${childrenPlaceholder}(</[\\w.]+
  */
 export function renderSourceWithArgs(storybookSource: string, { parameters, args, argTypes }: RenderSourceContext) {
     const { renderSource } = parameters;
-    const isStorybookSourceRequested = parameters.docs?.source?.type === "code";
     const mappedArgs = Object.fromEntries(Object.entries(args).map(([name, value]) => [name, mappedArgValue(value, argTypes[name]?.mapping)]));
     const hasElementArg = Object.values(mappedArgs).some(isValidElement);
-    if (typeof renderSource !== "string" || isStorybookSourceRequested || hasElementArg) {
+    if (typeof renderSource !== "string" || hasElementArg) {
         return storybookSource;
     }
     const { children, ...attributeArgs } = mappedArgs;

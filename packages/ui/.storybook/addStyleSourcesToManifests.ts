@@ -52,7 +52,7 @@ async function readStyleSource({ importPath, exportName }: StoryEntry) {
     const storyFilePath = path.resolve(importPath);
     const storyFile = parseStoryFile(await readFile(storyFilePath, "utf-8"), storyFilePath);
     const storyExport = storyExportsOf(storyFile).find((candidate) => candidate.exportName === exportName);
-    const renderBody = storyExport && renderBodyOf(storyExport.storyObject);
+    const renderBody = storyExport && renderBodyOf(storyExport.storyObject, storyFile);
     if (!renderBody) {
         return undefined;
     }

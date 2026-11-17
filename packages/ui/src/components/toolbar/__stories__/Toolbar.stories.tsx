@@ -20,13 +20,13 @@ type Mark = "bold" | "italic" | "underline";
 /** A text editor's toolbar: the block type as a menu, marks as toggles, lists, and undo as a plain action. */
 function EditorToolbar(props: Omit<ToolbarProps, "children">) {
     const [blockType, setBlockType] = useState<keyof typeof blockTypes>("paragraph");
-    const [menuOpen, setMenuOpen] = useState(false);
+    const [menuOpen, setIsMenuOpen] = useState(false);
     const [marks, setMarks] = useState<Record<Mark, boolean>>({ bold: true, italic: false, underline: false });
     const setMark = (mark: Mark, selected: boolean) => setMarks((current) => ({ ...current, [mark]: selected }));
 
     return (
         <Toolbar {...props}>
-            <ToolbarMenu label={blockTypes[blockType]} aria-label="Text style" open={menuOpen} onOpenChange={setMenuOpen}>
+            <ToolbarMenu label={blockTypes[blockType]} aria-label="Text style" open={menuOpen} onOpenChange={setIsMenuOpen}>
                 <MenuRadioGroup value={blockType} onChange={(value) => setBlockType(value as keyof typeof blockTypes)}>
                     {Object.entries(blockTypes).map(([value, label]) => (
                         <MenuRadioItem key={value} value={value} label={label} />

@@ -6,7 +6,7 @@ import { compile } from "sass";
 import ts from "typescript";
 
 import { parseTokens, type TokenDefinition } from "../src/storybook/docs/parseTokens";
-import { findProperty, metaNameOf, parseStoryFile, unwrapObjectLiteral } from "./storyFile";
+import { findProperty, metaObjectOf, parseStoryFile } from "./storyFile";
 
 const sourceDirectory = path.resolve(import.meta.dirname, "../src");
 const indexFile = path.join(sourceDirectory, "index.ts");
@@ -51,18 +51,9 @@ export function componentTokensOf(storyFilePath: string): ComponentTokens | unde
     };
 }
 
-function metaOf(storyFile: ts.SourceFile) {
-    const metaName = metaNameOf(storyFile);
-    const metaDeclaration = storyFile.statements
-        .filter(ts.isVariableStatement)
-        .flatMap((statement) => statement.declarationList.declarations)
-        .find((declaration) => ts.isIdentifier(declaration.name) && declaration.name.text === metaName);
-    return metaDeclaration?.initializer && unwrapObjectLiteral(metaDeclaration.initializer);
-}
-
 function listedTokensOf(storyFilePath: string) {
     const storyFile = parseStoryFile(readFileSync(storyFilePath, "utf-8"), storyFilePath);
-    const meta = metaOf(storyFile);
+    const meta = metaObjectOf(storyFile);
     const parametersProperty = meta && findProperty(meta, "parameters");
     const parameters =
         parametersProperty && ts.isPropertyAssignment(parametersProperty) && ts.isObjectLiteralExpression(parametersProperty.initializer)
@@ -99,7 +90,7 @@ function metaComponentFileOf(storyFilePath: string) {
 }
 
 function metaComponentNameOf(storyFile: ts.SourceFile) {
-    const meta = metaOf(storyFile);
+    const meta = metaObjectOf(storyFile);
     const componentProperty = meta && findProperty(meta, "component");
     return componentProperty && ts.isPropertyAssignment(componentProperty) && ts.isIdentifier(componentProperty.initializer)
         ? componentProperty.initializer.text

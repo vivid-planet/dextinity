@@ -14,7 +14,7 @@ alwaysApply: false
 
 - Function components only — no class components.
 - Always write JSX. `React.createElement` is only for rendering a component taken from a prop or variable.
-- Children are typed via `PropsWithChildren`, not an explicit `children: ReactNode` field.
+- Children are typed via `PropsWithChildren`, not an explicit `children: ReactNode` field. Declare `children` yourself only when you document it with TSDoc, e.g. in a component library, where the props table shows its description.
 - Folder structure: group by **feature/module**, not by type. Move things until it feels right; avoid top-level `components/`, `hooks/`, `utils/` dumping grounds.
 - One "logical component" per file. Multiple sub-components in the same file are fine for structure/styling when they support the main export.
 

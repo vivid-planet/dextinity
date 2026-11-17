@@ -188,7 +188,19 @@ Remove the `@CrudGenerator` and `@CrudSingleGenerator` decorators from your enti
   export class Product extends BaseEntity {
 ```
 
-Keep `@CrudField` where it sets `search: false`, as `searchToMikroOrmQuery` still reads it. You can remove the other usages, the remaining options were only read by the API Generator.
+`@CrudField` is replaced with `@ExcludeFromSearch`. Only its `search` option was still read, so replace it where it sets `search: false` and remove it everywhere else:
+
+```diff
+- @CrudField({ search: false })
++ @ExcludeFromSearch()
+  internalNote: string;
+```
+
+```sh
+grep -rn "@CrudField" src
+```
+
+If your code calls the helpers directly, rename `getCrudSearchFieldsFromMetadata` to `getSearchFieldsFromMetadata` and replace `hasCrudFieldFeature(entityClass, propName, "search")` with `!isExcludedFromSearch(entityClass, propName)`.
 
 Then remove the `api-generator` scripts and their calls from the other scripts:
 

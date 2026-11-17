@@ -2,6 +2,6 @@
 "@dextinity/cms-api": minor
 ---
 
-Export the `CrudSearchField` type
+Export the `SearchField` type
 
-It's the return type of the already exported `getCrudSearchFieldsFromMetadata`.
+It's the return type of the already exported `getSearchFieldsFromMetadata`.

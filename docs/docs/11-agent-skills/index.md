@@ -6,15 +6,7 @@ Agent Skills are reusable prompt-based instructions that teach AI coding assista
 
 For installation instructions, see the [Installing agent skills](../4-guides/5-installing-agent-features.md) guide.
 
-## Agent Skills vs. CRUD Generator
-
-Agent Skills are the recommended way to scaffold CRUD features. The [CRUD Generator](../1-getting-started/4-crud-generator/index.md) will be deprecated in a future version — use Agent Skills instead where possible.
-
-The skills are deliberately aligned with the output style of the CRUD Generator, so code produced by skills fits seamlessly next to previously generated code. Unlike generator output, skill-produced files are ordinary source files that you own and maintain like any hand-written code — there is no regeneration step and no `generated/` folder.
-
-For existing entities still managed by the CRUD Generator, the generator workflow keeps working: files inside `generated/` folders must not be edited by hand — including by AI assistants — and are updated by rerunning the generator. When such an entity needs changes the generator cannot express, consider migrating it to skill-maintained source files instead of extending the generator setup.
-
-### Available Skills
+## Available Skills
 
 | Skill                                                                      | Description                                                                    |
 | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |

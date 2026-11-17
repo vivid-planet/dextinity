@@ -55,6 +55,8 @@ _Coming with #7293._ The MCP server will also change the page tree and pages: `c
 
 `ScriptLoader` renders the chat only once the script of the web component has loaded, not as soon as the script is in the document. Under `StrictMode`, the effect runs twice, and the second run finds the script the first one added while it is still loading. A custom element rendered before its script defined it gets its `bridge` only after React ran its ref callback, which then registers nothing.
 
+When the script fails to load, e.g. because the AI Hub is down or the CSP blocks its host, the flyout shows an error instead of staying empty. Closing and reopening the flyout tries again: the failed script is removed, and the retry loads it with a `retry` query parameter, because the browser remembers a module that failed to load for the rest of the page's life.
+
 The ref callback (`registerBridge`) registers the MCP server and the host tools. It must not change on navigation, because React detaches and reattaches a ref whose callback changes, which would register everything again. It therefore reads what changes on navigation through a ref.
 
 The flyout is unmounted once it is closed, so the chat starts over with the next opening.

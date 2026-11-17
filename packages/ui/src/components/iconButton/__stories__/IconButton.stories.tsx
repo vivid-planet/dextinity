@@ -84,11 +84,11 @@ export const Default: Story = {
 /**
  * Keyboard focus shows the tooltip with the shortcut; Enter triggers the action.
  */
-export const WithShortcut: Story = {
+export const WithKeyboardShortcut: Story = {
     args: {
         children: <Icon name="edit" />,
         "aria-label": "Edit",
-        shortcut: "mod+e",
+        keyboardShortcut: "mod+e",
     },
     play: async ({ args, canvas }) => {
         await userEvent.tab();

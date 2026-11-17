@@ -24,7 +24,7 @@ export interface CommandPaletteItem {
     onSelect: () => void;
     icon?: ReactNode;
     /** The entry's keyboard shortcut, shown at the end so people learn it, in the notation of `useKeyboardShortcut`, e.g. `"mod+n"`. */
-    shortcut?: string;
+    keyboardShortcut?: string;
     /** Further terms the filter finds the entry by. */
     keywords?: string[];
 }
@@ -99,7 +99,7 @@ export interface CommandPaletteProps extends Omit<HTMLAttributes<HTMLDivElement>
      */
     filter?: boolean;
     /** Leaves out the global ⌘K / Ctrl+K shortcut, e.g. when the app handles it itself. */
-    disableGlobalShortcut?: boolean;
+    disableGlobalKeyboardShortcut?: boolean;
     /** The built-in texts. */
     labels?: Partial<CommandPaletteLabels>;
     /** Added alongside the component's own classes. */
@@ -158,7 +158,7 @@ export const CommandPalette = forwardRef<HTMLDivElement, CommandPaletteProps>(fu
         onQueryChange,
         groups,
         filter = true,
-        disableGlobalShortcut = false,
+        disableGlobalKeyboardShortcut = false,
         labels: labelsProp,
         className,
         slotProps,
@@ -183,7 +183,7 @@ export const CommandPalette = forwardRef<HTMLDivElement, CommandPaletteProps>(fu
     const activeItem = visibleItems.find((item) => item.id === activeId) ?? visibleItems.at(0);
     const optionId = (item: CommandPaletteItem) => `${id}-option-${item.id}`;
 
-    useKeyboardShortcut("mod+k", () => onOpenChange(!open), { enabled: !disableGlobalShortcut });
+    useKeyboardShortcut("mod+k", () => onOpenChange(!open), { enabled: !disableGlobalKeyboardShortcut });
 
     useEffect(() => {
         if (activeItem != null) {
@@ -278,7 +278,9 @@ export const CommandPalette = forwardRef<HTMLDivElement, CommandPaletteProps>(fu
                                                     id={optionId(item)}
                                                     role="option"
                                                     aria-selected={item === activeItem}
-                                                    aria-keyshortcuts={item.shortcut != null ? ariaKeyShortcuts(item.shortcut, apple) : undefined}
+                                                    aria-keyshortcuts={
+                                                        item.keyboardShortcut != null ? ariaKeyShortcuts(item.keyboardShortcut, apple) : undefined
+                                                    }
                                                     data-id={item.id}
                                                     className={styles.item}
                                                     onPointerMove={() => setActiveId(item.id)}
@@ -288,8 +290,12 @@ export const CommandPalette = forwardRef<HTMLDivElement, CommandPaletteProps>(fu
                                                     <span className={styles.itemLabel}>
                                                         <HighlightedLabel label={item.label} terms={terms} />
                                                     </span>
-                                                    {item.shortcut != null && (
-                                                        <KeyboardShortcut aria-hidden className={styles.itemShortcut} shortcut={item.shortcut} />
+                                                    {item.keyboardShortcut != null && (
+                                                        <KeyboardShortcut
+                                                            aria-hidden
+                                                            className={styles.itemKeyboardShortcut}
+                                                            shortcut={item.keyboardShortcut}
+                                                        />
                                                     )}
                                                 </div>
                                             ))}

@@ -8,7 +8,9 @@ afterEach(cleanup);
 
 describe("ShortcutList", () => {
     it("renders the contract classes and one key cap per shortcut", () => {
-        render(<ShortcutList className="consumer-class" shortcuts={[{ shortcut: ["mod+x", "mod+v"], description: "Cut and paste" }]} />);
+        render(
+            <ShortcutList className="consumer-class" keyboardShortcuts={[{ keyboardShortcut: ["mod+x", "mod+v"], description: "Cut and paste" }]} />,
+        );
 
         const table = screen.getByRole("table");
         expect(table.className).toContain("dextinityShortcutList");
@@ -20,7 +22,7 @@ describe("ShortcutList", () => {
     it("shows the shortcuts for the platform of the provider", () => {
         render(
             <KeyboardShortcutProvider platform="apple">
-                <ShortcutList shortcuts={[{ shortcut: "shift+mod+n", description: "New folder" }]} />
+                <ShortcutList keyboardShortcuts={[{ keyboardShortcut: "shift+mod+n", description: "New folder" }]} />
             </KeyboardShortcutProvider>,
         );
 
@@ -29,7 +31,7 @@ describe("ShortcutList", () => {
     });
 
     it("shows fixed key caps", () => {
-        render(<ShortcutList shortcuts={[{ keys: ["Right-click"], description: "Move to" }]} />);
+        render(<ShortcutList keyboardShortcuts={[{ keys: ["Right-click"], description: "Move to" }]} />);
 
         expect(screen.getByText("Right-click").tagName).toBe("KBD");
     });

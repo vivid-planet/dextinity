@@ -76,18 +76,18 @@ export function PatternLegend({ items }: { items: TitledItem[] }) {
 /**
  * The pattern's keyboard shortcuts.
  */
-export function PatternShortcuts({
+export function PatternKeyboardShortcuts({
     title = "Keyboard shortcuts",
     description,
-    shortcuts,
+    keyboardShortcuts,
 }: {
     title?: string;
     description?: string;
-    shortcuts: ShortcutListItem[];
+    keyboardShortcuts: ShortcutListItem[];
 }) {
     return (
         <PatternSection title={title} description={description}>
-            <ShortcutList shortcuts={shortcuts} />
+            <ShortcutList keyboardShortcuts={keyboardShortcuts} />
         </PatternSection>
     );
 }

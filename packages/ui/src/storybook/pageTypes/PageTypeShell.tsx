@@ -48,7 +48,7 @@ export function PageTypeShell({ activeId, overlay, children }: PropsWithChildren
                 topBar={<TopBar onSearchClick={() => undefined} scope={<StoryScopeSwitcher />} userMenu={<StoryUserMenu />} />}
                 navCollapsed={navCollapsed}
                 onNavCollapsedChange={setNavCollapsed}
-                disableShortcuts
+                disableKeyboardShortcuts
             >
                 {children}
             </AppShell>

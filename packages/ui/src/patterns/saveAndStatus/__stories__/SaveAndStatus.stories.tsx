@@ -19,10 +19,10 @@ import { Tooltip } from "../../../components/tooltip/Tooltip";
 import { storyModKey } from "../../../storybook/keyboardPlatformDecorator";
 import {
     PatternExample,
+    PatternKeyboardShortcuts,
     PatternPage,
     PatternRules,
     PatternSection,
-    PatternShortcuts,
     PatternSteps,
     PatternUses,
 } from "../../../storybook/patterns/PatternPage";
@@ -111,7 +111,7 @@ function EditPageExample() {
                             </Button>
                             <Tooltip
                                 content={status === "published" ? "The page is published: saving makes the change live" : "Saves without publishing"}
-                                shortcut="mod+s"
+                                keyboardShortcut="mod+s"
                             >
                                 <Button size="small" onClick={save}>
                                     Save
@@ -177,7 +177,7 @@ function SaveAndStatusPage() {
                     { title: "Archive", description: "Off the website, stays in the admin. Restoring sets it to Unpublished." },
                 ]}
             />
-            <PatternShortcuts shortcuts={[{ shortcut: "mod+s", description: "Save" }]} />
+            <PatternKeyboardShortcuts keyboardShortcuts={[{ keyboardShortcut: "mod+s", description: "Save" }]} />
             <PatternUses pages={["Buttons", "Selection & toggles", "Status, tags & badges", "Loading & save state", "Modals & overlays"]} />
             <PatternRules
                 dos={[

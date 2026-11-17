@@ -459,7 +459,7 @@ const RichTextEditorToolbar = memo(function RichTextEditorToolbar({
                 <ToolbarGroup>
                     <ToolbarButton
                         aria-label={labels.undo}
-                        shortcut="mod+z"
+                        keyboardShortcut="mod+z"
                         disabled={!state.canUndo}
                         keepFocus
                         onClick={() => editor?.chain().focus().undo().run()}
@@ -468,7 +468,7 @@ const RichTextEditorToolbar = memo(function RichTextEditorToolbar({
                     </ToolbarButton>
                     <ToolbarButton
                         aria-label={labels.redo}
-                        shortcut="shift+mod+z"
+                        keyboardShortcut="shift+mod+z"
                         disabled={!state.canRedo}
                         keepFocus
                         onClick={() => editor?.chain().focus().redo().run()}
@@ -507,7 +507,7 @@ const RichTextEditorToolbar = memo(function RichTextEditorToolbar({
                         <ToolbarButton
                             key={format}
                             aria-label={labels[format]}
-                            shortcut={markShortcuts[format]}
+                            keyboardShortcut={markShortcuts[format]}
                             selected={state[format]}
                             keepFocus
                             onSelectedChange={() => editor?.chain().focus().toggleMark(format).run()}
@@ -521,7 +521,7 @@ const RichTextEditorToolbar = memo(function RichTextEditorToolbar({
                                 <ToolbarButton
                                     key={format}
                                     aria-label={labels[format]}
-                                    shortcut={scriptShortcuts[format]}
+                                    keyboardShortcut={scriptShortcuts[format]}
                                     selected={state[format]}
                                     keepFocus
                                     onSelectedChange={() => toggleScript(format)}
@@ -583,7 +583,7 @@ const RichTextEditorToolbar = memo(function RichTextEditorToolbar({
                         <ToolbarButton
                             key={textAlign}
                             aria-label={labels[textAlignLabels[textAlign]]}
-                            shortcut={textAlignShortcuts[textAlign]}
+                            keyboardShortcut={textAlignShortcuts[textAlign]}
                             selected={state.textAlign === textAlign}
                             keepFocus
                             onSelectedChange={() => editor?.chain().focus().setTextAlign(textAlign).run()}
@@ -603,7 +603,7 @@ const RichTextEditorToolbar = memo(function RichTextEditorToolbar({
                     {has("bulletList") && (
                         <ToolbarButton
                             aria-label={labels.bulletList}
-                            shortcut="shift+mod+8"
+                            keyboardShortcut="shift+mod+8"
                             selected={state.bulletList}
                             keepFocus
                             onSelectedChange={() => editor?.chain().focus().toggleBulletList().run()}
@@ -614,7 +614,7 @@ const RichTextEditorToolbar = memo(function RichTextEditorToolbar({
                     {has("orderedList") && (
                         <ToolbarButton
                             aria-label={labels.orderedList}
-                            shortcut="shift+mod+7"
+                            keyboardShortcut="shift+mod+7"
                             selected={state.orderedList}
                             keepFocus
                             onSelectedChange={() => editor?.chain().focus().toggleOrderedList().run()}
@@ -624,7 +624,7 @@ const RichTextEditorToolbar = memo(function RichTextEditorToolbar({
                     )}
                     <ToolbarButton
                         aria-label={labels.indent}
-                        shortcut="Tab"
+                        keyboardShortcut="Tab"
                         disabled={!state.canIndent}
                         keepFocus
                         onClick={() => editor?.chain().focus().sinkListItem("listItem").run()}
@@ -633,7 +633,7 @@ const RichTextEditorToolbar = memo(function RichTextEditorToolbar({
                     </ToolbarButton>
                     <ToolbarButton
                         aria-label={labels.outdent}
-                        shortcut="shift+Tab"
+                        keyboardShortcut="shift+Tab"
                         disabled={!state.canOutdent}
                         keepFocus
                         onClick={() => editor?.chain().focus().liftListItem("listItem").run()}
@@ -649,7 +649,13 @@ const RichTextEditorToolbar = memo(function RichTextEditorToolbar({
             key: "link",
             content: (
                 <ToolbarGroup>
-                    <ToolbarButton aria-label={labels.link} shortcut="mod+k" selected={state.link} keepFocus onSelectedChange={() => requestLink()}>
+                    <ToolbarButton
+                        aria-label={labels.link}
+                        keyboardShortcut="mod+k"
+                        selected={state.link}
+                        keepFocus
+                        onSelectedChange={() => requestLink()}
+                    >
                         <Icon name="link" />
                     </ToolbarButton>
                     <ToolbarButton

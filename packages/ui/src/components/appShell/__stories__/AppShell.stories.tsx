@@ -92,7 +92,7 @@ const meta = {
                                     id: "nav",
                                     label: "Collapse navigation",
                                     icon: <Icon name="pin-left" />,
-                                    shortcut: "mod+\\",
+                                    keyboardShortcut: "mod+\\",
                                     onSelect: () => setNavCollapsed(!navCollapsed),
                                 },
                             ],
@@ -111,7 +111,7 @@ const meta = {
     },
     argTypes: {
         navCollapsed: { control: "boolean" },
-        disableShortcuts: { control: "boolean" },
+        disableKeyboardShortcuts: { control: "boolean" },
         nav: { control: false },
         topBar: { control: false },
         children: { control: false },

@@ -3,7 +3,14 @@ import { useState } from "react";
 import { expect, userEvent, within } from "storybook/test";
 
 import { PageTypeShell, StructureFrame, StructureRegion } from "../../../storybook/pageTypes/PageTypeShell";
-import { PatternLegend, PatternPage, PatternRules, PatternSection, PatternShortcuts, PatternUses } from "../../../storybook/patterns/PatternPage";
+import {
+    PatternKeyboardShortcuts,
+    PatternLegend,
+    PatternPage,
+    PatternRules,
+    PatternSection,
+    PatternUses,
+} from "../../../storybook/patterns/PatternPage";
 import { documentImage, interiorImage, landscapeImage, portraitImage } from "../../../storybook/sampleImages";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { AssetThumbnail, type AssetThumbnailBadge, type AssetThumbnailType } from "../../assetThumbnail/AssetThumbnail";
@@ -233,12 +240,12 @@ export const Structure: Story = {
                     />
                 </div>
             </PatternSection>
-            <PatternShortcuts
-                shortcuts={[
-                    { shortcut: "mod+a", description: "Select all" },
-                    { shortcut: "Space", description: "Quick look" },
-                    { shortcut: "mod+Backspace", description: "Move to the archive" },
-                    { shortcut: "mod+ArrowUp", description: "Enclosing folder" },
+            <PatternKeyboardShortcuts
+                keyboardShortcuts={[
+                    { keyboardShortcut: "mod+a", description: "Select all" },
+                    { keyboardShortcut: "Space", description: "Quick look" },
+                    { keyboardShortcut: "mod+Backspace", description: "Move to the archive" },
+                    { keyboardShortcut: "mod+ArrowUp", description: "Enclosing folder" },
                 ]}
             />
             <PatternUses pages={["Media & upload", "Menus & messages", "Modals & overlays"]} />

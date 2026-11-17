@@ -15,12 +15,12 @@ import { storyModKey } from "../../../storybook/keyboardPlatformDecorator";
 import { type JobAd, jobAds as initialJobAds } from "../../../storybook/patterns/jobAds";
 import {
     PatternExample,
+    PatternKeyboardShortcuts,
     PatternLinks,
     patternListClassNames,
     PatternPage,
     PatternRules,
     PatternSection,
-    PatternShortcuts,
     PatternSteps,
     PatternUses,
 } from "../../../storybook/patterns/PatternPage";
@@ -101,11 +101,11 @@ function MultiSelectPage() {
                     { label: `Assets (${mod}/⇧ as in the Finder)`, docsId: "page-types-finder--docs" },
                 ]}
             />
-            <PatternShortcuts
-                shortcuts={[
+            <PatternKeyboardShortcuts
+                keyboardShortcuts={[
                     { keys: ["⇧", "Click"], description: "Select a range" },
-                    { shortcut: "mod+a", description: "Select all visible items" },
-                    { shortcut: "Escape", description: "Clear the selection" },
+                    { keyboardShortcut: "mod+a", description: "Select all visible items" },
+                    { keyboardShortcut: "Escape", description: "Clear the selection" },
                 ]}
             />
             <PatternUses pages={["Selection & toggles", "Tables & paging", "Tree", "Menus & messages"]} />

@@ -38,7 +38,7 @@ function Gallery() {
     const [search, setSearch] = useState("");
     return (
         <div className={styles.gallery}>
-            <FilterBar searchValue={search} onSearchChange={setSearch} searchShortcut={false} />
+            <FilterBar searchValue={search} onSearchChange={setSearch} searchKeyboardShortcut={false} />
             <Field label="Title">
                 <Input name="title" value={title} onChange={(event) => setTitle(event.target.value)} />
             </Field>

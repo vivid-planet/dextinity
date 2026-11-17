@@ -22,14 +22,14 @@ interface ShortcutListItemWithShortcut extends ShortcutListItemBase {
      * are listed side by side and read as a list, for alternatives, e.g. `["mod+ArrowDown", "mod+o"]` for "Open", or one per part of
      * the description, e.g. `["mod+x", "mod+v"]` for "Cut and paste". The notation has no sequences of keys pressed one after another.
      */
-    shortcut: string | string[];
+    keyboardShortcut: string | string[];
     keys?: never;
 }
 
 interface ShortcutListItemWithKeys extends ShortcutListItemBase {
     /** Fixed key caps for what the notation doesn't cover, e.g. `["⇧", "Click"]` or `["Right-click"]`. */
     keys: string[];
-    shortcut?: never;
+    keyboardShortcut?: never;
 }
 
 /**
@@ -37,11 +37,11 @@ interface ShortcutListItemWithKeys extends ShortcutListItemBase {
  */
 export type ShortcutListItem = ShortcutListItemWithShortcut | ShortcutListItemWithKeys;
 
-function shortcutsOf(item: ShortcutListItem): string[] {
-    if (item.shortcut == null) {
+function keyboardShortcutsOf(item: ShortcutListItem): string[] {
+    if (item.keyboardShortcut == null) {
         return [];
     }
-    return typeof item.shortcut === "string" ? [item.shortcut] : item.shortcut;
+    return typeof item.keyboardShortcut === "string" ? [item.keyboardShortcut] : item.keyboardShortcut;
 }
 
 export interface ShortcutListLabels {
@@ -62,8 +62,8 @@ export interface ShortcutListSlotProps {
 }
 
 export interface ShortcutListProps extends Omit<TableHTMLAttributes<HTMLTableElement>, "className" | "children"> {
-    /** The shortcuts, in the order they are listed. */
-    shortcuts: ShortcutListItem[];
+    /** The keyboard shortcuts, in the order they are listed. */
+    keyboardShortcuts: ShortcutListItem[];
     /** Column headers; English defaults. */
     labels?: Partial<ShortcutListLabels>;
     /** Added alongside the component's own classes. */
@@ -76,7 +76,7 @@ export interface ShortcutListProps extends Omit<TableHTMLAttributes<HTMLTableEle
  * Lists keyboard shortcuts with what they do, e.g. on a help page or in a "Keyboard shortcuts" dialog opened with `?`.
  */
 export const ShortcutList = forwardRef<HTMLTableElement, ShortcutListProps>(function ShortcutList(
-    { shortcuts, labels: labelsProp, className, slotProps, ...restProps },
+    { keyboardShortcuts, labels: labelsProp, className, slotProps, ...restProps },
     ref,
 ) {
     const ownerState: ShortcutListOwnerState = {};
@@ -96,18 +96,18 @@ export const ShortcutList = forwardRef<HTMLTableElement, ShortcutListProps>(func
                 </tr>
             </thead>
             <tbody>
-                {shortcuts.map((item) => {
-                    const itemShortcuts = shortcutsOf(item);
-                    const shortcutKeys = keysByContent(itemShortcuts);
+                {keyboardShortcuts.map((item) => {
+                    const itemKeyboardShortcuts = keyboardShortcutsOf(item);
+                    const shortcutKeys = keysByContent(itemKeyboardShortcuts);
                     const capKeys = keysByContent(item.keys ?? []);
                     return (
-                        <tr key={`${[...itemShortcuts, ...(item.keys ?? [])].join(" ")} ${item.description}`}>
+                        <tr key={`${[...itemKeyboardShortcuts, ...(item.keys ?? [])].join(" ")} ${item.description}`}>
                             <td>
                                 <span {...keysProps}>
-                                    {itemShortcuts.map((shortcut, index) => (
+                                    {itemKeyboardShortcuts.map((keyboardShortcut, index) => (
                                         <Fragment key={shortcutKeys[index]}>
                                             {index > 0 && <span className={styles.separator}>{", "}</span>}
-                                            <KeyboardShortcut shortcut={shortcut} />
+                                            <KeyboardShortcut shortcut={keyboardShortcut} />
                                         </Fragment>
                                     ))}
                                     {item.keys?.map((key, index) => (

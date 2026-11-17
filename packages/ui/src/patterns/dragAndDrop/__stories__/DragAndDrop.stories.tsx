@@ -15,11 +15,11 @@ import { useUndoToast } from "../../../components/undoToast/useUndoToast";
 import { storyModKey } from "../../../storybook/keyboardPlatformDecorator";
 import {
     PatternExample,
+    PatternKeyboardShortcuts,
     PatternLegend,
     PatternPage,
     PatternRules,
     PatternSection,
-    PatternShortcuts,
     PatternSpec,
     PatternSpecs,
 } from "../../../storybook/patterns/PatternPage";
@@ -200,12 +200,12 @@ function DragAndDropPage() {
                     </PatternSpec>
                 </PatternSpecs>
             </PatternSection>
-            <PatternShortcuts
+            <PatternKeyboardShortcuts
                 title="Keyboard alternative"
                 description="Everything that can be dragged also works through the “Move to …” menu and the keyboard."
-                shortcuts={[
-                    { shortcut: ["mod+x", "mod+v"], description: "Cut and paste (page tree)" },
-                    { shortcut: ["ArrowUp", "ArrowDown"], description: "Move a block (on its grip)" },
+                keyboardShortcuts={[
+                    { keyboardShortcut: ["mod+x", "mod+v"], description: "Cut and paste (page tree)" },
+                    { keyboardShortcut: ["ArrowUp", "ArrowDown"], description: "Move a block (on its grip)" },
                     { keys: ["Right-click"], description: "Move to … (finder)" },
                 ]}
             />

@@ -12,16 +12,16 @@ const meta = {
     decorators: [themeDecorator],
     parameters: { tokens: shortcutListTokens },
     args: {
-        shortcuts: [
-            { shortcut: "mod+k", description: "Command palette" },
-            { shortcut: "mod+\\", description: "Collapse or expand the navigation" },
-            { shortcut: "/", description: "Search the list" },
-            { shortcut: "?", description: "Show keyboard shortcuts" },
-            { shortcut: "Escape", description: "Close, clear the selection" },
+        keyboardShortcuts: [
+            { keyboardShortcut: "mod+k", description: "Command palette" },
+            { keyboardShortcut: "mod+\\", description: "Collapse or expand the navigation" },
+            { keyboardShortcut: "/", description: "Search the list" },
+            { keyboardShortcut: "?", description: "Show keyboard shortcuts" },
+            { keyboardShortcut: "Escape", description: "Close, clear the selection" },
         ],
     },
     argTypes: {
-        shortcuts: { control: false },
+        keyboardShortcuts: { control: false },
         labels: { control: false },
         className: { control: false },
         slotProps: { control: false },
@@ -86,8 +86,8 @@ export const WindowsAndLinux: Story = {
  */
 export const SeveralShortcuts: Story = {
     args: {
-        shortcuts: [
-            { shortcut: ["mod+x", "mod+v"], description: "Cut and paste (page tree)" },
+        keyboardShortcuts: [
+            { keyboardShortcut: ["mod+x", "mod+v"], description: "Cut and paste (page tree)" },
             { keys: ["Right-click"], description: "Move to … (finder)" },
         ],
     },
@@ -99,6 +99,6 @@ export const SeveralShortcuts: Story = {
 export const CustomLabels: Story = {
     args: {
         labels: { keys: "Taste", description: "Wirkung" },
-        shortcuts: [{ shortcut: "mod+s", description: "Speichern" }],
+        keyboardShortcuts: [{ keyboardShortcut: "mod+s", description: "Speichern" }],
     },
 };

@@ -26,13 +26,13 @@ const groups: CommandPaletteGroup[] = [
         label: "Create",
         items: [
             { id: "new-page", label: "New page under Careers", icon: <Icon name="plus" />, onSelect: fn() },
-            { id: "new-job-ad", label: "New job ad", icon: <Icon name="plus" />, shortcut: "mod+n", onSelect: fn() },
+            { id: "new-job-ad", label: "New job ad", icon: <Icon name="plus" />, keyboardShortcut: "mod+n", onSelect: fn() },
         ],
     },
     {
         label: "Commands",
         items: [
-            { id: "nav", label: "Collapse navigation", icon: <Icon name="pin-left" />, shortcut: "mod+\\", onSelect: fn() },
+            { id: "nav", label: "Collapse navigation", icon: <Icon name="pin-left" />, keyboardShortcut: "mod+\\", onSelect: fn() },
             { id: "dark", label: "Switch to dark theme", icon: <Icon name="moon" />, keywords: ["color scheme"], onSelect: fn() },
         ],
     },
@@ -86,7 +86,7 @@ const meta = {
     },
     argTypes: {
         filter: { control: "boolean" },
-        disableGlobalShortcut: { control: "boolean" },
+        disableGlobalKeyboardShortcut: { control: "boolean" },
         groups: { control: false },
         labels: { control: false },
         className: { control: false },
@@ -129,7 +129,7 @@ export const Default: Story = {
 /**
  * ⌘K on Apple platforms and Ctrl+K elsewhere toggles the palette from anywhere in the app.
  */
-export const GlobalShortcut: Story = {
+export const GlobalKeyboardShortcut: Story = {
     play: async ({ args }) => {
         await userEvent.keyboard(`{${storyModKey()}>}k{/${storyModKey()}}`);
         await waitFor(() => expect(args.onOpenChange).toHaveBeenLastCalledWith(true));

@@ -29,7 +29,7 @@ const meta = {
         selected: { control: "boolean" },
         disabled: { control: "boolean" },
         keepFocus: { control: "boolean" },
-        shortcut: { control: "text" },
+        keyboardShortcut: { control: "text" },
         children: { control: false },
         className: { control: false },
         slotProps: { control: false },
@@ -82,8 +82,8 @@ export const Toggle: Story = {
 /**
  * The shortcut shows in the tooltip next to the name.
  */
-export const Shortcut: Story = {
-    args: { shortcut: "mod+b" },
+export const KeyboardShortcut: Story = {
+    args: { keyboardShortcut: "mod+b" },
 };
 
 /**

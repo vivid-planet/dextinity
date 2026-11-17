@@ -15,11 +15,11 @@ import { StatusIndicator } from "../../../components/statusIndicator/StatusIndic
 import { jobAds, type JobAdStatus } from "../../../storybook/patterns/jobAds";
 import {
     PatternExample,
+    PatternKeyboardShortcuts,
     patternListClassNames,
     PatternPage,
     PatternRules,
     PatternSection,
-    PatternShortcuts,
     PatternSteps,
     PatternUses,
 } from "../../../storybook/patterns/PatternPage";
@@ -149,10 +149,10 @@ function SearchAndFilterPage() {
                     { title: "Coming back", description: "Search and filters stay until they are cleared." },
                 ]}
             />
-            <PatternShortcuts
-                shortcuts={[
-                    { shortcut: "/", description: "Jump into the search" },
-                    { shortcut: "Escape", description: "Clear the search" },
+            <PatternKeyboardShortcuts
+                keyboardShortcuts={[
+                    { keyboardShortcut: "/", description: "Jump into the search" },
+                    { keyboardShortcut: "Escape", description: "Clear the search" },
                 ]}
             />
             <PatternUses pages={["Form fields", "Selection & toggles", "Tables & paging", "Menus & messages"]} />

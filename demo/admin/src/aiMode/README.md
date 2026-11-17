@@ -9,7 +9,7 @@ The AI Mode is ported from vivid-websites. This README explains the decisions th
 
 ## When the AI Mode is on
 
-The AI Mode needs three settings: the script of the web component (`AI_HUB_WEB_COMPONENT_SCRIPT_SRC`) and a widget (`AI_HUB_WIDGET_ID`) in the admin, and the secret key of that widget (`AI_HUB_API_KEY`) in the API. `.env` sets the script and the URL of the AI Hub API (`ai-hub-api.dextinity.com`) to the prod AI Hub, so the AI Mode is off until the widget ID and the key are set in `.env.local`.
+The AI Mode needs three settings: the script of the web component (`AI_HUB_WEB_COMPONENT_SCRIPT_SRC`) and a widget (`AI_HUB_WIDGET_ID`) in the admin, and the secret key of that widget (`AI_HUB_API_KEY`) in the API. `.env` sets the script and the URL of the AI Hub API (`staging-ai-hub-api.dextinity.com`) to the staging AI Hub, so the AI Mode is off until the widget ID and the key are set in `.env.local`.
 
 - Without the key, the API registers neither the AI Hub proxy nor the MCP server.
 - Without the script or the widget ID, the admin shows no switch (`isAiHubConfigured`). A missing setting turns the AI Mode off rather than leaving an empty flyout.
@@ -25,7 +25,7 @@ The chat doesn't talk to the AI Hub API itself. It sends its requests to the API
 - The key never reaches the browser. A key of type Widget in the browser would let anyone who reads it chat on the widget's account, as any user.
 - The conversations belong to the verified user. The chat sends a `user-id` too, but it is only a hint: the proxy replaces it with the authenticated user's ID wherever the AI Hub reads one.
 
-The proxy forwards only the requests the chat makes. They are listed in a route table in `ai-hub-proxy.ts`, taken from the bundle of the prod web component. For each request, the table lists the query parameters the chat sends and says where the AI Hub reads the user ID: in the query, in the body, or nowhere. No other query parameter is forwarded, so a variant such as `userId[0]` can't reach the AI Hub as a second user ID. The proxy sets the verified ID rather than replacing one the chat sent, because the AI Hub doesn't require a user ID everywhere it reads one: it checks the message feedback against the owner of the conversation only when it gets a `userId`.
+The proxy forwards only the requests the chat makes. They are listed in a route table in `ai-hub-proxy.ts`, taken from the bundle of the prod web component, which differs from the staging one only in its base URLs. For each request, the table lists the query parameters the chat sends and says where the AI Hub reads the user ID: in the query, in the body, or nowhere. No other query parameter is forwarded, so a variant such as `userId[0]` can't reach the AI Hub as a second user ID. The proxy sets the verified ID rather than replacing one the chat sent, because the AI Hub doesn't require a user ID everywhere it reads one: it checks the message feedback against the owner of the conversation only when it gets a `userId`.
 
 Only the file upload and the speech transcription send a body that isn't JSON, and the proxy pipes it through unread. Neither carries a user ID, and an uploaded file isn't tied to a user: any user of the AI Mode who has a file's ID can download it through the proxy.
 
@@ -177,7 +177,7 @@ AI_HUB_WIDGET_ID=…
 
 They turn on the AI Hub proxy and the MCP server in the API, and the switch and the CSP directives in the admin. The key and the ID of Demo's widget come from the team. Restart the API and the admin afterwards, and log in as a user with the `aiHub` permission, which every user in Demo has. Open the page tree and turn on the switch in the header.
 
-The chat talks to the prod AI Hub through the API, so the requests of the chat and their warnings show up in the API's logs (`pnpm exec dev-pm logs --lines 100 demo-api`).
+The chat talks to the staging AI Hub through the API, so the requests of the chat and their warnings show up in the API's logs (`pnpm exec dev-pm logs --lines 100 demo-api`).
 
 ### Without the AI Hub
 

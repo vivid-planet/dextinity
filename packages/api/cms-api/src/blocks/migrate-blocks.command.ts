@@ -1,8 +1,9 @@
 import { RequestContext } from "@mikro-orm/core";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Optional } from "@nestjs/common";
-import { Command, CommandRunner } from "nest-commander";
 
+import { Command } from "../console-commands/command.decorators.js";
+import { CommandRunner } from "../console-commands/command-runner.js";
 import { PageTreeFullTextService } from "../page-tree/fullText/page-tree-full-text.service.js";
 import { BlockMigrateService } from "./block-migrate.service.js";
 

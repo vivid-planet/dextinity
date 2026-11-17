@@ -1,4 +1,4 @@
-import { resolveEntityClass } from "@dextinity/cms-api";
+import { Command, CommandRunner, Option, resolveEntityClass } from "@dextinity/cms-api";
 import { MikroORM } from "@mikro-orm/core";
 import { CreateRequestContext } from "@mikro-orm/decorators/legacy";
 import { EntityManager } from "@mikro-orm/postgresql";
@@ -6,7 +6,6 @@ import { Inject, Logger, type Type } from "@nestjs/common";
 import { isUUID, validateSync } from "class-validator";
 import { InvalidOptionArgumentError } from "commander";
 import * as fs from "fs";
-import { Command, CommandRunner, Option } from "nest-commander";
 
 import type { BrevoConfigInterface } from "../brevo-config/entities/brevo-config-entity.factory.js";
 import { BrevoContactImportService } from "../brevo-contact/brevo-contact-import.service.js";

@@ -1,7 +1,8 @@
 import { CreateRequestContext } from "@mikro-orm/decorators/legacy";
 import { EntityManager } from "@mikro-orm/postgresql";
-import { Command, CommandRunner } from "nest-commander";
 
+import { Command } from "../../console-commands/command.decorators.js";
+import { CommandRunner } from "../../console-commands/command-runner.js";
 import { resolveFileEntity } from "../files/entities/resolve-dam-entity.js";
 import { DamDominantColorService } from "./dam-dominant-color.service.js";
 

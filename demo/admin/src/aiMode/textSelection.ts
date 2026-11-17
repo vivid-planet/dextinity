@@ -8,7 +8,7 @@ type TextSelection = {
 
 // Enough for the few sentences a request like "improve this text" is about, without letting a select-all of
 // the whole page land in the agent's context with every push.
-const maxTextSelectionLength = 2000;
+export const maxTextSelectionLength = 2000;
 
 const chatSelector = "ai-hub-chat";
 

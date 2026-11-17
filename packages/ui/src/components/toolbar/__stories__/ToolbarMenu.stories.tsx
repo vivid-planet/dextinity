@@ -16,9 +16,7 @@ const meta = {
         (Story) => (
             <div className={styles.stage}>
                 <div className={styles.surface}>
-                    <Toolbar aria-label="Editor">
-                        <Story />
-                    </Toolbar>
+                    <Story />
                 </div>
             </div>
         ),
@@ -49,14 +47,16 @@ const meta = {
     render: (args, context) => {
         const [open, setOpen] = useControlledArg(args, "open", context);
         return (
-            <ToolbarMenu
-                {...args}
-                open={open}
-                onOpenChange={(nextOpen) => {
-                    setOpen(nextOpen);
-                    args.onOpenChange(nextOpen);
-                }}
-            />
+            <Toolbar aria-label="Editor">
+                <ToolbarMenu
+                    {...args}
+                    open={open}
+                    onOpenChange={(nextOpen) => {
+                        setOpen(nextOpen);
+                        args.onOpenChange(nextOpen);
+                    }}
+                />
+            </Toolbar>
         );
     },
 } satisfies Meta<typeof ToolbarMenu>;

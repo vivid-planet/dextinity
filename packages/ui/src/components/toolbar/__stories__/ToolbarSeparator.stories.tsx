@@ -14,15 +14,7 @@ const meta = {
     decorators: [
         (Story) => (
             <div className={styles.surface}>
-                <Toolbar aria-label="Formatting">
-                    <ToolbarButton aria-label="Bold" onClick={fn()}>
-                        <Icon name="bold" />
-                    </ToolbarButton>
-                    <Story />
-                    <ToolbarButton aria-label="Link" onClick={fn()}>
-                        <Icon name="link-diagonal" />
-                    </ToolbarButton>
-                </Toolbar>
+                <Story />
             </div>
         ),
         themeDecorator,
@@ -30,6 +22,17 @@ const meta = {
     argTypes: {
         className: { control: false },
     },
+    render: (args) => (
+        <Toolbar aria-label="Formatting">
+            <ToolbarButton aria-label="Bold" onClick={fn()}>
+                <Icon name="bold" />
+            </ToolbarButton>
+            <ToolbarSeparator {...args} />
+            <ToolbarButton aria-label="Link" onClick={fn()}>
+                <Icon name="link-diagonal" />
+            </ToolbarButton>
+        </Toolbar>
+    ),
 } satisfies Meta<typeof ToolbarSeparator>;
 
 export default meta;

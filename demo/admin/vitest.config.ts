@@ -39,8 +39,6 @@ export default defineConfig({
     },
     test: {
         environment: "jsdom",
-        // Already the default, stated because specs share mocks across tests, e.g. the bridge of the chat in `AiModeFlyout.spec.tsx`.
-        clearMocks: true,
         setupFiles: ["./src/testing/vitest.setup.ts"],
         reporters: ["default", "junit"],
         outputFile: { junit: "./junit-unit.xml" },

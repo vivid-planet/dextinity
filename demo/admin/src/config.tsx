@@ -24,6 +24,8 @@ export function createConfig() {
         buildNumber: environmentVariables.BUILD_NUMBER,
         commitSha: environmentVariables.COMMIT_SHA,
         muiLicenseKey: environmentVariables.MUI_LICENSE_KEY,
+        aiHubWebComponentScriptSrc: environmentVariables.AI_HUB_WEB_COMPONENT_SCRIPT_SRC,
+        aiHubWidgetId: environmentVariables.AI_HUB_WIDGET_ID,
         brevo: {
             allowAddingContactsWithoutDoi: environmentVariables.BREVO_ALLOW_ADDING_CONTACTS_WITHOUT_DOI === "true",
         },

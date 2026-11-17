@@ -9,6 +9,10 @@ const app = express();
 const port = Number(process.env.ADMIN_PORT ?? 3000);
 const host = process.env.SERVER_HOST ?? "localhost";
 const previewUrls = process.env.PREVIEW_URL ? [process.env.PREVIEW_URL] : [];
+// The chat of the AI Mode loads its script and assets from the host of its web component and talks to the AI Hub API
+// through the API ('self'), which holds the key. Like the admin itself (see `isAiHubConfigured`), only with a widget.
+const aiHubWebComponentOrigins =
+    process.env.AI_HUB_WEB_COMPONENT_SCRIPT_SRC && process.env.AI_HUB_WIDGET_ID ? [new URL(process.env.AI_HUB_WEB_COMPONENT_SCRIPT_SRC).origin] : [];
 
 let indexFile = fs.readFileSync("./build/index.html", "utf8");
 
@@ -24,14 +28,14 @@ app.use(
         contentSecurityPolicy: {
             directives: {
                 "default-src": ["'none'"], // Don't allow any content to be loaded if not explicitly allowed
-                "script-src": [process.env.NODE_ENV === "development" ? "'self' 'unsafe-eval'" : "'self'"], // Unsafe eval is needed for the preview in local development
-                "script-src-elem": ["'self'", "'unsafe-inline'"],
+                "script-src": [process.env.NODE_ENV === "development" ? "'self' 'unsafe-eval'" : "'self'", ...aiHubWebComponentOrigins], // Unsafe eval is needed for the preview in local development
+                "script-src-elem": ["'self'", "'unsafe-inline'", ...aiHubWebComponentOrigins],
                 "style-src-elem": ["'self'", "'unsafe-inline'", ...previewUrls],
                 "style-src-attr": ["'unsafe-inline'"],
-                "font-src": ["'self'", "data:"],
-                "connect-src": ["'self'"],
-                "img-src": ["'self'", "data:", "blob:"],
-                "media-src": ["'self'", "data:"],
+                "font-src": ["'self'", "data:", ...aiHubWebComponentOrigins],
+                "connect-src": ["'self'", ...aiHubWebComponentOrigins],
+                "img-src": ["'self'", "data:", "blob:", ...aiHubWebComponentOrigins],
+                "media-src": ["'self'", "data:", ...aiHubWebComponentOrigins],
                 "frame-src": previewUrls,
             },
             useDefaults: false, // Avoid default values for not explicitly set directives

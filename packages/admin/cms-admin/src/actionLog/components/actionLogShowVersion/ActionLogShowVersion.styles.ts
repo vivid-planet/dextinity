@@ -7,7 +7,7 @@ export const Root = styled(Box)`
 
 export const DiffViewerContainer = styled(Paper)`
     padding: ${({ theme }) => theme.spacing(1)};
-    border-radius: 4px;
+    border-radius: ${({ theme }) => theme.shape.borderRadius}px;
 `;
 export const LoadingContainer = styled(Box)`
     display: flex;

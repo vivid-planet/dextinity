@@ -1,13 +1,13 @@
-import { MjmlColumn, MjmlSpacer } from "@faire/mjml-react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { MjmlMailRoot } from "../../components/mailRoot/MjmlMailRoot.js";
 import { MjmlSection } from "../../components/section/MjmlSection.js";
 import { MjmlText } from "../../components/text/MjmlText.js";
+import { MjmlColumn, MjmlSpacer } from "../../index.js";
 import { createTheme } from "../../theme/createTheme.js";
 
 const config: Meta = {
-    title: "Examples/NotificationEmail",
+    title: "Examples/Notification Email",
     parameters: { mailRoot: false },
 };
 
@@ -15,6 +15,7 @@ export default config;
 
 type Story = StoryObj;
 
+/** A complete mail with a header, a heading and body text, rendered with its own theme. */
 export const Default: Story = {
     render: () => {
         const theme = createTheme({

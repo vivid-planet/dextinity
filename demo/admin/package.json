@@ -72,7 +72,7 @@
         "@dextinity/cli": "workspace:*",
         "@dextinity/eslint-config": "workspace:*",
         "@dextinity/oxlint-config": "workspace:*",
-        "@formatjs/cli": "^6.18.2",
+        "@formatjs/cli": "^6.19.0",
         "@graphql-codegen/add": "^7.1.1",
         "@graphql-codegen/cli": "^7.4.6",
         "@graphql-codegen/fragment-matcher": "^7.1.0",
@@ -95,10 +95,10 @@
         "npm-run-all2": "^9.0.4",
         "oxlint": "1.89.0",
         "oxlint-tsgolint": "7.0.2004",
-        "prettier": "^3.9.10",
+        "prettier": "^3.10.1",
         "rimraf": "^6.1.4",
         "typescript": "^6.0.3",
-        "vite": "^8.3.6",
+        "vite": "^8.3.8",
         "vite-plugin-compression2": "^2.5.4"
     }
 }

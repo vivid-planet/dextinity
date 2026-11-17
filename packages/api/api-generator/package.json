@@ -59,7 +59,7 @@
         "class-validator": "^0.15.1",
         "eslint": "^9.39.5",
         "npm-run-all2": "^9.0.4",
-        "prettier": "^3.9.10",
+        "prettier": "^3.10.1",
         "reflect-metadata": "^0.2.2",
         "rimraf": "^6.1.4",
         "unplugin-swc": "^2.0.0",

@@ -1,9 +1,50 @@
 import { Meta } from "@storybook/addon-docs/blocks";
 
-<Meta title="Docs/Intro" />
+<Meta
+    title="Docs/Intro"
+    summary="Start here: install the package, find which page covers which topic, connect the MCP server, and find the related modules."
+/>
 
 # @dextinity/mail-react
 
-`@dextinity/mail-react` is Dextinity's library for building responsive, themed HTML emails with React and MJML.
+`@dextinity/mail-react` lets you build responsive, themed HTML emails using React components. Under the hood it uses [MJML](https://documentation.mjml.io/) to generate cross-client-compatible HTML. The library provides a theme system, higher-level wrapper components, a style utility layer, and Storybook integration for live previewing emails during development.
 
-This Storybook is for developing and previewing components in isolation. For the full guide — installation, the theme system, MJML layout rules, and integrating with the Mail Templates Module — see the [Building HTML Emails](https://cms-docs.dextinity.com/docs/features-modules/building-html-emails/) documentation.
+## Installation
+
+```sh
+npm install @dextinity/mail-react
+```
+
+- `react` is a required peer dependency.
+- `storybook` is an optional peer dependency, needed only for the Storybook addon.
+
+MJML (`mjml` and `mjml-browser`) comes with the package. A framework that bundles server code, such as Next.js, must list `mjml` in the application's own `package.json` too, or rendering fails at runtime. Nothing imports it directly, so add `mjml` to `ignoreDependencies` in `knip.json` rather than removing it as unused.
+
+## Where to Find What
+
+| Page                                                                          | Read it to                                                                                                               |
+| ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| [Email Basics](?path=/docs/docs-email-basics--docs)                           | learn the rules before you write mail markup: client research, the MJML layout model, ending tags, and the styling model |
+| [Email Client Pitfalls](?path=/docs/docs-email-client-pitfalls--docs)         | look up common pitfalls in email clients and the fix for each                                                            |
+| [Theme and Configuration](?path=/docs/docs-theme-and-configuration--docs)     | set up `createTheme`, variants, breakpoints, responsive values, colors, list markers, scoped themes, and `Config`        |
+| [Components](?path=/docs/docs-components--docs)                               | look up the MJML and HTML components, where each may be placed, and the MJML re-exports                                  |
+| [Styling and Customization](?path=/docs/docs-styling-and-customization--docs) | add CSS with `registerStyles`, target the MJML output, name classes, and write a custom component                        |
+| [Layout Patterns](?path=/docs/docs-layout-patterns--docs)                     | build column layouts with gaps and mobile stacking, and sections with a shared background                                |
+| [Dark Mode](?path=/docs/docs-dark-mode--docs)                                 | keep background colors and all colors in dark mode, and keep logos readable and lines visible                            |
+| [Blocks](?path=/docs/docs-blocks--docs)                                       | render Dextinity CMS block data and show the block preview in the admin                                                  |
+| [Rendering and Preview](?path=/docs/docs-rendering-and-preview--docs)         | render HTML on the server or client, preview mails in Storybook, and test in real mail clients                           |
+
+## MCP
+
+The Storybook serves an MCP server, so that AI agents can look up the components, their props, and examples. Connect it to your agent, for example to Claude Code:
+
+```sh
+claude mcp add --transport http dextinity-mail-react https://main--69df33e9280a36be495d6521.chromatic.com/mcp
+```
+
+## Related Modules
+
+The `@dextinity/mail-react` package focuses on building email markup. For sending emails and managing templates in a Dextinity project:
+
+- **Mail Templates Module** — server-side template registration, dependency injection, and sending. Integrates with `@dextinity/mail-react` via `renderMailHtml`. Docs: https://cms-docs.dextinity.com/docs/features-modules/mail-templates-module/
+- **Mailer Module** — lower-level mail sending service. Docs: https://cms-docs.dextinity.com/docs/features-modules/mailer-module/

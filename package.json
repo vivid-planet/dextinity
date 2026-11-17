@@ -63,23 +63,23 @@
     "devDependencies": {
         "@changesets/cli": "^3.0.3",
         "@dextinity/cli": "workspace:*",
-        "@formatjs/cli": "^6.18.2",
+        "@formatjs/cli": "^6.19.0",
         "@types/node": "^24.19.2",
-        "dev-oidc-provider": "^2.1.2",
+        "dev-oidc-provider": "^2.2.0",
         "dev-process-manager": "^4.1.0",
         "dotenv-cli": "^11.1.0",
         "husky": "^9.1.7",
-        "knip": "^6.44.2",
+        "knip": "^6.45.1",
         "lint-staged": "^17.6.0",
         "npm-run-all2": "^9.0.4",
         "open-cli": "^9.0.0",
-        "prettier": "^3.9.10",
+        "prettier": "^3.10.1",
         "rimraf": "^6.1.4",
         "typescript": "^6.0.3"
     },
-    "packageManager": "pnpm@12.18.0",
+    "packageManager": "pnpm@12.21.0",
     "engines": {
         "node": "24",
-        "pnpm": "12.18.0"
+        "pnpm": "12.21.0"
     }
 }

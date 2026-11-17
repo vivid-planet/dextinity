@@ -80,7 +80,15 @@ npm view @dextinity/cms-api versions --json
 
 Do the same in `api/package.json`, `admin/package.json` and your site packages.
 
-The Admin Generator has been removed and has no v11 release. Remove it from `admin/package.json`:
+The API Generator and the Admin Generator have been removed and have no v11 release. Remove them from `api/package.json` and `admin/package.json`:
+
+```diff title="api/package.json"
+{
+    "devDependencies": {
+-       "@dextinity/api-generator": "10.6.0",
+    }
+}
+```
 
 ```diff title="admin/package.json"
 {
@@ -182,7 +190,7 @@ Remove the `@CrudGenerator` and `@CrudSingleGenerator` decorators from your enti
 
 Keep `@CrudField` where it sets `search: false`, as `searchToMikroOrmQuery` still reads it. You can remove the other usages, the remaining options were only read by the API Generator.
 
-Then remove the `api-generator` scripts and their calls from the other scripts, and remove the dependency:
+Then remove the `api-generator` scripts and their calls from the other scripts:
 
 ```diff title="api/package.json"
 {
@@ -190,9 +198,6 @@ Then remove the `api-generator` scripts and their calls from the other scripts, 
 -       "api-generator": "rimraf --glob 'src/**/generated' && dextinity-api-generator generate",
 -       "build": "npm run clean && npm run api-generator && nest build",
 +       "build": "npm run clean && nest build",
-    },
-    "devDependencies": {
--       "@dextinity/api-generator": "...",
     }
 }
 ```

@@ -77,7 +77,7 @@ The agent needs to see the page that is being edited, including unsaved changes,
 - the text contents, from `extractTextContents`.
 - for the SEO block, its settings: it has no `extractTextContents`, so without this, the SEO tab would be invisible to the agent, although a request like "improve my meta description" is about it.
 
-Hidden blocks and the inactive variants of a one-of block contribute no files, links, or text, but the structure still lists hidden blocks, marked as such. Links inside rich text are included, because the TipTap link marks carry the state of the link block. Styling, layout, media metadata, and rich text formatting are left out. A block without `extractTextContents` contributes structure but no text.
+Hidden blocks contribute no text, but the structure still lists them, marked as hidden, with their files, links, and videos. The inactive variants of a one-of block contribute no files, links, or text. Links inside rich text are included, because the TipTap link marks carry the state of the link block. Styling, layout, media metadata, and rich text formatting are left out. A block without `extractTextContents` contributes structure but no text.
 
 The edit page registers its state with `useRegisterAiModePageState`. The registration goes through a store the flyout subscribes to, not React context state, so that block edits don't re-render the flyout. The saved page is available separately through the MCP server's `get_page`; `get_page_state` exists for the state being edited.
 

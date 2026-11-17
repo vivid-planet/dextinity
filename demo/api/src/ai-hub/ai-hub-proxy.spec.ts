@@ -1,5 +1,6 @@
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from "node:http";
 import type { AddressInfo } from "node:net";
+import { Writable } from "node:stream";
 
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -290,6 +291,35 @@ describe("forwardToAiHub", () => {
         await vi.waitFor(() => {
             expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining(`The answer of the AI Hub at ${aiHubUrl.host} broke off`));
         });
+    });
+
+    it("drops the AI Hub's answer when the chat went away before it arrived", async () => {
+        let resolveAnswerClosed: () => void;
+        const answerClosed = new Promise<void>((resolve) => {
+            resolveAnswerClosed = resolve;
+        });
+        const aiHubUrl = await listen((request, response) => {
+            response.on("close", () => resolveAnswerClosed());
+            response.writeHead(200, { "content-type": "text/event-stream" });
+            response.write("data: first\n\n");
+        });
+        // A response destroyed by the chat going away emits `close` only later, so the AI Hub's answer can arrive in between.
+        const response = Object.assign(new Writable({ emitClose: false, write: (_chunk, _encoding, callback) => callback() }), {
+            statusCode: 200,
+            setHeader: () => undefined,
+        });
+        response.destroy();
+
+        forwardToAiHub({
+            request: { method: "GET", headers: {} } as IncomingMessage,
+            response: response as unknown as ServerResponse,
+            targetUrl: new URL("/api/v2/chat/history", aiHubUrl),
+            apiKey: "sk_secret",
+            body: { type: "none" },
+            logger,
+        });
+
+        await answerClosed;
     });
 
     it("answers with 502 when the AI Hub cannot be reached", async () => {

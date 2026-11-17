@@ -155,6 +155,11 @@ export function forwardToAiHub({
     const send = targetUrl.protocol === "https:" ? httpsRequest : httpRequest;
     const upstreamRequest = send(targetUrl, { method: request.method, headers, timeout: idleTimeoutMs }, (upstreamResponse) => {
         hasUpstreamResponse = true;
+        // The chat went away, but its response emits `close` only later. `pipeline` would throw for it, which crashes the process.
+        if (response.destroyed) {
+            upstreamResponse.destroy();
+            return;
+        }
         response.statusCode = upstreamResponse.statusCode ?? 502;
         for (const name of forwardedResponseHeaders) {
             const value = upstreamResponse.headers[name];

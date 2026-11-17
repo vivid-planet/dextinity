@@ -50,7 +50,7 @@ export const Error: Story = {
  *
  * **`info` or `description`?**
  * - `info` is background most users don't need, e.g. where a value is used. It stays hidden until asked for.
- * - `description` (on `Field`, or a `FormHelperText`) is what everyone needs to fill in the field, e.g. the expected format. It is always
+ * - `description` (on `Field`, or a `FieldDescription`) is what everyone needs to fill in the field, e.g. the expected format. It is always
  *   visible below the field.
  */
 export const WithInfo: Story = {

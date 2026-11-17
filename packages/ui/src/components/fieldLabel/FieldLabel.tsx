@@ -92,7 +92,7 @@ export interface FieldLabelProps<
     /**
      * Extra explanation behind an info button after the label, shown in a tooltip on hover, keyboard focus, and tap. Not part of the
      * field's name; add `infoId` to the control's `aria-describedby` so it describes the control. Use it for background most users
-     * don't need; what everyone needs belongs in a `FormHelperText` below the control.
+     * don't need; what everyone needs belongs in a `FieldDescription` below the control.
      */
     info?: ReactNode;
     /**

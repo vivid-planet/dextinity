@@ -1,8 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { Button } from "../../../components/button/Button";
+import { FieldDescription } from "../../../components/fieldDescription/FieldDescription";
 import { FieldLabel } from "../../../components/fieldLabel/FieldLabel";
-import { FormHelperText } from "../../../components/formHelperText/FormHelperText";
+import { FieldValidationMessage } from "../../../components/fieldValidationMessage/FieldValidationMessage";
 import { Input } from "../../../components/input/Input";
 import { Typography } from "../../../components/typography/Typography";
 import { themeDecorator } from "../../../storybook/themeDecorator";
@@ -24,8 +25,8 @@ export const Field: Story = {
             <FieldLabel htmlFor="field-title" required>
                 Title
             </FieldLabel>
-            <Input id="field-title" required aria-describedby="field-title-hint" />
-            <FormHelperText id="field-title-hint">Shown in the browser tab and in search results.</FormHelperText>
+            <Input id="field-title" required aria-describedby="field-title-description" />
+            <FieldDescription id="field-title-description">Shown in the browser tab and in search results.</FieldDescription>
         </div>
     ),
 };
@@ -58,8 +59,8 @@ export const Form: Story = {
                 </Typography>
                 <div className={styles.field}>
                     <FieldLabel htmlFor="form-meta-title">Meta title</FieldLabel>
-                    <Input id="form-meta-title" aria-describedby="form-meta-title-hint" />
-                    <FormHelperText id="form-meta-title-hint">Leave empty to use the title.</FormHelperText>
+                    <Input id="form-meta-title" aria-describedby="form-meta-title-description" />
+                    <FieldDescription id="form-meta-title-description">Leave empty to use the title.</FieldDescription>
                 </div>
             </fieldset>
             <div className={styles.actions}>
@@ -79,9 +80,9 @@ export const Validation: Story = {
                         Slug
                     </FieldLabel>
                     <Input id="validation-slug" required status="error" defaultValue="About us" aria-describedby="validation-slug-error" />
-                    <FormHelperText id="validation-slug-error" error>
+                    <FieldValidationMessage id="validation-slug-error" state="error">
                         Use only lowercase letters, digits, and hyphens.
-                    </FormHelperText>
+                    </FieldValidationMessage>
                 </div>
                 <div className={styles.field}>
                     <FieldLabel htmlFor="validation-meta-title">Meta title</FieldLabel>
@@ -89,17 +90,21 @@ export const Validation: Story = {
                         id="validation-meta-title"
                         status="warning"
                         defaultValue="About us – our team, our history, our values, and our locations"
-                        aria-describedby="validation-meta-title-hint"
+                        aria-describedby="validation-meta-title-message"
                     />
-                    <FormHelperText id="validation-meta-title-hint">Search engines may cut titles longer than 60 characters.</FormHelperText>
+                    <FieldValidationMessage id="validation-meta-title-message" state="warning">
+                        Search engines may cut titles longer than 60 characters.
+                    </FieldValidationMessage>
                 </div>
                 <div className={styles.field}>
                     <FieldLabel htmlFor="validation-domain">Domain</FieldLabel>
-                    <Input id="validation-domain" status="success" defaultValue="example.com" aria-describedby="validation-domain-hint" />
-                    <FormHelperText id="validation-domain-hint">The domain points to this website.</FormHelperText>
+                    <Input id="validation-domain" status="success" defaultValue="example.com" aria-describedby="validation-domain-message" />
+                    <FieldValidationMessage id="validation-domain-message" state="success">
+                        The domain points to this website.
+                    </FieldValidationMessage>
                 </div>
             </div>
-            <FormHelperText error>The page could not be saved. Try again.</FormHelperText>
+            <FieldValidationMessage state="error">The page could not be saved. Try again.</FieldValidationMessage>
             <div className={styles.actions}>
                 <Button type="submit">Save</Button>
             </div>

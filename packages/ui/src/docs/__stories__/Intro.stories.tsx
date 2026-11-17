@@ -3,8 +3,8 @@ import { useState } from "react";
 
 import { Button } from "../../components/button/Button";
 import { Chip } from "../../components/chip/Chip";
+import { FieldDescription } from "../../components/fieldDescription/FieldDescription";
 import { FieldLabel } from "../../components/fieldLabel/FieldLabel";
-import { FormHelperText } from "../../components/formHelperText/FormHelperText";
 import { Icon } from "../../components/icon/Icon";
 import { IconButton } from "../../components/iconButton/IconButton";
 import { Input } from "../../components/input/Input";
@@ -53,8 +53,8 @@ export const Showcase: Story = {
                             <FieldLabel htmlFor="showcase-title" required>
                                 Page title
                             </FieldLabel>
-                            <Input id="showcase-title" required defaultValue="Spring campaign" aria-describedby="showcase-title-hint" />
-                            <FormHelperText id="showcase-title-hint">Shown in the browser tab and in search results.</FormHelperText>
+                            <Input id="showcase-title" required defaultValue="Spring campaign" aria-describedby="showcase-title-description" />
+                            <FieldDescription id="showcase-title-description">Shown in the browser tab and in search results.</FieldDescription>
                         </div>
                         <div className={styles.actions}>
                             <Button variant="outlined">Cancel</Button>

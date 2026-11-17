@@ -130,7 +130,8 @@ function focusInputOnFieldClick(event: MouseEvent<HTMLDivElement>) {
 
 /**
  * A single line of text. Inside a `Field`, it takes the field's label, message and state and leaves the box to the field, which
- * makes a complete text field. On its own, it draws its own box, to combine with `FieldLabel` and `FormHelperText`.
+ * makes a complete text field. On its own, it draws its own box, to combine with `FieldLabel`, `FieldDescription`, and
+ * `FieldValidationMessage`.
  */
 export const Input: <InputElement extends InputSlotElement = typeof BaseInput, LoadingSpinner extends ElementType = typeof Spinner>(
     props: InputProps<InputElement, LoadingSpinner> & RefAttributes<HTMLInputElement>,

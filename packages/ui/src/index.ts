@@ -93,7 +93,14 @@ export {
 export { type FieldSize, type FieldState } from "./components/field/Field";
 export { type FieldLayout } from "./components/field/Field";
 export { FieldActions, type FieldActionsLabels, type FieldActionsOwnerState, type FieldActionsProps } from "./components/fieldActions/FieldActions";
+export { FieldDescription, type FieldDescriptionOwnerState, type FieldDescriptionProps } from "./components/fieldDescription/FieldDescription";
 export { FieldLabel, type FieldLabelLabels, type FieldLabelOwnerState, type FieldLabelProps } from "./components/fieldLabel/FieldLabel";
+export {
+    FieldValidationMessage,
+    type FieldValidationMessageOwnerState,
+    type FieldValidationMessageProps,
+    type FieldValidationMessageState,
+} from "./components/fieldValidationMessage/FieldValidationMessage";
 export { formatFileSize } from "./components/fileUpload/fileSize";
 export type { FileUploadContext, FileUploadFile, FileUploadLabels } from "./components/fileUpload/FileUpload";
 export { FileUpload, type FileUploadOwnerState, type FileUploadProps, type FileUploadSlotProps } from "./components/fileUpload/FileUpload";
@@ -109,7 +116,6 @@ export {
     type FocalPointPickerProps,
     type FocalPointPickerSlotProps,
 } from "./components/focalPointPicker/FocalPointPicker";
-export { FormHelperText, type FormHelperTextOwnerState, type FormHelperTextProps } from "./components/formHelperText/FormHelperText";
 export { Icon, type IconOwnerState, type IconProps } from "./components/icon/Icon";
 export type { DefaultIconName, DefaultIconRegistry, DeprecatedIconAlias, IconName, IconRegistry } from "./components/icon/iconRegistry";
 export { IconButton, type IconButtonOwnerState, type IconButtonProps } from "./components/iconButton/IconButton";

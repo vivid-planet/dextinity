@@ -23,7 +23,7 @@ function EditorToolbar(props: Omit<ToolbarProps, "children">) {
     const [blockType, setBlockType] = useState<keyof typeof blockTypes>("paragraph");
     const [menuOpen, setMenuOpen] = useState(false);
     const [marks, setMarks] = useState<Record<Mark, boolean>>({ bold: true, italic: false, underline: false });
-    const toggle = (mark: Mark) => setMarks((current) => ({ ...current, [mark]: !current[mark] }));
+    const setMark = (mark: Mark, selected: boolean) => setMarks((current) => ({ ...current, [mark]: selected }));
 
     return (
         <Toolbar {...props}>
@@ -36,10 +36,15 @@ function EditorToolbar(props: Omit<ToolbarProps, "children">) {
             </ToolbarMenu>
             <ToolbarSeparator />
             <ToolbarGroup aria-label="Marks">
-                <ToolbarButton aria-label="Bold" shortcut="mod+b" pressed={marks.bold} onClick={() => toggle("bold")}>
+                <ToolbarButton aria-label="Bold" shortcut="mod+b" selected={marks.bold} onSelectedChange={(selected) => setMark("bold", selected)}>
                     <Icon name="bold" />
                 </ToolbarButton>
-                <ToolbarButton aria-label="Italic" shortcut="mod+i" pressed={marks.italic} onClick={() => toggle("italic")}>
+                <ToolbarButton
+                    aria-label="Italic"
+                    shortcut="mod+i"
+                    selected={marks.italic}
+                    onSelectedChange={(selected) => setMark("italic", selected)}
+                >
                     <Icon name="italic" />
                 </ToolbarButton>
                 <ToolbarButton aria-label="Link" shortcut="mod+k" onClick={fn()}>
@@ -48,10 +53,10 @@ function EditorToolbar(props: Omit<ToolbarProps, "children">) {
             </ToolbarGroup>
             <ToolbarSeparator />
             <ToolbarGroup aria-label="Lists">
-                <ToolbarButton aria-label="Bulleted list" pressed={false} onClick={fn()}>
+                <ToolbarButton aria-label="Bulleted list" selected={false} onSelectedChange={fn()}>
                     <Icon name="list" />
                 </ToolbarButton>
-                <ToolbarButton aria-label="Numbered list" pressed={false} onClick={fn()}>
+                <ToolbarButton aria-label="Numbered list" selected={false} onSelectedChange={fn()}>
                     <Icon name="list-ordered" />
                 </ToolbarButton>
             </ToolbarGroup>

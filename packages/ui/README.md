@@ -80,7 +80,7 @@ A change that makes a comment inaccurate updates it in the same change.
 
 ### Controlled values
 
-Components are pure UI and always controlled: a value comes with its change handler (`value` + `onChange`, `checked` + `onChange`, `open` + `onOpenChange`), and there is no `defaultValue`. A value prop is required when the component always has that value (`Checkbox`'s `checked`), and optional when the component also works without it (`ToolbarButton`'s `pressed`).
+Components are pure UI and always controlled: a value comes with its change handler (`value` + `onChange`, `checked` + `onChange`, `open` + `onOpenChange`), and there is no `defaultValue`. A value prop is required when the component always has that value (`Checkbox`'s `checked`), and optional when the component also works without it (`ToolbarButton`'s `selected`).
 
 ### Form controls and `Field`
 

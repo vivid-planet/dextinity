@@ -508,9 +508,9 @@ const RichTextEditorToolbar = memo(function RichTextEditorToolbar({
                             key={format}
                             aria-label={labels[format]}
                             shortcut={markShortcuts[format]}
-                            pressed={state[format]}
+                            selected={state[format]}
                             keepFocus
-                            onClick={() => editor?.chain().focus().toggleMark(format).run()}
+                            onSelectedChange={() => editor?.chain().focus().toggleMark(format).run()}
                         >
                             <Icon name={markIcons[format]} />
                         </ToolbarButton>
@@ -522,9 +522,9 @@ const RichTextEditorToolbar = memo(function RichTextEditorToolbar({
                                     key={format}
                                     aria-label={labels[format]}
                                     shortcut={scriptShortcuts[format]}
-                                    pressed={state[format]}
+                                    selected={state[format]}
                                     keepFocus
-                                    onClick={() => toggleScript(format)}
+                                    onSelectedChange={() => toggleScript(format)}
                                 >
                                     <Icon name={scriptIcons[format]} />
                                 </ToolbarButton>
@@ -533,9 +533,9 @@ const RichTextEditorToolbar = memo(function RichTextEditorToolbar({
                                 <ToolbarButton
                                     key={style.name}
                                     aria-label={style.label}
-                                    pressed={state.inlineStyle === style.name}
+                                    selected={state.inlineStyle === style.name}
                                     keepFocus
-                                    onClick={() => toggleInlineStyle(style.name)}
+                                    onSelectedChange={() => toggleInlineStyle(style.name)}
                                 >
                                     {style.icon != null && <Icon name={style.icon} />}
                                 </ToolbarButton>
@@ -584,9 +584,9 @@ const RichTextEditorToolbar = memo(function RichTextEditorToolbar({
                             key={textAlign}
                             aria-label={labels[textAlignLabels[textAlign]]}
                             shortcut={textAlignShortcuts[textAlign]}
-                            pressed={state.textAlign === textAlign}
+                            selected={state.textAlign === textAlign}
                             keepFocus
-                            onClick={() => editor?.chain().focus().setTextAlign(textAlign).run()}
+                            onSelectedChange={() => editor?.chain().focus().setTextAlign(textAlign).run()}
                         >
                             <Icon name={textAlignIcons[textAlign]} />
                         </ToolbarButton>
@@ -604,9 +604,9 @@ const RichTextEditorToolbar = memo(function RichTextEditorToolbar({
                         <ToolbarButton
                             aria-label={labels.bulletList}
                             shortcut="shift+mod+8"
-                            pressed={state.bulletList}
+                            selected={state.bulletList}
                             keepFocus
-                            onClick={() => editor?.chain().focus().toggleBulletList().run()}
+                            onSelectedChange={() => editor?.chain().focus().toggleBulletList().run()}
                         >
                             <Icon name="list-unordered" />
                         </ToolbarButton>
@@ -615,9 +615,9 @@ const RichTextEditorToolbar = memo(function RichTextEditorToolbar({
                         <ToolbarButton
                             aria-label={labels.orderedList}
                             shortcut="shift+mod+7"
-                            pressed={state.orderedList}
+                            selected={state.orderedList}
                             keepFocus
-                            onClick={() => editor?.chain().focus().toggleOrderedList().run()}
+                            onSelectedChange={() => editor?.chain().focus().toggleOrderedList().run()}
                         >
                             <Icon name="list-ordered" />
                         </ToolbarButton>
@@ -649,7 +649,7 @@ const RichTextEditorToolbar = memo(function RichTextEditorToolbar({
             key: "link",
             content: (
                 <ToolbarGroup>
-                    <ToolbarButton aria-label={labels.link} shortcut="mod+k" pressed={state.link} keepFocus onClick={() => requestLink()}>
+                    <ToolbarButton aria-label={labels.link} shortcut="mod+k" selected={state.link} keepFocus onSelectedChange={() => requestLink()}>
                         <Icon name="link" />
                     </ToolbarButton>
                     <ToolbarButton

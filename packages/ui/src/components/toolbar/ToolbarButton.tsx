@@ -11,7 +11,7 @@ import styles from "./ToolbarButton.module.scss";
  */
 export type ToolbarButtonOwnerState = {
     toggle: boolean;
-    pressed: boolean;
+    selected: boolean;
     disabled: boolean;
 };
 
@@ -27,10 +27,12 @@ export interface ToolbarButtonProps
     /** A keyboard shortcut for the action, shown in the tooltip, in the notation of `useKeyboardShortcut`, e.g. `"mod+b"`. */
     shortcut?: string;
     /**
-     * Makes the button a toggle and sets whether it is on, e.g. whether the text at the cursor is bold. Toggle it in `onClick`. Leave it
-     * out for a plain action, e.g. undo.
+     * Makes the button a toggle and sets whether it is on, e.g. whether the text at the cursor is bold. It is announced as pressed
+     * (`aria-pressed`). Leave it out for a plain action, e.g. undo.
      */
-    pressed?: boolean;
+    selected?: boolean;
+    /** Called with the new state when the toggle is clicked. */
+    onSelectedChange?: (selected: boolean) => void;
     /**
      * Prevents interaction with the button. It stays focusable inside the toolbar.
      *
@@ -59,10 +61,23 @@ function preventFocusLoss(event: MouseEvent) {
  * `children`: The icon, e.g. `<Icon name="bold" />`.
  */
 export const ToolbarButton = forwardRef<HTMLButtonElement, ToolbarButtonProps>(function ToolbarButton(
-    { children, "aria-label": ariaLabel, shortcut, pressed, disabled = false, keepFocus = false, className, slotProps, onMouseDown, ...restProps },
+    {
+        children,
+        "aria-label": ariaLabel,
+        shortcut,
+        selected,
+        onSelectedChange,
+        disabled = false,
+        keepFocus = false,
+        className,
+        slotProps,
+        onClick,
+        onMouseDown,
+        ...restProps
+    },
     ref,
 ) {
-    const ownerState: ToolbarButtonOwnerState = { toggle: pressed !== undefined, pressed: pressed === true, disabled };
+    const ownerState: ToolbarButtonOwnerState = { toggle: selected !== undefined, selected: selected === true, disabled };
     return (
         <BaseToolbar.Button
             ref={ref}
@@ -74,11 +89,17 @@ export const ToolbarButton = forwardRef<HTMLButtonElement, ToolbarButtonProps>(f
                     color="secondary"
                     aria-label={ariaLabel}
                     shortcut={shortcut}
-                    aria-pressed={ownerState.toggle ? ownerState.pressed : undefined}
+                    aria-pressed={ownerState.toggle ? ownerState.selected : undefined}
                     data-toggle={ownerState.toggle ? "" : undefined}
-                    data-pressed={ownerState.pressed ? "" : undefined}
+                    data-selected={ownerState.selected ? "" : undefined}
                     className={clsx(styles.root, className)}
                     slotProps={slotProps?.tooltip != null ? { tooltip: slotProps.tooltip } : undefined}
+                    onClick={(event) => {
+                        onClick?.(event);
+                        if (ownerState.toggle) {
+                            onSelectedChange?.(!ownerState.selected);
+                        }
+                    }}
                     onMouseDown={(event) => {
                         if (keepFocus) {
                             preventFocusLoss(event);

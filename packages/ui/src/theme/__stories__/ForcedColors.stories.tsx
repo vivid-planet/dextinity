@@ -102,7 +102,7 @@ function SeparatorGallery() {
     return (
         <div className={styles.gallery}>
             <Toolbar aria-label="Formatting">
-                <ToolbarButton aria-label="Bold" pressed={false} onClick={() => {}}>
+                <ToolbarButton aria-label="Bold" selected={false} onSelectedChange={() => {}}>
                     <Icon name="bold" />
                 </ToolbarButton>
                 <ToolbarSeparator />

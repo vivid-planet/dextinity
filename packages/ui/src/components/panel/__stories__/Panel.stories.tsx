@@ -6,7 +6,6 @@ import { Icon } from "../../icon/Icon";
 import { IconButton } from "../../iconButton/IconButton";
 import { Link } from "../../link/Link";
 import { Panel } from "../Panel";
-import panelTokens from "../Panel.tokens.scss?raw";
 import styles from "./Panel.stories.module.scss";
 
 const actionOptions = {
@@ -33,7 +32,7 @@ const meta = {
         ),
         themeDecorator,
     ],
-    parameters: { tokens: panelTokens, layout: "fullscreen" },
+    parameters: { layout: "fullscreen" },
     args: {
         title: "Selected",
         children: "Content",

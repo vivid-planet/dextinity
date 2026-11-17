@@ -6,7 +6,6 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
 import { ConfirmDialog } from "../ConfirmDialog";
-import confirmDialogTokens from "../ConfirmDialog.tokens.scss?raw";
 
 const iconOptions = {
     Trash: <Icon name="trash" />,
@@ -17,7 +16,7 @@ const meta = {
     component: ConfirmDialog,
     title: "Building blocks/Modals & overlays/ConfirmDialog",
     decorators: [themeDecorator],
-    parameters: { tokens: confirmDialogTokens, closedOnDocsPage: true },
+    parameters: { closedOnDocsPage: true },
     render: (args, context) => {
         const [open, setOpen] = useControlledArg(args, "open", context);
         const handleOpenChange = (nextOpen: boolean) => {

@@ -6,7 +6,6 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { IconButton } from "../../iconButton/IconButton";
 import { Tooltip } from "../../tooltip/Tooltip";
-import blockListTokens from "../BlockList.tokens.scss?raw";
 import { BlockListHeader } from "../BlockListHeader";
 import styles from "./BlockList.stories.module.scss";
 
@@ -14,7 +13,6 @@ const meta = {
     component: BlockListHeader,
     title: "Building blocks/Blocks & preview/BlockListHeader",
     decorators: [themeDecorator],
-    parameters: { tokens: blockListTokens },
     args: {
         count: 8,
         selectedCount: 0,

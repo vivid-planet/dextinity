@@ -2,13 +2,11 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { FieldValidationMessage } from "../FieldValidationMessage";
-import fieldValidationMessageTokens from "../FieldValidationMessage.tokens.scss?raw";
 
 const meta = {
     component: FieldValidationMessage,
     title: "Building blocks/Form fields/FieldValidationMessage",
     decorators: [themeDecorator],
-    parameters: { tokens: fieldValidationMessageTokens },
     args: {
         state: "error",
         children: "Enter a title",

@@ -2,6 +2,7 @@ import type { StorybookConfig } from "@storybook/react-vite";
 import { mergeConfig } from "vite";
 
 import { addStyleSourcesToManifests } from "./addStyleSourcesToManifests";
+import { componentTokensPlugin } from "./componentTokensPlugin";
 import { storyCodePlugin } from "./storyCodePlugin";
 
 const config: StorybookConfig = {
@@ -16,7 +17,7 @@ const config: StorybookConfig = {
     experimental_manifests: addStyleSourcesToManifests,
     viteFinal: (viteConfig) =>
         mergeConfig(viteConfig, {
-            plugins: [storyCodePlugin()],
+            plugins: [storyCodePlugin(), componentTokensPlugin()],
             build: {
                 // Base UI marks its modules with "use client", which has no meaning in the client-only Storybook bundle
                 rolldownOptions: { checks: { moduleLevelDirective: false } },

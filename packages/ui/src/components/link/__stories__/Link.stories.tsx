@@ -4,7 +4,6 @@ import { expect, fn, userEvent, waitFor } from "storybook/test";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { Link } from "../Link";
-import linkTokens from "../Link.tokens.scss?raw";
 
 const iconOptions = {
     ArrowRight: <Icon name="arrow-right" />,
@@ -16,7 +15,6 @@ const meta = {
     component: Link,
     title: "Building blocks/Page header, breadcrumbs & links/Link",
     decorators: [themeDecorator],
-    parameters: { tokens: linkTokens },
     args: {
         children: "Page tree",
         href: "#page-tree",

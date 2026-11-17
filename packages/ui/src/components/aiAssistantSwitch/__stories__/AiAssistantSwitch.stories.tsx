@@ -7,14 +7,12 @@ import { Icon } from "../../icon/Icon";
 import { StoryScopeSwitcher, StoryUserMenu } from "../../topBar/__stories__/topBarStoryParts";
 import { TopBar } from "../../topBar/TopBar";
 import { AiAssistantSwitch } from "../AiAssistantSwitch";
-import aiAssistantSwitchTokens from "../AiAssistantSwitch.tokens.scss?raw";
 
 const meta = {
     component: AiAssistantSwitch,
     title: "Shell/Top bar & scope/AiAssistantSwitch",
     decorators: [themeDecorator],
     tags: ["forced-colors"],
-    parameters: { tokens: aiAssistantSwitchTokens },
     args: {
         checked: false,
         onChange: fn(),

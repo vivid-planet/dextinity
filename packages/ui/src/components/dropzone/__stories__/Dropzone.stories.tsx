@@ -5,7 +5,6 @@ import { expect, fn, spyOn, userEvent, waitFor } from "storybook/test";
 import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Dropzone, type DropzoneRejection, type DropzoneUpload } from "../Dropzone";
-import dropzoneTokens from "../Dropzone.tokens.scss?raw";
 import styles from "./Dropzone.stories.module.scss";
 
 function describeRejections(rejections: DropzoneRejection[]) {
@@ -18,7 +17,6 @@ const meta = {
     component: Dropzone,
     title: "Building blocks/Media & upload/Dropzone",
     decorators: [themeDecorator],
-    parameters: { tokens: dropzoneTokens },
     args: {
         onFiles: fn(),
         onReject: fn(),

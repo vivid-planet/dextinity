@@ -7,7 +7,6 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
 import { QuickLook, type QuickLookItem } from "../QuickLook";
-import quickLookTokens from "../QuickLook.tokens.scss?raw";
 import styles from "./QuickLook.stories.module.scss";
 
 function placeholderImage(hue: number, label: string) {
@@ -25,7 +24,7 @@ const meta = {
     component: QuickLook,
     title: "Building blocks/Modals & overlays/QuickLook",
     decorators: [themeDecorator],
-    parameters: { tokens: quickLookTokens, closedOnDocsPage: true },
+    parameters: { closedOnDocsPage: true },
     render: (args, context) => {
         const [open, setOpen] = useControlledArg(args, "open", context);
         const [index, setIndex] = useControlledArg(args, "index", context);

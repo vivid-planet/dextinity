@@ -5,7 +5,6 @@ import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { Toolbar } from "../Toolbar";
-import toolbarTokens from "../Toolbar.tokens.scss?raw";
 import { ToolbarButton } from "../ToolbarButton";
 import styles from "./Toolbar.stories.module.scss";
 
@@ -22,7 +21,6 @@ const meta = {
         ),
         themeDecorator,
     ],
-    parameters: { tokens: toolbarTokens },
     args: { "aria-label": "Bold", children: <Icon name="bold" />, onClick: fn(), onSelectedChange: fn() },
     argTypes: {
         selected: { control: "boolean" },

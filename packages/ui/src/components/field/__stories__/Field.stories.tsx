@@ -13,7 +13,6 @@ import { Select } from "../../select/Select";
 import { Toolbar } from "../../toolbar/Toolbar";
 import { ToolbarButton } from "../../toolbar/ToolbarButton";
 import { Field, type FieldControlProps } from "../Field";
-import fieldTokens from "../Field.tokens.scss?raw";
 import styles from "./Field.stories.module.scss";
 
 function TextInput({ name = "title", initialValue = "" }: { name?: string; initialValue?: string }) {
@@ -76,7 +75,6 @@ const meta = {
     component: Field,
     title: "Building blocks/Form fields/Field",
     decorators: [themeDecorator],
-    parameters: { tokens: fieldTokens },
     args: {
         label: "Title",
         children: <TextInput initialValue="Senior UX Designer" />,

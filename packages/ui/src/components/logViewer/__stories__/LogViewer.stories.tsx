@@ -6,7 +6,6 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { IconButton } from "../../iconButton/IconButton";
 import { LogViewer, type LogViewerLineColor, type LogViewerProps } from "../LogViewer";
-import logViewerTokens from "../LogViewer.tokens.scss?raw";
 import styles from "./LogViewer.stories.module.scss";
 
 const jobLog = [
@@ -62,7 +61,6 @@ const meta = {
             </div>
         ),
     ],
-    parameters: { tokens: logViewerTokens },
     args: { content: jobLog, title: "page-tree-index · Run #482", getLineColor: colorOfLine, onCopy: fn() },
     argTypes: {
         lineNumbers: { control: "boolean" },

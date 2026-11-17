@@ -6,7 +6,6 @@ import { interiorImage, landscapeImage } from "../../../storybook/sampleImages";
 import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { FileUpload, type FileUploadContext, type FileUploadFile, type FileUploadProps } from "../FileUpload";
-import fileUploadTokens from "../FileUpload.tokens.scss?raw";
 import styles from "./FileUpload.stories.module.scss";
 
 /** Simulates an upload: progress in five steps; a file whose name contains "fail" fails on the first attempt. */
@@ -78,7 +77,6 @@ const meta = {
             </div>
         ),
     ],
-    parameters: { tokens: fileUploadTokens },
     args: {
         label: "Attachment",
         value: [],

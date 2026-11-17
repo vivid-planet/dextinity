@@ -5,7 +5,6 @@ import { useState } from "react";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { MainNavigationItem } from "../MainNavigationItem";
-import mainNavigationItemTokens from "../MainNavigationItem.tokens.scss?raw";
 import styles from "./mainNavigationItem.module.scss";
 
 const iconOptions = {
@@ -16,7 +15,6 @@ const iconOptions = {
 const meta = {
     component: MainNavigationItem,
     title: "Shell/Navigation/MainNavigationItem",
-    parameters: { tokens: mainNavigationItemTokens },
     decorators: [themeDecorator],
     args: {
         children: "Dashboard",

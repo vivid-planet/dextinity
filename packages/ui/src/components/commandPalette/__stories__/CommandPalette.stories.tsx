@@ -7,7 +7,6 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
 import { CommandPalette, type CommandPaletteGroup } from "../CommandPalette";
-import commandPaletteTokens from "../CommandPalette.tokens.scss?raw";
 import styles from "./CommandPalette.stories.module.scss";
 
 const openJobAds = fn();
@@ -49,7 +48,7 @@ const meta = {
             </div>
         ),
     ],
-    parameters: { tokens: commandPaletteTokens, closedOnDocsPage: true },
+    parameters: { closedOnDocsPage: true },
     render: (args, context) => {
         const [open, setOpen] = useControlledArg(args, "open", context);
         const [query, setQuery] = useControlledArg(args, "query", context);

@@ -6,7 +6,6 @@ import { fieldArgTypes, type FieldStoryArgs, hasFieldArgs, splitFieldArgs, Story
 import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Switch, type SwitchProps } from "../Switch";
-import switchTokens from "../Switch.tokens.scss?raw";
 import styles from "./Switch.stories.module.scss";
 
 type SwitchStoryArgs = SwitchProps & Pick<FieldStoryArgs, "required" | "validationMessage" | "state">;
@@ -64,7 +63,6 @@ const meta = {
     component: Switch,
     title: "Building blocks/Selection & toggles/Switch",
     decorators: [themeDecorator],
-    parameters: { tokens: switchTokens },
     args: {
         children: "Hide in menu",
         checked: false,

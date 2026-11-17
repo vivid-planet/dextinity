@@ -12,23 +12,19 @@ const config: Meta<typeof ActionGridToolbar> = {
 export default config;
 
 const TemplateStory: Story = (props) => {
-    const StoryComponent = () => {
-        return (
-            <DataGrid
-                columns={[]}
-                rows={[]}
-                showToolbar
-                slotProps={{
-                    toolbar: props,
-                }}
-                slots={{
-                    toolbar: ActionGridToolbar as GridSlotsComponent["toolbar"],
-                }}
-            />
-        );
-    };
-
-    return <StoryComponent />;
+    return (
+        <DataGrid
+            columns={[]}
+            rows={[]}
+            showToolbar
+            slotProps={{
+                toolbar: props,
+            }}
+            slots={{
+                toolbar: ActionGridToolbar as GridSlotsComponent["toolbar"],
+            }}
+        />
+    );
 };
 
 export const Default: Story = TemplateStory.bind({}) as Story;

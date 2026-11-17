@@ -24,7 +24,7 @@ category?: string;
 
 ### Input — FileUpload
 
-`FileUpload.id` is typed `string` (its column is `uuid`), so the generator emits `@IsString()` instead of `@IsUUID()`:
+`FileUpload.id` is typed `string` (its column is `uuid`), so use `@IsString()` instead of `@IsUUID()`:
 
 ```typescript
 @IsNotEmpty()

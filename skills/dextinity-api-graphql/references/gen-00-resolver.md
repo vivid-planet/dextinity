@@ -1,6 +1,6 @@
 # Resolver — CRUD Pattern
 
-Resolvers are the **CRUD layer** — they inject `EntityManager` directly and contain the full create/update/delete logic inline, matching what `@dextinity/api-generator` emits. A separate service exists only in two cases: position helpers for entities with a `position` field, and a hand-written business-logic service for validation/side effects (see [gen-07-service.md](gen-07-service.md)).
+Resolvers are the **CRUD layer** — they inject `EntityManager` directly and contain the full create/update/delete logic inline. A separate service exists only in two cases: position helpers for entities with a `position` field, and a hand-written business-logic service for validation/side effects (see [gen-07-service.md](gen-07-service.md)).
 
 ## Naming Convention
 

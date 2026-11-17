@@ -120,10 +120,10 @@ export class ProductCategoriesService {
 
 ## Kind 2: Business-logic (hooks) service — `{entity-name}.service.ts`
 
-Hand-written (never overwritten by regeneration), lives next to the entity's folder. It implements the `CrudGeneratorHooksService` interface from `@dextinity/cms-api` and hosts validation and side-effect logic plus the GraphQL error type. The resolver calls `validateCreateInput`/`validateUpdateInput` at the start of its create/update mutations and returns a payload with the errors (see [feature-02-validation.md](feature-02-validation.md) for the full pattern including payload types).
+Hand-written, lives next to the entity's folder. It hosts validation and side-effect logic plus the GraphQL error type. The resolver calls `validateCreateInput`/`validateUpdateInput` at the start of its create/update mutations and returns a payload with the errors (see [feature-02-validation.md](feature-02-validation.md) for the full pattern including payload types).
 
 ```typescript
-import type { CrudGeneratorHooksService, CurrentUser, MutationError } from "@dextinity/cms-api";
+import type { CurrentUser, MutationError } from "@dextinity/cms-api";
 import { Field, ObjectType, registerEnumType } from "@nestjs/graphql";
 
 import type { ProductVariant } from "./entities/product-variant.entity";
@@ -150,7 +150,7 @@ export class ProductVariantMutationError implements MutationError {
     code: ProductVariantMutationErrorCode;
 }
 
-export class ProductVariantService implements CrudGeneratorHooksService {
+export class ProductVariantService {
     async validateCreateInput(
         input: ProductVariantInput,
         options: { currentUser: CurrentUser; args: { product: string } },
@@ -189,7 +189,7 @@ When validation needs database access (e.g. uniqueness checks), add `@Injectable
 
 - **No service for plain scalar entities** — the resolver alone handles all CRUD. Never generate an empty pass-through service.
 - **Position helpers service**: plural naming, `@Injectable()`, injects `EntityManager`, contains **only** `incrementPositions`/`decrementPositions`/`getLastPosition` (plus `getPositionGroupCondition` when position is grouped). No `create`/`update`/`delete`/`find` methods.
-- **Business-logic service**: singular naming, `implements CrudGeneratorHooksService` (import as `type` from `@dextinity/cms-api`), hook methods return `{Entity}MutationError[]` (empty array = valid).
+- **Business-logic service**: singular naming, hook methods return `{Entity}MutationError[]` (empty array = valid).
 - **`{Entity}MutationError`** is an `@ObjectType()` implementing the `MutationError` interface from `@dextinity/cms-api`, with a `registerEnumType`'d `{Entity}MutationErrorCode` enum — defined and exported from the business-logic service file.
 - **No `@Args()`, `@Query()`, `@Mutation()`** in services — those are resolver concerns.
 - **Register** every generated service in the module's `providers` array.

@@ -89,16 +89,16 @@ type ActionLog {
   previousVersion: ActionLog
 
   """
-  Derived from snapshot and version: snapshot null → Deleted, version 1 → Created, otherwise → Updated.
+  Derived from snapshot and version: snapshot null → deleted, version 1 → created, otherwise → updated.
   """
   type: ActionLogType!
   user: ActionLogsUser!
 }
 
 enum ActionLogType {
-  Created
-  Updated
-  Deleted
+  created
+  updated
+  deleted
 }
 
 type UserPermissionsUser {

@@ -16,7 +16,7 @@ type ActionLog {
   snapshot: JSONObject
 
   """
-  Derived from snapshot and version: snapshot null → Deleted, version 1 → Created, otherwise → Updated.
+  Derived from snapshot and version: snapshot null → deleted, version 1 → created, otherwise → updated.
   """
   type: ActionLogType!
   user: ActionLogsUser!
@@ -54,9 +54,9 @@ enum ActionLogSortField {
 }
 
 enum ActionLogType {
-  Created
-  Deleted
-  Updated
+  created
+  deleted
+  updated
 }
 
 type ActionLogsUser {

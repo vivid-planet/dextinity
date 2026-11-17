@@ -117,7 +117,7 @@ export function GlobalActionLogGrid() {
                 sortable: false,
                 filterable: false,
                 width: 150,
-                renderCell: ({ value }) => <ActionLogTypeChip actionLogType={value} label={value} />,
+                renderCell: ({ row }) => <ActionLogTypeChip actionLogType={row.type} />,
             },
             {
                 field: "entityName",

@@ -29,7 +29,7 @@ The proxy forwards only the requests the chat makes. They are listed in a route 
 
 Only the file upload and the speech transcription send a body that isn't JSON, and the proxy pipes it through unread. Neither carries a user ID, and an uploaded file isn't tied to a user: any user of the AI Mode who has a file's ID can download it through the proxy.
 
-The proxy uses `node:http(s)` rather than `fetch`, because undici aborts the process when a streamed answer is read more slowly than it arrives and the server closes the connection. It limits the time without data rather than the time of the whole answer, so a long streamed answer isn't cut off. When the user closes the chat, it stops the request to the AI Hub, so the AI Hub doesn't keep working on an answer nobody reads.
+The proxy uses `node:http(s)` rather than `fetch`, because undici aborts the process when a streamed answer is read more slowly than it arrives and the server closes the connection. It limits the time without data rather than the time of the whole answer, so a long streamed answer isn't cut off. When the user closes the chat, it stops the request to the AI Hub, so the AI Hub doesn't keep working on an answer nobody reads. A chat that goes away just as the AI Hub starts answering is handled too: its response may not have emitted `close` yet, and piping the answer into it would crash the process, so the proxy drops the answer instead.
 
 ### A new release of the web component
 

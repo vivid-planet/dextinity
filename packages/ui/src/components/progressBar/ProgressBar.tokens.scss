@@ -11,14 +11,14 @@
     --dextinity-progress-bar-track: var(--dextinity-color-fill-track);
     // Outline of the track
     --dextinity-progress-bar-track-shadow: 0 0 transparent;
-    // Fill of the indicator in the accent tone
+    // Fill of the indicator in the accent color
     --dextinity-progress-bar-indicator-accent: var(--dextinity-gradient-brand);
-    // Fill of the indicator in the success tone
+    // Fill of the indicator in the success color
     --dextinity-progress-bar-indicator-success: var(--dextinity-color-success);
-    // Fill of the indicator in the warning tone
+    // Fill of the indicator in the warning color
     --dextinity-progress-bar-indicator-warning: var(--dextinity-color-warning);
-    // Fill of the indicator in the danger tone
-    --dextinity-progress-bar-indicator-danger: var(--dextinity-color-danger);
+    // Fill of the indicator in the error color
+    --dextinity-progress-bar-indicator-error: var(--dextinity-color-danger);
     // Text size of the label and the value
     --dextinity-progress-bar-label-font-size: var(--dextinity-typography-ui-size);
     // Color of the label

@@ -30,7 +30,7 @@ const meta = {
         message: "Saved – the change is live",
     },
     argTypes: {
-        tone: {
+        color: {
             control: "radio",
             options: ["success", "error", "warning", "info"],
         },
@@ -75,12 +75,12 @@ export const WithUndo: Story = {
 };
 
 /**
- * `tone="error"` reports a failure; screen readers announce it right away.
+ * `color="error"` reports a failure; screen readers announce it right away.
  */
-export const ErrorTone: Story = {
+export const Error: Story = {
     args: {
         message: "Please enter a title first",
-        tone: "error",
+        color: "error",
     },
     play: async ({ canvas }) => {
         await expect(canvas.getByRole("alert")).toHaveTextContent("Please enter a title first");
@@ -88,27 +88,27 @@ export const ErrorTone: Story = {
 };
 
 /**
- * `tone="warning"` points out something to look at although the action went through.
+ * `color="warning"` points out something to look at although the action went through.
  */
 export const Warning: Story = {
     args: {
         message: "Uploaded – the video is large and may load slowly",
-        tone: "warning",
+        color: "warning",
     },
     play: async ({ canvas }) => {
-        await expect(canvas.getByRole("status")).toHaveAttribute("data-tone", "warning");
+        await expect(canvas.getByRole("status")).toHaveAttribute("data-color", "warning");
     },
 };
 
 export const Info: Story = {
     args: {
         message: "3 pages are being translated",
-        tone: "info",
+        color: "info",
     },
 };
 
 /**
- * `icon` replaces the tone's icon.
+ * `icon` replaces the icon of the color.
  */
 export const CustomIcon: Story = {
     args: {

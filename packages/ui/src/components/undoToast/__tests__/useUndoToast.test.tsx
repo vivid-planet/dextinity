@@ -31,6 +31,6 @@ describe("useUndoToast", () => {
         act(() => {
             result.current.block("“logo.svg” is still in use · nothing deleted");
         });
-        expect(addToast).toHaveBeenCalledWith({ message: "“logo.svg” is still in use · nothing deleted", tone: "error" });
+        expect(addToast).toHaveBeenCalledWith({ message: "“logo.svg” is still in use · nothing deleted", color: "error" });
     });
 });

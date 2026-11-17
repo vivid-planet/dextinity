@@ -16,7 +16,7 @@ function ToastDemo({ toast, ...props }: ToastViewportProps & { toast: NewToast }
     return (
         <div className={styles.demo}>
             <Button onClick={() => add(toast)}>Save</Button>
-            <Button variant="outlined" color="secondary" onClick={() => add({ message: "Please enter a title first", tone: "error" })}>
+            <Button variant="outlined" color="secondary" onClick={() => add({ message: "Please enter a title first", color: "error" })}>
                 Publish
             </Button>
             <ToastViewport

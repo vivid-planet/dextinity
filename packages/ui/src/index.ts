@@ -156,7 +156,7 @@ export { ListDetailLayout, type ListDetailLayoutOwnerState, type ListDetailLayou
 export { type ListDetailLayoutSlotProps } from "./components/listDetailLayout/ListDetailLayout";
 export { ListLayout, type ListLayoutOwnerState, type ListLayoutProps } from "./components/listLayout/ListLayout";
 export { type ListLayoutSlotProps } from "./components/listLayout/ListLayout";
-export { LogViewer, type LogViewerLabels, type LogViewerLineTone, type LogViewerOwnerState } from "./components/logViewer/LogViewer";
+export { LogViewer, type LogViewerLabels, type LogViewerLineColor, type LogViewerOwnerState } from "./components/logViewer/LogViewer";
 export { type LogViewerProps, type LogViewerSlotProps } from "./components/logViewer/LogViewer";
 export {
     MainNavigationItem,
@@ -241,7 +241,7 @@ export { Tabs, type TabsItem, type TabsOwnerState, type TabsProps, type TabsSlot
 export { type TabsLabels, type TabsSlots } from "./components/tabs/Tabs";
 export { Textarea, type TextareaOwnerState, type TextareaProps } from "./components/textarea/Textarea";
 export { Theme, type ThemeProps } from "./components/theme/Theme";
-export { Toast, type ToastAction, type ToastOwnerState, type ToastProps, type ToastSlotProps, type ToastTone } from "./components/toast/Toast";
+export { Toast, type ToastAction, type ToastColor, type ToastOwnerState, type ToastProps, type ToastSlotProps } from "./components/toast/Toast";
 export { ToastViewport, type ToastViewportOwnerState, type ToastViewportProps } from "./components/toast/ToastViewport";
 export { type ToastViewportSlotProps } from "./components/toast/ToastViewport";
 export { type NewToast, type ToastData, useToasts } from "./components/toast/useToasts";

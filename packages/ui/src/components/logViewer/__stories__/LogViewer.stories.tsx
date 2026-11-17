@@ -5,7 +5,7 @@ import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { IconButton } from "../../iconButton/IconButton";
-import { LogViewer, type LogViewerLineTone, type LogViewerProps } from "../LogViewer";
+import { LogViewer, type LogViewerLineColor, type LogViewerProps } from "../LogViewer";
 import logViewerTokens from "../LogViewer.tokens.scss?raw";
 import styles from "./LogViewer.stories.module.scss";
 
@@ -22,7 +22,7 @@ const jobLog = [
     "2026-11-06T02:00:12.002Z INFO  Job finished with 1 error",
 ].join("\n");
 
-function toneOfLine(line: string): LogViewerLineTone | undefined {
+function colorOfLine(line: string): LogViewerLineColor | undefined {
     if (/\bERROR\b/.test(line)) {
         return "error";
     }
@@ -63,7 +63,7 @@ const meta = {
         ),
     ],
     parameters: { tokens: logViewerTokens },
-    args: { content: jobLog, title: "page-tree-index · Run #482", getLineTone: toneOfLine, onCopy: fn() },
+    args: { content: jobLog, title: "page-tree-index · Run #482", getLineColor: colorOfLine, onCopy: fn() },
     argTypes: {
         lineNumbers: { control: "boolean" },
         wrap: { control: "boolean" },
@@ -71,7 +71,7 @@ const meta = {
         loading: { control: "boolean" },
         title: { control: "text" },
         actions: { control: false },
-        getLineTone: { control: false },
+        getLineColor: { control: false },
         labels: { control: false },
         className: { control: false },
         slotProps: { control: false },
@@ -84,7 +84,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * Highlight errors and warnings with `getLineTone`, so they stand out in a long log.
+ * Highlight errors and warnings with `getLineColor`, so they stand out in a long log.
  *
  * **Rules**
  * - Show the log as it is; don't reformat or shorten lines.

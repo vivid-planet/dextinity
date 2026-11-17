@@ -22,7 +22,7 @@ const meta = {
     argTypes: {
         "aria-label": { description: "Names the bar when it has no visible `label`." },
         value: { control: { type: "range", min: 0, max: 100 } },
-        tone: { control: "select", options: ["accent", "success", "warning", "danger"] },
+        color: { control: "select", options: ["accent", "success", "warning", "error"] },
         size: { control: "radio", options: ["default", "small"] },
         showValue: { control: "boolean" },
         label: { control: "text" },
@@ -65,15 +65,15 @@ export const Indeterminate: Story = {
 };
 
 /**
- * `success` once a task finished, `warning` and `danger` when it ran into problems.
+ * `success` once a task finished, `warning` and `error` when it ran into problems.
  */
-export const Tones: Story = {
+export const Colors: Story = {
     render: (args) => (
         <div className={styles.stack}>
-            <ProgressBar {...args} label="Accent" aria-label={undefined} tone="accent" />
-            <ProgressBar {...args} label="Success" aria-label={undefined} tone="success" value={100} />
-            <ProgressBar {...args} label="Warning" aria-label={undefined} tone="warning" value={76} />
-            <ProgressBar {...args} label="Danger" aria-label={undefined} tone="danger" value={18} />
+            <ProgressBar {...args} label="Accent" aria-label={undefined} color="accent" />
+            <ProgressBar {...args} label="Success" aria-label={undefined} color="success" value={100} />
+            <ProgressBar {...args} label="Warning" aria-label={undefined} color="warning" value={76} />
+            <ProgressBar {...args} label="Error" aria-label={undefined} color="error" value={18} />
         </div>
     ),
 };

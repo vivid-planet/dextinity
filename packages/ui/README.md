@@ -86,7 +86,7 @@ Components are pure UI and always controlled: a value comes with its change hand
 
 Form controls are pure controls, like `Input`: `Select`, `DatePicker`, `Textarea`, `RadioGroup`, and the others have no `label`, `required`, `description`, `validationMessage`, or `state` props. `Field` holds all of that and the control follows it through `useFieldContext()`: the field's id, `aria-labelledby`, `aria-describedby`, `required`, `disabled`, `readOnly`, and invalid state. Usage: `<Field label="Location" required description="…" validationMessage="…"><Select … /></Field>`.
 
-`Input` is the exception that still has `status` and `required`, for an input on its own with native form validation; inside a `Field`, the field's state and `required` apply.
+`Input` is the exception that still has `state` and `required`, for an input on its own with native form validation; inside a `Field`, the field's state and `required` apply.
 
 Controls take no other HTML attributes than their name, description, `id`, `className`, and `style`: put `onFocus`, `onBlur`, and `data-*` attributes on the `Field`, whose root receives the focus events that bubble up from the control. For a control on its own, wrap it in a `Field` without `label`. In development, a control warns when the surrounding field's `layout` doesn't fit it.
 

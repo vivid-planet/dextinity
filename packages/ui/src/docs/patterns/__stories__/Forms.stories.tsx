@@ -79,7 +79,7 @@ export const Validation: Story = {
                     <FieldLabel htmlFor="validation-slug" required error>
                         Slug
                     </FieldLabel>
-                    <Input id="validation-slug" required status="error" defaultValue="About us" aria-describedby="validation-slug-error" />
+                    <Input id="validation-slug" required state="error" defaultValue="About us" aria-describedby="validation-slug-error" />
                     <FieldValidationMessage id="validation-slug-error" state="error">
                         Use only lowercase letters, digits, and hyphens.
                     </FieldValidationMessage>
@@ -88,7 +88,7 @@ export const Validation: Story = {
                     <FieldLabel htmlFor="validation-meta-title">Meta title</FieldLabel>
                     <Input
                         id="validation-meta-title"
-                        status="warning"
+                        state="warning"
                         defaultValue="About us – our team, our history, our values, and our locations"
                         aria-describedby="validation-meta-title-message"
                     />
@@ -98,7 +98,7 @@ export const Validation: Story = {
                 </div>
                 <div className={styles.field}>
                     <FieldLabel htmlFor="validation-domain">Domain</FieldLabel>
-                    <Input id="validation-domain" status="success" defaultValue="example.com" aria-describedby="validation-domain-message" />
+                    <Input id="validation-domain" state="success" defaultValue="example.com" aria-describedby="validation-domain-message" />
                     <FieldValidationMessage id="validation-domain-message" state="success">
                         The domain points to this website.
                     </FieldValidationMessage>

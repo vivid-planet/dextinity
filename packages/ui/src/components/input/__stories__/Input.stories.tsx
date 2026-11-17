@@ -27,9 +27,9 @@ const meta = {
         "aria-label": { description: "Names the input when no `Field` label does." },
         placeholder: { description: "An example of the expected value, shown while the input is empty." },
         onChange: { description: "Called with the change event on every edit; set `value` from `event.target.value`." },
-        status: {
-            control: "radio",
-            options: ["error", "success", "warning"],
+        state: {
+            control: "select",
+            options: ["default", "success", "warning", "error"],
         },
         startAdornment: {
             control: "select",
@@ -59,19 +59,19 @@ export const Default: Story = {};
 
 export const Error: Story = {
     args: {
-        status: "error",
+        state: "error",
     },
 };
 
 export const Success: Story = {
     args: {
-        status: "success",
+        state: "success",
     },
 };
 
 export const Warning: Story = {
     args: {
-        status: "warning",
+        state: "warning",
     },
 };
 

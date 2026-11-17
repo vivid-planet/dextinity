@@ -44,9 +44,9 @@ How to build a form from fields, sections, and buttons, and how to show the resu
 
 ## Validation
 
-- **Error:** the value is not valid, and the form can't be saved. Set `status="error"` on the `Input` and `error` on the `FieldLabel`, and show the message in a `FieldValidationMessage` with `state="error"`.
-- **Warning:** the value can be saved, but the user should check it. Set `status="warning"` on the `Input`, and show the message in a `FieldValidationMessage` with `state="warning"`.
-- **Success:** a check of the value passed, for example that a domain is reachable. Set `status="success"` on the `Input`, and show the message in a `FieldValidationMessage` with `state="success"`.
+- **Error:** the value is not valid, and the form can't be saved. Set `state="error"` on the `Input` and `error` on the `FieldLabel`, and show the message in a `FieldValidationMessage` with `state="error"`.
+- **Warning:** the value can be saved, but the user should check it. Set `state="warning"` on the `Input`, and show the message in a `FieldValidationMessage` with `state="warning"`.
+- **Success:** a check of the value passed, for example that a domain is reachable. Set `state="success"` on the `Input`, and show the message in a `FieldValidationMessage` with `state="success"`.
 - An error about the whole form, for example when saving fails, goes above the buttons, in a `FieldValidationMessage` with `state="error"`.
 
 <Canvas of={FormsStories.Validation} />

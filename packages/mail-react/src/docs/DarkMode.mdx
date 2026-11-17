@@ -6,6 +6,8 @@ import { Meta } from "@storybook/addon-docs/blocks";
 
 What mail clients change in dark mode, and the techniques tested against them. After each fix, test the mail again in every client in the table below: a fix for one client can break another.
 
+In dark mode, Gmail iOS, Yahoo Mail on the web, classic Outlook, Outlook on the web, Outlook iOS and Outlook Mac change the colors of the mail but leave most images alone. So a color that must stay is safest inside an image. Gmail Android is the exception: it inverts images with few colors that phones show at about `55px` or less.
+
 ## Client Behavior
 
 | Client                    | Changes in dark mode                                                                                                  |
@@ -67,7 +69,7 @@ In dark mode, several clients make a light content background dark, but leave a 
 
 ## Classic Outlook
 
-Classic Outlook for Windows ignores CSS background images, so the background-image techniques above fail there. The `background-url` attribute of an MJML section draws a VML background, but that VML moves the content of the section. Draw the background behind the logo as a VML shape with `fillcolor` (a `v:roundrect` for rounded corners), and declare the shape `1px` smaller in width and height than the size it must have (see "No CSS `border-radius` in Outlook" in the [Guide](?path=/docs/docs-guide--docs#no-css-border-radius-in-outlook)). Put the image in a `v:textbox`, wrap the shape in one `<!--[if mso]>…<![endif]-->` comment, and hide the HTML version with `<!--[if !mso]><!-->…<!--<![endif]-->`. Classic Outlook does not change VML fills in dark mode. Do not set `line-height: 0` on the element that holds the image in the `v:textbox`: classic Outlook then cuts off the top of the image.
+Classic Outlook for Windows ignores CSS background images, so the background-image techniques above fail there. The `background-url` attribute of an MJML section draws a VML background, but that VML moves the content of the section. Draw the background behind the logo as a VML shape with `fillcolor` (a `v:roundrect` for rounded corners), and declare the shape `1px` smaller in width and height than the size it must have (see "No CSS `border-radius` in Outlook" in [Email Client Pitfalls](?path=/docs/docs-email-client-pitfalls--docs#no-css-border-radius-in-outlook)). Put the image in a `v:textbox`, wrap the shape in one `<!--[if mso]>…<![endif]-->` comment, and hide the HTML version with `<!--[if !mso]><!-->…<!--<![endif]-->`. Classic Outlook does not change VML fills in dark mode. Do not set `line-height: 0` on the element that holds the image in the `v:textbox`: classic Outlook then cuts off the top of the image.
 
 ## Outlook Selectors
 

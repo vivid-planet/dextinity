@@ -53,6 +53,7 @@ registerStyles(
     `,
 );
 
+/** Four equal columns that stack below the body width, because they would get too narrow. */
 export const Default: StoryObj = {
     parameters: { theme },
     render: () => {

@@ -101,7 +101,7 @@ registerStyles(
 );
 ```
 
-The margin sits on `.twoColumnsSection__leftColumn`, a class the section writes on every render. `.column:not(.column--last)` says the same thing and reads better, and Gmail drops it, taking the gap with it — see [`styling-and-customization.md`](?path=/docs/docs-styling-and-customization--docs) → Selectors That Reach Every Client.
+The margin sits on `.twoColumnsSection__leftColumn`, a class the section writes on every render. `.column:not(.column--last)` says the same thing and reads better, and Gmail drops it, taking the gap with it — see [Selectors That Reach Every Client](?path=/docs/docs-styling-and-customization--docs#selectors-that-reach-every-client).
 
 For three or more equal-width columns, see [Multi-Column Symmetric Layouts](#multi-column-symmetric-layouts-3-columns).
 
@@ -148,13 +148,13 @@ Three columns shown; for four or more, repeat the middle-column.
 
 ### Responsive Stacking — Pick Per Layout
 
-Stacking is a **design decision per component**, not a function of column count. Do not assume the user wants the storybook default — these are starting points, not rules. If it is unclear which strategy fits, infer from the content (dense text vs. short labels vs. fixed-width icons/numbers) or ask.
+Stacking is a **design decision per component**, not a function of column count. The stories are starting points, not rules: pick the strategy that fits the content (dense text vs. short labels vs. fixed-width icons/numbers).
 
-| Strategy            | When to pick it                                                                         | How it's implemented                        |
-| ------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------- |
-| A. Stack at mobile  | Columns stay readable while narrowing below `bodyWidth` (e.g., 3-col storybook default) | Flex reset at `default` + stack at `mobile` |
-| B. Stack at default | Columns would get too cramped below `bodyWidth` (e.g., 4-col storybook default)         | Flex reset that stacks at `default`         |
-| C. Never stack      | Short fixed content that must remain horizontal (numeric rows, icon strips)             | Flex reset at `default`, no `mobile` block  |
+| Strategy            | When to pick it                                                                                                                                               | How it's implemented                        |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| A. Stack at mobile  | Columns stay readable while narrowing below `bodyWidth` (e.g., the [three-column story](?path=/story/layout-patterns-symmetric-three-column-layout--default)) | Flex reset at `default` + stack at `mobile` |
+| B. Stack at default | Columns would get too cramped below `bodyWidth` (e.g., the [four-column story](?path=/story/layout-patterns-symmetric-four-column-layout--default))           | Flex reset that stacks at `default`         |
+| C. Never stack      | Short fixed content that must remain horizontal (numeric rows, icon strips)                                                                                   | Flex reset at `default`, no `mobile` block  |
 
 All three strategies share the same flex reset on the `MjmlGroup` `<div>` that directly contains the columns — it neutralises the compensated inline widths so content areas stay equal at every viewport (without it, percentage widths and pixel paddings drift apart below `bodyWidth`, making columns unequal by a few pixels). They differ only at `mobile.belowMediaQuery`: A adds a stack override, B collapses into the `default` block and stacks immediately, C adds nothing. The section carries `disableResponsiveBehavior` in every case, because the columns need their inline widths — see [Column Widths Must Be Inline](#column-widths-must-be-inline).
 
@@ -244,7 +244,7 @@ Fixed-width columns overflow between `bodyWidth` and the mobile stacking breakpo
 
 Inside a group a pixel width is written inline as a percentage of the section, so the fixed column also needs its pixel width back below `bodyWidth`, where the section is narrower.
 
-The fluid column takes the space the fixed column leaves. A `calc()` expresses that directly, but some clients drop every declaration that contains one — see [No CSS `calc()`](?path=/docs/docs-guide--docs#no-css-calc). Repeat the width as a plain percentage in the same rule, before the `calc()`: clients that support `calc()` apply the later declaration, the rest keep the percentage.
+The fluid column takes the space the fixed column leaves. A `calc()` expresses that directly, but some clients drop every declaration that contains one — see [No CSS `calc()`](?path=/docs/docs-email-client-pitfalls--docs#no-css-calc). Repeat the width as a plain percentage in the same rule, before the `calc()`: clients that support `calc()` apply the later declaration, the rest keep the percentage.
 
 Pick a percentage that fits the narrowest section the media query reaches — the section at the mobile breakpoint — and round it down, so the fixed column and the percentage never total more than the section.
 
@@ -382,7 +382,7 @@ Do not put the switch breakpoint below `theme.breakpoints.mobile`. The default l
 
 Do not use a conditional comment (`<!--[if !mso]>`) to hide a layout. MJML puts its own `[if mso]` comments around each section, and their `<![endif]-->` closes your comment too early. `MjmlConditionalComment` selects an email client, not a screen width.
 
-Storybook: _Layout Patterns/Breakpoint Content Switch_.
+See the [Breakpoint Content Switch story](?path=/story/layout-patterns-breakpoint-content-switch--default).
 
 ---
 
@@ -409,7 +409,7 @@ Key behaviors:
 
 - `MjmlWrapper` applies `theme.colors.background.content` as its default background when a theme is present, so the `backgroundColor` prop is only needed when the wrapper should differ from the theme default.
 - An explicit `backgroundColor` on an inner `MjmlSection` still wins — use that only when a single section inside the wrapper needs to stand out.
-- For a region that also needs different default text color or variants, combine `MjmlWrapper` with a scoped `ThemeProvider` (see [`components-and-theme.md`](?path=/docs/docs-components-and-theme--docs) → Scoped Theming). Text components pick up the scoped theme while the wrapper provides the background.
+- For a region that also needs different default text color or variants, combine `MjmlWrapper` with a scoped `ThemeProvider` (see [Scoped Theming](?path=/docs/docs-theme-and-configuration--docs#scoped-theming)). Text components pick up the scoped theme while the wrapper provides the background.
 
 ---
 

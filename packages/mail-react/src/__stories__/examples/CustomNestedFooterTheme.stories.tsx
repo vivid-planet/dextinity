@@ -11,7 +11,7 @@ import { ThemeProvider } from "../../theme/ThemeProvider.js";
 import type { Theme } from "../../theme/themeTypes.js";
 
 const config: Meta = {
-    title: "Examples/CustomNestedFooterTheme",
+    title: "Examples/Custom Nested Footer Theme",
     parameters: { mailRoot: false },
 };
 
@@ -19,6 +19,7 @@ export default config;
 
 type Story = StoryObj;
 
+/** A footer with its own background and text colors: a `ThemeProvider` with a changed copy of the theme wraps the footer sections. */
 export const Default: Story = {
     render: () => {
         const theme = createTheme({

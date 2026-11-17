@@ -578,9 +578,6 @@ importers:
         specifier: ^1.6.9
         version: 1.6.9
     devDependencies:
-      '@dextinity/api-generator':
-        specifier: workspace:*
-        version: link:../../packages/api/api-generator
       '@dextinity/cli':
         specifier: workspace:*
         version: link:../../packages/cli

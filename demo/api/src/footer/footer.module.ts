@@ -4,8 +4,8 @@ import { Module } from "@nestjs/common";
 
 import { FooterScope } from "./dto/footer-scope.js";
 import { Footer } from "./entities/footer.entity.js";
-import { FooterResolver } from "./generated/footer.resolver.js";
-import { FootersService } from "./generated/footers.service.js";
+import { FooterResolver } from "./footer.resolver.js";
+import { FootersService } from "./footers.service.js";
 
 @Module({
     imports: [MikroOrmModule.forFeature([Footer, FooterScope])],

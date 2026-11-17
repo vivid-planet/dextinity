@@ -1,0 +1,26 @@
+import { SortDirection } from "@dextinity/cms-api";
+import { Field, InputType, registerEnumType } from "@nestjs/graphql";
+import { IsEnum } from "class-validator";
+
+export enum ProductCategorySortField {
+    title = "title",
+    slug = "slug",
+    position = "position",
+    type = "type",
+    createdAt = "createdAt",
+    updatedAt = "updatedAt",
+    id = "id",
+    type_title = "type_title",
+}
+registerEnumType(ProductCategorySortField, {
+    name: "ProductCategorySortField",
+});
+@InputType()
+export class ProductCategorySort {
+    @Field(() => ProductCategorySortField)
+    @IsEnum(ProductCategorySortField)
+    field: ProductCategorySortField;
+    @Field(() => SortDirection, { defaultValue: SortDirection.ASC })
+    @IsEnum(SortDirection)
+    direction: SortDirection = SortDirection.ASC;
+}

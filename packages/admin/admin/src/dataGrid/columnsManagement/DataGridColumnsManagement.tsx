@@ -22,17 +22,18 @@ import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBase
 import { Body, Divider, List, ListHeader, Root } from "./DataGridColumnsManagement.sc";
 import { DataGridColumnsManagementListItem } from "./DataGridColumnsManagementListItem";
 
-export type DataGridColumnsManagementProps = ThemedComponentBaseProps<{
-    root: "div";
-    body: "div";
-    list: typeof MuiList;
-    listHeader: typeof ListSubheader;
-    divider: typeof MuiDivider;
-}>;
+export type DataGridColumnsManagementProps = GridSlotProps["columnsManagement"] &
+    ThemedComponentBaseProps<{
+        root: "div";
+        body: "div";
+        list: typeof MuiList;
+        listHeader: typeof ListSubheader;
+        divider: typeof MuiDivider;
+    }>;
 
 export type DataGridColumnsManagementClassKey = "root" | "body" | "list" | "listHeader" | "divider";
 
-export const DataGridColumnsManagement = (inProps: DataGridColumnsManagementProps & GridSlotProps["columnsManagement"]) => {
+export const DataGridColumnsManagement = (inProps: DataGridColumnsManagementProps) => {
     const { sx, className, slotProps = {} } = useThemeProps({ props: inProps, name: "DextinityAdminDataGridColumnsManagement" });
 
     const apiRef = useGridApiContext<GridApiPro>();

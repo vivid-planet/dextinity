@@ -1,7 +1,6 @@
----
-name: dextinity-mail-react
-description: Guide for building HTML emails with @dextinity/mail-react and MJML. Use whenever working on email templates, mail markup, MJML components, email theming, email styling, responsive emails, column layouts, multi-column email sections, rendering Dextinity CMS block data (such as pixel-image blocks) in emails, or anything involving @dextinity/mail-react or HTML email development — even for seemingly simple tasks like putting content side-by-side in columns, since email client compatibility is a minefield that requires specific patterns and research before implementing.
----
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Docs/Guide" />
 
 # Building HTML Emails with @dextinity/mail-react
 
@@ -40,7 +39,7 @@ When implementing any visual feature:
 
 This applies to seemingly simple things: `border-radius`, `background-image`, `flexbox`, `gap`, custom fonts — all have partial or no support in major email clients.
 
-For which selectors reach which clients, see [`styling-and-customization.md`](references/styling-and-customization.md) → Selectors That Reach Every Client.
+For which selectors reach which clients, see [`styling-and-customization.md`](?path=/docs/docs-styling-and-customization--docs) → Selectors That Reach Every Client.
 
 ### Library Documentation
 
@@ -96,7 +95,7 @@ On mobile, reset the gap padding so content stretches full-width, and add a vert
 
 Set `disableResponsiveBehavior` on **every** section with more than one column. It wraps the columns in an `MjmlGroup`, which is what makes MJML write their widths inline; without it the widths exist only in a `min-width` media query, and clients that drop that query — GMX, Web.de and the Gmail apps with a non-Google account, for example — show the columns stacked. The group never stacks by itself, so write the mobile stacking into `registerStyles`, and target the column container one level deeper (`… > td > div`).
 
-→ For complete patterns — two columns, three or more, fixed+fluid — with responsive styles, CSS targeting rules, the stacking strategies, and the `direction="rtl"` technique for controlling mobile stack order, read [`references/layout-patterns.md`](references/layout-patterns.md).
+→ For complete patterns — two columns, three or more, fixed+fluid — with responsive styles, CSS targeting rules, the stacking strategies, and the `direction="rtl"` technique for controlling mobile stack order, read [`references/layout-patterns.md`](?path=/docs/docs-layout-patterns--docs).
 
 ### Ending Tags
 
@@ -126,7 +125,7 @@ MJML breaks this rule for column widths: it puts them in a `min-width` media que
 
 Always use `theme.breakpoints.*.belowMediaQuery` inside `registerStyles` instead of hardcoding media query values. This keeps responsive styles in sync with the theme configuration. If a breakpoint value is needed repeatedly but doesn't exist in the theme, add it via `createBreakpoint` and module augmentation rather than duplicating raw media queries. Reserve hardcoded media queries for genuinely one-off values.
 
-→ For the full `registerStyles` API, `css` helper, and custom component patterns, read [`references/styling-and-customization.md`](references/styling-and-customization.md).
+→ For the full `registerStyles` API, `css` helper, and custom component patterns, read [`references/styling-and-customization.md`](?path=/docs/docs-styling-and-customization--docs).
 
 ### Switching Content by Breakpoint
 
@@ -136,7 +135,7 @@ Two layouts make twice as much markup, so first try to make one layout that work
 
 The default layout is the one that shows when the `<style>` block is gone, so if it has columns its section needs `disableResponsiveBehavior` as well.
 
-→ For the hiding styles, the extra step classic Outlook needs, and what to avoid, read [`references/layout-patterns.md`](references/layout-patterns.md) → Breakpoint Content Switch.
+→ For the hiding styles, the extra step classic Outlook needs, and what to avoid, read [`references/layout-patterns.md`](?path=/docs/docs-layout-patterns--docs) → Breakpoint Content Switch.
 
 ---
 
@@ -218,7 +217,7 @@ Where an element has to fill the space next to a fixed-width one, let the table 
 }
 ```
 
-The asymmetric two-column layout in [`references/layout-patterns.md`](references/layout-patterns.md) uses this fallback.
+The asymmetric two-column layout in [`references/layout-patterns.md`](?path=/docs/docs-layout-patterns--docs) uses this fallback.
 
 ### `height` Becomes `min-height` in Yahoo Mail
 
@@ -243,7 +242,7 @@ MJML writes `word-break: break-word` on the `<td>` around each child of a column
 
 Clients turn plain-text mail addresses, URLs and phone numbers into links of their own, without the mail's inline styles:
 
-- Gmail (iOS and web), Outlook iOS, Apple Mail iOS: a CSS rule in the mail head for links inside text components restores the text style: `.mjmlText a, .htmlText a { color: inherit !important; font-family: inherit !important; font-size: inherit !important; line-height: inherit !important; font-weight: inherit !important; text-decoration: underline !important; }`. The rule also changes links you write yourself, because `inherit !important` wins over their inline styles. To keep a custom color, font or `text-decoration` on such a link, set it with `!important` (see `HtmlInlineLink` → Custom Color in [`references/components-and-theme.md`](references/components-and-theme.md)).
+- Gmail (iOS and web), Outlook iOS, Apple Mail iOS: a CSS rule in the mail head for links inside text components restores the text style: `.mjmlText a, .htmlText a { color: inherit !important; font-family: inherit !important; font-size: inherit !important; line-height: inherit !important; font-weight: inherit !important; text-decoration: underline !important; }`. The rule also changes links you write yourself, because `inherit !important` wins over their inline styles. To keep a custom color, font or `text-decoration` on such a link, set it with `!important` (see `HtmlInlineLink` → Custom Color in [`references/components-and-theme.md`](?path=/docs/docs-components-and-theme--docs)).
 - Classic Outlook: colors these links blue, and accepts only one color for them in the whole mail. Set the color in the mail head, inside `<!--[if mso]><style>…</style><![endif]-->`, and choose a color with enough contrast on every background of the mail (`#767677` is an example):
 
     ```css
@@ -270,7 +269,7 @@ In dark mode, Gmail iOS, Yahoo Mail on the web, classic Outlook, Outlook on the 
 - Keep a line visible: draw it as a border on a cell with a light background, not as a dark background like `MjmlDivider` and `HtmlDivider` do.
 - Classic Outlook ignores CSS background images; use a VML shape with `fillcolor` there.
 
-→ For per-client behavior, placement rules and size limits, read [`references/dark-mode.md`](references/dark-mode.md).
+→ For per-client behavior, placement rules and size limits, read [`references/dark-mode.md`](?path=/docs/docs-dark-mode--docs).
 
 ---
 
@@ -358,7 +357,7 @@ declare module "@dextinity/mail-react" {
 
 Place `declare module` blocks in your theme file below the `createTheme()` call.
 
-→ For the full theme structure, responsive values, module augmentation, and scoped theming, read [`references/components-and-theme.md`](references/components-and-theme.md).
+→ For the full theme structure, responsive values, module augmentation, and scoped theming, read [`references/components-and-theme.md`](?path=/docs/docs-components-and-theme--docs).
 
 ---
 
@@ -419,7 +418,7 @@ Variants are named typography presets (font size, weight, line height, color) de
 
 All components are imported from `@dextinity/mail-react` — never from `@faire/mjml-react` directly.
 
-→ For theme tokens, responsive values, component behavior, scoped theming, and MJML re-exports, read [`references/components-and-theme.md`](references/components-and-theme.md).
+→ For theme tokens, responsive values, component behavior, scoped theming, and MJML re-exports, read [`references/components-and-theme.md`](?path=/docs/docs-components-and-theme--docs).
 
 ---
 
@@ -599,7 +598,7 @@ Lists:
 - Two adjacent list block types render as two lists, and the numbered one starts again at `1.`
 - Draft-js indents `unordered-list-item` and `ordered-list-item` only, so a content editor cannot nest a custom list block type.
 
-→ To register a custom list block type across the admin RTE and the mail block, read [`references/rich-text-list-block-types.md`](references/rich-text-list-block-types.md).
+→ To register a custom list block type across the admin RTE and the mail block, read [`references/rich-text-list-block-types.md`](?path=/docs/docs-rich-text-list-block-types--docs).
 
 ---
 
@@ -665,7 +664,7 @@ registerStyles(
 );
 ```
 
-→ For the full `registerStyles` API, `belowMediaQuery` pattern, overriding built-in components, and `slotProps`, read [`references/styling-and-customization.md`](references/styling-and-customization.md).
+→ For the full `registerStyles` API, `belowMediaQuery` pattern, overriding built-in components, and `slotProps`, read [`references/styling-and-customization.md`](?path=/docs/docs-styling-and-customization--docs).
 
 ---
 

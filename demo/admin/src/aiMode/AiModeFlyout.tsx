@@ -3,7 +3,8 @@ import { useContentScope, useCurrentUser } from "@dextinity/cms-admin";
 import { Slide, useMediaQuery, useTheme } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { createConfig } from "@src/config";
-import { useCallback, useContext, useEffect, useRef } from "react";
+import { useCallback, useContext, useEffect, useLayoutEffect, useRef } from "react";
+import { useDragDropManager } from "react-dnd";
 import { useIntl } from "react-intl";
 import { useLocation } from "react-router";
 
@@ -23,6 +24,32 @@ const aiHubProxyUrl = `${config.apiUrl}/ai-hub`;
 
 const mcpServerUrl = `${config.apiUrl}/mcp`;
 
+// TODO Remove once the web component sets up its react-dnd backend on its own element rather than on the window.
+// The web component brings its own react-dnd. Its DndProvider reuses the manager it finds under this key on the window,
+// otherwise it sets up a second HTML5 backend there, which throws "Cannot have two HTML5 backends at the same time".
+// The admin's DndProvider puts its manager there, but takes it away again when StrictMode runs its effects twice.
+const reactDndGlobalInstanceKey = Symbol.for("__REACT_DND_CONTEXT_INSTANCE__");
+
+function useShareDragDropManagerWithChat() {
+    const dragDropManager = useDragDropManager();
+
+    // A layout effect, so that the manager is in place before the chat, a React root of its own, renders.
+    useLayoutEffect(() => {
+        const globalContext = window as unknown as Record<symbol, { dragDropManager: unknown } | null | undefined>;
+        if (globalContext[reactDndGlobalInstanceKey]) {
+            return;
+        }
+
+        globalContext[reactDndGlobalInstanceKey] = { dragDropManager };
+
+        return () => {
+            if (globalContext[reactDndGlobalInstanceKey]?.dragDropManager === dragDropManager) {
+                globalContext[reactDndGlobalInstanceKey] = null;
+            }
+        };
+    }, [dragDropManager]);
+}
+
 export function AiModeFlyout() {
     const { isOpen } = useAiMode();
     const { headerHeight } = useContext(MasterLayoutContext);
@@ -33,6 +60,7 @@ export function AiModeFlyout() {
     const location = useLocation();
     const { scope } = useContentScope();
     const user = useCurrentUser();
+    useShareDragDropManagerWithChat();
 
     const bridgeRef = useRef<BridgeElement | null>(null);
     const textSelectionStore = useTextSelectionStore();

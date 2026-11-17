@@ -3,11 +3,12 @@ import { CreateRequestContext } from "@mikro-orm/decorators/legacy";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
 import { ModuleRef, Reflector } from "@nestjs/core";
-import { Command, CommandRunner } from "nest-commander";
 
 import type { Block, BlockData, BlockWarning, BlockWarningsServiceInterface } from "../blocks/block.js";
 import { FlatBlocks } from "../blocks/flat-blocks/flat-blocks.js";
 import { isInjectableService } from "../common/helper/is-injectable-service.helper.js";
+import { ConsoleCommand } from "../console-commands/console-command.decorators.js";
+import type { ConsoleCommandInterface } from "../console-commands/console-command.interface.js";
 import { DiscoverService } from "../dependencies/discover.service.js";
 import { SCOPED_ENTITY_METADATA_KEY, type ScopedEntityMeta } from "../user-permissions/decorators/scoped-entity.decorator.js";
 import { getScopesForScopedEntity } from "../user-permissions/get-scopes-for-scoped-entity.js";
@@ -32,11 +33,11 @@ interface RootBlockData {
 }
 
 @Injectable()
-@Command({
+@ConsoleCommand({
     name: "check-warnings",
     description: "Checks for warnings",
 })
-export class WarningCheckerCommand extends CommandRunner {
+export class WarningCheckerCommand implements ConsoleCommandInterface {
     constructor(
         private readonly orm: MikroORM,
         private readonly discoverService: DiscoverService,
@@ -44,9 +45,7 @@ export class WarningCheckerCommand extends CommandRunner {
         private readonly warningService: WarningService,
         private reflector: Reflector,
         private readonly moduleRef: ModuleRef,
-    ) {
-        super();
-    }
+    ) {}
 
     @CreateRequestContext()
     async run(): Promise<void> {

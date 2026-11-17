@@ -1,25 +1,24 @@
 import { MikroORM } from "@mikro-orm/core";
 import { CreateRequestContext } from "@mikro-orm/decorators/legacy";
 import { Logger } from "@nestjs/common";
-import { Command, CommandRunner } from "nest-commander";
 
+import { ConsoleCommand } from "../console-commands/console-command.decorators.js";
+import type { ConsoleCommandInterface } from "../console-commands/console-command.interface.js";
 import type { MailTemplateInterface } from "./mail-template.decorator.js";
 import { MailTemplateService } from "./mail-template.service.js";
 
-@Command({
+@ConsoleCommand({
     name: "mail-template:test",
     description: "test mail template",
     arguments: "[mailTemplateClassName] [preparedTestPropsIndex]",
 })
-export class MailTemplateCommand extends CommandRunner {
+export class MailTemplateCommand implements ConsoleCommandInterface {
     private readonly logger = new Logger(MailTemplateCommand.name);
 
     constructor(
         private readonly orm: MikroORM,
         private readonly mailTemplateService: MailTemplateService,
-    ) {
-        super();
-    }
+    ) {}
 
     @CreateRequestContext()
     async run([mailTemplateClassName, preparedTestPropsIndex]: Array<string>): Promise<void> {

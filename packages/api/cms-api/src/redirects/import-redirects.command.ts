@@ -4,8 +4,9 @@ import { EntityManager, type FilterQuery, MikroORM } from "@mikro-orm/postgresql
 import { forwardRef, Inject } from "@nestjs/common";
 import * as console from "console";
 import * as fs from "fs";
-import { Command, CommandRunner } from "nest-commander";
 
+import { ConsoleCommand } from "../console-commands/console-command.decorators.js";
+import type { ConsoleCommandInterface } from "../console-commands/console-command.interface.js";
 import { PageTreeService } from "../page-tree/page-tree.service.js";
 import type { PageTreeReadApiOptions } from "../page-tree/page-tree-read-api.js";
 import type { RedirectInterface } from "./entities/redirect-entity.factory.js";
@@ -23,20 +24,18 @@ interface Row {
     scope?: RedirectScopeInterface;
 }
 
-@Command({
+@ConsoleCommand({
     name: "import-redirects",
     arguments: "<filepath> [comment]",
     description: "Import redirects from a CSV file",
 })
-export class ImportRedirectsCommand extends CommandRunner {
+export class ImportRedirectsCommand implements ConsoleCommandInterface {
     constructor(
         private readonly orm: MikroORM,
         private readonly entityManager: EntityManager,
         @Inject(forwardRef(() => PageTreeService)) private readonly pageTreeService: PageTreeService,
         @Inject(REDIRECTS_LINK_BLOCK) private readonly linkBlock: RedirectsLinkBlock,
-    ) {
-        super();
-    }
+    ) {}
 
     @CreateRequestContext()
     async run([filepath, comment = "Imported"]: string[]): Promise<void> {

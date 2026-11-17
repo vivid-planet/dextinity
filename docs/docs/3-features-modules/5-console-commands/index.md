@@ -2,28 +2,26 @@
 title: Console Commands
 ---
 
-We use [nest-commander](https://nest-commander.jaymcdoniel.dev/) to create console commands. Console commands can be used locally or deployed.
+Console commands are classes registered as providers in a NestJS module. They can be used locally or deployed, for instance as a cron job.
 
-## Defining Commands
+## Defining commands
 
 ```ts title="Demo console command"
+import { ConsoleCommand, type ConsoleCommandInterface } from "@dextinity/cms-api";
 import { CreateRequestContext } from "@mikro-orm/decorators/legacy";
 import { MikroORM } from "@mikro-orm/postgresql";
-import { Injectable, Logger } from "@nestjs/common";
-import { Command, CommandRunner } from "nest-commander";
+import { Logger } from "@nestjs/common";
 
-@Command({
-    command: "demo-command",
+@ConsoleCommand({
+    name: "demo-command",
     description: "Demo-Command for cronjob-deployment",
 })
-export class DemoCommand extends CommandRunner {
-    private readonly logger = new Logger(DemoConsole.name);
+export class DemoCommand implements ConsoleCommandInterface {
+    private readonly logger = new Logger(DemoCommand.name);
 
     constructor(
         private readonly orm: MikroORM, // MikroORM is injected so we can use the request context
-    ) {
-        super();
-    }
+    ) {}
 
     @CreateRequestContext()
     async run(): Promise<void> {
@@ -31,6 +29,51 @@ export class DemoCommand extends CommandRunner {
     }
 }
 ```
+
+## Arguments and options
+
+Define arguments in [commander](https://github.com/tj/commander.js) syntax: `<name>` is required, `[name]` is optional.
+They're passed to `run()` as the first parameter.
+
+Define options with the `@ConsoleCommandOption()` decorator.
+The decorated method parses the value passed on the command line, and `run()` receives the parsed values as the second parameter:
+
+```ts
+@ConsoleCommand({
+    name: "import-products",
+    arguments: "<filePath>",
+})
+export class ImportProductsCommand implements ConsoleCommandInterface {
+    async run([filePath]: string[], { limit }: { limit: number }): Promise<void> {
+        // ...
+    }
+
+    @ConsoleCommandOption({
+        flags: "-l, --limit <limit>",
+        description: "Maximum number of products to import",
+        defaultValue: 100,
+    })
+    parseLimit(value: string): number {
+        return parseInt(value);
+    }
+}
+```
+
+Set `required: true` to make an option mandatory.
+
+## Running commands from `console.ts`
+
+```ts title="api/src/console.ts"
+import { runConsoleCommand } from "@dextinity/cms-api";
+import { NestFactory } from "@nestjs/core";
+
+const app = await NestFactory.createApplicationContext(AppModule.forRoot(config), { logger: ["error", "warn", "log"] });
+await app.init();
+await runConsoleCommand(app);
+await app.close();
+```
+
+`runConsoleCommand()` rethrows errors thrown by the command, so `console.ts` can log them and exit with a non-zero code.
 
 ## Listing all available commands
 

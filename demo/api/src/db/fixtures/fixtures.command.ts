@@ -1,5 +1,7 @@
 import {
     BlobStorageBackendService,
+    ConsoleCommand,
+    type ConsoleCommandInterface,
     DependenciesService,
     type PageTreeNodeBaseCreateInput,
     type PageTreeNodeInterface,
@@ -20,7 +22,6 @@ import { Page } from "@src/documents/pages/entities/page.entity.js";
 import { PageTreeNodeCategory } from "@src/page-tree/page-tree-node-category.js";
 import { UserGroup } from "@src/user-groups/user-group.js";
 import { MultiBar, type Options, Presets } from "cli-progress";
-import { Command, CommandRunner } from "nest-commander";
 import slugify from "slugify";
 
 import { DocumentGeneratorService } from "./generators/document-generator.service.js";
@@ -42,11 +43,11 @@ const getDefaultPageInput = (): PageInput => {
     return pageInput;
 };
 
-@Command({
+@ConsoleCommand({
     name: "fixtures",
     description: "Create fixtures with faker.js",
 })
-export class FixturesCommand extends CommandRunner {
+export class FixturesCommand implements ConsoleCommandInterface {
     private readonly logger = new Logger(FixturesCommand.name);
 
     barOptions: Options = {
@@ -71,9 +72,7 @@ export class FixturesCommand extends CommandRunner {
         private readonly newsFixtureService: NewsFixtureService,
         private readonly draftJsMigrationPageFixtureService: DraftJsMigrationPageFixtureService,
         private readonly welcomeEmailFixtureService: WelcomeEmailFixtureService,
-    ) {
-        super();
-    }
+    ) {}
 
     @CreateRequestContext()
     async run(): Promise<void> {

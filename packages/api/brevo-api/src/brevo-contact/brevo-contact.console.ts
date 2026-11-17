@@ -1,22 +1,20 @@
+import { ConsoleCommand, type ConsoleCommandInterface } from "@dextinity/cms-api";
 import { CreateRequestContext } from "@mikro-orm/decorators/legacy";
 import { MikroORM } from "@mikro-orm/postgresql";
-import { Command, CommandRunner } from "nest-commander";
 
 import { BrevoApiContactsService } from "../brevo-api/brevo-api-contact.service.js";
 import { TargetGroupsService } from "../target-group/target-groups.service.js";
 
-@Command({
+@ConsoleCommand({
     name: "delete-unsubscribed-brevo-contacts",
     description: "deletes unsubscribed contacts",
 })
-export class DeleteUnsubscribedBrevoContactsConsole extends CommandRunner {
+export class DeleteUnsubscribedBrevoContactsConsole implements ConsoleCommandInterface {
     constructor(
         private readonly brevoApiContactsService: BrevoApiContactsService,
         private readonly targetGroupsService: TargetGroupsService,
         private readonly orm: MikroORM,
-    ) {
-        super();
-    }
+    ) {}
 
     @CreateRequestContext()
     async run(): Promise<void> {

@@ -10,8 +10,9 @@ const theme = createTheme([]);
  * Renders an admin component under the intl context, the project theme, and the router of `App.tsx`. The intl context
  * carries no catalog, so every message resolves to its `defaultMessage`.
  *
- * `useCurrentUser` throws without its provider and says so. `useContentScope` does not: it falls back to a default
- * context and parses the scope out of `route`.
+ * `useCurrentUser` throws without its provider and says so. `useContentScope` does not: without a `ContentScopeProvider`,
+ * it matches the default path `/` and returns an empty scope. A spec that depends on the scope wraps its tree in
+ * `ContentScopeProvider`.
  *
  * `isStrictMode` wraps the whole tree in `StrictMode`, as `loader.tsx` does. Further down the tree, it doesn't run the
  * effects a second time.

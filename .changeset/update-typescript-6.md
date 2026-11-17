@@ -1,5 +1,4 @@
 ---
-"@dextinity/admin-generator": patch
 "@dextinity/api-generator": patch
 ---
 

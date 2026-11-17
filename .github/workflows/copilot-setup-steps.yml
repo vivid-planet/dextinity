@@ -69,13 +69,6 @@ jobs:
                   path: packages/admin/admin-date-time/lib
                   key: ${{ runner.os }}-build-admin-date-time-${{ hashFiles('packages/admin/admin-date-time/src/**', 'packages/admin/admin-date-time/package.json', 'packages/admin/admin-date-time/tsconfig*.json', 'pnpm-lock.yaml') }}
 
-            - name: Cache @dextinity/admin-generator build
-              id: cache-admin-generator
-              uses: actions/cache@v6
-              with:
-                  path: packages/admin/admin-generator/lib
-                  key: ${{ runner.os }}-build-admin-generator-${{ hashFiles('packages/admin/admin-generator/src/**', 'packages/admin/admin-generator/bin/**', 'packages/admin/admin-generator/package.json', 'packages/admin/admin-generator/tsconfig*.json', 'pnpm-lock.yaml') }}
-
             - name: Cache @dextinity/admin-icons build
               id: cache-admin-icons
               uses: actions/cache@v6
@@ -181,7 +174,6 @@ jobs:
                   [ "${{ steps.cache-admin.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/admin"
                   [ "${{ steps.cache-admin-color-picker.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/admin-color-picker"
                   [ "${{ steps.cache-admin-date-time.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/admin-date-time"
-                  [ "${{ steps.cache-admin-generator.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/admin-generator"
                   [ "${{ steps.cache-admin-icons.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/admin-icons"
                   [ "${{ steps.cache-admin-rte.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/admin-rte"
                   [ "${{ steps.cache-brevo-admin.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/brevo-admin"

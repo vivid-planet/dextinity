@@ -1,0 +1,128 @@
+import {
+    type BlockInputInterface,
+    DamImageBlock,
+    isBlockInputInterface,
+    IsNullable,
+    IsSlug,
+    PartialType,
+    RootBlockInputScalar,
+} from "@dextinity/cms-api";
+import { Field, ID, InputType } from "@nestjs/graphql";
+import { ProductDimensions, ProductDiscounts, ProductPriceRange, ProductStatus } from "@src/products/entities/product.entity.js";
+import { ProductType } from "@src/products/entities/product-type.enum.js";
+import { Transform, Type } from "class-transformer";
+import { IsArray, IsBoolean, IsDate, IsDateString, IsEnum, IsNotEmpty, IsNumber, IsString, IsUUID, ValidateNested } from "class-validator";
+import { GraphQLLocalDate } from "graphql-scalars";
+
+import { ProductNestedProductColorInput } from "./product-nested-product-color.input.js";
+import { ProductNestedProductStatisticsInput } from "./product-nested-product-statistics.input.js";
+import { ProductNestedProductToTagInput } from "./product-nested-product-to-tag.input.js";
+
+@InputType()
+export class ProductInput {
+    @IsNotEmpty()
+    @IsString()
+    @Field()
+    title: string;
+    @IsNotEmpty()
+    @IsEnum(ProductStatus)
+    @Field(() => ProductStatus, { defaultValue: ProductStatus.Unpublished })
+    status: ProductStatus;
+    @IsNotEmpty()
+    @IsString()
+    @IsSlug()
+    @Field()
+    slug: string;
+    @IsNullable()
+    @IsString()
+    @Field({ nullable: true, defaultValue: null })
+    description?: string;
+    @IsNotEmpty()
+    @IsEnum(ProductType)
+    @Field(() => ProductType)
+    type: ProductType;
+    @IsEnum(ProductType, { each: true })
+    @Field(() => [ProductType], { defaultValue: [] })
+    additionalTypes: ProductType[];
+    @IsNullable()
+    @IsNumber()
+    @Field({ nullable: true, defaultValue: null })
+    price?: number;
+    @IsNullable()
+    @ValidateNested()
+    @Type(() => ProductPriceRange)
+    @Field(() => ProductPriceRange, { nullable: true })
+    priceRange?: ProductPriceRange;
+    @IsNotEmpty()
+    @IsBoolean()
+    @Field({ defaultValue: true })
+    inStock: boolean;
+    @IsNullable()
+    @IsDateString()
+    @Field(() => GraphQLLocalDate, { nullable: true, defaultValue: null })
+    availableSince?: string;
+    @IsNullable()
+    @IsDate()
+    @Field({ nullable: true, defaultValue: null })
+    lastCheckedAt?: Date;
+    @IsNotEmpty()
+    @Field(() => RootBlockInputScalar(DamImageBlock))
+    @Transform(({ value }) => (isBlockInputInterface(value) ? value : DamImageBlock.blockInputFactory(value)), { toClassOnly: true })
+    @ValidateNested()
+    image: BlockInputInterface;
+    @IsNotEmpty()
+    @IsArray()
+    @ValidateNested()
+    @Type(() => ProductDiscounts)
+    @Field(() => [ProductDiscounts], { defaultValue: [] })
+    discounts: ProductDiscounts[];
+    @IsNotEmpty()
+    @IsArray()
+    @Field(() => [String], { defaultValue: [] })
+    @IsString({ each: true })
+    articleNumbers: string[];
+    @IsNullable()
+    @ValidateNested()
+    @Type(() => ProductDimensions)
+    @Field(() => ProductDimensions, { nullable: true })
+    dimensions?: ProductDimensions;
+    @IsNullable()
+    @Field(() => ProductNestedProductStatisticsInput, { nullable: true })
+    @Type(() => ProductNestedProductStatisticsInput)
+    @ValidateNested()
+    statistics?: ProductNestedProductStatisticsInput;
+    @Field(() => [ProductNestedProductColorInput], { defaultValue: [] })
+    @IsArray()
+    @Type(() => ProductNestedProductColorInput)
+    colors: ProductNestedProductColorInput[];
+    @IsNullable()
+    @Field(() => ID, { nullable: true, defaultValue: null })
+    @IsUUID()
+    category?: string;
+    @Field(() => [ID], { defaultValue: [] })
+    @IsArray()
+    @IsUUID(undefined, { each: true })
+    tags: string[];
+    @Field(() => [ProductNestedProductToTagInput], { defaultValue: [] })
+    @IsArray()
+    @Type(() => ProductNestedProductToTagInput)
+    tagsWithStatus: ProductNestedProductToTagInput[];
+    @IsNullable()
+    @Field(() => ID, { nullable: true, defaultValue: null })
+    @IsUUID()
+    manufacturer?: string;
+    @IsNullable()
+    @Field(() => ID, { nullable: true, defaultValue: null })
+    @IsString()
+    priceList?: string;
+    @Field(() => [ID], { defaultValue: [] })
+    @IsArray()
+    @IsString({ each: true })
+    datasheets: string[];
+    @Field(() => [ID], { defaultValue: [] })
+    @IsArray()
+    @IsString({ each: true })
+    relatedImages: string[];
+}
+@InputType()
+export class ProductUpdateInput extends PartialType(ProductInput) {}

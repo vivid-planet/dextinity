@@ -239,12 +239,6 @@ export default defineConfig({
             group: ["demo-api", "demo"],
         },
         {
-            name: "demo-api-generator",
-            script: "pnpm --filter dextinity-demo-api exec dextinity-api-generator generate --watch",
-            group: ["demo-api", "demo"],
-            waitOn: [...waitOnPackages("@dextinity/cms-api"), "packages/api/api-generator/lib/apiGenerator.js"],
-        },
-        {
             name: "demo-api",
             script: "pnpm --filter dextinity-demo-api run start:dev",
             group: ["demo-api", "demo"],

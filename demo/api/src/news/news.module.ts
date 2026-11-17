@@ -6,7 +6,7 @@ import { News, NewsContentScope } from "@src/news/entities/news.entity.js";
 import { NewsLinkBlockTransformerService } from "./blocks/news-link-block-transformer.service.js";
 import { NewsComment } from "./entities/news-comment.entity.js";
 import { ExtendedNewsResolver } from "./extended-news.resolver.js";
-import { NewsResolver } from "./generated/news.resolver.js";
+import { NewsResolver } from "./news.resolver.js";
 import { NewsCommentResolver } from "./news-comment.resolver.js";
 import { NewsFieldResolver } from "./news-field.resolver.js";
 

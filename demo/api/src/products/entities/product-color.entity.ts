@@ -1,4 +1,4 @@
-import { CrudField, DocumentInterface } from "@dextinity/cms-api";
+import { DocumentInterface } from "@dextinity/cms-api";
 import { Entity, ManyToOne, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
 import { BaseEntity, OptionalProps, type Ref } from "@mikro-orm/postgresql";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
@@ -26,13 +26,6 @@ export class ProductColor extends BaseEntity implements DocumentInterface {
     hexCode: string;
 
     @ManyToOne(() => Product, { ref: true })
-    @CrudField({
-        resolveField: true, // default is true
-        // search: true, // not yet supported for nested
-        // filter: true, // not yet supported for nested
-        // sort: true, // not yet supported for nested
-        // input: true, // not supported for nested, doesn't make sense
-    })
     product: Ref<Product>;
 
     @Property()

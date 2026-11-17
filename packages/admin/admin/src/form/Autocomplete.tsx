@@ -56,10 +56,9 @@ const MultipleEndAdornmentContainer = styled("div")(
 export type FinalFormAutocompleteProps<
     T extends Record<string, any>,
     Multiple extends boolean | undefined,
-    DisableClearable extends boolean | undefined,
     FreeSolo extends boolean | undefined,
 > = Partial<AsyncAutocompleteOptionsProps<T>> &
-    Omit<AutocompleteProps<T, Multiple, DisableClearable, FreeSolo>, "renderInput"> & {
+    Omit<AutocompleteProps<T, Multiple, true, FreeSolo>, "renderInput" | "disableClearable"> & {
         errorText?: ReactNode;
         required?: boolean;
         disabled?: boolean;
@@ -76,7 +75,6 @@ type FinalFormAutocompleteInternalProps<T extends Record<string, any>> = FieldRe
 export const FinalFormAutocomplete = <
     T extends Record<string, any>,
     Multiple extends boolean | undefined = false,
-    DisableClearable extends boolean | undefined = false,
     FreeSolo extends boolean | undefined = false,
 >({
     input: { onChange, value: incomingValue, multiple, ...restInput },
@@ -91,7 +89,7 @@ export const FinalFormAutocomplete = <
     errorText = <FormattedMessage id="dextinity.finalFormSelect.error" defaultMessage="Error loading options." />,
     required,
     ...rest
-}: FinalFormAutocompleteProps<T, Multiple, DisableClearable, FreeSolo> & FinalFormAutocompleteInternalProps<T>) => {
+}: FinalFormAutocompleteProps<T, Multiple, FreeSolo> & FinalFormAutocompleteInternalProps<T>) => {
     const value = multiple ? (Array.isArray(incomingValue) ? incomingValue : []) : incomingValue;
     const hasValue = Array.isArray(value) ? value.length > 0 : Boolean(value);
     const clearable = !required && !disabled && !readOnly;
@@ -116,8 +114,6 @@ export const FinalFormAutocomplete = <
     return (
         <Autocomplete
             popupIcon={popupIcon}
-            // MUI's clear button is replaced by ClearInputAdornment, so MUI never emits a cleared value regardless of DisableClearable
-            disableClearable={true as DisableClearable}
             // Opens the dropdown when the (multiple) end adornment container is clicked, which focuses the input
             // but swallows the click before it reaches the input root.
             openOnFocus
@@ -149,6 +145,8 @@ export const FinalFormAutocomplete = <
             }}
             value={value ? (value as T) : (null as any)}
             {...rest}
+            // MUI's clear button is replaced by ClearInputAdornment
+            disableClearable
             disabled={disabled}
             readOnly={readOnly}
             multiple={multiple as Multiple}

@@ -35,3 +35,14 @@ jobs:
                   name: Tests
                   path: "**/junit-*.xml"
                   reporter: jest-junit
+    test-report-e2e:
+        name: "Test Report (e2e)"
+        if: github.event.workflow_run.conclusion != 'cancelled'
+        runs-on: ubuntu-latest
+        steps:
+            - uses: dorny/test-reporter@v3
+              with:
+                  artifact: test-results-e2e
+                  name: Tests
+                  path: "**/junit-*.xml"
+                  reporter: jest-junit

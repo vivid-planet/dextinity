@@ -190,5 +190,6 @@ describe("EditDialog with Stack, Router Tabs and Grid", () => {
         // where the edit dialog was open when navigating to a page
         // with an edit dialog component
         expect(screen.queryByText("Add a new product")).not.toBeInTheDocument();
-    });
+        // Takes about 4 seconds on CI runners, close to the default timeout of 5 seconds
+    }, 15_000);
 });

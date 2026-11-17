@@ -1,0 +1,56 @@
+name: Release Experimental site-vite-rsc
+
+# Publishes @dextinity/site-vite-rsc from the site-vite-rsc branch with the dist-tag experimental, so it can be
+# tried out in projects before the branch is merged: `pnpm add @dextinity/site-vite-rsc@experimental`.
+# Only this package is published; it depends on the released @dextinity/site-react, so it only works as long
+# as the branch doesn't need unreleased changes of other packages. Remove this workflow before merging into main.
+on:
+    push:
+        branches:
+            - site-vite-rsc
+
+# Releases publish to npm, so an in-flight run must never be aborted:
+# queue the next run instead of cancelling the running one.
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: false
+
+permissions:
+    contents: read
+
+jobs:
+    release-experimental:
+        name: Release Experimental site-vite-rsc
+        if: ${{ github.repository == 'vivid-planet/dextinity' }}
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout Repo
+              uses: actions/checkout@v7
+
+            - uses: ./.github/actions/setup
+              with:
+                  setup-ci: "false"
+
+            - name: Link the block-meta.json files needed by generate-block-types
+              run: pnpm run copy-project-files
+
+            - name: Build @dextinity/site-vite-rsc and its workspace dependencies
+              run: pnpm --filter '@dextinity/site-vite-rsc...' run build
+
+            # Based on the next minor version, like the canary releases, since the package will first be released in it.
+            # A single prerelease identifier stays valid semver even when the short SHA only consists of digits
+            # with a leading zero.
+            - name: Set the experimental version
+              id: version
+              working-directory: packages/site/site-vite-rsc
+              run: |
+                  next_minor_version="$(node -p 'const [major, minor] = require("./package.json").version.split("."); `${major}.${Number(minor) + 1}.0`')"
+                  version="$next_minor_version-canary-experimental-$(date -u +%Y%m%d%H%M)-$(git rev-parse --short=7 HEAD)"
+                  npm pkg set version="$version"
+                  echo "version=$version" >> "$GITHUB_OUTPUT"
+
+            # pnpm publish replaces the workspace: ranges with the versions of the workspace packages.
+            - name: Publish to npm
+              run: pnpm --filter @dextinity/site-vite-rsc publish --tag experimental --no-git-checks
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

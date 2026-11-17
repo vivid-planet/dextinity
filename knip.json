@@ -81,6 +81,21 @@
             "ignore": ["./src/**/*.generated.ts"],
             "ignoreDependencies": ["clsx", "fast-equals", "scroll-into-view-if-needed", "usehooks-ts"]
         },
+        "packages/site/site-vite-rsc": {
+            "entry": [
+                "./src/index.ts",
+                "./src/server.ts",
+                "./src/node.ts",
+                "./src/buildAssets.ts",
+                "./src/uploadBuildAssetsCommand.ts",
+                "./src/vite/index.ts",
+                "./src/entry.*.tsx",
+                "./e2e/fixture/handler.tsx",
+                "./e2e/fixture/reportError.ts"
+            ],
+            "project": ["./src/**/*.{ts,tsx}", "./e2e/**/*.{ts,tsx}"],
+            "ignore": ["./src/**/*.generated.ts"]
+        },
         "packages/mail-react": {
             "project": ["./src/**/*.{ts,tsx}"],
             "ignore": ["./src/**/*.generated.ts"]
@@ -113,6 +128,12 @@
             "entry": ["./src/app/**", "./cache-handler.ts", "./opentelemetry-metrics.ts", "tracing.dev.ts", "tracing.production.ts"],
             "project": ["./src/**/*.{ts,tsx}"],
             "ignoreDependencies": ["@babel/core", "@types/grecaptcha", "mjml"],
+            "ignore": ["**/*.generated.ts"]
+        },
+        "demo/site-vite-rsc": {
+            "entry": ["./src/handler.ts", "./src/util/reportError.ts", "./src/routes/mails/mailsEntry.ts", "tracing.dev.ts"],
+            "project": ["./src/**/*.{ts,tsx}"],
+            "ignoreDependencies": ["@babel/core", "@types/grecaptcha", "csso", "mjml"],
             "ignore": ["**/*.generated.ts"]
         },
         "storybook": {

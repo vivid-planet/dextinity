@@ -1,0 +1,26 @@
+@use "@src/styles/variables" as *;
+
+.root {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    @media (min-width: $breakpoint-md) {
+        flex-direction: row;
+    }
+
+    &--imageLeft {
+        @media (min-width: $breakpoint-md) {
+            flex-direction: row-reverse;
+        }
+    }
+}
+
+.imageContainer {
+    position: relative;
+    flex: 1;
+}
+
+.textContainer {
+    flex: 2;
+}

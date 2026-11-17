@@ -1,0 +1,89 @@
+@use "@src/styles/variables" as *;
+
+.root {
+    display: grid;
+    grid-template-columns: repeat(24, 1fr);
+}
+
+.box {
+    grid-column: 1 / -1;
+}
+
+.layout1 {
+    @media (min-width: $breakpoint-sm) {
+        &:nth-child(3n + 1) {
+            grid-column: 1 / 11;
+        }
+
+        &:nth-child(3n + 2) {
+            grid-column: 11 / 18;
+        }
+
+        &:nth-child(3n + 3) {
+            grid-column: 18 / -1;
+        }
+    }
+}
+
+.layout2 {
+    @media (min-width: $breakpoint-sm) {
+        &:nth-child(3n + 1) {
+            grid-column: 1 / 8;
+        }
+
+        &:nth-child(3n + 2) {
+            grid-column: 8 / 18;
+        }
+
+        &:nth-child(3n + 3) {
+            grid-column: 18 / -1;
+        }
+    }
+}
+
+.layout3 {
+    @media (min-width: $breakpoint-sm) {
+        &:nth-child(3n + 1) {
+            grid-column: 1 / 7;
+        }
+
+        &:nth-child(3n + 2) {
+            grid-column: 7 / 13;
+        }
+
+        &:nth-child(3n + 3) {
+            grid-column: 13 / -1;
+        }
+    }
+}
+
+.layout4 {
+    @media (min-width: $breakpoint-sm) {
+        grid-column: 1 / 15;
+
+        &:nth-child(even) {
+            grid-column: 15 / -1;
+        }
+    }
+}
+
+.layout5 {
+    @media (min-width: $breakpoint-sm) {
+        grid-column: 1 / 11;
+
+        &:nth-child(even) {
+            grid-column: 11 / -1;
+        }
+    }
+}
+
+.layout6,
+.layout7 {
+    @media (min-width: $breakpoint-sm) {
+        grid-column: 1 / 13;
+
+        &:nth-child(even) {
+            grid-column: 13 / -1;
+        }
+    }
+}

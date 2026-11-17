@@ -13,6 +13,7 @@
         "dextinity-demo-admin",
         "dextinity-demo-admin-server",
         "dextinity-demo-site",
+        "dextinity-demo-site-vite-rsc",
         "dextinity-docs"
     ],
     "snapshot": {

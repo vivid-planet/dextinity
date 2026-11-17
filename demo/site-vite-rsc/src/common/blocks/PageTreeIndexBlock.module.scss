@@ -1,0 +1,20 @@
+.root {
+    grid-column: 3 / -3;
+}
+
+.list {
+    list-style: disc;
+    color: var(--palette-primary-main);
+    padding-left: 0;
+}
+
+.listItem {
+    line-height: 26px;
+    padding-top: var(--spacing-s300);
+    margin-left: var(--spacing-s500);
+}
+
+.link {
+    color: var(--palette-primary-main);
+    text-underline-offset: 10px;
+}

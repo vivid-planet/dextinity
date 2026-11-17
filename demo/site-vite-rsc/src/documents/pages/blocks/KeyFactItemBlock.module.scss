@@ -1,0 +1,19 @@
+.root {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.icon {
+    margin-bottom: var(--spacing-s100);
+}
+
+.fact {
+    margin-bottom: var(--spacing-s300);
+    color: var(--brand-primary-dark);
+}
+
+.description {
+    margin-top: var(--spacing-s100);
+}

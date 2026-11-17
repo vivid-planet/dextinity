@@ -1,0 +1,33 @@
+import { resolve } from "node:path";
+
+import { dextinitySite, persistedQueriesPlugin } from "@dextinity/site-vite-rsc/vite";
+import { defineConfig } from "vite";
+
+export default defineConfig({
+    plugins: [
+        dextinitySite({ app: "./src/handler.ts", reportError: "./src/util/reportError.ts" }),
+        persistedQueriesPlugin({ persistedQueriesPath: "dist/persisted-queries.json", include: resolve(import.meta.dirname, "src") }),
+    ],
+    resolve: {
+        alias: {
+            "@src": resolve(import.meta.dirname, "src"),
+        },
+    },
+    environments: {
+        ssr: {
+            build: {
+                rolldownOptions: {
+                    // Loaded by the mail routes in routes/router.tsx
+                    input: { mails: "./src/routes/mails/mailsEntry.ts" },
+                },
+            },
+            resolve: {
+                noExternal: [
+                    // CommonJS dependencies whose exports aren't detected by Node.js when imported from ESM
+                    "prop-types",
+                ],
+            },
+            optimizeDeps: { include: ["react-focus-lock > prop-types"] },
+        },
+    },
+});

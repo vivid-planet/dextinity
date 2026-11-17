@@ -1,0 +1,119 @@
+@use "@src/styles/variables" as *;
+
+.root {
+    @media (min-width: $breakpoint-md) {
+        display: none;
+    }
+}
+
+.pageLayoutContent {
+    grid-column: 2 / -2;
+}
+
+.menuButton {
+    width: 24px;
+    height: 24px;
+}
+
+.menuContainer {
+    display: block;
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+    height: 0;
+    width: 100vw;
+    z-index: 40;
+    background-color: var(--brand-grey-050);
+    overflow: auto;
+    visibility: hidden;
+    transition:
+        height 0.15s ease-out,
+        visibility 0s linear 0.15s;
+
+    &--open {
+        visibility: visible;
+        height: calc(var(--full-viewport-height) - var(--header-height));
+        transition: height 0.25s ease-in;
+    }
+}
+
+.topLevelNavigation {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.subLevelNavigation {
+    list-style-type: none;
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+    height: calc(var(--full-viewport-height) - var(--header-height));
+    width: 100vw;
+    background-color: var(--brand-grey-050);
+    padding: 0;
+    overflow: auto;
+    visibility: hidden;
+    transform: translateX(100%);
+    transition:
+        transform 0.2s ease-out,
+        visibility 0s linear 0.2s;
+
+    &--expanded {
+        visibility: visible;
+        transform: translateX(0);
+        transition: transform 0.2s ease-in;
+    }
+}
+
+.link {
+    width: 100%;
+    text-decoration: none;
+    display: inline-block;
+    padding: var(--spacing-s500) 0;
+    color: var(--brand-grey-800);
+
+    @media (min-width: $breakpoint-sm) {
+        &:hover {
+            color: var(--brand-primary-main);
+        }
+    }
+}
+
+%buttonBase {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    padding: var(--spacing-s500) 0;
+    gap: var(--spacing-s200);
+
+    @media (min-width: $breakpoint-sm) {
+        &:hover {
+            color: var(--brand-primary-main);
+        }
+    }
+}
+
+.menuItemButton {
+    @extend %buttonBase;
+    justify-content: space-between;
+}
+
+.backButton {
+    @extend %buttonBase;
+    align-items: center;
+    border-bottom: 1px solid var(--brand-grey-200);
+}
+
+.overviewButton {
+    @extend %buttonBase;
+    align-items: center;
+    text-decoration: none;
+    color: var(--brand-grey-800);
+
+    @media (min-width: $breakpoint-sm) {
+        &:hover {
+            color: var(--brand-primary-main);
+        }
+    }
+}

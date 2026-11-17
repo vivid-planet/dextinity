@@ -1,0 +1,115 @@
+@use "@src/styles/variables" as *;
+
+.desktopHeaderFullHeightNav {
+    height: 100%;
+    display: none;
+
+    @media (min-width: $breakpoint-md) {
+        display: block;
+    }
+}
+
+.topLevelNavigation {
+    display: flex;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    gap: var(--spacing-s600);
+    height: 100%;
+}
+
+.subLevelNavigation {
+    display: none;
+    flex-direction: column;
+    gap: var(--spacing-s200);
+    position: absolute;
+    z-index: 40;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    list-style-type: none;
+    padding: var(--spacing-s100);
+    background-color: white;
+    border-left: 1px solid var(--brand-grey-200);
+    border-bottom: 1px solid var(--brand-grey-200);
+    border-right: 1px solid var(--brand-grey-200);
+
+    &--expanded {
+        display: flex;
+    }
+}
+
+.topLevelLinkContainer {
+    position: relative;
+
+    &:last-child {
+        & .subLevelNavigation {
+            left: auto;
+            transform: none;
+            right: 0;
+        }
+    }
+}
+
+.linkContainer {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s100);
+    height: 100%;
+    position: relative;
+}
+
+.toggleSubLevelNavigationButton {
+    width: 24px;
+    height: 24px;
+}
+
+.animatedChevron {
+    width: 20px;
+    height: 20px;
+    color: var(--brand-grey-800);
+    transform: rotate(0deg);
+    transition: transform 0.4s ease;
+
+    &--expanded {
+        color: var(--brand-primary-main);
+        transform: rotate(-180deg);
+    }
+}
+
+.closeSublevelNavigationButton {
+    opacity: 0;
+    background-color: white;
+    position: absolute;
+    top: 0;
+    right: 0;
+    pointer-events: none;
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    width: 1px;
+
+    &:focus-visible {
+        opacity: 1;
+        pointer-events: auto;
+        width: auto;
+        height: auto;
+        clip-path: none;
+    }
+}
+
+.menuPageLink {
+    text-decoration: none;
+    display: inline-block;
+    padding: var(--spacing-s100) 0;
+    color: var(--brand-grey-800);
+
+    &:hover {
+        color: var(--brand-primary-main);
+    }
+
+    &--active {
+        text-decoration: underline var(--brand-primary-main);
+        text-underline-offset: 8px;
+    }
+}

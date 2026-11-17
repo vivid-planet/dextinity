@@ -1,0 +1,15 @@
+.labelWrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-s100);
+}
+
+.label {
+    font-weight: 700;
+    color: var(--contact-form-text-label);
+}
+
+.optionalText {
+    color: var(--text-secondary);
+}

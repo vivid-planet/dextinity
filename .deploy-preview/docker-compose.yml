@@ -236,6 +236,46 @@ services:
             start_interval: 2s
             start_period: 180s
 
+    # The same demo site built with @dextinity/site-vite-rsc, reachable under site-vite-rsc--<host>. The
+    # admin keeps previewing in site.
+    site-vite-rsc:
+        build:
+            context: .
+            dockerfile: .deploy-preview/SiteViteRsc.Dockerfile
+        restart: unless-stopped
+        init: true
+        environment:
+            NODE_ENV: production
+            SERVER_HOST: 0.0.0.0
+            SITE_PORT: 3000
+            ADMIN_URL: *admin-url
+            API_URL_INTERNAL: http://api:4000/api
+            API_BASIC_AUTH_SYSTEM_USER_PASSWORD: ${BASIC_AUTH_SYSTEM_USER_PASSWORD}
+            SITE_PREVIEW_SECRET: ${SITE_PREVIEW_SECRET}
+            MAILER_HOST: mailpit
+            MAILER_PORT: 1025
+            CONTACT_FORM_FROM_EMAIL: ${CONTACT_FORM_FROM_EMAIL:-contact-form@example.com}
+            CONTACT_FORM_TO_EMAIL: ${CONTACT_FORM_TO_EMAIL:-contact-form@example.com}
+            RECAPTCHA_SERVICE_ACCOUNT: ${RECAPTCHA_SERVICE_ACCOUNT:-}
+            VALKEY_ENABLED: "true"
+            VALKEY_HOST: valkey
+            VALKEY_PORT: 6379
+            VALKEY_PASSWORD: ${VALKEY_PASSWORD}
+            # Shares Valkey with site, whose cache entries have a different format.
+            VALKEY_KEY_PREFIX: "site-vite-rsc:"
+            NODE_OPTIONS: --max-old-space-size=768
+        env_file:
+            # Rendered for site-vite-rsc--<host>, so that this site resolves its own host.
+            - demo/.env.site-configs.deploy-preview-site-vite-rsc
+        depends_on:
+            - api
+            - valkey
+        healthcheck:
+            test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/status').then(r => process.exit(r.ok ? 0 : 1), () => process.exit(1))"]
+            interval: 30s
+            start_interval: 2s
+            start_period: 180s
+
 volumes:
     postgres:
     uploads:

@@ -1,0 +1,79 @@
+@use "@src/styles/variables" as *;
+
+.root {
+    position: relative;
+}
+
+.imageOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+}
+
+.absoluteGridRoot {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.content {
+    padding: var(--spacing-d200) 0;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: var(--text-primary);
+    grid-column: 3 / -3;
+
+    @media (min-width: $breakpoint-sm) {
+        grid-column: 5 / -5;
+    }
+
+    @media (min-width: $breakpoint-xl) {
+        grid-column: 7 / -7;
+    }
+}
+
+.imageMobile {
+    @media (min-width: $breakpoint-sm) {
+        display: none;
+    }
+}
+
+.imageTablet {
+    display: none;
+
+    @media (min-width: $breakpoint-sm) {
+        display: block;
+    }
+
+    @media (min-width: $breakpoint-md) {
+        display: none;
+    }
+}
+
+.imageDesktop {
+    display: none;
+
+    @media (min-width: $breakpoint-md) {
+        display: block;
+    }
+
+    @media (min-width: $breakpoint-lg) {
+        display: none;
+    }
+}
+
+.imageLargeDesktop {
+    display: none;
+
+    @media (min-width: $breakpoint-lg) {
+        display: block;
+    }
+}

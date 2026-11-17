@@ -108,6 +108,12 @@ Demo frontend site (Next.js)
 - Start using `pnpm exec dev-pm start @demo-site`
 - access at: http://localhost:3000/
 
+**Site (Vite RSC):**
+The same demo site built with `@dextinity/site-vite-rsc` (Vite, React Server Components via `@vitejs/plugin-rsc`, Hono) in `demo/site-vite-rsc`, can run at the same time as the Next.js site
+
+- Start using `pnpm exec dev-pm start @demo-site-vite-rsc`
+- access at: http://localhost:3001/
+
 **Site Storybook:**
 Storybook for the demo site components (Vite, `@storybook/nextjs-vite`)
 
@@ -115,6 +121,14 @@ Storybook for the demo site components (Vite, `@storybook/nextjs-vite`)
 - access at: http://localhost:26648/
 - stories live in `__stories__` folders next to the component
 - run the story tests with `pnpm --filter dextinity-demo-site run test:storybook`
+
+**Site Storybook (Vite RSC):**
+Storybook for the components of the Vite RSC demo site (Vite, `@storybook/react-vite`), uses its own Vite config in `demo/site-vite-rsc/.storybook/vite.config.ts` without `@vitejs/plugin-rsc`
+
+- Start using `pnpm exec dev-pm start demo-site-vite-rsc-storybook`
+- access at: http://localhost:26649/
+- stories live in `__stories__` folders next to the component
+- run the story tests with `pnpm --filter dextinity-demo-site-vite-rsc run test:storybook`
 
 ### dev-pm
 
@@ -162,10 +176,11 @@ Every process loads `.env.local` itself: the demo packages and `dev:*` scripts r
 
 ### Site (`packages/site/`)
 
-| Package                  | Description                                                                                                                                                         |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `@dextinity/site-react`  | React components and utilities for the frontend/site layer                                                                                                          |
-| `@dextinity/site-nextjs` | Next.js-specific site layer components (extends `site-react`), serves build assets of other builds during rolling deployments (`dextinity-upload-build-assets` bin) |
+| Package                    | Description                                                                                                                                                                            |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@dextinity/site-react`    | React components and utilities for the frontend/site layer                                                                                                                             |
+| `@dextinity/site-nextjs`   | Next.js-specific site layer components (extends `site-react`), serves build assets of other builds during rolling deployments (`dextinity-upload-build-assets` bin)                    |
+| `@dextinity/site-vite-rsc` | Vite and React Server Components site layer (extends `site-react`), serves build assets of other builds during rolling deployments (`dextinity-site-vite-rsc-upload-build-assets` bin) |
 
 ### Utilities
 

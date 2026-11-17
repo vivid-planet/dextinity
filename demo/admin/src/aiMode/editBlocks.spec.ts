@@ -76,6 +76,26 @@ describe("planBlockEdits", () => {
         ).rejects.toThrow('Operation 2 ("update") failed, so none of the 2 operations were applied and the page is unchanged.');
     });
 
+    it("inserts only the blocks the content scope offers, but still updates a block of another type", async () => {
+        const blocks = [{ ...child("a"), type: "news" }];
+        const planWithNews = (operations: Parameters<typeof planBlockEdits>[0]["operations"]) =>
+            planBlockEdits({
+                blocks,
+                operations,
+                supportedBlocks: { text: textBlock, news: textBlock },
+                insertableBlocks: { text: textBlock },
+                schemaRootBlockName: "PageContent",
+                blockContext,
+            });
+
+        await expect(planWithNews([{ operation: "insert", type: "news", props: {} }])).rejects.toThrow(
+            'Unknown block type "news". Insertable types: text.',
+        );
+        await expect(planWithNews([{ operation: "update", key: "a", props: { text: "Changed" } }])).resolves.toMatchObject({
+            results: [{ operation: "update", key: "a", type: "news" }],
+        });
+    });
+
     it("refuses a field the block does not have instead of dropping it silently", async () => {
         await expect(plan([child("a")], [{ operation: "update", key: "a", props: { headline: "Changed" } }])).rejects.toThrow(
             'The "text" block has no field "headline"',

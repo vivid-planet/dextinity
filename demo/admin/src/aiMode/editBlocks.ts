@@ -203,14 +203,15 @@ export function asBlockEditOperations(value: unknown): BlockEditOperation[] {
  * half-changed. There is no undo for these changes beyond not saving the page, which makes an
  * all-or-nothing batch the only one the user can reason about.
  *
- * The steps are kept as a list of changes rather than as the finished array the working copy already
- * holds, so that applying them addresses the blocks by key — against the list as it stands when the
- * update runs, which the user may have edited while the conversions were awaited.
+ * The steps address the blocks by key, but an update replaces a block with the copy converted here.
+ * The caller must therefore only apply the batch to the very list it planned against, and reject it
+ * when the user changed the page while the conversions were awaited.
  */
 export async function planBlockEdits({
     blocks,
     operations,
     supportedBlocks,
+    insertableBlocks = supportedBlocks,
     additionalItemFields = {},
     schemaRootBlockName,
     blockContext,
@@ -218,6 +219,11 @@ export async function planBlockEdits({
     blocks: readonly BlocksBlockChild[];
     operations: BlockEditOperation[];
     supportedBlocks: Record<string, BlockInterface>;
+    /**
+     * The blocks an insertion may add, when the content scope offers fewer than the blocks block supports:
+     * blocks already on the page can still be edited, as in the Admin's own block picker.
+     */
+    insertableBlocks?: Record<string, BlockInterface>;
     /** The `additionalItemFields` of the blocks block, whose default values an inserted block starts with. */
     additionalItemFields?: AdditionalItemFields;
     /** The name the block holding the editable types has in block-meta; see `toBlockState`. */
@@ -238,6 +244,7 @@ export async function planBlockEdits({
                 blocks: planned,
                 edit,
                 supportedBlocks,
+                insertableBlocks,
                 additionalItemFields,
                 schemaRootBlockName,
                 blockContext,
@@ -265,6 +272,7 @@ async function planOperation({
     blocks,
     edit,
     supportedBlocks,
+    insertableBlocks,
     additionalItemFields,
     schemaRootBlockName,
     blockContext,
@@ -272,6 +280,7 @@ async function planOperation({
     blocks: readonly BlocksBlockChild[];
     edit: BlockEditOperation;
     supportedBlocks: Record<string, BlockInterface>;
+    insertableBlocks: Record<string, BlockInterface>;
     additionalItemFields: AdditionalItemFields;
     schemaRootBlockName: string;
     blockContext: BlockContext;
@@ -279,7 +288,7 @@ async function planOperation({
     switch (edit.operation) {
         case "insert": {
             const { child, warnings } = await createBlockChild({
-                supportedBlocks,
+                supportedBlocks: insertableBlocks,
                 additionalItemFields,
                 schemaRootBlockName,
                 blockContext,

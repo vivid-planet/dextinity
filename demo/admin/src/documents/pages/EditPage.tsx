@@ -25,6 +25,7 @@ import {
     TranslateContentMenuItem,
     useBlockContext,
     useBlockPreview,
+    useBlocksConfig,
     useContentScope,
     useSiteConfig,
 } from "@dextinity/cms-admin";
@@ -34,6 +35,7 @@ import { useRegisterAiModePageTools } from "@src/aiMode/AiModePageToolsContext";
 import type { BlocksBlockChild } from "@src/aiMode/blockProps";
 import { summarizeBlockState, summarizeSeoBlockState } from "@src/aiMode/blockStateSummary";
 import { type EditBlocks, planBlockEdits } from "@src/aiMode/editBlocks";
+import { useEffect, useRef } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useLocation, useRouteMatch } from "react-router";
 
@@ -183,24 +185,42 @@ export const EditPage = ({ id }: Props) => {
         });
     };
 
+    const { isBlockSupported } = useBlocksConfig();
+    const insertablePageContentBlocks = isBlockSupported
+        ? Object.fromEntries(Object.entries(pageContentBlocks).filter(([, block]) => isBlockSupported(block, scope)))
+        : pageContentBlocks;
+
+    const latestContentBlocksRef = useRef(document?.content.blocks);
+    useEffect(() => {
+        latestContentBlocksRef.current = document?.content.blocks;
+    });
+
     // Deliberately not memoized: useRegisterAiModePageTools re-registers on every render, so the
-    // agent always reaches the callback of the latest one — which is also the state it plans the
-    // batch against, as setPageState applies its updater later.
+    // agent always reaches the callback of the latest one.
     const editBlocks: EditBlocks = async ({ operations }) => {
+        const plannedContentBlocks = document?.content.blocks ?? [];
         const { apply, results } = await planBlockEdits({
-            blocks: document?.content.blocks ?? [],
+            blocks: plannedContentBlocks,
             operations,
             supportedBlocks: pageContentBlocks,
+            insertableBlocks: insertablePageContentBlocks,
             additionalItemFields: pageContentAdditionalItemFields,
             // PageContentBlock's name in block-meta, where the agent resolves the block schemas.
             schemaRootBlockName: "PageContent",
             blockContext,
         });
 
-        // One update for the whole batch, so the page is marked as changed once rather than per
-        // operation. Its steps address the blocks by key rather than by the positions planned above,
-        // which come from the last render and may have moved on by the time the updater runs.
         if (apply) {
+            // Planning awaits conversions that can query the API. Applying the batch to content that changed
+            // meanwhile, by the user or because another page was opened, would undo those changes or edit the
+            // wrong page, so the batch is rejected as a whole instead.
+            if (latestContentBlocksRef.current !== plannedContentBlocks) {
+                throw new Error(
+                    "The page's content changed while the edits were prepared, so none of the operations were applied. Read the page state again and retry.",
+                );
+            }
+
+            // One update for the whole batch, so the page is marked as changed once rather than per operation.
             updateContentBlocks(apply);
         }
 

@@ -52,7 +52,7 @@ export function ActionLogDialog({ entity, entityId, name, showAllScopes, open, o
         }
     }, [open]);
 
-    const dataGridRemote = useDataGridRemote({ initialSort: [{ field: "version", sort: "desc" }] });
+    const dataGridRemote = useDataGridRemote({ queryParamsPrefix: "actionLogDialog", initialSort: [{ field: "version", sort: "desc" }] });
     const persistentColumnState = usePersistentColumnState(`ActionLogDialog-${entity}`);
 
     const filter = useMemo(() => ({ entityId: { equal: entityId } }), [entityId]);

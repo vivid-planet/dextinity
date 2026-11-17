@@ -16,10 +16,12 @@ import type {
     GQLMyActionLogsDialogQueryVariables,
 } from "./ActionLogDialog.gql.generated";
 
+type ComparedVersion = NonNullable<GQLActionLogDialogFragment["previousVersion"]>;
+
 type ActionLogDialogView =
     | { type: "grid" }
     | { type: "showVersion"; row: GQLActionLogDialogFragment }
-    | { type: "compareVersions"; before: GQLActionLogDialogFragment; after: GQLActionLogDialogFragment };
+    | { type: "compareVersions"; before: ComparedVersion; after: ComparedVersion };
 
 export type ActionLogDialogProps = {
     /**
@@ -107,8 +109,10 @@ export function ActionLogDialog({ entity, entityId, name, showAllScopes, open, o
                         }
                     }}
                     onCompareVersionsClick={(beforeVersionId, afterVersionId) => {
-                        const before = rows.find((r) => r.id === beforeVersionId);
                         const after = rows.find((r) => r.id === afterVersionId);
+                        // The previous version of the last row on a page is on the next page.
+                        const previousVersion = after?.previousVersion?.id === beforeVersionId ? after.previousVersion : undefined;
+                        const before = rows.find((r) => r.id === beforeVersionId) ?? previousVersion;
                         if (before && after) {
                             setView({ type: "compareVersions", before, after });
                         }

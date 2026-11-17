@@ -30,7 +30,7 @@ type ActionLogVersionGridProps = ReturnType<typeof useDataGridRemote> &
          */
         showScope?: boolean;
         onShowVersionClick: (versionId: string) => void;
-        onCompareVersionsClick: (versionId: string, versionsId2: string) => void;
+        onCompareVersionsClick: (beforeVersionId: string, afterVersionId: string) => void;
     };
 
 export const ActionLogVersionGrid: FunctionComponent<ActionLogVersionGridProps> = ({
@@ -118,12 +118,14 @@ export const ActionLogVersionGrid: FunctionComponent<ActionLogVersionGridProps> 
 
     const rowCount = useBufferedRowCount(actionLogs?.totalCount);
 
-    const selectedIds = Array.from(selectionModel.ids);
     const toolbarProps: ActionGridToolbarProps = {
         disableCompare: selectionModel.ids.size < 2,
         onClickCompare: () => {
-            if (selectionModel.ids.size >= 2) {
-                onCompareVersionsClick(selectedIds[0].toString(), selectedIds[1].toString());
+            const [beforeVersion, afterVersion] = (actionLogs?.nodes ?? [])
+                .filter((row) => selectionModel.ids.has(row.id))
+                .sort((a, b) => a.version - b.version);
+            if (beforeVersion && afterVersion) {
+                onCompareVersionsClick(beforeVersion.id, afterVersion.id);
             }
         },
     };

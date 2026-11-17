@@ -78,7 +78,7 @@
         "immutable": "^3.8.4",
         "msw": "^3.0.5",
         "npm-run-all2": "^9.0.4",
-        "playwright": "^1.65.0",
+        "playwright": "^1.65.1",
         "prettier": "^3.10.1",
         "react-dnd": "^16.0.1",
         "react-dnd-html5-backend": "^16.0.1",

@@ -99,7 +99,7 @@
         "graphql": "^16.15.0",
         "jsdom": "^28.1.0",
         "npm-run-all2": "^9.0.4",
-        "playwright": "^1.65.0",
+        "playwright": "^1.65.1",
         "prettier": "^3.10.1",
         "sass": "^1.108.2",
         "schema-dts": "^2.1.0",

@@ -10,7 +10,7 @@ import {
     type RequestContextInterface,
 } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
-import { type CanActivate, type ExecutionContext, type INestApplication, Inject, Injectable } from "@nestjs/common";
+import { type CanActivate, type ExecutionContext, type INestApplication, Inject, Injectable, Scope } from "@nestjs/common";
 import { APP_GUARD } from "@nestjs/core";
 import { CONTEXT } from "@nestjs/graphql";
 import type { NestExpressApplication } from "@nestjs/platform-express";
@@ -46,30 +46,41 @@ class HeaderAuthGuard implements CanActivate {
     }
 }
 
-const transformedBlocks: { block: unknown; requestContext: RequestContextInterface }[] = [];
+const transformedBlocks: { blockContext: unknown; requestContext: RequestContextInterface | undefined }[] = [];
 
-// Request-scoped like the real one, which reads its block context off the request's headers, as the services of the
-// block transformers (e.g. the `PageTreeReadApiService` of internal links) do.
-@Injectable()
-class RequestScopedBlocksTransformerService {
-    private readonly requestContext: RequestContextInterface;
+// Stands in for the service of a block transformer, such as the `PageTreeReadApiService` an internal link resolves its
+// target with: request-scoped, and reading its context off the request the real `BlocksTransformerService` resolves it
+// under.
+@Injectable({ scope: Scope.REQUEST })
+class RequestScopedBlockTransformerService {
+    private readonly requestContext?: RequestContextInterface;
 
-    constructor(@Inject(CONTEXT) context: { req: Request }) {
-        this.requestContext = getRequestContextHeadersFromRequest(context.req);
+    constructor(@Inject(CONTEXT) context: { req?: Request } | undefined) {
+        this.requestContext = context?.req ? getRequestContextHeadersFromRequest(context.req) : undefined;
     }
 
-    async transformToPlain(block: unknown) {
-        transformedBlocks.push({ block, requestContext: this.requestContext });
-        return { transformed: block };
+    async transformToPlain(_block: unknown, blockContext: unknown) {
+        transformedBlocks.push({ blockContext, requestContext: this.requestContext });
+        return { transformed: true };
     }
+}
+
+function createBlockData() {
+    return { transformToPlain: () => RequestScopedBlockTransformerService, transformToSave: () => ({}) };
 }
 
 const homeNode = { id: "0190a5f4-0000-7000-8000-000000000001", name: "Home", slug: "home", documentType: "Page", scope: allowedScope };
 const otherScopeNode = { id: "0190a5f4-0000-7000-8000-000000000002", name: "Other", slug: "other", documentType: "Page", scope: otherScope };
 const nodes = [homeNode, otherScopeNode];
 const pages = [
-    { id: "0190a5f4-0000-7000-8000-000000000011", node: homeNode, content: "content", stage: "stage", seo: "seo" },
-    { id: "0190a5f4-0000-7000-8000-000000000012", node: otherScopeNode, content: "content", stage: "stage", seo: "seo" },
+    { id: "0190a5f4-0000-7000-8000-000000000011", node: homeNode, content: createBlockData(), stage: createBlockData(), seo: createBlockData() },
+    {
+        id: "0190a5f4-0000-7000-8000-000000000012",
+        node: otherScopeNode,
+        content: createBlockData(),
+        stage: createBlockData(),
+        seo: createBlockData(),
+    },
 ];
 const damFile = { id: "0190a5f4-0000-7000-8000-000000000021", name: "spring.jpg", scope: { domain: "secondary" } };
 const findDamFiles = vi.fn(async () => [[], 0]);
@@ -114,7 +125,8 @@ beforeAll(async () => {
         providers: [
             { provide: APP_GUARD, useClass: HeaderAuthGuard },
             { provide: AccessControlService, useValue: accessControlService },
-            { provide: BlocksTransformerService, useClass: RequestScopedBlocksTransformerService },
+            BlocksTransformerService,
+            RequestScopedBlockTransformerService,
             {
                 provide: PageTreeService,
                 useValue: {
@@ -160,15 +172,15 @@ describe("MCP endpoint of the API", () => {
         expect(JSON.parse(text)).toMatchObject({
             id: pages[0].id,
             pageTreeNode: { id: homeNode.id, path: "/home" },
-            content: { transformed: "content" },
-            stage: { transformed: "stage" },
-            seo: { transformed: "seo" },
+            content: { transformed: true },
+            stage: { transformed: true },
+            seo: { transformed: true },
         });
         expect(transformedBlocks).toHaveLength(3);
-        for (const { requestContext } of transformedBlocks) {
-            expect(requestContext).toMatchObject({ includeInvisibleBlocks: true, previewDamUrls: true });
+        for (const { blockContext, requestContext } of transformedBlocks) {
+            expect(blockContext).toEqual({ includeInvisibleContent: true, previewDamUrls: true });
             // So that internal links to unpublished and archived pages resolve to their target, as in the admin.
-            expect(requestContext.includeInvisiblePages).toEqual(
+            expect(requestContext?.includeInvisiblePages).toEqual(
                 expect.arrayContaining([PageTreeNodeVisibility.Unpublished, PageTreeNodeVisibility.Archived]),
             );
         }

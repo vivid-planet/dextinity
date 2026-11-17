@@ -1,6 +1,7 @@
 import { BlocksTransformerService, type ContentScope, type PageTreeNodeInterface, type PageTreeReadApi, PageTreeService } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { ContextIdFactory, ModuleRef } from "@nestjs/core";
+import { REQUEST_CONTEXT_ID } from "@nestjs/core/router/request/request-constants.js";
 import { Payload } from "@nestjs/microservices";
 import { McpController, McpRawRequest, Tool } from "@rekog/mcp-nest";
 import { AccessControlService } from "@src/auth/access-control.service.js";
@@ -199,7 +200,10 @@ The content is the "PageContent" block, the stage the "Stage" block, and the SEO
      */
     private async resolveBlocksTransformer(): Promise<BlocksTransformerService> {
         const contextId = ContextIdFactory.create();
-        this.moduleRef.registerRequestByContextId({ req: { headers: adminRequestHeaders } }, contextId);
+        // `BlocksTransformerService` resolves the services of the block transformers under the context ID it finds on
+        // the request, as the GraphQL module puts it there. Without it, they would get a new context without this request.
+        const request = { req: { headers: adminRequestHeaders }, [REQUEST_CONTEXT_ID]: contextId };
+        this.moduleRef.registerRequestByContextId(request, contextId);
         return this.moduleRef.resolve(BlocksTransformerService, contextId, { strict: false });
     }
 }

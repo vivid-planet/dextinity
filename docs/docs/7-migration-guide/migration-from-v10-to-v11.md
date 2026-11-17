@@ -188,20 +188,6 @@ Remove the `@CrudGenerator` and `@CrudSingleGenerator` decorators from your enti
   export class Product extends BaseEntity {
 ```
 
-`@CrudField` is replaced with `@ExcludeFromSearch`. Only its `search` option was still read, so replace it where it sets `search: false` and remove it everywhere else:
-
-```diff
-- @CrudField({ search: false })
-+ @ExcludeFromSearch()
-  internalNote: string;
-```
-
-```sh
-grep -rn "@CrudField" src
-```
-
-If your code calls the helpers directly, rename `getCrudSearchFieldsFromMetadata` to `getSearchFieldsFromMetadata` and replace `hasCrudFieldFeature(entityClass, propName, "search")` with `!isExcludedFromSearch(entityClass, propName)`.
-
 Then remove the `api-generator` scripts and their calls from the other scripts:
 
 ```diff title="api/package.json"
@@ -220,6 +206,29 @@ Remove the `generated/` exclusions of the API from your lint configuration (for 
 npm run lint:fix
 npm run lint
 ```
+
+### Replace `@CrudField` with `@ExcludeFromSearch`
+
+`@CrudField` is replaced with `@ExcludeFromSearch`. Only its `search` option was still read, by `searchToMikroOrmQuery` and `gqlArgsToMikroOrmQuery`. All other options were only read by the API Generator. Find the usages:
+
+```sh
+grep -rnE "CrudField|getCrudSearchFieldsFromMetadata|hasCrudFieldFeature" src
+```
+
+Replace `@CrudField` where it sets `search: false` and remove it everywhere else:
+
+```diff
+- import { CrudField } from "@dextinity/cms-api";
++ import { ExcludeFromSearch } from "@dextinity/cms-api";
+
+- @CrudField({ search: false })
++ @ExcludeFromSearch()
+  internalNote: string;
+```
+
+A subclass can no longer search a field again that its base class excludes. If an entity used `@CrudField({ search: true })` to override an inherited `search: false`, pass the search fields to `searchToMikroOrmQuery` explicitly instead.
+
+`CrudFieldOptions` is removed. If your code calls the helpers directly, rename `getCrudSearchFieldsFromMetadata` to `getSearchFieldsFromMetadata`. Replace `hasCrudFieldFeature(entityClass, propName, "search")` with `!isExcludedFromSearch(entityClass, propName)`; note the negation, `isExcludedFromSearch` returns `true` for fields that aren't searched. Calls of `hasCrudFieldFeature` with other options can be removed.
 
 ### Update the MikroORM dependencies
 

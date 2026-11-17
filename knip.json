@@ -116,8 +116,7 @@
             "project": ["./src/**/*.{ts,tsx}"],
             "ignoreDependencies": ["@as-integrations/express5", "@swc-node/register"],
             "ignoreUnresolved": ["^\\./dist/"],
-            "ignore": ["./src/**/generated/**", "**/*.generated.ts"],
-            "mikro-orm": false
+            "ignore": ["./src/**/generated/**", "**/*.generated.ts"]
         },
         "demo/site": {
             "entry": ["./src/app/**", "./cache-handler.ts", "./opentelemetry-metrics.ts", "tracing.dev.ts", "tracing.production.ts"],

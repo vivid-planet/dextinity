@@ -290,9 +290,6 @@ importers:
       graphql:
         specifier: ^16.15.0
         version: 16.15.0
-      p-debounce:
-        specifier: ^6.0.0
-        version: 6.0.0
       rdndmb-html5-to-touch:
         specifier: ^9.0.0
         version: 9.0.0(dnd-core@16.0.1)
@@ -330,9 +327,6 @@ importers:
       '@babel/core':
         specifier: ^8.0.10
         version: 8.0.10
-      '@dextinity/admin-generator':
-        specifier: workspace:*
-        version: link:../../packages/admin/admin-generator
       '@dextinity/cli':
         specifier: workspace:*
         version: link:../../packages/cli
@@ -414,9 +408,6 @@ importers:
       prettier:
         specifier: ^3.10.1
         version: 3.10.1
-      rimraf:
-        specifier: ^6.1.4
-        version: 6.1.4
       typescript:
         specifier: ^6.0.3
         version: 6.0.3

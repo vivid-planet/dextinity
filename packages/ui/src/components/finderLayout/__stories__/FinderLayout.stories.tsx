@@ -103,7 +103,7 @@ function StoryFinder() {
             <ul className={styles.content}>
                 {subfolders.map((folder) => (
                     <li key={folder.id}>
-                        <AssetThumbnail type="folder" name={folder.name} />
+                        <AssetThumbnail type="folder" title={folder.name} />
                     </li>
                 ))}
                 {folderAssets.map((asset) => (
@@ -114,7 +114,7 @@ function StoryFinder() {
                             fileType={asset.fileType}
                             duration={asset.duration}
                             badges={asset.badges}
-                            name={asset.name}
+                            title={asset.name}
                             meta={asset.meta}
                         />
                     </li>

@@ -78,7 +78,19 @@ npm view @dextinity/cms-api versions --json
 
 :::
 
-Do the same in `api/package.json`, `admin/package.json` and your site packages, then install the updated dependencies:
+Do the same in `api/package.json`, `admin/package.json` and your site packages.
+
+The Admin Generator has been removed and has no v11 release. Remove it from `admin/package.json`:
+
+```diff title="admin/package.json"
+{
+    "devDependencies": {
+-       "@dextinity/admin-generator": "10.6.0",
+    }
+}
+```
+
+Then install the updated dependencies:
 
 ```sh
 npm install
@@ -864,7 +876,7 @@ Update the imports of the moved files:
 + import { ProductsGrid } from "./ProductsGrid";
 ```
 
-Then delete the `*.dextinityGen.ts` and `*.dextinityGen.tsx` configuration files, remove the `admin-generator` script and its calls from the other scripts, and remove the dependency:
+Then delete the `*.dextinityGen.ts` and `*.dextinityGen.tsx` configuration files and remove the `admin-generator` script and its calls from the other scripts:
 
 ```diff title="admin/package.json"
 {
@@ -872,9 +884,6 @@ Then delete the `*.dextinityGen.ts` and `*.dextinityGen.tsx` configuration files
 -       "admin-generator": "rimraf --glob 'src/**/generated' && dextinity-admin-generator generate",
 -       "build": "run-s admin-generator intl:compile && run-p gql:types generate-block-types && vite build",
 +       "build": "npm run intl:compile && run-p gql:types generate-block-types && vite build",
-    },
-    "devDependencies": {
--       "@dextinity/admin-generator": "...",
     }
 }
 ```

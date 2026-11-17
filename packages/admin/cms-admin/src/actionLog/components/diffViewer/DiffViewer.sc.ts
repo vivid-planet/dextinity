@@ -1,5 +1,5 @@
 import { Box, css, type Theme } from "@mui/material";
-import { styled } from "@mui/material/styles";
+import { alpha, styled } from "@mui/material/styles";
 import type { ReactDiffViewerStylesOverride } from "react-diff-viewer-continued";
 
 export const Root = styled(Box)(
@@ -37,8 +37,8 @@ export const CodeFoldMessageContainer = styled(Box)(
 export const createStyles = (theme: Theme): ReactDiffViewerStylesOverride => {
     return {
         codeFoldExpandButton: {
-            fontSize: "14px",
-            fontWeight: 600,
+            fontSize: theme.typography.subtitle2.fontSize,
+            fontWeight: theme.typography.subtitle2.fontWeight,
             textDecoration: "underline",
             color: theme.palette.grey["900"],
             marginTop: theme.spacing(1),
@@ -46,10 +46,10 @@ export const createStyles = (theme: Theme): ReactDiffViewerStylesOverride => {
         },
         diffAdded: {
             "& pre": {
-                backgroundColor: `${theme.palette.success.main}80`, // 50% opacity
-                borderRadius: "4px",
-                color: "white",
-                fontSize: "12px",
+                backgroundColor: alpha(theme.palette.success.main, 0.5),
+                borderRadius: theme.shape.borderRadius,
+                color: theme.palette.common.white,
+                fontSize: theme.typography.caption.fontSize,
                 lineHeight: "8px",
                 minWidth: "14px",
                 paddingBottom: "3px",
@@ -62,17 +62,17 @@ export const createStyles = (theme: Theme): ReactDiffViewerStylesOverride => {
                 fontFamily: theme.typography.fontFamily,
             },
             "& td": {
-                paddingBottom: "10px",
-                paddingTop: "10px",
+                paddingBottom: theme.spacing(2),
+                paddingTop: theme.spacing(2),
             },
             minWidth: "unset",
         },
         diffRemoved: {
             "& pre": {
-                backgroundColor: `${theme.palette.error.main}4D`, // 30% opacity
-                borderRadius: "4px",
-                color: "white",
-                fontSize: "12px",
+                backgroundColor: alpha(theme.palette.error.main, 0.3),
+                borderRadius: theme.shape.borderRadius,
+                color: theme.palette.common.white,
+                fontSize: theme.typography.caption.fontSize,
                 lineHeight: "8px",
                 minWidth: "14px",
                 paddingBottom: "3px",
@@ -82,25 +82,29 @@ export const createStyles = (theme: Theme): ReactDiffViewerStylesOverride => {
             textDecoration: "line-through",
         },
         line: {
-            borderBottom: "1px solid white",
-            marginTop: "10px",
-            paddingBottom: "10px",
+            borderBottom: `1px solid ${theme.palette.common.white}`,
+            marginTop: theme.spacing(2),
+            paddingBottom: theme.spacing(2),
         },
         marker: {
-            color: "white",
+            color: theme.palette.common.white,
+        },
+        titleBlock: {
+            height: "auto",
+            padding: 0,
         },
         variables: {
             light: {
-                addedBackground: `${theme.palette.success.main}1A`, // 10% opacity
+                addedBackground: alpha(theme.palette.success.main, 0.1),
                 codeFoldBackground: theme.palette.grey["50"],
                 diffViewerTitleBackground: theme.palette.grey.A200,
-                removedBackground: `${theme.palette.error.main}1A`, // 10% opacity
-                wordAddedBackground: `${theme.palette.success.main}33`, // 20% opacity
-                wordRemovedBackground: `${theme.palette.error.main}33`, // 20% opacity
+                removedBackground: alpha(theme.palette.error.main, 0.1),
+                wordAddedBackground: alpha(theme.palette.success.main, 0.2),
+                wordRemovedBackground: alpha(theme.palette.error.main, 0.2),
             },
         },
         wordDiff: {
-            fontWeight: 600,
+            fontWeight: theme.typography.subtitle2.fontWeight,
             color: theme.palette.grey["900"],
         },
         wordRemoved: {

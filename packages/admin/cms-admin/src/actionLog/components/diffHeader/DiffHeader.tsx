@@ -1,7 +1,7 @@
 import { Typography } from "@mui/material";
 import { FormattedDate, FormattedMessage } from "react-intl";
 
-import { Root } from "./DiffHeader.sc";
+import { Root, VersionTitle } from "./DiffHeader.sc";
 
 export interface DiffHeaderProps {
     createdAt?: string;
@@ -13,9 +13,9 @@ export interface DiffHeaderProps {
 export const DiffHeader = ({ createdAt, userId, userName, version }: DiffHeaderProps) => {
     return (
         <Root>
-            <Typography color="white" variant="subtitle1">
+            <VersionTitle variant="subtitle1">
                 <FormattedMessage defaultMessage="Version {version}" id="actionLog.actionLogCompare.diffHeader.version" values={{ version }} />
-            </Typography>
+            </VersionTitle>
 
             <Typography color="textSecondary" variant="caption">
                 <FormattedMessage

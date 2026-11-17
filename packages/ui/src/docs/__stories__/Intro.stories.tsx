@@ -3,8 +3,7 @@ import { useState } from "react";
 
 import { Button } from "../../components/button/Button";
 import { Chip } from "../../components/chip/Chip";
-import { FieldDescription } from "../../components/fieldDescription/FieldDescription";
-import { FieldLabel } from "../../components/fieldLabel/FieldLabel";
+import { Field } from "../../components/field/Field";
 import { Icon } from "../../components/icon/Icon";
 import { IconButton } from "../../components/iconButton/IconButton";
 import { Input } from "../../components/input/Input";
@@ -49,13 +48,9 @@ export const Showcase: Story = {
                     </section>
 
                     <section className={styles.card}>
-                        <div className={styles.field}>
-                            <FieldLabel htmlFor="showcase-title" required>
-                                Page title
-                            </FieldLabel>
-                            <Input id="showcase-title" required defaultValue="Spring campaign" aria-describedby="showcase-title-description" />
-                            <FieldDescription id="showcase-title-description">Shown in the browser tab and in search results.</FieldDescription>
-                        </div>
+                        <Field label="Page title" required description="Shown in the browser tab and in search results.">
+                            <Input defaultValue="Spring campaign" />
+                        </Field>
                         <div className={styles.actions}>
                             <Button variant="outlined">Cancel</Button>
                             <Button>Save</Button>

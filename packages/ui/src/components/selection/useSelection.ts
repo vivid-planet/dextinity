@@ -1,6 +1,6 @@
 import { type KeyboardEvent as ReactKeyboardEvent, useCallback, useEffect, useRef } from "react";
 
-import { matchesShortcut } from "../keyboardShortcut/useKeyboardShortcut";
+import { matchesKeyboardShortcut } from "../keyboardShortcut/useKeyboardShortcut";
 
 export interface SelectionOptions {
     /** The ids of the visible items, in their order; ranges and "select all" use them. */
@@ -95,7 +95,7 @@ export function useSelection({ ids, selectedIds, onSelectionChange }: SelectionO
         if (event.defaultPrevented || isEditable(event.target)) {
             return;
         }
-        if (matchesShortcut(event, "mod+a")) {
+        if (matchesKeyboardShortcut(event, "mod+a")) {
             event.preventDefault();
             selectAll();
         } else if (event.key === "Escape" && selectedIds.length > 0) {

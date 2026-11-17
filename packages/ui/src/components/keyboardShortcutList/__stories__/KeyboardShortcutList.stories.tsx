@@ -3,14 +3,14 @@ import { expect } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { KeyboardShortcutProvider } from "../../keyboardShortcut/keyboardShortcutPlatform";
-import { ShortcutList } from "../ShortcutList";
-import shortcutListTokens from "../ShortcutList.tokens.scss?raw";
+import { KeyboardShortcutList } from "../KeyboardShortcutList";
+import keyboardShortcutListTokens from "../KeyboardShortcutList.tokens.scss?raw";
 
 const meta = {
-    component: ShortcutList,
-    title: "Patterns/Keyboard shortcuts/ShortcutList",
+    component: KeyboardShortcutList,
+    title: "Patterns/Keyboard shortcuts/KeyboardShortcutList",
     decorators: [themeDecorator],
-    parameters: { tokens: shortcutListTokens },
+    parameters: { tokens: keyboardShortcutListTokens },
     args: {
         keyboardShortcuts: [
             { keyboardShortcut: "mod+k", description: "Command palette" },
@@ -26,7 +26,7 @@ const meta = {
         className: { control: false },
         slotProps: { control: false },
     },
-} satisfies Meta<typeof ShortcutList>;
+} satisfies Meta<typeof KeyboardShortcutList>;
 
 export default meta;
 

@@ -1,8 +1,8 @@
 import type { PropsWithChildren, ReactNode } from "react";
 
 import { Icon } from "../../components/icon/Icon";
+import { KeyboardShortcutList, type KeyboardShortcutListItem } from "../../components/keyboardShortcutList/KeyboardShortcutList";
 import { Panel } from "../../components/panel/Panel";
-import { ShortcutList, type ShortcutListItem } from "../../components/shortcutList/ShortcutList";
 import styles from "./PatternPage.module.scss";
 
 /**
@@ -83,11 +83,11 @@ export function PatternKeyboardShortcuts({
 }: {
     title?: string;
     description?: string;
-    keyboardShortcuts: ShortcutListItem[];
+    keyboardShortcuts: KeyboardShortcutListItem[];
 }) {
     return (
         <PatternSection title={title} description={description}>
-            <ShortcutList keyboardShortcuts={keyboardShortcuts} />
+            <KeyboardShortcutList keyboardShortcuts={keyboardShortcuts} />
         </PatternSection>
     );
 }

@@ -115,7 +115,12 @@ export type { DefaultIconName, DefaultIconRegistry, DeprecatedIconAlias, IconNam
 export { IconButton, type IconButtonOwnerState, type IconButtonProps } from "./components/iconButton/IconButton";
 export { type IconButtonSlotProps, type IconButtonSlots } from "./components/iconButton/IconButton";
 export { Input, type InputOwnerState, type InputProps } from "./components/input/Input";
-export { describeShortcut, formatShortcut, formatShortcutText, type KeyboardShortcutLabels } from "./components/keyboardShortcut/formatShortcut";
+export {
+    describeKeyboardShortcut,
+    formatKeyboardShortcut,
+    formatKeyboardShortcutText,
+    type KeyboardShortcutLabels,
+} from "./components/keyboardShortcut/formatKeyboardShortcut";
 export { KeyboardShortcut, type KeyboardShortcutOwnerState, type KeyboardShortcutProps } from "./components/keyboardShortcut/KeyboardShortcut";
 export {
     isApplePlatform,
@@ -124,7 +129,14 @@ export {
     type KeyboardShortcutProviderProps,
     useKeyboardShortcutPlatform,
 } from "./components/keyboardShortcut/keyboardShortcutPlatform";
-export { type KeyboardShortcutOptions, matchesShortcut, useKeyboardShortcut } from "./components/keyboardShortcut/useKeyboardShortcut";
+export { type KeyboardShortcutOptions, matchesKeyboardShortcut, useKeyboardShortcut } from "./components/keyboardShortcut/useKeyboardShortcut";
+export {
+    KeyboardShortcutList,
+    type KeyboardShortcutListItem,
+    type KeyboardShortcutListLabels,
+    type KeyboardShortcutListSlotProps,
+} from "./components/keyboardShortcutList/KeyboardShortcutList";
+export { type KeyboardShortcutListOwnerState, type KeyboardShortcutListProps } from "./components/keyboardShortcutList/KeyboardShortcutList";
 export { KeyValueList, type KeyValueListItem, type KeyValueListOwnerState, type KeyValueListProps } from "./components/keyValueList/KeyValueList";
 export { type KeyValueListSlotProps } from "./components/keyValueList/KeyValueList";
 export { Link, type LinkLabels, type LinkOwnerState, type LinkProps, type LinkSlotProps } from "./components/link/Link";
@@ -206,8 +218,6 @@ export { type SegmentedControlProps, type SegmentedControlSlotProps } from "./co
 export { Select, type SelectLabels, type SelectOption, type SelectOwnerState, type SelectProps } from "./components/select/Select";
 export { type SelectValue } from "./components/select/Select";
 export { type Selection, type SelectionOptions, type SelectionToggleOptions, useSelection } from "./components/selection/useSelection";
-export { ShortcutList, type ShortcutListItem, type ShortcutListLabels, type ShortcutListSlotProps } from "./components/shortcutList/ShortcutList";
-export { type ShortcutListOwnerState, type ShortcutListProps } from "./components/shortcutList/ShortcutList";
 export { getSideNavAncestorIds, SideNav, type SideNavGroup, type SideNavItem } from "./components/sideNav/SideNav";
 export { type SideNavLabels, type SideNavOwnerState, type SideNavProps } from "./components/sideNav/SideNav";
 export { type SideNavSlotProps, type SideNavSlots } from "./components/sideNav/SideNav";

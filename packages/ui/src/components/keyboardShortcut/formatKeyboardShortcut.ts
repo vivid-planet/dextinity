@@ -1,6 +1,6 @@
 import { isApplePlatform } from "./keyboardShortcutPlatform";
 
-export interface ParsedShortcut {
+export interface ParsedKeyboardShortcut {
     key: string;
     mod: boolean;
     shift: boolean;
@@ -27,7 +27,7 @@ export function isSymbolKey(key: string) {
     return key.length === 1 && key.toLowerCase() === key.toUpperCase();
 }
 
-export function parseShortcut(shortcut: string): ParsedShortcut {
+export function parseKeyboardShortcut(shortcut: string): ParsedKeyboardShortcut {
     const { key, modifiers } = splitShortcut(shortcut);
     return {
         key: normalizeKey(key),
@@ -130,7 +130,7 @@ function capitalize(key: string) {
  *
  * To show a shortcut, pass it to `KeyboardShortcut`'s `shortcut` instead: it also gives screen readers its spoken name.
  */
-export function formatShortcut(shortcut: string, apple = isApplePlatform()): string[] {
+export function formatKeyboardShortcut(shortcut: string, apple = isApplePlatform()): string[] {
     const { key, modifiers } = splitShortcut(shortcut);
     const caps = apple ? appleModifierCaps : otherModifierCaps;
     const modifierCaps = sortedModifiers(modifiers, apple).map((modifier) => caps[modifier] ?? modifier);
@@ -142,8 +142,8 @@ export function formatShortcut(shortcut: string, apple = isApplePlatform()): str
  * The key caps of a shortcut as plain text, e.g. `"⌘S"` for `"mod+s"` on Apple platforms and `"Ctrl+S"` elsewhere, for places that
  * only take text, such as a `title`.
  */
-export function formatShortcutText(shortcut: string, apple = isApplePlatform()): string {
-    return formatShortcut(shortcut, apple).join(apple ? "" : "+");
+export function formatKeyboardShortcutText(shortcut: string, apple = isApplePlatform()): string {
+    return formatKeyboardShortcut(shortcut, apple).join(apple ? "" : "+");
 }
 
 const spokenKeyNames: Record<string, keyof KeyboardShortcutLabels> = {
@@ -169,7 +169,7 @@ const spokenKeyNames: Record<string, keyof KeyboardShortcutLabels> = {
 /**
  * The spoken name of a shortcut, e.g. "Command S" for `"mod+s"` on Apple platforms and "Control S" elsewhere.
  */
-export function describeShortcut(shortcut: string, apple = isApplePlatform(), labels: Partial<KeyboardShortcutLabels> = {}): string {
+export function describeKeyboardShortcut(shortcut: string, apple = isApplePlatform(), labels: Partial<KeyboardShortcutLabels> = {}): string {
     const names = { ...defaultKeyboardShortcutLabels, ...labels };
     const { key, modifiers } = splitShortcut(shortcut);
     const modifierNames: Record<string, string> = apple

@@ -6,7 +6,7 @@ import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
 import { FieldContextReset } from "../field/fieldContext";
 import { Icon } from "../icon/Icon";
-import { ariaKeyShortcuts } from "../keyboardShortcut/formatShortcut";
+import { ariaKeyShortcuts } from "../keyboardShortcut/formatKeyboardShortcut";
 import { KeyboardShortcut } from "../keyboardShortcut/KeyboardShortcut";
 import { useKeyboardShortcutPlatform } from "../keyboardShortcut/keyboardShortcutPlatform";
 import { useKeyboardShortcut } from "../keyboardShortcut/useKeyboardShortcut";

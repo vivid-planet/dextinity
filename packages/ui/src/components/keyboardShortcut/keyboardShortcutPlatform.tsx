@@ -1,6 +1,6 @@
 import { createContext, type PropsWithChildren, useContext, useMemo, useSyncExternalStore } from "react";
 
-import type { KeyboardShortcutLabels } from "./formatShortcut";
+import type { KeyboardShortcutLabels } from "./formatKeyboardShortcut";
 
 /**
  * Which keys a shortcut's `mod` and `alt` stand for: ⌘ and ⌥ on `apple` platforms, Ctrl and Alt on `other` platforms.

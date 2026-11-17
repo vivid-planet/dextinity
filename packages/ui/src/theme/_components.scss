@@ -37,6 +37,7 @@
 @use "../components/iconButton/IconButton.tokens" as iconButton;
 @use "../components/input/Input.tokens" as input;
 @use "../components/keyboardShortcut/KeyboardShortcut.tokens" as keyboardShortcut;
+@use "../components/keyboardShortcutList/KeyboardShortcutList.tokens" as keyboardShortcutList;
 @use "../components/keyValueList/KeyValueList.tokens" as keyValueList;
 @use "../components/link/Link.tokens" as link;
 @use "../components/linkedContent/LinkedContent.tokens" as linkedContent;
@@ -62,7 +63,6 @@
 @use "../components/scopeSwitcher/ScopeSwitcher.tokens" as scopeSwitcher;
 @use "../components/segmentedControl/SegmentedControl.tokens" as segmentedControl;
 @use "../components/select/Select.tokens" as select;
-@use "../components/shortcutList/ShortcutList.tokens" as shortcutList;
 @use "../components/sideNav/SideNav.tokens" as sideNav;
 @use "../components/skeleton/Skeleton.tokens" as skeleton;
 @use "../components/slider/Slider.tokens" as slider;
@@ -119,6 +119,7 @@
     @include iconButton.tokens;
     @include input.tokens;
     @include keyboardShortcut.tokens;
+    @include keyboardShortcutList.tokens;
     @include keyValueList.tokens;
     @include link.tokens;
     @include linkedContent.tokens;
@@ -144,7 +145,6 @@
     @include scopeSwitcher.tokens;
     @include segmentedControl.tokens;
     @include select.tokens;
-    @include shortcutList.tokens;
     @include sideNav.tokens;
     @include skeleton.tokens;
     @include slider.tokens;

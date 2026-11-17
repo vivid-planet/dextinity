@@ -6,12 +6,12 @@ import { Button } from "../../../components/button/Button";
 import { Dialog } from "../../../components/dialog/Dialog";
 import { KeyboardShortcut } from "../../../components/keyboardShortcut/KeyboardShortcut";
 import { useKeyboardShortcut } from "../../../components/keyboardShortcut/useKeyboardShortcut";
-import { ShortcutList, type ShortcutListItem } from "../../../components/shortcutList/ShortcutList";
+import { KeyboardShortcutList, type KeyboardShortcutListItem } from "../../../components/keyboardShortcutList/KeyboardShortcutList";
 import { PatternKeyboardShortcuts, PatternPage, PatternRules, PatternSection } from "../../../storybook/patterns/PatternPage";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import styles from "./KeyboardShortcuts.stories.module.scss";
 
-const everywhere: ShortcutListItem[] = [
+const everywhere: KeyboardShortcutListItem[] = [
     { keyboardShortcut: "mod+k", description: "Command palette" },
     { keyboardShortcut: "mod+\\", description: "Collapse or expand the navigation" },
     { keyboardShortcut: "/", description: "Search the list" },
@@ -19,19 +19,19 @@ const everywhere: ShortcutListItem[] = [
     { keyboardShortcut: "Escape", description: "Close, clear the selection" },
 ];
 
-const editing: ShortcutListItem[] = [
+const editing: KeyboardShortcutListItem[] = [
     { keyboardShortcut: "mod+s", description: "Save" },
     { keyboardShortcut: "mod+p", description: "Preview" },
     { keyboardShortcut: "mod+d", description: "Duplicate" },
 ];
 
-const pageTree: ShortcutListItem[] = [
+const pageTree: KeyboardShortcutListItem[] = [
     { keyboardShortcut: ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"], description: "Move, expand and collapse" },
     { keyboardShortcut: "Enter", description: "Edit" },
     { keyboardShortcut: "Space", description: "Select" },
 ];
 
-const finder: ShortcutListItem[] = [
+const finder: KeyboardShortcutListItem[] = [
     { keyboardShortcut: ["mod+1", "mod+2", "mod+3", "mod+4"], description: "Icons, list, columns, gallery" },
     { keyboardShortcut: ["mod+[", "mod+]"], description: "Back, forward" },
     { keyboardShortcut: "mod+ArrowUp", description: "Parent folder" },
@@ -77,7 +77,7 @@ function ShortcutOverview() {
                 </div>
             </PatternSection>
             <Dialog open={open} onOpenChange={setOpen} title="Keyboard shortcuts" size="large">
-                <ShortcutList keyboardShortcuts={[...everywhere, ...editing]} />
+                <KeyboardShortcutList keyboardShortcuts={[...everywhere, ...editing]} />
             </Dialog>
         </PatternPage>
     );
@@ -90,7 +90,7 @@ const meta = {
         docs: {
             description: {
                 component:
-                    "All keyboard shortcuts in one place. Build them with `useKeyboardShortcut`, show them with `ShortcutList`, and name them in tooltips (`Tooltip`'s `keyboardShortcut`) and menus, all in the same notation, e.g. `mod+s`: `mod` is ⌘ on Apple platforms and Ctrl elsewhere.",
+                    "All keyboard shortcuts in one place. Build them with `useKeyboardShortcut`, show them with `KeyboardShortcutList`, and name them in tooltips (`Tooltip`'s `keyboardShortcut`) and menus, all in the same notation, e.g. `mod+s`: `mod` is ⌘ on Apple platforms and Ctrl elsewhere.",
             },
         },
     },

@@ -6,7 +6,7 @@ import { AssetThumbnail } from "../../../components/assetThumbnail/AssetThumbnai
 import { Block } from "../../../components/blockList/Block";
 import { BlockList } from "../../../components/blockList/BlockList";
 import { Icon } from "../../../components/icon/Icon";
-import { formatShortcut } from "../../../components/keyboardShortcut/formatShortcut";
+import { formatKeyboardShortcut } from "../../../components/keyboardShortcut/formatKeyboardShortcut";
 import { useKeyboardShortcutPlatform } from "../../../components/keyboardShortcut/keyboardShortcutPlatform";
 import { ToastViewport } from "../../../components/toast/ToastViewport";
 import { useToasts } from "../../../components/toast/useToasts";
@@ -180,7 +180,7 @@ function DragAndDropPage() {
                         { title: "Page tree", description: "Move pages; a line shows where they land, a folder target stands out." },
                         {
                             title: "Finder",
-                            description: `Files and folders onto folders, also in the sidebar and path bar. Several with ${formatShortcut("mod+a", apple)[0]}/⇧.`,
+                            description: `Files and folders onto folders, also in the sidebar and path bar. Several with ${formatKeyboardShortcut("mod+a", apple)[0]}/⇧.`,
                         },
                         { title: "Blocks", description: "Order by the grip." },
                         { title: "Upload", description: "Files from the computer onto the list." },

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
-import { storyModKey, storyShortcutText } from "../../../storybook/keyboardPlatformDecorator";
+import { storyKeyboardShortcutText, storyModKey } from "../../../storybook/keyboardPlatformDecorator";
 import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
@@ -116,7 +116,7 @@ export const Default: Story = {
         await userEvent.type(input, "jo");
         await waitFor(() => expect(args.onQueryChange).toHaveBeenLastCalledWith("jo"));
         const options = screen.getAllByRole("option");
-        await expect(options.map((option) => option.textContent)).toStrictEqual(["Job ads", `New job ad${storyShortcutText("mod+n")}`]);
+        await expect(options.map((option) => option.textContent)).toStrictEqual(["Job ads", `New job ad${storyKeyboardShortcutText("mod+n")}`]);
         await expect(options[0]).toHaveAttribute("aria-selected", "true");
         await userEvent.keyboard("{ArrowDown}");
         await expect(options[1]).toHaveAttribute("aria-selected", "true");

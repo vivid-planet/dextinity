@@ -4,17 +4,17 @@
     inline-size: 100%;
     border-collapse: separate;
     border-spacing: 0;
-    color: var(--dextinity-shortcut-list-foreground);
+    color: var(--dextinity-keyboard-shortcut-list-foreground);
     font-family: var(--dextinity-font-family-text);
-    font-size: var(--dextinity-shortcut-list-font-size);
+    font-size: var(--dextinity-keyboard-shortcut-list-font-size);
 
     th {
-        block-size: var(--dextinity-shortcut-list-header-height);
+        block-size: var(--dextinity-keyboard-shortcut-list-header-height);
         padding-block: 0;
-        padding-inline: var(--dextinity-shortcut-list-cell-padding);
-        box-shadow: inset 0 calc(var(--dextinity-line-width) * -1) 0 var(--dextinity-shortcut-list-header-line);
-        color: var(--dextinity-shortcut-list-header-foreground);
-        font-size: var(--dextinity-shortcut-list-header-font-size);
+        padding-inline: var(--dextinity-keyboard-shortcut-list-cell-padding);
+        box-shadow: inset 0 calc(var(--dextinity-line-width) * -1) 0 var(--dextinity-keyboard-shortcut-list-header-line);
+        color: var(--dextinity-keyboard-shortcut-list-header-foreground);
+        font-size: var(--dextinity-keyboard-shortcut-list-header-font-size);
         font-weight: var(--dextinity-font-weight-medium);
         text-align: start;
         white-space: nowrap;
@@ -23,9 +23,9 @@
     }
 
     td {
-        block-size: var(--dextinity-shortcut-list-row-height);
+        block-size: var(--dextinity-keyboard-shortcut-list-row-height);
         padding-block: 0;
-        padding-inline: var(--dextinity-shortcut-list-cell-padding);
+        padding-inline: var(--dextinity-keyboard-shortcut-list-cell-padding);
         vertical-align: middle;
     }
 }
@@ -34,7 +34,7 @@
     position: relative;
     display: inline-flex;
     flex-wrap: wrap;
-    gap: var(--dextinity-shortcut-list-key-gap);
+    gap: var(--dextinity-keyboard-shortcut-list-key-gap);
     align-items: center;
 }
 

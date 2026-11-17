@@ -48,6 +48,7 @@ const meta = {
         months: { control: "radio", options: [1, 2] },
         locale: { control: "select", options: ["en-GB", "en-US", "de-AT", "fr-FR", "ja-JP"] },
         weekStartsOn: { control: "select", options: [0, 1, 2, 3, 4, 5, 6] },
+        isDateDisabled: { control: false },
         labels: { control: false },
         className: { control: false },
     },
@@ -109,6 +110,37 @@ export const Clearable: Story = {
 
 export const MinAndMax: Story = {
     args: { min: "2026-11-02", max: "2027-01-31", description: "Campaigns run until the end of January" },
+};
+
+/**
+ * `isDateDisabled` disables more days, such as weekends. Only the start and the end are checked: a range may contain disabled days.
+ */
+export const DisabledDates: Story = {
+    args: {
+        locale: "en-GB",
+        value: { start: "2027-08-02", end: "2027-08-06" },
+        isDateDisabled: (date: string) => [0, 6].includes(new Date(date).getUTCDay()),
+        description: "Starts and ends on a weekday",
+    },
+    play: async ({ args, canvas }) => {
+        await userEvent.click(canvas.getByRole("button", { name: "Choose dates" }));
+        const grid = await screen.findByRole("grid", { name: "August 2027" });
+        const saturday = within(grid).getByRole("button", { name: "Saturday, 7 August 2027" });
+        await expect(saturday).toHaveAttribute("aria-disabled", "true");
+        await userEvent.click(saturday);
+        await userEvent.click(within(grid).getByRole("button", { name: "Friday, 6 August 2027" }));
+        await userEvent.click(within(grid).getByRole("button", { name: "Sunday, 8 August 2027" }));
+        await expect(args.onChange).not.toHaveBeenCalled();
+        await userEvent.click(within(grid).getByRole("button", { name: "Monday, 9 August 2027" }));
+        await waitFor(() => expect(args.onChange).toHaveBeenCalledWith({ start: "2027-08-06", end: "2027-08-09" }));
+
+        const end = canvas.getByRole("textbox", { name: "Campaign period End" });
+        await userEvent.clear(end);
+        await userEvent.type(end, "14/08/2027");
+        await userEvent.tab();
+        await expect(end).toHaveAccessibleDescription("14/08/2027 can't be chosen.");
+        await expect(args.onChange).toHaveBeenCalledTimes(1);
+    },
 };
 
 export const Error: Story = {

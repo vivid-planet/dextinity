@@ -89,6 +89,7 @@ Components are pure UI and always controlled: a value comes with its change hand
 - **Colors** — a prop that picks a color is `color`, not `tone`.
 - **Values** — a value with the same meaning has the same name in every component. For example, the status colors use the words of `Field`'s `state`: `success`, `warning`, `error`.
 - **Sizes** — `size` takes `small`, `default`, and `large`, and `xlarge` when a component needs a larger one. The default is `default`. Don't use abbreviations such as `md` or `lg`.
+- **Disabled values** — an option object disables itself with a `disabled` field: `{ value, label, disabled }`. Where the values aren't such option objects, a callback named `is<Thing>Disabled` disables them: `Combobox`'s `isOptionDisabled`, the date pickers' `isDateDisabled`.
 
 ### Form controls and `Field`
 

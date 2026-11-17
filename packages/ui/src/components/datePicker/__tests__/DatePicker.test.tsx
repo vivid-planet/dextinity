@@ -63,6 +63,20 @@ describe("DatePicker", () => {
         expect(input).toHaveAccessibleDescription(/^Enter a date like/);
     });
 
+    it("focuses the last day of a shorter month chosen from a later day", async () => {
+        render(
+            <Field label="Published on">
+                <DatePicker name="publishedOn" value="2026-01-31" onChange={vi.fn()} locale="en-GB" />
+            </Field>,
+        );
+
+        await act(async () => fireEvent.click(screen.getByRole("button", { name: "Choose date" })));
+        await act(async () => fireEvent.click(await screen.findByRole("button", { name: "January" })));
+        await act(async () => fireEvent.click(screen.getByRole("button", { name: "Feb" })));
+
+        expect(screen.getByRole("button", { name: "Saturday, 28 February 2026" })).toHaveFocus();
+    });
+
     it("draws its own box and takes its name from aria-label on its own", () => {
         const { container } = render(<DatePicker name="publishedOn" aria-label="Published on" value={null} onChange={vi.fn()} />);
 

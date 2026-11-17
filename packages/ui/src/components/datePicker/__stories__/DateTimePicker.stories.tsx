@@ -50,6 +50,7 @@ const meta = {
         ...fieldArgTypes,
         locale: { control: "select", options: ["en-GB", "en-US", "de-AT", "fr-FR", "ja-JP"] },
         weekStartsOn: { control: "select", options: [0, 1, 2, 3, 4, 5, 6] },
+        isDateDisabled: { control: false },
         labels: { control: false },
         className: { control: false },
     },
@@ -161,6 +162,33 @@ export const Clearable: Story = {
 
 export const MinAndMax: Story = {
     args: { min: "2026-11-01", max: "2026-12-31", description: "Until the end of the year" },
+};
+
+/**
+ * `isDateDisabled` disables more days, such as weekends. They are struck through in the calendar, and a typed one shows an error.
+ */
+export const DisabledDates: Story = {
+    args: {
+        locale: "en-GB",
+        isDateDisabled: (date: string) => [0, 6].includes(new Date(date).getUTCDay()),
+        description: "Weekdays only",
+    },
+    play: async ({ args, canvas }) => {
+        await userEvent.click(canvas.getByRole("button", { name: "Choose date" }));
+        const grid = await screen.findByRole("grid");
+        const saturday = within(grid).getByRole("button", { name: "Saturday, 7 November 2026" });
+        await expect(saturday).toHaveAttribute("aria-disabled", "true");
+        await userEvent.click(saturday);
+        await expect(args.onChange).not.toHaveBeenCalled();
+        await userEvent.keyboard("{Escape}");
+
+        const date = canvas.getByRole("textbox", { name: "Publish at" });
+        await userEvent.clear(date);
+        await userEvent.type(date, "14/11/2026");
+        await userEvent.tab();
+        await expect(date).toHaveAccessibleDescription("14/11/2026 can't be chosen.");
+        await expect(args.onChange).not.toHaveBeenCalled();
+    },
 };
 
 export const Error: Story = {

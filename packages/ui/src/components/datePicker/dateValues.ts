@@ -133,6 +133,26 @@ export function clampDate(date: IsoDate, min: IsoDate | undefined, max: IsoDate 
 }
 
 /**
+ * The day from `first` to `last` that is closest to `date` and that `isSelectable` accepts, or `undefined` when there is none. Of two
+ * equally close days, it is the later one. `date` must lie from `first` to `last`.
+ */
+export function nearestSelectableDay(date: IsoDate, first: IsoDate, last: IsoDate, isSelectable: (day: IsoDate) => boolean): IsoDate | undefined {
+    for (let distance = 0; ; distance++) {
+        const later = addDays(date, distance);
+        const earlier = addDays(date, -distance);
+        if (later > last && earlier < first) {
+            return undefined;
+        }
+        if (later <= last && isSelectable(later)) {
+            return later;
+        }
+        if (earlier >= first && isSelectable(earlier)) {
+            return earlier;
+        }
+    }
+}
+
+/**
  * The number of whole months from the month of `from` to the month of `to`, negative when `to` is earlier.
  */
 export function monthsBetween(from: IsoDate, to: IsoDate): number {

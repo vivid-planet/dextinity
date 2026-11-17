@@ -38,10 +38,15 @@ export type DatePickerOwnerState = FieldOwnerState & {
  * The calendar options shared by the date pickers.
  */
 export interface DatePickerCalendarProps {
-    /** The earliest day that can be chosen, as `YYYY-MM-DD`. */
+    /** The earliest day that can be chosen, as `YYYY-MM-DD`. A `value` before it shows no error; validate the value in the form. */
     min?: string;
-    /** The latest day that can be chosen, as `YYYY-MM-DD`. */
+    /** The latest day that can be chosen, as `YYYY-MM-DD`. A `value` after it shows no error; validate the value in the form. */
     max?: string;
+    /**
+     * Disables days in addition to `min` and `max`, e.g. weekends or holidays. Called with each day as `YYYY-MM-DD`. A `value` it disables
+     * shows no error; validate the value in the form.
+     */
+    isDateDisabled?: (date: string) => boolean;
     /**
      * The locale that formats and reads typed dates, and names months and weekdays, e.g. `de-AT`.
      *
@@ -76,8 +81,8 @@ export interface DatePickerProps extends DatePickerCalendarProps, PureControlPro
 }
 
 /**
- * A day, typed in the locale's format or chosen in a calendar. Typed text is read on blur or Enter; text that is no valid day, or lies
- * outside `min` and `max`, stays in the field with an error and leaves the value unchanged until it is corrected.
+ * A day, typed in the locale's format or chosen in a calendar. Typed text is read on blur or Enter; text that is no valid day, or a day
+ * that can't be chosen, stays in the field with an error and leaves the value unchanged until it is corrected.
  */
 export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(function DatePicker(
     {
@@ -88,6 +93,7 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(function
         onChange,
         min,
         max,
+        isDateDisabled,
         locale,
         weekStartsOn,
         clearable = false,
@@ -117,7 +123,7 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(function
 
     const date = isIsoDate(value) ? value : null;
     const draft = useTextDraft(date == null ? "" : formatDate(date, locale), (text) => {
-        const typed = readTypedDay(text, { locale, min, max, labels });
+        const typed = readTypedDay(text, { locale, min, max, isDateDisabled, labels });
         if (typed.error != null) {
             return typed.error;
         }
@@ -200,6 +206,7 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(function
                         }}
                         min={min}
                         max={max}
+                        isDateDisabled={isDateDisabled}
                         locale={locale}
                         weekStartsOn={weekStartsOn ?? localeWeekStart(locale)}
                         months={1}

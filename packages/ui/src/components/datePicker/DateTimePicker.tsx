@@ -59,7 +59,7 @@ export interface DateTimePickerProps extends DatePickerCalendarProps, PureContro
 
 /**
  * A day and a time of day, typed in the locale's format or chosen in a calendar and a list of times. Choosing a day keeps the time; without
- * one, the time is midnight. Typed text is read on blur or Enter; text that can't be read, or a day outside `min` and `max`, stays in its
+ * one, the time is midnight. Typed text is read on blur or Enter; text that can't be read, or a day that can't be chosen, stays in its
  * input with an error and leaves the value unchanged until it is corrected.
  */
 export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(function DateTimePicker(
@@ -71,6 +71,7 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
         onChange,
         min,
         max,
+        isDateDisabled,
         locale,
         weekStartsOn,
         clearable = false,
@@ -116,7 +117,7 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
     };
 
     const dateDraft = useTextDraft(current == null ? "" : formatDate(current.date, locale), (text) => {
-        const typed = readTypedDay(text, { locale, min, max, labels });
+        const typed = readTypedDay(text, { locale, min, max, isDateDisabled, labels });
         if (typed.error != null) {
             return typed.error;
         }
@@ -210,6 +211,7 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
                         }}
                         min={min}
                         max={max}
+                        isDateDisabled={isDateDisabled}
                         locale={locale}
                         weekStartsOn={weekStartsOn ?? localeWeekStart(locale)}
                         months={1}

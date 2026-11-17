@@ -17,6 +17,7 @@ import {
     isWithin,
     monthsBetween,
     monthWeeks,
+    nearestSelectableDay,
     startOfMonth,
     startOfWeek,
     today as getToday,
@@ -63,6 +64,8 @@ export interface CalendarProps {
     onSelect: (date: IsoDate) => void;
     min: IsoDate | undefined;
     max: IsoDate | undefined;
+    /** Disables days in addition to `min` and `max`. */
+    isDateDisabled: ((date: IsoDate) => boolean) | undefined;
     locale: string | undefined;
     weekStartsOn: number;
     /** How many months are shown side by side. */
@@ -82,9 +85,18 @@ function monthKey(date: IsoDate) {
  * The month grid inside the date pickers' popup, with a menu in the header that switches the year. Arrow keys move by day and week,
  * Home and End to the start and end of the week, Page Up and Page Down by month, and with Shift by year.
  */
-export function Calendar({ start, end, range, onSelect, min, max, locale, weekStartsOn, months, showToday, labels }: CalendarProps) {
+export function Calendar({ start, end, range, onSelect, min, max, isDateDisabled, locale, weekStartsOn, months, showToday, labels }: CalendarProps) {
     const today = getToday();
-    const [focused, setFocused] = useState(() => clampDate(start ?? today, min, max));
+    const isDaySelectable = (day: IsoDate) => isWithin(day, min, max) && isDateDisabled?.(day) !== true;
+    const selectableDayNear = (day: IsoDate, firstVisibleMonth: IsoDate) =>
+        nearestSelectableDay(day, firstVisibleMonth, endOfMonth(addMonths(firstVisibleMonth, months - 1)), isDaySelectable) ?? day;
+    const [focused, setFocused] = useState(() => {
+        if (start != null) {
+            return clampDate(start, min, max);
+        }
+        const clampedToday = clampDate(today, min, max);
+        return selectableDayNear(clampedToday, startOfMonth(clampedToday));
+    });
     const [visibleMonth, setVisibleMonth] = useState(() => startOfMonth(focused));
     const [view, setView] = useState<CalendarView>("days");
     const [hovered, setHovered] = useState<IsoDate | null>(null);
@@ -121,7 +133,7 @@ export function Calendar({ start, end, range, onSelect, min, max, locale, weekSt
         setFocused((current) => {
             const shifted = clampDate(addMonths(current, delta), min, max);
             const lastDay = endOfMonth(addMonths(nextVisible, months - 1));
-            return shifted < nextVisible || shifted > lastDay ? clampDate(nextVisible, min, max) : shifted;
+            return selectableDayNear(shifted < nextVisible || shifted > lastDay ? clampDate(nextVisible, min, max) : shifted, nextVisible);
         });
     };
 
@@ -183,7 +195,7 @@ export function Calendar({ start, end, range, onSelect, min, max, locale, weekSt
     const canGoForward = max == null || (view === "months" ? visibleMonth.slice(0, 4) < max.slice(0, 4) : monthKey(lastVisibleMonth) < monthKey(max));
 
     const renderDay = (day: IsoDate) => {
-        const disabled = !isWithin(day, min, max);
+        const disabled = !isDaySelectable(day);
         const selected = day === start || day === end;
         const isRangeStart = range && rangeEnd != null && day === rangeLow;
         const isRangeEnd = range && rangeEnd != null && day === rangeHigh;
@@ -312,10 +324,12 @@ export function Calendar({ start, end, range, onSelect, min, max, locale, weekSt
                                 aria-current={monthKey(month) === monthKey(visibleMonth) ? "true" : undefined}
                                 data-focus-target={monthKey(month) === monthKey(visibleMonth) ? "" : undefined}
                                 onClick={() => {
-                                    const shifted = clampDate(`${monthKey(month)}-${focused.slice(8)}`, min, max);
+                                    const shifted = clampDate(addMonths(focused, monthsBetween(focused, month)), min, max);
                                     moveFocusRef.current = true;
                                     setVisibleMonth(month);
-                                    setFocused(monthKey(shifted) === monthKey(month) ? shifted : clampDate(month, min, max));
+                                    setFocused(
+                                        selectableDayNear(monthKey(shifted) === monthKey(month) ? shifted : clampDate(month, min, max), month),
+                                    );
                                     setView("days");
                                 }}
                             >
@@ -359,7 +373,7 @@ export function Calendar({ start, end, range, onSelect, min, max, locale, weekSt
             )}
             {showToday && view === "days" && (
                 <div className={styles.footer}>
-                    <button type="button" className={styles.todayButton} disabled={!isWithin(today, min, max)} onClick={() => onSelect(today)}>
+                    <button type="button" className={styles.todayButton} disabled={!isDaySelectable(today)} onClick={() => onSelect(today)}>
                         {labels.today}
                     </button>
                 </div>

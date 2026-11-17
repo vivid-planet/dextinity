@@ -66,7 +66,7 @@ function toRange(start: IsoDate | null, end: IsoDate | null): DateRange | null {
 
 /**
  * A range of days, typed in the locale's format or chosen in a calendar: the first click chooses the start, the second the end. Typed
- * text is read on blur or Enter; text that is no valid day, or lies outside `min` and `max`, stays in its input with an error and leaves
+ * text is read on blur or Enter; text that is no valid day, or a day that can't be chosen, stays in its input with an error and leaves
  * the value unchanged until it is corrected.
  */
 export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps>(function DateRangePicker(
@@ -78,6 +78,7 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
         onChange,
         min,
         max,
+        isDateDisabled,
         locale,
         weekStartsOn,
         clearable = false,
@@ -117,7 +118,7 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
     const editable = !disabled && !readOnly;
 
     const readDay = (text: string, apply: (day: IsoDate | null) => void) => {
-        const typed = readTypedDay(text, { locale, min, max, labels });
+        const typed = readTypedDay(text, { locale, min, max, isDateDisabled, labels });
         if (typed.error != null) {
             return typed.error;
         }
@@ -237,6 +238,7 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
                         }}
                         min={min}
                         max={max}
+                        isDateDisabled={isDateDisabled}
                         locale={locale}
                         weekStartsOn={weekStartsOn ?? localeWeekStart(locale)}
                         months={months}

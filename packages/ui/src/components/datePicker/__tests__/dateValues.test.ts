@@ -11,6 +11,7 @@ import {
     localeWeekStart,
     monthsBetween,
     monthWeeks,
+    nearestSelectableDay,
     parseDate,
     parseTime,
     splitDateTime,
@@ -188,5 +189,15 @@ describe("closestTimeIndex", () => {
         expect(closestTimeIndex(times, { hours: 8, minutes: 40 })).toBe(17);
         expect(closestTimeIndex(times, { hours: 8, minutes: 45 })).toBe(17);
         expect(closestTimeIndex(times, { hours: 23, minutes: 59 })).toBe(47);
+    });
+});
+
+describe("nearestSelectableDay", () => {
+    const isWeekday = (date: string) => ![0, 6].includes(new Date(date).getUTCDay());
+
+    it("finds the closest selectable day between the bounds", () => {
+        expect(nearestSelectableDay("2026-11-21", "2026-11-01", "2026-11-30", isWeekday)).toBe("2026-11-20");
+        expect(nearestSelectableDay("2026-11-21", "2026-11-21", "2026-11-30", isWeekday)).toBe("2026-11-23");
+        expect(nearestSelectableDay("2026-11-21", "2026-11-21", "2026-11-22", isWeekday)).toBeUndefined();
     });
 });

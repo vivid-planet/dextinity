@@ -1,5 +1,5 @@
 import type { ComponentNameToClassKey, ThemeOptions } from "@mui/material";
-import type { Components, Theme } from "@mui/material/styles";
+import type { Theme } from "@mui/material/styles";
 import type {} from "@mui/x-data-grid/themeAugmentation";
 import type {} from "@mui/x-date-pickers/themeAugmentation";
 import type {} from "@mui/x-date-pickers-pro/themeAugmentation";
@@ -62,12 +62,14 @@ import { getMuiToggleButtonGroup } from "./MuiToggleButtonGroup";
 import { getMuiTooltip } from "./MuiTooltip";
 import { getMuiTypography } from "./MuiTypography";
 
-export type GetMuiComponentTheme<ClassesName extends keyof ComponentNameToClassKey> = (
-    component: Components[ClassesName],
-    theme: Theme,
-) => Components[ClassesName];
+export type ThemeComponents = NonNullable<ThemeOptions["components"]>;
 
-export const getComponentsTheme = (components: Components, theme: Theme): ThemeOptions["components"] => ({
+export type GetMuiComponentTheme<ClassesName extends keyof ComponentNameToClassKey> = (
+    component: ThemeComponents[ClassesName],
+    theme: Theme,
+) => ThemeComponents[ClassesName];
+
+export const getComponentsTheme = (components: ThemeComponents, theme: Theme): ThemeOptions["components"] => ({
     ...components,
     MuiAccordion: getMuiAccordion(components.MuiAccordion, theme),
     MuiAlert: getMuiAlert(components.MuiAlert, theme),

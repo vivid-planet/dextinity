@@ -1,4 +1,4 @@
-import type { ComponentNameToClassKey, ComponentsPropsList, Interpolation, Theme } from "@mui/material/styles";
+import type { ComponentNameToClassKey, ComponentsPropsList, CssVarsTheme, Interpolation, Theme } from "@mui/material/styles";
 import { deepmerge } from "@mui/utils";
 
 type OwnerState<PropsName extends keyof ComponentsPropsList> = PropsName extends keyof ComponentsPropsList
@@ -6,6 +6,9 @@ type OwnerState<PropsName extends keyof ComponentsPropsList> = PropsName extends
     : Record<string, unknown>;
 
 type OverrideProps<PropsName extends keyof ComponentsPropsList> = OwnerState<PropsName> & { theme: Theme } & Record<string, unknown>;
+
+// Matches the theme type of `ThemeOptions["components"]`
+type ComponentsTheme = Omit<Theme, "components" | "palette"> & CssVarsTheme;
 
 type ClassKey<ClassesName extends keyof ComponentNameToClassKey> = ComponentNameToClassKey[ClassesName];
 
@@ -50,9 +53,9 @@ const getOverridesInterpolation = <PropsName extends keyof ComponentsPropsList>(
 
 // Overload for standard MUI components
 export function mergeOverrideStyles<ComponentName extends keyof ComponentNameToClassKey & keyof ComponentsPropsList>(
-    passedIn?: Partial<OverridesStyleRules<ClassKey<ComponentName>>>,
-    dextinity?: Partial<OverridesStyleRules<ClassKey<ComponentName>>>,
-): Partial<OverridesStyleRules<ClassKey<ComponentName>>>;
+    passedIn?: Partial<OverridesStyleRules<ClassKey<ComponentName>, ComponentName, ComponentsTheme>>,
+    dextinity?: Partial<OverridesStyleRules<ClassKey<ComponentName>, ComponentName, ComponentsTheme>>,
+): Partial<OverridesStyleRules<ClassKey<ComponentName>, ComponentName, ComponentsTheme>>;
 
 // Overload for components with custom owner state (e.g. MuiPickersTextField from `@mui/x-date-pickers`)
 export function mergeOverrideStyles<TStyleOverrides extends Record<string, any>>(

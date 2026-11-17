@@ -47,7 +47,7 @@ How to build a form from fields, sections, and buttons, and how to show the resu
 - **Warning:** the value can be saved, but the user should check it. Set `state="warning"` on the `Field`, and the message as its `validationMessage`.
 - **Success:** a check of the value passed, for example that a domain is reachable. Set `state="success"` on the `Field`, and the message as its `validationMessage`.
 - The validation message replaces the description until the `state` is `default` again.
-- A control checks only what the user enters: the date pickers show an error for a typed day that can't be chosen, e.g. one outside `min` and `max`. A `value` that the form sets shows no error, even when it is out of range or disabled, the same as a disabled option in a `Select` or `Combobox`: validate the value in the form, and show the result as the field's `validationMessage`.
+- A control checks only what the user enters: the date pickers show an error for a typed day or time that can't be chosen, e.g. one outside `min` and `max`. A `value` that the form sets shows no error, even when it is out of range or disabled, the same as a disabled option in a `Select` or `Combobox`: validate the value in the form, and show the result as the field's `validationMessage`.
 - An error about the whole form, for example when saving fails, goes above the buttons, in a `FieldValidationMessage` with `state="error"`.
 
 <Canvas of={FormsStories.Validation} />

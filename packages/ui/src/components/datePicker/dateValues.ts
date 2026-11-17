@@ -305,6 +305,13 @@ export function formatTime(time: TimeOfDay, locale: string | undefined): string 
 }
 
 /**
+ * The time of day as `HH:mm` on the 24-hour clock.
+ */
+export function toIsoTime({ hours, minutes }: TimeOfDay): string {
+    return `${pad(hours)}:${pad(minutes)}`;
+}
+
+/**
  * Reads a typed time of day: `9:30`, `09.30`, `0930`, `9`, or with `am`/`pm`, e.g. `9:30 pm`. Returns `null` for anything else.
  */
 export function parseTime(text: string): TimeOfDay | null {

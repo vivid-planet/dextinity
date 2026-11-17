@@ -12,6 +12,8 @@ export interface DateInputErrorLabels {
     dateDisabled: (date: string) => string;
     /** Shown for typed text that isn't a time of day, with an example time in the expected format. */
     invalidTime: (example: string) => string;
+    /** Shown for a time that `isTimeDisabled` disables on the chosen day, with the formatted time. */
+    timeDisabled: (time: string) => string;
 }
 
 export const defaultDateInputErrorLabels: DateInputErrorLabels = {
@@ -20,6 +22,7 @@ export const defaultDateInputErrorLabels: DateInputErrorLabels = {
         min != null && max != null ? `Choose a date from ${min} to ${max}.` : min != null ? `Choose ${min} or later.` : `Choose ${max} or earlier.`,
     dateDisabled: (date) => `${date} can't be chosen.`,
     invalidTime: (example) => `Enter a time like ${example}.`,
+    timeDisabled: (time) => `${time} can't be chosen.`,
 };
 
 /**

@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { forwardRef, type KeyboardEvent, useCallback, useId, useRef, useState } from "react";
+import { forwardRef, type KeyboardEvent, useCallback, useEffect, useId, useRef, useState } from "react";
 
 import { ControlFrame, type PureControlProps, useControlState } from "../field/ControlFrame";
 import type { FieldOwnerState } from "../field/Field";
@@ -7,7 +7,17 @@ import { Icon } from "../icon/Icon";
 import { CalendarPopover } from "./CalendarPopover";
 import { type DatePickerCalendarProps, type DatePickerLabels, defaultDatePickerLabels } from "./DatePicker";
 import styles from "./DateTimePicker.module.scss";
-import { formatDate, formatTime, type IsoDate, joinDateTime, localeWeekStart, parseTime, splitDateTime, type TimeOfDay } from "./dateValues";
+import {
+    formatDate,
+    formatTime,
+    type IsoDate,
+    joinDateTime,
+    localeWeekStart,
+    parseTime,
+    splitDateTime,
+    type TimeOfDay,
+    toIsoTime,
+} from "./dateValues";
 import { TimePopover } from "./TimePopover";
 import { invalidTimeMessage, readTypedDay } from "./typedDay";
 import { useTextDraft } from "./useTextDraft";
@@ -53,14 +63,21 @@ export interface DateTimePickerProps extends DatePickerCalendarProps, PureContro
      * @defaultValue `15`
      */
     timeStep?: number;
+    /**
+     * Disables times of a day, e.g. outside office hours. Called with the time as `HH:mm` and the local day as `YYYY-MM-DD`, so each day
+     * can have its own times. A `value` it disables shows no error; validate the value in the form.
+     */
+    isTimeDisabled?: (time: string, date: string) => boolean;
     /** Texts of the inputs, the buttons, and the calendar, for translation. */
     labels?: Partial<DateTimePickerLabels>;
 }
 
 /**
  * A day and a time of day, typed in the locale's format or chosen in a calendar and a list of times. Choosing a day keeps the time; without
- * one, the time is midnight. Typed text is read on blur or Enter; text that can't be read, or a day that can't be chosen, stays in its
- * input with an error and leaves the value unchanged until it is corrected.
+ * one, the time is midnight. Typed text is read on blur or Enter; text that can't be read, or a day or time that can't be chosen, stays in
+ * its input with an error and leaves the value unchanged until it is corrected. A typed time that can't be chosen is checked again when
+ * the day changes. A kept time that can't be chosen on the new day shows an error too, until the time is changed or `isTimeDisabled`
+ * allows it; without a time, a day on which midnight can't be chosen waits for a time without an error.
  */
 export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(function DateTimePicker(
     {
@@ -78,6 +95,7 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
         placeholder,
         timePlaceholder,
         timeStep = 15,
+        isTimeDisabled,
         labels: labelsProp,
         id,
         className,
@@ -92,6 +110,8 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
     const [timeListOpen, setTimeListOpen] = useState(false);
     // A time typed before there is a day, used once a day is chosen
     const [pendingTime, setPendingTime] = useState<TimeOfDay | null>(null);
+    // A day chosen while the kept time is disabled on it, used once an allowed time is set
+    const [pendingDay, setPendingDay] = useState<{ date: IsoDate; value: string | null } | null>(null);
     const inputRef = useRef<HTMLInputElement | null>(null);
     const timeInputRef = useRef<HTMLInputElement>(null);
     const setInputRef = useCallback(
@@ -108,23 +128,24 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
 
     const current = splitDateTime(value);
     const time = current?.time ?? pendingTime;
+    if (pendingDay != null && pendingDay.value !== value) {
+        setPendingDay(null);
+    }
+    const pendingDate = pendingDay?.date ?? null;
+    const date = pendingDate ?? current?.date ?? null;
     const { disabled, readOnly } = useControlState(disabledProp, readOnlyProp);
     const editable = !disabled && !readOnly;
 
-    const change = (date: IsoDate | null, nextTime: TimeOfDay | null) => {
+    const isTimeDisabledOn = (day: IsoDate, timeOfDay: TimeOfDay) => isTimeDisabled?.(toIsoTime(timeOfDay), day) === true;
+
+    const change = (day: IsoDate | null, nextTime: TimeOfDay | null) => {
         setPendingTime(null);
-        onChange(date == null ? null : joinDateTime(date, nextTime ?? midnight));
+        setPendingDay(null);
+        onChange(day == null ? null : joinDateTime(day, nextTime ?? midnight));
     };
 
-    const dateDraft = useTextDraft(current == null ? "" : formatDate(current.date, locale), (text) => {
-        const typed = readTypedDay(text, { locale, min, max, isDateDisabled, labels });
-        if (typed.error != null) {
-            return typed.error;
-        }
-        change(typed.day, typed.day == null ? null : time);
-    });
     const timeDraft = useTextDraft(time == null ? "" : formatTime(time, locale), (text) => {
-        if (text.trim() === "" && current == null) {
+        if (text.trim() === "" && date == null) {
             setPendingTime(null);
             return;
         }
@@ -132,14 +153,54 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
         if (parsed == null) {
             return invalidTimeMessage(locale, labels);
         }
-        if (current == null) {
+        if (date == null) {
             setPendingTime(parsed);
+        } else if (isTimeDisabledOn(date, parsed)) {
+            return labels.timeDisabled(formatTime(parsed, locale));
         } else {
-            change(current.date, parsed);
+            change(date, parsed);
         }
     });
 
-    const draftError = dateDraft.error ?? timeDraft.error;
+    const rejectedTimeAllowedOn = (day: IsoDate) => {
+        const rejectedTime = timeDraft.error == null ? null : parseTime(timeDraft.text);
+        return rejectedTime != null && !isTimeDisabledOn(day, rejectedTime) ? rejectedTime : null;
+    };
+
+    const chooseDay = (day: IsoDate | null) => {
+        if (day == null) {
+            change(null, null);
+            return;
+        }
+        const rejectedTime = rejectedTimeAllowedOn(day);
+        if (rejectedTime != null) {
+            timeDraft.reset();
+            change(day, rejectedTime);
+        } else if (isTimeDisabledOn(day, time ?? midnight)) {
+            setPendingDay({ date: day, value });
+        } else {
+            change(day, time);
+        }
+    };
+
+    const dateDraft = useTextDraft(date == null ? "" : formatDate(date, locale), (text) => {
+        const typed = readTypedDay(text, { locale, min, max, isDateDisabled, labels });
+        if (typed.error != null) {
+            return typed.error;
+        }
+        chooseDay(typed.day);
+    });
+
+    const isPendingDayAllowed = pendingDate != null && !isTimeDisabledOn(pendingDate, time ?? midnight);
+    useEffect(() => {
+        if (isPendingDayAllowed) {
+            change(pendingDate, time);
+        }
+    });
+
+    const keptTimeError =
+        pendingDate != null && time != null && isTimeDisabledOn(pendingDate, time) ? labels.timeDisabled(formatTime(time, locale)) : undefined;
+    const draftError = dateDraft.error ?? timeDraft.error ?? keptTimeError;
 
     const onKeyDown = (draft: typeof dateDraft, openPopup: (open: boolean) => void) => (event: KeyboardEvent<HTMLInputElement>) => {
         if (event.key === "Enter") {
@@ -155,10 +216,10 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
 
     const chooseTime = (nextTime: TimeOfDay) => {
         timeDraft.reset();
-        if (current == null) {
+        if (date == null) {
             setPendingTime(nextTime);
         } else {
-            change(current.date, nextTime);
+            change(date, nextTime);
         }
         setTimeListOpen(false);
     };
@@ -201,12 +262,12 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
                         disabled={!editable}
                         finalFocus={inputRef}
                         labelledBy={nameId}
-                        start={current?.date ?? null}
+                        start={date}
                         end={null}
                         range={false}
                         onSelect={(day) => {
                             dateDraft.reset();
-                            change(day, time);
+                            chooseDay(day);
                             setOpen(false);
                         }}
                         min={min}
@@ -247,6 +308,7 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
                         }}
                         value={time}
                         onSelect={chooseTime}
+                        isTimeDisabled={(timeOfDay) => date != null && isTimeDisabledOn(date, timeOfDay)}
                         step={timeStep}
                         locale={locale}
                         triggerLabel={labels.openTimeList}

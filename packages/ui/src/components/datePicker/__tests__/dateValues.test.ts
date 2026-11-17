@@ -17,6 +17,7 @@ import {
     splitDateTime,
     startOfWeek,
     timesOfDay,
+    toIsoTime,
 } from "../dateValues";
 
 describe("isIsoDate", () => {
@@ -124,6 +125,13 @@ describe("formatTime", () => {
     it("uses the locale's clock", () => {
         expect(formatTime({ hours: 21, minutes: 5 }, "de-AT")).toBe("21:05");
         expect(formatTime({ hours: 21, minutes: 5 }, "en-US")).toBe("09:05 PM");
+    });
+});
+
+describe("toIsoTime", () => {
+    it("writes the time as HH:mm on the 24-hour clock, so times compare as text", () => {
+        expect(toIsoTime({ hours: 7, minutes: 5 })).toBe("07:05");
+        expect(toIsoTime({ hours: 18, minutes: 30 })).toBe("18:30");
     });
 });
 

@@ -30,6 +30,14 @@ export function metaObjectOf(sourceFile: ts.SourceFile) {
     return metaDeclaration?.initializer && unwrapObjectLiteral(metaDeclaration.initializer);
 }
 
+export function metaComponentNameOf(storyFile: ts.SourceFile) {
+    const meta = metaObjectOf(storyFile);
+    const componentProperty = meta && findProperty(meta, "component");
+    return componentProperty && ts.isPropertyAssignment(componentProperty) && ts.isIdentifier(componentProperty.initializer)
+        ? componentProperty.initializer.text
+        : undefined;
+}
+
 export function storyExportsOf(sourceFile: ts.SourceFile) {
     return sourceFile.statements
         .filter(isExportedVariableStatement)
@@ -52,6 +60,11 @@ export function renderBodyOf(storyObject: ts.ObjectLiteralExpression, sourceFile
         return meta && meta !== storyObject ? renderBodyOf(meta, sourceFile) : undefined;
     }
     return declaredRenderBody;
+}
+
+export function rendersWithDefaultRender(storyObject: ts.ObjectLiteralExpression, sourceFile: ts.SourceFile) {
+    const meta = metaObjectOf(sourceFile);
+    return declaredRenderBodyOf(storyObject, sourceFile) === "meta" && (!meta || declaredRenderBodyOf(meta, sourceFile) === "meta");
 }
 
 function declaredRenderBodyOf(storyObject: ts.ObjectLiteralExpression, sourceFile: ts.SourceFile): ts.ConciseBody | "meta" | "unknown" {

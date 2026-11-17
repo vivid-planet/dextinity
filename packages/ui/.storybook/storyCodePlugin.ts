@@ -3,8 +3,10 @@ import type { Plugin } from "vite";
 
 import { childrenPlaceholder } from "../src/storybook/childrenPlaceholder";
 import {
+    metaComponentNameOf,
     parseStoryFile,
     renderBodyOf,
+    rendersWithDefaultRender,
     storyExportsOf,
     type StyleImport,
     styleImportReferencesIn,
@@ -18,7 +20,7 @@ type TextEdit = { start: number; end: number; text: string };
  * Adds parameters to each story, for the code that its docs show:
  *
  * - `renderSource`: the body of the `render` function that the story renders with, with `useState` in place of the story-only
- *   `useControlledArg`.
+ *   `useControlledArg`. For a story without one: `meta.component` with `{...args}`.
  * - `styleSource`: the `.module.scss` files that the body uses.
  */
 export function storyCodePlugin(): Plugin {
@@ -30,25 +32,37 @@ export function storyCodePlugin(): Plugin {
                 return undefined;
             }
             const storyFile = parseStoryFile(code, id);
-            const styleImports = styleImportsOf(storyFile);
-            const renderSourceFile = parseStoryFile(withRenderSourceEdits(storyFile, styleImports), id);
-            const renderSources = new Map(
-                storyExportsOf(renderSourceFile).map(({ exportName, storyObject }) => [exportName, renderSourceOf(storyObject, renderSourceFile)]),
-            );
-            const storyParametersAssignments = storyExportsOf(storyFile).flatMap(({ exportName, storyObject }) => {
-                const renderSource = renderSources.get(exportName);
-                const renderBody = renderBodyOf(storyObject, storyFile);
-                if (renderSource === undefined || !renderBody) {
-                    return [];
-                }
-                return [storyParametersAssignment(exportName, renderSource, styleImportsUsedIn(renderBody, styleImports))];
-            });
-            if (storyParametersAssignments.length === 0) {
+            const storyCodes = storyCodesOf(storyFile);
+            if (storyCodes.length === 0) {
                 return undefined;
             }
-            return { code: [code, ...styleImports.map(rawStyleImport), ...storyParametersAssignments].join("\n"), map: null };
+            const rawStyleImports = styleImportsOf(storyFile).map(rawStyleImport);
+            return { code: [code, ...rawStyleImports, ...storyCodes.map(storyParametersAssignment)].join("\n"), map: null };
         },
     };
+}
+
+type StoryCode = { exportName: string; renderSource: string; usedStyleImports: StyleImport[] };
+
+export function storyCodesOf(storyFile: ts.SourceFile): StoryCode[] {
+    const styleImports = styleImportsOf(storyFile);
+    const renderSourceFile = parseStoryFile(withRenderSourceEdits(storyFile, styleImports), storyFile.fileName);
+    const renderSources = new Map(
+        storyExportsOf(renderSourceFile).map(({ exportName, storyObject }) => [exportName, renderSourceOf(storyObject, renderSourceFile)]),
+    );
+    return storyExportsOf(storyFile).flatMap(({ exportName, storyObject }) => {
+        const renderBody = renderBodyOf(storyObject, storyFile);
+        const renderSource = renderBody ? renderSources.get(exportName) : defaultRenderSourceOf(storyObject, storyFile);
+        if (renderSource === undefined) {
+            return [];
+        }
+        return [{ exportName, renderSource, usedStyleImports: renderBody ? styleImportsUsedIn(renderBody, styleImports) : [] }];
+    });
+}
+
+function defaultRenderSourceOf(storyObject: ts.ObjectLiteralExpression, storyFile: ts.SourceFile) {
+    const componentName = rendersWithDefaultRender(storyObject, storyFile) ? metaComponentNameOf(storyFile) : undefined;
+    return componentName && `<${componentName} {...args}>${childrenPlaceholder}</${componentName}>`;
 }
 
 function withRenderSourceEdits(storyFile: ts.SourceFile, styleImports: StyleImport[]) {
@@ -149,7 +163,7 @@ function rawStyleSourceName(importName: string) {
     return `rawStyleSourceOf_${importName}`;
 }
 
-function storyParametersAssignment(exportName: string, renderSource: string, usedStyleImports: StyleImport[]) {
+function storyParametersAssignment({ exportName, renderSource, usedStyleImports }: StoryCode) {
     const parameters = `${exportName}.parameters`;
     const renderSourceParameter = `renderSource: ${JSON.stringify(renderSource)}`;
     const styleSourceNames = usedStyleImports.map(({ importName }) => rawStyleSourceName(importName));

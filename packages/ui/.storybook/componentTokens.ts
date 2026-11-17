@@ -6,7 +6,7 @@ import { compile } from "sass";
 import ts from "typescript";
 
 import { parseTokens, type TokenDefinition } from "../src/storybook/docs/parseTokens";
-import { findProperty, metaObjectOf, parseStoryFile } from "./storyFile";
+import { findProperty, metaComponentNameOf, metaObjectOf, parseStoryFile } from "./storyFile";
 
 const sourceDirectory = path.resolve(import.meta.dirname, "../src");
 const indexFile = path.join(sourceDirectory, "index.ts");
@@ -87,14 +87,6 @@ function metaComponentFileOf(storyFilePath: string) {
         .filter(ts.isImportDeclaration)
         .find((statement) => importedNamesOf(statement).includes(componentName));
     return importDeclaration && resolveImport(importDeclaration, storyFilePath);
-}
-
-function metaComponentNameOf(storyFile: ts.SourceFile) {
-    const meta = metaObjectOf(storyFile);
-    const componentProperty = meta && findProperty(meta, "component");
-    return componentProperty && ts.isPropertyAssignment(componentProperty) && ts.isIdentifier(componentProperty.initializer)
-        ? componentProperty.initializer.text
-        : undefined;
 }
 
 function importedNamesOf(importDeclaration: ts.ImportDeclaration) {

@@ -54,7 +54,8 @@ export const createAdminHostTools = ({
 
             const path = `${scopeUrl}/pages/pagetree/${categoryToUrlParam(category)}/${id}/edit`;
             history.push(path);
-            return `Opened the page at ${path}.`;
+            // A page with unsaved changes asks the user before it is left, and the user may decide to stay.
+            return `Asked the editor to open the page at ${path}. If the page that was open has unsaved changes, the user first decides whether to discard them and may stay on it, so check with get_page_state ("pageTreeNodeId") which page is open before you refer to it.`;
         },
     },
     {

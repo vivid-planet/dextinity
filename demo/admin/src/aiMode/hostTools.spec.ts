@@ -50,6 +50,12 @@ describe("open_page", () => {
         expect(history.push).toHaveBeenCalledWith(`${scopeUrl}/pages/pagetree/top-menu/${nodeId}/edit`);
     });
 
+    it("doesn't claim the page is open, as the user may decide to stay on a page with unsaved changes", () => {
+        const { tool } = getTool({ name: "open_page" });
+
+        expect(tool.handler({ id: nodeId, category: "topMenu" })).toContain("check with get_page_state");
+    });
+
     it("refuses an ID that is no UUID, so it cannot reach another path", () => {
         const { tool, history } = getTool({ name: "open_page" });
 

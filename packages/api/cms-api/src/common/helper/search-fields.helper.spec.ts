@@ -1,20 +1,20 @@
 import type { EntityMetadata } from "@mikro-orm/postgresql";
 import { describe, expect, it } from "vitest";
 
-import { ExcludeFromSearch } from "../decorators/exclude-from-search.decorator.js";
+import { Searchable } from "../decorators/searchable.decorator.js";
 import { getSearchFieldsFromMetadata } from "./search-fields.helper.js";
 
 class Manufacturer {
     name: string;
 
-    @ExcludeFromSearch()
+    @Searchable(false)
     internalNote: string;
 }
 
 class Product {
     title: string;
 
-    @ExcludeFromSearch()
+    @Searchable(false)
     slug: string;
 
     manufacturer: Manufacturer;
@@ -47,9 +47,25 @@ describe("getSearchFieldsFromMetadata", () => {
         expect(getSearchFieldsFromMetadata(metadata)).toEqual([{ name: "manufacturer.name", needsCastToText: false }]);
     });
 
+    it("should search a field again that a subclass makes searchable", () => {
+        class ProductWithSearchableSlug extends Product {
+            @Searchable()
+            declare slug: string;
+        }
+        const metadata = createMetadata(ProductWithSearchableSlug, [
+            { name: "title", type: "string", kind: "scalar", columnTypes: ["text"] },
+            { name: "slug", type: "string", kind: "scalar", columnTypes: ["text"] },
+        ]);
+
+        expect(getSearchFieldsFromMetadata(metadata)).toEqual([
+            { name: "title", needsCastToText: false },
+            { name: "slug", needsCastToText: false },
+        ]);
+    });
+
     it("should skip a relation that is excluded from search", () => {
         class ProductWithExcludedManufacturer {
-            @ExcludeFromSearch()
+            @Searchable(false)
             manufacturer: Manufacturer;
         }
         const metadata = createMetadata(ProductWithExcludedManufacturer, [

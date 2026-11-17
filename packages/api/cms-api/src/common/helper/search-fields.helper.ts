@@ -1,10 +1,10 @@
 import type { EntityMetadata } from "@mikro-orm/postgresql";
 
-import { EXCLUDE_FROM_SEARCH_METADATA_KEY } from "../decorators/exclude-from-search.decorator.js";
+import { SEARCHABLE_METADATA_KEY } from "../decorators/searchable.decorator.js";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function isExcludedFromSearch(metadataClass: any, propName: string): boolean {
-    return Reflect.getMetadata(EXCLUDE_FROM_SEARCH_METADATA_KEY, metadataClass, propName) === true;
+export function isSearchable(metadataClass: any, propName: string): boolean {
+    return Reflect.getMetadata(SEARCHABLE_METADATA_KEY, metadataClass, propName) ?? true;
 }
 
 export type SearchField = {
@@ -25,7 +25,7 @@ export type SearchField = {
 export function getSearchFieldsFromMetadata(metadata: EntityMetadata): SearchField[] {
     return metadata.props
         .filter((prop) => prop.name != "status")
-        .filter((prop) => !isExcludedFromSearch(metadata.class, prop.name) && !prop.name.startsWith("scope_"))
+        .filter((prop) => isSearchable(metadata.class, prop.name) && !prop.name.startsWith("scope_"))
         .reduce((acc, prop) => {
             if (prop.type === "string" || prop.type === "text" || prop.type === "uuid") {
                 acc.push({ name: prop.name, needsCastToText: prop.type === "uuid" || prop.columnTypes.includes("uuid") });
@@ -36,7 +36,7 @@ export function getSearchFieldsFromMetadata(metadata: EntityMetadata): SearchFie
                 prop.targetMeta.props
                     .filter(
                         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                        (innerProp) => !isExcludedFromSearch(prop.targetMeta!.class, innerProp.name) && !innerProp.name.startsWith("scope_"),
+                        (innerProp) => isSearchable(prop.targetMeta!.class, innerProp.name) && !innerProp.name.startsWith("scope_"),
                     )
                     .forEach((innerProp) => {
                         if (innerProp.type === "string" || innerProp.type === "text" || innerProp.type === "uuid") {

@@ -26,7 +26,6 @@ services:
     - build_command: |-
           CI=true node copy-project-files.js &&
           pnpm --filter "dextinity-demo-site^..." run build &&
-          ./demo/site/intl-update.sh &&
           MAILER_HOST=build MAILER_PORT=25 CONTACT_FORM_FROM_EMAIL=build@example.com CONTACT_FORM_TO_EMAIL=build@example.com RECAPTCHA_SERVICE_ACCOUNT=eyJwcm9qZWN0X2lkIjoiYnVpbGQifQ== pnpm --filter dextinity-demo-site run build &&
           pnpm --filter dextinity-demo-site exec dextinity-upload-build-assets --driver s3 --storage-key-prefix demo-site --bucket "$(printenv BUILD_ASSETS_S3_BUCKET)" \
           --region "$(printenv BUILD_ASSETS_S3_REGION)" --endpoint "$(printenv BUILD_ASSETS_S3_ENDPOINT)" \

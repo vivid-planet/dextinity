@@ -22,6 +22,7 @@ When running in the cloud/web environment and repo is cloned from scratch, if re
 
 1. Install dependencies (**only** run if not yet done by eg. pipeline setup, check if `node_modules` exists)
     - `NODE_USE_ENV_PROXY=1 ./install.sh`
+    - The demo translations (`demo/*/lang/`) are cloned by `intl:compile` when they're missing, which `build`, `lint` and starting the demo run. To pull the latest translations, run `pnpm --dir demo/<admin|api|site> run intl:update`.
 2. Run build for packages you are working on (**only** run if build file doesn't exist yet, check if `lib` exists in package)
     - `pnpm --recursive --filter '<package-name>' run build`
 

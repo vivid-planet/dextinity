@@ -95,7 +95,7 @@ The agent gets the text only, not where it is in the block. To change it, it rew
 
 The host tools are tools of the admin rather than of the MCP server, because they act on what only the admin knows: which page is open, and its unsaved state.
 
-- `open_page` opens a page tree node's document in the editor. It takes the node's category as well as its ID, because the category is part of the URL. Unsaved changes of the page that is open aren't lost silently: the admin asks the user, as on any navigation. vivid-websites also has tools to list and navigate to any admin page; they are left out because the AI Mode is limited to the page tree.
+- `open_page` opens a page tree node's document in the editor. It takes the node's category as well as its ID, because the category is part of the URL. Unsaved changes of the page that is open aren't lost silently: the admin asks the user, as on any navigation. Because the user may stay on the page, `open_page` reports only that it asked to open the page, and tells the agent to check with `get_page_state` (`pageTreeNodeId`) which page is open before referring to it. vivid-websites also has tools to list and navigate to any admin page; they are left out because the AI Mode is limited to the page tree.
 - `get_page_state` returns the page's metadata and the summary described above.
 - `edit_blocks` changes the content blocks, see below.
 

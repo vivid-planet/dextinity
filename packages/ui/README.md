@@ -82,6 +82,14 @@ A change that makes a comment inaccurate updates it in the same change.
 
 Components are pure UI and always controlled: a value comes with its change handler (`value` + `onChange`, `checked` + `onChange`, `open` + `onOpenChange`), and there is no `defaultValue`. A value prop is required when the component always has that value (`Checkbox`'s `checked`), and optional when the component also works without it (`ToolbarButton`'s `selected`).
 
+### Prop names
+
+- **Ids** — a prop that holds one id ends in `Id`, one that holds a list of ids ends in `Ids`: `currentId`, `expandedIds`.
+- **The current item** — the item of the current page or place is `current`, as in `aria-current`: `MainNavigationItem`'s `current`, `SideNav`'s `currentId`. Don't call it `active`.
+- **Colors** — a prop that picks a color is `color`, not `tone`.
+- **Values** — a value with the same meaning has the same name in every component. For example, the status colors use the words of `Field`'s `state`: `success`, `warning`, `error`.
+- **Sizes** — `size` takes `small`, `default`, and `large`, and `xlarge` when a component needs a larger one. The default is `default`. Don't use abbreviations such as `md` or `lg`.
+
 ### Form controls and `Field`
 
 Form controls are pure controls, like `Input`: `Select`, `DatePicker`, `Textarea`, `RadioGroup`, and the others have no `label`, `required`, `description`, `validationMessage`, or `state` props. `Field` holds all of that and the control follows it through `useFieldContext()`: the field's id, `aria-labelledby`, `aria-describedby`, `required`, `disabled`, `readOnly`, and invalid state. Usage: `<Field label="Location" required description="…" validationMessage="…"><Select … /></Field>`.

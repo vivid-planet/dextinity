@@ -9,7 +9,7 @@ export {
     type AssetThumbnailSlotProps,
 } from "./components/assetThumbnail/AssetThumbnail";
 export { Avatar, type AvatarOwnerState, type AvatarProps, type AvatarSlotProps, getInitials } from "./components/avatar/Avatar";
-export { Badge, type BadgeOwnerState, type BadgeProps } from "./components/badge/Badge";
+export { Badge, type BadgeCountProps, type BadgeMarkProps, type BadgeOwnerState, type BadgeProps } from "./components/badge/Badge";
 export { Banner, type BannerOwnerState, type BannerProps, type BannerSlotProps } from "./components/banner/Banner";
 export { Block, type BlockLabels, type BlockOwnerState, type BlockProps, type BlockSlotProps } from "./components/blockList/Block";
 export {

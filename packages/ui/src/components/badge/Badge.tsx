@@ -1,47 +1,59 @@
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type PropsWithChildren } from "react";
+import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 
 import { Icon } from "../icon/Icon";
 import { Tooltip } from "../tooltip/Tooltip";
 import styles from "./Badge.module.scss";
 
-type BadgeVariant = "warning" | "count" | "dot";
-
 /**
  * The resolved configuration that influences the component's appearance or behavior.
  */
 export type BadgeOwnerState = {
-    variant: BadgeVariant;
+    variant: BadgeProps["variant"];
 };
 
-export interface BadgeProps extends Omit<HTMLAttributes<HTMLSpanElement>, "className" | "children">, PropsWithChildren {
-    /**
-     * `warning` marks a problem such as a missing alt text, `count` a number of items, and `dot` something new or changed.
-     */
-    variant: BadgeVariant;
-    /**
-     * The explanation, shown as a tooltip on hover and keyboard focus. Required for `warning` and `dot`, where it is also the accessible
-     * name; without it they are hidden from assistive technology.
-     */
-    tooltip?: string;
+interface BadgeBaseProps extends Omit<HTMLAttributes<HTMLSpanElement>, "className" | "children"> {
     /** Added alongside the component's own classes. */
     className?: string;
 }
 
 /**
- * Marks a real exception on an element: a missing value, a count, or something new. One badge per element at most.
- *
- * `children`: The number of a `count`; `warning` and `dot` show no text.
+ * A badge with a number of items.
  */
-export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge({ variant, children, tooltip, className, ...restProps }, ref) {
+export interface BadgeCountProps extends BadgeBaseProps {
+    /** Shows a number of items. */
+    variant: "count";
+    /** The number of items. */
+    children: ReactNode;
+    /** The explanation, shown as a tooltip on hover and keyboard focus and read after the number. */
+    tooltip?: string;
+}
+
+/**
+ * A badge without text, explained by its tooltip.
+ */
+export interface BadgeMarkProps extends BadgeBaseProps {
+    /** `warning` marks a problem such as a missing alt text, and `dot` something new or changed. */
+    variant: "warning" | "dot";
+    /** The explanation, shown as a tooltip on hover and keyboard focus, and the badge's accessible name. */
+    tooltip: string;
+}
+
+export type BadgeProps = BadgeCountProps | BadgeMarkProps;
+
+/**
+ * Marks a real exception on an element: a missing value, a count, or something new. One badge per element at most.
+ */
+export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge(props, ref) {
+    const { variant, tooltip, className, ...restProps } = props;
     const ownerState: BadgeOwnerState = { variant };
+    const count = props.variant === "count" ? props.children : undefined;
     const hasText = ownerState.variant === "count";
 
     const badge = (
         <span
-            role={hasText || tooltip == null ? undefined : "img"}
+            role={hasText ? undefined : "img"}
             aria-label={hasText ? undefined : tooltip}
-            aria-hidden={hasText || tooltip != null ? undefined : true}
             tabIndex={tooltip != null ? 0 : undefined}
             {...restProps}
             ref={ref}
@@ -49,7 +61,7 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge({ va
             className={clsx(styles.root, className)}
         >
             {ownerState.variant === "warning" && <Icon name="alert" />}
-            {hasText && children}
+            {count}
             {hasText && tooltip != null && <span className={styles.description}>{tooltip}</span>}
         </span>
     );

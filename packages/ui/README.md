@@ -34,7 +34,7 @@ Changesets are not created for changes within this package.
 
 ### Exports
 
-- Props are exported as an interface named `<ComponentName>Props`, never a type alias.
+- Props are exported as an interface named `<ComponentName>Props`, never a type alias. Only when variants take different props is `<ComponentName>Props` a union of exported interfaces, one per group of variants with the same props.
 - The resolved configuration is exported as a type named `<ComponentName>OwnerState`.
 - The component is exported as `<ComponentName>`, wrapped in `forwardRef`.
 

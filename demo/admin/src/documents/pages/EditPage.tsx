@@ -25,14 +25,21 @@ import {
     TranslateContentMenuItem,
     useBlockContext,
     useBlockPreview,
+    useBlocksConfig,
     useContentScope,
     useSiteConfig,
 } from "@dextinity/cms-admin";
 import { IconButton, Stack } from "@mui/material";
+import { useRegisterAiModePageState } from "@src/aiMode/AiModePageStateContext";
+import { useRegisterAiModePageTools } from "@src/aiMode/AiModePageToolsContext";
+import type { BlocksBlockChild } from "@src/aiMode/blockProps";
+import { summarizeBlockState, summarizeSeoBlockState } from "@src/aiMode/blockStateSummary";
+import { type EditBlocks, planBlockEdits } from "@src/aiMode/editBlocks";
+import { useEffect, useRef } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { useRouteMatch } from "react-router";
+import { useLocation, useRouteMatch } from "react-router";
 
-import { PageContentBlock } from "./blocks/PageContentBlock";
+import { pageContentAdditionalItemFields, PageContentBlock, pageContentBlocks } from "./blocks/PageContentBlock";
 import { SeoBlock } from "./blocks/SeoBlock";
 import { StageBlock } from "./blocks/StageBlock";
 import type { GQLEditPageQuery, GQLEditPageQueryVariables, GQLUpdatePageMutation, GQLUpdatePageMutationVariables } from "./EditPage.generated";
@@ -140,7 +147,7 @@ const usePage = createUsePage({
 
 export const EditPage = ({ id }: Props) => {
     const intl = useIntl();
-    const { pageState, rootBlocksApi, hasChanges, loading, dialogs, pageSaveButton, handleSavePage, translateContent } = usePage({
+    const { pageState, setPageState, rootBlocksApi, hasChanges, loading, dialogs, pageSaveButton, handleSavePage, translateContent } = usePage({
         pageId: id,
     });
 
@@ -152,7 +159,100 @@ export const EditPage = ({ id }: Props) => {
 
     const blockContext = useBlockContext();
 
+    const location = useLocation();
     const tabRouteMatch = useRouteMatch<{ tab: string }>(`${match.path}/:tab`);
+
+    const document = pageState?.document;
+
+    const updateContentBlocks = (update: (blocks: BlocksBlockChild[]) => BlocksBlockChild[]) => {
+        setPageState((previous) => {
+            if (!previous?.document) {
+                return previous;
+            }
+
+            return {
+                ...previous,
+                document: {
+                    ...previous.document,
+                    content: {
+                        ...previous.document.content,
+                        // The steps keep the item fields of every block and give an inserted one the default values of
+                        // `pageContentAdditionalItemFields`, which the generic block child type doesn't know about.
+                        blocks: update(previous.document.content.blocks) as typeof previous.document.content.blocks,
+                    },
+                },
+            };
+        });
+    };
+
+    const { isBlockSupported } = useBlocksConfig();
+    const insertablePageContentBlocks = isBlockSupported
+        ? Object.fromEntries(Object.entries(pageContentBlocks).filter(([, block]) => isBlockSupported(block, scope)))
+        : pageContentBlocks;
+
+    const latestContentBlocksRef = useRef(document?.content.blocks);
+    useEffect(() => {
+        latestContentBlocksRef.current = document?.content.blocks;
+    });
+
+    // Deliberately not memoized: useRegisterAiModePageTools re-registers on every render, so the
+    // agent always reaches the callback of the latest one.
+    const editBlocks: EditBlocks = async ({ operations }) => {
+        const plannedContentBlocks = document?.content.blocks ?? [];
+        const { apply, results } = await planBlockEdits({
+            blocks: plannedContentBlocks,
+            operations,
+            supportedBlocks: pageContentBlocks,
+            insertableBlocks: insertablePageContentBlocks,
+            additionalItemFields: pageContentAdditionalItemFields,
+            // PageContentBlock's name in block-meta, where the agent resolves the block schemas.
+            schemaRootBlockName: "PageContent",
+            blockContext,
+        });
+
+        if (apply) {
+            // Planning awaits conversions that can query the API. Applying the batch to content that changed
+            // meanwhile, by the user or because another page was opened, would undo those changes or edit the
+            // wrong page, so the batch is rejected as a whole instead.
+            if (latestContentBlocksRef.current !== plannedContentBlocks) {
+                throw new Error(
+                    "The page's content changed while the edits were prepared, so none of the operations were applied. Read the page state again and retry.",
+                );
+            }
+
+            // One update for the whole batch, so the page is marked as changed once rather than per operation.
+            updateContentBlocks(apply);
+        }
+
+        return { results };
+    };
+
+    useRegisterAiModePageTools(document ? { editBlocks } : null);
+
+    useRegisterAiModePageState(
+        pageState && document
+            ? {
+                  metadata: {
+                      pageTreeNodeId: id,
+                      documentType: document.__typename,
+                      documentId: document.id,
+                      path: pageState.path,
+                      activeTab: tabRouteMatch?.params.tab ?? "content",
+                      // Nested block editing is URL-driven, so the route below the active tab identifies the selected block.
+                      selectedBlockRoute:
+                          tabRouteMatch && location.pathname.length > tabRouteMatch.url.length
+                              ? location.pathname.slice(tabRouteMatch.url.length)
+                              : undefined,
+                      hasChanges: hasChanges ?? false,
+                  },
+                  getDocumentSummary: () => ({
+                      content: summarizeBlockState(PageContentBlock, document.content),
+                      stage: summarizeBlockState(StageBlock, document.stage),
+                      seo: summarizeSeoBlockState(SeoBlock, document.seo),
+                  }),
+              }
+            : null,
+    );
 
     if (pageState == null || pageState.document == null) {
         return null;

@@ -5,6 +5,8 @@ import { useRouteMatch } from "react-router";
 
 import { isAiHubConfigured } from "./aiHubConfig";
 import { AiModeProvider } from "./AiModeContext";
+import { AiModePageStateProvider } from "./AiModePageStateContext";
+import { AiModePageToolsProvider } from "./AiModePageToolsContext";
 
 const config = createConfig();
 
@@ -17,7 +19,9 @@ export function AdminAiModeProvider({ children }: PropsWithChildren) {
 
     return (
         <AiModeProvider isEnabled={isAiHubConfigured(config) && isAllowed("aiHub")} isAvailable={pageTreeRouteMatch !== null}>
-            {children}
+            <AiModePageStateProvider>
+                <AiModePageToolsProvider>{children}</AiModePageToolsProvider>
+            </AiModePageStateProvider>
         </AiModeProvider>
     );
 }

@@ -1,0 +1,184 @@
+@use "../../theme/forcedColors" as forced-colors;
+
+.root {
+    --_columns: minmax(0, 1fr);
+    --_areas: "editor";
+    --_pane-sticky-offset: var(--dextinity-edit-layout-sticky-offset);
+
+    container-type: inline-size;
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-edit-layout-header-spacing);
+    min-inline-size: 0;
+
+    &[data-sticky-header] {
+        --_pane-sticky-offset: max(
+            var(--dextinity-edit-layout-sticky-offset),
+            var(--dextinity-edit-layout-header-sticky-offset) + var(--_header-block-size, 0px) + var(--dextinity-edit-layout-header-spacing)
+        );
+    }
+
+    &[data-variant="page"] {
+        --_columns: minmax(0, 1fr) var(--dextinity-edit-layout-panel-width);
+        --_areas: "preview editor";
+    }
+
+    &[data-variant="formWithPreview"] {
+        --_columns: minmax(0, 1.15fr) minmax(0, 1fr);
+        --_areas: "editor preview";
+    }
+
+    &[data-variant="formWithBlocks"] {
+        --_columns: minmax(0, 1fr) minmax(0, 1.15fr);
+        --_areas: "preview editor";
+    }
+
+    &[data-variant="form"][data-aside] {
+        --_columns: minmax(0, 1fr) var(--dextinity-edit-layout-aside-width);
+        --_areas: "editor aside";
+    }
+}
+
+.header,
+.editor {
+    min-inline-size: 0;
+}
+
+.root[data-sticky-header] .header {
+    position: sticky;
+    inset-block-start: var(--dextinity-edit-layout-header-sticky-offset);
+    z-index: var(--dextinity-edit-layout-header-sticky-layer);
+
+    // Drawn around the header instead of padding it, so holding it in place doesn't move its content
+    &::before {
+        content: "";
+        position: absolute;
+        inset: calc(-1 * var(--dextinity-edit-layout-header-sticky-outset));
+        z-index: -1;
+        border-radius: var(--dextinity-edit-layout-header-sticky-radius);
+        background: var(--dextinity-edit-layout-header-sticky-background);
+        box-shadow: var(--dextinity-edit-layout-header-sticky-shadow);
+        backdrop-filter: blur(var(--dextinity-edit-layout-header-sticky-blur)) saturate(var(--dextinity-material-saturation));
+        opacity: 0;
+        transition: opacity var(--dextinity-motion-duration-short) var(--dextinity-motion-easing);
+        pointer-events: none;
+
+        @include forced-colors.edge;
+    }
+
+    &[data-stuck]::before {
+        opacity: 1;
+    }
+}
+
+.paneSwitch {
+    display: none;
+}
+
+.body {
+    display: grid;
+    grid-template-columns: var(--_columns);
+    grid-template-areas: var(--_areas);
+    gap: var(--dextinity-edit-layout-gap);
+    align-items: start;
+}
+
+.editor {
+    grid-area: editor;
+}
+
+.preview,
+.aside {
+    position: sticky;
+    inset-block-start: var(--_pane-sticky-offset);
+    min-inline-size: 0;
+}
+
+.preview {
+    display: flex;
+    flex-direction: column;
+    grid-area: preview;
+    block-size: calc(100dvh - var(--_pane-sticky-offset) - var(--dextinity-edit-layout-preview-spacing));
+    min-block-size: var(--dextinity-edit-layout-preview-min-height);
+
+    > * {
+        flex: 1;
+        min-block-size: 0;
+    }
+}
+
+.aside {
+    grid-area: aside;
+}
+
+.previewPlaceholder {
+    display: flex;
+    flex-direction: column;
+
+    // Stretches the skeleton's shape to the preview's height, which the sticky preview sets
+    > *,
+    :global(.dextinitySkeleton__item) {
+        flex: 1;
+        align-items: stretch;
+    }
+
+    --dextinity-skeleton-block-height: auto;
+}
+
+.editorPlaceholder {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-density-form-gap);
+}
+
+.tabsPlaceholder {
+    display: flex;
+    gap: var(--dextinity-space-4);
+}
+
+.blocksPlaceholder {
+    --dextinity-skeleton-gap: var(--dextinity-space-1-5);
+    --dextinity-skeleton-tile-height: 52px;
+    --dextinity-skeleton-tile-radius: var(--dextinity-radius-field);
+}
+
+.fieldPlaceholder {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-space-2);
+
+    --dextinity-skeleton-tile-height: var(--dextinity-density-field-height);
+    --dextinity-skeleton-tile-radius: var(--dextinity-radius-control);
+}
+
+@container (max-width: 980px) {
+    .paneSwitch {
+        display: flex;
+    }
+
+    // Declared on the body, so it wins over the columns each variant sets on the root
+    .body {
+        --_columns: minmax(0, 1fr);
+        --_areas: none;
+    }
+
+    .editor,
+    .preview,
+    .aside {
+        grid-area: auto;
+    }
+
+    .preview,
+    .aside {
+        position: static;
+    }
+
+    .preview {
+        block-size: auto;
+    }
+
+    .root[data-preview][data-pane="editor"] .preview,
+    .root[data-preview][data-pane="preview"] .editor {
+        display: none;
+    }
+}

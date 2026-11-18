@@ -1,21 +1,15 @@
-import { type BlockDataInterface, CrudField, CrudGenerator, DamImageBlock, RootBlock, RootBlockEntity, RootBlockType } from "@dextinity/cms-api";
+import { type BlockDataInterface, DamImageBlock, RootBlock, RootBlockEntity, RootBlockType } from "@dextinity/cms-api";
 import { Entity, ManyToOne, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
 import { BaseEntity, OptionalProps, type Ref } from "@mikro-orm/postgresql";
 import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
 import { Min } from "class-validator";
 import { randomUUID } from "crypto";
 
-import { ProductVariantService } from "../product-variant.service.js";
 import { Product } from "./product.entity.js";
 
 @ObjectType()
 @Entity()
 @RootBlockEntity()
-@CrudGenerator({
-    requiredPermission: "products",
-    position: { groupByFields: ["product"] },
-    hooksService: ProductVariantService,
-})
 export class ProductVariant extends BaseEntity {
     [OptionalProps]?: "createdAt" | "updatedAt";
 
@@ -37,14 +31,6 @@ export class ProductVariant extends BaseEntity {
     position: number;
 
     @ManyToOne(() => Product, { ref: true })
-    @CrudField({
-        resolveField: true, // default is true
-        // search: true, // not yet supported for nested
-        // filter: true, // not yet supported for nested
-        // sort: true, // not yet supported for nested
-        // input: false, // ignored because product is a root argument for create
-        dedicatedResolverArg: true, //default is false
-    })
     product: Ref<Product>;
 
     @Property()

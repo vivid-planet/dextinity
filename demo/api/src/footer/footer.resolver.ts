@@ -1,0 +1,50 @@
+import { RequiredPermission } from "@dextinity/cms-api";
+import { EntityManager } from "@mikro-orm/postgresql";
+import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
+
+import { FooterInput } from "./dto/footer.input.js";
+import { FooterScope } from "./dto/footer-scope.js";
+import { Footer } from "./entities/footer.entity.js";
+import { FootersService } from "./footers.service.js";
+
+@Resolver(() => Footer)
+@RequiredPermission(["pageTree"])
+export class FooterResolver {
+    constructor(
+        protected readonly entityManager: EntityManager,
+        protected readonly footersService: FootersService,
+    ) {}
+    @Query(() => Footer, { nullable: true })
+    async footer(
+        @Args("scope", { type: () => FooterScope })
+        scope: FooterScope,
+    ): Promise<Footer | null> {
+        const footers = await this.entityManager.find(Footer, { scope });
+        if (footers.length > 1) {
+            throw new Error("There must be only one footer");
+        }
+        return footers.length > 0 ? footers[0] : null;
+    }
+    @Mutation(() => Footer)
+    async saveFooter(
+        @Args("scope", { type: () => FooterScope })
+        scope: FooterScope,
+        @Args("input", { type: () => FooterInput })
+        input: FooterInput,
+    ): Promise<Footer> {
+        let footer = await this.entityManager.findOne(Footer, { scope });
+        if (!footer) {
+            footer = this.entityManager.create(Footer, {
+                ...input,
+                content: input.content.transformToBlockData(),
+                scope,
+            });
+        }
+        footer.assign({
+            ...input,
+            content: input.content.transformToBlockData(),
+        });
+        await this.entityManager.flush();
+        return footer;
+    }
+}

@@ -1,6 +1,6 @@
 import { type EntityMetadata, type FilterQuery, type ObjectQuery, type OrderDefinition, raw } from "@mikro-orm/postgresql";
 
-import { type CrudSearchField, getCrudSearchFieldsFromMetadata } from "../helper/crud-generator.helper.js";
+import { getSearchFieldsFromMetadata, type SearchField } from "../helper/search-fields.helper.js";
 import type { SortDirection } from "../sorting/sort-direction.enum.js";
 import { BooleanFilter } from "./boolean.filter.js";
 import { DateFilter } from "./date.filter.js";
@@ -309,7 +309,7 @@ export const splitSearchString = (search: string) => {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function searchToMikroOrmQuery(search: string, fieldsOrMetadata: Array<string | CrudSearchField> | EntityMetadata): ObjectQuery<any> {
+export function searchToMikroOrmQuery(search: string, fieldsOrMetadata: Array<string | SearchField> | EntityMetadata): ObjectQuery<any> {
     const fields = Array.isArray(fieldsOrMetadata)
         ? fieldsOrMetadata.map((field) => {
               if (typeof field === "string") {
@@ -318,7 +318,7 @@ export function searchToMikroOrmQuery(search: string, fieldsOrMetadata: Array<st
 
               return field;
           })
-        : getCrudSearchFieldsFromMetadata(fieldsOrMetadata);
+        : getSearchFieldsFromMetadata(fieldsOrMetadata);
     const quotedSearchParts = splitSearchString(search);
 
     const ands = [];
@@ -356,11 +356,11 @@ export function gqlArgsToMikroOrmQuery({ search, filter }: { search?: string; fi
     const andFilters = [];
 
     if (search) {
-        const crudSearchPropNames = getCrudSearchFieldsFromMetadata(metadata);
-        if (crudSearchPropNames.length == 0) {
+        const searchFields = getSearchFieldsFromMetadata(metadata);
+        if (searchFields.length == 0) {
             throw new Error("Entity has no searchable fields");
         }
-        andFilters.push(searchToMikroOrmQuery(search, crudSearchPropNames));
+        andFilters.push(searchToMikroOrmQuery(search, searchFields));
     }
 
     if (filter) {

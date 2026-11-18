@@ -1,4 +1,4 @@
-import { useApolloClient } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
 import { type IEditDialogApi, RowActionsItem, RowActionsMenu, useStackSwitchApi, writeClipboardText } from "@dextinity/admin";
 import { Add, Delete, Domain, Edit, Preview, PreviewUnavailable, Settings, Translate } from "@dextinity/admin-icons";
 import { Divider } from "@mui/material";

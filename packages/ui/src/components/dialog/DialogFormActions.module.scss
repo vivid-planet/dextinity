@@ -1,0 +1,15 @@
+.root {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--dextinity-dialog-footer-gap);
+}
+
+.secondaryActions {
+    display: flex;
+    align-items: center;
+    gap: var(--dextinity-dialog-footer-gap);
+    margin-inline-end: auto;
+}

@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { FinalFormCheckbox, type FinalFormCheckboxProps } from "../Checkbox";
 import { Field, type FieldProps } from "../Field";
 
-export interface CheckboxFieldProps extends FieldProps<string, HTMLInputElement> {
+export interface CheckboxFieldProps extends FieldProps<boolean, HTMLInputElement> {
     fieldLabel?: ReactNode;
     componentsProps?: {
         formControlLabel?: FormControlLabelProps;

@@ -27,9 +27,9 @@ type Story = StoryObj<typeof meta>;
 export const Showcase: Story = {
     render: function Render() {
         const contentPages = [
-            { name: "Pages", icon: <Icon name="page-tree" /> },
-            { name: "Assets", icon: <Icon name="assets" /> },
-            { name: "Target groups", icon: <Icon name="target-groups" /> },
+            { name: "Pages", icon: <Icon name="sitemap" /> },
+            { name: "Assets", icon: <Icon name="images" /> },
+            { name: "Target groups", icon: <Icon name="target-group" /> },
         ];
         const [activePage, setActivePage] = useState("Pages");
 
@@ -37,13 +37,13 @@ export const Showcase: Story = {
             <div className={styles.showcase}>
                 <div className={styles.column}>
                     <section className={styles.taskCard}>
-                        <Typography variant="labelS" className={styles.taskDate}>
+                        <Typography variant="label" className={styles.taskDate}>
                             <Icon name="calendar-today" /> Due on Friday
                         </Typography>
-                        <Typography variant="h3" className={styles.taskTitle}>
+                        <Typography variant="title" className={styles.taskTitle}>
                             Publish the spring campaign
                         </Typography>
-                        <Typography variant="bodyS" className={styles.taskMeta}>
+                        <Typography variant="small" className={styles.taskMeta}>
                             3 of 5 pages ready
                         </Typography>
                     </section>
@@ -62,9 +62,9 @@ export const Showcase: Story = {
                         </div>
                     </section>
                     <section className={styles.card}>
-                        <Typography variant="display">Aa</Typography>
-                        <Typography variant="h4">Type scale</Typography>
-                        <Typography variant="bodyS" className={styles.muted}>
+                        <Typography variant="displayL">Aa</Typography>
+                        <Typography variant="section">Type scale</Typography>
+                        <Typography variant="small" className={styles.muted}>
                             Headings, body text, labels, and data in one font.
                         </Typography>
                     </section>
@@ -88,7 +88,7 @@ export const Showcase: Story = {
                     </nav>
 
                     <section className={styles.card}>
-                        <Typography variant="labelS">Status</Typography>
+                        <Typography variant="label">Status</Typography>
                         <div className={styles.chips}>
                             <Chip color="secondary">Draft</Chip>
                             <Chip color="info">In review</Chip>
@@ -100,8 +100,8 @@ export const Showcase: Story = {
                     <section className={styles.card}>
                         <div className={styles.recordRow}>
                             <div>
-                                <Typography variant="labelM">Product page</Typography>
-                                <Typography variant="bodyXs" className={styles.muted}>
+                                <Typography variant="body">Product page</Typography>
+                                <Typography variant="small" className={styles.muted}>
                                     Edited 2 hours ago
                                 </Typography>
                             </div>
@@ -113,7 +113,7 @@ export const Showcase: Story = {
                                     <Icon name="copy" />
                                 </IconButton>
                                 <IconButton variant="text" color="error" aria-label="Delete">
-                                    <Icon name="delete" />
+                                    <Icon name="trash" />
                                 </IconButton>
                             </div>
                         </div>

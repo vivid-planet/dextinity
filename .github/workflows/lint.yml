@@ -27,30 +27,6 @@ jobs:
                   git config user.name github-actions
                   git config user.email github-actions@github.com
 
-            - name: "Library: Clone translations"
-              uses: actions/checkout@v7
-              with:
-                  repository: vivid-planet/dextinity-lang
-                  path: "demo/admin/lang/dextinity-lang"
-
-            - name: "Demo Admin: Clone translations"
-              uses: actions/checkout@v7
-              with:
-                  repository: vivid-planet/dextinity-demo-lang
-                  path: "demo/admin/lang/dextinity-demo-lang"
-
-            - name: "Demo Site: Clone translations"
-              uses: actions/checkout@v7
-              with:
-                  repository: vivid-planet/dextinity-demo-lang
-                  path: "demo/site/lang/dextinity-demo-lang"
-
-            - name: "Demo Api: Clone translations"
-              uses: actions/checkout@v7
-              with:
-                  repository: vivid-planet/dextinity-demo-lang
-                  path: "demo/api/lang/dextinity-demo-lang"
-
             - uses: ./.github/actions/setup
               with:
                   build-packages: "true"

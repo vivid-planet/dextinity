@@ -1,4 +1,5 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client/react";
 import { Alert, Button, CancelButton, LocalErrorScopeApolloContext } from "@dextinity/admin";
 import {
     CircularProgress,

@@ -1,0 +1,244 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta
+    title="Docs/Styling and Customization"
+    summary="registerStyles and css, targeting MJML output, BEM class names, and the pattern for a custom raw-HTML component with responsive styles."
+/>
+
+# Styling and Customization
+
+This page shows how to add responsive CSS to a mail, how to name and target classes, and how to build a custom component in raw HTML.
+
+## The `css` Helper
+
+`css` is a tagged template literal that returns a plain string. Its only purpose is enabling CSS syntax highlighting and auto-formatting in editors (e.g., the styled-components VS Code extension):
+
+```ts
+import { css } from "@dextinity/mail-react";
+
+const styles = css`
+    @media (max-width: 419px) {
+        .myComponent {
+            padding: 12px !important;
+        }
+    }
+`;
+```
+
+No runtime styling logic — purely a developer experience improvement.
+
+## Registering Responsive Styles
+
+`registerStyles` adds CSS to the email's `<head>` as `<style>` blocks. Call it at the **module level** (outside component functions) so styles are registered once when the module is first imported.
+
+Since `<style>` blocks are ignored by some desktop clients, `registerStyles` is intended for responsive overrides inside media queries — not for base styles, which must be inline.
+
+Pass a function when you need access to theme tokens (breakpoints, colors, sizes) — which is **most of the time**. Always prefer theme-aware styles over static CSS so that breakpoints and tokens stay in sync with the theme. Theme-aware entries are called at render time with the theme from `MjmlMailRoot`:
+
+```ts
+import { css, registerStyles } from "@dextinity/mail-react";
+
+registerStyles(
+    (theme) => css`
+        ${theme.breakpoints.mobile.belowMediaQuery} {
+            .calloutBox {
+                padding: 12px !important;
+                border-color: ${theme.colors.background.body} !important;
+            }
+        }
+    `,
+);
+```
+
+Every breakpoint in the theme has a `belowMediaQuery` property — a ready-to-use CSS media query string targeting viewports below that breakpoint. For the mobile breakpoint at 420px, `theme.breakpoints.mobile.belowMediaQuery` is `"@media (max-width: 419px)"`; for an augmented tablet breakpoint at 540px, `theme.breakpoints.tablet.belowMediaQuery` is `"@media (max-width: 539px)"`.
+
+Always use `belowMediaQuery` instead of hardcoding media query values. This keeps responsive styles in sync with the theme's breakpoint configuration. If a breakpoint value is needed repeatedly but doesn't exist in the theme, add it via `createBreakpoint` and module augmentation rather than duplicating raw media queries — see [Breakpoints](?path=/docs/docs-theme-and-configuration--docs#breakpoints). Reserve hardcoded media queries for genuinely one-off values.
+
+Two client behaviors matter for responsive overrides: Yahoo Mail and Outlook.com drop any declaration that contains a [`calc()`](?path=/docs/docs-email-client-pitfalls--docs#no-css-calc), and Yahoo Mail rewrites [`height` into `min-height`](?path=/docs/docs-email-client-pitfalls--docs#height-becomes-min-height-in-yahoo-mail). For which selectors reach which clients, see [Selectors That Reach Every Client](?path=/docs/docs-email-client-pitfalls--docs#selectors-that-reach-every-client).
+
+### Static CSS
+
+Pass a `css` string when you genuinely don't need any theme values (rare — most responsive styles benefit from theme breakpoints):
+
+```ts
+import { css, registerStyles } from "@dextinity/mail-react";
+
+registerStyles(css`
+    @media (max-width: 419px) {
+        .calloutBox {
+            padding: 12px !important;
+        }
+    }
+`);
+```
+
+## Important Details
+
+- Call at **module level**, not inside component functions
+- `MjmlMailRoot` renders all registered styles automatically
+- Duplicate registrations with the same function/string reference overwrite (stored in a `Map`)
+- `registerStyles` emits the CSS of every imported module, used or not — see [Gmail Drops Head CSS Past 16 kB](?path=/docs/docs-email-client-pitfalls--docs#gmail-drops-head-css-past-16-kb).
+- Theme-aware entries always resolve against the **root theme** from `MjmlMailRoot` — nested `ThemeProvider` scopes do not affect them
+- Optional second argument: partial `MjmlStyle` props (forwarded to the underlying `<mj-style>`)
+- An entry registered with `{ inline: true }` as the second argument has its rules written into `style` attributes. It keeps no `@media` rules: MJML drops them without a warning.
+- Do not write `//` comments inside a `css` template: CSS has no line comments, so mail-react throws an error when it minifies the registered styles. In an `{ inline: true }` entry there is no error, and the rule after the comment is lost. Use `/* */`, or a JS comment in an expression: `${/* note */ ""}`
+
+## BEM Class Naming Convention
+
+Use BEM with camelCase blocks for custom component CSS classes:
+
+| BEM Part | Pattern                       | Example                   |
+| -------- | ----------------------------- | ------------------------- |
+| Block    | `componentName`               | `calloutBox`              |
+| Element  | `componentName__elementName`  | `calloutBox__title`       |
+| Modifier | `componentName--modifierName` | `calloutBox--highlighted` |
+
+For a column layout, adapt the block name to the component context:
+
+| Element                | Example class name                                               |
+| ---------------------- | ---------------------------------------------------------------- |
+| Section/layout wrapper | `twoColumnsSection`, `imageTextLayout`                           |
+| Left/small column      | `twoColumnsSection__leftColumn`, `imageTextLayout__smallColumn`  |
+| Right/fluid column     | `twoColumnsSection__rightColumn`, `imageTextLayout__fluidColumn` |
+
+Built-in components follow this convention. Their class names are listed in the tables on the [Components](?path=/docs/docs-components--docs#mjml-components-layout-level) page.
+
+## MJML Table Structure
+
+MJML generates table-based HTML. When targeting nested elements inside MJML components via CSS, you may need to traverse the generated table structure:
+
+```css
+.mjmlSection--indented > table > tbody > tr > td {
+    /* targets the actual content cell */
+}
+```
+
+Use browser dev tools in Storybook to inspect the generated HTML structure when writing CSS selectors for built-in components. The exact nesting varies by component and shouldn't be assumed — always inspect first. For the known paths in columns, see [CSS Targeting Rules](?path=/docs/docs-layout-patterns--docs#css-targeting-rules).
+
+## Overriding Built-In Components
+
+Target built-in CSS class names in `registerStyles` to add responsive overrides to library components:
+
+```ts
+registerStyles(
+    (theme) => css`
+        ${theme.breakpoints.mobile.belowMediaQuery} {
+            .mjmlSection--indented > table > tbody > tr > td {
+                background-color: ${theme.colors.background.body} !important;
+            }
+        }
+    `,
+);
+```
+
+## Custom Component Pattern
+
+When built-in components don't cover your needs, create custom components. **Always try to compose layouts using MJML components first** (`MjmlSection`, `MjmlColumn`, `MjmlText`, `MjmlImage`, etc.) — they handle cross-client compatibility automatically. Only drop into raw HTML (`MjmlRaw`, `MjmlTable`) when the MJML layout model genuinely can't express the structure you need. Raw HTML is an escape hatch, not the default approach.
+
+When raw HTML is necessary, follow these conventions:
+
+1. **Inline styles** for base/desktop rendering — set via `style` props on HTML elements
+2. **BEM class names** on elements that need responsive overrides
+3. **`registerStyles`** at module level with media queries targeting those classes
+4. **`!important`** on all responsive overrides
+
+```tsx
+import { css, MjmlColumn, MjmlRaw, MjmlSection, registerStyles } from "@dextinity/mail-react";
+
+interface FeatureCardProps {
+    title: string;
+    description: string;
+    highlighted?: boolean;
+}
+
+function FeatureCard({ title, description, highlighted = false }: FeatureCardProps) {
+    return (
+        <MjmlSection>
+            <MjmlColumn>
+                <MjmlRaw>
+                    <tr>
+                        <td
+                            className={`featureCard${highlighted ? " featureCard--highlighted" : ""}`}
+                            style={{
+                                padding: "24px",
+                                border: "1px solid #E0E0E0",
+                                borderRadius: "8px",
+                                backgroundColor: highlighted ? "#F0F7FF" : "#FFFFFF",
+                            }}
+                        >
+                            <span
+                                className="featureCard__title"
+                                style={{
+                                    display: "block",
+                                    fontSize: "20px",
+                                    fontWeight: 700,
+                                    lineHeight: "28px",
+                                    msoLineHeightRule: "exactly",
+                                    margin: "0 0 8px 0",
+                                }}
+                            >
+                                {title}
+                            </span>
+                            <span
+                                className="featureCard__description"
+                                style={{
+                                    display: "block",
+                                    fontSize: "14px",
+                                    lineHeight: "22px",
+                                    msoLineHeightRule: "exactly",
+                                    color: "#555555",
+                                }}
+                            >
+                                {description}
+                            </span>
+                        </td>
+                    </tr>
+                </MjmlRaw>
+            </MjmlColumn>
+        </MjmlSection>
+    );
+}
+
+registerStyles(
+    (theme) => css`
+        ${theme.breakpoints.mobile.belowMediaQuery} {
+            .featureCard {
+                padding: 16px !important;
+            }
+            .featureCard__title {
+                font-size: 18px !important;
+                line-height: 24px !important;
+            }
+            .featureCard__description {
+                font-size: 13px !important;
+            }
+        }
+    `,
+);
+```
+
+### Checklist
+
+- Inside `MjmlRaw` and other ending tags, you're in HTML-land — only HTML elements, no MJML components. See [Ending Tags](?path=/docs/docs-email-basics--docs#ending-tags).
+- Inside `MjmlRaw` in an `MjmlColumn`, open with a `<tr>` and put the markup in a `<td>`. `HtmlText` is the exception: it renders the `<td>` itself, so a surrounding `<tr>` is all it needs — unless its `element` prop renders something else, which needs a `<td>` again. See [Start Raw Content Inside a Column With `<tr>`](?path=/docs/docs-email-client-pitfalls--docs#start-raw-content-inside-a-column-with-tr).
+- Always reset margins on block-level elements: `style={{ margin: 0 }}` — see [Avoid Block-Level HTML Elements Inside Ending Tags](?path=/docs/docs-email-client-pitfalls--docs#avoid-block-level-html-elements-inside-ending-tags).
+- **Every element with a manual `line-height`** must also have `mso-line-height-rule: exactly` as an inline style — Outlook ignores standard line-height calculations and produces unexpected vertical spacing without it. This is easy to forget on `<span>` and `<td>` elements inside custom components. See [Set `mso-line-height-rule: exactly` on Every Manual `line-height`](?path=/docs/docs-email-client-pitfalls--docs#set-mso-line-height-rule-exactly-on-every-manual-line-height).
+- `borderRadius` won't render in Outlook — provide a visually acceptable fallback. See [No CSS `border-radius` in Outlook](?path=/docs/docs-email-client-pitfalls--docs#no-css-border-radius-in-outlook).
+- Keep unused variants and modules out of the mail — see [Gmail Drops Head CSS Past 16 kB](?path=/docs/docs-email-client-pitfalls--docs#gmail-drops-head-css-past-16-kb).
+
+## Forwarding Props via `slotProps`
+
+Some components use internal sub-components not directly accessible through the main API. These expose a `slotProps` prop for forwarding:
+
+```tsx
+<MjmlSection disableResponsiveBehavior slotProps={{ group: { width: "100%" } }}>
+    <MjmlColumn>
+        <MjmlText>Column 1</MjmlText>
+    </MjmlColumn>
+    <MjmlColumn>
+        <MjmlText>Column 2</MjmlText>
+    </MjmlColumn>
+</MjmlSection>
+```
+
+Currently, `MjmlSection` exposes `slotProps.group` for forwarding props to the internal `MjmlGroup` when `disableResponsiveBehavior` is enabled — see [MjmlSection](?path=/docs/components-mjmlsection--docs).

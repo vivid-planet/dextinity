@@ -4,6 +4,7 @@ import {
     Button,
     ButtonGroup as MuiButtonGroup,
     type ButtonGroupProps,
+    type ButtonProps,
     MenuItem as MuiMenuItem,
     MenuList as MuiMenuList,
     Popover as MuiPopover,
@@ -166,7 +167,10 @@ export function SplitButton(inProps: PropsWithChildren<SplitButtonProps>) {
                 {...slotProps?.popover}
             >
                 <MenuList {...slotProps?.menuList}>
-                    {childrenArray.map((child: ReactElement<any>, index) => {
+                    {childrenArray.map((child, index) => {
+                        if (!isValidElement<ButtonProps>(child)) {
+                            return null;
+                        }
                         return (
                             <MenuItem
                                 key={index}

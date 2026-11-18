@@ -1,4 +1,4 @@
-import type { PureQueryOptions } from "@apollo/client";
+import type { ApolloClient } from "@apollo/client";
 import { Delete } from "@dextinity/admin-icons";
 // eslint-disable-next-line no-restricted-imports
 import { Button, type ButtonProps, IconButton } from "@mui/material";
@@ -15,7 +15,7 @@ interface IProps {
     icon?: ReactNode | null;
     text?: ReactNode; // typically a string or a FormattedMessage (intl) is passed
     color?: ButtonProps["color"];
-    refetchQueries?: Array<string | PureQueryOptions>;
+    refetchQueries?: Array<string | ApolloClient.QueryOptions>;
 }
 
 const DeleteMessage = () => <FormattedMessage {...messages.delete} />;

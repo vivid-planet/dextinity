@@ -1,0 +1,51 @@
+@mixin tokens {
+    // Height of an option in a medium control
+    --dextinity-segmented-control-height: var(--dextinity-density-segment-height);
+    // Height of an option in a small control
+    --dextinity-segmented-control-height-small: var(--dextinity-density-segment-height-small);
+    // Inline padding of an option
+    --dextinity-segmented-control-padding: var(--dextinity-space-3);
+    // Inline padding of an option in a small control
+    --dextinity-segmented-control-padding-small: 9px;
+    // Space between the track's edge and the options
+    --dextinity-segmented-control-inset: 3px;
+    // Gap between the options
+    --dextinity-segmented-control-gap: var(--dextinity-space-0-5);
+    // Corner radius of the track
+    --dextinity-segmented-control-radius: calc(var(--dextinity-radius-item) + var(--dextinity-segmented-control-inset));
+    // Corner radius of an option
+    --dextinity-segmented-control-option-radius: var(--dextinity-radius-item);
+    // Text size of an option
+    --dextinity-segmented-control-font-size: var(--dextinity-typography-ui-size);
+    // Size of an option's icon
+    --dextinity-segmented-control-icon-size: var(--dextinity-icon-size-small);
+    // Opacity of a disabled control or option
+    --dextinity-segmented-control-disabled-opacity: var(--dextinity-opacity-disabled);
+
+    // Fill of the track
+    --dextinity-segmented-control-background: var(--dextinity-color-surface-sunken);
+    // Outline of the track
+    --dextinity-segmented-control-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line);
+    // Text color of an option
+    --dextinity-segmented-control-foreground: var(--dextinity-color-text-subtle);
+    // Text color of a hovered option
+    --dextinity-segmented-control-foreground-hover: var(--dextinity-color-text);
+
+    // Fill of the selected option
+    --dextinity-segmented-control-selected-background: var(--dextinity-color-surface);
+    // Text color of the selected option
+    --dextinity-segmented-control-selected-foreground: var(--dextinity-color-text);
+    // Font weight of the selected option
+    --dextinity-segmented-control-selected-font-weight: var(--dextinity-font-weight-medium);
+    // Shadow and outline of the selected option
+    --dextinity-segmented-control-selected-shadow:
+        var(--dextinity-shadow-1), inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line-strong);
+
+    // Line around the track in the error state
+    --dextinity-segmented-control-line-error: var(--dextinity-color-danger);
+}
+
+@mixin high-contrast-tokens {
+    --dextinity-segmented-control-selected-background: var(--dextinity-color-text);
+    --dextinity-segmented-control-selected-foreground: var(--dextinity-color-canvas);
+}

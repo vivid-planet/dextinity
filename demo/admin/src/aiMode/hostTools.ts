@@ -1,25 +1,22 @@
 import { categoryToUrlParam, pageTreeCategories } from "@src/pageTree/pageTreeCategories";
-import type { useHistory } from "react-router";
 
 import type { HostTool } from "./aiHubBridge";
 import type { AiModePageState } from "./AiModePageStateContext";
 import type { AiModePageTools } from "./AiModePageToolsContext";
 import { asBlockEditOperations, isBlockEditChange } from "./editBlocks";
 
-type History = ReturnType<typeof useHistory>;
-
 const categories = pageTreeCategories.map(({ category }) => category);
 
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export const createAdminHostTools = ({
-    history,
+    navigate,
     scopeUrl,
     getPageState,
     getPageTools,
     clearTextSelection,
 }: {
-    history: History;
+    navigate: (path: string) => void;
     /** The URL prefix of the current content scope, e.g. "/main/en". */
     scopeUrl: string;
     getPageState: () => AiModePageState | null;
@@ -53,7 +50,7 @@ export const createAdminHostTools = ({
             }
 
             const path = `${scopeUrl}/pages/pagetree/${categoryToUrlParam(category)}/${id}/edit`;
-            history.push(path);
+            navigate(path);
             // A page with unsaved changes asks the user before it is left, and the user may decide to stay.
             return `Asked the editor to open the page at ${path}. If the page that was open has unsaved changes, the user first decides whether to discard them and may stay on it, so check with get_page_state ("pageTreeNodeId") which page is open before you refer to it.`;
         },

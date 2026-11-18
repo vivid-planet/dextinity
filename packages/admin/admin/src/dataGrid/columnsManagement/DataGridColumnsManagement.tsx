@@ -7,7 +7,13 @@ import {
     type Theme,
     useThemeProps,
 } from "@mui/material";
-import { gridColumnVisibilityModelSelector, type GridPinnedColumnPosition, useGridApiContext, useGridSelector } from "@mui/x-data-grid";
+import {
+    gridColumnVisibilityModelSelector,
+    type GridPinnedColumnPosition,
+    type GridSlotProps,
+    useGridApiContext,
+    useGridSelector,
+} from "@mui/x-data-grid";
 import type { GridApiPro } from "@mui/x-data-grid-pro";
 import { type ChangeEvent, useMemo } from "react";
 import { FormattedMessage } from "react-intl";
@@ -16,13 +22,14 @@ import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBase
 import { Body, Divider, List, ListHeader, Root } from "./DataGridColumnsManagement.sc";
 import { DataGridColumnsManagementListItem } from "./DataGridColumnsManagementListItem";
 
-export type DataGridColumnsManagementProps = ThemedComponentBaseProps<{
-    root: "div";
-    body: "div";
-    list: typeof MuiList;
-    listHeader: typeof ListSubheader;
-    divider: typeof MuiDivider;
-}>;
+export type DataGridColumnsManagementProps = GridSlotProps["columnsManagement"] &
+    ThemedComponentBaseProps<{
+        root: "div";
+        body: "div";
+        list: typeof MuiList;
+        listHeader: typeof ListSubheader;
+        divider: typeof MuiDivider;
+    }>;
 
 export type DataGridColumnsManagementClassKey = "root" | "body" | "list" | "listHeader" | "divider";
 

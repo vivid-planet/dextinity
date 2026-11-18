@@ -1,0 +1,144 @@
+@use "../../theme/forcedColors" as forced-colors;
+
+:global(.dextinityField__box):has(> .root) {
+    --dextinity-field-radius-stacked: var(--dextinity-rich-text-editor-radius);
+}
+
+// Lets the toolbar and the text take part in the field's box
+.root {
+    display: contents;
+}
+
+.toolbar {
+    box-shadow: inset 0 calc(var(--dextinity-line-width) * -1) 0 var(--dextinity-rich-text-editor-toolbar-line);
+
+    --dextinity-toolbar-padding: var(--dextinity-rich-text-editor-toolbar-padding);
+    --dextinity-toolbar-button-size: var(--dextinity-rich-text-editor-toolbar-button-size);
+    --dextinity-toolbar-button-background-pressed: var(--dextinity-rich-text-editor-toolbar-button-background-active);
+    --dextinity-toolbar-button-foreground-pressed: var(--dextinity-rich-text-editor-toolbar-button-foreground-active);
+
+    @include forced-colors.separator;
+}
+
+.editor {
+    display: contents;
+}
+
+.content {
+    box-sizing: border-box;
+    min-block-size: calc(
+        var(--dextinity-rich-text-editor-min-rows) * 1lh + 2 * var(--dextinity-rich-text-editor-content-padding-block)
+    );
+    padding: var(--dextinity-rich-text-editor-content-padding);
+    outline: none;
+    line-height: var(--dextinity-rich-text-editor-line-height);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    font-variant-ligatures: none;
+    cursor: text;
+
+    &[aria-disabled="true"] {
+        cursor: not-allowed;
+    }
+
+    p,
+    ul,
+    ol,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        margin: 0 0 var(--dextinity-rich-text-editor-block-gap);
+
+        &:last-child {
+            margin-block-end: 0;
+        }
+    }
+
+    li > p {
+        margin: 0;
+    }
+
+    ul,
+    ol {
+        padding-inline-start: var(--dextinity-rich-text-editor-list-indent);
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-weight: var(--dextinity-rich-text-editor-heading-weight);
+        line-height: var(--dextinity-rich-text-editor-heading-line-height);
+    }
+
+    @for $level from 1 through 6 {
+        h#{$level} {
+            font-size: var(--dextinity-rich-text-editor-heading-#{$level}-size);
+        }
+    }
+
+    a {
+        color: var(--dextinity-rich-text-editor-link-color);
+        text-decoration: underline;
+        text-underline-offset: var(--dextinity-link-underline-offset);
+    }
+
+    [data-type="placeholder"] {
+        padding-inline: var(--dextinity-rich-text-editor-text-placeholder-padding-inline);
+        border-radius: var(--dextinity-rich-text-editor-text-placeholder-radius);
+        background: var(--dextinity-rich-text-editor-text-placeholder-background);
+        color: var(--dextinity-rich-text-editor-text-placeholder-foreground);
+        white-space: nowrap;
+
+        @include forced-colors.edge;
+    }
+
+    :global(.ProseMirror-selectednode) {
+        outline: var(--dextinity-rich-text-editor-selected-outline);
+    }
+
+    [data-type="non-breaking-space"],
+    [data-type="soft-hyphen"] {
+        position: relative;
+
+        &::after {
+            position: absolute;
+            inset-block-start: 50%;
+            inset-inline-start: 50%;
+            translate: -50% -50%;
+            inline-size: var(--dextinity-rich-text-editor-special-character-size);
+            block-size: var(--dextinity-rich-text-editor-special-character-size);
+            background: var(--dextinity-rich-text-editor-special-character-color);
+            content: "";
+            pointer-events: none;
+
+            @include forced-colors.fill;
+        }
+    }
+
+    [data-type="non-breaking-space"]::after {
+        mask: var(--dextinity-icon-non-breaking-space) center / contain no-repeat;
+    }
+
+    [data-type="soft-hyphen"] {
+        display: inline-block;
+        inline-size: var(--dextinity-rich-text-editor-special-character-size);
+
+        &::after {
+            mask: var(--dextinity-icon-soft-hyphen) center / contain no-repeat;
+        }
+    }
+}
+
+.emptyBlock:first-child::before {
+    float: inline-start;
+    block-size: 0;
+    color: var(--dextinity-rich-text-editor-placeholder-color);
+    content: attr(data-placeholder);
+    pointer-events: none;
+}

@@ -1,4 +1,3 @@
-import type { useHistory } from "react-router";
 import { describe, expect, it, vi } from "vitest";
 
 import type { AiModePageState } from "./AiModePageStateContext";
@@ -7,21 +6,17 @@ import { createAdminHostTools } from "./hostTools";
 
 const scopeUrl = "/main/en";
 
-function createHistory() {
-    return { push: vi.fn() } as unknown as ReturnType<typeof useHistory> & { push: ReturnType<typeof vi.fn> };
-}
-
 function createTools({ pageState = null, pageTools = null }: { pageState?: AiModePageState | null; pageTools?: AiModePageTools | null } = {}) {
-    const history = createHistory();
+    const navigate = vi.fn();
     const clearTextSelection = vi.fn();
     const tools = createAdminHostTools({
-        history,
+        navigate,
         scopeUrl,
         getPageState: () => pageState,
         getPageTools: () => pageTools,
         clearTextSelection,
     });
-    return { tools, history, clearTextSelection };
+    return { tools, navigate, clearTextSelection };
 }
 
 function getTool({ name, ...options }: { name: string } & Parameters<typeof createTools>[0]) {
@@ -43,11 +38,11 @@ describe("open_page", () => {
     const nodeId = "0199b3c4-7d2e-7a10-9a4b-3f2c1d0e9f8a";
 
     it("opens the editor of a page tree node of the current scope, in the node's category", () => {
-        const { tool, history } = getTool({ name: "open_page" });
+        const { tool, navigate } = getTool({ name: "open_page" });
 
         tool.handler({ id: nodeId, category: "topMenu" });
 
-        expect(history.push).toHaveBeenCalledWith(`${scopeUrl}/pages/pagetree/top-menu/${nodeId}/edit`);
+        expect(navigate).toHaveBeenCalledWith(`${scopeUrl}/pages/pagetree/top-menu/${nodeId}/edit`);
     });
 
     it("doesn't claim the page is open, as the user may decide to stay on a page with unsaved changes", () => {
@@ -57,10 +52,10 @@ describe("open_page", () => {
     });
 
     it("refuses an ID that is no UUID, so it cannot reach another path", () => {
-        const { tool, history } = getTool({ name: "open_page" });
+        const { tool, navigate } = getTool({ name: "open_page" });
 
         expect(() => tool.handler({ id: "../../dashboard", category: "mainNavigation" })).toThrow("UUID");
-        expect(history.push).not.toHaveBeenCalled();
+        expect(navigate).not.toHaveBeenCalled();
     });
 
     it("refuses a category the page tree does not have", () => {

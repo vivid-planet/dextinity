@@ -1,4 +1,5 @@
-import { type QueryResult, type TypedDocumentNode, useQuery } from "@apollo/client";
+import type { TypedDocumentNode } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import {
     Alert,
     DataGridToolbar,
@@ -58,7 +59,7 @@ type QueryVariables = {
 };
 
 interface DependentsListGridToolbarProps extends GridToolbarProps {
-    refetch: QueryResult<DependentsListQuery, QueryVariables>["refetch"];
+    refetch: useQuery.Result<DependentsListQuery, QueryVariables>["refetch"];
 }
 function DependentsListGridToolbar({ refetch }: DependentsListGridToolbarProps) {
     const [isRefetching, setIsRefetching] = useState<boolean>(false);
@@ -193,6 +194,7 @@ export const DependentsList = ({ query, variables }: DependentsListProps) => {
             sort,
             ...variables,
         },
+        notifyOnNetworkStatusChange: false,
     });
 
     if (error) {

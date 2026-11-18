@@ -1,10 +1,10 @@
-import { MjmlColumn, MjmlSpacer } from "@faire/mjml-react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { MjmlImage } from "../../components/image/MjmlImage.js";
 import { MjmlSection } from "../../components/section/MjmlSection.js";
 import { MjmlText } from "../../components/text/MjmlText.js";
 import { MjmlWrapper } from "../../components/wrapper/MjmlWrapper.js";
+import { MjmlColumn, MjmlSpacer } from "../../index.js";
 import { registerStyles } from "../../styles/registerStyles.js";
 import { createTheme } from "../../theme/createTheme.js";
 import { getDefaultFromResponsiveValue } from "../../theme/responsiveValue.js";
@@ -12,6 +12,7 @@ import { css } from "../../utils/css.js";
 
 const config: Meta = {
     title: "Diagnostics/Image Border Radius",
+    tags: ["!manifest"],
 };
 
 export default config;

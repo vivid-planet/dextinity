@@ -1,34 +1,18 @@
 import { useSyncExternalStore } from "react";
 
 import type { ThemeColorScheme } from "../theme/types";
+import { createToolbarSetting } from "./toolbarSetting";
 
-type ToolbarColorScheme = ThemeColorScheme | "system";
-
-const toolbarColorSchemeTitles: Record<ToolbarColorScheme, string> = {
-    light: "Light mode",
-    dark: "Dark mode",
-    "high-contrast": "High contrast mode",
-    system: "Follow system",
-};
-
-export const toolbarColorSchemeOptions = Object.entries(toolbarColorSchemeTitles).map(([value, title]) => ({ value, title }));
-
-const toolbarColorSchemeStorageKey = "dextinity-ui-color-scheme";
-
-function isToolbarColorScheme(value: unknown): value is ToolbarColorScheme {
-    return typeof value === "string" && value in toolbarColorSchemeTitles;
-}
-
-export function getToolbarColorScheme(): ToolbarColorScheme {
-    const storedValue = localStorage.getItem(toolbarColorSchemeStorageKey);
-    return isToolbarColorScheme(storedValue) ? storedValue : "light";
-}
-
-export function storeToolbarColorScheme(value: unknown) {
-    if (isToolbarColorScheme(value)) {
-        localStorage.setItem(toolbarColorSchemeStorageKey, value);
-    }
-}
+export const colorSchemeSetting = createToolbarSetting<ThemeColorScheme | "system">({
+    storageKey: "dextinity-ui-color-scheme",
+    titles: {
+        light: "Light mode",
+        dark: "Dark mode",
+        "high-contrast": "High contrast mode",
+        system: "Follow system",
+    },
+    defaultValue: "light",
+});
 
 const moreContrastQuery = window.matchMedia("(prefers-contrast: more)");
 const darkColorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
@@ -44,22 +28,16 @@ function getSystemColorScheme(): ThemeColorScheme {
 }
 
 function getAppliedColorScheme(): ThemeColorScheme {
-    const toolbarColorScheme = getToolbarColorScheme();
+    const toolbarColorScheme = colorSchemeSetting.get();
     return toolbarColorScheme === "system" ? getSystemColorScheme() : toolbarColorScheme;
 }
 
 function subscribeToAppliedColorScheme(onChange: () => void) {
-    function handleStorage(event: StorageEvent) {
-        if (event.key === toolbarColorSchemeStorageKey) {
-            onChange();
-        }
-    }
-
-    window.addEventListener("storage", handleStorage);
+    const unsubscribe = colorSchemeSetting.subscribe(onChange);
     moreContrastQuery.addEventListener("change", onChange);
     darkColorSchemeQuery.addEventListener("change", onChange);
     return () => {
-        window.removeEventListener("storage", handleStorage);
+        unsubscribe();
         moreContrastQuery.removeEventListener("change", onChange);
         darkColorSchemeQuery.removeEventListener("change", onChange);
     };

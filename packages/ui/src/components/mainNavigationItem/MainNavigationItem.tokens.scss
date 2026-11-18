@@ -1,33 +1,57 @@
+// The values match the entries of `SideNav`'s navigation, without its glass and gradient.
 @mixin tokens {
-    --dextinity-main-navigation-item-height: var(--dextinity-unit-10);
-    --dextinity-main-navigation-item-radius: var(--dextinity-radius-md);
-    --dextinity-main-navigation-item-gap: var(--dextinity-unit-2);
-    --dextinity-main-navigation-item-padding-horizontal: var(--dextinity-unit-3);
-    --dextinity-main-navigation-item-icon-size: 16px;
-    --dextinity-main-navigation-item-expand-icon-size: 12px;
+    // Height of an item
+    --dextinity-main-navigation-item-height: var(--dextinity-density-nav-item-height);
+    // Corner radius of an item
+    --dextinity-main-navigation-item-radius: var(--dextinity-radius-field);
+    // Gap between the icon, the label and the expand icon
+    --dextinity-main-navigation-item-gap: var(--dextinity-space-2);
+    // Padding at the end of an item
+    --dextinity-main-navigation-item-padding-horizontal: var(--dextinity-space-3);
+    // Size of the leading icon
+    --dextinity-main-navigation-item-icon-size: var(--dextinity-icon-size-small);
+    // Size of the chevron of an item with sub-items
+    --dextinity-main-navigation-item-expand-icon-size: var(--dextinity-icon-size-xxsmall);
 
-    --dextinity-main-navigation-item-active-indicator-width: 3px;
+    // Width of the bar that marks the active item
+    --dextinity-main-navigation-item-active-indicator-width: var(--dextinity-indicator-width-strong);
+    // Height of the bar that marks the active item
     --dextinity-main-navigation-item-active-indicator-height: 24px;
 
-    --dextinity-main-navigation-item-indent-level-1: var(--dextinity-unit-3);
-    --dextinity-main-navigation-item-indent-level-2: var(--dextinity-unit-9);
-    --dextinity-main-navigation-item-indent-level-3: var(--dextinity-unit-15);
+    // Start padding of a top-level item
+    --dextinity-main-navigation-item-indent-level-1: var(--dextinity-space-3);
+    // Start padding of a second-level item
+    --dextinity-main-navigation-item-indent-level-2: 36px;
+    // Start padding of a third-level item
+    --dextinity-main-navigation-item-indent-level-3: 60px;
 
-    --dextinity-main-navigation-item-font-size: var(--dextinity-typography-body-md-size);
-    --dextinity-main-navigation-item-font-line-height: var(--dextinity-typography-body-md-line-height);
+    // Text size of the label
+    --dextinity-main-navigation-item-font-size: 13.5px;
+    // Line height of the label
+    --dextinity-main-navigation-item-font-line-height: var(--dextinity-typography-body-line-height);
+    // Weight of the label
     --dextinity-main-navigation-item-font-weight: var(--dextinity-font-weight-medium);
-    --dextinity-main-navigation-item-font-weight-style: var(--dextinity-font-weight-medium-style);
 
-    --dextinity-main-navigation-item-default-background: var(--dextinity-color-transparent);
-    --dextinity-main-navigation-item-default-foreground: var(--dextinity-color-foreground-default);
-    --dextinity-main-navigation-item-default-icon: var(--dextinity-color-foreground-default);
+    // Fill of an item at rest
+    --dextinity-main-navigation-item-default-background: transparent;
+    // Label color of an item at rest
+    --dextinity-main-navigation-item-default-foreground: var(--dextinity-color-text-subtle);
+    // Icon color of an item at rest
+    --dextinity-main-navigation-item-default-icon: var(--dextinity-color-text-subtle);
 
-    --dextinity-main-navigation-item-hover-background: var(--dextinity-color-background-subtle);
-    --dextinity-main-navigation-item-hover-foreground: var(--dextinity-color-foreground-default);
-    --dextinity-main-navigation-item-hover-icon: var(--dextinity-color-foreground-default);
+    // Fill of an item on hover
+    --dextinity-main-navigation-item-hover-background: var(--dextinity-color-surface-sunken);
+    // Label color of an item on hover
+    --dextinity-main-navigation-item-hover-foreground: var(--dextinity-color-text);
+    // Icon color of an item on hover
+    --dextinity-main-navigation-item-hover-icon: var(--dextinity-color-text);
 
-    --dextinity-main-navigation-item-active-background: var(--dextinity-color-action-primary-subtle);
-    --dextinity-main-navigation-item-active-foreground: var(--dextinity-color-action-primary-default);
-    --dextinity-main-navigation-item-active-icon: var(--dextinity-color-action-primary-default);
-    --dextinity-main-navigation-item-active-indicator: var(--dextinity-color-action-primary-default);
+    // Fill of the active item
+    --dextinity-main-navigation-item-active-background: var(--dextinity-color-accent-soft);
+    // Label color of the active item
+    --dextinity-main-navigation-item-active-foreground: var(--dextinity-color-accent-text);
+    // Icon color of the active item
+    --dextinity-main-navigation-item-active-icon: var(--dextinity-color-accent-text);
+    // Color of the bar that marks the active item
+    --dextinity-main-navigation-item-active-indicator: var(--dextinity-color-accent);
 }

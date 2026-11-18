@@ -1,6 +1,6 @@
 import "@fontsource-variable/roboto-flex/full.css";
 
-import { ApolloProvider } from "@apollo/client";
+import { ApolloProvider } from "@apollo/client/react";
 import { ErrorDialogHandler, MuiThemeProvider, RouterBrowserRouter, SnackbarProvider } from "@dextinity/admin";
 import { BrevoConfigProvider } from "@dextinity/brevo-admin";
 import {
@@ -27,7 +27,7 @@ import { HTML5toTouch } from "rdndmb-html5-to-touch";
 import { useMemo } from "react";
 import { DndProvider } from "react-dnd-multi-backend";
 import { FormattedMessage, IntlProvider } from "react-intl";
-import { Route, Switch } from "react-router";
+import { Route, Routes } from "react-router";
 
 import { AppMasterLayout } from "./common/AppMasterLayout";
 import { additionalPageTreeNodeFieldsFragment } from "./common/EditPageNode";
@@ -170,28 +170,28 @@ export function App() {
                                             <RouterBrowserRouter>
                                                 <GlobalStyle />
                                                 <ContentScopeProvider>
-                                                    {({ match }) => (
+                                                    {() => (
                                                         <AzureAiTranslatorProvider enabled showApplyTranslationDialog>
-                                                            <Switch>
+                                                            <Routes>
                                                                 <Route
-                                                                    path={`${match.path}/preview`}
-                                                                    render={(props) => (
+                                                                    path="preview/*"
+                                                                    element={
                                                                         <SitePreview
                                                                             resolvePath={(path: string, scope) => {
                                                                                 return `/${scope.language}${path}`;
                                                                             }}
-                                                                            {...props}
                                                                         />
-                                                                    )}
+                                                                    }
                                                                 />
                                                                 <Route
-                                                                    render={() => (
+                                                                    path="*"
+                                                                    element={
                                                                         <AdminAiModeProvider>
                                                                             <AppMasterLayout />
                                                                         </AdminAiModeProvider>
-                                                                    )}
+                                                                    }
                                                                 />
-                                                            </Switch>
+                                                            </Routes>
                                                         </AzureAiTranslatorProvider>
                                                     )}
                                                 </ContentScopeProvider>

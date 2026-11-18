@@ -5,7 +5,7 @@ import { HTML5toTouch } from "rdndmb-html5-to-touch";
 import { useState } from "react";
 import { useDragDropManager } from "react-dnd";
 import { DndProvider } from "react-dnd-multi-backend";
-import { useHistory } from "react-router";
+import { useNavigate } from "react-router";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { AiModeProvider } from "./AiModeContext";
@@ -41,8 +41,8 @@ const bridge = {
 const topMenuPath = "/main/en/pages/pagetree/top-menu";
 
 function OpenTopMenuButton() {
-    const history = useHistory();
-    return <button onClick={() => history.push(topMenuPath)}>Open top menu</button>;
+    const navigate = useNavigate();
+    return <button onClick={() => navigate(topMenuPath)}>Open top menu</button>;
 }
 
 type DragDropManager = ReturnType<typeof useDragDropManager>;

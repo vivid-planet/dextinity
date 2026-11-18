@@ -1,4 +1,4 @@
-import { type BlockDataInterface, CrudSingleGenerator, RootBlock, RootBlockDataScalar, RootBlockEntity, RootBlockType } from "@dextinity/cms-api";
+import { type BlockDataInterface, RootBlock, RootBlockDataScalar, RootBlockEntity, RootBlockType } from "@dextinity/cms-api";
 import { Embedded, Entity, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
 import { BaseEntity, OptionalProps } from "@mikro-orm/postgresql";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
@@ -10,7 +10,6 @@ import { WelcomeEmailScope } from "../dto/welcome-email-scope.js";
 @Entity()
 @ObjectType()
 @RootBlockEntity()
-@CrudSingleGenerator({ requiredPermission: ["pageTree"] })
 export class WelcomeEmail extends BaseEntity {
     [OptionalProps]?: "createdAt" | "updatedAt";
 

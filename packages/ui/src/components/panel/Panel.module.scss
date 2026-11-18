@@ -1,0 +1,83 @@
+@use "../../theme/forcedColors" as forced-colors;
+
+.root {
+    position: relative;
+    box-sizing: border-box;
+    min-inline-size: 0;
+    padding: var(--dextinity-panel-padding);
+    border-radius: var(--dextinity-panel-radius);
+    color: var(--dextinity-color-text);
+    font-family: var(--dextinity-font-family-text);
+    font-size: var(--dextinity-typography-body-size);
+
+    &[data-variant="glass"] {
+        background: var(--dextinity-panel-glass-background);
+        box-shadow: var(--dextinity-panel-glass-shadow);
+        backdrop-filter: blur(var(--dextinity-panel-glass-blur)) saturate(var(--dextinity-material-saturation));
+
+        @include forced-colors.edge;
+    }
+
+    &[data-variant="solid"] {
+        background: var(--dextinity-panel-solid-background);
+        box-shadow: var(--dextinity-panel-solid-shadow);
+
+        @include forced-colors.edge;
+    }
+
+    &[data-padding="none"] {
+        overflow: hidden;
+        padding: 0;
+
+        .header {
+            margin: var(--dextinity-panel-padding);
+            margin-block-end: 0;
+        }
+
+        .body {
+            padding: 0;
+        }
+    }
+}
+
+.header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--dextinity-panel-header-gap);
+    min-block-size: 34px;
+    padding: var(--dextinity-panel-header-padding);
+}
+
+.heading {
+    flex: 1 1 auto;
+    min-inline-size: 0;
+}
+
+.title {
+    margin: 0;
+    color: var(--dextinity-panel-title-color);
+    font-size: var(--dextinity-panel-title-font-size);
+    font-weight: var(--dextinity-panel-title-font-weight);
+    line-height: var(--dextinity-typography-title-line-height);
+    letter-spacing: var(--dextinity-typography-title-letter-spacing);
+}
+
+.description {
+    margin-block-start: var(--dextinity-space-1);
+    color: var(--dextinity-panel-description-color);
+    font-size: var(--dextinity-panel-description-font-size);
+    line-height: var(--dextinity-typography-body-line-height);
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--dextinity-space-2);
+    margin-inline-start: auto;
+}
+
+.body {
+    padding: var(--dextinity-panel-body-padding);
+}

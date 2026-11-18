@@ -1,4 +1,5 @@
-import { gql, useApolloClient, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client/react";
 import {
     Button,
     CrudContextMenu,
@@ -43,7 +44,7 @@ import { ManufacturerFilterOperator } from "./ManufacturerFilter";
 import type {
     GQLDeleteProductMutation,
     GQLDeleteProductMutationVariables,
-    GQLProductsListManualFragment,
+    GQLProductsListFragment,
     GQLProductsListQuery,
     GQLProductsListQueryVariables,
     GQLUpdateProductStatusMutation,
@@ -128,7 +129,7 @@ export function ProductsGrid() {
         ids: new Set([]),
     });
 
-    const columns = useMemo((): GridColDef<GQLProductsListManualFragment>[] => {
+    const columns = useMemo((): GridColDef<GQLProductsListFragment>[] => {
         return [
             {
                 field: "overview",
@@ -346,6 +347,7 @@ export function ProductsGrid() {
             limit: dataGridProps.paginationModel.pageSize,
             sort: muiGridSortToGql(sortModel, columns),
         },
+        notifyOnNetworkStatusChange: false,
     });
     if (error) {
         throw error;
@@ -396,7 +398,7 @@ export function ProductsGrid() {
 }
 
 const productsFragment = gql`
-    fragment ProductsListManual on Product {
+    fragment ProductsList on Product {
         id
         slug
         title
@@ -440,7 +442,7 @@ const productsQuery = gql`
         products(offset: $offset, limit: $limit, sort: $sort, filter: $filter, search: $search) {
             nodes {
                 id
-                ...ProductsListManual
+                ...ProductsList
             }
             totalCount
         }

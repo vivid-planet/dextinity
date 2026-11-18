@@ -1,12 +1,14 @@
-import { Route, type RouteProps } from "react-router";
+import { useRoutePattern } from "../../router/internal/routeContext";
+import { ErrorBoundary, type ErrorBoundaryProps } from "./ErrorBoundary";
 
-import { ErrorBoundary } from "./ErrorBoundary";
+export type RouteWithErrorBoundaryProps = Omit<ErrorBoundaryProps, "key">;
 
-const RouteWithErrorBoundary = (props: RouteProps) => {
-    return (
-        <ErrorBoundary key={JSON.stringify(props.path)}>
-            <Route {...props} />
-        </ErrorBoundary>
-    );
+/**
+ * Wraps the element of a route in an `ErrorBoundary`, e.g. `<Route path="products/*" element={<RouteWithErrorBoundary><Products /></RouteWithErrorBoundary>} />`.
+ * The error is reset when navigating to another route.
+ */
+const RouteWithErrorBoundary = (props: RouteWithErrorBoundaryProps) => {
+    const routePattern = useRoutePattern();
+    return <ErrorBoundary key={routePattern} {...props} />;
 };
 export { RouteWithErrorBoundary };

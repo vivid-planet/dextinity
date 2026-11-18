@@ -1,4 +1,4 @@
-import { useApolloClient, useQuery } from "@apollo/client";
+import { skipToken, useApolloClient, useQuery } from "@apollo/client/react";
 import {
     Field,
     Loading,
@@ -8,6 +8,7 @@ import {
     ToolbarFillSpace,
     ToolbarItem,
     ToolbarTitleItem,
+    useCurrentRouteMatch,
     useFormApiRef,
     useStackApi,
     useStackSwitchApi,
@@ -36,7 +37,6 @@ import { IconButton } from "@mui/material";
 import { isBefore } from "date-fns";
 import { useMemo } from "react";
 import { FormattedMessage } from "react-intl";
-import { useRouteMatch } from "react-router";
 
 import { useBrevoConfig } from "../../common/BrevoConfigProvider";
 import type { GQLEmailCampaignInput } from "../../graphql.generated";
@@ -80,13 +80,13 @@ export function EmailCampaignForm({ id, EmailCampaignContentBlock, scope }: Form
     const previewApi = useBlockPreview();
     const formApiRef = useFormApiRef<EmailCampaignState>();
     const blockContext = useBlockContext();
-    const match = useRouteMatch();
+    const routeUrl = useCurrentRouteMatch()?.url ?? "";
 
     const FinalFormEmailCampaignContentBlock = useMemo(() => createFinalFormBlock(EmailCampaignContentBlock), [EmailCampaignContentBlock]);
 
     const { data, error, loading, refetch } = useQuery<GQLEmailCampaignFormQuery, GQLEmailCampaignFormQueryVariables>(
         emailCampaignFormQuery,
-        id ? { variables: { id } } : { skip: true },
+        id ? { variables: { id }, notifyOnNetworkStatusChange: false } : skipToken,
     );
 
     const { state, setState, hasChanges, output, query, updateReferenceContent } = useEditState<
@@ -129,7 +129,7 @@ export function EmailCampaignForm({ id, EmailCampaignContentBlock, scope }: Form
     const saveConflict = useFormSaveConflict({
         checkConflict: async () => {
             const updatedAt = await queryUpdatedAt(client, "brevoEmailCampaign", id);
-            return resolveHasSaveConflict(data?.brevoEmailCampaign.updatedAt, updatedAt);
+            return resolveHasSaveConflict(data?.brevoEmailCampaign?.updatedAt, updatedAt);
         },
         formApiRef,
         loadLatestVersion: async () => {
@@ -216,7 +216,7 @@ export function EmailCampaignForm({ id, EmailCampaignContentBlock, scope }: Form
 
     const previewContext = {
         ...blockContext,
-        parentUrl: match.url,
+        parentUrl: routeUrl,
         showVisibleOnly: previewApi.showOnlyVisible,
     };
 

@@ -1,0 +1,74 @@
+@use "../../theme/forcedColors" as forced-colors;
+
+.root {
+    container-type: inline-size;
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-tree-detail-layout-header-spacing);
+    min-inline-size: 0;
+}
+
+.body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--dextinity-tree-detail-layout-detail-width);
+    gap: var(--dextinity-tree-detail-layout-gap);
+    align-items: start;
+}
+
+.main {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-tree-detail-layout-gap);
+    box-sizing: border-box;
+    min-inline-size: 0;
+
+    .root:not([data-surface="none"]) & {
+        gap: 0;
+        padding: var(--dextinity-tree-detail-layout-card-padding);
+        border-radius: var(--dextinity-tree-detail-layout-card-radius);
+        color: var(--dextinity-color-text);
+
+        @include forced-colors.edge;
+
+        > .toolbar {
+            padding: var(--dextinity-tree-detail-layout-card-toolbar-padding);
+        }
+
+        > .tree {
+            padding: var(--dextinity-tree-detail-layout-card-tree-padding);
+        }
+    }
+
+    .root[data-surface="glass"] & {
+        background: var(--dextinity-tree-detail-layout-card-glass-background);
+        box-shadow: var(--dextinity-tree-detail-layout-card-glass-shadow);
+        backdrop-filter: blur(var(--dextinity-tree-detail-layout-card-glass-blur)) saturate(var(--dextinity-material-saturation));
+    }
+
+    .root[data-surface="solid"] & {
+        background: var(--dextinity-tree-detail-layout-card-solid-background);
+        box-shadow: var(--dextinity-tree-detail-layout-card-solid-shadow);
+    }
+}
+
+.header,
+.toolbar,
+.tree {
+    min-inline-size: 0;
+}
+
+.detail {
+    position: sticky;
+    inset-block-start: var(--dextinity-tree-detail-layout-sticky-offset);
+    min-inline-size: 0;
+}
+
+@container (max-width: 860px) {
+    .body {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .detail {
+        position: static;
+    }
+}

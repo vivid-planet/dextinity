@@ -1,10 +1,11 @@
 import { BaseEntity, OptionalProps, PrimaryKeyProp } from "@mikro-orm/core";
-import { Entity, Index, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
+import { Entity, Enum, Index, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
 import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
 import { GraphQLJSONObject } from "graphql-scalars";
 import { v7 } from "uuid";
 
 import type { ContentScope } from "../../user-permissions/interfaces/content-scope.interface.js";
+import { ActionLogType } from "../dto/action-log-type.enum.js";
 
 @Entity()
 @ObjectType()
@@ -36,6 +37,10 @@ export class ActionLog extends BaseEntity {
     @Field(() => Int)
     @Property({ type: "integer" })
     version: number;
+
+    @Field(() => ActionLogType)
+    @Enum({ items: () => ActionLogType })
+    type: ActionLogType;
 
     @Field(() => GraphQLJSONObject, { nullable: true })
     @Property({ type: "jsonb", nullable: true })

@@ -18,6 +18,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { UserPermissionsStorageService } from "../user-permissions/user-permissions-storage.service.js";
 import { ACTION_LOGS_METADATA_KEY, type ActionLogMetadata } from "./action-logs.decorator.js";
 import { ActionLogsService } from "./action-logs.service.js";
+import { ActionLogType } from "./dto/action-log-type.enum.js";
 import { ActionLog } from "./entities/action-log.entity.js";
 
 // The snapshot holds the primary key of a referenced entity instead of the entity itself, so that a change of the
@@ -31,6 +32,18 @@ function getReferencedPrimaryKeys(entity: AnyEntity, relations: EntityProperty[]
         }
     }
     return referencedPrimaryKeys;
+}
+
+function getActionLogType(changeSetType: ChangeSetType): ActionLogType {
+    switch (changeSetType) {
+        case ChangeSetType.CREATE:
+            return ActionLogType.created;
+        case ChangeSetType.DELETE:
+        case ChangeSetType.DELETE_EARLY:
+            return ActionLogType.deleted;
+        default:
+            return ActionLogType.updated;
+    }
 }
 
 @Injectable()
@@ -97,6 +110,7 @@ export class ActionLogsSubscriber implements EventSubscriber {
                 userId: typeof user === "string" ? user : user.id,
                 entityName,
                 entityId,
+                type: getActionLogType(changeSet.type),
                 snapshot,
                 version: raw(
                     `(${this.entityManager

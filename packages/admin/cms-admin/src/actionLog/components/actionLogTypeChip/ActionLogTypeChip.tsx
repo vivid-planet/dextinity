@@ -1,19 +1,23 @@
 import { Chip, type ChipProps } from "@mui/material";
-import { styled } from "@mui/material/styles";
+import type { ReactNode } from "react";
+import { FormattedMessage } from "react-intl";
 
-type ActionLogTypeChipProps = ChipProps & { actionLogType: string };
+import type { GQLActionLogType } from "../../../graphql.generated";
 
-export const ActionLogTypeChip = styled(({ actionLogType, ...rest }: ActionLogTypeChipProps) => <Chip {...rest} />, {
-    shouldForwardProp: (prop) => prop !== "actionLogType",
-})(({ theme, actionLogType }) => {
-    if (actionLogType === "Created") {
-        return { backgroundColor: theme.palette.success.main, color: theme.palette.success.contrastText };
-    }
-    if (actionLogType === "Updated") {
-        return { backgroundColor: theme.palette.primary.main, color: theme.palette.primary.contrastText };
-    }
-    if (actionLogType === "Deleted") {
-        return { backgroundColor: theme.palette.error.main, color: theme.palette.error.contrastText };
-    }
-    return {};
-});
+type ActionLogTypeChipProps = Omit<ChipProps, "label" | "color"> & { actionLogType: GQLActionLogType };
+
+const labels: Record<GQLActionLogType, ReactNode> = {
+    created: <FormattedMessage id="actionLog.actionLogTypeChip.created" defaultMessage="Created" />,
+    updated: <FormattedMessage id="actionLog.actionLogTypeChip.updated" defaultMessage="Updated" />,
+    deleted: <FormattedMessage id="actionLog.actionLogTypeChip.deleted" defaultMessage="Deleted" />,
+};
+
+const colors: Record<GQLActionLogType, ChipProps["color"]> = {
+    created: "success",
+    updated: "primary",
+    deleted: "error",
+};
+
+export function ActionLogTypeChip({ actionLogType, ...restProps }: ActionLogTypeChipProps) {
+    return <Chip {...restProps} color={colors[actionLogType]} label={labels[actionLogType]} />;
+}

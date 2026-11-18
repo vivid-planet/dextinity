@@ -194,16 +194,16 @@ export class ActionLogsResolver {
     }
 
     @ResolveField(() => ActionLogType, {
-        description: "Derived from snapshot and version: snapshot null → Deleted, version 1 → Created, otherwise → Updated.",
+        description: "Derived from snapshot and version: snapshot null → deleted, version 1 → created, otherwise → updated.",
     })
     type(@Parent() actionLog: ActionLog): ActionLogType {
         if (actionLog.snapshot == null) {
-            return ActionLogType.Deleted;
+            return ActionLogType.deleted;
         }
         if (actionLog.version === 1) {
-            return ActionLogType.Created;
+            return ActionLogType.created;
         }
-        return ActionLogType.Updated;
+        return ActionLogType.updated;
     }
 
     @ResolveField(() => ActionLogsUser)

@@ -89,7 +89,7 @@ export function ActionLogsGrid({ entity, getDisplayName = getDefaultDisplayName 
                 sortable: false,
                 filterable: false,
                 width: 150,
-                renderCell: ({ row }) => <ActionLogTypeChip actionLogType={row.type} label={row.type} />,
+                renderCell: ({ row }) => <ActionLogTypeChip actionLogType={row.type} />,
             },
             {
                 field: "entityId",

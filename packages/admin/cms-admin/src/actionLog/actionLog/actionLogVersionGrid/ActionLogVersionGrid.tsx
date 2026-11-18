@@ -55,7 +55,7 @@ export function ActionLogVersionGrid<Row extends GQLActionLogVersionGridFragment
                 headerName: intl.formatMessage({ defaultMessage: "Action", id: "actionLog.actionLogVersionGrid.columns.type" }),
                 sortable: false,
                 width: 130,
-                renderCell: ({ row }) => <ActionLogTypeChip actionLogType={row.type} label={row.type} />,
+                renderCell: ({ row }) => <ActionLogTypeChip actionLogType={row.type} />,
             },
             ...(showScope
                 ? [

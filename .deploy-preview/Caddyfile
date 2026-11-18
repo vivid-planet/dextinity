@@ -23,6 +23,11 @@
 		reverse_proxy mailpit:8025
 	}
 
+	@docs header_regexp Host ^docs--
+	handle @docs {
+		reverse_proxy docs:8080
+	}
+
 	handle {
 		reverse_proxy site:3000
 	}

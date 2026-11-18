@@ -1,7 +1,7 @@
 # Deploy Preview Environment
 
-Runs the complete demo (api, admin, site, login and mails) in Docker, built production style, for
-example to look at a pull request before it is merged. For development use `pnpm run dev:demo`.
+Runs the complete demo (api, admin, site, login and mails) and the docs in Docker, built production
+style, for example to look at a pull request before it is merged. For development use `pnpm run dev:demo`.
 
 ## Quick start
 
@@ -14,6 +14,7 @@ example to look at a pull request before it is merged. For development use `pnpm
 | Site        | http://demo.preview.localhost:8080        |
 | Admin       | http://admin--demo.preview.localhost:8080 |
 | Mailpit     | http://mail--demo.preview.localhost:8080  |
+| Docs        | http://docs--demo.preview.localhost:8080  |
 
 The admin login offers the users of `demo/api/src/auth/static-users.ts`, like in local development.
 
@@ -45,9 +46,9 @@ DEPLOY_PREVIEW_PORT=8081 COMPOSE_PROJECT_NAME=pr-123 ./start-deploy-preview.sh
 
 ## Host names
 
-Admin, login and mails are served under `admin--<host>`, `idp--<host>` and `mail--<host>`: next to
-the base domain instead of below it, so that a single wildcard certificate (`*.example.com`) covers
-every host of every deploy preview. Behind an upstream proxy, forward all of them to
+Admin, login, mails and docs are served under `admin--<host>`, `idp--<host>`, `mail--<host>` and
+`docs--<host>`: next to the base domain instead of below it, so that a single wildcard certificate
+(`*.example.com`) covers every host of every deploy preview. Behind an upstream proxy, forward all of them to
 `DEPLOY_PREVIEW_PORT` and keep the `Host` header.
 
 Site and admin must share their registrable domain, otherwise the block preview in the admin cannot

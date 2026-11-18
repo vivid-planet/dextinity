@@ -1,0 +1,15 @@
+# Replaces the .dockerignore of the repository for Docs.Dockerfile, which excludes the docs to keep
+# them out of the demo images.
+
+**
+!package.json
+!pnpm-lock.yaml
+!pnpm-workspace.yaml
+!packages/**/package.json
+!demo/**/package.json
+!storybook/package.json
+!docs
+docs/node_modules
+docs/build
+docs/.docusaurus
+**/node_modules

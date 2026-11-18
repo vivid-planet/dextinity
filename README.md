@@ -131,6 +131,12 @@ It is also possible to start specific microservices
 pnpm exec dev-pm start @demo-api # (@demo-api|@demo-admin|@demo-site)
 ```
 
+The translations (`demo/*/lang/`) are cloned automatically when they're missing. To pull the latest translations, run:
+
+```bash
+pnpm --dir demo/admin run intl:update # (admin|api|site)
+```
+
 #### Run multiple Demo instances in parallel
 
 To run several checkouts at once without port collisions, assign a free port offset before starting:

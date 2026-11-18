@@ -44,7 +44,7 @@ import { ManufacturerFilterOperator } from "./ManufacturerFilter";
 import type {
     GQLDeleteProductMutation,
     GQLDeleteProductMutationVariables,
-    GQLProductsListManualFragment,
+    GQLProductsListFragment,
     GQLProductsListQuery,
     GQLProductsListQueryVariables,
     GQLUpdateProductStatusMutation,
@@ -129,7 +129,7 @@ export function ProductsGrid() {
         ids: new Set([]),
     });
 
-    const columns = useMemo((): GridColDef<GQLProductsListManualFragment>[] => {
+    const columns = useMemo((): GridColDef<GQLProductsListFragment>[] => {
         return [
             {
                 field: "overview",
@@ -398,7 +398,7 @@ export function ProductsGrid() {
 }
 
 const productsFragment = gql`
-    fragment ProductsListManual on Product {
+    fragment ProductsList on Product {
         id
         slug
         title
@@ -442,7 +442,7 @@ const productsQuery = gql`
         products(offset: $offset, limit: $limit, sort: $sort, filter: $filter, search: $search) {
             nodes {
                 id
-                ...ProductsListManual
+                ...ProductsList
             }
             totalCount
         }

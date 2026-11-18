@@ -50,14 +50,6 @@ export default defineConfig({
             group: ["dextinity-admin"],
         },
 
-        // admin-generator
-        {
-            name: "admin-generator",
-            script: "pnpm --filter @dextinity/admin-generator run dev",
-            group: ["cms-admin", "cms"],
-            waitOn: waitOnPackages("@dextinity/cms-admin"),
-        },
-
         // group cms-admin
         {
             name: "cms-admin",
@@ -93,13 +85,6 @@ export default defineConfig({
             name: "cms-api-codegen-block-meta",
             script: "pnpm --filter @dextinity/cms-api run generate-block-meta:watch",
             group: ["cms-api", "cms"],
-        },
-        // api-generator
-        {
-            name: "api-generator",
-            script: "pnpm --filter @dextinity/api-generator run dev",
-            group: ["cms-api", "cms"],
-            waitOn: waitOnPackages("@dextinity/cms-api"),
         },
 
         //group site-nextjs
@@ -237,12 +222,6 @@ export default defineConfig({
             // dev-pm doesn't pass them to scripts, and Compose prefers real env vars over its own `.env` lookup.
             script: "set -a; . ./.env; [ ! -f .env.local ] || . ./.env.local; set +a; docker compose up",
             group: ["demo-api", "demo"],
-        },
-        {
-            name: "demo-api-generator",
-            script: "pnpm --filter dextinity-demo-api exec dextinity-api-generator generate --watch",
-            group: ["demo-api", "demo"],
-            waitOn: [...waitOnPackages("@dextinity/cms-api"), "packages/api/api-generator/lib/apiGenerator.js"],
         },
         {
             name: "demo-api",

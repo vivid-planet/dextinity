@@ -1,0 +1,72 @@
+import { AffectedEntity, gqlArgsToMikroOrmQuery, gqlSortToMikroOrmOrderBy } from "@dextinity/cms-api";
+import { EntityManager, type FindOptions } from "@mikro-orm/postgresql";
+import { Args, ID, Mutation, Query, Resolver } from "@nestjs/graphql";
+
+import { ManufacturerInput, ManufacturerUpdateInput } from "./dto/manufacturer.input.js";
+import { ManufacturersArgs } from "./dto/manufacturers.args.js";
+import { PaginatedManufacturers } from "./dto/paginated-manufacturers.js";
+import { Manufacturer } from "./entities/manufacturer.entity.js";
+
+@Resolver(() => Manufacturer)
+export class ManufacturerResolver {
+    constructor(protected readonly entityManager: EntityManager) {}
+    @Query(() => Manufacturer)
+    @AffectedEntity(Manufacturer)
+    async manufacturer(
+        @Args("id", { type: () => ID })
+        id: string,
+    ): Promise<Manufacturer> {
+        const manufacturer = await this.entityManager.findOneOrFail(Manufacturer, id);
+        return manufacturer;
+    }
+    @Query(() => PaginatedManufacturers)
+    async manufacturers(
+        @Args()
+        { search, filter, sort, offset, limit }: ManufacturersArgs,
+    ): Promise<PaginatedManufacturers> {
+        const where = gqlArgsToMikroOrmQuery({ search, filter }, this.entityManager.getMetadata(Manufacturer));
+        const options: FindOptions<Manufacturer> = { offset, limit };
+        if (sort) {
+            options.orderBy = gqlSortToMikroOrmOrderBy(sort);
+        }
+        const [entities, totalCount] = await this.entityManager.findAndCount(Manufacturer, where, options);
+        return new PaginatedManufacturers(entities, totalCount);
+    }
+    @Mutation(() => Manufacturer)
+    async createManufacturer(
+        @Args("input", { type: () => ManufacturerInput })
+        input: ManufacturerInput,
+    ): Promise<Manufacturer> {
+        const manufacturer = this.entityManager.create(Manufacturer, {
+            ...input,
+        });
+        await this.entityManager.flush();
+        return manufacturer;
+    }
+    @Mutation(() => Manufacturer)
+    @AffectedEntity(Manufacturer)
+    async updateManufacturer(
+        @Args("id", { type: () => ID })
+        id: string,
+        @Args("input", { type: () => ManufacturerUpdateInput })
+        input: ManufacturerUpdateInput,
+    ): Promise<Manufacturer> {
+        const manufacturer = await this.entityManager.findOneOrFail(Manufacturer, id);
+        manufacturer.assign({
+            ...input,
+        });
+        await this.entityManager.flush();
+        return manufacturer;
+    }
+    @Mutation(() => Boolean)
+    @AffectedEntity(Manufacturer)
+    async deleteManufacturer(
+        @Args("id", { type: () => ID })
+        id: string,
+    ): Promise<boolean> {
+        const manufacturer = await this.entityManager.findOneOrFail(Manufacturer, id);
+        this.entityManager.remove(manufacturer);
+        await this.entityManager.flush();
+        return true;
+    }
+}

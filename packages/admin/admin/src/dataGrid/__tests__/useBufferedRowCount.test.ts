@@ -15,9 +15,12 @@ describe("useBufferedRowCount", () => {
     });
 
     it("should keep the previous count when rowCount transitions to undefined", () => {
-        const { result, rerender } = renderHook(({ count }: { count: number | undefined }) => useBufferedRowCount(count), {
-            initialProps: { count: 100 },
-        });
+        const { result, rerender } = renderHook<number, { count: number | undefined }>(
+            ({ count }: { count: number | undefined }) => useBufferedRowCount(count),
+            {
+                initialProps: { count: 100 },
+            },
+        );
 
         expect(result.current).toBe(100);
 
@@ -29,9 +32,12 @@ describe("useBufferedRowCount", () => {
     });
 
     it("should update when rowCount changes from one defined value to another", () => {
-        const { result, rerender } = renderHook(({ count }: { count: number | undefined }) => useBufferedRowCount(count), {
-            initialProps: { count: 10 },
-        });
+        const { result, rerender } = renderHook<number, { count: number | undefined }>(
+            ({ count }: { count: number | undefined }) => useBufferedRowCount(count),
+            {
+                initialProps: { count: 10 },
+            },
+        );
 
         expect(result.current).toBe(10);
 
@@ -43,9 +49,12 @@ describe("useBufferedRowCount", () => {
     });
 
     it("should return 0 initially and then update once the first defined value arrives", () => {
-        const { result, rerender } = renderHook(({ count }: { count: number | undefined }) => useBufferedRowCount(count), {
-            initialProps: { count: undefined },
-        });
+        const { result, rerender } = renderHook<number, { count: number | undefined }>(
+            ({ count }: { count: number | undefined }) => useBufferedRowCount(count),
+            {
+                initialProps: { count: undefined },
+            },
+        );
 
         expect(result.current).toBe(0);
 
@@ -57,9 +66,12 @@ describe("useBufferedRowCount", () => {
     });
 
     it("should retain the last known count through multiple undefined transitions", () => {
-        const { result, rerender } = renderHook(({ count }: { count: number | undefined }) => useBufferedRowCount(count), {
-            initialProps: { count: 50 },
-        });
+        const { result, rerender } = renderHook<number, { count: number | undefined }>(
+            ({ count }: { count: number | undefined }) => useBufferedRowCount(count),
+            {
+                initialProps: { count: 50 },
+            },
+        );
 
         act(() => rerender({ count: undefined }));
         act(() => rerender({ count: undefined }));

@@ -1,5 +1,12 @@
 // @vitest-environment node
-import { BlobClient, type BlobDownloadResponseParsed, BlockBlobClient, type BlockBlobUploadResponse, RestError } from "@azure/storage-blob";
+import {
+    BlobClient,
+    type BlobDownloadResponseParsed,
+    BlockBlobClient,
+    type BlockBlobUploadResponse,
+    ContainerClient,
+    RestError,
+} from "@azure/storage-blob";
 import { Readable } from "stream";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -56,5 +63,31 @@ describe("createAzureBuildAssetsStorage", () => {
         expect(uploadData.mock.calls[0][1]).toEqual({
             blobHTTPHeaders: { blobContentType: "text/javascript", blobCacheControl: "public, max-age=31536000, immutable" },
         });
+    });
+
+    it("lists the keys of the blobs with the prefix", async () => {
+        const listBlobsFlat = vi.spyOn(ContainerClient.prototype, "listBlobsFlat").mockReturnValue(
+            (async function* () {
+                yield { name: "site/_next/static/a.js" };
+                yield { name: "site/_next/static/b.js" };
+            })() as unknown as ReturnType<ContainerClient["listBlobsFlat"]>,
+        );
+
+        expect(await storage.listFiles("site/_next/static/")).toEqual(["site/_next/static/a.js", "site/_next/static/b.js"]);
+        expect(listBlobsFlat).toHaveBeenCalledWith({ prefix: "site/_next/static/" });
+    });
+
+    it("deletes the blobs and tolerates missing ones", async () => {
+        const deleteIfExists = vi
+            .spyOn(BlobClient.prototype, "deleteIfExists")
+            .mockResolvedValueOnce({ succeeded: true } as Awaited<ReturnType<BlobClient["deleteIfExists"]>>)
+            .mockResolvedValueOnce({ succeeded: false } as Awaited<ReturnType<BlobClient["deleteIfExists"]>>);
+
+        await storage.deleteFiles(["site/_next/static/a.js", "site/_next/static/missing.js"]);
+
+        expect(deleteIfExists.mock.contexts.map((blobClient) => (blobClient as BlobClient).name)).toEqual([
+            "site/_next/static/a.js",
+            "site/_next/static/missing.js",
+        ]);
     });
 });

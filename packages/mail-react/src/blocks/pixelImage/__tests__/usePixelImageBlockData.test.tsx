@@ -90,21 +90,30 @@ describe("usePixelImageBlockData — width selection", () => {
         expect(result.imageUrl).toContain(":2048:");
     });
 
-    it("uses largestPossibleRenderWidth × 2 when defaultRenderWidth equals largestPossibleRenderWidth", () => {
-        const result = expectNonNull(
-            captureUsePixelImageData({
-                data: smartImageData,
-                defaultRenderWidth: 600,
-                largestPossibleRenderWidth: 600,
-                config,
-            }),
-        );
-        expect(result.imageUrl).toContain(":1200:");
+    it("rounds defaultRenderWidth × 2 up to a validSizes entry when it isn't one", () => {
+        const result = expectNonNull(captureUsePixelImageData({ data: smartImageData, defaultRenderWidth: 600, config }));
+        expect(result.imageUrl).toContain(":1280:");
     });
 
-    it("defaults largestPossibleRenderWidth to theme.sizes.bodyWidth (600) and triggers DPR-2 fixed path at width 600", () => {
-        const result = expectNonNull(captureUsePixelImageData({ data: smartImageData, defaultRenderWidth: 600, config }));
-        expect(result.imageUrl).toContain(":1200:");
+    it("picks the width from largestPossibleRenderWidth when it is larger than defaultRenderWidth", () => {
+        const result = expectNonNull(
+            captureUsePixelImageData({ data: smartImageData, defaultRenderWidth: 300, largestPossibleRenderWidth: 420, config }),
+        );
+        expect(result.imageUrl).toContain(":1280:");
+    });
+
+    it("rounds to a validSizes entry when largestPossibleRenderWidth equals defaultRenderWidth", () => {
+        const result = expectNonNull(
+            captureUsePixelImageData({ data: smartImageData, defaultRenderWidth: 600, largestPossibleRenderWidth: 600, config }),
+        );
+        expect(result.imageUrl).toContain(":1280:");
+    });
+
+    it("ignores a largestPossibleRenderWidth smaller than defaultRenderWidth", () => {
+        const result = expectNonNull(
+            captureUsePixelImageData({ data: smartImageData, defaultRenderWidth: 300, largestPossibleRenderWidth: 100, config }),
+        );
+        expect(result.imageUrl).toContain(":640:");
     });
 });
 

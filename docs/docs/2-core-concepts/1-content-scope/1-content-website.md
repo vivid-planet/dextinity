@@ -8,7 +8,7 @@ Different modules can use different scopes and some modules might not use a scop
 
 ### API: Database
 
-Usually, the scope is stored in a `scope` object as an [embeddable](https://mikro-orm.io/docs/embeddables), which the API Generator will then use to create a standardized API that requires passing the scope.
+Usually, the scope is stored in a `scope` object as an [embeddable](https://mikro-orm.io/docs/embeddables).
 
 ```ts title="api/src/news/entities/news.entity.ts"
 @Embeddable()

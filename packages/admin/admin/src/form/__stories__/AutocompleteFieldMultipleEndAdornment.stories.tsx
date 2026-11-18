@@ -79,7 +79,7 @@ const MultiField = ({ initialValues, required, disabled, loading, loadingError }
             }}
         >
             {() => (
-                <AutocompleteField<Option, true, false, false>
+                <AutocompleteField<Option, true, false>
                     name="field"
                     multiple
                     options={allOptions}
@@ -106,7 +106,7 @@ const SingleField = ({ initialValue }: { initialValue: Option | null }) => {
             }}
         >
             {() => (
-                <AutocompleteField<Option, false, false, false>
+                <AutocompleteField<Option, false, false>
                     name="field"
                     options={allOptions}
                     getOptionLabel={(option) => option.label}

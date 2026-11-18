@@ -1,4 +1,3 @@
-import { MjmlColumn, MjmlSpacer, MjmlTable } from "@faire/mjml-react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { HtmlInlineLink } from "../../components/inlineLink/HtmlInlineLink.js";
@@ -7,10 +6,11 @@ import { MjmlSection } from "../../components/section/MjmlSection.js";
 import { HtmlText } from "../../components/text/HtmlText.js";
 import { MjmlText } from "../../components/text/MjmlText.js";
 import { MjmlWrapper } from "../../components/wrapper/MjmlWrapper.js";
+import { MjmlColumn, MjmlSpacer, MjmlTable } from "../../index.js";
 import { createTheme } from "../../theme/createTheme.js";
 
 const config: Meta = {
-    title: "Examples/CustomBackgroundForFooter",
+    title: "Examples/Custom Background for Footer",
     parameters: { mailRoot: false },
 };
 
@@ -18,6 +18,7 @@ export default config;
 
 type Story = StoryObj;
 
+/** A footer with its own background color: an `MjmlWrapper` sets the color behind all sections inside it. */
 export const Default: Story = {
     render: () => {
         const theme = createTheme({

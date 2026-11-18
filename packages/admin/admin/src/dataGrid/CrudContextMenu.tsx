@@ -132,7 +132,7 @@ export function CrudContextMenu<CopyData>(inProps: CrudContextMenuProps<CopyData
                     userMessage: (
                         <FormattedMessage id="dextinity.common.clipboardInvalidFormat" defaultMessage="Clipboard contains an invalid format" />
                     ),
-                    error: e.toString(),
+                    error: String(e),
                 });
             }
 
@@ -154,7 +154,7 @@ export function CrudContextMenu<CopyData>(inProps: CrudContextMenuProps<CopyData
                                 defaultMessage="Paste failed, probably due to an invalid format"
                             />
                         ),
-                        error: e.toString(),
+                        error: String(e),
                     });
                     console.error("mutation failed", e);
                 }

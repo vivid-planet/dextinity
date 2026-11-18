@@ -8,7 +8,7 @@ interface ICreateFetchOptions {
 const isUrlAbsolute = (url: string) => url.indexOf("://") > 0 || url.indexOf("//") === 0;
 
 export function createFetch(options: ICreateFetchOptions) {
-    async function appFetch(input: RequestInfo, init?: RequestInit) {
+    async function appFetch(input: RequestInfo | URL, init?: RequestInit) {
         init = init || {};
         init.headers = init.headers ? new Headers(init.headers) : new Headers();
         if (options.interceptHeaders) {

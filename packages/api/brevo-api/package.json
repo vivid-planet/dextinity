@@ -74,7 +74,7 @@
         "express": "^5.3.0",
         "graphql": "^16.15.0",
         "graphql-scalars": "^2.0.1",
-        "prettier": "^3.9.10",
+        "prettier": "^3.10.1",
         "reflect-metadata": "^0.2.2",
         "rimraf": "^6.1.4",
         "rxjs": "^7.8.2",

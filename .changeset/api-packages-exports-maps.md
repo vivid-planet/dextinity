@@ -1,5 +1,4 @@
 ---
-"@dextinity/api-generator": major
 "@dextinity/brevo-api": major
 "@dextinity/cms-api": major
 ---

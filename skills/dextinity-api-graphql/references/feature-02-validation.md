@@ -4,7 +4,7 @@ Apply when create/update operations need business logic validation beyond what D
 
 ## What changes
 
-1. A hand-written **business-logic service** `{EntityName}Service` (singular, see [gen-07-service.md](gen-07-service.md)) implements the `CrudGeneratorHooksService` interface from `@dextinity/cms-api` with `validateCreateInput`/`validateUpdateInput` methods
+1. A hand-written **business-logic service** `{EntityName}Service` (singular, see [gen-07-service.md](gen-07-service.md)) with `validateCreateInput`/`validateUpdateInput` methods
 2. The service file defines a `{EntityName}MutationErrorCode` enum (registered via `registerEnumType`) and a `{EntityName}MutationError` ObjectType implementing the `MutationError` interface from `@dextinity/cms-api`
 3. The resolver defines **payload types** (entity + errors) and returns them from create/update mutations instead of the entity directly
 4. The resolver injects the business-logic service and `@GetCurrentUser() user: CurrentUser`, calls the validate hooks first, and returns `{ errors }` early when validation fails
@@ -14,7 +14,7 @@ Apply when create/update operations need business logic validation beyond what D
 Error code enum, error ObjectType, and hook methods live together in the service file. Hook methods return an array of errors (empty = valid).
 
 ```typescript
-import type { CrudGeneratorHooksService, CurrentUser, MutationError } from "@dextinity/cms-api";
+import type { CurrentUser, MutationError } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
 import { Field, ObjectType, registerEnumType } from "@nestjs/graphql";
@@ -48,7 +48,7 @@ export class ProductVariantMutationError implements MutationError {
 }
 
 @Injectable()
-export class ProductVariantService implements CrudGeneratorHooksService {
+export class ProductVariantService {
     constructor(private readonly entityManager: EntityManager) {}
 
     async validateCreateInput(input: ProductVariantInput, options: { currentUser: CurrentUser }): Promise<ProductVariantMutationError[]> {

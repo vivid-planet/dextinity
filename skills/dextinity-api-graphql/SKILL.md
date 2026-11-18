@@ -1,7 +1,7 @@
 ---
 name: dextinity-api-graphql
 description: |
-    Generates NestJS/GraphQL CRUD API files (resolver with inline CRUD logic, input/filter/sort/args DTOs, paginated response, conditional position/business-logic services) for a MikroORM entity in a Dextinity project, matching the output style of @dextinity/api-generator. Resolvers inject EntityManager and contain the CRUD logic; services exist only for position helpers and business-logic hooks. Uses @dextinity/cms-api utilities for pagination, filtering, sorting, and permissions.
+    Generates NestJS/GraphQL CRUD API files (resolver with inline CRUD logic, input/filter/sort/args DTOs, paginated response, conditional position/business-logic services) for a MikroORM entity in a Dextinity project. Resolvers inject EntityManager and contain the CRUD logic; services exist only for position helpers and business-logic hooks. Uses @dextinity/cms-api utilities for pagination, filtering, sorting, and permissions.
     TRIGGER when: user asks to create the CRUD API (resolver, DTOs) for a new or existing entity, to add or remove fields on an entity that has a CRUD resolver and DTOs, or when dextinity-crud runs its API phase.
     Do NOT trigger for other API work, e.g. custom queries or mutations, services, jobs, migrations or module wiring that isn't part of an entity's CRUD API.
 ---
@@ -169,10 +169,10 @@ When the user describes a relation and it's unclear whether the child should be 
 
 ### Architecture: Resolver-based CRUD, Conditional Services
 
-- **Resolvers ARE the CRUD layer** — they inject `EntityManager` directly and contain the create/update/delete logic inline (`entityManager.create`, `Reference.create`, `collection.set()`, nested input handling), matching what `@dextinity/api-generator` emits.
+- **Resolvers ARE the CRUD layer** — they inject `EntityManager` directly and contain the create/update/delete logic inline (`entityManager.create`, `Reference.create`, `collection.set()`, nested input handling).
 - **Generate a service ONLY when needed** — there are two kinds (see [gen-07-service.md](references/gen-07-service.md)):
     - a **position helpers service** (`{entity-names}.service.ts`, plural) when the entity has a `position` field — contains only `incrementPositions`/`decrementPositions`/`getLastPosition`;
-    - a hand-written **business-logic (hooks) service** (`{entity-name}.service.ts`, singular) when create/update needs validation or side effects — implements `CrudGeneratorHooksService` from `@dextinity/cms-api`.
+    - a hand-written **business-logic (hooks) service** (`{entity-name}.service.ts`, singular) when create/update needs validation or side effects.
 - **Plain scalar entities get no service at all** — never generate a pass-through service.
 - **EVERY relation and block MUST have a `@ResolveField`** — no exceptions. Every `@ManyToOne`, `@OneToMany`, `@ManyToMany`, and `@RootBlock` on the entity requires a corresponding `@ResolveField` method in the resolver. Never eagerly load relations via `.init()` or hardcoded `populate` in queries — rely solely on `@ResolveField` lazy loading.
 - **`@ResolveField` for relations**: `entity.relation.loadOrFail()` (ManyToOne) or `entity.relation.loadItems()` (ManyToMany/OneToMany).

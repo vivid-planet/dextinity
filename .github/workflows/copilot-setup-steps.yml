@@ -97,13 +97,6 @@ jobs:
                   path: packages/admin/cms-admin/lib
                   key: ${{ runner.os }}-build-cms-admin-${{ hashFiles('packages/admin/cms-admin/src/**', 'packages/admin/cms-admin/package.json', 'packages/admin/cms-admin/tsconfig*.json', 'pnpm-lock.yaml') }}
 
-            - name: Cache @dextinity/api-generator build
-              id: cache-api-generator
-              uses: actions/cache@v6
-              with:
-                  path: packages/api/api-generator/lib
-                  key: ${{ runner.os }}-build-api-generator-${{ hashFiles('packages/api/api-generator/src/**', 'packages/api/api-generator/bin/**', 'packages/api/api-generator/package.json', 'packages/api/api-generator/tsconfig*.json', 'pnpm-lock.yaml') }}
-
             - name: Cache @dextinity/brevo-api build
               id: cache-brevo-api
               uses: actions/cache@v6
@@ -178,7 +171,6 @@ jobs:
                   [ "${{ steps.cache-admin-rte.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/admin-rte"
                   [ "${{ steps.cache-brevo-admin.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/brevo-admin"
                   [ "${{ steps.cache-cms-admin.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/cms-admin"
-                  [ "${{ steps.cache-api-generator.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/api-generator"
                   [ "${{ steps.cache-brevo-api.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/brevo-api"
                   [ "${{ steps.cache-cms-api.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/cms-api"
                   [ "${{ steps.cache-mail-react.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/mail-react"

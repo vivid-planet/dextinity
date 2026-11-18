@@ -155,11 +155,10 @@ Every process loads `.env.local` itself: the demo packages and `dev:*` scripts r
 
 ### API (`packages/api/`)
 
-| Package                    | Description                                                                                   |
-| -------------------------- | --------------------------------------------------------------------------------------------- |
-| `@dextinity/cms-api`       | NestJS/GraphQL API for CMS features (file uploads, translations, blocks, S3/Azure storage)    |
-| `@dextinity/brevo-api`     | NestJS integration for the Brevo email/marketing service                                      |
-| `@dextinity/api-generator` | CLI tool that generates TypeScript types from GraphQL schemas (`dextinity-api-generator` bin) |
+| Package                | Description                                                                                |
+| ---------------------- | ------------------------------------------------------------------------------------------ |
+| `@dextinity/cms-api`   | NestJS/GraphQL API for CMS features (file uploads, translations, blocks, S3/Azure storage) |
+| `@dextinity/brevo-api` | NestJS integration for the Brevo email/marketing service                                   |
 
 ### Site (`packages/site/`)
 

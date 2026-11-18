@@ -37,6 +37,22 @@ Set the color twice: as `background-color`, and as a `background-image` of a sol
 - Use this technique behind images only, not behind text. Outlook iOS turns dark text on a light background light, and Gmail iOS and Outlook on the web turn light text on a dark background dark. In both cases the text disappears.
 - Name the PNG after its color, such as `001e50-100x100.png` for `#001e50`. When the theme color changes, replace the image too.
 
+### Example: Dark Background Behind an Image
+
+An image on a dark blue section background.
+
+#### Problem
+
+The color is set only as `background-color`. In dark mode, Gmail iOS, Outlook on the web and Outlook iOS make it lighter.
+
+<Canvas of={DarkModeStories.BackgroundColorProblem} />
+
+#### Fix
+
+The color is also set as a `background-image` of a solid `100×100` px PNG, `001e50-100x100.png`. These clients leave background images, so the color stays. Classic Outlook ignores CSS background images, so there the color still changes.
+
+<Canvas of={DarkModeStories.BackgroundColorFix} />
+
 ## Keep All Colors
 
 `<meta name="color-scheme" content="light only">` stops Gmail iOS and Apple Mail (iOS and macOS) from changing the colors of the mail in dark mode. Gmail Android ignores it. React 19 removes a `<meta>` element that is rendered in the head, so add it as raw HTML, with an `MjmlRaw` in the `head` of `MjmlMailRoot` (see [Contributing to `<MjmlHead>` and `<MjmlAttributes>`](?path=/docs/docs-building-mails-components--docs#contributing-to-mjmlhead-and-mjmlattributes)).

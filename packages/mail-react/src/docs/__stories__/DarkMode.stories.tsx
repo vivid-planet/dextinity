@@ -129,3 +129,46 @@ export const LineFix: Story = {
         </MjmlSection>
     ),
 };
+
+/** A dark blue background set only as `background-color`, with an image on it. In dark mode, several clients change the color. */
+export const BackgroundColorProblem: Story = {
+    tags: ["!dev"],
+    render: () => (
+        <MjmlSection paddingTop={0} paddingBottom={0}>
+            <MjmlColumn>
+                <MjmlRaw>
+                    <tr>
+                        <td style={{ padding: "24px", fontSize: 0, backgroundColor: "#001e50" }}>
+                            <HtmlImage src="https://picsum.photos/seed/dark-mode-background/1104/552" width={552} height={276} alt="Landscape" />
+                        </td>
+                    </tr>
+                </MjmlRaw>
+            </MjmlColumn>
+        </MjmlSection>
+    ),
+};
+
+/** The background color is also a `background-image` of a solid PNG in that color, which the clients leave unchanged. */
+export const BackgroundColorFix: Story = {
+    tags: ["!dev"],
+    render: () => (
+        <MjmlSection paddingTop={0} paddingBottom={0}>
+            <MjmlColumn>
+                <MjmlRaw>
+                    <tr>
+                        <td
+                            style={{
+                                padding: "24px",
+                                fontSize: 0,
+                                backgroundColor: "#001e50",
+                                backgroundImage: "url(/dark-mode/001e50-100x100.png)",
+                            }}
+                        >
+                            <HtmlImage src="https://picsum.photos/seed/dark-mode-background/1104/552" width={552} height={276} alt="Landscape" />
+                        </td>
+                    </tr>
+                </MjmlRaw>
+            </MjmlColumn>
+        </MjmlSection>
+    ),
+};

@@ -1,13 +1,14 @@
 import { gql } from "@apollo/client";
 import { useMutation, useQuery } from "@apollo/client/react";
 import { Button, DataGridToolbar, DeleteDialog, FieldSet, FillSpace, GridCellContent, type GridColDef } from "@dextinity/admin";
-import { Add, Delete, Edit, StateFilled } from "@dextinity/admin-icons";
+import { Add, Delete, Edit, StateFilled, Time } from "@dextinity/admin-icons";
 import { IconButton, Typography } from "@mui/material";
 import type { GridToolbarProps } from "@mui/x-data-grid";
 import { differenceInDays, parseISO } from "date-fns";
 import { type ReactNode, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
+import { ActionLogDialog } from "../../../actionLog/actionLog/actionLogDialog/ActionLogDialog";
 import { DataGrid } from "../../../dataGrid/DataGrid";
 import { camelCaseToHumanReadable } from "../../utils/camelCaseToHumanReadable";
 import { OverrideContentScopesDialog } from "./OverrideContentScopesDialog";
@@ -39,6 +40,7 @@ export const PermissionGrid = ({ userId }: { userId: string }) => {
     const [permissionId, setPermissionId] = useState<string | "add" | null>(null);
     const [overrideContentScopesId, setOverrideContentScopesId] = useState<string | null>(null);
     const [permissionToDelete, setPermissionToDelete] = useState<string | null>(null);
+    const [actionLogPermission, setActionLogPermission] = useState<GQLPermissionForGridFragment | null>(null);
 
     const [deletePermission] = useMutation<GQLDeletePermissionMutation, GQLDeletePermissionMutationVariables>(gql`
         mutation DeletePermission($id: ID!) {
@@ -154,7 +156,7 @@ export const PermissionGrid = ({ userId }: { userId: string }) => {
             sortable: false,
             pinnable: false,
             filterable: false,
-            width: 116,
+            width: 156,
             pinned: "right",
             renderCell: ({ row }) => {
                 return (
@@ -169,9 +171,14 @@ export const PermissionGrid = ({ userId }: { userId: string }) => {
                         </IconButton>
 
                         {row.source !== "BY_RULE" && (
-                            <IconButton onClick={() => setPermissionToDelete(row.id)}>
-                                <Delete />
-                            </IconButton>
+                            <>
+                                <IconButton onClick={() => setActionLogPermission(row)}>
+                                    <Time />
+                                </IconButton>
+                                <IconButton onClick={() => setPermissionToDelete(row.id)}>
+                                    <Delete />
+                                </IconButton>
+                            </>
                         )}
                     </>
                 );
@@ -219,6 +226,15 @@ export const PermissionGrid = ({ userId }: { userId: string }) => {
                     userId={userId}
                     permissionId={overrideContentScopesId}
                     handleDialogClose={() => setOverrideContentScopesId(null)}
+                />
+            )}
+            {actionLogPermission && (
+                <ActionLogDialog
+                    entity="UserPermission"
+                    entityId={actionLogPermission.id}
+                    name={camelCaseToHumanReadable(actionLogPermission.permission)}
+                    open
+                    onClose={() => setActionLogPermission(null)}
                 />
             )}
             {permissionId && <PermissionDialog userId={userId} permissionId={permissionId} handleDialogClose={() => setPermissionId(null)} />}

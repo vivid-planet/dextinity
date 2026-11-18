@@ -4,6 +4,8 @@ import { Field, ID, ObjectType, registerEnumType } from "@nestjs/graphql";
 import { randomUUID } from "crypto";
 import { GraphQLJSONObject } from "graphql-scalars";
 
+import { ActionLogs } from "../../action-logs/action-logs.decorator.js";
+import { RequiredPermission } from "../decorators/required-permission.decorator.js";
 import type { ContentScope } from "../interfaces/content-scope.interface.js";
 import { CombinedPermission, type Permission } from "../user-permissions.types.js";
 
@@ -17,6 +19,8 @@ registerEnumType(UserPermissionSource, {
 
 @ObjectType()
 @Entity({ tableName: "DextinityUserPermission" })
+@RequiredPermission("userPermissions", { skipScopeCheck: true })
+@ActionLogs()
 export class UserPermission extends BaseEntity {
     @Field(() => ID)
     @PrimaryKey({ type: "uuid" })

@@ -104,6 +104,17 @@ Then install the updated dependencies:
 npm install
 ```
 
+:::note
+
+The existing lockfiles still pin the v10 dependency tree (MikroORM 6, NestJS 11, React Router 5, …), which the v11 packages reject as peers. In `api`, `admin` and the site, `npm install` then fails with `ERESOLVE could not resolve`, for instance `Conflicting peer dependency: @mikro-orm/core@7.x` or `Conflicting peer dependency: react-router@8.x`. Once you've updated the dependencies of a package as described in the following sections, delete its lockfile and install again to regenerate it:
+
+```sh
+rm package-lock.json
+npm install
+```
+
+:::
+
 ## Linting
 
 ### Remove the `@calm/react-intl/missing-formatted-message` ESLint rule
@@ -537,7 +548,29 @@ TypeScript 6 turns the deprecated `baseUrl` option into an error and requires an
 }
 ```
 
-`rootDir` has to stay at `./src`: with `.`, `src/main.ts` compiles to `dist/src/main.js`, and `start:prod` no longer finds the entry point. Widen it again in the configs that type-check files outside `src`:
+`rootDir` has to stay at `./src`: with `.`, `src/main.ts` compiles to `dist/src/main.js`, and `start:prod` no longer finds the entry point.
+
+With `rootDir` set to `./src`, TypeScript writes the incremental build info (`tsconfig.tsbuildinfo`, `tsconfig.build.tsbuildinfo`) to the API folder instead of `dist`. The development scripts delete `dist` before they start, but the build info survives, so TypeScript considers the output up to date and emits nothing: the API fails with `Cannot find module '…/dist/main.js'` (or `…/dist/tracing.js`). Keep the build info in `dist`:
+
+```diff title="api/tsconfig.json"
+{
+    "compilerOptions": {
++       "tsBuildInfoFile": "./dist/tsconfig.tsbuildinfo",
+    }
+}
+```
+
+```diff title="api/tsconfig.build.json"
+{
+    "compilerOptions": {
++       "tsBuildInfoFile": "./dist/tsconfig.build.tsbuildinfo",
+    }
+}
+```
+
+Delete the build info files that were already written to the API folder.
+
+Widen `rootDir` again in the configs that type-check files outside `src`:
 
 ```diff title="api/tsconfig.lint.json"
 {
@@ -549,11 +582,23 @@ TypeScript 6 turns the deprecated `baseUrl` option into an error and requires an
 
 Without `baseUrl`, `paths` entries resolve relative to the `tsconfig.json`, so they need a leading `./`, and `tsconfig-paths` has to be v4 — v3 doesn't resolve them.
 
-### Override the `@golevelup/nestjs-discovery` version on pnpm
+### Override the `@golevelup/nestjs-discovery` version
 
-Skip this section when your project uses npm or yarn — nothing is needed there.
+`nest-commander` pins `@golevelup/nestjs-discovery` at `7.0.3`, which still asks for NestJS v11 as a peer. It works against v12, but npm fails to install with `ERESOLVE could not resolve` (`Conflicting peer dependency: @nestjs/core@11.x`), and so does pnpm with `strictPeerDependencies`. Pin it to a release that accepts v12.
 
-`nest-commander` pins `@golevelup/nestjs-discovery` at `7.0.3`, which still asks for NestJS v11 as a peer. It works against v12, and npm installs it as a nested copy with a warning. pnpm with `strictPeerDependencies` fails instead, so pin it to a release that accepts v12:
+On npm:
+
+```json title="api/package.json"
+{
+    "overrides": {
+        "nest-commander": {
+            "@golevelup/nestjs-discovery": "^7.1.0"
+        }
+    }
+}
+```
+
+On pnpm:
 
 ```yaml title="pnpm-workspace.yaml"
 overrides:
@@ -616,13 +661,19 @@ Replace the CommonJS-only constructs:
 + export default config;
 ```
 
-JSON imports need an import attribute. `@swc-node/register` doesn't resolve path aliases for imports with attributes, so use a relative path:
+JSON imports need an import attribute. `@swc-node/register` doesn't resolve path aliases for imports with attributes, so use a relative path. Put it in the group of the relative imports, where `simple-import-sort` expects it:
 
 ```diff title="api/src/config/config.ts"
 - import dextinityConfig from "@src/dextinity-config.json";
+  import { plainToClass } from "class-transformer";
+  import { validateSync } from "class-validator";
+
 + // eslint-disable-next-line @dextinity/no-other-module-relative-import -- @swc-node/register doesn't resolve path aliases for imports with attributes
 + import dextinityConfig from "../dextinity-config.json" with { type: "json" };
+  import { EnvironmentVariables } from "./environment-variables.js";
 ```
+
+Anywhere else, `lint:fix` moves the import away from its disable comment, and the autofix of `@dextinity/no-other-module-relative-import` turns it back into `@src/dextinity-config.json`. Lint passes then, but the API fails to start with `Cannot find package '@src/dextinity-config.json'`.
 
 Run the TypeScript scripts with `@swc-node/register` instead of `ts-node`. Nest CLI rewrites the `@src/` aliases in the build output, so `tsconfig-paths` isn't needed anymore:
 
@@ -663,6 +714,52 @@ if (process.env.TRACING == "production") {
 ```
 
 Update every other place that starts the API with `node dist/main`, for instance the command of your Docker image or deployment. Without `--import`, the API starts without tracing.
+
+If `console.ts` also loads the tracing (for instance to shut the SDK down before the process exits), export the SDK from the tracing files and from `tracing.ts`:
+
+```ts title="api/src/tracing.ts"
+export const sdk =
+    process.env.TRACING == "production"
+        ? (await import("./tracing.production.js")).sdk
+        : process.env.TRACING == "dev"
+          ? (await import("./tracing.dev.js")).sdk
+          : undefined;
+```
+
+```diff title="api/src/tracing.dev.ts"
+  sdk.start();
+
+  await waitForAllMessagesAcknowledged();
++
++ export { sdk };
+```
+
+Import it in `console.ts` instead of loading the tracing there. The preloaded module and the import resolve to the same module, so the SDK is only started once:
+
+```diff title="api/src/console.ts"
+- let tracing: any;
+- if (process.env.TRACING == "dev") {
+-     tracing = import("./tracing.dev");
+- }
++ import { sdk } from "./tracing.js";
+
+  // ...
+- await (await tracing)?.sdk?.shutdown();
++ await sdk?.shutdown();
+```
+
+Then preload the tracing in the console scripts as well:
+
+```diff title="api/package.json"
+{
+    "scripts": {
+-       "console": "... node --import @swc-node/register/esm-register src/console.ts",
++       "console": "... node --import @swc-node/register/esm-register --import ./src/tracing.ts src/console.ts",
+-       "console:prod": "node dist/console.js",
++       "console:prod": "node --import ./dist/tracing.js dist/console.js",
+    }
+}
+```
 
 OpenTelemetry instrumentations only patch ES modules through a loader hook. If you use them, add `import-in-the-middle` to the dependencies and register its hook in the tracing file. Limit the hook to the modules the instrumentations patch: wrapping every module breaks packages with circular imports, such as `@getbrevo/brevo`, with `ReferenceError: Cannot access 'BrevoError' before initialization`.
 
@@ -969,7 +1066,7 @@ cd admin
 npm install react-intl@^12.1.2
 ```
 
-If your API or site packages use `react-intl` as well, update them to the same version so the whole project shares one `react-intl` version. If you use `@formatjs/cli` to extract messages, update it to the latest 6.x version as well.
+`@dextinity/site-nextjs` requires `react-intl` v12 as well, so update it in your site packages, too. Otherwise, `npm install` fails with `ERESOLVE could not resolve`. If your API uses `react-intl`, update it to the same version so the whole project shares one `react-intl` version. If you use `@formatjs/cli` to extract messages, update it to the latest 6.x version as well.
 
 `react-intl` v12 requires React 18 or later, so the admin packages no longer support React 16 and 17. If your admin still uses one of them, update `react` and `react-dom` to v18 or v19 first.
 
@@ -1289,6 +1386,8 @@ npx @mui/x-codemod@latest v9.0.0/preset-safe src
 :::note
 
 `@mui/codemod` 9.5.0 fails to start with `TypeError: yargs.command is not a function`. Version 9.4.0 contains the same v9 codemods.
+
+`deprecations/all` ends with `Input Error: You must pass a valid list of files to parse` when `src` contains no CSS files. The message comes from its CSS step and can be ignored: the files listed as `ok` before it are migrated.
 
 :::
 

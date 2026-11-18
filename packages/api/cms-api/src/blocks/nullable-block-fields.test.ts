@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 import { IsNullable } from "../common/validators/is-nullable.js";
 import { BlockData, BlockInput, blockInputToData, createBlock, transformToBlockSave } from "./block.js";
 import { BlockField } from "./decorators/field.js";
+import { createOptionalBlock } from "./factories/createOptionalBlock.js";
 import { BlockMigration } from "./migrations/BlockMigration.js";
 import type { BlockMigrationInterface } from "./migrations/types.js";
 import { typeSafeBlockMigrationPipe } from "./migrations/typeSafeBlockMigrationPipe.js";
@@ -135,5 +136,21 @@ describe("nullable block fields", () => {
 
         expect(errors).toHaveLength(1);
         expect(errors[0].property).toBe("headline");
+    });
+});
+
+describe("optional block input", () => {
+    const OptionalNullableFieldsBlock = createOptionalBlock(NullableFieldsBlock, "OptionalNullableFields");
+
+    it("should accept null for the block", async () => {
+        const errors = await validate(OptionalNullableFieldsBlock.blockInputFactory({ block: null, visible: false }));
+
+        expect(errors).toHaveLength(0);
+    });
+
+    it("should reject a missing block", async () => {
+        const errors = await validate(OptionalNullableFieldsBlock.blockInputFactory({ visible: false } as never));
+
+        expect(errors.map((error) => error.property)).toEqual(["block"]);
     });
 });

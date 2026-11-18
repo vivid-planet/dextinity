@@ -39,3 +39,11 @@ describe.each(blocks)("$name damFileId validation", ({ createInput }) => {
         expect(errors[0]).toMatchObject({ property: "damFileId", constraints: { isUuid: expect.any(String) } });
     });
 });
+
+describe("PixelImageBlock cropArea validation", () => {
+    it("should reject a missing cropArea", async () => {
+        const errors = await validate(PixelImageBlock.blockInputFactory({ damFileId: null } as never));
+
+        expect(errors.map((error) => error.property)).toEqual(["cropArea"]);
+    });
+});

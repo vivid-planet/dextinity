@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsUUID, ValidateNested } from "class-validator";
+import { IsDefined, IsUUID, ValidateNested } from "class-validator";
 
 import {
     type BlockContext,
@@ -75,6 +75,7 @@ class PixelImageBlockInput extends BlockInput {
 
     @Type(() => ImageCropAreaInput)
     @IsNullable()
+    @IsDefined()
     @ValidateNested()
     cropArea: ImageCropAreaInput | null;
 

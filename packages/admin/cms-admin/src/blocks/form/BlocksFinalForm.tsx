@@ -46,17 +46,29 @@ function AutosaveSpy<FormValues>({ onSubmit }: AutoSaveSpyProps<FormValues>) {
 
 // Final Form removes the value of a cleared field, but block data stores null for an empty optional field
 function setClearedFieldsToNull<FormValues>(values: FormValues, initialValues: Partial<FormValues> | undefined): FormValues {
-    if (!initialValues || typeof values !== "object" || values === null) {
-        return values;
+    return setClearedValuesToNull(values, initialValues) as FormValues;
+}
+
+function setClearedValuesToNull(value: unknown, initialValue: unknown): unknown {
+    if (Array.isArray(value) && Array.isArray(initialValue)) {
+        return value.map((item, index) => setClearedValuesToNull(item, initialValue[index]));
     }
 
-    const clearedFields = Object.keys(initialValues).filter((field) => (values as Record<string, unknown>)[field] === undefined);
-
-    if (clearedFields.length === 0) {
-        return values;
+    if (!isPlainObject(value) || !isPlainObject(initialValue)) {
+        return value;
     }
 
-    return { ...values, ...Object.fromEntries(clearedFields.map((field) => [field, null])) };
+    const result: Record<string, unknown> = { ...value };
+
+    for (const [field, initialFieldValue] of Object.entries(initialValue)) {
+        result[field] = value[field] === undefined ? null : setClearedValuesToNull(value[field], initialFieldValue);
+    }
+
+    return result;
+}
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+    return typeof value === "object" && value !== null && Object.getPrototypeOf(value) === Object.prototype;
 }
 
 const noop = () => {

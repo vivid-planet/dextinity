@@ -1,5 +1,5 @@
 import { Transform } from "class-transformer";
-import { IsBoolean, ValidateNested } from "class-validator";
+import { IsBoolean, IsDefined, ValidateNested } from "class-validator";
 
 import { IsNullable } from "../../common/validators/is-nullable.js";
 import {
@@ -66,6 +66,7 @@ export function createOptionalBlock<DecoratedBlock extends Block>(
             toClassOnly: true,
         })
         @ValidateNested()
+        @IsDefined()
         @IsNullable()
         block: ExtractBlockInput<DecoratedBlock> | null;
 

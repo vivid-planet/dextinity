@@ -26,14 +26,26 @@ type TransformResponse = {
         image: {
             width: number;
             height: number;
-            cropArea: ImageCropArea;
+            cropArea: CropAreaResponse;
             dominantColor: string | null;
         } | null;
         fileUrl?: string;
     } | null;
-    cropArea: ImageCropArea | null;
+    cropArea: CropAreaResponse | null;
     urlTemplate?: string;
 };
+
+type CropAreaResponse = Pick<ImageCropArea, "focalPoint"> & {
+    width: number | null;
+    height: number | null;
+    x: number | null;
+    y: number | null;
+};
+
+// A crop area without dimensions, e.g. a smart crop, has none stored
+function toCropAreaResponse({ focalPoint, width, height, x, y }: ImageCropArea): CropAreaResponse {
+    return { focalPoint, width: width ?? null, height: height ?? null, x: x ?? null, y: y ?? null };
+}
 
 @Injectable()
 export class PixelImageBlockTransformerService implements BlockTransformerServiceInterface<PixelImageBlockData, TransformResponse> {
@@ -84,13 +96,13 @@ export class PixelImageBlockTransformerService implements BlockTransformerServic
                     ? {
                           width: file.image.width,
                           height: file.image.height,
-                          cropArea: { ...file.image.cropArea },
+                          cropArea: toCropAreaResponse(file.image.cropArea),
                           dominantColor: file.image.dominantColor ?? null,
                       }
                     : null,
                 fileUrl,
             },
-            cropArea: cropArea ? { ...cropArea } : null,
+            cropArea: cropArea ? toCropAreaResponse(cropArea) : null,
             urlTemplate: this.imagesService.createUrlTemplate({ file, cropArea }, { previewDamUrls }),
         };
     }

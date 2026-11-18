@@ -74,6 +74,14 @@ describe("PixelImageBlockTransformerService", () => {
         expect(result.urlTemplate).toBe(imagesService.createUrlTemplate({ file: fallbackImage }, {}));
     });
 
+    it("returns null for the dimensions of a crop area without them", async () => {
+        const { transformer } = createTransformer({ hasInvalidLicense: false, fallback: null });
+
+        const result = await transformer.transformToPlain(block, context);
+
+        expect(result.damFile?.image?.cropArea).toEqual({ focalPoint: FocalPoint.SMART, width: null, height: null, x: null, y: null });
+    });
+
     it("renders no image when the license is invalid and no fallback image is set", async () => {
         const { transformer } = createTransformer({ hasInvalidLicense: true, fallback: null });
 

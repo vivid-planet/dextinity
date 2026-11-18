@@ -31,9 +31,9 @@ jobs:
         steps:
             - uses: dorny/test-reporter@v3
               with:
-                  artifact: /^test-results-storybook-/
+                  artifact: test-results-storybook
                   name: Tests
-                  path: "**/junit*.xml"
+                  path: "**/junit-*.xml"
                   reporter: jest-junit
                   # Changes that affect no Storybook project don't run any Storybook tests.
                   fail-on-empty: false

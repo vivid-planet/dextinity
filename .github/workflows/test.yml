@@ -102,7 +102,7 @@ jobs:
               if: success() || failure()
               with:
                   name: test-results-storybook-${{ matrix.project.id }}
-                  path: ${{ matrix.project.path }}/junit*.xml
+                  path: ${{ matrix.project.path }}/junit-storybook.xml
                   overwrite: true
 
     # Required status checks can't refer to the matrix jobs, which depend on the change.
@@ -112,5 +112,15 @@ jobs:
         if: ${{ !cancelled() }}
         runs-on: ubuntu-latest
         steps:
+            # The report workflow runs from the default branch, so it can't adapt to which projects ran.
+            - name: Merge test results
+              if: needs.test-storybook-project.result != 'skipped'
+              uses: actions/upload-artifact/merge@v7
+              with:
+                  name: test-results-storybook
+                  pattern: test-results-storybook-*
+                  separate-directories: true
+                  delete-merged: true
+
             - if: needs.find-storybook-projects.result != 'success' || !contains(fromJSON('["success", "skipped"]'), needs.test-storybook-project.result)
               run: exit 1

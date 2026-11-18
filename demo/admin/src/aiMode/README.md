@@ -14,7 +14,7 @@ The AI Mode needs three settings: the script of the web component (`AI_HUB_WEB_C
 - Without the key, the API registers neither the AI Hub proxy nor the MCP server.
 - Without the script or the widget ID, the admin shows no switch (`isAiHubConfigured`). A missing setting turns the AI Mode off rather than leaving an empty flyout.
 
-The user also needs the `aiHub` permission, for the switch as much as for the proxy. It is a permission of its own rather than the page tree's because the AI Hub will serve more than the editing of pages. In Demo, every user has it, as every permission other than `userPermissions`.
+The user also needs the `aiHub` permission, for the switch as much as for the proxy and the MCP server. It is a permission of its own rather than the page tree's because the AI Hub will serve more than the editing of pages. In Demo, every user has it, as every permission other than `userPermissions`.
 
 For now, the AI Mode works in the page tree only. Everywhere else, the switch is disabled and its tooltip says the AI Mode isn't available there yet. The flyout closes there and opens again on returning to the page tree, because whether it is open is stored separately from whether it is available.
 
@@ -37,7 +37,7 @@ The admin loads the web component without a fixed version, so a new release can 
 
 ## The MCP server
 
-The MCP server is part of the API (`@nestjs/mcp`) rather than a service of its own, so it reads with the API's services and checks the API's permissions. Its route, `/api/mcp`, is a regular route of the app, so the global `DextinityAuthGuard` authenticates every request, and the chat's requests carry the admin session like any other. The route requires the `pageTree` permission without a scope, because a JSON-RPC request carries none. Only the admin may call it from a browser: requests with an `Origin` other than the host of `ADMIN_URL` are refused.
+The MCP server is part of the API (`@nestjs/mcp`) rather than a service of its own, so it reads with the API's services and checks the API's permissions. Its route, `/api/mcp`, is a regular route of the app, so the global `DextinityAuthGuard` authenticates every request, and the chat's requests carry the admin session like any other. The route requires the `aiHub` permission without a scope, as the AI Hub proxy does, because a JSON-RPC request carries none. It applies to every request, including `tools/list`; the tools check their own permissions on top. Only the admin may call it from a browser: requests with an `Origin` other than the host of `ADMIN_URL` are refused.
 
 The tools are methods of providers, and the app's guards, interceptors, and exception filters run around every call, as around a resolver. Each tool therefore declares the permission and the scope it reads with `@RequiredPermission` and `@AffectedEntity` or a `scope` argument, as the corresponding resolver does. A system user authenticated by basic auth is refused (`SignedInUserGuard`), because the tools serve the admin, which a person uses.
 

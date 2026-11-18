@@ -20,8 +20,9 @@ export class AiModeMcpModule {
                     name: "dextinity-demo-admin",
                     version: "1.0.0",
                     path: "mcp",
-                    // No scope: a JSON-RPC request carries none. Each tool declares the scope it reads.
-                    decorators: [RequiredPermission("pageTree", { skipScopeCheck: true })],
+                    // As the AI Hub proxy: the server serves the AI Mode's chat. No scope, because a JSON-RPC request
+                    // carries none; each tool declares the permission and the scope it reads.
+                    decorators: [RequiredPermission("aiHub", { skipScopeCheck: true })],
                     include: [AiModeMcpModule],
                     // The chat calls the server from the admin in the browser.
                     http: { allowedOrigins: [new URL(adminUrl).hostname] },

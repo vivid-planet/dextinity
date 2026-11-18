@@ -14,6 +14,7 @@ Pass the type of the additional values as type argument or annotate the paramete
 
 **`DocumentInterface`:** Document types with different input and output types can now be combined in `Record<string, DocumentInterface>`, `DocumentInterface<any, any>` isn't needed anymore.
 `DocumentInterface` accepts the type of the page tree node's additional fields as third type argument, which is used for the props of `InfoTag` and `SitePreviewAction`.
+`InfoTag` and `SitePreviewAction` must be function components, convert class components to function components.
 `updateMutation` isn't typed with the document output anymore.
 
 **`createCompositeBlock`:** `visibleOrderedBlocksForState` receives the composite block's state instead of `unknown`.

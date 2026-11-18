@@ -65,3 +65,19 @@ More rules for a hand-written VML shape:
 - Give the shape a width that fits its column. Classic Outlook does not shrink VML to its container, so a wider shape makes the whole mail wider.
 
 See the [Litmus VML button snippet](https://litmus.com/community/snippets/7-bulletproof-button-vml-approach).
+
+### Example: Button With Rounded Corners
+
+A link styled as a `200px` by `44px` button, with a corner radius of `8px`.
+
+#### Problem
+
+The link has rounded corners from CSS `border-radius` only. Classic Outlook ignores `border-radius` and shows a button with square corners.
+
+<Canvas of={ClassicOutlookStories.RoundedButtonProblem} />
+
+#### Fix
+
+A VML `v:roundrect` in a conditional comment draws the button for classic Outlook. The shape is declared `1px` smaller, `199px` by `43px`, because classic Outlook draws it `1px` larger. Its `arcsize` is `19%`: the `8px` radius divided by the declared `43px` height. The shape has the link of the HTML button, and `<!--[if !mso]><!-->…<!--<![endif]-->` hides the HTML button from classic Outlook.
+
+<Canvas of={ClassicOutlookStories.RoundedButtonFix} />

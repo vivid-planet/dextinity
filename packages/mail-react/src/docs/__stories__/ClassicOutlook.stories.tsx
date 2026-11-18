@@ -55,3 +55,65 @@ export const ImageLineHeightFix: Story = {
         </MjmlSection>
     ),
 };
+
+/** A link styled as a button, with rounded corners from CSS `border-radius` only. Classic Outlook shows square corners. */
+export const RoundedButtonProblem: Story = {
+    tags: ["!dev"],
+    render: () => (
+        <MjmlSection>
+            <MjmlColumn>
+                <MjmlRaw>
+                    <tr>
+                        <td align="center" style={{ padding: "0 24px" }}>
+                            <a
+                                href="https://example.com/"
+                                style={{
+                                    display: "inline-block",
+                                    width: "200px",
+                                    fontFamily: "Arial, sans-serif",
+                                    fontSize: "16px",
+                                    fontWeight: "bold",
+                                    lineHeight: "44px",
+                                    msoLineHeightRule: "exactly",
+                                    textAlign: "center",
+                                    textDecoration: "none",
+                                    color: "#ffffff",
+                                    backgroundColor: "#001e50",
+                                    borderRadius: "8px",
+                                }}
+                            >
+                                Track your order
+                            </a>
+                        </td>
+                    </tr>
+                </MjmlRaw>
+            </MjmlColumn>
+        </MjmlSection>
+    ),
+};
+
+/** Classic Outlook shows a VML `v:roundrect` with rounded corners. The HTML link is hidden from classic Outlook. */
+export const RoundedButtonFix: Story = {
+    tags: ["!dev"],
+    render: () => (
+        <MjmlSection>
+            <MjmlColumn>
+                <MjmlRaw>
+                    <tr>
+                        <td
+                            align="center"
+                            style={{ padding: "0 24px" }}
+                            dangerouslySetInnerHTML={{
+                                __html: `<!--[if mso]>
+<v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" href="https://example.com/" arcsize="19%" stroked="f" fillcolor="#001e50" style="width:199px;height:43px;v-text-anchor:middle;">
+<center style="font-family:Arial,sans-serif;font-size:16px;font-weight:bold;color:#ffffff;">Track your order</center>
+</v:roundrect>
+<![endif]--><!--[if !mso]><!--><a href="https://example.com/" style="display:inline-block;width:200px;font-family:Arial,sans-serif;font-size:16px;font-weight:bold;line-height:44px;mso-line-height-rule:exactly;text-align:center;text-decoration:none;color:#ffffff;background-color:#001e50;border-radius:8px;">Track your order</a><!--<![endif]-->`,
+                            }}
+                        />
+                    </tr>
+                </MjmlRaw>
+            </MjmlColumn>
+        </MjmlSection>
+    ),
+};

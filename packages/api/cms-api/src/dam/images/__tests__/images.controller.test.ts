@@ -3,6 +3,7 @@ import { plainToInstance } from "class-transformer";
 import type { Response } from "express";
 import { describe, expect, it, vi } from "vitest";
 
+import type { BlobStorageBackendService } from "../../../blob-storage/backends/blob-storage-backend.service";
 import type { ScaledImagesCacheService } from "../../../blob-storage/cache/scaled-images-cache.service";
 import { FocalPoint } from "../../../file-utils/focal-point.enum";
 import { ImgproxyBuilder } from "../../../imgproxy/imgproxy.builder";
@@ -14,6 +15,7 @@ import { HashImageParams } from "../dto/image.params";
 import type { ImageCropArea } from "../entities/image-crop-area.entity";
 import { createImagesController } from "../images.controller";
 import { ImagesService } from "../images.service";
+import { ScaledImagesService } from "../scaled-images.service";
 
 interface ImagesControllerForTest {
     smartCroppedImage(params: HashImageParams, accept: string, res: Response): Promise<void>;
@@ -53,14 +55,18 @@ function createController({
     } as unknown as ScaledImagesCacheService;
     const blobStorageBackendService = { getBackendFilePathPrefix: () => "" };
 
-    const ImagesController = createImagesController({ damBasePath });
-    return new (ImagesController as unknown as new (...dependencies: unknown[]) => ImagesControllerForTest)(
+    const scaledImagesService = new ScaledImagesService(
         config,
         imgproxyService,
+        cacheService,
+        blobStorageBackendService as unknown as BlobStorageBackendService,
+    );
+
+    const ImagesController = createImagesController({ damBasePath });
+    return new (ImagesController as unknown as new (...dependencies: unknown[]) => ImagesControllerForTest)(
         filesService,
         new ImagesService(config),
-        cacheService,
-        blobStorageBackendService,
+        scaledImagesService,
         null,
     );
 }

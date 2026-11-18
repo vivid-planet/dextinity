@@ -3,6 +3,8 @@ import { Entity, Enum, ManyToOne, PrimaryKey, Property } from "@mikro-orm/decora
 import { Field, ID, ObjectType, registerEnumType } from "@nestjs/graphql";
 import { randomUUID } from "crypto";
 
+import { ActionLogs } from "../../../../action-logs/action-logs.decorator.js";
+import { RequiredPermission } from "../../../../user-permissions/decorators/required-permission.decorator.js";
 import { ScopedEntity } from "../../../../user-permissions/decorators/scoped-entity.decorator.js";
 import type { FileInterface } from "../../entities/file.entity.js";
 import { resolveFileEntity } from "../../entities/resolve-dam-entity.js";
@@ -14,6 +16,8 @@ registerEnumType(DamMediaAlternativeType, { name: "DamMediaAlternativeType" });
 
 @Entity()
 @ObjectType()
+@RequiredPermission("dam")
+@ActionLogs()
 @ScopedEntity(async (damMediaAlternative: DamMediaAlternative) => {
     const scope = (await damMediaAlternative.for.load())?.scope;
     return scope;

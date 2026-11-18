@@ -8,7 +8,6 @@
             "vitest": ["./node_modules/vitest"]
         },
         "rootDir": ".",
-        "strict": true,
         "target": "esnext",
         "verbatimModuleSyntax": true
     },

@@ -44,4 +44,15 @@ describe("createOneOfBlock", () => {
             'activeType "external" has no entry in attachedBlocks, which is empty.',
         );
     });
+
+    it("should keep additional fields in output2State", async () => {
+        const block = createOneOfBlock({
+            name: "testOneOfBlock",
+            displayName: "Test One Of Block",
+            supportedBlocks: { internal: TestBlock },
+        });
+        const state = { title: "Link title", attachedBlocks: [{ type: "internal", props: {} }], activeType: "internal" };
+
+        await expect(block.output2State(block.state2Output(state), {} as BlockContext)).resolves.toEqual(state);
+    });
 });

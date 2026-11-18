@@ -70,6 +70,7 @@ jobs:
 
             - name: Test (storybook)
               run: pnpm run test:storybook
+              timeout-minutes: 20
 
             - name: Upload test results
               uses: actions/upload-artifact@v7

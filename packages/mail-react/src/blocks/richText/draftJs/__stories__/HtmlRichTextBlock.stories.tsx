@@ -1,7 +1,7 @@
-import { MjmlColumn, MjmlRaw } from "@faire/mjml-react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { MjmlSection } from "../../../../components/section/MjmlSection.js";
+import { MjmlColumn, MjmlRaw } from "../../../../index.js";
 import { registerStyles } from "../../../../styles/registerStyles.js";
 import { createTheme } from "../../../../theme/createTheme.js";
 import { ThemeProvider } from "../../../../theme/ThemeProvider.js";

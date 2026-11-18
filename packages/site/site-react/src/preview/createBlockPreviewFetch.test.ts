@@ -56,6 +56,30 @@ describe("createBlockPreviewFetch", () => {
         expect(headers.get("X-Block-Preview")).toBe("jwt");
     });
 
+    it("adds the X-Block-Preview header to a same-origin Request input", async () => {
+        const { blockPreviewFetch, getSentHeaders } = setup("jwt");
+
+        await blockPreviewFetch(new Request(url));
+
+        expect(getSentHeaders().get("X-Block-Preview")).toBe("jwt");
+    });
+
+    it("doesn't add the X-Block-Preview header to a cross-origin Request input", async () => {
+        const { blockPreviewFetch, getSentHeaders } = setup("jwt");
+
+        await blockPreviewFetch(new Request("https://example.com/api/data"));
+
+        expect(getSentHeaders().has("X-Block-Preview")).toBe(false);
+    });
+
+    it("doesn't add the X-Block-Preview header to a cross-origin URL", async () => {
+        const { blockPreviewFetch, getSentHeaders } = setup("jwt");
+
+        await blockPreviewFetch("https://example.com/api/data");
+
+        expect(getSentHeaders().has("X-Block-Preview")).toBe(false);
+    });
+
     it("passes the input and the other init options unchanged", async () => {
         const { originalFetch, blockPreviewFetch } = setup();
         const request = new Request(url, { method: "POST", body: "body" });

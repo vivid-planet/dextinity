@@ -60,12 +60,12 @@
         "fast-equals": "^6.2.2",
         "jose": "^6.2.17",
         "mime": "^4.1.2",
-        "scroll-into-view-if-needed": "^3.1.0",
+        "scroll-into-view-if-needed": "^3.2.1",
         "server-only": "^0.0.1",
         "usehooks-ts": "^3.1.1"
     },
     "devDependencies": {
-        "@aws-sdk/client-s3": "^3.1164.0",
+        "@aws-sdk/client-s3": "^3.1169.0",
         "@azure/storage-blob": "^12.34.0",
         "@dextinity/cli": "workspace:*",
         "@dextinity/eslint-config": "workspace:*",
@@ -82,7 +82,7 @@
         "react": "^19.3.1",
         "react-dom": "^19.3.1",
         "rimraf": "^6.1.4",
-        "rollup": "^4.68.2",
+        "rollup": "^4.68.3",
         "rollup-plugin-preserve-directives": "^0.4.0",
         "sass": "^1.108.2",
         "typescript": "^5.9.3",

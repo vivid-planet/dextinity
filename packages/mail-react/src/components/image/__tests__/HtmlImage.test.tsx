@@ -41,9 +41,9 @@ describe("HtmlImage", () => {
         expect(html).toContain('arcsize="10%"');
     });
 
-    it("renders the src that config.resolveImageSrc returns, in the image and in the Outlook VML", () => {
+    it("renders the src that config.rewriteImageSrc returns, in the image and in the Outlook VML", () => {
         const html = renderToStaticMarkup(
-            <ConfigProvider config={{ resolveImageSrc: ({ src }) => `cid:${src}` }}>
+            <ConfigProvider config={{ rewriteImageSrc: ({ src }) => `cid:${src}` }}>
                 <HtmlImage src="image.jpg" alt="A photo" width={100} height={100} borderRadius={10} />
             </ConfigProvider>,
         );
@@ -53,28 +53,28 @@ describe("HtmlImage", () => {
         expect(html).not.toContain('"image.jpg"');
     });
 
-    it("passes the image's src, width and height to config.resolveImageSrc", () => {
-        const resolveImageSrc = vi.fn(({ src }: { src: string }) => src);
+    it("passes the image's src, width and height to config.rewriteImageSrc", () => {
+        const rewriteImageSrc = vi.fn(({ src }: { src: string }) => src);
 
         renderToStaticMarkup(
-            <ConfigProvider config={{ resolveImageSrc }}>
+            <ConfigProvider config={{ rewriteImageSrc }}>
                 <HtmlImage src="image.jpg" alt="" width={100} height="50" />
             </ConfigProvider>,
         );
 
-        expect(resolveImageSrc).toHaveBeenCalledWith({ src: "image.jpg", width: 100, height: "50" });
+        expect(rewriteImageSrc).toHaveBeenCalledWith({ src: "image.jpg", width: 100, height: "50" });
     });
 
-    it("does not call config.resolveImageSrc for an image without a src", () => {
-        const resolveImageSrc = vi.fn(({ src }: { src: string }) => src);
+    it("does not call config.rewriteImageSrc for an image without a src", () => {
+        const rewriteImageSrc = vi.fn(({ src }: { src: string }) => src);
 
         const html = renderToStaticMarkup(
-            <ConfigProvider config={{ resolveImageSrc }}>
+            <ConfigProvider config={{ rewriteImageSrc }}>
                 <HtmlImage alt="" />
             </ConfigProvider>,
         );
 
-        expect(resolveImageSrc).not.toHaveBeenCalled();
+        expect(rewriteImageSrc).not.toHaveBeenCalled();
         expect(html).not.toContain("src=");
     });
 });

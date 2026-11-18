@@ -44,7 +44,7 @@ There is no decorator outside Storybook, so you must wrap your content in [`Mjml
 
 ## Rewriting image sources
 
-`config.resolveImageSrc` returns the `src` that `HtmlImage` and `MjmlImage` render for an image, including the image in classic Outlook's VML. `HtmlPixelImageBlock` and `MjmlPixelImageBlock` render through these components, so the function applies to them as well. It receives the image's `src`, `width` and `height`.
+`config.rewriteImageSrc` returns the `src` that `HtmlImage` and `MjmlImage` render for an image, including the image in classic Outlook's VML. `HtmlPixelImageBlock` and `MjmlPixelImageBlock` render through these components, so the function applies to them as well. It receives the image's `src`, `width` and `height`.
 
 Use it when mail clients can't load an image from its own URL, e.g. because the API is behind an auth proxy. The function can hand out a `cid:` reference instead and remember the image, so it can be attached to the sent mail once the mail is rendered:
 
@@ -55,16 +55,14 @@ import { randomUUID } from "node:crypto";
 
 const contentIdsBySrc = new Map<string, string>();
 
+function registerInlineImage(src: string): string {
+    const contentId = contentIdsBySrc.get(src) ?? randomUUID();
+    contentIdsBySrc.set(src, contentId);
+    return contentId;
+}
+
 const { html } = renderMailHtml(
-    <MjmlMailRoot
-        config={{
-            resolveImageSrc: ({ src }) => {
-                const contentId = contentIdsBySrc.get(src) ?? randomUUID();
-                contentIdsBySrc.set(src, contentId);
-                return `cid:${contentId}`;
-            },
-        }}
-    >
+    <MjmlMailRoot config={{ rewriteImageSrc: ({ src }) => `cid:${registerInlineImage(src)}` }}>
         <MailContent />
     </MjmlMailRoot>,
 );

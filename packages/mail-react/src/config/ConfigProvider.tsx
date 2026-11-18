@@ -13,9 +13,9 @@ export interface PixelImageBlockConfig {
 }
 
 /**
- * The image that `HtmlImage` or `MjmlImage` is about to render, as passed to `Config.resolveImageSrc`.
+ * The image that `HtmlImage` or `MjmlImage` is about to render, as passed to `Config.rewriteImageSrc`.
  */
-export interface ResolveImageSrcOptions {
+export interface RewriteImageSrcOptions {
     src: string;
     width?: number | string;
     height?: number | string;
@@ -45,7 +45,7 @@ export interface Config {
      * attachment of the sent mail. Also applies to `HtmlPixelImageBlock` and `MjmlPixelImageBlock`, which render
      * through them. Without it, an image is rendered with its own `src`.
      */
-    resolveImageSrc?: (image: ResolveImageSrcOptions) => string;
+    rewriteImageSrc?: (image: RewriteImageSrcOptions) => string;
 }
 
 const ConfigContext = createContext<Config>({});

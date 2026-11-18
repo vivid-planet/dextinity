@@ -7,7 +7,7 @@ import { registerStyles } from "../../styles/registerStyles.js";
 import { css } from "../../utils/css.js";
 import { hideFromOutlookEndComment, hideFromOutlookStartComment } from "../../utils/outlookConditionalComment.js";
 import { generateOutlookImageVml, generateOutlookImageVmlRow } from "./outlookVml.js";
-import { useResolvedImageSrc } from "./useResolvedImageSrc.js";
+import { useRewrittenImageSrc } from "./useRewrittenImageSrc.js";
 
 export type MjmlImageProps = Omit<IMjmlImageProps, "borderRadius"> & {
     /** Corner radius of the image. */
@@ -36,7 +36,7 @@ export function MjmlImage({
     paddingLeft,
     ...restProps
 }: MjmlImageProps): ReactNode {
-    const src = useResolvedImageSrc({ src: passedSrc, width, height });
+    const src = useRewrittenImageSrc({ src: passedSrc, width, height });
 
     const imageNode = (
         <BaseMjmlImage

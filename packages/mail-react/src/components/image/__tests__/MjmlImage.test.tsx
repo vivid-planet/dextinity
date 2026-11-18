@@ -8,9 +8,9 @@ import { renderMailHtml } from "../../../server/renderMailHtml.js";
 import { MjmlImage } from "../MjmlImage.js";
 
 describe("MjmlImage", () => {
-    it("renders the src that config.resolveImageSrc returns, in the image and in the Outlook VML", () => {
+    it("renders the src that config.rewriteImageSrc returns, in the image and in the Outlook VML", () => {
         const { html } = renderMailHtml(
-            <MjmlMailRoot config={{ resolveImageSrc: ({ src }) => `cid:${src}` }}>
+            <MjmlMailRoot config={{ rewriteImageSrc: ({ src }) => `cid:${src}` }}>
                 <MjmlSection>
                     <MjmlColumn>
                         <MjmlImage src="image.jpg" alt="A photo" width={100} height={100} borderRadius={10} />
@@ -24,11 +24,11 @@ describe("MjmlImage", () => {
         expect(html).not.toContain('"image.jpg"');
     });
 
-    it("passes the image's src, width and height to config.resolveImageSrc", () => {
-        const resolveImageSrc = vi.fn(({ src }: { src: string }) => src);
+    it("passes the image's src, width and height to config.rewriteImageSrc", () => {
+        const rewriteImageSrc = vi.fn(({ src }: { src: string }) => src);
 
         renderMailHtml(
-            <MjmlMailRoot config={{ resolveImageSrc }}>
+            <MjmlMailRoot config={{ rewriteImageSrc }}>
                 <MjmlSection>
                     <MjmlColumn>
                         <MjmlImage src="image.jpg" alt="" width={100} height={50} />
@@ -37,7 +37,7 @@ describe("MjmlImage", () => {
             </MjmlMailRoot>,
         );
 
-        expect(resolveImageSrc).toHaveBeenCalledWith({ src: "image.jpg", width: 100, height: 50 });
+        expect(rewriteImageSrc).toHaveBeenCalledWith({ src: "image.jpg", width: 100, height: 50 });
     });
 
     it("writes borderRadius into the style attribute of the compiled <img>", () => {

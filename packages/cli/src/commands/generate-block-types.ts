@@ -80,11 +80,15 @@ function writeFieldType(field: BlockMetaField, blockNamePostfix: string) {
         }
     } else if (field.kind === "NestedObject") {
         content += "{\n";
-        field.object.fields.forEach((f) => writeField(f, blockNamePostfix));
+        for (const nestedField of field.object.fields) {
+            writeField(nestedField, blockNamePostfix);
+        }
         content += "}\n";
     } else if (field.kind === "NestedObjectList") {
         content += "Array<{\n";
-        field.object.fields.forEach((f) => writeField(f, blockNamePostfix));
+        for (const nestedField of field.object.fields) {
+            writeField(nestedField, blockNamePostfix);
+        }
         content += "}>\n";
     }
 }

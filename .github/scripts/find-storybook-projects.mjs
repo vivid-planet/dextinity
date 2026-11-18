@@ -1,6 +1,4 @@
-// Prints the workspace projects whose Storybook tests a change can affect, as a JSON array for a job matrix.
 // Usage: node .github/scripts/find-storybook-projects.mjs [<base revision>]
-// Without a base revision, all projects with a `test:storybook` script are printed.
 
 import { execFileSync } from "node:child_process";
 import { appendFileSync, existsSync, readFileSync } from "node:fs";

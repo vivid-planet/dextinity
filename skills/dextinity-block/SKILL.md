@@ -109,13 +109,13 @@ Ask the user before creating a migration if they haven't mentioned it. Explain t
 **Migration IS needed:**
 
 - Adding a **required** field (existing data lacks it).
+- Adding an **optional/nullable** field (`@IsNullable()` + `@BlockField({ type, nullable: true })`, typed as `T | null`): existing data lacks it, but an optional field is always present, so the migration sets it to `null`.
 - **Changing** a field's type (old data has the old shape).
 - **Removing** a field (recommended to keep data clean).
 - **Renaming** a field (old data uses the old name).
 
 **Migration is NOT needed:**
 
-- Adding an **optional/nullable** field (`@IsNullable()` + `@BlockField({ type, nullable: true })`, typed as `T | null`).
 - Adding a new supported block to a `BlocksBlock` or `OneOfBlock`.
 - Adding new enum values (existing data unaffected).
 

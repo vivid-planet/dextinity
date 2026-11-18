@@ -304,6 +304,8 @@ export const HeadlineBlock = createBlock(HeadlineBlockData, HeadlineBlockInput, 
 });
 ```
 
+An **optional** field is added the same way, with `null` instead of a default value: `return { ...from, subtitle: null };`.
+
 ---
 
 ### Example 2: Replacing a String Field with a RichTextBlock

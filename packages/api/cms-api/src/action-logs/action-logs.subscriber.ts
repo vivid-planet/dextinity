@@ -8,6 +8,7 @@ import {
     type FlushEventArgs,
     PostgreSqlDriver,
     raw,
+    wrap,
 } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
 
@@ -66,7 +67,7 @@ export class ActionLogsSubscriber implements EventSubscriber {
         let snapshot: AnyEntity | undefined = undefined;
         if (changeSet.type !== ChangeSetType.DELETE) {
             const ignoreFields = entityMetadata.relations.map((entityProperty) => entityProperty.name);
-            snapshot = changeSet.entity.toObject(ignoreFields);
+            snapshot = wrap(changeSet.entity, true).toObject(ignoreFields);
         }
 
         return this.entityManager.create(

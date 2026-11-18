@@ -59,19 +59,12 @@
             "project": ["./src/**/*.{ts,tsx}"],
             "ignore": ["**/*.generated.ts", ".storybook/public/mockServiceWorker.js"]
         },
-        "packages/admin/admin-generator": {
-            "project": ["./src/**/*.{ts,tsx}"]
-        },
         "packages/admin/brevo-admin": {
             "project": ["./src/**/*.{ts,tsx}"],
             "ignore": ["**/*.generated.ts"]
         },
         "packages/api/cms-api": {
             "entry": ["./src/**/migrations/*.ts"],
-            "project": ["./src/**/*.{ts,tsx}"]
-        },
-        "packages/api/api-generator": {
-            "entry": ["./src/**/__tests__/**/*.ts"],
             "project": ["./src/**/*.{ts,tsx}"]
         },
         "packages/api/brevo-api": {

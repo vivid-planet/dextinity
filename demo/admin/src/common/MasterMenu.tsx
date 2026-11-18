@@ -11,6 +11,7 @@ import {
     CronJobsPage,
     DamPage,
     type DocumentInterface,
+    type DocumentType,
     MasterMenu,
     type MasterMenuData,
     MasterMenuRoutes,
@@ -49,24 +50,10 @@ import { Navigate, useParams } from "react-router";
 
 import { EditPageNode } from "./EditPageNode";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const pageTreeDocumentTypes: Record<string, DocumentInterface<any, any>> = {
+export const pageTreeDocumentTypes: Record<string, DocumentInterface> = {
     Page,
     Link,
     PredefinedPage,
-};
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const topMenuDocumentTypes: Record<string, DocumentInterface<any, any>> = {
-    Page,
-    PredefinedPage,
-};
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const pagesPageDocumentTypes: Record<string, DocumentInterface<any, any>> = {
-    Page,
-    PredefinedPage,
-    Link,
 };
 
 function PageTreePage() {
@@ -81,7 +68,20 @@ function PageTreePage() {
     return (
         <PagesPage
             path={`/pages/pagetree/${categoryParam}`}
-            documentTypes={(category) => (category === "TopMenu" ? topMenuDocumentTypes : pagesPageDocumentTypes)}
+            documentTypes={(category): Record<DocumentType, DocumentInterface> => {
+                if (category === "TopMenu") {
+                    return {
+                        Page,
+                        PredefinedPage,
+                    };
+                }
+
+                return {
+                    Page,
+                    PredefinedPage,
+                    Link,
+                };
+            }}
             editPageNode={EditPageNode}
             category={category}
             renderContentScopeIndicator={(scope: ContentScope) => <ContentScopeIndicator scope={scope} />}

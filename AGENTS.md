@@ -142,25 +142,23 @@ Every process loads `.env.local` itself: the demo packages and `dev:*` scripts r
 
 ### Admin (`packages/admin/`)
 
-| Package                         | Description                                                                                   |
-| ------------------------------- | --------------------------------------------------------------------------------------------- |
-| `@dextinity/admin`              | Core admin components and framework (React, MUI, Apollo, Final Form)                          |
-| `@dextinity/admin-babel-preset` | Shared Babel preset for transpiling admin packages                                            |
-| `@dextinity/admin-color-picker` | Color picker form field component                                                             |
-| `@dextinity/admin-date-time`    | Date/time picker form field components                                                        |
-| `@dextinity/admin-icons`        | SVG icon library as React components                                                          |
-| `@dextinity/admin-rte`          | Rich text editor component (Draft.js-based)                                                   |
-| `@dextinity/admin-generator`    | CLI tool that generates admin CRUD UIs from GraphQL schemas (`dextinity-admin-generator` bin) |
-| `@dextinity/cms-admin`          | Admin UI for CMS features (pages, blocks, content management)                                 |
-| `@dextinity/brevo-admin`        | Admin UI for Brevo email/marketing integration                                                |
+| Package                         | Description                                                          |
+| ------------------------------- | -------------------------------------------------------------------- |
+| `@dextinity/admin`              | Core admin components and framework (React, MUI, Apollo, Final Form) |
+| `@dextinity/admin-babel-preset` | Shared Babel preset for transpiling admin packages                   |
+| `@dextinity/admin-color-picker` | Color picker form field component                                    |
+| `@dextinity/admin-date-time`    | Date/time picker form field components                               |
+| `@dextinity/admin-icons`        | SVG icon library as React components                                 |
+| `@dextinity/admin-rte`          | Rich text editor component (Draft.js-based)                          |
+| `@dextinity/cms-admin`          | Admin UI for CMS features (pages, blocks, content management)        |
+| `@dextinity/brevo-admin`        | Admin UI for Brevo email/marketing integration                       |
 
 ### API (`packages/api/`)
 
-| Package                    | Description                                                                                   |
-| -------------------------- | --------------------------------------------------------------------------------------------- |
-| `@dextinity/cms-api`       | NestJS/GraphQL API for CMS features (file uploads, translations, blocks, S3/Azure storage)    |
-| `@dextinity/brevo-api`     | NestJS integration for the Brevo email/marketing service                                      |
-| `@dextinity/api-generator` | CLI tool that generates TypeScript types from GraphQL schemas (`dextinity-api-generator` bin) |
+| Package                | Description                                                                                |
+| ---------------------- | ------------------------------------------------------------------------------------------ |
+| `@dextinity/cms-api`   | NestJS/GraphQL API for CMS features (file uploads, translations, blocks, S3/Azure storage) |
+| `@dextinity/brevo-api` | NestJS integration for the Brevo email/marketing service                                   |
 
 ### Site (`packages/site/`)
 

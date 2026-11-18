@@ -10,7 +10,7 @@ import { BlockAdminComponentSectionGroup } from "../common/BlockAdminComponentSe
 import { HiddenInSubroute } from "../common/HiddenInSubroute";
 import { useBlockContext } from "../context/useBlockContext";
 import { composeBlocks, type CompositeBlockInterface } from "../helpers/composeBlocks/composeBlocks";
-import type { BlockInterfaceWithOptions } from "../helpers/composeBlocks/types";
+import type { BlockInterfaceWithOptions, DataMapState } from "../helpers/composeBlocks/types";
 import { normalizedBlockConfig } from "../helpers/composeBlocks/utils";
 import { createBlockSkeleton } from "../helpers/createBlockSkeleton";
 import { isBlockInterface } from "../helpers/isBlockInterface";
@@ -83,12 +83,15 @@ interface CreateCompositeBlockOptionsBase {
      * Tags used for searching in the Add Block Drawer.
      */
     tags?: Array<MessageDescriptor | string>;
+}
+
+interface VisibleOrderedBlocksForStateOption<State> {
     /**
      * Function to determine the order of the blocks in the admin component. If a block is not included in the array, it will not be rendered.
      * @param state The current state of the composite block
      * @returns An array of block keys in the order they should be rendered in the admin component, if undefined all blocks will be rendered in the order they are defined in the blocks object
      */
-    visibleOrderedBlocksForState?: (state: unknown) => string[] | undefined;
+    visibleOrderedBlocksForState?: (state: State) => string[] | undefined;
 }
 
 type CreateCompositeBlockOptionsWithGroups = Omit<CreateCompositeBlockOptionsBase, "blocks"> & { groups: Record<string, GroupConfiguration> };
@@ -118,7 +121,7 @@ type ExtractCompositeBlocksConfig<Options extends CreateCompositeBlockOptions> =
       : never;
 
 export const createCompositeBlock = <Options extends CreateCompositeBlockOptions>(
-    options: Options,
+    options: Options & VisibleOrderedBlocksForStateOption<DataMapState<ExtractCompositeBlocksConfig<Options>>>,
     override?: (
         block: CompositeBlockInterface<ExtractCompositeBlocksConfig<Options>>,
     ) => CompositeBlockInterface<ExtractCompositeBlocksConfig<Options>>,

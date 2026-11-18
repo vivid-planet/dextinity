@@ -98,7 +98,7 @@ Even if squashing is used, commit cleanliness is still important for easier revi
 :::
 
 - Commits should be **atomic** (i.e., the code should be in a runnable state).  
-  Exception: if a CodeMod or CRUD generator is used, the generated changes should be in a **separate commit**, so they can be excluded from review.
+  Exception: if a codemod or code generator is used, the generated changes should be in a **separate commit**, so they can be excluded from review.
 - Prefer multiple small commits (e.g., separate docs and feature work).
 - One commit per **logical change**.
 - Write **clear and descriptive commit messages**:

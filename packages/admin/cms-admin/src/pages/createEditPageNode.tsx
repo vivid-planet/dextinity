@@ -1,4 +1,5 @@
-import { gql, useApolloClient, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { skipToken, useApolloClient, useQuery } from "@apollo/client/react";
 import { CheckboxField, ErrorScope, Field, FieldContainer, FinalForm, FinalFormInput, FinalFormSelect, Loading, Tooltip } from "@dextinity/admin";
 import { Info } from "@dextinity/admin-icons";
 import { Box, Divider, IconButton, MenuItem, Typography } from "@mui/material";
@@ -35,14 +36,10 @@ import { transformToSlug } from "./pageTree/transformToSlug";
 
 type SerializedInitialValues = string;
 
-interface EditPageNodeFinalFormValues {
-    [key: string]: unknown;
-}
-
-interface CreateEditPageNodeProps {
+interface CreateEditPageNodeProps<AdditionalFormValues extends object> {
     additionalFormFields?: ReactNode;
     nodeFragment?: { name: string; fragment: DocumentNode };
-    valuesToInput?: (values: EditPageNodeFinalFormValues) => EditPageNodeFinalFormValues;
+    valuesToInput?: (values: FormValues & AdditionalFormValues) => Record<string, unknown>;
     disableHideInMenu?: boolean;
 }
 
@@ -53,12 +50,12 @@ export interface EditPageNodeProps {
     documentTypes: Record<DocumentType, DocumentInterface>;
 }
 
-export function createEditPageNode({
+export function createEditPageNode<AdditionalFormValues extends object = object>({
     additionalFormFields,
     nodeFragment,
     valuesToInput,
     disableHideInMenu = false,
-}: CreateEditPageNodeProps): (props: EditPageNodeProps) => JSX.Element {
+}: CreateEditPageNodeProps<AdditionalFormValues>): (props: EditPageNodeProps) => JSX.Element {
     const editPageNodeQuery = gql`
         query EditPageNode($id: ID!) {
             page: pageTreeNode(id: $id) {
@@ -167,6 +164,10 @@ export function createEditPageNode({
                     fetchPolicy: "cache-first",
                 });
 
+                if (!data) {
+                    throw new Error("Failed to check slug availability");
+                }
+
                 return data.availability;
             },
             [apollo, scope, parentId, slug],
@@ -177,15 +178,14 @@ export function createEditPageNode({
 
         const { data: redirectQueryData } = useQuery<GQLRedirectSourceAvailableQuery, GQLRedirectSourceAvailableQueryVariables>(
             redirectSourceAvailableForPageEdit,
-            {
-                variables: debouncedRedirectSource
-                    ? {
+            debouncedRedirectSource
+                ? {
+                      variables: {
                           scope: redirectScope,
                           source: debouncedRedirectSource,
-                      }
-                    : undefined,
-                skip: !debouncedRedirectSource,
-            },
+                      },
+                  }
+                : skipToken,
         );
 
         const isRedirectSourceAvailable = redirectQueryData?.redirectSourceAvailable ?? true;
@@ -250,7 +250,8 @@ export function createEditPageNode({
                         };
 
                         if (valuesToInput) {
-                            input = { ...input, ...valuesToInput({ values }) };
+                            // The values of additionalFormFields aren't known to this form
+                            input = { ...input, ...valuesToInput(values as FormValues & AdditionalFormValues) };
                         }
 
                         if (mode === "edit") {

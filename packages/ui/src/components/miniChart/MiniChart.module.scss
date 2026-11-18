@@ -1,0 +1,87 @@
+@use "../../theme/forcedColors" as forced-colors;
+
+.root {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-space-2);
+    inline-size: 100%;
+    min-inline-size: 0;
+    font-family: var(--dextinity-font-family-text);
+}
+
+.plot {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    gap: var(--dextinity-mini-chart-bar-gap);
+    block-size: var(--dextinity-mini-chart-height);
+}
+
+.bar {
+    flex: 1;
+    block-size: calc(var(--dextinity-mini-chart-bar-share) * 100%);
+    border-radius: var(--dextinity-mini-chart-bar-radius);
+    background: var(--dextinity-mini-chart-color);
+
+    &[data-highlighted] {
+        background: var(--dextinity-mini-chart-color-highlighted);
+    }
+
+    &[data-last] {
+        background: var(--dextinity-mini-chart-color-last);
+    }
+
+    @include forced-colors.fill;
+
+    &:is([data-highlighted], [data-last]) {
+        @include forced-colors.fill(Highlight);
+    }
+}
+
+.line {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    overflow: visible;
+
+    polyline {
+        fill: none;
+        stroke: var(--dextinity-mini-chart-color);
+        stroke-width: var(--dextinity-mini-chart-line-width);
+        stroke-linejoin: round;
+        stroke-linecap: round;
+
+        @media (forced-colors: active) {
+            stroke: CanvasText;
+        }
+    }
+}
+
+.point {
+    position: absolute;
+    inline-size: var(--dextinity-mini-chart-point-size);
+    block-size: var(--dextinity-mini-chart-point-size);
+    border-radius: 50%;
+    translate: -50% -50%;
+
+    &[data-highlighted] {
+        background: var(--dextinity-mini-chart-color-highlighted);
+    }
+
+    &[data-last] {
+        background: var(--dextinity-mini-chart-color-last);
+    }
+
+    &:is([data-highlighted], [data-last]) {
+        @include forced-colors.fill(Highlight);
+    }
+}
+
+.labels {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--dextinity-space-2);
+    color: var(--dextinity-mini-chart-label-color);
+    font-size: var(--dextinity-mini-chart-label-font-size);
+}

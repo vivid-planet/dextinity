@@ -1,7 +1,7 @@
-import type { CrudGeneratorHooksService, CurrentUser, MutationError } from "@dextinity/cms-api";
+import type { CurrentUser, MutationError } from "@dextinity/cms-api";
 import { Field, ObjectType, registerEnumType } from "@nestjs/graphql";
 
-import type { ProductInput } from "./generated/dto/product.input.js";
+import type { ProductInput } from "./dto/product.input.js";
 
 enum ProductMutationErrorCode {
     titleTooShort = "titleTooShort",
@@ -24,7 +24,7 @@ export class ProductMutationError implements MutationError {
     code: ProductMutationErrorCode;
 }
 
-export class ProductService implements CrudGeneratorHooksService {
+export class ProductService {
     async validateCreateInput(input: ProductInput, options: { currentUser: CurrentUser }): Promise<ProductMutationError[]> {
         if (input.title.length < 3 && options.currentUser.email !== "foo@example.com") {
             return [

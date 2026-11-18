@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { Field, type FieldProps } from "../Field";
 import { FinalFormSwitch, type FinalFormSwitchProps } from "../Switch";
 
-export interface SwitchFieldProps extends Omit<FieldProps<string, HTMLInputElement>, "label"> {
+export interface SwitchFieldProps extends Omit<FieldProps<boolean, HTMLInputElement>, "label"> {
     name: string;
     fieldLabel?: ReactNode;
     label?: ReactNode | ((checked?: boolean) => ReactNode);

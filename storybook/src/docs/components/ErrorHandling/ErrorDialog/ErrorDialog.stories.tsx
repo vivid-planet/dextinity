@@ -1,4 +1,5 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { Button, useErrorDialog } from "@dextinity/admin";
 import { Typography } from "@mui/material";
 import { useState } from "react";

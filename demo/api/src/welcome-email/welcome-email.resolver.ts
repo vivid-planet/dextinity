@@ -1,0 +1,50 @@
+import { RequiredPermission } from "@dextinity/cms-api";
+import { EntityManager } from "@mikro-orm/postgresql";
+import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
+
+import { WelcomeEmailInput } from "./dto/welcome-email.input.js";
+import { WelcomeEmailScope } from "./dto/welcome-email-scope.js";
+import { WelcomeEmail } from "./entities/welcome-email.entity.js";
+import { WelcomeEmailsService } from "./welcome-emails.service.js";
+
+@Resolver(() => WelcomeEmail)
+@RequiredPermission(["pageTree"])
+export class WelcomeEmailResolver {
+    constructor(
+        protected readonly entityManager: EntityManager,
+        protected readonly welcomeEmailsService: WelcomeEmailsService,
+    ) {}
+    @Query(() => WelcomeEmail, { nullable: true })
+    async welcomeEmail(
+        @Args("scope", { type: () => WelcomeEmailScope })
+        scope: WelcomeEmailScope,
+    ): Promise<WelcomeEmail | null> {
+        const welcomeEmails = await this.entityManager.find(WelcomeEmail, { scope });
+        if (welcomeEmails.length > 1) {
+            throw new Error("There must be only one welcomeEmail");
+        }
+        return welcomeEmails.length > 0 ? welcomeEmails[0] : null;
+    }
+    @Mutation(() => WelcomeEmail)
+    async saveWelcomeEmail(
+        @Args("scope", { type: () => WelcomeEmailScope })
+        scope: WelcomeEmailScope,
+        @Args("input", { type: () => WelcomeEmailInput })
+        input: WelcomeEmailInput,
+    ): Promise<WelcomeEmail> {
+        let welcomeEmail = await this.entityManager.findOne(WelcomeEmail, { scope });
+        if (!welcomeEmail) {
+            welcomeEmail = this.entityManager.create(WelcomeEmail, {
+                ...input,
+                content: input.content.transformToBlockData(),
+                scope,
+            });
+        }
+        welcomeEmail.assign({
+            ...input,
+            content: input.content.transformToBlockData(),
+        });
+        await this.entityManager.flush();
+        return welcomeEmail;
+    }
+}

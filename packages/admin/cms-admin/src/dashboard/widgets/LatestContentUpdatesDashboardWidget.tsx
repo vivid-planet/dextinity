@@ -3,7 +3,7 @@ import { ArrowRight, Reload } from "@dextinity/admin-icons";
 import { IconButton } from "@mui/material";
 import type { DataGridProps } from "@mui/x-data-grid";
 import { FormattedMessage, useIntl } from "react-intl";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 import { DataGrid } from "../../dataGrid/DataGrid";
 import { DashboardWidgetRoot } from "./DashboardWidgetRoot";

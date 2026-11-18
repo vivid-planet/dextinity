@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client/react";
 import {
     Button,
     CrudMoreActionsMenu,
@@ -121,7 +121,7 @@ export function RedirectsGrid({ linkBlock, scope }: Props): JSX.Element {
         {
             label: intl.formatMessage({
                 id: "dextinity.pages.redirects.redirect.redirectType.temporary",
-                defaultMessage: "Standard",
+                defaultMessage: "Standard (Temporary)",
             }),
             value: "temporary",
         },
@@ -268,6 +268,7 @@ export function RedirectsGrid({ linkBlock, scope }: Props): JSX.Element {
         },
         context: LocalErrorScopeApolloContext,
         fetchPolicy: "cache-and-network",
+        notifyOnNetworkStatusChange: false,
     });
 
     if (error) {

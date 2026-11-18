@@ -1,4 +1,5 @@
-import { gql, useApolloClient, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client/react";
 import {
     Button,
     CrudContextMenu,
@@ -146,6 +147,7 @@ export function ManufacturersGrid() {
             limit: dataGridProps.paginationModel.pageSize,
             sort: muiGridSortToGql(sortModel),
         },
+        notifyOnNetworkStatusChange: false,
     });
     if (error) {
         throw error;
@@ -170,7 +172,7 @@ export function ManufacturersGrid() {
 }
 
 const manufacturersFragment = gql`
-    fragment ManufacturersListManual on Manufacturer {
+    fragment ManufacturersList on Manufacturer {
         name
         address {
             street
@@ -204,7 +206,7 @@ const manufacturersQuery = gql`
         manufacturers(offset: $offset, limit: $limit, sort: $sort, filter: $filter, search: $search) {
             nodes {
                 id
-                ...ManufacturersListManual
+                ...ManufacturersList
             }
             totalCount
         }

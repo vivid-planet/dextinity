@@ -59,19 +59,12 @@
             "project": ["./src/**/*.{ts,tsx}"],
             "ignore": ["**/*.generated.ts", ".storybook/public/mockServiceWorker.js"]
         },
-        "packages/admin/admin-generator": {
-            "project": ["./src/**/*.{ts,tsx}"]
-        },
         "packages/admin/brevo-admin": {
             "project": ["./src/**/*.{ts,tsx}"],
             "ignore": ["**/*.generated.ts"]
         },
         "packages/api/cms-api": {
             "entry": ["./src/**/migrations/*.ts"],
-            "project": ["./src/**/*.{ts,tsx}"]
-        },
-        "packages/api/api-generator": {
-            "entry": ["./src/**/__tests__/**/*.ts"],
             "project": ["./src/**/*.{ts,tsx}"]
         },
         "packages/api/brevo-api": {
@@ -94,9 +87,9 @@
             "ignoreDependencies": ["sass"]
         },
         "demo/admin": {
-            "entry": ["./src/loader.tsx", "./src/**/*.dextinityGen.{ts,tsx}"],
+            "entry": ["./src/loader.tsx"],
             "project": ["./src/**/*.{ts,tsx}"],
-            "ignore": ["./src/**/generated/**", "**/graphql.generated.ts", "**/*.generated.ts"],
+            "ignore": ["**/graphql.generated.ts", "**/*.generated.ts"],
             "ignoreDependencies": ["@swc/plugin-emotion", "cosmiconfig-toml-loader", "@babel/core"]
         },
         "demo/api": {
@@ -116,7 +109,7 @@
             "project": ["./src/**/*.{ts,tsx}"],
             "ignoreDependencies": ["@as-integrations/express5", "@swc-node/register"],
             "ignoreUnresolved": ["^\\./dist/"],
-            "ignore": ["./src/**/generated/**", "**/*.generated.ts"]
+            "ignore": ["**/*.generated.ts"]
         },
         "demo/site": {
             "entry": ["./src/app/**", "./cache-handler.ts", "./opentelemetry-metrics.ts", "tracing.dev.ts", "tracing.production.ts"],

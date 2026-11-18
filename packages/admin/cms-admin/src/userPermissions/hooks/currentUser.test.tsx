@@ -33,7 +33,7 @@ function createCurrentUserQueryResult(permission: string) {
 
 let currentUserQueryResult = createCurrentUserQueryResult("pageTree");
 
-vi.mock(import("@apollo/client"), async (importOriginal) => {
+vi.mock(import("@apollo/client/react"), async (importOriginal) => {
     const originalModule = await importOriginal();
     return { ...originalModule, useQuery: (() => currentUserQueryResult) as unknown as typeof originalModule.useQuery };
 });

@@ -6,7 +6,7 @@ import { createConfig } from "@src/config";
 import { useCallback, useContext, useEffect, useLayoutEffect, useRef } from "react";
 import { useDragDropManager } from "react-dnd";
 import { FormattedMessage, useIntl } from "react-intl";
-import { useHistory, useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 
 import type { BridgeElement } from "./aiHubBridge";
 import { useAiMode } from "./AiModeContext";
@@ -60,7 +60,7 @@ export function AiModeFlyout() {
     const isMobile = useMediaQuery(theme.breakpoints.down("md"));
     const windowSize = useWindowSize();
     const intl = useIntl();
-    const history = useHistory();
+    const navigate = useNavigate();
     const location = useLocation();
     const { scope, match } = useContentScope();
     const user = useCurrentUser();
@@ -85,6 +85,10 @@ export function AiModeFlyout() {
     const pushContextRef = useRef(pushContext);
     pushContextRef.current = pushContext;
 
+    // useNavigate returns a new function on every navigation, which would re-register the bridge each time.
+    const navigateRef = useRef(navigate);
+    navigateRef.current = navigate;
+
     const registerBridge = useCallback(
         (element: BridgeElement | null) => {
             bridgeRef.current = element;
@@ -95,7 +99,7 @@ export function AiModeFlyout() {
             element.bridge.registerMcpServers([{ url: mcpServerUrl }]);
             element.bridge.registerHostTools(
                 createAdminHostTools({
-                    history,
+                    navigate: (path) => void navigateRef.current(path),
                     scopeUrl: match.url,
                     getPageState: () => pageStateStore.getCurrent(),
                     getPageTools: () => pageToolsStore.getCurrent(),
@@ -105,7 +109,7 @@ export function AiModeFlyout() {
 
             pushContextRef.current();
         },
-        [history, match.url, pageStateStore, pageToolsStore, textSelectionStore],
+        [match.url, pageStateStore, pageToolsStore, textSelectionStore],
     );
 
     // The selection belongs to the page it was made on. Navigating while the chat has focus changes no selection the

@@ -6,19 +6,17 @@ import { FinalFormAsyncAutocomplete } from "../FinalFormAsyncAutocomplete";
 export type AsyncAutocompleteFieldProps<
     T extends Record<string, any>,
     Multiple extends boolean | undefined,
-    DisableClearable extends boolean | undefined,
     FreeSolo extends boolean | undefined,
 > = FieldProps<T, HTMLInputElement | HTMLTextAreaElement> & {
     loadOptions: (search?: string) => Promise<T[]>;
-} & Omit<AutocompleteProps<T, Multiple, DisableClearable, FreeSolo>, "options" | "renderInput"> & {
+} & Omit<AutocompleteProps<T, Multiple, true, FreeSolo>, "options" | "renderInput" | "disableClearable"> & {
         clearable?: boolean;
     };
 
 export function AsyncAutocompleteField<
     T extends Record<string, any>,
     Multiple extends boolean | undefined = false,
-    DisableClearable extends boolean | undefined = false,
     FreeSolo extends boolean | undefined = false,
->(props: AsyncAutocompleteFieldProps<T, Multiple, DisableClearable, FreeSolo>) {
+>(props: AsyncAutocompleteFieldProps<T, Multiple, FreeSolo>) {
     return <Field component={FinalFormAsyncAutocomplete} {...props} />;
 }

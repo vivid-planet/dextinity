@@ -43,7 +43,7 @@
         "commander": "^15.1.0",
         "jiti": "^2.7.0",
         "js-yaml": "^5.5.0",
-        "prettier": "^3.9.10"
+        "prettier": "^3.10.1"
     },
     "devDependencies": {
         "@dextinity/eslint-config": "workspace:*",

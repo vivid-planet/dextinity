@@ -1,4 +1,5 @@
-import { gql, useApolloClient, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { skipToken, useApolloClient, useQuery } from "@apollo/client/react";
 import {
     AsyncSelectField,
     CheckboxField,
@@ -52,7 +53,7 @@ import { createProductMutation, productFormFragment, productQuery, updateProduct
 import type {
     GQLCreateProductMutation,
     GQLCreateProductMutationVariables,
-    GQLProductFormManualFragment,
+    GQLProductFormFragment,
     GQLProductQuery,
     GQLProductQueryVariables,
     GQLUpdateProductMutation,
@@ -70,13 +71,13 @@ const rootBlocks = {
 };
 
 // Set types for FinalFormFileUpload manually, as they cannot be generated from the fragment in `@dextinity/cms-admin`
-type ProductFormManualFragment = Omit<GQLProductFormManualFragment, "priceList" | "datasheets" | "relatedImages"> & {
+type ProductFormFragment = Omit<GQLProductFormFragment, "priceList" | "datasheets" | "relatedImages"> & {
     priceList: GQLFinalFormFileUploadFragment | null;
     datasheets: Array<GQLFinalFormFileUploadFragment>;
     relatedImages: Array<GQLDamFileFieldFileFragment>;
 };
 
-type FormValues = Omit<ProductFormManualFragment, "image" | "lastCheckedAt"> & {
+type FormValues = Omit<ProductFormFragment, "image" | "lastCheckedAt"> & {
     image: BlockState<typeof rootBlocks.image>;
     manufacturerCountry?: { id: string; label: string };
     lastCheckedAt?: Date | null;
@@ -103,11 +104,11 @@ export function ProductForm({ id, width, onCreate }: FormProps) {
 
     const { data, error, loading, refetch } = useQuery<GQLProductQuery, GQLProductQueryVariables>(
         productQuery,
-        id ? { variables: { id } } : { skip: true },
+        id ? { variables: { id }, notifyOnNetworkStatusChange: false } : skipToken,
     );
 
     const initialValues = useMemo<InitialFormValues>(() => {
-        const filteredData = data ? filterByFragment<ProductFormManualFragment>(productFormFragment, data.product) : undefined;
+        const filteredData = data ? filterByFragment<ProductFormFragment>(productFormFragment, data.product) : undefined;
         if (!filteredData) {
             return {
                 image: rootBlocks.image.defaultValues(),
@@ -257,7 +258,7 @@ export function ProductForm({ id, width, onCreate }: FormProps) {
                                 `,
                             });
 
-                            return data.manufacturerCountries.nodes;
+                            return data?.manufacturerCountries.nodes ?? [];
                         }}
                         getOptionLabel={(option) => option.label}
                         label={<FormattedMessage id="product.manufacturerCountry" defaultMessage="Manufacturer Country" />}
@@ -286,7 +287,7 @@ export function ProductForm({ id, width, onCreate }: FormProps) {
                                 },
                             });
 
-                            return data.manufacturers.nodes;
+                            return data?.manufacturers.nodes ?? [];
                         }}
                         getOptionLabel={(option) => option.name}
                         label={<FormattedMessage id="product.manufacturer" defaultMessage="Manufacturer" />}
@@ -345,7 +346,7 @@ export function ProductForm({ id, width, onCreate }: FormProps) {
                                 `,
                             });
 
-                            return data.productCategories.nodes;
+                            return data?.productCategories.nodes ?? [];
                         }}
                         getOptionLabel={(option) => option.title}
                     />
@@ -368,7 +369,7 @@ export function ProductForm({ id, width, onCreate }: FormProps) {
                                 `,
                             });
 
-                            return data.productTags.nodes;
+                            return data?.productTags.nodes ?? [];
                         }}
                         getOptionLabel={(option) => option.title}
                     />

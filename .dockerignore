@@ -35,7 +35,7 @@ demo/*/src/site-configs.d.ts
 **/*.tsbuildinfo
 demo/uploads
 
-# Cloned by intl-update.sh
+# Cloned by intl-clone
 **/lang
 **/lang-compiled
 **/lang-extracted

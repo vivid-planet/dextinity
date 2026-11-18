@@ -1,4 +1,4 @@
-import { useApolloClient, useQuery } from "@apollo/client";
+import { skipToken, useApolloClient, useQuery } from "@apollo/client/react";
 import { filterByFragment, FinalForm, type FinalFormSubmitEvent, Loading, TextField, useFormApiRef, useStackSwitchApi } from "@dextinity/admin";
 import { queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@dextinity/cms-admin";
 import { deepEqual } from "fast-equals";
@@ -15,14 +15,14 @@ import {
 import type {
     GQLCreateProductCategoryMutation,
     GQLCreateProductCategoryMutationVariables,
-    GQLProductCategoryFormHandmadeFragment,
+    GQLProductCategoryFormFragment,
     GQLProductCategoryQuery,
     GQLProductCategoryQueryVariables,
     GQLUpdateProductCategoryMutation,
     GQLUpdateProductCategoryMutationVariables,
 } from "./ProductCategoryForm.gql.generated";
 
-type FormValues = GQLProductCategoryFormHandmadeFragment;
+type FormValues = GQLProductCategoryFormFragment;
 interface FormProps {
     id?: string;
 }
@@ -33,13 +33,13 @@ export function ProductCategoryForm({ id }: FormProps) {
     const stackSwitchApi = useStackSwitchApi();
     const { data, error, loading, refetch } = useQuery<GQLProductCategoryQuery, GQLProductCategoryQueryVariables>(
         productCategoryQuery,
-        id ? { variables: { id } } : { skip: true },
+        id ? { variables: { id }, notifyOnNetworkStatusChange: false } : skipToken,
     );
     const initialValues = useMemo<Partial<FormValues>>(
         () =>
             data?.productCategory
                 ? {
-                      ...filterByFragment<GQLProductCategoryFormHandmadeFragment>(productCategoryFormFragment, data.productCategory),
+                      ...filterByFragment<GQLProductCategoryFormFragment>(productCategoryFormFragment, data.productCategory),
                   }
                 : {},
         [data],

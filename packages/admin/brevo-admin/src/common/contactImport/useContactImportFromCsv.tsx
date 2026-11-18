@@ -1,5 +1,5 @@
-import { useApolloClient } from "@apollo/client";
-import type { RefetchQueriesInclude } from "@apollo/client/core/types";
+import type { RefetchQueriesInclude } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
 import { Alert, Button, CheckboxField, Dialog, downloadFile, FinalForm, Loading, messages, useErrorDialog } from "@dextinity/admin";
 import { Upload } from "@dextinity/admin-icons";
 import { Box, DialogActions, DialogContent, DialogTitle, type MenuItem } from "@mui/material";

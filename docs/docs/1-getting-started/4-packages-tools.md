@@ -35,7 +35,7 @@ This is the core package that is used to build your Admin. Together with its acc
 
 Components for use in forms generally have an accompanying component, optimized for use with [react-final-form](https://final-form.org/react), indicated by the component's name being prefixed with "FinalForm".
 
-Navigation and routing are managed by [react-router](https://reactrouter.com/).
+Navigation and routing are managed by [React Router](https://reactrouter.com/) v8. Use its native APIs (`<Routes>`, `<Route element>`, `<Navigate>`, `useNavigate`, `useParams`) in your app, imported from `react-router`.
 
 Using the `createDextinityTheme` function, you can create a theme that contains all the default styling for your admin. Custom options and styles can be added the same way as with MUI's [createTheme](https://mui.com/material-ui/customization/theming/#api) function. The resulting theme can simply be used with MUI's [ThemeProvider](https://mui.com/material-ui/customization/theming/#theme-provider).
 

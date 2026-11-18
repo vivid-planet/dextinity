@@ -1,0 +1,6 @@
+.grid {
+    display: inline-grid;
+    grid-template-columns: auto auto;
+    gap: var(--dextinity-space-3);
+    justify-items: start;
+}

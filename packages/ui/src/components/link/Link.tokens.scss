@@ -1,0 +1,22 @@
+@mixin tokens {
+    // Gap between the icon and the label
+    --dextinity-link-gap: var(--dextinity-space-1-5);
+    // Size of the link text
+    --dextinity-link-font-size: var(--dextinity-typography-ui-size);
+    // Size of the icon
+    --dextinity-link-icon-size: var(--dextinity-icon-size-xsmall);
+    // Gap between the text and its underline, for links inside running text
+    --dextinity-link-underline-offset: 3px;
+    // Corner radius of the focus ring
+    --dextinity-link-radius: var(--dextinity-radius-item);
+    // Color of a secondary link
+    --dextinity-link-secondary-foreground: var(--dextinity-color-text-subtle);
+    // Color of a hovered secondary link
+    --dextinity-link-secondary-foreground-hover: var(--dextinity-color-text);
+    // Color of an accent link
+    --dextinity-link-accent-foreground: var(--dextinity-color-accent-text);
+    // Color of a hovered accent link
+    --dextinity-link-accent-foreground-hover: var(--dextinity-color-text);
+    // How far the icon moves in the direction of travel on hover; 0 with reduced motion
+    --dextinity-link-icon-nudge: calc(var(--dextinity-motion-distance) * 0.375);
+}

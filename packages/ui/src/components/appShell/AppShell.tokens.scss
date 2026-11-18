@@ -1,0 +1,39 @@
+@mixin tokens {
+    // Background behind the whole shell and its light fields
+    --dextinity-app-shell-background: var(--dextinity-color-canvas);
+    // Space around the glass panels
+    --dextinity-app-shell-gap: 18px;
+    // Padding of the main area next to the navigation
+    --dextinity-app-shell-content-padding: 18px 26px var(--dextinity-space-12) 22px;
+    // Space between the top bar and the page header
+    --dextinity-app-shell-content-offset: 52px;
+    // Padding of the main area in narrow windows
+    --dextinity-app-shell-content-padding-narrow: var(--dextinity-space-3) var(--dextinity-space-3) var(--dextinity-space-12);
+    // Space between the top bar and the page header in narrow windows
+    --dextinity-app-shell-content-offset-narrow: 32px;
+    // Color of the top-left light field behind the glass; off in high contrast
+    --dextinity-app-shell-field-1: var(--dextinity-material-field-1);
+    // Color of the top-right light field behind the glass; off in high contrast
+    --dextinity-app-shell-field-2: var(--dextinity-material-field-2);
+    // Color of the bottom light field behind the glass; off in high contrast
+    --dextinity-app-shell-field-3: var(--dextinity-material-field-3);
+    // Softness of the light fields; the bottom one is 1.25 times as soft
+    --dextinity-app-shell-field-blur: 40px;
+    // One drift of the top-right light field; the other two take 0.8125 and 1.1875 times as long
+    --dextinity-app-shell-field-drift-duration: 32s;
+    // Opacity of the film grain over the shell; 0 turns it off
+    --dextinity-app-shell-grain: var(--dextinity-material-grain);
+    // Dims the page behind the open navigation drawer in narrow windows
+    --dextinity-app-shell-backdrop: oklch(0 0 0 / 0.28);
+    // Width of the navigation drawer in narrow windows
+    --dextinity-app-shell-drawer-width: min(320px, 86vw);
+    // Shadow of the navigation panel inside the drawer
+    --dextinity-app-shell-overlay-shadow: var(--dextinity-shadow-3);
+
+    // Stacking order of the sticky top bar, below the navigation
+    --dextinity-app-shell-top-bar-layer: 6;
+    // Stacking order of the sticky navigation, above the top bar
+    --dextinity-app-shell-nav-layer: 7;
+    // Stacking order of the grain texture, above the shell's content
+    --dextinity-app-shell-grain-layer: 10;
+}

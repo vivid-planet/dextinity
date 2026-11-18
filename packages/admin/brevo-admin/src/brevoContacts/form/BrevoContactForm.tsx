@@ -1,4 +1,5 @@
-import { type DocumentNode, gql, useApolloClient, useQuery } from "@apollo/client";
+import { type DocumentNode, gql } from "@apollo/client";
+import { skipToken, useApolloClient, useQuery } from "@apollo/client/react";
 import {
     Alert,
     CheckboxField,
@@ -79,7 +80,7 @@ export function BrevoContactForm({ id, scope, input2State, additionalFormFields,
 `;
     const { data, loading, refetch } = useQuery<GQLBrevoContactFormQuery, GQLBrevoContactFormQueryVariables>(
         brevoContactFormQuery(brevoContactFormFragment),
-        id ? { variables: { id, scope } } : { skip: true },
+        id ? { variables: { id, scope }, notifyOnNetworkStatusChange: false } : skipToken,
     );
 
     const initialValues = useMemo<Partial<EditBrevoContactFormValuesWithAttributes>>(() => {
@@ -113,7 +114,7 @@ export function BrevoContactForm({ id, scope, input2State, additionalFormFields,
                 fetchPolicy: "no-cache",
             });
 
-            return resolveHasSaveConflict(data?.brevoContact?.modifiedAt, updatedData.brevoContact.modifiedAt);
+            return resolveHasSaveConflict(data?.brevoContact?.modifiedAt, updatedData?.brevoContact.modifiedAt);
         },
         formApiRef,
         loadLatestVersion: async () => {

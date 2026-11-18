@@ -1,0 +1,32 @@
+// The drop area comes from the Dropzone tokens.
+@mixin tokens {
+    // Gap between the drop area and the files
+    --dextinity-file-upload-gap: var(--dextinity-field-gap);
+    // Gap between the uploaded files in the list
+    --dextinity-file-upload-file-gap: var(--dextinity-space-2);
+    // Minimum height of an uploaded file
+    --dextinity-file-upload-file-height: 48px;
+    // Corner radius of an uploaded file; the thumbnail is rounded to match
+    --dextinity-file-upload-file-radius: var(--dextinity-radius-control);
+    // Fill of an uploaded file
+    --dextinity-file-upload-file-background: var(--dextinity-color-surface);
+    // Outline of an uploaded file
+    --dextinity-file-upload-file-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line);
+    // Fill of a file that failed to upload
+    --dextinity-file-upload-file-error-background: var(--dextinity-color-danger-soft);
+    // Width and height of the thumbnail of an uploaded file
+    --dextinity-file-upload-thumbnail-size: 32px;
+    // Color of a file name that links to the file
+    --dextinity-file-upload-link-color: var(--dextinity-color-accent-text);
+    // Size of the size and type of an uploaded file
+    --dextinity-file-upload-meta-font-size: 11.5px;
+    // Color of the icon and reason of a failed file
+    --dextinity-file-upload-error-foreground: var(--dextinity-color-danger-text);
+    // Size of the reason a file failed, next to its name
+    --dextinity-file-upload-error-font-size: 12px;
+    // Outline of the drop area when the field has an error
+    --dextinity-file-upload-error-outline: var(--dextinity-line-width-strong) dashed var(--dextinity-color-danger);
+
+    // Corner radius of the focus ring of a linked file name
+    --dextinity-file-upload-link-radius: 4px;
+}

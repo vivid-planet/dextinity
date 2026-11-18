@@ -1,26 +1,59 @@
+import { useCurrentRouteMatch } from "@dextinity/admin";
 import { deepEqual } from "fast-equals";
 import { createContext, type Dispatch, type ReactNode, type SetStateAction, useCallback, useContext, useMemo, useState } from "react";
-import { type match, Redirect, Route, Switch, useHistory, useRouteMatch } from "react-router";
+import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router";
 
+import { getPathnameBelowUrl } from "../common/getPathnameBelowUrl";
 import { useCurrentUser } from "../userPermissions/hooks/currentUser";
 import { contentScopeLocalStorageKey } from "./ContentScopeSelect";
 import { NoContentScopeFallback } from "./noContentScopeFallback/NoContentScopeFallback";
 import { defaultCreatePath } from "./utils/defaultCreatePath";
+import { matchContentScope } from "./utils/matchContentScope";
+import { NullValueAsString } from "./utils/nullValueAsString";
 
 export interface ContentScope {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [key: string]: any;
 }
 
-type ContentScopeLocation = {
-    createPath: (scope: ContentScopeValues) => string | string[];
+/**
+ * The URL segments of a content scope, in order. Each segment contains the value of `dimension`, which must be one of `values`.
+ *
+ * For example, `[{ dimension: "domain", values: ["main", "secondary"] }, { dimension: "language", values: ["de", "en"] }]` matches `/main/en`.
+ * A `null` value is written as `-` by the default `createUrl`. An empty path, for scopes without dimensions, matches every URL.
+ */
+export type ContentScopePath = Array<{ dimension: string; values: string[] }>;
+
+export type ContentScopeLocation = {
+    /**
+     * Returns the path of the content scope, or several paths, e.g. one per group of scopes with the same dimensions. The first matching path is used.
+     */
+    createPath: (values: ContentScopeValues) => ContentScopePath | ContentScopePath[];
     createUrl: (scope: ContentScope) => string;
 };
 
-const defaultContentScopeLocation = { createPath: defaultCreatePath, createUrl: defaultCreateUrl };
+/**
+ * The part of the URL that contains the content scope.
+ */
+export interface ContentScopeMatch {
+    /**
+     * The URL segments per dimension, e.g. `{ domain: "main", language: "en" }`.
+     */
+    params: Record<string, string>;
+    /**
+     * The URL of the content scope, e.g. `/main/en`. It's the URL of the route the children of `ContentScopeProvider` are rendered in.
+     */
+    url: string;
+    /**
+     * Whether the location is the URL of the content scope itself and not one below it.
+     */
+    isExact: boolean;
+}
+
+const defaultContentScopeLocation: ContentScopeLocation = { createPath: defaultCreatePath, createUrl: defaultCreateUrl };
 
 interface ContentScopeContext {
-    path: string | string[];
+    path?: ContentScopePath | ContentScopePath[];
     redirectPathAfterChange?: string; // define where the user should be redirected to after a scope change
     setRedirectPathAfterChange: Dispatch<SetStateAction<string | undefined>>;
     values: ContentScopeValues;
@@ -28,7 +61,6 @@ interface ContentScopeContext {
 }
 
 const defaultContentScopeContext: ContentScopeContext = {
-    path: "/",
     setRedirectPathAfterChange: () => {
         //
     },
@@ -46,7 +78,7 @@ type SetContentScopeAction = (state: ContentScope) => ContentScope;
 export type UseContentScopeApi = {
     scope: ContentScope;
     setScope: (action: SetContentScopeAction) => void;
-    match: match;
+    match: ContentScopeMatch;
     setRedirectPathAfterChange: Dispatch<SetStateAction<string | undefined>>;
     supported: boolean;
     createUrl: (scope: ContentScope) => string;
@@ -62,7 +94,12 @@ export type ContentScopeValues = Array<{
 // ... and get rid of "as" type-assertions
 const Context = createContext<ContentScopeContext>(defaultContentScopeContext);
 
-const NullValueAsString = "-"; // used to represent null-values in the url
+interface ContentScopeRouteContextValue {
+    pathname: string;
+    match: ContentScopeMatch;
+}
+
+const ContentScopeRouteContext = createContext<ContentScopeRouteContextValue | undefined>(undefined);
 
 function parseScopeFromRouterMatchParams(params: NonNullRecord<ContentScope>): ContentScope {
     return Object.entries(params).reduce((a, [key, value]) => {
@@ -92,10 +129,28 @@ function defaultCreateUrl(scope: ContentScope) {
 // @TODO: provide default empty scope "{}"
 export function useContentScope(): UseContentScopeApi {
     const context = useContext(Context);
-    const history = useHistory();
-    const matchContextScope = useRouteMatch<NonNullRecord<ContentScope>>(context?.path || "");
-    const matchDefault = useRouteMatch();
-    const match = matchContextScope || matchDefault;
+    const contentScopeRoute = useContext(ContentScopeRouteContext);
+    const navigate = useNavigate();
+    const { pathname } = useLocation();
+    const routeUrl = useCurrentRouteMatch()?.url;
+    const contextPath = context.path;
+
+    const match = useMemo((): ContentScopeMatch => {
+        // The match of the content scope route only applies to the location it was rendered for, and e.g. not to the one of a nested router
+        if (contentScopeRoute?.pathname === pathname) {
+            return contentScopeRoute.match;
+        }
+        if (contextPath === undefined) {
+            return { params: {}, url: "/", isExact: pathname === "/" };
+        }
+        const contentScopeMatch = matchContentScope(contextPath, pathname)?.match;
+        if (contentScopeMatch) {
+            return contentScopeMatch;
+        }
+        // e.g. in a nested router
+        const url = routeUrl ?? "/";
+        return { params: {}, url, isExact: getPathnameBelowUrl(pathname, url) === "" };
+    }, [contentScopeRoute, contextPath, pathname, routeUrl]);
 
     const matchParamsString = JSON.stringify(match.params); // convert matchParams to string, like this we can memoize or callbacks more easily
     const scope = useMemo(() => parseScopeFromRouterMatchParams(JSON.parse(matchParamsString)), [matchParamsString]);
@@ -105,9 +160,9 @@ export function useContentScope(): UseContentScopeApi {
             const newContentScope = action(scope);
             const pathAfterScopePath = redirectPath || "";
             const url = context.location.createUrl(newContentScope);
-            history.push({ pathname: url + pathAfterScopePath });
+            navigate({ pathname: url + pathAfterScopePath });
         },
-        [scope, history, redirectPath, context.location],
+        [scope, navigate, redirectPath, context.location],
     );
 
     return {
@@ -124,7 +179,10 @@ export function useContentScope(): UseContentScopeApi {
 export interface ContentScopeProviderProps {
     defaultValue?: ContentScope;
     values?: ContentScopeValues;
-    children: (p: { match: match<NonNullRecord<ContentScope>> }) => ReactNode;
+    /**
+     * Rendered as the element of a route at the URL of the content scope, so that it can contain relative routes, e.g. `<Route path="preview/*" />`.
+     */
+    children: (p: { match: ContentScopeMatch }) => ReactNode;
     location?: ContentScopeLocation;
 
     /**
@@ -133,6 +191,34 @@ export interface ContentScopeProviderProps {
      * @default <NoContentScopeFallback />
      */
     noContentScopeFallback?: ReactNode;
+}
+
+// The dimensions are route params so that the route pattern stays the same across scopes,
+// because it's part of e.g. the reset key of RouteWithErrorBoundary and the keys of persisted data grid states.
+function createRoutePath(path: ContentScopePath) {
+    return `${path.map(({ dimension }) => `/:${dimension}`).join("")}/*`;
+}
+
+interface ContentScopeRouteProps {
+    match: ContentScopeMatch;
+    children: ContentScopeProviderProps["children"];
+}
+
+function ContentScopeRoute({ match: { params, isExact }, children }: ContentScopeRouteProps) {
+    const { pathname } = useLocation();
+    // Encoded like the URLs of the routes below it, which can differ from the location (see getPathnameBelowUrl)
+    const url = (useCurrentRouteMatch()?.url ?? "").replace(/\/$/, "");
+    const paramsString = JSON.stringify(params);
+    const contentScopeRoute = useMemo(
+        (): ContentScopeRouteContextValue => ({ pathname, match: { params: JSON.parse(paramsString), url, isExact } }),
+        [pathname, paramsString, url, isExact],
+    );
+
+    return (
+        <ContentScopeRouteContext.Provider value={contentScopeRoute}>
+            {children({ match: contentScopeRoute.match })}
+        </ContentScopeRouteContext.Provider>
+    );
 }
 
 export function ContentScopeProvider({
@@ -151,7 +237,8 @@ export function ContentScopeProvider({
     }
 
     const path = location.createPath(values);
-    const match = useRouteMatch<NonNullRecord<ContentScope>>(path);
+    const { pathname } = useLocation();
+    const matchedPath = matchContentScope(path, pathname);
     const [redirectPathAfterChange, setRedirectPathAfterChange] = useState<undefined | string>("");
 
     if (values.length === 0) {
@@ -185,17 +272,19 @@ export function ContentScopeProvider({
                 redirectPathAfterChange,
                 setRedirectPathAfterChange,
                 values,
-                location: location as ContentScopeLocation,
+                location,
             }}
         >
-            <Switch>
-                {match && (
-                    <Route exact={false} strict={false} path={path}>
-                        {children({ match })}
-                    </Route>
-                )}
-                <Redirect to={defaultUrl} />
-            </Switch>
+            {matchedPath ? (
+                <Routes>
+                    <Route
+                        path={createRoutePath(matchedPath.path)}
+                        element={<ContentScopeRoute match={matchedPath.match}>{children}</ContentScopeRoute>}
+                    />
+                </Routes>
+            ) : (
+                <Navigate to={defaultUrl} replace />
+            )}
         </Context.Provider>
     );
 }

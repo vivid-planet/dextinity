@@ -1,5 +1,4 @@
 import type { PixelImageBlockData as PixelImageBlockSourceData } from "../../blocks.generated.js";
-import { useTheme } from "../../theme/ThemeProvider.js";
 import { usePixelImageBlockConfig } from "./usePixelImageBlockConfig.js";
 
 interface UsePixelImageBlockDataProps {
@@ -20,12 +19,10 @@ interface PixelImageBlockData {
 export function usePixelImageBlockData({
     data: { damFile, cropArea, urlTemplate },
     defaultRenderWidth,
-    largestPossibleRenderWidth: passedLargestPossibleRenderWidth,
+    largestPossibleRenderWidth,
     aspectRatio: passedAspectRatio,
 }: UsePixelImageBlockDataProps): PixelImageBlockData | null {
-    const theme = useTheme();
     const { validSizes, baseUrl } = usePixelImageBlockConfig();
-    const largestPossibleRenderWidth = passedLargestPossibleRenderWidth ?? theme.sizes.bodyWidth;
 
     if (!damFile?.image) {
         return null;
@@ -34,7 +31,7 @@ export function usePixelImageBlockData({
     const usedCropArea = cropArea ?? damFile.image.cropArea;
     const aspectRatio = passedAspectRatio !== undefined ? parseAspectRatio(passedAspectRatio) : calculateAspectRatio(damFile.image, usedCropArea);
 
-    const optimalWidth = getOptimalAllowedImageWidth(validSizes, defaultRenderWidth, largestPossibleRenderWidth);
+    const optimalWidth = getOptimalAllowedImageWidth(validSizes, Math.max(defaultRenderWidth, largestPossibleRenderWidth ?? 0));
     const resolvedImageUrl = generateImageUrl(urlTemplate, optimalWidth, aspectRatio);
 
     return {
@@ -50,25 +47,9 @@ function isAbsoluteUrl(url: string): boolean {
     return !url.startsWith("/");
 }
 
-function getOptimalAllowedImageWidth(validSizes: number[], defaultRenderWidth: number, largestPossibleRenderWidth: number): number {
-    const sortedValidSizes = validSizes.sort((a, b) => a - b);
-
-    let width: number | null = null;
-    const largestPossibleWidth = sortedValidSizes[sortedValidSizes.length - 1];
-
-    sortedValidSizes.forEach((validWidth) => {
-        if (defaultRenderWidth === largestPossibleRenderWidth) {
-            width = largestPossibleRenderWidth * 2;
-        } else if (!width && validWidth >= defaultRenderWidth * 2) {
-            width = validWidth;
-        }
-    });
-
-    if (!width) {
-        return largestPossibleWidth;
-    }
-
-    return width;
+function getOptimalAllowedImageWidth(validSizes: number[], largestRenderWidth: number): number {
+    const sortedValidSizes = [...validSizes].sort((a, b) => a - b);
+    return sortedValidSizes.find((validWidth) => validWidth >= largestRenderWidth * 2) ?? sortedValidSizes[sortedValidSizes.length - 1];
 }
 
 interface ImageDimensions {

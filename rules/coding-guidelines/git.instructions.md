@@ -23,7 +23,7 @@ alwaysApply: false
 - Never use vague messages like `fix`, `polish`, `wip`, `another try` in the final history — clean them up before merging.
 - Commits should be **atomic**: each commit leaves the code in a runnable state.
 - Prefer multiple small commits split by logical change (e.g. separate docs from feature work).
-- Exception: codemod / CRUD-generator output belongs in its own commit so reviewers can skip it.
+- Exception: codemod or code generator output belongs in its own commit so reviewers can skip it.
 - Multi-line commit messages are preferred over MR-description-only explanations — the info stays in Git and shows up in IDE tools.
 
 ## Branches & merging

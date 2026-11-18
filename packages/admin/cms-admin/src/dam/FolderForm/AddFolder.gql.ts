@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client/core";
+import { gql } from "@apollo/client";
 
 export const createDamFolderMutation = gql`
     mutation CreateDamFolder($input: CreateDamFolderInput!, $scope: DamScopeInput!) {

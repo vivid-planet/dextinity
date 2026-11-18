@@ -1,0 +1,18 @@
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--dextinity-space-6);
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-space-3);
+}
+
+.nested {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-space-3);
+    padding-inline-start: var(--dextinity-space-6);
+}

@@ -8,13 +8,22 @@ import {
     type MainNavigationItemGroupProps,
     MainNavigationItemRouterLink,
     type MainNavigationItemRouterLinkProps,
+    useCurrentRouteMatch,
     useMainNavigation,
     useWindowSize,
 } from "@dextinity/admin";
 import { type ReactNode, useEffect } from "react";
-import { type RouteProps, useRouteMatch } from "react-router-dom";
 
 import { type Permission, useUserPermissionCheck } from "../userPermissions/hooks/currentUser";
+
+export interface MasterMenuRoute {
+    /**
+     * The path below the current route, which is usually the content scope, starting with a slash, e.g. `/dashboard` or `/pages/pagetree/:category`.
+     * It also matches the URLs below it, e.g. `/dashboard/settings`. Use `useParams()` in the element to read the params.
+     */
+    path: string;
+    element: ReactNode;
+}
 
 type MasterMenuItemBase = {
     requiredPermission?: Permission | Permission[];
@@ -23,7 +32,7 @@ type MasterMenuItemBase = {
 type MasterMenuItemRoute = MasterMenuItemBase &
     Omit<MainNavigationItemRouterLinkProps, "to"> & {
         type: "route";
-        route?: RouteProps;
+        route?: MasterMenuRoute;
         to?: string;
         badgeContent?: ReactNode;
     };
@@ -32,7 +41,7 @@ type MasterMenuItemCollapsible = MasterMenuItemBase &
     Omit<MainNavigationCollapsibleItemProps, "children"> & {
         type: "collapsible";
         items?: Array<MasterMenuItemRoute | MasterMenuItemAnchor | MasterMenuItemCollapsible>;
-        route?: RouteProps;
+        route?: MasterMenuRoute;
     };
 
 type MasterMenuItemAnchor = MasterMenuItemBase &
@@ -129,25 +138,35 @@ export function useMenuFromMasterMenuData(items: MasterMenuData): MenuItem[] {
             type,
             menuElement: {
                 ...menuItem,
-                to: to ?? route?.path?.toString() ?? "",
+                to: to ?? route?.path ?? "",
             },
         };
     };
     return items.filter(checkPermission).map(mapFn);
 }
 
+function countNavigableMenuItems(menuItems: MenuItem[]): number {
+    return menuItems.reduce((count, menuItem) => {
+        if (menuItem.type === "group" || menuItem.type === "collapsible") {
+            return count + countNavigableMenuItems(menuItem.items);
+        }
+        return count + 1;
+    }, 0);
+}
+
 export const MasterMenu = ({ menu, permanentMenuMinWidth = 1024 }: MasterMenuProps) => {
     const menuItems = useMenuFromMasterMenuData(menu);
+    const hasMultipleMenuItems = countNavigableMenuItems(menuItems) > 1;
     const { setHasMultipleMenuItems } = useMainNavigation();
     const windowSize = useWindowSize();
-    const match = useRouteMatch();
+    const routeUrl = (useCurrentRouteMatch()?.url ?? "").replace(/\/$/, "");
     const useTemporaryMenu: boolean = windowSize.width < permanentMenuMinWidth;
 
     useEffect(() => {
-        setHasMultipleMenuItems(menuItems.length > 1);
-    }, [menuItems.length, setHasMultipleMenuItems]);
+        setHasMultipleMenuItems(hasMultipleMenuItems);
+    }, [hasMultipleMenuItems, setHasMultipleMenuItems]);
 
-    if (menuItems.length <= 1) {
+    if (!hasMultipleMenuItems) {
         return null;
     }
 
@@ -162,7 +181,7 @@ export const MasterMenu = ({ menu, permanentMenuMinWidth = 1024 }: MasterMenuPro
             } else if (item.type === "externalLink") {
                 return <MainNavigationItemAnchorLink key={index} {...item.menuElement} />;
             } else if (item.type === "route") {
-                return <MainNavigationItemRouterLink key={index} {...item.menuElement} to={`${match.url}${item.menuElement.to}`} />;
+                return <MainNavigationItemRouterLink key={index} {...item.menuElement} to={`${routeUrl}${item.menuElement.to}`} />;
             }
             return [];
         });
@@ -187,7 +206,7 @@ export const MasterMenu = ({ menu, permanentMenuMinWidth = 1024 }: MasterMenuPro
                         return <MainNavigationItemAnchorLink key={index} {...menuElement.menuElement} />;
                     case "route":
                         return (
-                            <MainNavigationItemRouterLink key={index} {...menuElement.menuElement} to={`${match.url}${menuElement.menuElement.to}`} />
+                            <MainNavigationItemRouterLink key={index} {...menuElement.menuElement} to={`${routeUrl}${menuElement.menuElement.to}`} />
                         );
                 }
             })}

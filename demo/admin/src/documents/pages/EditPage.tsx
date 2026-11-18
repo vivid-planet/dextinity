@@ -8,6 +8,7 @@ import {
     Toolbar,
     ToolbarActions,
     ToolbarItem,
+    useCurrentRouteMatch,
     useStackApi,
 } from "@dextinity/admin";
 import { ArrowLeft, Preview } from "@dextinity/admin-icons";
@@ -37,7 +38,7 @@ import { summarizeBlockState, summarizeSeoBlockState } from "@src/aiMode/blockSt
 import { type EditBlocks, planBlockEdits } from "@src/aiMode/editBlocks";
 import { useEffect, useRef } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { useLocation, useRouteMatch } from "react-router";
+import { matchPath, useLocation } from "react-router";
 
 import { pageContentAdditionalItemFields, PageContentBlock, pageContentBlocks } from "./blocks/PageContentBlock";
 import { SeoBlock } from "./blocks/SeoBlock";
@@ -151,7 +152,8 @@ export const EditPage = ({ id }: Props) => {
         pageId: id,
     });
 
-    const match = useRouteMatch();
+    const routeUrl = useCurrentRouteMatch()?.url ?? "";
+    const { pathname } = useLocation();
     const stackApi = useStackApi();
     const { match: contentScopeMatch, scope } = useContentScope();
     const siteConfig = useSiteConfig({ scope });
@@ -159,8 +161,8 @@ export const EditPage = ({ id }: Props) => {
 
     const blockContext = useBlockContext();
 
-    const location = useLocation();
-    const tabRouteMatch = useRouteMatch<{ tab: string }>(`${match.path}/:tab`);
+    const tabRouteMatch = matchPath({ path: `${routeUrl}/:tab`, end: false }, pathname);
+    const tab = tabRouteMatch?.params.tab;
 
     const document = pageState?.document;
 
@@ -237,11 +239,11 @@ export const EditPage = ({ id }: Props) => {
                       documentType: document.__typename,
                       documentId: document.id,
                       path: pageState.path,
-                      activeTab: tabRouteMatch?.params.tab ?? "content",
+                      activeTab: tab ?? "content",
                       // Nested block editing is URL-driven, so the route below the active tab identifies the selected block.
                       selectedBlockRoute:
-                          tabRouteMatch && location.pathname.length > tabRouteMatch.url.length
-                              ? location.pathname.slice(tabRouteMatch.url.length)
+                          tabRouteMatch && pathname.length > tabRouteMatch.pathname.length
+                              ? pathname.slice(tabRouteMatch.pathname.length)
                               : undefined,
                       hasChanges: hasChanges ?? false,
                   },
@@ -265,18 +267,18 @@ export const EditPage = ({ id }: Props) => {
     let previewUrl: string;
     let previewState;
 
-    if (tabRouteMatch?.params.tab === "stage") {
+    if (tab === "stage") {
         previewUrl = `${siteConfig.blockPreviewBaseUrl}/stage`;
         previewState = StageBlock.createPreviewState(pageState.document.stage, {
             ...blockContext,
-            parentUrl: `${match.url}/stage`,
+            parentUrl: `${routeUrl}/stage`,
             showVisibleOnly: previewApi.showOnlyVisible,
         });
     } else {
         previewUrl = `${siteConfig.blockPreviewBaseUrl}/page`;
         previewState = PageContentBlock.createPreviewState(pageState.document.content, {
             ...blockContext,
-            parentUrl: match.url,
+            parentUrl: routeUrl,
             showVisibleOnly: previewApi.showOnlyVisible,
         });
     }
@@ -296,7 +298,7 @@ export const EditPage = ({ id }: Props) => {
             {hasChanges && (
                 <RouterPrompt
                     message={(location) => {
-                        if (location.pathname.startsWith(match.url)) {
+                        if (location.pathname.startsWith(routeUrl)) {
                             return true;
                         } //we navigated within our self
                         return intl.formatMessage({

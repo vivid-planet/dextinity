@@ -37,5 +37,18 @@ export function createAzureBuildAssetsStorage({
                 .getBlockBlobClient(key)
                 .uploadData(body, { blobHTTPHeaders: { blobContentType: contentType, blobCacheControl: cacheControl } });
         },
+        async listFiles(prefix) {
+            const keys: string[] = [];
+            for await (const blob of containerClient.listBlobsFlat({ prefix })) {
+                keys.push(blob.name);
+            }
+            return keys;
+        },
+        async deleteFiles(keys) {
+            for (const key of keys) {
+                // Tolerates missing blobs, so a cleanup that failed halfway can be retried
+                await containerClient.getBlobClient(key).deleteIfExists({ deleteSnapshots: "include" });
+            }
+        },
     };
 }

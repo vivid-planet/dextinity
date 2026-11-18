@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
 
 export const productCategoryFormFragment = gql`
-    fragment ProductCategoryFormHandmade on ProductCategory {
+    fragment ProductCategoryForm on ProductCategory {
         title
         slug
     }
@@ -11,7 +11,7 @@ export const productCategoryQuery = gql`
         productCategory(id: $id) {
             id
             updatedAt
-            ...ProductCategoryFormHandmade
+            ...ProductCategoryForm
         }
     }
     ${productCategoryFormFragment}
@@ -21,7 +21,7 @@ export const createProductCategoryMutation = gql`
         createProductCategory(input: $input) {
             id
             updatedAt
-            ...ProductCategoryFormHandmade
+            ...ProductCategoryForm
         }
     }
     ${productCategoryFormFragment}
@@ -31,7 +31,7 @@ export const updateProductCategoryMutation = gql`
         updateProductCategory(id: $id, input: $input) {
             id
             updatedAt
-            ...ProductCategoryFormHandmade
+            ...ProductCategoryForm
         }
     }
     ${productCategoryFormFragment}

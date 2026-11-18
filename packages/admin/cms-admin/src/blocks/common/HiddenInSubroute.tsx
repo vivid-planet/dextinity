@@ -1,12 +1,9 @@
-import type { ReactNode } from "react";
-import { Route, useRouteMatch } from "react-router";
+import type { PropsWithChildren } from "react";
 
-export const HiddenInSubroute = ({ children }: { children?: ReactNode }) => {
-    const match = useRouteMatch();
+import { useIsExactRouteMatch } from "../../common/useIsExactRouteMatch";
 
-    return (
-        <Route path={match.url} exact>
-            {children}
-        </Route>
-    );
+export const HiddenInSubroute = ({ children }: PropsWithChildren) => {
+    const isExactRouteMatch = useIsExactRouteMatch();
+
+    return isExactRouteMatch ? <>{children}</> : null;
 };

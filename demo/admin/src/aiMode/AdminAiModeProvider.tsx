@@ -1,7 +1,7 @@
 import { useContentScope, useUserPermissionCheck } from "@dextinity/cms-admin";
 import { createConfig } from "@src/config";
 import type { PropsWithChildren } from "react";
-import { useRouteMatch } from "react-router";
+import { matchPath, useLocation } from "react-router";
 
 import { isAiHubConfigured } from "./aiHubConfig";
 import { AiModeProvider } from "./AiModeContext";
@@ -14,7 +14,8 @@ const config = createConfig();
 // route is below the content scope, so this has to be too.
 export function AdminAiModeProvider({ children }: PropsWithChildren) {
     const { match } = useContentScope();
-    const pageTreeRouteMatch = useRouteMatch(`${match.path}/pages/pagetree`);
+    const { pathname } = useLocation();
+    const pageTreeRouteMatch = matchPath({ path: `${match.url}/pages/pagetree`, end: false }, pathname);
     const isAllowed = useUserPermissionCheck();
 
     return (

@@ -1,20 +1,22 @@
-import { type TypedDocumentNode, useQuery } from "@apollo/client";
-import { MockedProvider } from "@apollo/client/testing";
+import type { TypedDocumentNode } from "@apollo/client";
+import { MockedProvider } from "@apollo/client/testing/react";
 import { MuiThemeProvider, SnackbarProvider } from "@dextinity/admin";
 import { createTheme } from "@mui/material";
 import type { PropsWithChildren } from "react";
 import { IntlProvider } from "react-intl";
 import { act, renderHook } from "test-utils";
-import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { BlockInterface } from "../blocks/types";
 import { createUsePage } from "./createUsePage";
 
-vi.mock(import("@apollo/client"), async (importOriginal) => {
-    const originalModule = await importOriginal();
+const useQueryMock = vi.hoisted(() => vi.fn());
+
+vi.mock("@apollo/client/react", async (importOriginal) => {
+    const originalModule = await importOriginal<typeof import("@apollo/client/react")>();
     return {
         ...originalModule,
-        useQuery: vi.fn(),
+        useQuery: useQueryMock,
     };
 });
 
@@ -63,7 +65,7 @@ function Providers({ children }: PropsWithChildren) {
 describe("createUsePage", () => {
     beforeEach(() => {
         vi.resetAllMocks();
-        (useQuery as Mock).mockReturnValue({
+        useQueryMock.mockReturnValue({
             loading: false,
             data: {
                 page: {

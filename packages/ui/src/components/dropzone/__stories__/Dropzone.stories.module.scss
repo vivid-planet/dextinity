@@ -1,0 +1,19 @@
+.container {
+    max-inline-size: 640px;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.listItem {
+    padding: var(--dextinity-space-3) var(--dextinity-space-2);
+    box-shadow: inset 0 calc(var(--dextinity-line-width) * -1) 0 var(--dextinity-color-line);
+    color: var(--dextinity-color-text);
+    font-family: var(--dextinity-font-family-text);
+    font-size: 13.5px;
+}

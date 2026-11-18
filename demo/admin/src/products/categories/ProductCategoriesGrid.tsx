@@ -1,4 +1,5 @@
-import { gql, useApolloClient, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client/react";
 import {
     Button,
     CrudContextMenu,
@@ -19,7 +20,7 @@ import { FormattedMessage, FormattedNumber, useIntl } from "react-intl";
 import type {
     GQLDeleteProductCategoryMutation,
     GQLDeleteProductCategoryMutationVariables,
-    GQLProductCategoriesGridHandmadeFragment,
+    GQLProductCategoriesGridFragment,
     GQLProductCategoriesGridQuery,
     GQLProductCategoriesGridQueryVariables,
     GQLUpdateProductCategoryPositionMutation,
@@ -27,7 +28,7 @@ import type {
 } from "./ProductCategoriesGrid.generated";
 
 const productCategoriesFragment = gql`
-    fragment ProductCategoriesGridHandmade on ProductCategory {
+    fragment ProductCategoriesGrid on ProductCategory {
         id
         title
         slug
@@ -39,7 +40,7 @@ const productCategoriesQuery = gql`
     query ProductCategoriesGrid($offset: Int!, $limit: Int!, $sort: [ProductCategorySort!]) {
         productCategories(offset: $offset, limit: $limit, sort: $sort) {
             nodes {
-                ...ProductCategoriesGridHandmade
+                ...ProductCategoriesGrid
             }
             totalCount
         }
@@ -87,7 +88,7 @@ export function ProductCategoriesGrid() {
             refetchQueries: [productCategoriesQuery],
         });
     };
-    const columns: GridColDef<GQLProductCategoriesGridHandmadeFragment>[] = useMemo(() => {
+    const columns: GridColDef<GQLProductCategoriesGridFragment>[] = useMemo(() => {
         return [
             {
                 field: "title",
@@ -154,6 +155,7 @@ export function ProductCategoriesGrid() {
             limit: 100,
             sort: { field: "position", direction: "ASC" },
         },
+        notifyOnNetworkStatusChange: false,
     });
     const rowCount = useBufferedRowCount(data?.productCategories.totalCount);
     if (error) {

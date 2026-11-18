@@ -1,0 +1,5 @@
+.root {
+    &[role="alertdialog"] {
+        inline-size: min(100%, var(--dextinity-confirm-dialog-width));
+    }
+}

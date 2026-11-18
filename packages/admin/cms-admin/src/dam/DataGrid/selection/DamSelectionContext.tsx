@@ -1,4 +1,5 @@
-import { gql, useApolloClient } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
 import { downloadFile } from "@dextinity/admin";
 import { createContext, type Dispatch, type ReactNode, type SetStateAction, useCallback, useContext, useState } from "react";
 
@@ -135,7 +136,7 @@ export const DamSelectionProvider = ({ children, initialSelection, onSelectionCh
             return { id: item[0], type: item[1] };
         });
 
-        let errors;
+        let error;
         for (const selectedItem of selectedItems) {
             if (selectedItem.type === "file") {
                 const result = await apolloClient.mutate<GQLDeleteDamFileMutation, GQLDeleteDamFileMutationVariables>({
@@ -148,7 +149,7 @@ export const DamSelectionProvider = ({ children, initialSelection, onSelectionCh
                     errorPolicy: "all",
                 });
 
-                errors = result.errors;
+                error = result.error;
             } else {
                 const result = await apolloClient.mutate<GQLDeleteDamFolderMutation, GQLDeleteDamFolderMutationVariables>({
                     mutation: gql`
@@ -160,11 +161,11 @@ export const DamSelectionProvider = ({ children, initialSelection, onSelectionCh
                     errorPolicy: "all",
                 });
 
-                errors = result.errors;
+                error = result.error;
             }
         }
 
-        if (errors) {
+        if (error) {
             showError(setHasDeletionErrors);
         } else {
             clearDamItemCache(apolloClient.cache);
@@ -186,7 +187,7 @@ export const DamSelectionProvider = ({ children, initialSelection, onSelectionCh
                 return id;
             });
 
-        const { errors } = await apolloClient.mutate<GQLRestoreFilesMutation, GQLRestoreFilesMutationVariables>({
+        const { error } = await apolloClient.mutate<GQLRestoreFilesMutation, GQLRestoreFilesMutationVariables>({
             mutation: gql`
                 mutation RestoreFiles($ids: [ID!]!) {
                     restoreDamFiles(ids: $ids) {
@@ -201,7 +202,7 @@ export const DamSelectionProvider = ({ children, initialSelection, onSelectionCh
             errorPolicy: "all",
         });
 
-        if (errors) {
+        if (error) {
             showError(setHasRestoreErrors);
         } else {
             clearDamItemCache(apolloClient.cache);
@@ -223,7 +224,7 @@ export const DamSelectionProvider = ({ children, initialSelection, onSelectionCh
                 return id;
             });
 
-        const { errors } = await apolloClient.mutate<GQLArchiveFilesMutation, GQLArchiveFilesMutationVariables>({
+        const { error } = await apolloClient.mutate<GQLArchiveFilesMutation, GQLArchiveFilesMutationVariables>({
             mutation: gql`
                 mutation ArchiveFiles($ids: [ID!]!) {
                     archiveDamFiles(ids: $ids) {
@@ -238,7 +239,7 @@ export const DamSelectionProvider = ({ children, initialSelection, onSelectionCh
             errorPolicy: "all",
         });
 
-        if (errors) {
+        if (error) {
             showError(setHasArchiveErrors);
         } else {
             clearDamItemCache(apolloClient.cache);

@@ -1,0 +1,97 @@
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { expect, fn, userEvent, waitFor } from "storybook/test";
+
+import { themeDecorator } from "../../../storybook/themeDecorator";
+import { Icon } from "../../icon/Icon";
+import { IconButton } from "../../iconButton/IconButton";
+import { Tooltip } from "../../tooltip/Tooltip";
+import { TopBar } from "../TopBar";
+import topBarTokens from "../TopBar.tokens.scss?raw";
+import styles from "./TopBar.stories.module.scss";
+import { StoryScopeSwitcher, StoryUserMenu } from "./topBarStoryParts";
+
+const meta = {
+    component: TopBar,
+    title: "Shell/Top bar & scope/TopBar",
+    decorators: [
+        themeDecorator,
+        (Story) => (
+            <div className={styles.stage}>
+                <Story />
+            </div>
+        ),
+    ],
+    parameters: { tokens: topBarTokens, layout: "fullscreen" },
+    args: {
+        onSearchClick: fn(),
+        scope: <StoryScopeSwitcher />,
+        userMenu: <StoryUserMenu />,
+    },
+    argTypes: {
+        scope: { control: false },
+        userMenu: { control: false },
+        browseActions: { control: false },
+        labels: { control: false },
+        className: { control: false },
+    },
+} satisfies Meta<typeof TopBar>;
+
+export default meta;
+
+type Story = StoryObj<typeof meta>;
+
+/**
+ * Search at the start opens the command palette; scope and user menu at the end.
+ *
+ * **Rules**
+ *
+ * - One top bar for the whole app; screens don't add their own.
+ * - It looks the same on every page. Back, what is edited, and Save belong in the page's `PageHeader`.
+ * - The scope is always visible and lives only here.
+ * - Never show the app name in the top bar; it belongs in the navigation.
+ */
+export const Default: Story = {
+    play: async ({ args, canvas }) => {
+        await userEvent.click(canvas.getByRole("button", { name: "Search, jump, create …" }));
+        await waitFor(() => expect(args.onSearchClick).toHaveBeenCalled());
+    },
+};
+
+/**
+ * `browseActions` holds the app's own controls while browsing, before the scope, e.g. a button that opens the status of the site's
+ * builds.
+ */
+export const WithBrowseActions: Story = {
+    args: {
+        browseActions: (
+            <Tooltip content="Builds">
+                <IconButton variant="text" color="secondary" aria-label="Builds" onClick={fn()}>
+                    <Icon name="refresh" />
+                </IconButton>
+            </Tooltip>
+        ),
+    },
+    play: async ({ canvas }) => {
+        const builds = canvas.getByRole("button", { name: "Builds" });
+        const scope = canvas.getByRole("banner").querySelector(".dextinityScopeSwitcher");
+        await expect(builds).toBeVisible();
+        await expect(scope != null && builds.compareDocumentPosition(scope) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    },
+};
+
+/**
+ * On narrow bars the search becomes an icon; the scope shows its short form, then only the icon. On
+ * narrow windows, `onMenuClick` shows the menu button that opens the navigation.
+ */
+export const Narrow: Story = {
+    args: {
+        onMenuClick: fn(),
+    },
+    decorators: [
+        (Story) => (
+            <div className={styles.narrow}>
+                <Story />
+            </div>
+        ),
+    ],
+};

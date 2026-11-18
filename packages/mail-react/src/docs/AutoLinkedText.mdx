@@ -1,4 +1,6 @@
-import { Meta } from "@storybook/addon-docs/blocks";
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+
+import * as AutoLinkedTextStories from "./__stories__/AutoLinkedText.stories";
 
 <Meta
     title="Docs/Client Issues/Auto-Linked Text"
@@ -28,3 +30,20 @@ Clients turn plain-text mail addresses, URLs and phone numbers into links of the
         text-decoration: underline;
     }
     ```
+
+### Example: Auto-Linked Contact Details
+
+A gray text with a plain-text mail address, URL and phone number.
+
+#### Problem
+
+- Gmail (iOS and web), Outlook iOS and Apple Mail iOS turn the mail address, the URL and the phone number into links. These links do not have the inline styles of the text.
+- Classic Outlook colors these links blue.
+
+<Canvas of={AutoLinkedTextStories.AutoLinksProblem} />
+
+#### Fix
+
+A CSS rule in the mail head gives links inside text components the text style again, in Gmail (iOS and web), Outlook iOS and Apple Mail iOS. A style block for classic Outlook, inside `<!--[if mso]>…<![endif]-->`, sets the link color to `#767677`. Classic Outlook accepts only one link color for the whole mail.
+
+<Canvas of={AutoLinkedTextStories.AutoLinksFix} />

@@ -1,5 +1,5 @@
 import { CrudMoreActionsMenu, useEditDialog, useSnackbarApi, useStackSwitchApi } from "@dextinity/admin";
-import { AddFolder as AddFolderIcon, Archive, Delete, Download, Move, Restore, Settings, Upload } from "@dextinity/admin-icons";
+import { AddFolder as AddFolderIcon, Archive, Delete, Download, Move, Restore, Settings, Time, Upload } from "@dextinity/admin-icons";
 import { type PopoverOrigin, Slide, type SlideProps, Snackbar } from "@mui/material";
 import { useRef } from "react";
 import { type FileRejection, useDropzone } from "react-dropzone";
@@ -19,6 +19,7 @@ interface DamMoreActionsProps {
     };
     hideSelectiveActions?: boolean;
     hideSettingsAction?: boolean;
+    hideActionLogAction?: boolean;
 }
 
 export const DamMoreActions = ({
@@ -28,6 +29,7 @@ export const DamMoreActions = ({
     filter,
     hideSelectiveActions,
     hideSettingsAction,
+    hideActionLogAction,
 }: DamMoreActionsProps) => {
     const damSelectionActionsApi = useDamSelectionApi();
     const { selectionMap, archiveSelected, deleteSelected, downloadSelected, restoreSelected, moveSelected } = damSelectionActionsApi;
@@ -100,6 +102,13 @@ export const DamMoreActions = ({
                               label: <FormattedMessage id="dextinity.dam.moreActions.settings" defaultMessage="Settings" />,
                               onClick: () => stackSwitchApi.activatePage("settings", "settings"),
                               icon: <Settings />,
+                          }
+                        : null,
+                    !hideActionLogAction
+                        ? {
+                              label: <FormattedMessage id="dextinity.dam.moreActions.actionLog" defaultMessage="Action Log" />,
+                              onClick: () => stackSwitchApi.activatePage("action-log", "action-log"),
+                              icon: <Time />,
                           }
                         : null,
                 ]}

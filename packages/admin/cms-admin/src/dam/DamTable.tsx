@@ -3,6 +3,7 @@ import { type IFilterApi, Stack, StackMainContent, StackPage, StackSwitch, Toolb
 import { type ReactNode, useState } from "react";
 import { useIntl } from "react-intl";
 
+import { DamActionLog } from "./actionLog/DamActionLog";
 import { CurrentDamFolderProvider } from "./CurrentDamFolderProvider";
 import { ManualDuplicatedFilenamesHandlerContextProvider } from "./DataGrid/duplicatedFilenames/ManualDuplicatedFilenamesHandler";
 import { FileUploadContextProvider } from "./DataGrid/fileUpload/FileUploadContext";
@@ -64,6 +65,9 @@ const Folder = ({ id, filterApi, renderWithFullHeightMainContent, ...props }: Fo
                 <StackPage name="settings" title={intl.formatMessage({ id: "dextinity.pages.dam.settings", defaultMessage: "Settings" })}>
                     <DamSettings contentScopeIndicator={props.contentScopeIndicator} />
                 </StackPage>
+                <StackPage name="action-log" title={intl.formatMessage({ id: "dextinity.pages.dam.actionLog", defaultMessage: "Action Log" })}>
+                    <DamActionLog contentScopeIndicator={props.contentScopeIndicator} />
+                </StackPage>
                 <StackPage name="folder" title={data?.damFolder.name}>
                     {(selectedId) => {
                         setSelectedFolderId(selectedId);
@@ -93,6 +97,7 @@ export interface DamConfig {
     toolbarOptions?: {
         hideSelectiveActions?: boolean;
         hideSettingsAction?: boolean;
+        hideActionLogAction?: boolean;
     };
     additionalToolbarItems?: ReactNode;
     disableFolderSelection?: boolean;

@@ -5,11 +5,13 @@ import { Field, ID, ObjectType } from "@nestjs/graphql";
 import { randomUUID } from "crypto";
 import { GraphQLJSONObject } from "graphql-scalars";
 
+import { ActionLogs } from "../../action-logs/action-logs.decorator.js";
 import type { Block, BlockDataInterface } from "../../blocks/block.js";
 import { RootBlock } from "../../blocks/decorators/root-block.js";
 import { RootBlockEntity } from "../../blocks/decorators/root-block-entity.js";
 import { RootBlockType } from "../../blocks/root-block-type.js";
 import { EntityInfo } from "../../entity-info/entity-info.decorator.js";
+import { RequiredPermission } from "../../user-permissions/decorators/required-permission.decorator.js";
 import { RedirectGenerationType, RedirectSourceType, RedirectType } from "../redirects.enum.js";
 import type { RedirectScopeInterface } from "../types.js";
 
@@ -100,6 +102,8 @@ export class RedirectEntityFactory {
             @Entity()
             @ObjectType()
             @RootBlockEntity()
+            @RequiredPermission("pageTree")
+            @ActionLogs()
             class Redirect extends RedirectBase {
                 @Embedded(() => RedirectScope)
                 @Field(() => RedirectScope)
@@ -110,6 +114,8 @@ export class RedirectEntityFactory {
             @Entity()
             @ObjectType()
             @RootBlockEntity()
+            @RequiredPermission("pageTree", { skipScopeCheck: true })
+            @ActionLogs()
             class Redirect extends RedirectBase {}
             return Redirect;
         }

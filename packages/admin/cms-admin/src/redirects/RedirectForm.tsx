@@ -22,6 +22,7 @@ import { deepEqual } from "fast-equals";
 import { type JSX, useMemo } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
+import { ActionLogButton } from "../actionLog/actionLog/actionLogButton/ActionLogButton";
 import { createFinalFormBlock } from "../blocks/form/createFinalFormBlock";
 import type { BlockInterface, BlockState } from "../blocks/types";
 import { ContentScopeIndicator } from "../contentScope/ContentScopeIndicator";
@@ -225,6 +226,7 @@ export const RedirectForm = ({ mode, id, linkBlock, scope }: Props): JSX.Element
                         </ToolbarTitleItem>
                         <FillSpace />
                         <ToolbarActions>
+                            {mode === "edit" && id && <ActionLogButton entityId={id} entity="Redirect" name={values.source} scope={scope} />}
                             <FinalFormSaveButton />
                         </ToolbarActions>
                     </Toolbar>

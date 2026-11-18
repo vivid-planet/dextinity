@@ -1,8 +1,20 @@
-import { Stack, StackPage, StackSwitch, StackToolbar } from "@dextinity/admin";
-import { Document, LinkExternal } from "@dextinity/admin-icons";
+import {
+    Button,
+    FillSpace,
+    Stack,
+    StackLink,
+    StackPage,
+    StackSwitch,
+    StackToolbar,
+    ToolbarActions,
+    ToolbarAutomaticTitleItem,
+    ToolbarBackButton,
+} from "@dextinity/admin";
+import { Document, LinkExternal, Time } from "@dextinity/admin-icons";
 import type { ComponentType, JSX } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
+import { ActionLogsGrid } from "../actionLog/actionLog/actionLogsGrid/ActionLogsGrid";
 import { createExternalLinkBlock } from "../blocks/createExternalLinkBlock";
 import { createOneOfBlock } from "../blocks/factories/createOneOfBlock";
 import { InternalLinkBlock } from "../blocks/InternalLinkBlock";
@@ -26,6 +38,10 @@ const RedirectsExternalLinkBlock = createExternalLinkBlock({ name: "RedirectsExt
     icon: (state) => state.targetUrl && <LinkExternal color="primary" />,
     dynamicDisplayName: (state) => state.targetUrl ?? block.displayName,
 }));
+
+function getRedirectDisplayName(snapshot: Record<string, unknown>): string | undefined {
+    return typeof snapshot.source === "string" ? snapshot.source : undefined;
+}
 
 interface RedirectsPageProps {
     redirectPathAfterChange?: string;
@@ -52,13 +68,31 @@ function createRedirectsPage({ linkBlock = createRedirectsLinkBlock() }: CreateR
         const scope = useRedirectsScope();
 
         const isGlobalScoped = Object.keys(scope).length === 0;
+        const scopeIndicator = <ContentScopeIndicator global={isGlobalScoped} scope={isGlobalScoped ? undefined : scope} />;
 
         return (
             <Stack topLevelTitle={intl.formatMessage({ id: "dextinity.pages.redirects", defaultMessage: "Redirects" })}>
                 <StackSwitch initialPage="grid">
                     <StackPage name="grid">
-                        <StackToolbar scopeIndicator={<ContentScopeIndicator global={isGlobalScoped} scope={isGlobalScoped ? undefined : scope} />} />
+                        <StackToolbar scopeIndicator={scopeIndicator}>
+                            <FillSpace />
+                            <ToolbarActions>
+                                <Button variant="textDark" startIcon={<Time />} component={StackLink} pageName="action-log" payload="action-log">
+                                    <FormattedMessage id="dextinity.actionLogButton.title" defaultMessage="Action Log" />
+                                </Button>
+                            </ToolbarActions>
+                        </StackToolbar>
                         <RedirectsGrid linkBlock={linkBlock} scope={scope} />
+                    </StackPage>
+                    <StackPage
+                        name="action-log"
+                        title={intl.formatMessage({ id: "dextinity.pages.redirects.actionLog", defaultMessage: "Action Log" })}
+                    >
+                        <StackToolbar scopeIndicator={scopeIndicator}>
+                            <ToolbarBackButton />
+                            <ToolbarAutomaticTitleItem />
+                        </StackToolbar>
+                        <ActionLogsGrid entity="Redirect" scope={scope} getDisplayName={getRedirectDisplayName} />
                     </StackPage>
                     <StackPage name="edit" title={intl.formatMessage({ id: "dextinity.pages.redirects.edit", defaultMessage: "edit" })}>
                         {(selectedId: string) => {

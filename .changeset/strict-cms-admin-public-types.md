@@ -4,12 +4,13 @@
 
 Fix public types that failed in projects with `strictFunctionTypes`
 
-**`createEditPageNode`:** `valuesToInput` is typed as it's called, receiving `{ values }`, with `values` containing the page tree node's form values and the values of `additionalFormFields`.
+**`createEditPageNode`:** `valuesToInput` is called with the form values directly instead of `{ values }`, matching its type.
+The values contain the page tree node's form values and the values of `additionalFormFields`.
 Pass the type of the additional values as type argument or annotate the parameter:
 
 ```diff
-- valuesToInput: (values) => ({ userGroup: values.userGroup }),
-+ valuesToInput: ({ values }: { values: { userGroup: string } }) => ({ userGroup: values.userGroup }),
+- valuesToInput: ({ values }) => ({ userGroup: values.userGroup }),
++ valuesToInput: (values: { userGroup: string }) => ({ userGroup: values.userGroup }),
 ```
 
 **`DocumentInterface`:** Document types with different input and output types can now be combined in `Record<string, DocumentInterface>`, `DocumentInterface<any, any>` isn't needed anymore.

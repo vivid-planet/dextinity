@@ -39,7 +39,7 @@ type SerializedInitialValues = string;
 interface CreateEditPageNodeProps<AdditionalFormValues extends object> {
     additionalFormFields?: ReactNode;
     nodeFragment?: { name: string; fragment: DocumentNode };
-    valuesToInput?: (options: { values: FormValues & AdditionalFormValues }) => Record<string, unknown>;
+    valuesToInput?: (values: FormValues & AdditionalFormValues) => Record<string, unknown>;
     disableHideInMenu?: boolean;
 }
 
@@ -251,7 +251,7 @@ export function createEditPageNode<AdditionalFormValues extends object = object>
 
                         if (valuesToInput) {
                             // The values of additionalFormFields aren't known to this form
-                            input = { ...input, ...valuesToInput({ values: values as FormValues & AdditionalFormValues }) };
+                            input = { ...input, ...valuesToInput(values as FormValues & AdditionalFormValues) };
                         }
 
                         if (mode === "edit") {

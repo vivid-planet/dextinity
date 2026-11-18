@@ -43,6 +43,8 @@
         --dextinity-brand-radius-control: 10px;
         // Multiplies every other corner radius
         --dextinity-brand-radius-factor: 1;
+        // Multiplies the horizontal padding of medium buttons
+        --dextinity-brand-button-padding-factor: 2;
     }
 
     [data-dextinity-brand="ai-hub"] {
@@ -50,5 +52,6 @@
         --dextinity-brand-primary-chroma: 0.2;
         --dextinity-brand-secondary-hue: 40;
         --dextinity-brand-secondary-chroma: 0.16;
+        --dextinity-brand-button-padding-factor: 1;
     }
 }

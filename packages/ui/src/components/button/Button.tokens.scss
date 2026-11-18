@@ -4,7 +4,7 @@
     // Height of a small button
     --dextinity-button-height-small: var(--dextinity-density-control-height-small);
     // Horizontal padding of a medium button
-    --dextinity-button-padding: var(--dextinity-density-control-padding);
+    --dextinity-button-padding: calc(var(--dextinity-density-control-padding) * var(--dextinity-brand-button-padding-factor));
     // Horizontal padding of a small button
     --dextinity-button-padding-small: var(--dextinity-density-control-padding-small);
     // Gap between the icons and the label

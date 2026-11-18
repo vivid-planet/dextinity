@@ -41,7 +41,7 @@ import type {
     GQLTargetGroupsListFragment,
 } from "./TargetGroupsGrid.generated";
 
-export type TargetGroupContactExportRow<AdditionalContactAttributes extends object> = GQLTargetGroupContactItemFragment & AdditionalContactAttributes;
+type TargetGroupContactExportRow<AdditionalContactAttributes extends object> = GQLTargetGroupContactItemFragment & AdditionalContactAttributes;
 
 export interface ExportTargetGroupOptions<AdditionalContactAttributes extends object> {
     additionalAttributesFragment: { name: string; fragment: DocumentNode };

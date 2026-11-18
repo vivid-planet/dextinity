@@ -232,7 +232,7 @@ export class AppModule {
                 MailTemplatesModule,
                 ProductsModule,
                 ...(config.azureAiTranslator ? [AzureAiTranslatorModule.register(config.azureAiTranslator)] : []),
-                ...(config.aiHub ? [AiHubModule.register(config.aiHub), AiModeMcpModule.forRoot({ authModule })] : []),
+                ...(config.aiHub ? [AiHubModule.register(config.aiHub), AiModeMcpModule.forRoot({ adminUrl: config.adminUrl })] : []),
                 ...(!config.debug
                     ? [
                           AccessLogModule.forRoot({

@@ -5,28 +5,41 @@ import {
     type CurrentUser,
     FilesService,
     getRequestContextHeadersFromRequest,
+    getRequestFromExecutionContext,
+    PageTreeNodeDocumentEntityScopeService,
     PageTreeNodeVisibility,
     PageTreeService,
     type RequestContextInterface,
+    UserPermissionsModule,
 } from "@dextinity/cms-api";
-import { EntityManager } from "@mikro-orm/postgresql";
-import { type CanActivate, type ExecutionContext, type INestApplication, Inject, Injectable, Scope } from "@nestjs/common";
+import { EntityManager, MikroORM, NotFoundError } from "@mikro-orm/postgresql";
+import type { Client } from "@modelcontextprotocol/client";
+import {
+    type CanActivate,
+    type ExecutionContext,
+    Global,
+    type INestApplication,
+    Inject,
+    Injectable,
+    Module,
+    type Provider,
+    Scope,
+} from "@nestjs/common";
 import { APP_GUARD } from "@nestjs/core";
 import { CONTEXT } from "@nestjs/graphql";
-import type { NestExpressApplication } from "@nestjs/platform-express";
+import { connectMcpClient } from "@nestjs/mcp/testing";
 import { Test } from "@nestjs/testing";
-import { AccessControlService } from "@src/auth/access-control.service.js";
+import { DamFile } from "@src/dam/entities/dam-file.entity.js";
+import { Page } from "@src/documents/pages/entities/page.entity.js";
+import { PageTreeNode } from "@src/page-tree/entities/page-tree-node.entity.js";
 import type { Request } from "express";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { BlockTools } from "./block.tools.js";
-import { DamTools } from "./dam.tools.js";
-import { createMcpServer } from "./mcp.factory.js";
-import { PageTreeTools } from "./page-tree.tools.js";
+import { AiModeMcpModule } from "./mcp.module.js";
 
-// Covers the wiring the tools depend on and a direct call to a tool method doesn't go through: the route, the
-// user the authentication in front of it puts on the request, the permission checks the tools make in place of
-// the resolvers' guards, and the request-scoped service they resolve per call.
+// Covers what a direct call to a tool method doesn't go through: the user the authentication puts on the request, the
+// permission checks of `UserPermissionsGuard` that the tools declare, the answers to a refused call, and the
+// request-scoped service the tools resolve per call.
 
 const allowedScope = { domain: "main", language: "en" };
 const otherScope = { domain: "secondary", language: "en" };
@@ -40,8 +53,12 @@ const users: Record<string, CurrentUser | string> = {
 @Injectable()
 class HeaderAuthGuard implements CanActivate {
     canActivate(context: ExecutionContext): boolean {
-        const request = context.switchToHttp().getRequest<Request & { user?: CurrentUser | string }>();
-        request.user = users[request.header("x-test-user") ?? ""];
+        const request = getRequestFromExecutionContext(context);
+        const userName = request?.headers["x-test-user"];
+        if (!request || typeof userName !== "string") {
+            return false;
+        }
+        request.user = users[userName];
         return request.user !== undefined;
     }
 }
@@ -83,6 +100,7 @@ const pages = [
     },
 ];
 const damFile = { id: "0190a5f4-0000-7000-8000-000000000021", name: "spring.jpg", scope: { domain: "secondary" } };
+const unknownId = "0190a5f4-0000-7000-8000-000000000099";
 const findDamFiles = vi.fn(async () => [[], 0]);
 const getNodes = vi.fn(async () => [homeNode]);
 
@@ -100,60 +118,98 @@ const readApi = {
 };
 
 const accessControlService = {
-    isAllowed: (user: CurrentUser, permission: string, scope: ContentScope) =>
+    isAllowed: (user: CurrentUser, permission: string, scope?: ContentScope) =>
         ["pageTree", CorePermission.dam].includes(permission) &&
-        Object.entries(scope).every(([dimension, value]) => value === (allowedScope as Record<string, string>)[dimension]),
+        Object.entries(scope ?? {}).every(([dimension, value]) => value === (allowedScope as Record<string, string>)[dimension]),
 };
 
+// The rows `@AffectedEntity` reads the scope of.
+const rowsByEntity = new Map<unknown, { id: string }[]>([
+    [PageTreeNode, nodes],
+    [Page, pages],
+    [DamFile, [damFile]],
+]);
+
+const orm = {
+    em: {
+        findOneOrFail: async (entity: { name: string }, id: string) => {
+            const row = rowsByEntity.get(entity)?.find((candidate) => candidate.id === id);
+            if (!row) {
+                throw NotFoundError.findOneFailed(entity.name, { id });
+            }
+            return row;
+        },
+        getMetadata: () => ({ get: () => ({ getPrimaryProps: () => [{ type: "uuid" }] }) }),
+    },
+};
+
+// The package exports neither the guard that `UserPermissionsModule` registers globally nor the service it checks the
+// scopes with, so they are taken from the module's own providers.
+const userPermissionsProviders: Provider[] = Reflect.getMetadata("providers", UserPermissionsModule);
+
+function findUserPermissionsProvider(isWanted: (provider: Provider) => boolean): Provider {
+    const provider = userPermissionsProviders.find(isWanted);
+    if (!provider) {
+        throw new Error("UserPermissionsModule no longer provides what the test takes from it");
+    }
+    return provider;
+}
+
+const userPermissionsGuardProvider = findUserPermissionsProvider((provider) => typeof provider === "object" && provider.provide === APP_GUARD);
+const contentScopeServiceProvider = findUserPermissionsProvider(
+    (provider) => typeof provider === "function" && provider.name === "ContentScopeService",
+);
+
+const appProviders: Provider[] = [
+    BlocksTransformerService,
+    RequestScopedBlockTransformerService,
+    PageTreeNodeDocumentEntityScopeService,
+    contentScopeServiceProvider,
+    { provide: "access-control-service", useValue: accessControlService },
+    { provide: "user-permissions-options", useValue: { systemUsers: ["system-user"] } },
+    { provide: MikroORM, useValue: orm },
+    {
+        provide: PageTreeService,
+        useValue: {
+            createReadApi: () => readApi,
+            getActiveAttachedDocument: async (nodeId: string) => {
+                const page = pages.find((candidate) => candidate.node.id === nodeId);
+                return page ? { documentId: page.id } : null;
+            },
+        },
+    },
+    {
+        provide: EntityManager,
+        useValue: { findOne: async (_: unknown, id: string) => pages.find((page) => page.id === id) ?? null },
+    },
+    {
+        provide: FilesService,
+        useValue: { findAndCount: findDamFiles, findOneById: async (id: string) => (id === damFile.id ? damFile : null) },
+    },
+];
+
+// The services the tools get from the app's modules.
+@Global()
+@Module({ providers: appProviders, exports: appProviders })
+class AppServicesModule {}
+
 let app: INestApplication;
-let endpoint: string;
+const clients: Record<string, Client> = {};
 
 async function callTool(name: string, args: Record<string, unknown>, user = "editor") {
-    const response = await fetch(endpoint, {
-        method: "POST",
-        headers: { "content-type": "application/json", accept: "application/json, text/event-stream", "x-test-user": user },
-        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/call", params: { name, arguments: args } }),
-    });
-    const { result } = (await response.json()) as { result: { content: { text: string }[]; isError?: boolean } };
-    return { text: result.content[0].text, isError: result.isError === true };
+    clients[user] ??= await connectMcpClient(app, { headers: { "x-test-user": user } });
+    const result = await clients[user].callTool({ name, arguments: args });
+    const [content] = result.content as { type: "text"; text: string }[];
+    return { text: content.text, isError: result.isError === true };
 }
 
 beforeAll(async () => {
-    const mcp = createMcpServer();
     const moduleRef = await Test.createTestingModule({
-        controllers: [mcp.controller, BlockTools, DamTools, PageTreeTools],
-        providers: [
-            { provide: APP_GUARD, useClass: HeaderAuthGuard },
-            { provide: AccessControlService, useValue: accessControlService },
-            BlocksTransformerService,
-            RequestScopedBlockTransformerService,
-            {
-                provide: PageTreeService,
-                useValue: {
-                    createReadApi: () => readApi,
-                    getActiveAttachedDocument: async (nodeId: string) => {
-                        const page = pages.find((candidate) => candidate.node.id === nodeId);
-                        return page ? { documentId: page.id } : null;
-                    },
-                },
-            },
-            {
-                provide: EntityManager,
-                useValue: { findOne: async (_: unknown, id: string) => pages.find((page) => page.id === id) ?? null },
-            },
-            {
-                provide: FilesService,
-                useValue: { findAndCount: findDamFiles, findOneById: async (id: string) => (id === damFile.id ? damFile : null) },
-            },
-        ],
+        imports: [AppServicesModule, AiModeMcpModule.forRoot({ adminUrl: "http://localhost:8000" })],
+        providers: [{ provide: APP_GUARD, useClass: HeaderAuthGuard }, userPermissionsGuardProvider],
     }).compile();
 
-    app = moduleRef.createNestApplication<NestExpressApplication>();
-    mcp.strategy.setHttpAdapter(app.getHttpAdapter());
-    app.connectMicroservice({ strategy: mcp.strategy });
-    await app.startAllMicroservices();
-    await app.listen(0);
-    endpoint = `${await app.getUrl()}/mcp`.replace("[::1]", "127.0.0.1");
+    app = await moduleRef.createNestApplication().init();
 });
 
 beforeEach(() => {
@@ -161,10 +217,11 @@ beforeEach(() => {
 });
 
 afterAll(async () => {
+    await Promise.all(Object.values(clients).map((client) => client.close()));
     await app?.close();
 });
 
-describe("MCP endpoint of the API", () => {
+describe("MCP server of the API", () => {
     it("answers get_page with the blocks transformed as the admin's editor sees them", async () => {
         const { text, isError } = await callTool("get_page", { id: pages[0].id });
 
@@ -186,11 +243,14 @@ describe("MCP endpoint of the API", () => {
         }
     });
 
-    it("answers a page of a scope the user may not read as if it didn't exist", async () => {
-        const { text, isError } = await callTool("get_page", { id: pages[1].id });
+    it.each([
+        ["of a scope the user may not read", pages[1].id],
+        ["that doesn't exist", unknownId],
+    ])("answers a page %s as if it didn't exist", async (_, id) => {
+        const { text, isError } = await callTool("get_page", { id });
 
         expect(isError).toBe(true);
-        expect(text).toBe(`There is no page ${pages[1].id}.`);
+        expect(text).toBe(`There is no page ${id}.`);
         expect(transformedBlocks).toEqual([]);
     });
 
@@ -201,11 +261,14 @@ describe("MCP endpoint of the API", () => {
         expect(JSON.parse(text)).toMatchObject({ id: homeNode.id, path: "/home", documentId: pages[0].id, scope: allowedScope });
     });
 
-    it("answers a page tree node of a scope the user may not read as if it didn't exist", async () => {
-        const { text, isError } = await callTool("get_page_tree_node", { id: otherScopeNode.id });
+    it.each([
+        ["of a scope the user may not read", otherScopeNode.id],
+        ["that doesn't exist", unknownId],
+    ])("answers a page tree node %s as if it didn't exist", async (_, id) => {
+        const { text, isError } = await callTool("get_page_tree_node", { id });
 
         expect(isError).toBe(true);
-        expect(text).toBe(`There is no page tree node ${otherScopeNode.id}.`);
+        expect(text).toBe(`There is no page tree node ${id}.`);
     });
 
     it("lists the page tree nodes of a scope the user may read", async () => {
@@ -216,8 +279,11 @@ describe("MCP endpoint of the API", () => {
         expect(getNodes).toHaveBeenCalledWith(expect.objectContaining({ scope: allowedScope, category: "mainNavigation", limit: 100, offset: 0 }));
     });
 
-    it.each(["list_page_tree_nodes", "get_page_tree_node_by_path"])("refuses %s in a scope the user may not read", async (tool) => {
-        const { text, isError } = await callTool(tool, { scope: otherScope, path: "/other" });
+    it.each([
+        ["list_page_tree_nodes", { scope: otherScope }],
+        ["get_page_tree_node_by_path", { scope: otherScope, path: "/other" }],
+    ])("refuses %s in a scope the user may not read", async (tool, args) => {
+        const { text, isError } = await callTool(tool, args);
 
         expect(isError).toBe(true);
         expect(text).toBe("You may not read the page tree of this scope.");
@@ -244,8 +310,8 @@ describe("MCP endpoint of the API", () => {
         expect(text).toBe(`There is no DAM file ${damFile.id}.`);
     });
 
-    it("refuses a system user", async () => {
-        const { text, isError } = await callTool("list_available_blocks", {}, "system");
+    it("refuses a system user, whom the permission check lets through", async () => {
+        const { text, isError } = await callTool("get_page_tree_node", { id: homeNode.id }, "system");
 
         expect(isError).toBe(true);
         expect(text).toBe("The MCP server answers only a user signed in to the admin.");

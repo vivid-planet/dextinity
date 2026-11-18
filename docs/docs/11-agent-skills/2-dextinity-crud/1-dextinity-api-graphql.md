@@ -3,7 +3,7 @@ title: dextinity-api-graphql
 sidebar_position: 1
 ---
 
-The `dextinity-api-graphql` skill generates the NestJS/GraphQL API layer for a MikroORM entity. It produces the same output style as `@dextinity/api-generator`: **resolvers contain the CRUD logic** (injecting `EntityManager` directly), while services are generated only when needed — position helpers for ordered entities and hand-written business-logic services for validation hooks.
+The `dextinity-api-graphql` skill generates the NestJS/GraphQL API layer for a MikroORM entity. **Resolvers contain the CRUD logic** (injecting `EntityManager` directly), while services are generated only when needed — position helpers for ordered entities and hand-written business-logic services for validation hooks.
 
 ## What It Generates
 

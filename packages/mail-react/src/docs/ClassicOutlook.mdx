@@ -1,4 +1,6 @@
-import { Meta } from "@storybook/addon-docs/blocks";
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+
+import * as ClassicOutlookStories from "./__stories__/ClassicOutlook.stories";
 
 <Meta
     title="Docs/Client Issues/Classic Outlook"
@@ -17,6 +19,22 @@ Classic Outlook cuts off the top of an image when `line-height: 0` is set on the
 
 - Use `1px` instead of `0`, or leave `line-height` unset. Without `mso-line-height-rule: exactly`, any other `line-height` smaller than the image does not cut it: classic Outlook treats the value as a minimum. `MjmlTable` has a default `line-height` of `22px`, and that value does no harm. Do not set `lineHeight={0}` on `MjmlTable`.
 - With `mso-line-height-rule: exactly`, a `line-height` smaller than the image cuts the image to that height. `HtmlText` sets the theme `line-height` (`20px` by default) with `mso-line-height-rule: exactly`, so do not put images in it.
+
+### Example: Image in a Table Cell
+
+An image in a `<td>` with `font-size: 0`.
+
+#### Problem
+
+The `<td>` has `line-height: 1px`. Inside an MJML section, classic Outlook shows the image only about `1px` high.
+
+<Canvas of={ClassicOutlookStories.ImageLineHeightProblem} />
+
+#### Fix
+
+The `<td>` has no `line-height`. Classic Outlook shows the full image.
+
+<Canvas of={ClassicOutlookStories.ImageLineHeightFix} />
 
 ## No CSS `background-image` in Outlook
 

@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { HtmlImage, MjmlColumn, MjmlRaw, MjmlSection } from "../../index.js";
 
 const config: Meta = {
-    title: "Docs/Dark Mode Examples",
+    title: "Docs/Client Issues/Dark Mode Examples",
 };
 
 export default config;

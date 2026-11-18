@@ -3,7 +3,7 @@ import { Canvas, Meta } from "@storybook/addon-docs/blocks";
 import * as DarkModeStories from "./__stories__/DarkMode.stories";
 
 <Meta
-    title="Docs/Dark Mode"
+    title="Docs/Client Issues/Dark Mode"
     summary="What mail clients change in dark mode, and the techniques tested against them for backgrounds, logos, lines and all colors."
 />
 
@@ -39,7 +39,7 @@ Set the color twice: as `background-color`, and as a `background-image` of a sol
 
 ## Keep All Colors
 
-`<meta name="color-scheme" content="light only">` stops Gmail iOS and Apple Mail (iOS and macOS) from changing the colors of the mail in dark mode. Gmail Android ignores it. React 19 removes a `<meta>` element that is rendered in the head, so add it as raw HTML, with an `MjmlRaw` in the `head` of `MjmlMailRoot` (see [Contributing to `<MjmlHead>` and `<MjmlAttributes>`](?path=/docs/docs-components--docs#contributing-to-mjmlhead-and-mjmlattributes)).
+`<meta name="color-scheme" content="light only">` stops Gmail iOS and Apple Mail (iOS and macOS) from changing the colors of the mail in dark mode. Gmail Android ignores it. React 19 removes a `<meta>` element that is rendered in the head, so add it as raw HTML, with an `MjmlRaw` in the `head` of `MjmlMailRoot` (see [Contributing to `<MjmlHead>` and `<MjmlAttributes>`](?path=/docs/docs-building-mails-components--docs#contributing-to-mjmlhead-and-mjmlattributes)).
 
 ## Keep a Logo Readable
 
@@ -102,7 +102,7 @@ In dark mode, several clients make a light content background dark, but leave a 
 Classic Outlook for Windows ignores CSS background images, so the background-image techniques above fail there. The `background-url` attribute of an MJML section draws a VML background, but that VML moves the content of the section. Draw the background behind the logo as a VML shape:
 
 1. Draw the shape with `fillcolor`. Use a `v:roundrect` for rounded corners.
-2. Declare the shape `1px` smaller in width and height than the size it must have (see "No CSS `border-radius` in Outlook" in [Email Client Pitfalls](?path=/docs/docs-email-client-pitfalls--docs#no-css-border-radius-in-outlook)).
+2. Declare the shape `1px` smaller in width and height than the size it must have (see [No CSS `border-radius` in Outlook](?path=/docs/docs-client-issues-classic-outlook--docs#no-css-border-radius-in-outlook)).
 3. Put the image in a `v:textbox`. Do not set `line-height: 0` on the element that holds the image in the `v:textbox`: classic Outlook then cuts off the top of the image.
 4. Wrap the shape in one `<!--[if mso]>…<![endif]-->` comment.
 5. Hide the HTML version with `<!--[if !mso]><!-->…<!--<![endif]-->`.

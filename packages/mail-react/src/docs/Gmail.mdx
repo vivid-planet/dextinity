@@ -1,0 +1,35 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Docs/Client Issues/Gmail" summary="Gmail: the CSS selectors that reach every client, and the 16 kB limit for head CSS." />
+
+# Gmail
+
+## Selectors That Reach Every Client
+
+Gmail applies class, element and id selectors, and descendant and child combinators. It drops the whole rule for a pseudo-class or a pseudo-element, and of the attribute selectors it applies only `[class~="value"]`. Its mobile webmail is narrower still: no combinators, no attribute selectors, and no media queries, so no responsive rule reaches it.
+
+`:hover` is the exception, but only in Gmail's desktop webmail and its Android app, and not there on a non-Google account. Its iOS app and mobile webmail drop it, so keep state styles decorative.
+
+Where a rule depends on an item's position, set a modifier class while rendering instead of using a positional selector:
+
+```tsx
+<td className={`stackedList__item ${isLastItem ? "stackedList__item--last" : ""}`}>
+```
+
+```css
+.stackedList__item {
+    margin-bottom: 24px !important;
+}
+
+.stackedList__item--last {
+    margin-bottom: 0 !important;
+}
+```
+
+A flex `gap` does not stand in for this — see [Multi-Column Symmetric Layouts](?path=/docs/docs-building-mails-layout-patterns--docs#multi-column-symmetric-layouts-3-columns).
+
+Target the mail's body with `#body`. Some clients replace the `<body>` tag with a `<div>`, which a `body` selector no longer reaches.
+
+## Gmail Drops Head CSS Past 16 kB
+
+Gmail counts the content of all `<style>` tags together, MJML's own included. Past `16 kB` (`16,384` characters), Gmail removes the `<style>` tag that passes the limit. mail-react puts the registered styles and the CSS from the `head` slot of `MjmlMailRoot` in one `<style>` tag, placed last, so the mail loses all of that CSS. `registerStyles` emits the CSS of every imported module, used or not; mail-react minifies the registered CSS. Keep unused variants and modules out of the mail, and check the size: count the characters in all `<style>` tags of a full rendered mail. See [email-bugs#90](https://github.com/hteumeuleu/email-bugs/issues/90).

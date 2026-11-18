@@ -1,7 +1,7 @@
 import { Meta } from "@storybook/addon-docs/blocks";
 
 <Meta
-    title="Docs/Styling and Customization"
+    title="Docs/Building Mails/Styling and Customization"
     summary="registerStyles and css, targeting MJML output, BEM class names, and the pattern for a custom raw-HTML component with responsive styles."
 />
 
@@ -52,9 +52,9 @@ registerStyles(
 
 Every breakpoint in the theme has a `belowMediaQuery` property — a ready-to-use CSS media query string targeting viewports below that breakpoint. For the mobile breakpoint at 420px, `theme.breakpoints.mobile.belowMediaQuery` is `"@media (max-width: 419px)"`; for an augmented tablet breakpoint at 540px, `theme.breakpoints.tablet.belowMediaQuery` is `"@media (max-width: 539px)"`.
 
-Always use `belowMediaQuery` instead of hardcoding media query values. This keeps responsive styles in sync with the theme's breakpoint configuration. If a breakpoint value is needed repeatedly but doesn't exist in the theme, add it via `createBreakpoint` and module augmentation rather than duplicating raw media queries — see [Breakpoints](?path=/docs/docs-theme-and-configuration--docs#breakpoints). Reserve hardcoded media queries for genuinely one-off values.
+Always use `belowMediaQuery` instead of hardcoding media query values. This keeps responsive styles in sync with the theme's breakpoint configuration. If a breakpoint value is needed repeatedly but doesn't exist in the theme, add it via `createBreakpoint` and module augmentation rather than duplicating raw media queries — see [Breakpoints](?path=/docs/docs-building-mails-theme-and-configuration--docs#breakpoints). Reserve hardcoded media queries for genuinely one-off values.
 
-Two client behaviors matter for responsive overrides: Yahoo Mail and Outlook.com drop any declaration that contains a [`calc()`](?path=/docs/docs-email-client-pitfalls--docs#no-css-calc), and Yahoo Mail rewrites [`height` into `min-height`](?path=/docs/docs-email-client-pitfalls--docs#height-becomes-min-height-in-yahoo-mail). For which selectors reach which clients, see [Selectors That Reach Every Client](?path=/docs/docs-email-client-pitfalls--docs#selectors-that-reach-every-client).
+Two client behaviors matter for responsive overrides: Yahoo Mail and Outlook.com drop any declaration that contains a [`calc()`](?path=/docs/docs-client-issues-yahoo-mail-and-outlook-com--docs#no-css-calc), and Yahoo Mail rewrites [`height` into `min-height`](?path=/docs/docs-client-issues-yahoo-mail-and-outlook-com--docs#height-becomes-min-height-in-yahoo-mail). For which selectors reach which clients, see [Selectors That Reach Every Client](?path=/docs/docs-client-issues-gmail--docs#selectors-that-reach-every-client).
 
 ### Static CSS
 
@@ -77,7 +77,7 @@ registerStyles(css`
 - Call at **module level**, not inside component functions
 - `MjmlMailRoot` renders all registered styles automatically
 - Duplicate registrations with the same function/string reference overwrite (stored in a `Map`)
-- `registerStyles` emits the CSS of every imported module, used or not — see [Gmail Drops Head CSS Past 16 kB](?path=/docs/docs-email-client-pitfalls--docs#gmail-drops-head-css-past-16-kb).
+- `registerStyles` emits the CSS of every imported module, used or not — see [Gmail Drops Head CSS Past 16 kB](?path=/docs/docs-client-issues-gmail--docs#gmail-drops-head-css-past-16-kb).
 - Theme-aware entries always resolve against the **root theme** from `MjmlMailRoot` — nested `ThemeProvider` scopes do not affect them
 - Optional second argument: partial `MjmlStyle` props (forwarded to the underlying `<mj-style>`)
 - An entry registered with `{ inline: true }` as the second argument has its rules written into `style` attributes. It keeps no `@media` rules: MJML drops them without a warning.
@@ -101,7 +101,7 @@ For a column layout, adapt the block name to the component context:
 | Left/small column      | `twoColumnsSection__leftColumn`, `imageTextLayout__smallColumn`  |
 | Right/fluid column     | `twoColumnsSection__rightColumn`, `imageTextLayout__fluidColumn` |
 
-Built-in components follow this convention. Their class names are listed in the tables on the [Components](?path=/docs/docs-components--docs#mjml-components-layout-level) page.
+Built-in components follow this convention. Their class names are listed in the tables on the [Components](?path=/docs/docs-building-mails-components--docs#mjml-components-layout-level) page.
 
 ## MJML Table Structure
 
@@ -113,7 +113,7 @@ MJML generates table-based HTML. When targeting nested elements inside MJML comp
 }
 ```
 
-Use browser dev tools in Storybook to inspect the generated HTML structure when writing CSS selectors for built-in components. The exact nesting varies by component and shouldn't be assumed — always inspect first. For the known paths in columns, see [CSS Targeting Rules](?path=/docs/docs-layout-patterns--docs#css-targeting-rules).
+Use browser dev tools in Storybook to inspect the generated HTML structure when writing CSS selectors for built-in components. The exact nesting varies by component and shouldn't be assumed — always inspect first. For the known paths in columns, see [CSS Targeting Rules](?path=/docs/docs-building-mails-layout-patterns--docs#css-targeting-rules).
 
 ## Overriding Built-In Components
 
@@ -219,12 +219,12 @@ registerStyles(
 
 ### Checklist
 
-- Inside `MjmlRaw` and other ending tags, you're in HTML-land — only HTML elements, no MJML components. See [Ending Tags](?path=/docs/docs-email-basics--docs#ending-tags).
-- Inside `MjmlRaw` in an `MjmlColumn`, open with a `<tr>` and put the markup in a `<td>`. `HtmlText` is the exception: it renders the `<td>` itself, so a surrounding `<tr>` is all it needs — unless its `element` prop renders something else, which needs a `<td>` again. See [Start Raw Content Inside a Column With `<tr>`](?path=/docs/docs-email-client-pitfalls--docs#start-raw-content-inside-a-column-with-tr).
-- Always reset margins on block-level elements: `style={{ margin: 0 }}` — see [Avoid Block-Level HTML Elements Inside Ending Tags](?path=/docs/docs-email-client-pitfalls--docs#avoid-block-level-html-elements-inside-ending-tags).
-- **Every element with a manual `line-height`** must also have `mso-line-height-rule: exactly` as an inline style — Outlook ignores standard line-height calculations and produces unexpected vertical spacing without it. This is easy to forget on `<span>` and `<td>` elements inside custom components. See [Set `mso-line-height-rule: exactly` on Every Manual `line-height`](?path=/docs/docs-email-client-pitfalls--docs#set-mso-line-height-rule-exactly-on-every-manual-line-height).
-- `borderRadius` won't render in Outlook — provide a visually acceptable fallback. See [No CSS `border-radius` in Outlook](?path=/docs/docs-email-client-pitfalls--docs#no-css-border-radius-in-outlook).
-- Keep unused variants and modules out of the mail — see [Gmail Drops Head CSS Past 16 kB](?path=/docs/docs-email-client-pitfalls--docs#gmail-drops-head-css-past-16-kb).
+- Inside `MjmlRaw` and other ending tags, you're in HTML-land — only HTML elements, no MJML components. See [Ending Tags](?path=/docs/docs-getting-started-email-basics--docs#ending-tags).
+- Inside `MjmlRaw` in an `MjmlColumn`, open with a `<tr>` and put the markup in a `<td>`. `HtmlText` is the exception: it renders the `<td>` itself, so a surrounding `<tr>` is all it needs — unless its `element` prop renders something else, which needs a `<td>` again. See [Start Raw Content Inside a Column With `<tr>`](?path=/docs/docs-building-mails-components--docs#start-raw-content-inside-a-column-with-tr).
+- Always reset margins on block-level elements: `style={{ margin: 0 }}` — see [Avoid Block-Level HTML Elements Inside Ending Tags](?path=/docs/docs-building-mails-components--docs#avoid-block-level-html-elements-inside-ending-tags).
+- **Every element with a manual `line-height`** must also have `mso-line-height-rule: exactly` as an inline style — Outlook ignores standard line-height calculations and produces unexpected vertical spacing without it. This is easy to forget on `<span>` and `<td>` elements inside custom components. See [Set `mso-line-height-rule: exactly` on Every Manual `line-height`](?path=/docs/docs-client-issues-classic-outlook--docs#set-mso-line-height-rule-exactly-on-every-manual-line-height).
+- `borderRadius` won't render in Outlook — provide a visually acceptable fallback. See [No CSS `border-radius` in Outlook](?path=/docs/docs-client-issues-classic-outlook--docs#no-css-border-radius-in-outlook).
+- Keep unused variants and modules out of the mail — see [Gmail Drops Head CSS Past 16 kB](?path=/docs/docs-client-issues-gmail--docs#gmail-drops-head-css-past-16-kb).
 
 ## Forwarding Props via `slotProps`
 

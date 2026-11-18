@@ -1,7 +1,7 @@
 import { Meta } from "@storybook/addon-docs/blocks";
 
 <Meta
-    title="Docs/Email Basics"
+    title="Docs/Getting Started/Email Basics"
     summary="Read before writing mail markup: client research, the section → column → content model, ending tags, and inline-first styling."
 />
 
@@ -34,13 +34,13 @@ Keep these open during email development:
 When you implement a visual feature:
 
 1. Check [Can I email](https://www.caniemail.com/) for the CSS properties and selectors involved.
-2. If Outlook does not support a property, search for a VML workaround or provide a graceful fallback. Skipping `border-radius` is generally acceptable (see [No CSS `border-radius` in Outlook](?path=/docs/docs-email-client-pitfalls--docs#no-css-border-radius-in-outlook)).
+2. If Outlook does not support a property, search for a VML workaround or provide a graceful fallback. Skipping `border-radius` is generally acceptable (see [No CSS `border-radius` in Outlook](?path=/docs/docs-client-issues-classic-outlook--docs#no-css-border-radius-in-outlook)).
 3. Test in Storybook with the MJML Warnings panel open.
 4. When you are not sure, look in the Litmus blog or the Campaign Monitor guide for known patterns.
 
 This also applies to properties that seem simple: `border-radius`, `background-image`, `flexbox`, `gap`, and custom fonts all have partial or no support in major email clients.
 
-For which selectors reach which clients, see [Selectors That Reach Every Client](?path=/docs/docs-email-client-pitfalls--docs#selectors-that-reach-every-client).
+For which selectors reach which clients, see [Selectors That Reach Every Client](?path=/docs/docs-client-issues-gmail--docs#selectors-that-reach-every-client).
 
 ## The MJML Layout Model
 
@@ -66,7 +66,7 @@ Content components outside this hierarchy cause MJML validation warnings and bro
 
 ### Multi-Column Layouts
 
-MJML has no `gap` property: padding on the inner edges of adjacent columns makes the gap (see [How Column Gaps Work](?path=/docs/docs-layout-patterns--docs#how-column-gaps-work)). Set `disableResponsiveBehavior` on **every** section with more than one column, and write the mobile stacking with `registerStyles` (see [Column Widths Must Be Inline](?path=/docs/docs-layout-patterns--docs#column-widths-must-be-inline)).
+MJML has no `gap` property: padding on the inner edges of adjacent columns makes the gap (see [How Column Gaps Work](?path=/docs/docs-building-mails-layout-patterns--docs#how-column-gaps-work)). Set `disableResponsiveBehavior` on **every** section with more than one column, and write the mobile stacking with `registerStyles` (see [Column Widths Must Be Inline](?path=/docs/docs-building-mails-layout-patterns--docs#column-widths-must-be-inline)).
 
 ```tsx
 const columnGap = 20;
@@ -82,7 +82,7 @@ const halfGap = columnGap / 2;
 </MjmlSection>;
 ```
 
-For complete patterns — two columns, three or more, fixed+fluid — with responsive styles, CSS targeting rules, the stacking strategies, and the `direction="rtl"` technique for controlling mobile stack order, see [Layout Patterns](?path=/docs/docs-layout-patterns--docs).
+For complete patterns — two columns, three or more, fixed+fluid — with responsive styles, CSS targeting rules, the stacking strategies, and the `direction="rtl"` technique for controlling mobile stack order, see [Layout Patterns](?path=/docs/docs-building-mails-layout-patterns--docs).
 
 ### Ending Tags
 
@@ -98,7 +98,7 @@ Email clients that lack CSS support are almost all desktop clients (Outlook 2007
 
 1. **Base/default styles are inline** — applied through MJML component props or explicit `style` attributes on HTML elements. Desktop clients like Outlook ignore `<style>` blocks entirely, so the base rendering must look correct with inline styles alone.
 
-2. **Responsive overrides are progressive enhancement** — registered via `registerStyles` with media queries targeting mobile viewports. Clients that support media queries also support modern CSS, so properties like `flex`, and CSS custom properties are safe inside media queries. Yahoo Mail and Outlook.com drop any declaration that contains a `calc()` (see [No CSS `calc()`](?path=/docs/docs-email-client-pitfalls--docs#no-css-calc)).
+2. **Responsive overrides are progressive enhancement** — registered via `registerStyles` with media queries targeting mobile viewports. Clients that support media queries also support modern CSS, so properties like `flex`, and CSS custom properties are safe inside media queries. Yahoo Mail and Outlook.com drop any declaration that contains a `calc()` (see [No CSS `calc()`](?path=/docs/docs-client-issues-yahoo-mail-and-outlook-com--docs#no-css-calc)).
 
 3. **`!important` is required** in media query overrides — because inline styles take precedence over `<style>` block rules, responsive overrides need `!important` to win.
 
@@ -106,10 +106,10 @@ Never rely on `<style>` blocks for base/desktop layout. Set all default styles i
 
 MJML breaks this rule for column widths: it puts them in a `min-width` media query, so a multi-column section stacks in any client that drops that query — GMX, Web.de and the Gmail apps with a non-Google account, for example. See [Multi-Column Layouts](#multi-column-layouts).
 
-Reading a `<style>` block is not the same as applying everything in it. Gmail reads the block and then drops each rule whose selector it does not take — see [Selectors That Reach Every Client](?path=/docs/docs-email-client-pitfalls--docs#selectors-that-reach-every-client).
+Reading a `<style>` block is not the same as applying everything in it. Gmail reads the block and then drops each rule whose selector it does not take — see [Selectors That Reach Every Client](?path=/docs/docs-client-issues-gmail--docs#selectors-that-reach-every-client).
 
-For the `registerStyles` API, the `css` helper, and custom components, see [Styling and Customization](?path=/docs/docs-styling-and-customization--docs).
+For the `registerStyles` API, the `css` helper, and custom components, see [Styling and Customization](?path=/docs/docs-building-mails-styling-and-customization--docs).
 
 ### Switching Content by Breakpoint
 
-When the mobile view needs a different structure than the desktop view, put both layouts in the email and hide one of them, as shown in [Breakpoint Content Switch](?path=/docs/docs-layout-patterns--docs#breakpoint-content-switch).
+When the mobile view needs a different structure than the desktop view, put both layouts in the email and hide one of them, as shown in [Breakpoint Content Switch](?path=/docs/docs-building-mails-layout-patterns--docs#breakpoint-content-switch).

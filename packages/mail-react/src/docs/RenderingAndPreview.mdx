@@ -2,7 +2,7 @@ import { Meta } from "@storybook/addon-docs/blocks";
 
 <Meta
     title="Docs/Rendering and Preview"
-    summary="renderMailHtml on the server or client, use in the Mail Templates Module, MJML warnings, the Storybook addon, writing stories, and cross-client testing."
+    summary="renderMailHtml on the server or client, rewriting image sources, use in the Mail Templates Module, MJML warnings, the Storybook addon, writing stories, and cross-client testing."
 />
 
 # Rendering and Preview
@@ -34,6 +34,36 @@ const { html, mjmlWarnings } = renderMailHtml(
 - Returns `{ html: string; mjmlWarnings: MjmlWarning[] }` — warnings are collected, not thrown
 - The server `renderMailHtml` turns off `mj-include` by default, because an include can read files on the server. To use it, pass `{ ignoreIncludes: false }`.
 - Outside Storybook, wrap content in `MjmlMailRoot` yourself (the Storybook decorator handles it automatically).
+
+## Rewriting Image Sources
+
+`config.rewriteImageSrc` returns the `src` that `HtmlImage` and `MjmlImage` render for an image, including the image in classic Outlook's VML. `HtmlPixelImageBlock` and `MjmlPixelImageBlock` render through these components, so the function applies to them as well. It receives the image's `src`, `width` and `height`. A raw `<img>` doesn't go through it.
+
+Use it when mail clients can't load an image from its own URL, e.g. because the API is behind an auth proxy. The function can hand out a `cid:` reference instead and remember the image, so it can be attached to the sent mail once the mail is rendered:
+
+```tsx
+import { MjmlMailRoot } from "@dextinity/mail-react";
+import { renderMailHtml } from "@dextinity/mail-react/server";
+import { randomUUID } from "node:crypto";
+
+const contentIdsBySrc = new Map<string, string>();
+
+function registerInlineImage(src: string): string {
+    const contentId = contentIdsBySrc.get(src) ?? randomUUID();
+    contentIdsBySrc.set(src, contentId);
+    return contentId;
+}
+
+const { html } = renderMailHtml(
+    <MjmlMailRoot config={{ rewriteImageSrc: ({ src }) => `cid:${registerInlineImage(src)}` }}>
+        <MailContent />
+    </MjmlMailRoot>,
+);
+
+// Fetch each image of contentIdsBySrc and pass it as an attachment with its `cid`
+```
+
+The rendering is synchronous, so the function can't fetch an image itself.
 
 ## Using It in the Mail Templates Module
 

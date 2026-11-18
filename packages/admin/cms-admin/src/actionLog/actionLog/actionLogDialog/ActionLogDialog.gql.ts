@@ -9,6 +9,9 @@ const actionLogDialogFragment = gql`
         ...ActionLogVersionGrid
         ...ActionLogShowVersion
         ...ActionLogCompare
+        previousVersion {
+            ...ActionLogCompare
+        }
     }
     ${actionLogVersionGridFragment}
     ${actionLogShowVersionFragment}

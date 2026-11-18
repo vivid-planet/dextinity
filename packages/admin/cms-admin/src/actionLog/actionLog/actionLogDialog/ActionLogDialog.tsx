@@ -16,10 +16,12 @@ import type {
     GQLMyActionLogsDialogQueryVariables,
 } from "./ActionLogDialog.gql.generated";
 
+type ComparedVersion = NonNullable<GQLActionLogDialogFragment["previousVersion"]>;
+
 type ActionLogDialogView =
     | { type: "grid" }
     | { type: "showVersion"; row: GQLActionLogDialogFragment }
-    | { type: "compareVersions"; before: GQLActionLogDialogFragment; after: GQLActionLogDialogFragment };
+    | { type: "compareVersions"; before: ComparedVersion; after: ComparedVersion };
 
 export type ActionLogDialogProps = {
     /**
@@ -74,7 +76,6 @@ export function ActionLogDialog({ entity, entityId, name, showAllScopes, open, o
 
     const { loading, error } = showAllScopes ? allScopesQuery : scopedQuery;
     const result = showAllScopes ? allScopesQuery.data?.myActionLogs : scopedQuery.data?.actionLogs;
-    const rows = result?.nodes ?? [];
 
     return (
         <Dialog
@@ -100,19 +101,8 @@ export function ActionLogDialog({ entity, entityId, name, showAllScopes, open, o
                     loading={loading}
                     name={name}
                     showScope={showAllScopes}
-                    onShowVersionClick={(versionId) => {
-                        const row = rows.find((r) => r.id === versionId);
-                        if (row) {
-                            setView({ type: "showVersion", row });
-                        }
-                    }}
-                    onCompareVersionsClick={(beforeVersionId, afterVersionId) => {
-                        const before = rows.find((r) => r.id === beforeVersionId);
-                        const after = rows.find((r) => r.id === afterVersionId);
-                        if (before && after) {
-                            setView({ type: "compareVersions", before, after });
-                        }
-                    }}
+                    onShowVersionClick={(row) => setView({ type: "showVersion", row })}
+                    onCompareVersionsClick={(before, after) => setView({ type: "compareVersions", before, after })}
                 />
             )}
 

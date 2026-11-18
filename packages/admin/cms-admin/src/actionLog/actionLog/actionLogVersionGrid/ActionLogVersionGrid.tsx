@@ -1,8 +1,8 @@
 import { type GridColDef, useBufferedRowCount, type useDataGridRemote, type usePersistentColumnState } from "@dextinity/admin";
 import { View } from "@dextinity/admin-icons";
 import { IconButton, Typography } from "@mui/material";
-import { gridClasses, type GridRowSelectionModel, type GridSlotsComponent } from "@mui/x-data-grid";
-import { type FunctionComponent, useMemo, useState } from "react";
+import { gridClasses, type GridRowParams, type GridRowSelectionModel, type GridSlotsComponent } from "@mui/x-data-grid";
+import { useMemo, useState } from "react";
 import { FormattedDate, FormattedMessage, useIntl } from "react-intl";
 
 import { DataGrid } from "../../../dataGrid/DataGrid";
@@ -14,11 +14,9 @@ import { ActionGridToolbar, type ActionGridToolbarProps } from "./actionGridTool
 import type { GQLActionLogVersionGridFragment } from "./ActionLogVersionGrid.gql.generated";
 import { Root } from "./ActionLogVersionGrid.sc";
 
-type ActionGridRow = GQLActionLogVersionGridFragment;
-
-type ActionLogVersionGridProps = ReturnType<typeof useDataGridRemote> &
+type ActionLogVersionGridProps<Row extends GQLActionLogVersionGridFragment> = ReturnType<typeof useDataGridRemote> &
     ReturnType<typeof usePersistentColumnState> & {
-        actionLogs: { nodes: ActionGridRow[]; totalCount: number } | undefined;
+        actionLogs: { nodes: Row[]; totalCount: number } | undefined;
         id: string;
         loading: boolean;
         /**
@@ -29,11 +27,11 @@ type ActionLogVersionGridProps = ReturnType<typeof useDataGridRemote> &
          * Shows the scope of each version, for a history that spans several scopes.
          */
         showScope?: boolean;
-        onShowVersionClick: (versionId: string) => void;
-        onCompareVersionsClick: (versionId: string, versionsId2: string) => void;
+        onShowVersionClick: (version: Row) => void;
+        onCompareVersionsClick: (beforeVersion: Row | NonNullable<Row["previousVersion"]>, afterVersion: Row) => void;
     };
 
-export const ActionLogVersionGrid: FunctionComponent<ActionLogVersionGridProps> = ({
+export function ActionLogVersionGrid<Row extends GQLActionLogVersionGridFragment>({
     actionLogs,
     id,
     loading,
@@ -42,11 +40,11 @@ export const ActionLogVersionGrid: FunctionComponent<ActionLogVersionGridProps> 
     onShowVersionClick,
     onCompareVersionsClick,
     ...dataGridProps
-}) => {
+}: ActionLogVersionGridProps<Row>) {
     const intl = useIntl();
     const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>({ type: "include", ids: new Set() });
 
-    const columns = useMemo<GridColDef<ActionGridRow>[]>(
+    const columns = useMemo<GridColDef<Row>[]>(
         () => [
             {
                 field: "version",
@@ -66,7 +64,7 @@ export const ActionLogVersionGrid: FunctionComponent<ActionLogVersionGridProps> 
                           headerName: intl.formatMessage({ defaultMessage: "Scope", id: "actionLog.actionLogVersionGrid.columns.scope" }),
                           sortable: false,
                           width: 150,
-                          renderCell: ({ row }: { row: ActionGridRow }) => <ScopeCell scopes={row.scope} />,
+                          renderCell: ({ row }: { row: Row }) => <ScopeCell scopes={row.scope} />,
                       },
                   ]
                 : []),
@@ -99,7 +97,7 @@ export const ActionLogVersionGrid: FunctionComponent<ActionLogVersionGridProps> 
                         <IconButton
                             color="primary"
                             onClick={() => {
-                                onShowVersionClick(row.id);
+                                onShowVersionClick(row);
                             }}
                         >
                             <View />
@@ -118,12 +116,14 @@ export const ActionLogVersionGrid: FunctionComponent<ActionLogVersionGridProps> 
 
     const rowCount = useBufferedRowCount(actionLogs?.totalCount);
 
-    const selectedIds = Array.from(selectionModel.ids);
     const toolbarProps: ActionGridToolbarProps = {
         disableCompare: selectionModel.ids.size < 2,
         onClickCompare: () => {
-            if (selectionModel.ids.size >= 2) {
-                onCompareVersionsClick(selectedIds[0].toString(), selectedIds[1].toString());
+            const [beforeVersion, afterVersion] = (actionLogs?.nodes ?? [])
+                .filter((row) => selectionModel.ids.has(row.id))
+                .sort((a, b) => a.version - b.version);
+            if (beforeVersion && afterVersion) {
+                onCompareVersionsClick(beforeVersion, afterVersion);
             }
         },
     };
@@ -177,11 +177,11 @@ export const ActionLogVersionGrid: FunctionComponent<ActionLogVersionGridProps> 
                     return selectionModel.ids.size < 2;
                 }}
                 loading={loading}
-                onRowClick={({ row }) => {
+                onRowClick={({ row }: GridRowParams<Row>) => {
                     if (row.previousVersion) {
-                        onCompareVersionsClick(row.previousVersion.id, row.id);
+                        onCompareVersionsClick(row.previousVersion, row);
                     } else {
-                        onShowVersionClick(row.id);
+                        onShowVersionClick(row);
                     }
                 }}
                 onRowSelectionModelChange={(newSelectionModel) => {
@@ -199,5 +199,5 @@ export const ActionLogVersionGrid: FunctionComponent<ActionLogVersionGridProps> 
             />
         </Root>
     );
-};
+}
 export { actionLogVersionGridFragment } from "./ActionLogVersionGrid.gql";

@@ -1,5 +1,4 @@
-import { type GridColDef, usePersistentColumnState } from "@dextinity/admin";
-import { DataGrid, type DataGridProps } from "@mui/x-data-grid";
+import type { GridColDef } from "@dextinity/admin";
 
 export const exampleRows = [
     { id: 1, lastName: "Snow", firstName: "Jon" },
@@ -25,8 +24,3 @@ export const exampleColumns: GridColDef[] = [
         flex: 1,
     },
 ];
-
-export const ExampleDataGrid = (props: Partial<DataGridProps>) => {
-    const dataGridProps = usePersistentColumnState("ResponsiveColumnsStory");
-    return <DataGrid rows={exampleRows} columns={exampleColumns} {...dataGridProps} {...props} />;
-};

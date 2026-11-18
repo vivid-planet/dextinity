@@ -76,7 +76,6 @@ export function ActionLogDialog({ entity, entityId, name, showAllScopes, open, o
 
     const { loading, error } = showAllScopes ? allScopesQuery : scopedQuery;
     const result = showAllScopes ? allScopesQuery.data?.myActionLogs : scopedQuery.data?.actionLogs;
-    const rows = result?.nodes ?? [];
 
     return (
         <Dialog
@@ -102,21 +101,8 @@ export function ActionLogDialog({ entity, entityId, name, showAllScopes, open, o
                     loading={loading}
                     name={name}
                     showScope={showAllScopes}
-                    onShowVersionClick={(versionId) => {
-                        const row = rows.find((r) => r.id === versionId);
-                        if (row) {
-                            setView({ type: "showVersion", row });
-                        }
-                    }}
-                    onCompareVersionsClick={(beforeVersionId, afterVersionId) => {
-                        const after = rows.find((r) => r.id === afterVersionId);
-                        // The previous version of the last row on a page is on the next page.
-                        const previousVersion = after?.previousVersion?.id === beforeVersionId ? after.previousVersion : undefined;
-                        const before = rows.find((r) => r.id === beforeVersionId) ?? previousVersion;
-                        if (before && after) {
-                            setView({ type: "compareVersions", before, after });
-                        }
-                    }}
+                    onShowVersionClick={(row) => setView({ type: "showVersion", row })}
+                    onCompareVersionsClick={(before, after) => setView({ type: "compareVersions", before, after })}
                 />
             )}
 

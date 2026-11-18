@@ -188,8 +188,6 @@ Remove the `@CrudGenerator` and `@CrudSingleGenerator` decorators from your enti
   export class Product extends BaseEntity {
 ```
 
-Keep `@CrudField` where it sets `search: false`, as `searchToMikroOrmQuery` still reads it. You can remove the other usages, the remaining options were only read by the API Generator.
-
 Then remove the `api-generator` scripts and their calls from the other scripts:
 
 ```diff title="api/package.json"
@@ -208,6 +206,27 @@ Remove the `generated/` exclusions of the API from your lint configuration (for 
 npm run lint:fix
 npm run lint
 ```
+
+### Replace `@CrudField` with `@Searchable`
+
+`@CrudField` is replaced with `@Searchable`. Only its `search` option was still read, by `searchToMikroOrmQuery` and `gqlArgsToMikroOrmQuery`. All other options were only read by the API Generator. Find the usages:
+
+```sh
+grep -rnE "CrudField|getCrudSearchFieldsFromMetadata|hasCrudFieldFeature" src
+```
+
+Replace `@CrudField` where it sets `search` and remove it everywhere else:
+
+```diff
+- import { CrudField } from "@dextinity/cms-api";
++ import { Searchable } from "@dextinity/cms-api";
+
+- @CrudField({ search: false })
++ @Searchable(false)
+  internalNote: string;
+```
+
+`CrudFieldOptions` is removed. If your code calls the helpers directly, rename `getCrudSearchFieldsFromMetadata` to `getSearchFieldsFromMetadata` and replace `hasCrudFieldFeature(entityClass, propName, "search")` with `isSearchable(entityClass, propName)`. Calls of `hasCrudFieldFeature` with other options can be removed.
 
 ### Update the MikroORM dependencies
 

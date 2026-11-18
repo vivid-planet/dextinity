@@ -1,15 +1,13 @@
 import type { EntityMetadata } from "@mikro-orm/postgresql";
 
-import { CRUD_FIELD_METADATA_KEY, type CrudFieldOptions } from "../decorators/crud-generator.decorator.js";
+import { SEARCHABLE_METADATA_KEY } from "../decorators/searchable.decorator.js";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function hasCrudFieldFeature(metadataClass: any, propName: string, option: keyof CrudFieldOptions): boolean {
-    const crudField = (Reflect.getMetadata(CRUD_FIELD_METADATA_KEY, metadataClass, propName) ?? {}) as CrudFieldOptions;
-    const defaultValue = option == "dedicatedResolverArg" ? false : true;
-    return !!(crudField[option] ?? defaultValue);
+export function isSearchable(metadataClass: any, propName: string): boolean {
+    return Reflect.getMetadata(SEARCHABLE_METADATA_KEY, metadataClass, propName) ?? true;
 }
 
-export type CrudSearchField = {
+export type SearchField = {
     /**
      * The name of the field, which can be a simple property name or a nested property in the format "relation.property".
      *
@@ -24,10 +22,10 @@ export type CrudSearchField = {
     needsCastToText: boolean;
 };
 
-export function getCrudSearchFieldsFromMetadata(metadata: EntityMetadata): CrudSearchField[] {
+export function getSearchFieldsFromMetadata(metadata: EntityMetadata): SearchField[] {
     return metadata.props
         .filter((prop) => prop.name != "status")
-        .filter((prop) => hasCrudFieldFeature(metadata.class, prop.name, "search") && !prop.name.startsWith("scope_"))
+        .filter((prop) => isSearchable(metadata.class, prop.name) && !prop.name.startsWith("scope_"))
         .reduce((acc, prop) => {
             if (prop.type === "string" || prop.type === "text" || prop.type === "uuid") {
                 acc.push({ name: prop.name, needsCastToText: prop.type === "uuid" || prop.columnTypes.includes("uuid") });
@@ -38,7 +36,7 @@ export function getCrudSearchFieldsFromMetadata(metadata: EntityMetadata): CrudS
                 prop.targetMeta.props
                     .filter(
                         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                        (innerProp) => hasCrudFieldFeature(prop.targetMeta!.class, innerProp.name, "search") && !innerProp.name.startsWith("scope_"),
+                        (innerProp) => isSearchable(prop.targetMeta!.class, innerProp.name) && !innerProp.name.startsWith("scope_"),
                     )
                     .forEach((innerProp) => {
                         if (innerProp.type === "string" || innerProp.type === "text" || innerProp.type === "uuid") {
@@ -50,5 +48,5 @@ export function getCrudSearchFieldsFromMetadata(metadata: EntityMetadata): CrudS
                     });
             }
             return acc;
-        }, [] as CrudSearchField[]);
+        }, [] as SearchField[]);
 }

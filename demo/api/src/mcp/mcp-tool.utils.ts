@@ -16,7 +16,7 @@ import type { Request } from "express";
 import { z } from "zod";
 
 /** The HTTP request of a tool call, after the global `DextinityAuthGuard` has authenticated it. */
-export type McpRequest = Request & { user?: CurrentUser | string };
+type McpRequest = Request & { user?: CurrentUser | string };
 
 /**
  * Refuses a system user authenticated by basic auth, whom `UserPermissionsGuard` lets through: the tools serve the AI

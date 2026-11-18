@@ -97,6 +97,30 @@ In dark mode, several clients make a light content background dark, but leave a 
     }
     ```
 
+### Example: Line Under a Text
+
+A dark line under a dark text, on a white background.
+
+#### Problem
+
+The line is drawn as a background color with `MjmlDivider`. In dark mode, Gmail on Android makes the white background dark, but leaves the line dark. The line is difficult to see.
+
+<Canvas of={DarkModeStories.LineProblem} />
+
+| Gmail on Android 16 (Pixel 10), dark mode                                                              |
+| ------------------------------------------------------------------------------------------------------ |
+| <img width="381" src="/dark-mode/gmail-android-line-problem.png" alt="The line is difficult to see" /> |
+
+#### Fix
+
+The line is a `border-top` on an empty cell with `height: 0`. The cell has a light `background-color`, so Gmail Android makes the border light enough to see. The table has `border-collapse: separate`, because with `collapse`, Gmail Android ignores the background.
+
+<Canvas of={DarkModeStories.LineFix} />
+
+| Gmail on Android 16 (Pixel 10), dark mode                                               |
+| --------------------------------------------------------------------------------------- |
+| <img width="381" src="/dark-mode/gmail-android-line-fix.png" alt="The line is light" /> |
+
 ## Classic Outlook
 
 Classic Outlook for Windows ignores CSS background images, so the background-image techniques above fail there. The `background-url` attribute of an MJML section draws a VML background, but that VML moves the content of the section. Draw the background behind the logo as a VML shape:

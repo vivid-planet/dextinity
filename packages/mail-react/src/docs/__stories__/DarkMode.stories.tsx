@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { HtmlImage, MjmlColumn, MjmlRaw, MjmlSection } from "../../index.js";
+import { HtmlImage, MjmlColumn, MjmlDivider, MjmlRaw, MjmlSection, MjmlText } from "../../index.js";
 
 const config: Meta = {
     title: "Docs/Client Issues/Dark Mode Examples",
@@ -67,6 +67,58 @@ export const SmallLogoFix: Story = {
                                         <td width={64} style={{ fontSize: 0, lineHeight: "1px" }}>
                                             <HtmlImage src="/dark-mode/logo-filled-64x40.png" width={64} height={40} alt="Dextinity" />
                                         </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </MjmlRaw>
+            </MjmlColumn>
+        </MjmlSection>
+    ),
+};
+
+/** A line drawn as a background color with `MjmlDivider`. In dark mode, it is difficult to see on the dark background. */
+export const LineProblem: Story = {
+    tags: ["!dev"],
+    render: () => (
+        <MjmlSection backgroundColor="#ffffff" indent paddingTop={32} paddingBottom={32}>
+            <MjmlColumn>
+                <MjmlText color="#001e50" fontSize="16px" lineHeight="24px" paddingBottom="16px">
+                    Your order is on its way.
+                </MjmlText>
+                <MjmlDivider height={1} backgroundColor="#001e50" />
+            </MjmlColumn>
+        </MjmlSection>
+    ),
+};
+
+/** The line is a border on an empty cell with a light background, in a table with `border-collapse: separate`. */
+export const LineFix: Story = {
+    tags: ["!dev"],
+    render: () => (
+        <MjmlSection backgroundColor="#ffffff" indent paddingTop={32} paddingBottom={32}>
+            <MjmlColumn>
+                <MjmlText color="#001e50" fontSize="16px" lineHeight="24px" paddingBottom="16px">
+                    Your order is on its way.
+                </MjmlText>
+                <MjmlRaw>
+                    <tr>
+                        <td>
+                            <table role="presentation" width="100%" cellPadding={0} cellSpacing={0} style={{ borderCollapse: "separate" }}>
+                                <tbody>
+                                    <tr>
+                                        <td
+                                            style={{
+                                                height: 0,
+                                                fontSize: 0,
+                                                lineHeight: 0,
+                                                msoLineHeightRule: "exactly",
+                                                borderTop: "1px solid #001e50",
+                                                color: "#001e50",
+                                                backgroundColor: "#cccccc",
+                                            }}
+                                        />
                                     </tr>
                                 </tbody>
                             </table>

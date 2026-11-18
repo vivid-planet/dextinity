@@ -105,7 +105,6 @@ jobs:
                   path: ${{ matrix.project.path }}/junit-storybook.xml
                   overwrite: true
 
-    # Required status checks can't refer to the matrix jobs, which depend on the change.
     test-storybook:
         name: Test (storybook)
         needs: [find-storybook-projects, test-storybook-project]

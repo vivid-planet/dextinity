@@ -3,7 +3,6 @@
 "@dextinity/admin-babel-preset": major
 "@dextinity/admin-color-picker": major
 "@dextinity/admin-date-time": major
-"@dextinity/admin-generator": major
 "@dextinity/admin-icons": major
 "@dextinity/admin-rte": major
 "@dextinity/agent-features": major

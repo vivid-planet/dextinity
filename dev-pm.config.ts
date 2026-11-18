@@ -50,14 +50,6 @@ export default defineConfig({
             group: ["dextinity-admin"],
         },
 
-        // admin-generator
-        {
-            name: "admin-generator",
-            script: "pnpm --filter @dextinity/admin-generator run dev",
-            group: ["cms-admin", "cms"],
-            waitOn: waitOnPackages("@dextinity/cms-admin"),
-        },
-
         // group cms-admin
         {
             name: "cms-admin",

@@ -1,9 +1,14 @@
 import { gql, useQuery } from "@apollo/client";
-import { AutocompleteField, Table, TableFilterFinalForm, TableQuery, useTableQuery, useTableQueryFilter } from "@dextinity/admin";
 import { Grid } from "@mui/material";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import type { LaunchesPastResult } from "../../../.storybook/mocks/handlers";
-import { apolloStoryDecorator } from "../../apollo-story.decorator";
+import { AutocompleteField } from "../../form/fields/AutocompleteField";
+import { Table } from "../Table";
+import { TableFilterFinalForm } from "../TableFilterFinalForm";
+import { TableQuery } from "../TableQuery";
+import { useTableQuery } from "../useTableQuery";
+import { useTableQueryFilter } from "../useTableQueryFilter";
 
 const query = gql`
     query LaunchesPast($filter: LaunchesPastFilter, $limit: Int, $offset: Int) {
@@ -33,59 +38,64 @@ interface IVariables {
     offset?: number;
 }
 
-export default {
-    title: "@dextinity/admin/table",
-    decorators: [apolloStoryDecorator("/graphql")],
+const meta: Meta = {
+    title: "components/table/TableResetFilter",
 };
 
-export const ResetFilter = () => {
-    const filterApi = useTableQueryFilter<IFilterValues>({});
-    const { data: optionsData } = useQuery<IQueryData, IVariables>(query, { variables: { limit: 3, offset: 0 } });
-    const { tableData, api, loading, error } = useTableQuery<IQueryData, IVariables>()(query, {
-        variables: {
-            filter: filterApi.current.missionName ? { mission_name: { equal: filterApi.current.missionName.value } } : undefined,
-        },
-        resolveTableData: (data) => ({
-            data: data.launchesPastResult.data,
-            totalCount: data.launchesPastResult.result.totalCount,
-        }),
-    });
+export default meta;
 
-    return (
-        <TableQuery api={api} loading={loading} error={error}>
-            {tableData && (
-                <>
-                    <TableFilterFinalForm filterApi={filterApi} resetButton>
-                        <Grid container>
-                            <Grid size={2}>
-                                <AutocompleteField
-                                    name="missionName"
-                                    options={
-                                        optionsData?.launchesPastResult.data.map((launch) => ({
-                                            label: launch.mission_name,
-                                            value: launch.mission_name,
-                                        })) ?? []
-                                    }
-                                    fullWidth
-                                />
+type Story = StoryObj;
+
+export const ResetFilter: Story = {
+    render: () => {
+        const filterApi = useTableQueryFilter<IFilterValues>({});
+        const { data: optionsData } = useQuery<IQueryData, IVariables>(query, { variables: { limit: 3, offset: 0 } });
+        const { tableData, api, loading, error } = useTableQuery<IQueryData, IVariables>()(query, {
+            variables: {
+                filter: filterApi.current.missionName ? { mission_name: { equal: filterApi.current.missionName.value } } : undefined,
+            },
+            resolveTableData: (data) => ({
+                data: data.launchesPastResult.data,
+                totalCount: data.launchesPastResult.result.totalCount,
+            }),
+        });
+
+        return (
+            <TableQuery api={api} loading={loading} error={error}>
+                {tableData && (
+                    <>
+                        <TableFilterFinalForm filterApi={filterApi} resetButton>
+                            <Grid container>
+                                <Grid size={2}>
+                                    <AutocompleteField
+                                        name="missionName"
+                                        options={
+                                            optionsData?.launchesPastResult.data.map((launch) => ({
+                                                label: launch.mission_name,
+                                                value: launch.mission_name,
+                                            })) ?? []
+                                        }
+                                        fullWidth
+                                    />
+                                </Grid>
                             </Grid>
-                        </Grid>
-                    </TableFilterFinalForm>
-                    <Table
-                        {...tableData}
-                        columns={[
-                            {
-                                name: "mission_name",
-                                header: "Mission Name",
-                            },
-                            {
-                                name: "launch_date_local",
-                                header: "Launch Date",
-                            },
-                        ]}
-                    />
-                </>
-            )}
-        </TableQuery>
-    );
+                        </TableFilterFinalForm>
+                        <Table
+                            {...tableData}
+                            columns={[
+                                {
+                                    name: "mission_name",
+                                    header: "Mission Name",
+                                },
+                                {
+                                    name: "launch_date_local",
+                                    header: "Launch Date",
+                                },
+                            ]}
+                        />
+                    </>
+                )}
+            </TableQuery>
+        );
+    },
 };

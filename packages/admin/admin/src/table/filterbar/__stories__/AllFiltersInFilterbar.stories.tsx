@@ -1,18 +1,18 @@
-import {
-    AutocompleteField,
-    Field,
-    FilterBar,
-    FilterBarMoreFilters,
-    FilterBarPopoverFilter,
-    FinalFormInput,
-    FinalFormRangeInput,
-    SwitchField,
-    Table,
-    TableFilterFinalForm,
-    useTableQueryFilter,
-} from "@dextinity/admin";
 import { faker } from "@faker-js/faker";
 import { Box, Divider, Typography } from "@mui/material";
+import type { Meta, StoryObj } from "@storybook/react-vite";
+
+import { Field } from "../../../form/Field";
+import { AutocompleteField } from "../../../form/fields/AutocompleteField";
+import { SwitchField } from "../../../form/fields/SwitchField";
+import { FinalFormInput } from "../../../form/FinalFormInput";
+import { FinalFormRangeInput } from "../../../form/FinalFormRangeInput";
+import { Table } from "../../Table";
+import { TableFilterFinalForm } from "../../TableFilterFinalForm";
+import { useTableQueryFilter } from "../../useTableQueryFilter";
+import { FilterBar } from "../FilterBar";
+import { FilterBarMoreFilters } from "../filterBarMoreFilters/FilterBarMoreFilters";
+import { FilterBarPopoverFilter } from "../filterBarPopoverFilter/FilterBarPopoverFilter";
 
 interface ColorFilterFieldProps {
     colors: string[];
@@ -180,11 +180,15 @@ function Story({ tableData }: StoryProps) {
     );
 }
 
-export default {
-    title: "@dextinity/admin/table/filterbar",
+const meta: Meta = {
+    title: "components/table/filterbar/AllFiltersInFilterbar",
 };
 
-export const FilterbarWithAllKindsOfFilters = {
+export default meta;
+
+type Story = StoryObj;
+
+export const FilterbarWithAllKindsOfFilters: Story = {
     render: () => {
         const randomTableData = Array.from(Array(30).keys()).map((i): IExampleRow => {
             return {

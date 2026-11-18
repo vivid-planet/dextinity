@@ -1,15 +1,15 @@
-import {
-    Field,
-    FilterBar,
-    FilterBarPopoverFilter,
-    FinalFormInput,
-    FinalFormSearchTextField,
-    Table,
-    TableFilterFinalForm,
-    useTableQueryFilter,
-} from "@dextinity/admin";
 import { faker } from "@faker-js/faker";
 import { Box, Typography } from "@mui/material";
+import type { Meta, StoryObj } from "@storybook/react-vite";
+
+import { Field } from "../../../form/Field";
+import { FinalFormInput } from "../../../form/FinalFormInput";
+import { FinalFormSearchTextField } from "../../../form/FinalFormSearchTextField";
+import { Table } from "../../Table";
+import { TableFilterFinalForm } from "../../TableFilterFinalForm";
+import { useTableQueryFilter } from "../../useTableQueryFilter";
+import { FilterBar } from "../FilterBar";
+import { FilterBarPopoverFilter } from "../filterBarPopoverFilter/FilterBarPopoverFilter";
 
 interface IFilterValues {
     query: string;
@@ -117,11 +117,15 @@ function Story({ tableData }: StoryProps) {
     );
 }
 
-export default {
-    title: "@dextinity/admin/table/filterbar",
+const meta: Meta = {
+    title: "components/table/filterbar/TextFilterFieldWithoutPopover",
 };
 
-export const FilterbarWithTextFieldSearch = {
+export default meta;
+
+type Story = StoryObj;
+
+export const FilterbarWithTextFieldSearch: Story = {
     render: () => {
         const randomTableData = Array.from(Array(30).keys()).map((i): IExampleRow => {
             return {

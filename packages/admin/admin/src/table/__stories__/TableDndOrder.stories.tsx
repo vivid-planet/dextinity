@@ -1,8 +1,14 @@
-import { Button, Stack, StackLink, StackPage, StackSwitch, TableDndOrder, TableLocalChanges } from "@dextinity/admin";
 import { Stack as MuiStack } from "@mui/material";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { dndProviderDecorator } from "../../dnd.decorator";
-import { storyRouterDecorator } from "../../story-router.decorator";
+import { DndDecorator } from "../../../.storybook/decorators/Dnd.decorator";
+import { Button } from "../../common/buttons/Button";
+import { StackPage } from "../../stack/Page";
+import { Stack } from "../../stack/Stack";
+import { StackLink } from "../../stack/StackLink";
+import { StackSwitch } from "../../stack/Switch";
+import { TableDndOrder } from "../TableDndOrder";
+import { TableLocalChanges } from "../TableLocalChanges";
 
 interface IRow {
     id: string; // TODO add support for number in TableLocalChanges
@@ -10,12 +16,16 @@ interface IRow {
     task: string;
 }
 
-export default {
-    title: "@dextinity/admin/table",
-    decorators: [storyRouterDecorator(), dndProviderDecorator()],
+const meta: Meta = {
+    title: "components/table/TableDndOrder",
+    decorators: [DndDecorator],
 };
 
-export const DnDOrder = {
+export default meta;
+
+type Story = StoryObj;
+
+export const DnDOrder: Story = {
     render: () => {
         const data: IRow[] = [
             { id: "1", order: 1, task: "Write a cool JS library" },

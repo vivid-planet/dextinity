@@ -1,6 +1,14 @@
-import { Field, FilterBar, FilterBarPopoverFilter, FinalFormRangeInput, Table, TableFilterFinalForm, useTableQueryFilter } from "@dextinity/admin";
 import { faker } from "@faker-js/faker";
 import { Typography } from "@mui/material";
+import type { Meta, StoryObj } from "@storybook/react-vite";
+
+import { Field } from "../../../form/Field";
+import { FinalFormRangeInput } from "../../../form/FinalFormRangeInput";
+import { Table } from "../../Table";
+import { TableFilterFinalForm } from "../../TableFilterFinalForm";
+import { useTableQueryFilter } from "../../useTableQueryFilter";
+import { FilterBar } from "../FilterBar";
+import { FilterBarPopoverFilter } from "../filterBarPopoverFilter/FilterBarPopoverFilter";
 
 interface IFilterValues {
     horsepower: {
@@ -57,11 +65,15 @@ function Story({ tableData }: StoryProps) {
     );
 }
 
-export default {
-    title: "@dextinity/admin/table/filterbar",
+const meta: Meta = {
+    title: "components/table/filterbar/RangeInputFieldFilter",
 };
 
-export const FilterbarWithRangeInputFieldFilter = {
+export default meta;
+
+type Story = StoryObj;
+
+export const FilterbarWithRangeInputFieldFilter: Story = {
     render: () => {
         const randomTableData = Array.from(Array(30).keys()).map((i): IExampleRow => {
             return {

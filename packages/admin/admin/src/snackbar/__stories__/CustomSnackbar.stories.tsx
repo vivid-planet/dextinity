@@ -1,5 +1,8 @@
-import { Button, SnackbarProvider, useSnackbarApi } from "@dextinity/admin";
 import { List, ListItem, Snackbar } from "@mui/material";
+import type { Meta, StoryObj } from "@storybook/react-vite";
+
+import { Button } from "../../common/buttons/Button";
+import { SnackbarProvider, useSnackbarApi } from "../SnackbarProvider";
 
 let counter = 0;
 
@@ -44,14 +47,20 @@ const CustomSnackbar = () => {
     );
 };
 
-export default {
-    title: "@dextinity/admin/snackbar",
+const meta: Meta = {
+    title: "components/snackbar/CustomSnackbar",
 };
 
-export const _CustomSnackbar = () => {
-    return (
-        <SnackbarProvider>
-            <CustomSnackbar />
-        </SnackbarProvider>
-    );
+export default meta;
+
+type Story = StoryObj;
+
+export const _CustomSnackbar: Story = {
+    render: () => {
+        return (
+            <SnackbarProvider>
+                <CustomSnackbar />
+            </SnackbarProvider>
+        );
+    },
 };

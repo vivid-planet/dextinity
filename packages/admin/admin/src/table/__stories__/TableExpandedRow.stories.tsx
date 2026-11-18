@@ -1,8 +1,11 @@
-import { type ITableHeadRowProps, type ITableRowProps, Table, TableBodyRow, TableColumns, TableHeadColumns } from "@dextinity/admin";
 import { AddNoCircle } from "@dextinity/admin-icons";
 import { IconButton, TableCell } from "@mui/material";
 import TableRow from "@mui/material/TableRow";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
+
+import { type ITableHeadRowProps, type ITableRowProps, Table, TableColumns, TableHeadColumns } from "../Table";
+import { TableBodyRow } from "../TableBodyRow";
 
 interface IRow {
     id: number;
@@ -45,37 +48,43 @@ function ExampleHeadTableRow<TRow extends IRow>(props: ITableHeadRowProps<TRow>)
     );
 }
 
-export default {
-    title: "@dextinity/admin/table",
+const meta: Meta = {
+    title: "components/table/TableExpandedRow",
 };
 
-export const ExpandedRow = () => {
-    const data: IRow[] = [
-        { id: 1, foo1: "blub", foo2: "blub" },
-        { id: 2, foo1: "blub", foo2: "blub" },
-    ];
+export default meta;
 
-    return (
-        <Table
-            data={data}
-            totalCount={data.length}
-            renderTableRow={(props) => <ExpandableTableRow {...props} />}
-            renderHeadTableRow={(props) => <ExampleHeadTableRow {...props} />}
-            columns={[
-                {
-                    name: "foo1",
-                    header: "Foo1",
-                },
-                {
-                    name: "foo2",
-                    header: "Foo2",
-                    render: (row) => <strong>{row.id}</strong>,
-                },
-                {
-                    name: "bar",
-                    visible: false,
-                },
-            ]}
-        />
-    );
+type Story = StoryObj;
+
+export const ExpandedRow: Story = {
+    render: () => {
+        const data: IRow[] = [
+            { id: 1, foo1: "blub", foo2: "blub" },
+            { id: 2, foo1: "blub", foo2: "blub" },
+        ];
+
+        return (
+            <Table
+                data={data}
+                totalCount={data.length}
+                renderTableRow={(props) => <ExpandableTableRow {...props} />}
+                renderHeadTableRow={(props) => <ExampleHeadTableRow {...props} />}
+                columns={[
+                    {
+                        name: "foo1",
+                        header: "Foo1",
+                    },
+                    {
+                        name: "foo2",
+                        header: "Foo2",
+                        render: (row) => <strong>{row.id}</strong>,
+                    },
+                    {
+                        name: "bar",
+                        visible: false,
+                    },
+                ]}
+            />
+        );
+    },
 };

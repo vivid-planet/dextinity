@@ -1,11 +1,18 @@
 import { gql } from "@apollo/client";
-import { Field, FinalForm, FinalFormInput, type ISelectionApi, Selected, SelectionRoute, Table, TableQuery, useTableQuery } from "@dextinity/admin";
 import { Grid } from "@mui/material";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Redirect, Route, Switch } from "react-router";
 
 import type { Launch, LaunchesPastResult } from "../../../.storybook/mocks/handlers";
-import { apolloStoryDecorator } from "../../apollo-story.decorator";
-import { storyRouterDecorator } from "../../story-router.decorator";
+import { FinalForm } from "../../FinalForm";
+import { Field } from "../../form/Field";
+import { FinalFormInput } from "../../form/FinalFormInput";
+import { Selected } from "../../Selected";
+import type { ISelectionApi } from "../../SelectionApi";
+import { SelectionRoute } from "../../SelectionRoute";
+import { Table } from "../Table";
+import { TableQuery } from "../TableQuery";
+import { useTableQuery } from "../useTableQuery";
 
 const launchFormFragment = gql`
     fragment LaunchForm on Launch {
@@ -81,7 +88,7 @@ function ExampleForm(props: IExampleFormProps) {
     );
 }
 
-function Story() {
+function Example() {
     const { tableData, api, loading, error } = useTableQuery<IQueryData, Record<string, any>>()(query, {
         resolveTableData: (data) => ({
             data: data.launchesPastResult.data,
@@ -119,20 +126,25 @@ function Story() {
     );
 }
 
-export default {
-    title: "@dextinity/admin/table",
-    decorators: [apolloStoryDecorator("/graphql"), storyRouterDecorator()],
+const meta: Meta = {
+    title: "components/table/TableBesidesForm",
 };
 
-export const BesidesForm = () => {
-    return (
-        <Switch>
-            <Route exact path="/">
-                <Redirect to="/foo" />
-            </Route>
-            <Route path="/foo">
-                <Story />
-            </Route>
-        </Switch>
-    );
+export default meta;
+
+type Story = StoryObj;
+
+export const BesidesForm: Story = {
+    render: () => {
+        return (
+            <Switch>
+                <Route exact path="/">
+                    <Redirect to="/foo" />
+                </Route>
+                <Route path="/foo">
+                    <Example />
+                </Route>
+            </Switch>
+        );
+    },
 };

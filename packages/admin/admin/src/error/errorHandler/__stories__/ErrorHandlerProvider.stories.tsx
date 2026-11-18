@@ -1,7 +1,10 @@
-import { Alert, ErrorBoundary, ErrorHandlerProvider } from "@dextinity/admin";
 import { Box, Card, CardContent, Link, List, ListItem, ListItemText, Typography } from "@mui/material";
-import type { Meta } from "@storybook/react-vite";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { type ErrorInfo, useState } from "react";
+
+import { Alert } from "../../../alert/Alert";
+import { ErrorBoundary } from "../../errorboundary/ErrorBoundary";
+import { ErrorHandlerProvider } from "../ErrorHandlerProvider";
 
 const ThrowingView = () => {
     throw new Error("Some error occurred");
@@ -17,8 +20,8 @@ type CapturedError = {
     componentStack: string;
 };
 
-export default {
-    title: "@dextinity/admin/error-handling/error-handler-provider",
+const meta: Meta<Args> = {
+    title: "components/error/ErrorHandlerProvider",
     args: {
         renderViewWithErrors: false,
     },
@@ -28,14 +31,18 @@ export default {
             control: "boolean",
         },
     },
-} as Meta;
+};
+
+export default meta;
+
+type Story = StoryObj<Args>;
 
 type Args = {
     renderViewWithErrors: boolean;
 };
 
-export const _ErrorHandlerProvider = {
-    render: ({ renderViewWithErrors }: Args) => {
+export const _ErrorHandlerProvider: Story = {
+    render: ({ renderViewWithErrors }) => {
         const [capturedErrors, setCapturedErrors] = useState<CapturedError[]>([]);
 
         const handleError = (error: Error, errorInfo: ErrorInfo) => {

@@ -1,29 +1,32 @@
 import { gql } from "@apollo/client";
-import { Table, TableQuery, useTableQuery } from "@dextinity/admin";
+import type { Decorator, Meta, StoryObj } from "@storybook/react-vite";
 
-import { apolloSwapiStoryDecorator } from "../../apollo-story.decorator";
-import { errorDialogStoryProviderDecorator } from "../../docs/components/ErrorHandling/ErrorDialog/error-dialog-provider.decorator";
+import type { LaunchesPastResult } from "../../../.storybook/mocks/handlers";
+import { ErrorDialogHandler } from "../../error/errordialog/ErrorDialogHandler";
+import { Table } from "../Table";
+import { TableQuery } from "../TableQuery";
+import { useTableQuery } from "../useTableQuery";
 
-interface People {
-    id: string;
-    name: string;
-    birthYear: string;
-    gender: string;
-    homeworld: {
-        name: string;
-    };
-}
 interface QueryData {
-    allPeople: {
-        people: People[];
-    };
+    launchesPastResult: LaunchesPastResult;
 }
 
-export default {
-    title: "@dextinity/admin/table/globalErrorHandling",
-    decorators: [apolloSwapiStoryDecorator(), errorDialogStoryProviderDecorator()],
+const ErrorDialogHandlerDecorator: Decorator = (Story) => (
+    <>
+        <ErrorDialogHandler />
+        <Story />
+    </>
+);
+
+type Args = {
+    query: string;
+};
+
+const meta: Meta<Args> = {
+    title: "components/table/GlobalErrorHandling",
+    decorators: [ErrorDialogHandlerDecorator],
     args: {
-        query: "query StarWarsPeople {allPeople { people { id name birthYear gender homeworld{ name } } }}",
+        query: "query LaunchesPast { launchesPastResult { data { id mission_name launch_date_local } result { totalCount } } }",
     },
     argTypes: {
         query: {
@@ -32,20 +35,23 @@ export default {
     },
 };
 
-type Args = {
-    query: string;
-};
+export default meta;
 
-export const GlobalErrorHandling = {
-    render: ({ query }: Args) => {
+type Story = StoryObj<Args>;
+
+/**
+ * Change the query, for example the operation name, to make the request fail and open the global error dialog.
+ */
+export const GlobalErrorHandling: Story = {
+    render: ({ query }) => {
         const { tableData, api, loading, error } = useTableQuery<QueryData, Record<string, any>>()(
             gql`
                 ${query}
             `,
             {
                 resolveTableData: (data) => ({
-                    data: data.allPeople.people,
-                    totalCount: data.allPeople.people.length,
+                    data: data.launchesPastResult.data,
+                    totalCount: data.launchesPastResult.result.totalCount,
                 }),
                 globalErrorHandling: true,
             },
@@ -62,20 +68,12 @@ export const GlobalErrorHandling = {
                                 header: "Id",
                             },
                             {
-                                name: "name",
-                                header: "Name",
+                                name: "mission_name",
+                                header: "Mission Name",
                             },
                             {
-                                name: "birthYear",
-                                header: "Birthyear",
-                            },
-                            {
-                                name: "gender",
-                                header: "Gender",
-                            },
-                            {
-                                name: "homeworld.name",
-                                header: "Homeworld",
+                                name: "launch_date_local",
+                                header: "Launch Date",
                             },
                         ]}
                     />

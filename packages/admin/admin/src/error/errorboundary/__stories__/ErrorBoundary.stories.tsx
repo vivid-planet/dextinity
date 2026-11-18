@@ -1,6 +1,8 @@
-import { Alert, ErrorBoundary } from "@dextinity/admin";
 import { Box, Card, CardContent, Link, Typography } from "@mui/material";
-import type { Meta } from "@storybook/react-vite";
+import type { Meta, StoryObj } from "@storybook/react-vite";
+
+import { Alert } from "../../../alert/Alert";
+import { ErrorBoundary } from "../ErrorBoundary";
 
 const ViewWithNoError = () => {
     return (
@@ -19,8 +21,8 @@ const ViewWithError = () => {
     );
 };
 
-export default {
-    title: "@dextinity/admin/error-handling/error-boundaries",
+const meta: Meta<Args> = {
+    title: "components/error/ErrorBoundary",
     args: {
         renderViewWithErrors: false,
     },
@@ -30,14 +32,18 @@ export default {
             control: "boolean",
         },
     },
-} as Meta<typeof ErrorBoundary>;
+};
+
+export default meta;
+
+type Story = StoryObj<Args>;
 
 type Args = {
     renderViewWithErrors: boolean;
 };
 
-export const _ErrorBoundary = {
-    render: ({ renderViewWithErrors }: Args) => {
+export const _ErrorBoundary: Story = {
+    render: ({ renderViewWithErrors }) => {
         return (
             <>
                 <Box marginBottom={4}>

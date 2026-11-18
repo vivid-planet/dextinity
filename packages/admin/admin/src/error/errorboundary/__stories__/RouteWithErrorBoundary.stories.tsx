@@ -1,8 +1,12 @@
-import { Alert, MainNavigation, MainNavigationItemRouterLink, MasterLayout, RouteWithErrorBoundary } from "@dextinity/admin";
 import { Card, CardContent, Typography } from "@mui/material";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Redirect, Route, Switch } from "react-router";
 
-import { storyRouterDecorator } from "../../story-router.decorator";
+import { Alert } from "../../../alert/Alert";
+import { MainNavigationItemRouterLink } from "../../../mui/mainNavigation/ItemRouterLink";
+import { MainNavigation } from "../../../mui/mainNavigation/MainNavigation";
+import { MasterLayout } from "../../../mui/MasterLayout";
+import { RouteWithErrorBoundary } from "../RouteWithErrorBoundary";
 
 const ViewWithNoError = () => {
     return (
@@ -38,12 +42,15 @@ function MasterMenu() {
     );
 }
 
-export default {
-    title: "@dextinity/admin/error-handling/error-boundaries",
-    decorators: [storyRouterDecorator()],
+const meta: Meta = {
+    title: "components/error/RouteWithErrorBoundary",
 };
 
-export const _RouteWithErrorBoundary = {
+export default meta;
+
+type Story = StoryObj;
+
+export const _RouteWithErrorBoundary: Story = {
     render: () => {
         return (
             <MasterLayout menuComponent={MasterMenu}>

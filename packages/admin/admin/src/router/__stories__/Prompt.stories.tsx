@@ -1,11 +1,11 @@
-import { RouterPrompt } from "@dextinity/admin";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useEffect, useState } from "react";
 import { Redirect, Route, Switch, useLocation } from "react-router";
 import { Link } from "react-router-dom";
 
-import { storyRouterDecorator } from "../../story-router.decorator";
+import { RouterPrompt } from "../Prompt";
 
-function Story() {
+function Example() {
     return (
         <Switch>
             <Route path="/foo">
@@ -42,17 +42,20 @@ function Path() {
     return <div>{location.pathname}</div>;
 }
 
-export default {
-    title: "@dextinity/admin/router",
-    decorators: [storyRouterDecorator()],
+const meta: Meta = {
+    title: "components/router/Prompt",
 };
 
-export const NestedRouteWithNonSubPathRouteInPrompt = {
+export default meta;
+
+type Story = StoryObj;
+
+export const NestedRouteWithNonSubPathRouteInPrompt: Story = {
     render: () => {
         return (
             <>
                 <Path />
-                <Story />
+                <Example />
             </>
         );
     },

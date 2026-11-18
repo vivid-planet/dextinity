@@ -1016,6 +1016,9 @@ importers:
       '@emotion/styled':
         specifier: ^11.14.1
         version: 11.14.1(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.1)(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.1)(supports-color@8.1.1)
+      '@faker-js/faker':
+        specifier: ^10.6.0
+        version: 10.6.0
       '@mui/material':
         specifier: ^7.3.11
         version: 7.3.11(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.1)(supports-color@8.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.1)(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.1)(supports-color@8.1.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -1127,6 +1130,9 @@ importers:
       react-dnd:
         specifier: ^16.0.1
         version: 16.0.1(@types/hoist-non-react-statics@3.3.7(@types/react@19.3.0))(@types/node@24.19.2)(@types/react@19.3.0)(react@19.3.1)
+      react-dnd-html5-backend:
+        specifier: ^16.0.1
+        version: 16.0.1
       react-dom:
         specifier: ^19.3.1
         version: 19.3.1(react@19.3.1)

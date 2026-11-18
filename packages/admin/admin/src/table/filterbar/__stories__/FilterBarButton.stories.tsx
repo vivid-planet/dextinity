@@ -1,8 +1,10 @@
-import { FilterBarButton } from "@dextinity/admin";
 import { ChevronDown } from "@dextinity/admin-icons";
 import { List, ListItem } from "@mui/material";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 
-function Story() {
+import { FilterBarButton } from "../filterBarButton/FilterBarButton";
+
+function Example() {
     return (
         <List>
             <ListItem>
@@ -49,10 +51,16 @@ function Story() {
     );
 }
 
-export default {
-    title: "@dextinity/admin/table/filterbar",
+const meta: Meta = {
+    title: "components/table/filterbar/FilterBarButton",
 };
 
-export const _FilterBarButton = () => {
-    return <Story />;
+export default meta;
+
+type Story = StoryObj;
+
+export const _FilterBarButton: Story = {
+    render: () => {
+        return <Example />;
+    },
 };

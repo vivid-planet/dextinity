@@ -1,24 +1,22 @@
-import {
-    Button,
-    Field,
-    FillSpace,
-    FinalForm,
-    FinalFormInput,
-    MainContent,
-    Selected,
-    Stack,
-    StackPage,
-    StackSwitch,
-    Table,
-    Toolbar,
-    ToolbarActions,
-    ToolbarItem,
-    useEditDialog,
-} from "@dextinity/admin";
 import { Add as AddIcon, Edit as EditIcon } from "@dextinity/admin-icons";
 import { DialogContent, IconButton, Typography } from "@mui/material";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { storyRouterDecorator } from "../../story-router.decorator";
+import { Button } from "../../common/buttons/Button";
+import { FillSpace } from "../../common/FillSpace";
+import { MainContent } from "../../common/MainContent";
+import { ToolbarActions } from "../../common/toolbar/actions/ToolbarActions";
+import { ToolbarItem } from "../../common/toolbar/item/ToolbarItem";
+import { Toolbar } from "../../common/toolbar/Toolbar";
+import { useEditDialog } from "../../editDialog/EditDialog";
+import { FinalForm } from "../../FinalForm";
+import { Field } from "../../form/Field";
+import { FinalFormInput } from "../../form/FinalFormInput";
+import { Selected } from "../../Selected";
+import { StackPage } from "../../stack/Page";
+import { Stack } from "../../stack/Stack";
+import { StackSwitch } from "../../stack/Switch";
+import { Table } from "../Table";
 
 interface IExampleRow {
     id: number;
@@ -44,12 +42,15 @@ function EditForm(props: IEditFormProps) {
     );
 }
 
-export default {
-    title: "@dextinity/admin/table",
-    decorators: [storyRouterDecorator()],
+const meta: Meta = {
+    title: "components/table/TableStackEditDialogHooks",
 };
 
-export const StackEditDialogHooks = {
+export default meta;
+
+type Story = StoryObj;
+
+export const StackEditDialogHooks: Story = {
     render: () => {
         const data: IExampleRow[] = [
             { id: 1, foo: "blub", bar: "blub" },

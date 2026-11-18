@@ -1,9 +1,9 @@
-import { SubRouteIndexRoute, useSubRoutePrefix } from "@dextinity/admin";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useEffect, useState } from "react";
 import { Redirect, Route, Switch, useLocation } from "react-router";
 import { Link } from "react-router-dom";
 
-import { storyRouterDecorator } from "../../story-router.decorator";
+import { SubRouteIndexRoute, useSubRoutePrefix } from "../SubRoute";
 
 function Cmp1() {
     const urlPrefix = useSubRoutePrefix();
@@ -22,7 +22,7 @@ function Cmp1() {
     );
 }
 
-function Story() {
+function Example() {
     return (
         <div>
             <Switch>
@@ -47,12 +47,15 @@ function Path() {
     return <div>{location.pathname}</div>;
 }
 
-export default {
-    title: "@dextinity/admin/router",
-    decorators: [storyRouterDecorator()],
+const meta: Meta = {
+    title: "components/router/SubRouteNestedIndex",
 };
 
-export const SubrouteNestedIndex = {
+export default meta;
+
+type Story = StoryObj;
+
+export const SubrouteNestedIndex: Story = {
     render: () => {
         return (
             <>
@@ -62,7 +65,7 @@ export const SubrouteNestedIndex = {
                         <Redirect to="/foo" />
                     </Route>
                     <Route path="/foo">
-                        <Story />
+                        <Example />
                     </Route>
                 </Switch>
             </>

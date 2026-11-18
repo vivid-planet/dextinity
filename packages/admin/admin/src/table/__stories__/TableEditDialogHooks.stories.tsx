@@ -1,29 +1,30 @@
-import {
-    Button,
-    Field,
-    FillSpace,
-    FinalForm,
-    FinalFormInput,
-    MainContent,
-    Selected,
-    Table,
-    Toolbar,
-    ToolbarActions,
-    ToolbarItem,
-    useEditDialog,
-} from "@dextinity/admin";
 import { Add as AddIcon, Edit as EditIcon } from "@dextinity/admin-icons";
 import { DialogContent, IconButton, Typography } from "@mui/material";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useMemo, useState } from "react";
 
-import { storyRouterDecorator } from "../../story-router.decorator";
+import { Button } from "../../common/buttons/Button";
+import { FillSpace } from "../../common/FillSpace";
+import { MainContent } from "../../common/MainContent";
+import { ToolbarActions } from "../../common/toolbar/actions/ToolbarActions";
+import { ToolbarItem } from "../../common/toolbar/item/ToolbarItem";
+import { Toolbar } from "../../common/toolbar/Toolbar";
+import { useEditDialog } from "../../editDialog/EditDialog";
+import { FinalForm } from "../../FinalForm";
+import { Field } from "../../form/Field";
+import { FinalFormInput } from "../../form/FinalFormInput";
+import { Selected } from "../../Selected";
+import { Table } from "../Table";
 
-export default {
-    title: "@dextinity/admin/table",
-    decorators: [storyRouterDecorator()],
+const meta: Meta = {
+    title: "components/table/TableEditDialogHooks",
 };
 
-export const EditDialogHooks = {
+export default meta;
+
+type Story = StoryObj;
+
+export const EditDialogHooks: Story = {
     render: () => {
         interface IEditFormProps {
             row?: IExampleRow;

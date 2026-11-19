@@ -1,3 +1,5 @@
+import "./smallListStyles";
+
 import { createTipTapRichTextBlock, MjmlColumn, MjmlSection, type PropsWithData, withPreview } from "@dextinity/mail-react";
 import type { MailRichTextBlockData, PhoneLinkBlockData } from "@src/blocks.generated";
 

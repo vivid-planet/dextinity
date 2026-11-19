@@ -6,14 +6,12 @@ import { MailImageBlock } from "@src/mail/blocks/MailImageBlock";
 import { MailRichTextBlock } from "@src/mail/blocks/MailRichTextBlock";
 import { MailSpacerBlock } from "@src/mail/blocks/MailSpacerBlock";
 import { MailTwoColumnsBlock } from "@src/mail/blocks/MailTwoColumnsBlock";
-import { MailTwoListSizesRichTextBlock } from "@src/mail/blocks/MailTwoListSizesRichTextBlock";
 
 export const WelcomeEmailContentBlock = createBlocksBlock({
     name: "WelcomeEmailContent",
     supportedBlocks: {
         heading: MailHeadingBlock,
         text: MailRichTextBlock,
-        twoListSizesText: MailTwoListSizesRichTextBlock,
         image: MailImageBlock,
         button: MailButtonBlock,
         divider: MailDividerBlock,

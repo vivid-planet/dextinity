@@ -135,6 +135,16 @@ describe("set_<entity>_grid_view", () => {
     });
 });
 
+it("runs every tool without the user's approval, because none changes data", () => {
+    const { tools } = createTools();
+
+    expect(tools.map(({ name, readOnlyHint }) => [name, readOnlyHint])).toEqual([
+        ["get_news_grid_rows", true],
+        ["set_news_grid_view", true],
+        ["open_news_form", true],
+    ]);
+});
+
 describe("open_<entity>_form", () => {
     it("opens the form of a row, or the form for a new one without an ID", () => {
         const { call, openForm } = createTools();

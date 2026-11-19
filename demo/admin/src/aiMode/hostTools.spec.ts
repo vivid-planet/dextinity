@@ -69,6 +69,10 @@ describe("open_admin_page", () => {
         expect(JSON.stringify(tool.inputSchema)).toContain("/system/redirects: System › Redirects");
     });
 
+    it("runs without the user's approval, because it only navigates", () => {
+        expect(getOpenAdminPage().tool.readOnlyHint).toBe(true);
+    });
+
     it("opens a page in the current content scope", () => {
         const { call, navigate } = getOpenAdminPage();
 
@@ -93,6 +97,10 @@ describe("open_page", () => {
         call({ id: nodeId, category: "topMenu" });
 
         expect(navigate).toHaveBeenCalledWith(`${scopeUrl}/pages/pagetree/top-menu/${nodeId}/edit`);
+    });
+
+    it("runs without the user's approval, because it only navigates", () => {
+        expect(findTool(createPageTreeTools({ navigate: vi.fn(), scopeUrl }), "open_page").readOnlyHint).toBe(true);
     });
 
     it("doesn't claim the page is open, as the user may decide to stay on a page with unsaved changes", () => {

@@ -6,11 +6,13 @@ import {
     type KeyboardEvent,
     type PropsWithChildren,
     type ReactNode,
+    useCallback,
     useEffect,
     useLayoutEffect,
     useRef,
     useState,
 } from "react";
+import { createPortal } from "react-dom";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
@@ -118,8 +120,29 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
     const ownerState: AppShellOwnerState = { layout, navCollapsed, assistantOpen: hasAssistant && assistantOpen };
     const [navDrawerOpen, setNavDrawerOpen] = useState(false);
     const { anchorRef, container } = useThemePortalContainer<HTMLSpanElement>();
-    const assistantRef = useRef<HTMLElement>(null);
+    const assistantRef = useRef<HTMLElement | null>(null);
     const assistantSwitchRef = useRef<HTMLButtonElement>(null);
+    // The assistant renders into one element that moves between the column and the narrow sheet, so its state, e.g. a conversation,
+    // survives when the window crosses the breakpoint
+    const [assistantHost] = useState(() => (typeof document === "undefined" ? null : document.createElement("div")));
+    const attachAssistantHost = useCallback(
+        (node: HTMLElement | null) => {
+            // Moving the element blurs what has focus in it, so it only moves when its parent changes
+            if (node != null && assistantHost != null && assistantHost.parentNode !== node) {
+                assistantHost.className = styles.assistantHost;
+                node.appendChild(assistantHost);
+            }
+        },
+        [assistantHost],
+    );
+    const attachAssistantColumn = useCallback(
+        (node: HTMLElement | null) => {
+            assistantRef.current = node;
+            attachAssistantHost(node);
+        },
+        [attachAssistantHost],
+    );
+    const findAssistantFocusTarget = () => assistantHost?.querySelector<HTMLElement>("[data-autofocus], textarea, input") ?? null;
 
     const focusInAssistantRef = useRef(false);
     const changeAssistantOpen = (open: boolean) => onAssistantOpenChange?.(open);
@@ -139,15 +162,15 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
             return;
         }
         const timeout = window.setTimeout(() => {
-            const assistantElement = assistantRef.current;
-            const target = assistantElement?.querySelector<HTMLElement>("[data-autofocus], textarea, input") ?? assistantElement;
-            target?.focus();
+            (findAssistantFocusTarget() ?? assistantRef.current)?.focus();
         }, assistantFocusDelay);
         return () => window.clearTimeout(timeout);
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- the focus target is looked up when the timeout fires
     }, [ownerState.assistantOpen, layout]);
 
     const onAssistantKeyDown = (event: KeyboardEvent<HTMLElement>) => {
-        if (event.key === "Escape" && !event.defaultPrevented) {
+        // On narrow windows, the sheet closes on Escape itself
+        if (event.key === "Escape" && !event.defaultPrevented && layout !== "narrow") {
             event.preventDefault();
             changeAssistantOpen(false);
         }
@@ -213,33 +236,46 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
                     <BaseDialog.Root open={assistantOpen} onOpenChange={(open) => changeAssistantOpen(open)}>
                         <BaseDialog.Portal container={container} keepMounted>
                             <BaseDialog.Backdrop className={styles.backdrop} />
-                            <BaseDialog.Popup aria-label={labels.assistant} className={styles.assistantSheet}>
-                                {assistant}
+                            <BaseDialog.Popup
+                                aria-label={labels.assistant}
+                                initialFocus={() => findAssistantFocusTarget() ?? true}
+                                finalFocus={() => assistantSwitchRef.current ?? true}
+                                className={styles.assistantSheet}
+                            >
+                                <div ref={attachAssistantHost} className={styles.assistantSheetBody} />
                             </BaseDialog.Popup>
                         </BaseDialog.Portal>
                     </BaseDialog.Root>
                 ) : (
                     <div className={styles.assistant}>
                         <aside
-                            ref={assistantRef}
+                            ref={attachAssistantColumn}
                             aria-label={labels.assistant}
                             tabIndex={-1}
                             inert={!assistantOpen}
-                            onKeyDown={onAssistantKeyDown}
-                            onFocus={() => {
-                                focusInAssistantRef.current = true;
-                            }}
-                            onBlur={(event) => {
-                                if (!event.currentTarget.contains(event.relatedTarget)) {
-                                    focusInAssistantRef.current = false;
-                                }
-                            }}
                             className={styles.assistantPanel}
-                        >
-                            {assistant}
-                        </aside>
+                        />
                     </div>
                 ))}
+            {hasAssistant &&
+                assistantHost != null &&
+                createPortal(
+                    <div
+                        onKeyDown={onAssistantKeyDown}
+                        onFocus={() => {
+                            focusInAssistantRef.current = true;
+                        }}
+                        onBlur={(event) => {
+                            if (!event.currentTarget.contains(event.relatedTarget)) {
+                                focusInAssistantRef.current = false;
+                            }
+                        }}
+                        className={styles.assistantContent}
+                    >
+                        {assistant}
+                    </div>,
+                    assistantHost,
+                )}
             <div className={styles.grain} aria-hidden />
         </div>
     );

@@ -67,10 +67,10 @@ const suggestions = ["Which job ads have no salary?", "What changed since yester
  */
 function StoryAssistant({ onClose }: { onClose?: () => void }) {
     const [message, setMessage] = useState("");
-    const [messages, setMessages] = useState<string[]>([]);
+    const [messages, setMessages] = useState<Array<{ id: number; text: string }>>([]);
     const send = (text: string) => {
         if (text.trim() !== "") {
-            setMessages((previous) => [...previous, text]);
+            setMessages((previous) => [...previous, { id: previous.length === 0 ? 1 : previous[previous.length - 1].id + 1, text }]);
             setMessage("");
         }
     };
@@ -108,9 +108,9 @@ function StoryAssistant({ onClose }: { onClose?: () => void }) {
                         </Button>
                     </div>
                 </div>
-                {messages.map((text, index) => (
-                    <div key={`${index}-${text}`} className={styles.message} data-from="user">
-                        {text}
+                {messages.map((message) => (
+                    <div key={message.id} className={styles.message} data-from="user">
+                        {message.text}
                     </div>
                 ))}
                 {messages.length > 0 && (

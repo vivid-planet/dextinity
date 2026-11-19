@@ -52,6 +52,11 @@
     .root[data-icononly] & {
         display: none;
     }
+
+    // Hides the label where the scope picker hides its text too, e.g. while the assistant column narrows the page
+    @container dextinity-shell-bar (max-width: 600px) {
+        display: none;
+    }
 }
 
 .track {

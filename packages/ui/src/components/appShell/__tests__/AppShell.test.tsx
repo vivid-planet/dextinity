@@ -1,4 +1,5 @@
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { useState } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { AiAssistantSwitch } from "../../aiAssistantSwitch/AiAssistantSwitch";
@@ -179,5 +180,32 @@ describe("AppShell", () => {
         expect(screen.getByRole("dialog", { name: "AI assistant" })).toBeTruthy();
         // The open sheet is modal, so it hides the rest of the page, the switch included, from assistive technology
         expect(screen.getByRole("switch", { name: "AI assistant", hidden: true }).hasAttribute("data-icononly")).toBe(true);
+    });
+
+    it("keeps the assistant's state when the window crosses the narrow breakpoint", () => {
+        windowWidth = 1440;
+        function StatefulAssistant() {
+            const [draft, setDraft] = useState("");
+            return <textarea aria-label="Message" value={draft} onChange={(event) => setDraft(event.target.value)} />;
+        }
+        const renderShellElement = () => (
+            <AppShell
+                nav={<span />}
+                topBar={<TopBar />}
+                navCollapsed={false}
+                onNavCollapsedChange={vi.fn()}
+                assistant={<StatefulAssistant />}
+                assistantOpen
+            >
+                Content
+            </AppShell>
+        );
+        const { rerender } = render(renderShellElement());
+        fireEvent.change(screen.getByRole("textbox", { name: "Message" }), { target: { value: "Which job ads have no salary?" } });
+
+        windowWidth = 600;
+        rerender(renderShellElement());
+        const sheet = screen.getByRole("dialog", { name: "AI assistant" });
+        expect(sheet.querySelector("textarea")?.value).toBe("Which job ads have no salary?");
     });
 });

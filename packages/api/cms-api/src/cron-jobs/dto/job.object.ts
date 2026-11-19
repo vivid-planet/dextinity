@@ -3,6 +3,7 @@ import { Field, ID, ObjectType } from "@nestjs/graphql";
 import { KubernetesJobStatus } from "../../kubernetes/job-status.enum";
 import { LABEL_ANNOTATION } from "../../kubernetes/kubernetes.constants";
 import { toLegacyName } from "../../kubernetes/kubernetes-metadata";
+import { JobAttempt } from "./job-attempt.object";
 
 @ObjectType("KubernetesJob")
 export class Job {
@@ -26,4 +27,13 @@ export class Job {
 
     @Field({ nullable: true })
     completionTime?: Date;
+
+    /** Resolved by `JobsResolver.attempts` if not already set */
+    attempts?: JobAttempt[];
+
+    @Field({ nullable: true, description: "Reason of the Job's Failed condition, e.g. BackoffLimitExceeded or DeadlineExceeded" })
+    failureReason?: string;
+
+    @Field({ nullable: true, description: "Message of the Job's Failed condition" })
+    failureMessage?: string;
 }

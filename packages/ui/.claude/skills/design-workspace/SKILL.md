@@ -15,7 +15,7 @@ The workspace is a story of the `@dextinity/ui` Storybook: `Workspace/Shell` (`s
 | A clickable prototype of an app                | A story in `src/storybook/workspace/__stories__/WorkspacePrototypes.stories.tsx`, plus its entry in `src/storybook/workspace/prototypes.ts` |
 | A change to a component the designer asked for | The component itself, in its own pull request, as any other change of the package                                                           |
 
-Keep each change that is meant for review on its own branch from `next`, so it can become its own pull request. The designer's link shows a branch that merges all of them (see [The link](#the-link)).
+Keep each change that is meant for review on its own branch, so it can become its own pull request (see [Pull requests](#pull-requests)). The designer's link shows a branch that merges all of them (see [The link](#the-link)).
 
 ## Prototypes
 
@@ -53,3 +53,12 @@ The build keeps the file names stable and bundles the stories into a few files, 
 ## Checking a change
 
 Look at every visual change before publishing it, at a desktop, a tablet, and a phone width: serve the build directory (`python3 -m http.server`) and take screenshots with Playwright of `iframe.html?id=workspace-shell--shell&viewMode=story`. In the build, the workspace keeps its settings in `localStorage`, so a fresh browser context starts from the defaults.
+
+## Pull requests
+
+Open a pull request only when the designer asks for one. A designer usually doesn't read GitHub, so report what happens on it in the session.
+
+- Branch from `next`. When the change builds on a branch whose pull request isn't merged yet, branch from that branch and open the pull request against it, so the diff shows only the new change. Once the pull request below is merged, change the base to `next`.
+- Open it as a draft and set it to ready for review once CI is green, so Greptile reviews a finished change. Fix Greptile's findings until it scores 5/5, and reply to its threads.
+- Add screenshots of every visual change, at the widths you checked it at. Upload them to the `pr-screenshots` branch, which has no shared history with the code, in a folder named after the pull request, and link them by commit, e.g. `https://raw.githubusercontent.com/vivid-planet/dextinity/<commit>/<pull request number>/<name>.png`, so a later push to the branch doesn't change the images.
+- Changes to the workspace and the prototypes are Storybook-only and need no changeset; a change to a component does.

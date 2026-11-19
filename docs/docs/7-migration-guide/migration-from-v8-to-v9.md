@@ -1219,6 +1219,37 @@ export function createGraphQLFetch() {
 }
 ```
 
+#### Set `expireTime` in the Next.js config file
+
+Since Next.js 15, the `stale-while-revalidate` value of the `Cache-Control` header for ISR pages is calculated from the `expireTime` option, which defaults to one year.
+With the default revalidate time of 7.5 minutes, the header changes as follows:
+
+```
+// Next.js 14
+max-age=14400, s-maxage=450, stale-while-revalidate
+
+// Next.js 16
+s-maxage=450, stale-while-revalidate=31535550
+```
+
+Without a value, `stale-while-revalidate` is invalid and gets ignored by CDNs.
+With Next.js 16, a CDN that honors `stale-while-revalidate` may serve an outdated page for up to a year, for instance, a page that has since been hidden or deleted.
+
+Set `expireTime` to twice the revalidate time to keep the effective cache duration at 15 minutes:
+
+```diff title="site/next.config.mjs"
+const nextConfig = {
++   expireTime: 900,
+    // ...
+};
+```
+
+This results in the following header:
+
+```
+s-maxage=450, stale-while-revalidate=450
+```
+
 #### Store the wrapped cache value in the in-memory fallback in `cache-handler.ts`
 
 :::danger Very important — the site can crash in production if this is missing

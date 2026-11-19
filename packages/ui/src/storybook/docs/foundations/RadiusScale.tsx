@@ -6,11 +6,14 @@ import styles from "./Foundations.module.scss";
 import { useComputedTokens } from "./useComputedTokens";
 
 const radii = [
+    { token: "--dextinity-radius-small", name: "6 × r", usage: "Segmented control options" },
     { token: "--dextinity-radius-item", name: "8 × r", usage: "Menu items, tags" },
-    { token: "--dextinity-radius-control", name: "Control", usage: "Controls (set by the brand)" },
+    { token: "--dextinity-radius-control", name: "Control", usage: "Controls, navigation entries, chips (set by the brand)" },
+    { token: "--dextinity-radius-row", name: "8 × r", usage: "Hover areas of rows" },
     { token: "--dextinity-radius-field", name: "14 × r", usage: "Inputs on glass, blocks" },
-    { token: "--dextinity-radius-row", name: "20 × r", usage: "Rows, menus" },
-    { token: "--dextinity-radius-panel", name: "30 × r", usage: "Panels" },
+    { token: "--dextinity-radius-panel", name: "14 × r", usage: "Panels, cards, top bar" },
+    { token: "--dextinity-radius-overlay", name: "20 × r", usage: "Menus, popovers, dialogs" },
+    { token: "--dextinity-radius-frame", name: "30 × r", usage: "Side navigation, command palette" },
     { token: "--dextinity-radius-pill", name: "Pill", usage: "Pills, switches" },
 ];
 

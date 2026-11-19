@@ -10,7 +10,7 @@
     // Edge highlight and shadow of the navigation
     --dextinity-side-nav-shadow: var(--dextinity-material-edge-shadow), var(--dextinity-shadow-2);
     // Corner radius of the navigation
-    --dextinity-side-nav-radius: var(--dextinity-radius-panel);
+    --dextinity-side-nav-radius: var(--dextinity-radius-frame);
     // Line between groups and above the footer
     --dextinity-side-nav-separator-color: var(--dextinity-material-edge);
 
@@ -38,7 +38,7 @@
     // Space above and below an entry's label
     --dextinity-side-nav-item-padding-block: 7px;
     // Corner radius of an entry
-    --dextinity-side-nav-item-radius: var(--dextinity-radius-field);
+    --dextinity-side-nav-item-radius: var(--dextinity-radius-control);
     // Text size of an entry's label
     --dextinity-side-nav-item-font-size: 13.5px;
     // Text color of an entry

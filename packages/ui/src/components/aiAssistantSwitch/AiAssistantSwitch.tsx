@@ -38,12 +38,12 @@ export interface AiAssistantSwitchSlotProps {
 
 export interface AiAssistantSwitchProps extends Omit<
     ButtonHTMLAttributes<HTMLButtonElement>,
-    "className" | "children" | "type" | "role" | "aria-checked"
+    "className" | "children" | "type" | "role" | "aria-checked" | "onChange"
 > {
     /** Whether the assistant is shown. Inside `AppShell`, leave it unset: the switch follows the shell's assistant. */
     checked?: boolean;
     /** Called to show or hide the assistant. Inside `AppShell`, leave it unset. */
-    onCheckedChange?: (checked: boolean) => void;
+    onChange?: (checked: boolean) => void;
     /** Shows only the icon and the switch. Inside `AppShell`, leave it unset: the label is hidden on narrow windows. */
     iconOnly?: boolean;
     /**
@@ -75,7 +75,7 @@ export interface AiAssistantSwitchProps extends Omit<
 export const AiAssistantSwitch = forwardRef<HTMLButtonElement, AiAssistantSwitchProps>(function AiAssistantSwitch(
     {
         checked: checkedProp,
-        onCheckedChange: onCheckedChangeProp,
+        onChange: onChangeProp,
         iconOnly: iconOnlyProp,
         icon = <Icon name="spark" />,
         keyboardShortcut = "mod+j",
@@ -90,7 +90,7 @@ export const AiAssistantSwitch = forwardRef<HTMLButtonElement, AiAssistantSwitch
     const shell = useAppShellContext();
     const labels = { ...defaultLabels, ...labelsProp };
     const checked = checkedProp ?? shell?.assistantOpen ?? false;
-    const onCheckedChange = onCheckedChangeProp ?? shell?.onAssistantOpenChange;
+    const onChange = onChangeProp ?? shell?.onAssistantOpenChange;
     const iconOnly = iconOnlyProp ?? shell?.layout === "narrow";
     const ownerState: AiAssistantSwitchOwnerState = { checked, iconOnly };
     const ariaKeyShortcuts = useAriaKeyShortcuts(keyboardShortcut);
@@ -140,7 +140,7 @@ export const AiAssistantSwitch = forwardRef<HTMLButtonElement, AiAssistantSwitch
                 onClick={(event: MouseEvent<HTMLButtonElement>) => {
                     onClick?.(event);
                     if (!event.defaultPrevented) {
-                        onCheckedChange?.(!checked);
+                        onChange?.(!checked);
                     }
                 }}
                 className={clsx(styles.root, className)}

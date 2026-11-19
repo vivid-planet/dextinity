@@ -69,6 +69,10 @@
     }
 
     @include forced-colors.edge;
+
+    .root[aria-checked="true"] & {
+        @include forced-colors.fill(Highlight);
+    }
 }
 
 .thumb {
@@ -86,5 +90,13 @@
         transform: translateX(calc(var(--dextinity-ai-assistant-switch-track-width) - var(--dextinity-ai-assistant-switch-track-height)));
     }
 
+    .root[aria-checked="true"]:dir(rtl) & {
+        transform: translateX(calc(var(--dextinity-ai-assistant-switch-track-height) - var(--dextinity-ai-assistant-switch-track-width)));
+    }
+
     @include forced-colors.fill;
+
+    .root[aria-checked="true"] & {
+        @include forced-colors.fill(HighlightText);
+    }
 }

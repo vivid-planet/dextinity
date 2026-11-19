@@ -33,11 +33,10 @@ const StyledFilterBarButton = createComponentSlot(FilterBarButton)<FilterBarMore
 /**
  * @deprecated Use MUI X Data Grid in combination with `useDataGridRemote` instead.
  */
-export interface FilterBarMoreFiltersProps
-    extends ThemedComponentBaseProps<{
-        root: "div";
-        button: typeof FilterBarButton;
-    }> {
+export interface FilterBarMoreFiltersProps extends ThemedComponentBaseProps<{
+    root: "div";
+    button: typeof FilterBarButton;
+}> {
     icon?: ReactNode;
 }
 

@@ -683,7 +683,7 @@ describe("UserPermissionsGuard", () => {
 
     it("fails when RequiredPermission decorator is missing", async () => {
         mockAnnotations({});
-        expect(async () =>
+        await expect(async () =>
             guard.canActivate(
                 mockContext({
                     userPermissions: [{ permission: permissions.p1, contentScopes: [] }],
@@ -699,7 +699,7 @@ describe("UserPermissionsGuard", () => {
                 options: { skipScopeCheck: true },
             },
         });
-        expect(async () =>
+        await expect(async () =>
             guard.canActivate(
                 mockContext({
                     userPermissions: [{ permission: permissions.p1, contentScopes: [] }],
@@ -715,7 +715,7 @@ describe("UserPermissionsGuard", () => {
                 options: { skipScopeCheck: false },
             },
         });
-        expect(async () =>
+        await expect(async () =>
             guard.canActivate(
                 mockContext({
                     userPermissions: [{ permission: permissions.p1, contentScopes: [{ a: "a" }] }],

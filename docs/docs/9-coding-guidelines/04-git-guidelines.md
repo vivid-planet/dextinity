@@ -19,6 +19,7 @@ A clean Git history can be achieved in two ways:
 ### Rules
 
 - One merge request per change (feature, fix, or refactoring)
+- Don't write in the description what the reader can get from the diff: no code copied from it, no account of how the code changes. A usage example of a new API is fine.
 - If the `main` pipeline is red (i.e., not passing), nothing may be merged unless it contributes to fixing the issue (see also environments in [Kubernetes](./kubernetes))
 
 ### Goal
@@ -135,6 +136,37 @@ Add margin
 
 :::tip Good
 Add margin to nav items to prevent them from overlapping the logo
+:::
+
+Don't write in the body what the reader can get from the diff: no code copied from it, no account of how the code changes. A usage example of a new API is fine.
+:::warning Bad
+
+````
+Separate multiple selected values in a select
+
+The labels were rendered as an array, so React showed them without a
+separator.
+
+Join the labels with `", "` in `renderValue`:
+
+```tsx
+renderValue={() => value.map((item) => getOptionLabel(item)).join(", ")}
+```
+
+The single-value branch is unchanged.
+````
+
+:::
+
+:::tip Good
+
+```
+Separate multiple selected values in a select
+
+The labels were rendered as an array, so React showed them without a
+separator: `value-2value-1` instead of `value-2, value-1`.
+```
+
 :::
 
 <br/>

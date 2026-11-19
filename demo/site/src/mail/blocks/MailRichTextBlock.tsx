@@ -1,7 +1,7 @@
-import { createRichTextBlock, MjmlColumn, MjmlSection, type PropsWithData } from "@dextinity/mail-react";
+import { createRichTextBlock, MjmlColumn, MjmlSection, type PropsWithData, withPreview } from "@dextinity/mail-react";
 import type { PhoneLinkBlockData, RichTextBlockData } from "@src/blocks.generated";
 
-const { MjmlRichTextBlock } = createRichTextBlock({
+export const { MjmlRichTextBlock } = createRichTextBlock({
     blockTypes: {
         title: { variant: "title" },
         header: { variant: "header" },
@@ -12,12 +12,15 @@ const { MjmlRichTextBlock } = createRichTextBlock({
     },
 });
 
-export const MailRichTextBlock = ({ data }: PropsWithData<RichTextBlockData>) => {
-    return (
-        <MjmlSection indent>
-            <MjmlColumn>
-                <MjmlRichTextBlock data={data} />
-            </MjmlColumn>
-        </MjmlSection>
-    );
-};
+export const MailRichTextBlock = withPreview<PropsWithData<RichTextBlockData>>(
+    ({ data, className }) => {
+        return (
+            <MjmlSection indent className={className}>
+                <MjmlColumn>
+                    <MjmlRichTextBlock data={data} />
+                </MjmlColumn>
+            </MjmlSection>
+        );
+    },
+    { label: "Text" },
+);

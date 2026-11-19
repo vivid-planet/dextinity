@@ -22,6 +22,10 @@ function hashQuery(query: string): string {
     return createHash("sha256").update(query).digest("hex");
 }
 
+function getFragmentName(query: string): string | undefined {
+    return query.match(/^\s*fragment\s+(\w+)\s+on\s+\w+/)?.[1];
+}
+
 // This regex matches gql`...` template literals, including multiline queries
 const gqlTagRegex = /gql`([\s\S]*?)`/gm;
 
@@ -35,11 +39,20 @@ const webpackPersistedQueriesLoader = function (this: LoaderContext<GqlHashLoade
     while ((match = gqlTagRegex.exec(source)) !== null) {
         const query = (match as RegExpExecArray)[1];
         const hash = hashQuery(query);
+        const fragmentName = getFragmentName(query);
+        if (fragmentName) {
+            // persistedQueryRoute resolves fragments by name, so a previous version (e.g. before an undo) must not shadow this one
+            for (const [existingHash, existingQuery] of Object.entries(hashMap)) {
+                if (existingHash !== hash && getFragmentName(existingQuery) === fragmentName) {
+                    delete hashMap[existingHash];
+                }
+            }
+        }
         hashMap[hash] = query;
         const fragmentVariables = Array.from(query.matchAll(/\${.*?}/g) ?? [])
             .map((m) => m[0])
             .join(" ");
-        if (query.match(/^\s*fragment\s+(\w+)\s+on\s+\w+/)) {
+        if (fragmentName) {
             // fragment
             replacements.push({
                 start: match.index,

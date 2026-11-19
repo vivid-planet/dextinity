@@ -1,6 +1,8 @@
 import type { SxProps, Theme } from "@mui/material";
 
-export const dataGridStyles: SxProps<Theme> = (theme) => ({
+export const lastContentColumnClassName = "TableBlock-lastContentColumn";
+
+const getCommonDataGridStyles = (theme: Theme) => ({
     "--DataGrid-rowBorderColor": theme.palette.grey[100],
     borderLeft: 0,
     borderRight: 0,
@@ -27,9 +29,12 @@ export const dataGridStyles: SxProps<Theme> = (theme) => ({
             boxShadow: "none",
         },
 
-        "&:nth-last-of-type(4)": {
-            // The last non-pinned cell should not have a border, as the pinned column already has one
+        [`&.${lastContentColumnClassName}`]: {
             borderRight: "none",
+        },
+
+        '&[data-field="actions"]': {
+            borderLeft: `1px solid ${theme.palette.grey[100]}`,
         },
     },
 
@@ -52,13 +57,13 @@ export const dataGridStyles: SxProps<Theme> = (theme) => ({
             boxShadow: "none",
         },
 
-        "&:nth-last-of-type(3)": {
-            // The last non-pinned cell should not have a border, as the pinned column already has one
+        [`&.${lastContentColumnClassName}`]: {
             borderRight: "none",
         },
 
         '&[data-field="actions"]': {
             display: "flex",
+            borderLeft: `1px solid ${theme.palette.grey[100]}`,
             borderRight: "none",
             justifyContent: "center",
             alignItems: "center",
@@ -68,5 +73,18 @@ export const dataGridStyles: SxProps<Theme> = (theme) => ({
 
     ".MuiDataGrid-columnSeparator": {
         display: "none",
+    },
+});
+
+export const dataGridStyles: SxProps<Theme> = (theme) => getCommonDataGridStyles(theme);
+
+export const freeDataGridStyles: SxProps<Theme> = (theme) => ({
+    ...getCommonDataGridStyles(theme),
+
+    '.MuiDataGrid-cell[data-field="actions"], .MuiDataGrid-columnHeader[data-field="actions"]': {
+        position: "sticky",
+        right: 0,
+        zIndex: 1,
+        backgroundColor: theme.palette.background.paper,
     },
 });

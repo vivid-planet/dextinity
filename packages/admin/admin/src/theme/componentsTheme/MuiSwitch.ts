@@ -16,6 +16,27 @@ export const getMuiSwitch: GetMuiComponentTheme<"MuiSwitch"> = (component, { pal
             padding: 9,
             display: "flex",
         },
+        sizeSmall: {
+            width: 46,
+            height: 24,
+            padding: "6px 9px",
+
+            [`& .${switchClasses.switchBase}`]: {
+                margin: "6px 9px",
+                padding: 2,
+
+                [`&.${switchClasses.checked}`]: {
+                    transform: "translateX(16px)",
+                },
+            },
+            [`& .${switchClasses.thumb}`]: {
+                width: 8,
+                height: 8,
+            },
+            [`& .${switchClasses.track}`]: {
+                borderRadius: 12 / 2,
+            },
+        },
         switchBase: {
             margin: 9,
             padding: 3,

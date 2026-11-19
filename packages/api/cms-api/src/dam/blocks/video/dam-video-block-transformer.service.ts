@@ -4,7 +4,7 @@ import { BlockContext, BlockTransformerServiceInterface, TraversableTransformBlo
 import { DamFileAiContentType } from "../../files/entities/ai-content-type.enum";
 import { FilesService } from "../../files/files.service";
 import { DamScopeInterface } from "../../types";
-import { DamVideoBlockData } from "./dam-video.block";
+import { DamVideoBlockDataInterface } from "./createDamVideoBlock";
 
 type TransformResponse = {
     damFile?: {
@@ -26,10 +26,10 @@ type TransformResponse = {
 };
 
 @Injectable()
-export class DamVideoBlockTransformerService implements BlockTransformerServiceInterface<DamVideoBlockData, TransformResponse> {
+export class DamVideoBlockTransformerService implements BlockTransformerServiceInterface<DamVideoBlockDataInterface, TransformResponse> {
     constructor(private readonly filesService: FilesService) {}
 
-    async transformToPlain(block: DamVideoBlockData, { previewDamUrls }: BlockContext) {
+    async transformToPlain(block: DamVideoBlockDataInterface, { previewDamUrls }: BlockContext) {
         const ret: TraversableTransformBlockResponse = {
             autoplay: block.autoplay,
             loop: block.loop,
@@ -43,13 +43,19 @@ export class DamVideoBlockTransformerService implements BlockTransformerServiceI
 
         const file = await this.filesService.findOneById(block.damFileId);
 
-        if (file) {
+        if (file && !this.filesService.isBlockedByLicense(file, { previewDamUrls })) {
             const captions = [];
             for (const caption of (await file.alternativesForThisFile.loadItems()).filter((alternative) => alternative.type === "captions")) {
+                const captionFile = await caption.alternative.loadOrFail();
+
+                if (this.filesService.isBlockedByLicense(captionFile, { previewDamUrls })) {
+                    continue;
+                }
+
                 captions.push({
                     id: caption.id,
                     language: caption.language,
-                    fileUrl: await this.filesService.createFileUrl(await caption.alternative.loadOrFail(), { previewDamUrls }),
+                    fileUrl: await this.filesService.createFileUrl(captionFile, { previewDamUrls }),
                 });
             }
 

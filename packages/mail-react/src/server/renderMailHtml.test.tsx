@@ -1,9 +1,14 @@
-import { MjmlClass, MjmlColumn, MjmlText, MjmlTitle } from "@faire/mjml-react";
+import { fileURLToPath } from "node:url";
+
+import { MjmlClass, MjmlColumn, MjmlInclude, MjmlRaw, MjmlText, MjmlTitle } from "@faire/mjml-react";
 import { describe, expect, it } from "vitest";
 
+import { MjmlButton } from "../components/button/MjmlButton.js";
 import { MjmlMailRoot } from "../components/mailRoot/MjmlMailRoot.js";
 import { MjmlSection } from "../components/section/MjmlSection.js";
+import { HtmlText } from "../components/text/HtmlText.js";
 import { registerStyles } from "../styles/registerStyles.js";
+import { createTheme } from "../theme/createTheme.js";
 import { css } from "../utils/css.js";
 import { renderMailHtml } from "./renderMailHtml.js";
 
@@ -188,5 +193,76 @@ describe("server/renderMailHtml", () => {
         );
 
         expect(mjmlWarnings).toEqual([]);
+    });
+
+    const mailWithIncludedFile = (
+        <MjmlMailRoot>
+            <MjmlSection>
+                <MjmlColumn>
+                    <MjmlInclude path={fileURLToPath(new URL("./__fixtures__/included.mjml", import.meta.url))} />
+                </MjmlColumn>
+            </MjmlSection>
+        </MjmlMailRoot>
+    );
+
+    it.each([
+        { case: "without options", options: undefined },
+        { case: "with ignoreIncludes set to undefined", options: { ignoreIncludes: undefined } },
+    ])("does not read files from the server through mj-include $case", ({ options }) => {
+        const { html } = renderMailHtml(mailWithIncludedFile, options);
+
+        expect(html).not.toContain("content-of-a-server-file");
+    });
+
+    it("reads files through mj-include when ignoreIncludes is false", () => {
+        const { html } = renderMailHtml(mailWithIncludedFile, { ignoreIncludes: false });
+
+        expect(html).toContain("content-of-a-server-file");
+    });
+
+    it.each([
+        { case: "single quotes", fontFamily: "'Helvetica Neue', Arial", expectedFontFamily: "'Helvetica Neue', Arial" },
+        { case: "double quotes", fontFamily: '"Helvetica Neue", Arial', expectedFontFamily: "'Helvetica Neue', Arial" },
+        { case: "an apostrophe in double quotes", fontFamily: `"Gill's Sans", Arial`, expectedFontFamily: "'Gill\\'s Sans', Arial" },
+    ])("keeps a theme font family with $case on a full-width button", ({ fontFamily, expectedFontFamily }) => {
+        const { html } = renderMailHtml(
+            <MjmlMailRoot theme={createTheme({ text: { fontFamily } })}>
+                <MjmlSection>
+                    <MjmlColumn>
+                        <MjmlButton fullWidth>Go</MjmlButton>
+                    </MjmlColumn>
+                </MjmlSection>
+            </MjmlMailRoot>,
+        );
+
+        expect(html).toContain(expectedFontFamily);
+    });
+
+    it("inlines a registered style into an HTML element with a quoted font family", () => {
+        registerStyles(
+            css`
+                .quotedFontText {
+                    text-transform: uppercase;
+                }
+            `,
+            { inline: true },
+        );
+
+        const { html } = renderMailHtml(
+            <MjmlMailRoot theme={createTheme({ text: { fontFamily: "'Helvetica Neue', Arial" } })}>
+                <MjmlSection>
+                    <MjmlColumn>
+                        <MjmlRaw>
+                            <tr>
+                                <HtmlText className="quotedFontText">Hello</HtmlText>
+                            </tr>
+                        </MjmlRaw>
+                    </MjmlColumn>
+                </MjmlSection>
+            </MjmlMailRoot>,
+        );
+
+        expect(html).toContain("text-transform: uppercase");
+        expect(html).toContain("'Helvetica Neue', Arial");
     });
 });

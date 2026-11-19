@@ -16,8 +16,8 @@ import {
 } from "@mikro-orm/postgresql";
 import { Type } from "@nestjs/common";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
+import { randomUUID } from "crypto";
 import { GraphQLBigInt } from "graphql-scalars";
-import { v4 as uuid } from "uuid";
 
 import { EntityInfo } from "../../../entity-info/entity-info.decorator";
 import { RequiredPermission } from "../../../user-permissions/decorators/required-permission.decorator";
@@ -62,7 +62,7 @@ export function createFileEntity({ Scope, Folder }: { Scope?: Type<DamScopeInter
     class FileBase extends BaseEntity implements FileInterface {
         @PrimaryKey({ columnType: "uuid" })
         @Field(() => ID)
-        id: string = uuid();
+        id: string = randomUUID();
 
         @Field(() => Folder, { nullable: true })
         @ManyToOne({

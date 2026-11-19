@@ -8,8 +8,7 @@ import { FileSelect, type FileSelectProps } from "./file/FileSelect";
 import type { ErrorFileSelectItem, ValidFileSelectItem } from "./file/fileSelectItemTypes";
 
 export interface FinalFormFileSelectProps
-    extends FieldRenderProps<File | File[], HTMLInputElement>,
-        Omit<FileSelectProps, "files" | "onDrop" | "onRemove"> {}
+    extends FieldRenderProps<File | File[], HTMLInputElement>, Omit<FileSelectProps, "files" | "onDrop" | "onRemove"> {}
 
 export function FinalFormFileSelect(inProps: FinalFormFileSelectProps) {
     const {

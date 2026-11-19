@@ -1,4 +1,4 @@
-import { createHash } from "crypto";
+import { createHash, randomUUID } from "crypto";
 import type createDOMPurify from "dompurify";
 import fs from "fs";
 import { unlink } from "fs/promises";
@@ -8,7 +8,6 @@ import { basename, extname } from "path";
 import slugify from "slugify";
 import stream from "stream";
 import { promisify } from "util";
-import { v4 as uuid } from "uuid";
 
 import type { FileUploadInput } from "./file-upload.input";
 import { FILE_UPLOAD_FIELD } from "./files.constants";
@@ -116,7 +115,7 @@ export const getValidExtensionsForMimetype = (mimetype: string) => {
 
 export async function createFileUploadInputFromUrl(url: string): Promise<FileUploadInput> {
     const tempDir = fs.mkdtempSync(`${os.tmpdir()}/download`);
-    const fakeName = uuid();
+    const fakeName = randomUUID();
     const tempFile = `${tempDir}/${fakeName}`;
 
     if (url.substring(0, 4) === "http") {

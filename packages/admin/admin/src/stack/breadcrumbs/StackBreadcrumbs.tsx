@@ -11,15 +11,7 @@ import { useStackApi } from "../Api";
 import { getElementOuterWidth, useItemsToRender } from "./utils";
 
 export type StackBreadcrumbsClassKey =
-    | "root"
-    | "breadcrumbs"
-    | "listItem"
-    | "link"
-    | "disabledLink"
-    | "overflowLink"
-    | "separator"
-    | "backButton"
-    | "backButtonSeparator";
+    "root" | "breadcrumbs" | "listItem" | "link" | "disabledLink" | "overflowLink" | "separator" | "backButton" | "backButtonSeparator";
 
 const Root = createComponentSlot("div")<StackBreadcrumbsClassKey>({
     componentName: "StackBreadcrumbs",
@@ -74,18 +66,17 @@ export const BackButtonSeparator = createComponentSlot("div")<StackBreadcrumbsCl
     `,
 );
 
-export interface StackBreadcrumbsProps
-    extends ThemedComponentBaseProps<{
-        root: "div";
-        breadcrumbs: "div";
-        listItem: "div";
-        link: typeof Link;
-        disabledLink: typeof Typography;
-        overflowLink: typeof Link;
-        separator: "div";
-        backButton: typeof Link;
-        backButtonSeparator: "div";
-    }> {
+export interface StackBreadcrumbsProps extends ThemedComponentBaseProps<{
+    root: "div";
+    breadcrumbs: "div";
+    listItem: "div";
+    link: typeof Link;
+    disabledLink: typeof Typography;
+    overflowLink: typeof Link;
+    separator: "div";
+    backButton: typeof Link;
+    backButtonSeparator: "div";
+}> {
     separator?: ReactNode;
     overflowLinkText?: ReactNode;
 }

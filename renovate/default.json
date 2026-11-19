@@ -1,8 +1,15 @@
 {
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-    "extends": ["config:recommended", ":semanticCommitsDisabled"],
-    "minimumReleaseAge": "3 days",
-    "internalChecksFilter": "strict",
+    "extends": [
+        "config:recommended",
+        ":semanticCommitsDisabled",
+        ":configMigration",
+        "abandonments:recommended",
+        "security:minimumReleaseAgeNpm",
+        ":maintainLockFilesWeekly",
+        ":automergeStableNonMajor"
+    ],
+    "automergeStrategy": "squash",
     "recreateWhen": "never",
     "packageRules": [
         {
@@ -14,37 +21,16 @@
             "matchPackageNames": ["/^lodash.*/"]
         },
         {
-            "groupName": "eslint",
-            "matchPackageNames": ["/^eslint/"],
-            "excludePackagePatterns": ["eslint-config-next", "eslint-plugin-storybook"]
-        },
-        {
-            "groupName": "prettier",
-            "matchPackageNames": ["/^prettier/"]
-        },
-        {
-            "groupName": "typescript",
-            "matchPackageNames": ["/typescript/"]
+            "extends": ["packages:eslint"],
+            "groupName": "ESLint packages"
         },
         {
             "groupName": "Storybook",
             "matchPackageNames": ["/^@storybook/", "/^storybook/", "eslint-plugin-storybook"]
         },
         {
-            "groupName": "Mui-X",
-            "matchPackageNames": ["/^@mui/x/"]
-        },
-        {
             "groupName": "Docusaurus",
             "matchPackageNames": ["/^@docusaurus/*/", "/@tsconfig/docusaurus/"]
-        },
-        {
-            "groupName": "Mui",
-            "matchPackageNames": ["/@mui/material/", "/@mui/system/", "/@mui/utils/"]
-        },
-        {
-            "groupName": "emotion",
-            "matchPackageNames": ["/@emotion/*/"]
         },
         {
             "groupName": "Final Form",
@@ -52,36 +38,20 @@
             "enabled": false
         },
         {
-            "matchPackageNames": ["@graphql-codegen/*"],
-            "groupName": "GraphQL Codegen"
-        },
-        {
             "matchPackageNames": ["@apollo/server"],
             "groupName": "@apollo/server"
         },
         {
-            "matchPackageNames": ["@apollo/client", "apollo-link-rest", "graphql-tag"],
+            "matchPackageNames": ["@apollo/client", "graphql-tag"],
             "groupName": "@apollo/client and related dependencies"
-        },
-        {
-            "groupName": "Mikro-ORM",
-            "matchPackageNames": ["/^@mikro-orm/*/"]
         },
         {
             "groupName": "NestJS",
             "matchPackageNames": ["/^@nestjs/*/"]
         },
         {
-            "groupName": "OpenTelemetry",
-            "matchPackageNames": ["/^@opentelemetry/*/"]
-        },
-        {
             "groupName": "lodash",
             "matchPackageNames": ["/^lodash.*/", "/^@types/lodash.*/"]
-        },
-        {
-            "groupName": "msw",
-            "matchPackageNames": ["msw", "@graphql-mocks/network-msw"]
         },
         {
             "groupName": "node",
@@ -93,11 +63,6 @@
             "labels": ["major", "dependencies"]
         },
         {
-            "matchDepTypes": ["peerDependencies"],
-            "matchUpdateTypes": ["major"],
-            "baseBranches": ["next"]
-        },
-        {
             "groupName": "SWC",
             "matchPackageNames": ["@swc/plugin-emotion", "@vitejs/plugin-react-swc"]
         },
@@ -107,11 +72,11 @@
         },
         {
             "matchDepTypes": ["dependencies", "devDependencies"],
-            "rangeStrategy": ["bump"]
+            "rangeStrategy": "bump"
         },
         {
             "matchDepTypes": ["peerDependencies"],
-            "rangeStrategy": ["widen"]
+            "rangeStrategy": "widen"
         },
         {
             "enabled": false,
@@ -121,20 +86,29 @@
         {
             "groupName": "Stylelint",
             "matchPackageNames": ["stylelint", "/^stylelint-*/"]
+        },
+        {
+            "groupName": "OpenTelemetry",
+            "matchPackageNames": ["@opentelemetry/**"]
+        },
+        {
+            "description": "The changesets GitHub action and the changesets CLI must be updated together to stay compatible",
+            "groupName": "Changesets",
+            "matchPackageNames": ["@changesets/cli", "changesets/action"]
         }
     ],
-    "regexManagers": [
+    "customManagers": [
         {
-            "fileMatch": ["^\\.env$"],
+            "customType": "regex",
+            "managerFilePatterns": ["/^\\.env$/"],
             "matchStrings": ["OAUTH2_PROXY_VERSION=(?<currentValue>v?[0-9]+\\.[0-9]+\\.[0-9]+)"],
             "datasourceTemplate": "github-releases",
             "depNameTemplate": "oauth2-proxy/oauth2-proxy",
             "versioningTemplate": "semver"
         }
     ],
-    "lockFileMaintenance": { "enabled": true },
     "labels": ["dependencies"],
-    "baseBranches": ["main"],
+    "baseBranchPatterns": ["main"],
     "nvm": {
         "enabled": false
     }

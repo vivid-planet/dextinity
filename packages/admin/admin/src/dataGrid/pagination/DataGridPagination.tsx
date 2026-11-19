@@ -4,7 +4,7 @@ import type { ThemedComponentBaseProps } from "helpers/ThemedComponentBaseProps"
 import { type ChangeEvent, type FunctionComponent, useCallback } from "react";
 import { FormattedMessage } from "react-intl";
 
-import { PageInformation, Root } from "./DataGridPagination.styles";
+import { PageInformation, PageSizeFormControl, Root } from "./DataGridPagination.styles";
 import { DataGridPaginationActions } from "./paginationActions/DataGridPaginationActions";
 
 export type DataGridPaginationClassKey = "root" | "pageInformation";
@@ -63,20 +63,24 @@ export const DataGridPagination: FunctionComponent<DataGridPaginationProps> = (i
                 />
             </PageInformation>
 
-            <TablePagination
-                ActionsComponent={DataGridPaginationActions}
-                component="div"
-                count={paginationState.rowCount}
-                labelDisplayedRows={() => {
-                    return null;
-                }}
-                labelRowsPerPage={<FormattedMessage defaultMessage="Items per page:" id="dextinity.dataGridPagination.itemsPerPageLabel" />}
-                page={paginationState.paginationModel.page <= pageCount ? paginationState.paginationModel.page : pageCount}
-                rowsPerPage={paginationState.paginationModel.pageSize}
-                rowsPerPageOptions={rootProps.pageSizeOptions?.includes(paginationState.paginationModel.pageSize) ? rootProps.pageSizeOptions : []}
-                onPageChange={handlePageChange}
-                onRowsPerPageChange={handlePageSizeChange}
-            />
+            <PageSizeFormControl>
+                <TablePagination
+                    ActionsComponent={DataGridPaginationActions}
+                    component="div"
+                    count={paginationState.rowCount}
+                    labelDisplayedRows={() => {
+                        return null;
+                    }}
+                    labelRowsPerPage={<FormattedMessage defaultMessage="Items per page:" id="dextinity.dataGridPagination.itemsPerPageLabel" />}
+                    page={paginationState.paginationModel.page <= pageCount ? paginationState.paginationModel.page : pageCount}
+                    rowsPerPage={paginationState.paginationModel.pageSize}
+                    rowsPerPageOptions={
+                        rootProps.pageSizeOptions?.includes(paginationState.paginationModel.pageSize) ? rootProps.pageSizeOptions : []
+                    }
+                    onPageChange={handlePageChange}
+                    onRowsPerPageChange={handlePageSizeChange}
+                />
+            </PageSizeFormControl>
         </Root>
     );
 };

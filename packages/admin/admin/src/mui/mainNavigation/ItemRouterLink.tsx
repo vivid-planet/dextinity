@@ -6,10 +6,9 @@ import { Link, type LinkProps, Route } from "react-router-dom";
 import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
 import { MainNavigationItem, type MainNavigationItemProps } from "./Item";
 
-interface MainNavigationRouterLinkItemStandardProps
-    extends ThemedComponentBaseProps<{
-        badge: typeof Badge;
-    }> {
+interface MainNavigationRouterLinkItemStandardProps extends ThemedComponentBaseProps<{
+    badge: typeof Badge;
+}> {
     to: string;
     badgeContent?: ReactNode;
 }

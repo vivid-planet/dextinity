@@ -29,11 +29,10 @@ const BarWrapper = createComponentSlot("div")<FilterBarClassKey>({
 /**
  * @deprecated Use MUI X Data Grid in combination with `useDataGridRemote` instead.
  */
-export interface FilterBarProps
-    extends ThemedComponentBaseProps<{
-        root: "div";
-        barWrapper: "div";
-    }> {
+export interface FilterBarProps extends ThemedComponentBaseProps<{
+    root: "div";
+    barWrapper: "div";
+}> {
     children?: ReactNode;
 }
 

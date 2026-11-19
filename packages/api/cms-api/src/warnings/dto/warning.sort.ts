@@ -9,6 +9,7 @@ enum WarningSortField {
     message = "message",
     type = "type",
     name = "name",
+    visible = "visible",
     severity = "severity",
     status = "status",
 }

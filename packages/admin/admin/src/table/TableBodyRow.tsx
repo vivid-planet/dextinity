@@ -24,7 +24,8 @@ const Root = createComponentSlot(TableRow)<TableBodyRowClassKey, OwnerState>({
  * @deprecated Use MUI X Data Grid in combination with `useDataGridRemote` instead.
  */
 export interface TableBodyRowProps
-    extends ThemedComponentBaseProps<{
+    extends
+        ThemedComponentBaseProps<{
             root: typeof TableRow;
         }>,
         TableRowProps {

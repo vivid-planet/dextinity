@@ -30,10 +30,12 @@ const Content = createComponentSlot("div")<TabsClassKey, OwnerState>({
     },
 })(
     ({ ownerState }) => css`
-        ${ownerState.contentHidden &&
-        css`
-            display: none;
-        `}
+        ${
+            ownerState.contentHidden &&
+            css`
+                display: none;
+            `
+        }
     `,
 );
 

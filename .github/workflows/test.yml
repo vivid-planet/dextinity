@@ -22,7 +22,7 @@ jobs:
         steps:
             - run: echo "${{ github.actor }}"
 
-            - uses: actions/checkout@v6
+            - uses: actions/checkout@v7
             - run: |
                   git config user.name github-actions
                   git config user.email github-actions@github.com
@@ -45,13 +45,39 @@ jobs:
                       demo/*/junit-unit.xml
                   overwrite: true
 
-    test-storybook:
-        name: Test (storybook)
+    find-storybook-projects:
+        name: Find Storybook projects to test
         runs-on: ubuntu-latest
+        outputs:
+            projects: ${{ steps.find.outputs.projects }}
+        steps:
+            - uses: actions/checkout@v7
+              with:
+                  fetch-depth: 2
+
+            - uses: pnpm/action-setup@v6
+
+            - uses: actions/setup-node@v7
+              with:
+                  node-version: 24
+
+            # A pull request is checked out as a merge commit, whose first parent is the base branch.
+            - id: find
+              run: node .github/scripts/find-storybook-projects.mjs ${{ github.event_name == 'pull_request' && 'HEAD^1' || '' }}
+
+    test-storybook-project:
+        name: Test (storybook, ${{ matrix.project.id }})
+        needs: find-storybook-projects
+        if: needs.find-storybook-projects.outputs.projects != '[]'
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                project: ${{ fromJSON(needs.find-storybook-projects.outputs.projects) }}
         steps:
             - run: echo "${{ github.actor }}"
 
-            - uses: actions/checkout@v6
+            - uses: actions/checkout@v7
               with:
                   ref: ${{ github.event.pull_request.head.ref || github.ref }}
                   token: ${{ secrets.GITHUB_TOKEN }}
@@ -61,21 +87,39 @@ jobs:
 
             - uses: ./.github/actions/setup
               with:
+                  project: ${{ matrix.project.name }}
                   build-packages: "true"
 
             - name: Install Playwright Browsers
-              run: pnpm --filter dextinity-storybook exec playwright install chromium-headless-shell
+              run: pnpm --filter "${{ matrix.project.name }}" exec playwright install chromium-headless-shell
 
             - name: Test (storybook)
-              run: pnpm run test:storybook
+              run: pnpm --filter "${{ matrix.project.name }}" run test:storybook
+              timeout-minutes: 20
 
             - name: Upload test results
               uses: actions/upload-artifact@v7
               if: success() || failure()
               with:
-                  name: test-results-storybook
-                  path: |
-                      packages/*/junit-storybook.xml
-                      packages/*/*/junit-storybook.xml
-                      storybook/junit.xml
+                  name: test-results-storybook-${{ matrix.project.id }}
+                  path: ${{ matrix.project.path }}/junit-storybook.xml
                   overwrite: true
+
+    test-storybook:
+        name: Test (storybook)
+        needs: [find-storybook-projects, test-storybook-project]
+        if: ${{ !cancelled() }}
+        runs-on: ubuntu-latest
+        steps:
+            # The report workflow runs from the default branch, so it can't adapt to which projects ran.
+            - name: Merge test results
+              if: needs.test-storybook-project.result != 'skipped'
+              uses: actions/upload-artifact/merge@v7
+              with:
+                  name: test-results-storybook
+                  pattern: test-results-storybook-*
+                  separate-directories: true
+                  delete-merged: true
+
+            - if: needs.find-storybook-projects.result != 'success' || !contains(fromJSON('["success", "skipped"]'), needs.test-storybook-project.result)
+              run: exit 1

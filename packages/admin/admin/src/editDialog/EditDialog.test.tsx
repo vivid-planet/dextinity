@@ -40,14 +40,14 @@ describe("EditDialog", () => {
 
             const rendered = render(<Story />);
 
-            user.click(rendered.getByText("Open dialog"));
+            await user.click(rendered.getByText("Open dialog"));
 
             // Edit dialog title -> dialog is open
             await rendered.findByText("Add");
 
-            user.keyboard("Test");
+            await user.keyboard("Test");
 
-            user.click(screen.getByText("Save"));
+            await user.click(screen.getByText("Save"));
 
             await waitFor(() => expect(onAfterSave).toHaveBeenCalledTimes(1));
         });
@@ -78,14 +78,14 @@ describe("EditDialog", () => {
 
             const rendered = render(<Story />);
 
-            user.click(rendered.getByText("Open dialog"));
+            await user.click(rendered.getByText("Open dialog"));
 
             // Edit dialog title -> dialog is open
             await rendered.findByText("Add");
 
-            user.keyboard("Test");
+            await user.keyboard("Test");
 
-            user.keyboard("{Enter}");
+            await user.keyboard("{Enter}");
 
             await waitFor(() => expect(onAfterSave).toHaveBeenCalledTimes(1));
         });

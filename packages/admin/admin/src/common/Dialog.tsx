@@ -73,10 +73,12 @@ const DialogTitle = createComponentSlot(MuiDialogTitle)<DialogClassKey, OwnerSta
     slotName: "dialogTitle",
 })(
     ({ ownerState, theme }) => css`
-        ${ownerState.hasCloseButton &&
-        css`
-            padding-right: ${theme.spacing(10)};
-        `}
+        ${
+            ownerState.hasCloseButton &&
+            css`
+                padding-right: ${theme.spacing(10)};
+            `
+        }
     `,
 );
 

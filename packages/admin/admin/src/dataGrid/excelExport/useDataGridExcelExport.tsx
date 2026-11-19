@@ -42,9 +42,8 @@ export function useDataGridExcelExport<Row extends GridValidRowModel, GQLQuery, 
             } = exportOptions;
             const workbook = generateExcelFile<Row>(columns, data, { worksheetName, styling });
 
-            workbook.xlsx.writeBuffer().then((buffer) => {
-                downloadFile(new Blob([buffer]), safeFileNameWithExtension(fileName));
-            });
+            const buffer = await workbook.xlsx.writeBuffer();
+            downloadFile(new Blob([buffer]), safeFileNameWithExtension(fileName));
         },
         [intl],
     );
@@ -75,7 +74,7 @@ export function useDataGridExcelExport<Row extends GridValidRowModel, GQLQuery, 
             } while (hasPaging && data.length < totalCount);
 
             if (data.length > 0) {
-                createExcelExportDownload<Row>(columns, data, exportOptions);
+                await createExcelExportDownload<Row>(columns, data, exportOptions);
             }
         } catch (e) {
             setError(e);

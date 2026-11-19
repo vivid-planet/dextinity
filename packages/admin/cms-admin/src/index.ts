@@ -16,6 +16,7 @@ export { type BlockContext } from "./blocks/context/BlockContext";
 export { BlockContextProvider } from "./blocks/context/BlockContextProvider";
 export { useBlockContext } from "./blocks/context/useBlockContext";
 export { createDamVideoBlock } from "./blocks/createDamVideoBlock";
+export { createExternalLinkBlock } from "./blocks/createExternalLinkBlock";
 export { createImageLinkBlock } from "./blocks/createImageLinkBlock";
 export { createLinkBlock } from "./blocks/createLinkBlock";
 export type { RichTextBlockFactoryOptions } from "./blocks/createRichTextBlock";
@@ -92,7 +93,7 @@ export type {
     TipTapTextBlockStyle,
     TipTapTextBlockTag,
 } from "./blocks/tipTap/createTipTapRichTextBlock";
-export { createTipTapRichTextBlock } from "./blocks/tipTap/createTipTapRichTextBlock";
+export { createTipTapRichTextBlock, isTipTapRichTextEmpty } from "./blocks/tipTap/createTipTapRichTextBlock";
 export type {
     AnonymousBlockInterface,
     BlockAdminComponent,
@@ -186,7 +187,7 @@ export { SearchHeaderItem } from "./fullTextSearch/SearchHeaderItem";
 export { ChooseDamFileDialog as ChooseFileDialog } from "./form/file/chooseFile/ChooseDamFileDialog";
 export { ChooseDamFilesDialog } from "./form/file/chooseFile/ChooseDamFilesDialog";
 export { FileField, type GQLDamFileFieldFileFragment } from "./form/file/FileField";
-export { damFileFieldFragment } from "./form/file/FileField.gql";
+export { damFileFieldFragment } from "./form/file/FileField.fragment";
 export { FileUploadField, type FileUploadFieldProps } from "./form/file/FileUploadField";
 export {
     FinalFormFileUpload,

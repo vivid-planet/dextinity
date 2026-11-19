@@ -1,7 +1,7 @@
 import { BlockDataInterface, CrudSingleGenerator, RootBlock, RootBlockDataScalar, RootBlockEntity, RootBlockType } from "@dextinity/cms-api";
 import { BaseEntity, Embedded, Entity, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "crypto";
 
 import { WelcomeEmailContentBlock } from "../blocks/welcome-email-content.block";
 import { WelcomeEmailScope } from "../dto/welcome-email-scope";
@@ -15,7 +15,7 @@ export class WelcomeEmail extends BaseEntity {
 
     @PrimaryKey({ type: "uuid" })
     @Field(() => ID)
-    id: string = uuid();
+    id: string = randomUUID();
 
     @RootBlock(WelcomeEmailContentBlock)
     @Property({ type: new RootBlockType(WelcomeEmailContentBlock) })

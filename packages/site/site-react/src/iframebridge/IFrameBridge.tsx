@@ -8,12 +8,19 @@ import { useDebounceCallback } from "usehooks-ts";
 import styles from "./IFrameBridge.module.scss";
 import { type AdminMessage, AdminMessageType, type IFrameMessage, IFrameMessageType } from "./IFrameMessage";
 import { PreviewOverlay } from "./PreviewOverlay";
-import { getCombinedPositioningOfElements, getRecursiveChildrenOfPreviewElement, PREVIEW_ELEMENT_SCROLLED_INTO_VIEW_EVENT } from "./utils";
+import {
+    getCombinedPositioningOfElements,
+    getRecursiveChildrenOfPreviewElement,
+    PREVIEW_ELEMENT_SCROLLED_INTO_VIEW_EVENT,
+    removePreviewElementFromList,
+} from "./utils";
 
-type PreviewElement = {
+export type PreviewElement = {
     element: HTMLElement;
     adminRoute: string;
     label: string;
+    /** `"element"` measures the element's own box, for a block without a `display: contents` wrapper, such as an element found by its class names. */
+    measurementTarget?: "element" | "children";
 };
 
 export type OverlayElementData = {
@@ -113,8 +120,11 @@ export const IFrameBridgeProvider = ({ children }: PropsWithChildren) => {
 
         const newPreviewElementsData = previewElements
             .map((previewElement) => {
-                const childNodes = getRecursiveChildrenOfPreviewElement(previewElement.element);
-                const positioning = getCombinedPositioningOfElements(childNodes);
+                const measuredElements =
+                    previewElement.measurementTarget === "element"
+                        ? [previewElement.element]
+                        : getRecursiveChildrenOfPreviewElement(previewElement.element);
+                const positioning = getCombinedPositioningOfElements(measuredElements);
 
                 const isRenderedOutsideOfViewportWidth = positioning.left > childrenWrapperRight;
 
@@ -284,7 +294,7 @@ export const IFrameBridgeProvider = ({ children }: PropsWithChildren) => {
 
     const removePreviewElement = useCallback(
         (element: PreviewElement) => {
-            setPreviewElements((prev) => prev.filter((el) => el.adminRoute !== element.adminRoute));
+            setPreviewElements((prev) => removePreviewElementFromList(prev, element));
         },
         [setPreviewElements],
     );

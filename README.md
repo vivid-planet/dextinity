@@ -131,6 +131,17 @@ It is also possible to start specific microservices
 pnpm exec dev-pm start @demo-api # (@demo-api|@demo-admin|@demo-site)
 ```
 
+#### Run multiple Demo instances in parallel
+
+To run several checkouts at once without port collisions, assign a free port offset before starting:
+
+```bash
+pnpm run assign-ports
+pnpm exec dev-pm start @demo
+```
+
+`assign-ports.mts` reads every `*_PORT` entry from `.env`, finds an offset (+100, …, +900) at which all ports are free, and writes the offset ports to `.env.local`. If the base ports are free, no overrides are written. Afterwards, the site configs are regenerated so that they use the assigned site port.
+
 #### Start Storybook
 
 ```bash

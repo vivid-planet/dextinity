@@ -2,9 +2,27 @@ import react from "@vitejs/plugin-react-swc";
 import { resolve } from "path";
 import { defineConfig, type Plugin } from "vite";
 import { compression } from "vite-plugin-compression2";
-import { createHtmlPlugin } from "vite-plugin-html";
 
-import { environment as envVarsToLoad } from "./src/environment";
+import { environment as envVarsToLoad } from "./src/environment.ts";
+
+function injectEnvironmentValues({ mode }: { mode: string }): Plugin {
+    return {
+        name: "inject-environment-values",
+        transformIndexHtml: () => [
+            {
+                tag: "script",
+                children: envVarsToLoad
+                    .map((envVarKey) => {
+                        // In production, server/index.ts replaces the $-placeholders when it serves index.html
+                        const value = mode === "production" ? `$${envVarKey}` : process.env[envVarKey];
+                        return `window.EXTERNAL__${envVarKey}__ = ${value ? `'${value}'` : undefined};`;
+                    })
+                    .join("\n"),
+                injectTo: "head",
+            },
+        ],
+    };
+}
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -35,18 +53,7 @@ export default defineConfig(({ mode }) => {
                 ],
             }),
             compression(),
-            createHtmlPlugin({
-                minify: true,
-                entry: resolve(__dirname, "src/loader.ts"),
-                inject: {
-                    data: {
-                        environmentValues: envVarsToLoad.map((envVarKey) => ({
-                            key: envVarKey,
-                            value: mode === "production" ? `$${envVarKey}` : process.env[envVarKey],
-                        })),
-                    },
-                },
-            }),
+            injectEnvironmentValues({ mode }),
         ],
         server: {
             host: process.env.SERVER_HOST ?? "localhost",
@@ -70,19 +77,13 @@ export default defineConfig(({ mode }) => {
         define: {
             // define NODE_ENV for packages using it
             "process.env.NODE_ENV": mode === "production" ? "'production'" : "'development'",
-        },
-        optimizeDeps: {
-            esbuildOptions: {
-                // Node.js global to browser globalThis. https://github.com/vitejs/vite/discussions/5912
-                // "global is not defined" occurs directly after loading. Used by draft-is package
-                define: {
-                    global: "globalThis",
-                },
-            },
+            // Node.js global to browser globalThis. https://github.com/vitejs/vite/discussions/5912
+            // "global is not defined" occurs directly after loading. Used by draft-is package
+            global: "globalThis",
         },
         resolve: {
             alias: {
-                "@src": resolve(__dirname, "./src"),
+                "@src": resolve(import.meta.dirname, "./src"),
             },
         },
         build: {

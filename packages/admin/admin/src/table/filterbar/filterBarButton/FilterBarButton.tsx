@@ -45,20 +45,24 @@ const Root = createComponentSlot(Button)<FilterBarButtonClassKey, OwnerState>({
             background-color: ${theme.palette.common.white};
         }
 
-        ${ownerState.openPopover &&
-        css`
-            border-color: ${theme.palette.primary.main};
-        `}
+        ${
+            ownerState.openPopover &&
+            css`
+                border-color: ${theme.palette.primary.main};
+            `
+        }
 
-        ${ownerState.hasDirtyFields &&
-        css`
-            border-color: ${theme.palette.grey[400]};
-            font-weight: ${theme.typography.fontWeightBold};
+        ${
+            ownerState.hasDirtyFields &&
+            css`
+                border-color: ${theme.palette.grey[400]};
+                font-weight: ${theme.typography.fontWeightBold};
 
-            &:disabled {
-                border-color: ${theme.palette.grey[100]};
-            }
-        `}
+                &:disabled {
+                    border-color: ${theme.palette.grey[100]};
+                }
+            `
+        }
     `,
 );
 
@@ -73,7 +77,8 @@ const FilterBadge = createComponentSlot("span")<FilterBarButtonClassKey>({
  * @deprecated Use MUI X Data Grid in combination with `useDataGridRemote` instead.
  */
 export interface FilterBarButtonProps
-    extends ThemedComponentBaseProps<{
+    extends
+        ThemedComponentBaseProps<{
             root: typeof Button;
             filterBadge: "span";
         }>,

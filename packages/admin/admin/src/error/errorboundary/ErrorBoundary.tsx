@@ -98,10 +98,12 @@ const ExceptionSummaryIconOpen = createComponentSlot("div")<ErrorBoundaryClassKe
         align-items: center;
         display: flex;
 
-        ${ownerState.showDetails &&
-        css`
-            display: none;
-        `}
+        ${
+            ownerState.showDetails &&
+            css`
+                display: none;
+            `
+        }
     `,
 );
 
@@ -116,10 +118,12 @@ const ExceptionSummaryIconClosed = createComponentSlot("div")<ErrorBoundaryClass
         align-items: center;
         display: none;
 
-        ${ownerState.showDetails &&
-        css`
-            display: flex;
-        `}
+        ${
+            ownerState.showDetails &&
+            css`
+                display: flex;
+            `
+        }
     `,
 );
 

@@ -11,6 +11,7 @@ import { BaseChooseDamFileDialog } from "./BaseChooseDamFileDialog";
 const TableRowButton = styled(Button)`
     padding: 0;
     justify-content: left;
+    text-align: left;
     color: ${({ theme }) => theme.palette.grey[600]};
 
     &:hover {
@@ -30,9 +31,9 @@ type FileLabelProps = {
     onChooseFile: (fileId: string) => void;
 } & RenderDamLabelOptions;
 
-const FileLabel = ({ file, onChooseFile, matches, showLicenseWarnings }: FileLabelProps) => (
+const FileLabel = ({ file, onChooseFile, matches, showLicenseWarnings, showPath }: FileLabelProps) => (
     <TableRowButton disableRipple={true} variant="textDark" onClick={() => onChooseFile(file.id)} fullWidth>
-        <DamItemLabel asset={file} matches={matches} showLicenseWarnings={showLicenseWarnings} />
+        <DamItemLabel asset={file} matches={matches} showLicenseWarnings={showLicenseWarnings} showPath={showPath} />
     </TableRowButton>
 );
 

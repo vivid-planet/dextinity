@@ -14,6 +14,7 @@ import { SelectPreviewComponent } from "./iframebridge/SelectPreviewComponent";
 import { TableBlockContextProvider } from "./table/TableBlockContext";
 import { TableBlockGrid } from "./table/TableBlockGrid";
 import { createCellRoute, parseCellHash } from "./table/utils/cellRoute";
+import { createTablePreviewText, getPlainTexts } from "./table/utils/createTablePreviewText";
 import {
     BlockCategory,
     type BlockInputApi,
@@ -174,6 +175,12 @@ export const createTableBlock = <RichText extends RichTextBlockInterface = RichT
             })),
             adminMeta: { route: previewCtx.parentUrl },
         }),
+
+        previewContent: (state: TableBlockState<CellState>, context: BlockContext) => {
+            const previewText = createTablePreviewText(state, (cellState) => getPlainTexts(RichTextBlock.previewContent(cellState, context)));
+
+            return previewText.length > 0 ? [{ type: "text", content: previewText }] : [];
+        },
 
         AdminComponent: ({ state, updateState }) => {
             const stackApi = useStackApi();

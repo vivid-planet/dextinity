@@ -8,9 +8,6 @@ export function createGraphQLFetchMiddleware() {
 
     return createGraphQLFetch(
         createFetchWithDefaults(fetch, {
-            next: {
-                revalidate: 7.5 * 60,
-            },
             headers: {
                 authorization: `Basic ${Buffer.from(`${SYSTEM_USER_NAME}:${process.env.API_BASIC_AUTH_SYSTEM_USER_PASSWORD}`).toString("base64")}`,
             },

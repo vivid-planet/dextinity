@@ -4,13 +4,12 @@ import { type ReactNode, useState } from "react";
 import { createComponentSlot } from "../helpers/createComponentSlot";
 import type { ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
 
-export interface HoverActionsProps
-    extends ThemedComponentBaseProps<{
-        root: "div";
-        hoverAreaExpansion: "div";
-        actions: "div";
-        children: "div";
-    }> {
+export interface HoverActionsProps extends ThemedComponentBaseProps<{
+    root: "div";
+    hoverAreaExpansion: "div";
+    actions: "div";
+    children: "div";
+}> {
     actions?: ReactNode;
     children?: ReactNode;
 }

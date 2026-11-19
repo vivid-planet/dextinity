@@ -9,12 +9,11 @@ import { createComponentSlot } from "./helpers/createComponentSlot";
 import type { ThemedComponentBaseProps } from "./helpers/ThemedComponentBaseProps";
 import { useStackApi } from "./stack/Api";
 
-export interface FinalFormSaveCancelButtonsLegacyProps
-    extends ThemedComponentBaseProps<{
-        root: "div";
-        cancelButton: typeof CancelButton;
-        saveButton: typeof SaveButton;
-    }> {
+export interface FinalFormSaveCancelButtonsLegacyProps extends ThemedComponentBaseProps<{
+    root: "div";
+    cancelButton: typeof CancelButton;
+    saveButton: typeof SaveButton;
+}> {
     cancelIcon?: ReactNode;
     saveIcon?: ReactNode;
 }

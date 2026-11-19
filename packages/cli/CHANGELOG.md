@@ -1,5 +1,50 @@
 # @comet/cli
 
+## 10.15.0
+
+No changes in this release.
+
+## 10.14.0
+
+No changes in this release.
+
+## 10.13.1
+
+## 10.13.0
+
+## 10.12.0
+
+## 10.11.0
+
+### Patch Changes
+
+- 75ebfd4: Require Node.js 22.12.0 or later
+
+    `@dextinity/cms-api` is a CommonJS package that loads dependencies which are only available as ES modules, for instance `content-disposition`.
+    Node.js supports loading ES modules with `require()` without a flag only from version 22.12.0.
+    On older versions, the API fails at startup with `ERR_REQUIRE_ESM`.
+    The other packages require the same version, so that all packages have the same Node.js minimum.
+    For `@dextinity/site-react` and `@dextinity/site-nextjs`, this drops support for Node.js 18 and 20, which no longer receive security updates.
+
+- 48a9757: Update `commander` to v14
+
+    Commands now fail with "too many arguments" when they receive positional arguments they don't declare. Before, these arguments were ignored.
+    For example, an unquoted glob passed to `dextinity-admin-generator generate --file` is expanded by the shell into several arguments, and only the first file was generated. Quote the glob so the admin generator receives it as one pattern:
+
+    ```bash
+    dextinity-admin-generator generate --file 'src/products/**/*.dextinityGen.tsx'
+    ```
+
+## 10.10.0
+
+### Patch Changes
+
+- b0decc5: Fix `dextinity inject-site-configs` failing with `ERR_MODULE_NOT_FOUND` in projects without a `tsconfig.json`
+
+    Without a `tsconfig.json`, `ts-node` falls back to the defaults of `@tsconfig/node16`, which switched to `module: Node16` in version 1.0.4.
+    This caused `ts-node` to emit ESM, so extensionless imports in the site configs (e.g., `import main from "./main"`) could no longer be resolved.
+    The CLI now always compiles to CommonJS.
+
 ## 10.9.1
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 import { BaseEntity, defineConfig, Entity, ManyToOne, MikroORM, OneToOne, PrimaryKey, Property, Ref } from "@mikro-orm/postgresql";
 import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "crypto";
 import { describe, expect, it } from "vitest";
 
 import { testPermission } from "../../utils/test-helper";
@@ -10,7 +10,7 @@ import { generateSortDto } from "../generate-crud";
 @Entity()
 export class TestEntity1 extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property()
     foo: string;
@@ -19,7 +19,7 @@ export class TestEntity1 extends BaseEntity {
 @Entity()
 export class TestEntity2 extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @ManyToOne(() => TestEntityTarget, { nullable: true, index: true, ref: true })
     nested?: Ref<TestEntityTarget> = undefined;
@@ -28,7 +28,7 @@ export class TestEntity2 extends BaseEntity {
 @Entity()
 export class TestEntity3 extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @OneToOne(() => TestEntityTarget, { nullable: true, index: true, ref: true })
     nested?: Ref<TestEntityTarget> = undefined;
@@ -37,7 +37,7 @@ export class TestEntity3 extends BaseEntity {
 @Entity()
 export class TestEntityTarget extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property()
     foo: string;

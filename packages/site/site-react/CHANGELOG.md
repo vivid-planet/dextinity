@@ -1,5 +1,126 @@
 # @comet/site-react
 
+## 10.15.0
+
+No changes in this release.
+
+## 10.14.0
+
+### Minor Changes
+
+- 1000778: Allow rendering `PreviewSkeleton` as a server component
+
+    `PreviewSkeleton` is no longer a client component. When `hasContent` is `true`, it renders its children directly, so no client reference carrying `title` and `children` is added to the RSC payload. The placeholder shown for empty content is still rendered on the client, and its behavior in the block and site preview is unchanged.
+
+- 1595266: Add a `textAlign` option to `createTipTapRichTextBlock`
+
+    Editors can align paragraphs and headings left, center, right, or justified, using the toolbar or the shortcuts `Mod-Shift-L`, `Mod-Shift-E`, `Mod-Shift-R`, and `Mod-Shift-J`.
+    The alignment is stored in the text block's `textAlign` attribute.
+    The option is disabled by default and must be enabled in both the API and the Admin:
+
+    ```ts
+    createTipTapRichTextBlock({ textAlign: true });
+    ```
+
+    To enable only some of the alignments, pass an object:
+
+    ```ts
+    createTipTapRichTextBlock({ textAlign: { left: true, center: true } });
+    ```
+
+    `renderTipTapRichText` renders the alignment as the text block's `text-align` style.
+    A custom `textBlock` handler has to apply `node.attrs.textAlign` itself.
+
+### Patch Changes
+
+- 9ed0039: Treat a document with only empty lists as empty in `hasTipTapRichTextContent`
+
+    An empty list renders nothing but a bullet or a number, so a TipTap rich text that contains only empty lists, list items and text blocks no longer counts as content.
+
+## 10.13.1
+
+### Patch Changes
+
+- 94991f8: Update `jose` to v6
+
+## 10.13.0
+
+## 10.12.0
+
+### Patch Changes
+
+- ea0ad37: Reload changed persisted queries during development
+
+    `persistedQueryRoute` loaded the persisted queries file only once. Queries and fragments that changed while the dev server was running were ignored until a restart: a changed query failed with `PersistedQueryNotFound`, and a changed fragment silently sent the old fragment to the API.
+    Outside production, the route now reloads the file whenever it changes.
+
+## 10.11.0
+
+### Minor Changes
+
+- a4cc3bb: Make mail blocks selectable in the admin's block preview
+
+    Mail blocks now work in the block preview like site blocks: a hover highlights them, and a click opens their form. The sent mail does not change.
+
+    Wrap each mail block in `withPreview` and apply the `className` it passes to the block's root element:
+
+    ```tsx
+    export const MailButtonBlock = withPreview<PropsWithData<MailButtonBlockData>>(
+        ({ data, className }) => (
+            <MjmlSection className={className}>
+                <MjmlColumn>
+                    <MjmlButton href={data.link.targetUrl}>{data.text}</MjmlButton>
+                </MjmlColumn>
+            </MjmlSection>
+        ),
+        { label: "Button" },
+    );
+    ```
+
+    Pass the block's props as the type argument of `withPreview`, as in `withPreview<PropsWithData<MailButtonBlockData>>`, and it adds the `className` to them.
+
+    In the block preview page, pass the result of `useIFrameBridge` to `useRefToRegisterMailBlocksForPreview`, and put the ref it returns on the element that contains the mail HTML:
+
+    ```tsx
+    const mailContainerRef = useRefToRegisterMailBlocksForPreview<HTMLSpanElement>(useIFrameBridge());
+
+    return <span ref={mailContainerRef} dangerouslySetInnerHTML={{ __html: mailHtml }} />;
+    ```
+
+### Patch Changes
+
+- 85eecab: Keep the headers of a `Request` passed to `fetch` in the block preview
+
+    `BlockPreviewProvider` wraps `window.fetch` to add the `X-Block-Preview` header.
+    When `fetch` was called with a `Request` object, as `openapi-fetch` and other libraries do, the wrapper dropped all headers set on the `Request`.
+    Now the headers of the `Request` and of `init` are merged, with `init` taking precedence.
+
+- 75ebfd4: Require Node.js 22.12.0 or later
+
+    `@dextinity/cms-api` is a CommonJS package that loads dependencies which are only available as ES modules, for instance `content-disposition`.
+    Node.js supports loading ES modules with `require()` without a flag only from version 22.12.0.
+    On older versions, the API fails at startup with `ERR_REQUIRE_ESM`.
+    The other packages require the same version, so that all packages have the same Node.js minimum.
+    For `@dextinity/site-react` and `@dextinity/site-nextjs`, this drops support for Node.js 18 and 20, which no longer receive security updates.
+
+## 10.10.0
+
+### Patch Changes
+
+- 9d65d08: Fix the selection in the block preview for blocks that a page renders more than once
+
+    When one copy of such a block unmounted, the other copies could not be selected in the block preview until it was reloaded.
+
+- 41b3249: Respect the `autoplay` setting of `YouTubeVideoBlock` when no preview image is set
+
+    Previously the video only started playing after the preview image was clicked, so blocks without a preview image (e.g. in a kiosk) never autoplayed.
+
+    The embedded player is now also loaded lazily, so a video further down the page doesn't start playing before it is anywhere near the viewport.
+
+- 3ba43d6: Play the video unmuted in `YouTubeVideoBlock`, `VimeoVideoBlock` and `DamVideoBlock` when it is started by clicking the preview image
+
+    Autoplaying videos still start muted, since browsers block unmuted autoplay without a user interaction. The click on the preview image is such an interaction, so muting is no longer necessary from that point on.
+
 ## 10.9.1
 
 ## 10.9.0

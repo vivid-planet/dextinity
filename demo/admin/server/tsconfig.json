@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "allowImportingTsExtensions": true,
+        "erasableSyntaxOnly": true,
+        "module": "nodenext",
+        "moduleResolution": "nodenext",
+        "noEmit": true,
+        "skipLibCheck": true,
+        "strict": true,
+        "target": "ESNext",
+        "types": ["node"],
+        "verbatimModuleSyntax": true
+    },
+    "include": ["index.ts"]
+}

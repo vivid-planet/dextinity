@@ -160,9 +160,11 @@ type Unpacked<T> = T extends (infer U)[] ? U : T extends (...args: any[]) => inf
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type NestedToPlainReturn<T extends Record<string, any>> = WithoutBlockInputMethods<{
-    [Key in keyof T]: T[Key] extends BlockInputInterface | undefined // value is a BlockInputInterface
+    [Key in keyof T]: T[Key] extends
+        BlockInputInterface | undefined // value is a BlockInputInterface
         ? ReturnType<NonNullable<T[Key]>["toPlain"]>
-        : T[Key] extends BlockInputInterface[] | undefined // value is an array of BlockInputInterfaces
+        : T[Key] extends
+                BlockInputInterface[] | undefined // value is an array of BlockInputInterfaces
           ? ReturnType<NonNullable<Unpacked<T[Key]>>["toPlain"]>[]
           : T[Key];
 }>;
@@ -256,8 +258,32 @@ export type BlockMetaField =
            * Lets consumers like the block loader process blocks embedded in the content.
            */
           childBlocks: Record<string, Block>;
+          /**
+           * The editor schema and options the content is validated against, so tools outside the
+           * editor can build valid content.
+           */
+          tipTap?: BlockMetaTipTap;
           nullable: boolean;
       };
+
+export interface BlockMetaTipTapStyledNode {
+    styles: string[];
+    defaultStyle: string | null;
+}
+
+export interface BlockMetaTipTap {
+    nodes: string[];
+    marks: string[];
+    textBlocks: Array<{ name: string; tag: string } & BlockMetaTipTapStyledNode>;
+    defaultTextBlock: string;
+    orderedList: BlockMetaTipTapStyledNode | null;
+    unorderedList: BlockMetaTipTapStyledNode | null;
+    inlineStyles: Array<{ name: string; appliesTo: string[] | null }>;
+    placeholders: string[];
+    link: string | null;
+    maxTextBlocks: number | null;
+    listLevelMax: number | null;
+}
 
 export interface BlockMetaInterface {
     fields: BlockMetaField[];

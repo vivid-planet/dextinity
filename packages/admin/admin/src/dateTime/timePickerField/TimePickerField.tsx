@@ -1,7 +1,7 @@
 import type { FieldRenderProps } from "react-final-form";
 
 import { Field, type FieldProps } from "../../form/Field";
-import { TimePicker as TimePicker, type TimePickerProps as TimePickerProps } from "../timePicker/TimePicker";
+import { TimePicker, type TimePickerProps } from "../timePicker/TimePicker";
 
 const FinalFormTimePicker = ({ meta, input, ...restProps }: TimePickerProps & FieldRenderProps<string, HTMLInputElement>) => {
     return <TimePicker {...input} {...restProps} />;

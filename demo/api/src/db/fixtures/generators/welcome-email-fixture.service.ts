@@ -202,6 +202,56 @@ export class WelcomeEmailFixtureService {
                         },
                     },
                     { key: faker.string.uuid(), visible: true, type: "spacer", props: { spacing: MailSpacing.medium } },
+                    {
+                        key: faker.string.uuid(),
+                        visible: true,
+                        type: "twoColumns",
+                        props: {
+                            layout: "1-1",
+                            columns: [
+                                {
+                                    key: faker.string.uuid(),
+                                    visible: true,
+                                    props: { blocks: [{ key: faker.string.uuid(), visible: true, type: "image", props: image }] },
+                                },
+                                {
+                                    key: faker.string.uuid(),
+                                    visible: true,
+                                    props: {
+                                        blocks: [
+                                            {
+                                                key: faker.string.uuid(),
+                                                visible: true,
+                                                type: "text",
+                                                props: {
+                                                    draftContent: draftContent(
+                                                        [
+                                                            { text: "Our team", type: "header" },
+                                                            { text: "Meet the people who write this newsletter.", type: "copy" },
+                                                        ],
+                                                        {},
+                                                    ),
+                                                },
+                                            },
+                                            { key: faker.string.uuid(), visible: true, type: "spacer", props: { spacing: MailSpacing.small } },
+                                            {
+                                                key: faker.string.uuid(),
+                                                visible: true,
+                                                type: "button",
+                                                props: {
+                                                    text: "About us",
+                                                    link: { targetUrl: "https://example.com/about", openInNewWindow: true, noFollow: false },
+                                                    variant: MailButtonVariant.outlined,
+                                                    align: MailButtonAlignment.left,
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                    { key: faker.string.uuid(), visible: true, type: "spacer", props: { spacing: MailSpacing.medium } },
                     { key: faker.string.uuid(), visible: true, type: "tipTapText", props: helpWithTipTap },
                     { key: faker.string.uuid(), visible: true, type: "spacer", props: { spacing: MailSpacing.medium } },
                     { key: faker.string.uuid(), visible: true, type: "divider", props: {} },

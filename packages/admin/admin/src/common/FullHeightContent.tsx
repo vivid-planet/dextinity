@@ -49,10 +49,12 @@ const Root = createComponentSlot("div")<FullHeightContentClassKey, OwnerState>({
         position: relative;
         height: calc(100vh - ${ownerState.topOffset}px - ${theme.spacing(4)});
 
-        ${ownerState.disableBottomContentSpacing &&
-        css`
-            height: calc(100vh - ${ownerState.topOffset}px);
-        `}
+        ${
+            ownerState.disableBottomContentSpacing &&
+            css`
+                height: calc(100vh - ${ownerState.topOffset}px);
+            `
+        }
     `,
 );
 

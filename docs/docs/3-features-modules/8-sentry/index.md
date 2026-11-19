@@ -42,3 +42,9 @@ In your main file, add Sentry handlers to capture requests and errors:
   }
   bootstrap();
 ```
+
+:::note
+
+`@sentry/node` v11 deprecates `setupExpressErrorHandler`, but keep calling it. Sentry only captures Express errors automatically when it's initialized before Express is loaded, and `SentryModule` initializes it afterwards.
+
+:::

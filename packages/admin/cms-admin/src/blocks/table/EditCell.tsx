@@ -1,6 +1,6 @@
 import { Box, Popper } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { type GridRenderEditCellParams, useGridApiContext } from "@mui/x-data-grid-pro";
+import { type GridRenderEditCellParams, useGridApiContext } from "@mui/x-data-grid";
 import { useCallback, useEffect, useState } from "react";
 
 import { resolveNewState } from "../utils";

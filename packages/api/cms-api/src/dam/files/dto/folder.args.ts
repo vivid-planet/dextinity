@@ -9,7 +9,7 @@ import { DamScopeInterface } from "../../types";
 import { EmptyDamScope } from "./empty-dam-scope";
 
 @InputType()
-export class FolderFilterInput {
+class FolderFilterInput {
     @Field({ nullable: true })
     @IsOptional()
     @IsString()

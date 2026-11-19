@@ -2,7 +2,7 @@ import { DocumentInterface } from "@dextinity/cms-api";
 import { Collection, Embedded, Entity, ManyToMany, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
 import { Type } from "@nestjs/common";
 import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "crypto";
 
 import { EmailCampaignInterface } from "../../email-campaign/entities/email-campaign-entity.factory";
 import { BrevoContactFilterAttributesInterface, EmailCampaignScopeInterface } from "../../types";
@@ -40,7 +40,7 @@ export function createTargetGroupEntity({
 
         @PrimaryKey({ columnType: "uuid" })
         @Field(() => ID)
-        id: string = uuid();
+        id: string = randomUUID();
 
         @Property({ columnType: "timestamp with time zone" })
         @Field()

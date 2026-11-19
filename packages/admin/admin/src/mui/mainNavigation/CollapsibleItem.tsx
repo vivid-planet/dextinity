@@ -19,7 +19,8 @@ import type { MainNavigationItemRouterLinkProps } from "./ItemRouterLink";
 export type MainNavigationChild = ReactElement<MainNavigationCollapsibleItemProps | MainNavigationItemRouterLinkProps | MainNavigationItemProps>;
 
 export interface MainNavigationCollapsibleItemProps
-    extends Omit<MainNavigationItemProps, "slotProps">,
+    extends
+        Omit<MainNavigationItemProps, "slotProps">,
         ThemedComponentBaseProps<{
             root: "div";
             mainNavigationItem: typeof MainNavigationItem;

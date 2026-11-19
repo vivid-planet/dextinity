@@ -1,45 +1,39 @@
 import { gql } from "@apollo/client";
-import { type SortDirection, Table, TableQuery, useTableQuery } from "@dextinity/admin";
+import { Table, TableQuery, useTableQuery } from "@dextinity/admin";
 
-import { apolloRestStoryDecorator } from "../../../apollo-rest-story.decorator";
+import type { LaunchesPastResult } from "../../../../.storybook/mocks/handlers";
+import { apolloStoryDecorator } from "../../../apollo-story.decorator";
 
 const query = gql`
-    query users($sort: String, $order: String) {
-        users(sort: $sort, order: $order) @rest(type: "User", path: "users?_sort={args.sort}&_order={args.order}") {
-            id
-            name
-            username
-            email
+    query LaunchesPast {
+        launchesPastResult {
+            data {
+                id
+                mission_name
+                launch_date_local
+            }
+            result {
+                totalCount
+            }
         }
     }
 `;
 
 interface QueryData {
-    users: Array<{
-        id: number;
-        name: string;
-        username: string;
-        email: string;
-    }>;
-}
-
-interface QueryVariables {
-    blubId: number;
-    sort: string;
-    order: SortDirection;
+    launchesPastResult: LaunchesPastResult;
 }
 
 export default {
     title: "Docs/Components/Table/TableQuery",
-    decorators: [apolloRestStoryDecorator()],
+    decorators: [apolloStoryDecorator("/graphql")],
 };
 
 export const _TableQuery = {
     render: () => {
-        const { tableData, api, loading, error } = useTableQuery<QueryData, QueryVariables>()(query, {
+        const { tableData, api, loading, error } = useTableQuery<QueryData, Record<string, never>>()(query, {
             resolveTableData: (data) => ({
-                data: data.users,
-                totalCount: data.users.length,
+                data: data.launchesPastResult.data,
+                totalCount: data.launchesPastResult.result.totalCount,
             }),
         });
 
@@ -50,16 +44,12 @@ export const _TableQuery = {
                         {...tableData}
                         columns={[
                             {
-                                name: "name",
-                                header: "Name",
+                                name: "mission_name",
+                                header: "Mission Name",
                             },
                             {
-                                name: "username",
-                                header: "Username",
-                            },
-                            {
-                                name: "email",
-                                header: "E-Mail",
+                                name: "launch_date_local",
+                                header: "Launch Date",
                             },
                         ]}
                     />

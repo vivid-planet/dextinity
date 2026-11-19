@@ -4,7 +4,9 @@ import {
     ForbiddenException,
     forwardRef,
     Get,
+    GoneException,
     Headers,
+    HttpStatus,
     Inject,
     NotFoundException,
     Param,
@@ -22,8 +24,8 @@ import { BlobStorageBackendService } from "../../blob-storage/backends/blob-stor
 import { ScaledImagesCacheService } from "../../blob-storage/cache/scaled-images-cache.service";
 import { createHashedPath } from "../../blob-storage/utils/create-hashed-path.util";
 import { FocalPoint } from "../../file-utils/focal-point.enum";
-import { BASIC_TYPES, MODERN_TYPES } from "../../file-utils/images.constants";
-import { getCenteredPosition, getMaxDimensionsFromArea, getSupportedMimeType } from "../../file-utils/images.util";
+import { MODERN_TYPES } from "../../file-utils/images.constants";
+import { getBasicImageMimeType, getCenteredPosition, getMaxDimensionsFromArea, getSupportedMimeType } from "../../file-utils/images.util";
 import { Extension, Gravity, ResizingType } from "../../imgproxy/imgproxy.enum";
 import { ImgproxyService } from "../../imgproxy/imgproxy.service";
 import { RequiredPermission } from "../../user-permissions/decorators/required-permission.decorator";
@@ -38,6 +40,8 @@ import { ImagesService } from "./images.service";
 
 const smartImageUrl = `:fileId/crop\\::focalPoint/resize\\::resizeWidth\\::resizeHeight/:filename`;
 const focusImageUrl = `:fileId/crop\\::cropWidth\\::cropHeight\\::focalPoint\\::cropX\\::cropY/resize\\::resizeWidth\\::resizeHeight/:filename`;
+
+const publicCacheControl = "max-age=31536000, s-maxage=86400, public";
 
 export const createImagesController = ({ damBasePath }: { damBasePath: string }): Type<unknown> => {
     @Controller(`${damBasePath}/images`)
@@ -120,7 +124,7 @@ export const createImagesController = ({ damBasePath }: { damBasePath: string })
             }
 
             const file = await this.filesService.findOneById(params.fileId);
-            if (file === null) {
+            if (file === null || !file.image) {
                 throw new NotFoundException();
             }
 
@@ -128,9 +132,13 @@ export const createImagesController = ({ damBasePath }: { damBasePath: string })
                 throw new BadRequestException("Content Hash mismatch!");
             }
 
-            return this.pipeCroppedImage(file, params, accept, res, {
-                "cache-control": "max-age=31536000, s-maxage=86400, public", // Public cache, 1 year for browsers, 1 day for proxies/cdn's
-            });
+            this.throwIfLicenseIsInvalid(file, res);
+
+            if (this.imagesService.shouldRedirectToCurrentUrl(file, params.filename)) {
+                return this.redirectToCurrentUrl({ file, params, res });
+            }
+
+            return this.pipeCroppedImage(file, params, accept, res, { "cache-control": publicCacheControl });
         }
 
         @DisableDextinityGuards()
@@ -141,7 +149,7 @@ export const createImagesController = ({ damBasePath }: { damBasePath: string })
             }
 
             const file = await this.filesService.findOneById(params.fileId);
-            if (file === null) {
+            if (file === null || !file.image) {
                 throw new NotFoundException();
             }
 
@@ -149,13 +157,30 @@ export const createImagesController = ({ damBasePath }: { damBasePath: string })
                 throw new BadRequestException("Content Hash mismatch!");
             }
 
-            return this.pipeCroppedImage(file, params, accept, res, {
-                "cache-control": "max-age=31536000, s-maxage=86400, public", // Public cache, 1 year for browsers, 1 day for proxies/cdn's
-            });
+            this.throwIfLicenseIsInvalid(file, res);
+
+            if (this.imagesService.shouldRedirectToCurrentUrl(file, params.filename)) {
+                return this.redirectToCurrentUrl({ file, params, res });
+            }
+
+            return this.pipeCroppedImage(file, params, accept, res, { "cache-control": publicCacheControl });
         }
 
         private isValidHash({ hash, ...imageParams }: HashImageParams): boolean {
             return hash === this.imagesService.createHash(imageParams);
+        }
+
+        private throwIfLicenseIsInvalid(file: FileInterface, res: Response): void {
+            if (this.filesService.hasInvalidLicense(file)) {
+                res.setHeader("cache-control", "no-store"); // The image must be delivered again once the license becomes valid
+                throw new GoneException();
+            }
+        }
+
+        private redirectToCurrentUrl({ file, params, res }: { file: FileInterface; params: ImageParams; res: Response }): void {
+            const { cropArea, resizeWidth, resizeHeight } = params;
+            res.setHeader("cache-control", publicCacheControl);
+            res.redirect(HttpStatus.MOVED_PERMANENTLY, this.imagesService.createUrl({ file, cropArea, resizeWidth, resizeHeight }));
         }
 
         private async pipeCroppedImage(
@@ -221,11 +246,7 @@ export const createImagesController = ({ damBasePath }: { damBasePath: string })
                 .builder()
                 .crop(cropWidth, cropHeight, cropGravity, cropOffsetX, cropOffsetY)
                 .resize(ResizingType.AUTO, resizeWidth)
-                .format(
-                    (mime.getExtension(
-                        getSupportedMimeType(MODERN_TYPES, accept) ?? getSupportedMimeType(BASIC_TYPES, file.mimetype) ?? "",
-                    ) as Extension) || Extension.JPG,
-                )
+                .format(mime.getExtension(getSupportedMimeType(MODERN_TYPES, accept) ?? getBasicImageMimeType(file.mimetype)) as Extension)
                 .generateUrl(
                     `${this.blobStorageBackendService.getBackendFilePathPrefix()}${this.config.filesDirectory}/${createHashedPath(file.contentHash)}`,
                 );

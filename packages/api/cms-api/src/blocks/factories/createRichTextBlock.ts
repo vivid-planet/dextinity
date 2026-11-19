@@ -64,8 +64,10 @@ interface RichTextBlockDataInterface extends BlockDataInterface {
     draftContent: RawDraftContentState;
 }
 
-interface RichTextBlockInputInterface<LinkBlockInput extends BlockInputInterface>
-    extends BlockInputInterface<BlockDataInterface, { draftContent: DraftJsFactoryProps<LinkBlockInput> }> {
+interface RichTextBlockInputInterface<LinkBlockInput extends BlockInputInterface> extends BlockInputInterface<
+    BlockDataInterface,
+    { draftContent: DraftJsFactoryProps<LinkBlockInput> }
+> {
     draftContent: DraftJsInput<LinkBlockInput>;
 }
 
@@ -227,6 +229,9 @@ function IsDraftContent(link: Block, validationOptions?: ValidationOptions) {
             constraints: [link],
             options: validationOptions,
             validator: {
+                defaultMessage(args: ValidationArguments) {
+                    return `${args.property} must be a Draft.js content object with blocks and entityMap, where each entity is a LINK with valid ${(args.constraints[0] as Block).name} data`;
+                },
                 async validate(value: unknown, args: ValidationArguments) {
                     const LinkBlock = args.constraints[0] as Block;
 

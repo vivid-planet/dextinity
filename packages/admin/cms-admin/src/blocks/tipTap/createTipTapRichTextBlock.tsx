@@ -32,6 +32,7 @@ import { NonBreakingSpace } from "./extensions/NonBreakingSpace";
 import { Placeholder } from "./extensions/Placeholder";
 import { SoftHyphen } from "./extensions/SoftHyphen";
 import { createTextBlock } from "./extensions/TextBlock";
+import { resolveTextAlign, type TipTapTextAlign } from "./extensions/textBlockAttributes";
 import { createTextBlockList } from "./extensions/TextBlockList";
 import { TextBlockListItem } from "./extensions/TextBlockListItem";
 import { InlineStyleContext } from "./InlineStyleContext";
@@ -84,6 +85,7 @@ export interface TipTapResolvedOptions {
     defaultTextBlock: TipTapResolvedTextBlock;
     orderedList: false | TipTapResolvedList;
     unorderedList: false | TipTapResolvedList;
+    textAlign: TipTapTextAlign[];
     nonBreakingSpace: boolean;
     softHyphen: boolean;
     link: boolean;
@@ -115,6 +117,7 @@ export function resolveTipTapOptions({
     defaultTextBlock,
     orderedList,
     unorderedList,
+    textAlign = false,
     nonBreakingSpace = true,
     softHyphen = true,
     link,
@@ -140,6 +143,7 @@ export function resolveTipTapOptions({
         // Lists are enabled by default, but cannot exist without a paragraph to build their items from.
         orderedList: resolveList({ list: orderedList ?? hasParagraph, name: orderedListName, tag: "ol" }),
         unorderedList: resolveList({ list: unorderedList ?? hasParagraph, name: unorderedListName, tag: "ul" }),
+        textAlign: resolveTextAlign(textAlign),
         nonBreakingSpace,
         softHyphen,
         link: !!link,
@@ -245,6 +249,13 @@ export interface TipTapRichTextBlockFactoryOptions {
      */
     unorderedList?: boolean | TipTapListOptions;
     /**
+     * Enables aligning text blocks left, center, right or justified. Defaults to `false`. Pass an
+     * object such as `{ left: true, center: true }` to enable only some of the alignments.
+     *
+     * Must match the API's `textAlign`, otherwise the API rejects content the editor produces.
+     */
+    textAlign?: boolean | Partial<Record<TipTapTextAlign, boolean>>;
+    /**
      * Enables non-breaking spaces. Defaults to `true`.
      */
     nonBreakingSpace?: boolean;
@@ -300,6 +311,21 @@ function getPlainTextFromContent(content: JSONContent): string {
         }
     }
     return text;
+}
+
+function getTextLines(content: JSONContent): string[] {
+    if (content.type !== "textBlock") {
+        return (content.content ?? []).flatMap(getTextLines);
+    }
+    const lines = [""];
+    for (const child of content.content ?? []) {
+        if (child.type === "hardBreak") {
+            lines.push("");
+        } else {
+            lines[lines.length - 1] += getPlainTextFromContent(child);
+        }
+    }
+    return lines;
 }
 
 const buildEmptyContent = ({ defaultTextBlock }: TipTapResolvedOptions): JSONContent => {
@@ -441,6 +467,13 @@ function collectCmsBlockNodes(content: JSONContent): Array<{ blockType: string; 
     return results;
 }
 
+const hasContent = (content: JSONContent): boolean =>
+    isCmsBlockNode(content) || (content.type === "textBlock" ? (content.content?.length ?? 0) > 0 : (content.content ?? []).some(hasContent));
+
+export function isTipTapRichTextEmpty(tipTapContent: JSONContent): boolean {
+    return !hasContent(tipTapContent);
+}
+
 function collectLinkMarksData(content: JSONContent): unknown[] {
     const results: unknown[] = [];
 
@@ -508,14 +541,16 @@ export function buildTipTapExtensions({
             blockquote: false,
             code: false,
             codeBlock: false,
+            horizontalRule: false,
             link: false,
-            // A text block is directly editable (Enter at its end already creates the next one), so it
-            // doesn't need TrailingNode's own empty paragraph the way a trailing atom node (e.g. a child block) does.
-            trailingNode: { notAfter: ["textBlock"] },
+            // Enter at the end of a text block creates the next one, and Enter in an empty last list item
+            // leaves the list, so only a trailing atom node (e.g. a child block) needs TrailingNode's empty
+            // text block. After a list, it couldn't be deleted: TrailingNode adds it again right away.
+            trailingNode: { notAfter: ["textBlock", "orderedList", "bulletList"] },
         }),
         createTextBlock({ ...resolvedOptions, hasTextBlockStyles: hasStyles, styled }),
         ...(hasParagraph ? [TextBlockListItem] : []),
-        ...(styledNodes.some((styledNode) => styledNode.defaultStyle !== null) ? [createDefaultTextBlockStyle(resolvedOptions)] : []),
+        ...(hasStyles ? [createDefaultTextBlockStyle(resolvedOptions)] : []),
         // Only worth replacing the list shortcuts where a list has styles of its own to apply.
         ...([resolvedOptions.orderedList, resolvedOptions.unorderedList].some((list) => list && list.styles.length > 0)
             ? [createTextBlockList(resolvedOptions)]
@@ -746,9 +781,6 @@ export const TipTapEditor = ({
 type TipTapRichTextBlockInterface = BlockInterface<TipTapRichTextBlockData, TipTapRichTextBlockState, TipTapRichTextBlockInput> &
     ReadOnlyBlockRenderInterface<TipTapRichTextBlockState>;
 
-/**
- * @experimental
- */
 export const createTipTapRichTextBlock = (options: TipTapRichTextBlockFactoryOptions = {}): TipTapRichTextBlockInterface => {
     const resolvedOptions = resolveTipTapOptions(options);
     const inlineStyles = options.inlineStyles ?? [];
@@ -851,7 +883,10 @@ export const createTipTapRichTextBlock = (options: TipTapRichTextBlockFactoryOpt
         ReadOnlyComponent: ({ state }) => <TipTapEditor state={state} updateState={() => {}} {...sharedEditorProps} readOnly />,
 
         previewContent: (state) => {
-            const text = getPlainTextFromContent(state.tipTapContent);
+            const text = getTextLines(state.tipTapContent)
+                .map((line) => line.trim())
+                .filter((line) => line.length > 0)
+                .join(" ");
             const MAX_CHARS = 100;
             return text.length > 0 ? [{ type: "text", content: text.slice(0, MAX_CHARS) }] : [];
         },

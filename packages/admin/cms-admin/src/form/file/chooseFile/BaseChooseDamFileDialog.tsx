@@ -86,7 +86,7 @@ export const BaseChooseDamFileDialog = ({
                                             options.filterApi.formApi.change("searchText", undefined);
                                         }}
                                     >
-                                        <DamItemLabel asset={row} matches={options.matches} />
+                                        <DamItemLabel asset={row} matches={options.matches} showPath={options.showPath} />
                                     </FolderStackLink>
                                 );
                             }}
@@ -94,7 +94,7 @@ export const BaseChooseDamFileDialog = ({
                             hideContextMenu={true}
                             hideMultiselect={hideMultiselect}
                             hideArchiveFilter={true}
-                            toolbarOptions={{ hideSelectiveActions: true }}
+                            toolbarOptions={{ hideSelectiveActions: true, hideSettingsAction: true }}
                             disableFolderSelection={disableFolderSelection}
                             keepNonExistentRowsSelected={keepNonExistentRowsSelected}
                             initialSelection={initialFileIds ? new Map(initialFileIds.map((id) => [id, "file"])) : undefined}

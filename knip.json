@@ -1,5 +1,6 @@
 {
-    "$schema": "https://unpkg.com/knip@5/schema.json",
+    "$schema": "https://unpkg.com/knip@6/schema.json",
+    "ignore": ["**/lib/**"],
     "workspaces": {
         ".": {
             "entry": ["dev-pm.config.ts"],
@@ -8,7 +9,8 @@
             "ignoreBinaries": ["oauth2-proxy", "peers", "playwright"]
         },
         "packages/cli": {
-            "project": ["./src/**/*.{ts,tsx}"]
+            "project": ["./src/**/*.{ts,tsx}"],
+            "ignoreBinaries": ["op"]
         },
         "packages/eslint-config": {
             "ignore": ["*"],
@@ -21,7 +23,7 @@
             "project": []
         },
         "docs": {
-            "ignore": ["./docs/**/*.mdx", "./src/components/StorybookAdminComponentDocsIframe.tsx", ".docusaurus/**"],
+            "ignore": ["./docs/**/*.mdx", ".docusaurus/**"],
             "ignoreDependencies": ["@algolia/client-search", "search-insights"]
         },
         "packages/admin/admin-babel-preset": {
@@ -76,14 +78,15 @@
         },
         "packages/site/site-nextjs": {
             "project": ["./src/**/*.{ts,tsx}"],
-            "ignore": ["./src/**/*.generated.ts"]
+            "ignore": ["./src/**/*.generated.ts"],
+            "ignoreDependencies": ["clsx", "fast-equals", "scroll-into-view-if-needed", "usehooks-ts"]
         },
         "packages/mail-react": {
             "project": ["./src/**/*.{ts,tsx}"],
             "ignore": ["./src/**/*.generated.ts"]
         },
         "demo/admin": {
-            "entry": ["./src/loader.ts", "./src/**/*.dextinityGen.{ts,tsx}"],
+            "entry": ["./src/loader.tsx", "./src/**/*.dextinityGen.{ts,tsx}"],
             "project": ["./src/**/*.{ts,tsx}"],
             "ignore": ["./src/**/generated/**", "**/graphql.generated.ts", "**/*.generated.ts"],
             "ignoreDependencies": ["@swc/plugin-emotion", "cosmiconfig-toml-loader", "@babel/core"]
@@ -103,10 +106,11 @@
             ],
             "project": ["./src/**/*.{ts,tsx}"],
             "ignoreDependencies": ["@as-integrations/express5"],
-            "ignore": ["./src/**/generated/**", "**/*.generated.ts"]
+            "ignore": ["./src/**/generated/**", "**/*.generated.ts"],
+            "mikro-orm": false
         },
         "demo/site": {
-            "entry": ["./src/app/**", "./cache-handler.ts", "./server.ts", "./opentelemetry-metrics.ts", "tracing.dev.ts", "tracing.production.ts"],
+            "entry": ["./src/app/**", "./cache-handler.ts", "./opentelemetry-metrics.ts", "tracing.dev.ts", "tracing.production.ts"],
             "project": ["./src/**/*.{ts,tsx}"],
             "ignoreDependencies": ["@babel/core", "@types/grecaptcha", "mjml"],
             "ignore": ["**/*.generated.ts"]

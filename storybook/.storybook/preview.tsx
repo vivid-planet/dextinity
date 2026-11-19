@@ -54,7 +54,7 @@ export const globalTypes: GlobalTypes = {
     },
 };
 
-const workerStarted = worker.start({ onUnhandledRequest: "bypass" });
+const workerStarted = worker.start({ onUnhandledFrame: "bypass" });
 
 const preview: Preview = {
     tags: ["autodocs"],
@@ -133,7 +133,6 @@ const preview: Preview = {
                     ...orderIcons,
                     ...orderBestPractices,
                     ...orderDevelopment,
-                    "component-docs-",
                     "admin-",
                     "stories-",
                 ];

@@ -1,21 +1,31 @@
-import { readFile } from "fs/promises";
+import { readFile, stat } from "fs/promises";
 
 import { convertPreviewDataToHeaders, type PreviewData } from "../graphQLFetch/graphQLFetch";
 
 let queryMap: Record<string, string>;
 let fragmentsMap: Record<string, string>;
+let persistedQueriesModifiedAt: number | undefined;
 async function loadPersistedQueries(path: string) {
-    const file = await readFile(path, { encoding: "utf-8" });
-    queryMap = JSON.parse(file.toString()) as typeof queryMap;
+    const { mtimeMs } = await stat(path);
+    if (mtimeMs === persistedQueriesModifiedAt) {
+        return;
+    }
 
-    fragmentsMap = {};
-    for (const [, query] of Object.entries(queryMap)) {
+    const file = await readFile(path, { encoding: "utf-8" });
+    const newQueryMap = JSON.parse(file.toString()) as typeof queryMap;
+
+    const newFragmentsMap: typeof fragmentsMap = {};
+    for (const [, query] of Object.entries(newQueryMap)) {
         const match = query.match(/^\s*fragment\s+(\w+)\s+on\s+\w+/m);
         if (match) {
             const fragmentName = match[1];
-            fragmentsMap[fragmentName] = query.replace(/\${.*?}/g, ""); // remove interpolations that would be injected at runtime;
+            newFragmentsMap[fragmentName] = query.replace(/\${.*?}/g, ""); // remove interpolations that would be injected at runtime;
         }
     }
+
+    queryMap = newQueryMap;
+    fragmentsMap = newFragmentsMap;
+    persistedQueriesModifiedAt = mtimeMs;
 }
 
 function injectFragments(query: string) {
@@ -67,6 +77,10 @@ export async function persistedQueryRoute(
 ) {
     if (!queryMap) {
         await loadPersistedQueries(persistedQueriesPath);
+    } else if (process.env.NODE_ENV !== "production") {
+        // During development, the bundler plugin rewrites the file without an atomic rename, so a reload can see it half-written.
+        // Keep the previous queries in that case and retry on the next request.
+        await loadPersistedQueries(persistedQueriesPath).catch(() => undefined);
     }
 
     let hash: string | null | undefined;

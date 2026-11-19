@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/admin-babel-preset",
-    "version": "10.9.1",
+    "version": "10.15.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/vivid-planet/dextinity",
@@ -12,8 +12,8 @@
     "main": "index.js",
     "dependencies": {
         "@babel/cli": "^7.29.7",
-        "@babel/core": "^7.29.7",
-        "@babel/preset-env": "^7.29.7",
+        "@babel/core": "^7.29.13",
+        "@babel/preset-env": "^7.29.14",
         "@babel/preset-react": "^7.29.7",
         "@babel/preset-typescript": "^7.29.7",
         "@emotion/babel-plugin": "^11.13.5"
@@ -29,6 +29,6 @@
         "registry": "https://registry.npmjs.org"
     },
     "engines": {
-        "node": ">=22.0.0"
+        "node": ">=22.12.0"
     }
 }

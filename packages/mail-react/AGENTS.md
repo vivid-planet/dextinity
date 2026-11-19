@@ -4,7 +4,7 @@
 
 [README.md](README.md) explains what this package is, the design decisions behind it (e.g. `useOptionalTheme()` over `useTheme()`), and the conventions its code follows. Read it before working in here. If a change reverses a decision or shifts a convention, update the README in the same PR.
 
-When a change affects how the package is used (components, documented behavior, patterns, styling), update the docs and the agent skill (`skills/dextinity-mail-react/SKILL.md`) — see _Usage documentation_ in the README; consider a separate docs commit. A fix inside the package that leaves its usage unchanged needs neither. The skill is the agent-facing usage guide; it doesn't restate props, types, or defaults — those live in the package's types and TSDoc.
+When a change affects how the package is used (components, documented behavior, patterns, styling), update the usage guide in `src/docs/` — see _Usage documentation_ in the README. A fix inside the package that leaves its usage unchanged doesn't need it. The guide doesn't restate props, types, or defaults — those live in the package's types and TSDoc.
 
 ## When creating a changeset
 
@@ -14,16 +14,16 @@ Before adding a new changeset, check `.changeset/` at the repo root for an exist
 
 This package has two dev-pm scripts (see the `dev-pm` skill for command usage):
 
-| Name                   | What it does                              |
-| ---------------------- | ----------------------------------------- |
-| `mail-react`           | `tsc --watch` — rebuilds `lib/` on change |
-| `mail-react-storybook` | `storybook dev -p 6066 --no-open`         |
+| Name                             | What it does                              |
+| -------------------------------- | ----------------------------------------- |
+| `mail-react`                     | `tsc --watch` — rebuilds `lib/` on change |
+| `storybook-dextinity-mail-react` | `storybook dev -p 6066 --no-open`         |
 
-The `@mail-react` group starts `mail-react`. Start `mail-react-storybook` on its own, or with the `@storybook` group.
+The `@mail-react` group starts `mail-react`. Start `storybook-dextinity-mail-react` on its own, or with the `@storybook` group.
 
 ## Storybook
 
-Storybook runs on a fixed port: `http://localhost:6066`.
+Storybook runs on a fixed port, `http://localhost:6066`, and serves an MCP server at `http://localhost:6066/mcp`.
 
 ### Story index API
 
@@ -61,5 +61,4 @@ After making changes, run `pnpm run lint:fix` and then `pnpm run lint` to verify
 
 ## See also
 
-- Skill: `skills/dextinity-mail-react/SKILL.md` — patterns and conventions for building emails with this package
-- Docs: `docs/docs/3-features-modules/13-building-html-emails/` — end-user documentation for `@dextinity/mail-react`
+- Usage guide: `src/docs/` — patterns and conventions for building emails with this package, served in the Storybook and its MCP server

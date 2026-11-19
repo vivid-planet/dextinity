@@ -13,11 +13,10 @@ import { type MainNavigationClassKey, type OwnerState, PermanentDrawer, Temporar
 export const DEFAULT_DRAWER_WIDTH = 300;
 export const DEFAULT_DRAWER_WIDTH_COLLAPSED = 60;
 
-export interface MainNavigationProps
-    extends ThemedComponentBaseProps<{
-        temporaryDrawer: typeof MuiDrawer;
-        permanentDrawer: typeof MuiDrawer;
-    }> {
+export interface MainNavigationProps extends ThemedComponentBaseProps<{
+    temporaryDrawer: typeof MuiDrawer;
+    permanentDrawer: typeof MuiDrawer;
+}> {
     children: ReactNode;
     variant?: "permanent" | "temporary";
     drawerWidth?: number;

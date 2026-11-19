@@ -6,7 +6,8 @@ import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBase
 import { type AppHeaderButtonClassKey, Content, EndIcon, Root, StartIcon, Text } from "./AppHeaderButton.styles";
 
 export interface AppHeaderButtonProps
-    extends ButtonBaseProps,
+    extends
+        ButtonBaseProps,
         ThemedComponentBaseProps<{
             root: typeof ButtonBase;
             content: "div";

@@ -5,7 +5,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { styled } from "@mui/material/styles";
-import { type MouseEvent, useState } from "react";
+import { Fragment, type MouseEvent, useState } from "react";
 import { FormattedMessage } from "react-intl";
 
 import type { BlockInterface, BlockState } from "../types";
@@ -41,13 +41,13 @@ export function TipTapBlockDialog({ block: Block, initialState, isEditing, onSub
                     <FormattedMessage
                         id="dextinity.blocks.tipTapRichText.editBlock"
                         defaultMessage='Edit "{block}"'
-                        values={{ block: Block.displayName }}
+                        values={{ block: <Fragment key="block">{Block.displayName}</Fragment> }}
                     />
                 ) : (
                     <FormattedMessage
                         id="dextinity.blocks.tipTapRichText.insertBlock"
                         defaultMessage='Insert "{block}"'
-                        values={{ block: Block.displayName }}
+                        values={{ block: <Fragment key="block">{Block.displayName}</Fragment> }}
                     />
                 )}
             </DialogTitle>

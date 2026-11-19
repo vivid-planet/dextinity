@@ -219,8 +219,8 @@ enum Category {
 
 ```ts
 enum Category {
-  Main = "Main"
-  Secondary = "Secondary"
+  main = "main"
+  secondary = "secondary"
 }
 ```
 
@@ -228,7 +228,7 @@ enum Category {
 
 Reason: Admin and Site only know the GraphQL schema, where the enum keys are used. Therefore, queries and mutations also send the keys. If the values differ from the keys, this causes API errors because the wrong values are used for the enum.
 
-Regarding naming conventions, see also [TypeScript | Enums](./typescript).
+Use `camelCase` for keys and values, the same as for TypeScript enums. See [TypeScript | Enums](./typescript).
 
 ### TypeScript number vs GraphQL Int/Float
 

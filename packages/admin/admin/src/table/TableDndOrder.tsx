@@ -14,7 +14,8 @@ import { TableBodyRow } from "./TableBodyRow";
 export type TableDndOrderClassKey = "root" | "dragCell" | "dragIconContainer";
 
 interface IDndOrderRowProps<TRow extends IRow>
-    extends ThemedComponentBaseProps<{
+    extends
+        ThemedComponentBaseProps<{
             dragCell: typeof TableCell;
             dragIconContainer: "div";
         }>,
@@ -155,7 +156,8 @@ const DragIconContainer = createComponentSlot("div")<TableDndOrderClassKey>({
 `);
 
 interface TableDndOrderProps<TRow extends IRow>
-    extends ThemedComponentBaseProps<{
+    extends
+        ThemedComponentBaseProps<{
             root: typeof Table;
             dragCell: typeof TableCell;
             dragIconContainer: "div";

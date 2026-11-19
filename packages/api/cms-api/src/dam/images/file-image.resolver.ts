@@ -16,17 +16,7 @@ export class FileImagesResolver {
 
     @ResolveField(() => String, { nullable: true })
     async urlTemplate(@Parent() fileImage: DamFileImage, @Context("req") req: IncomingMessage): Promise<string | undefined> {
-        const file = await this.filesService.findOneByImageId(fileImage.id);
-
-        if (file) {
-            const urlTemplate = this.imagesService.createUrlTemplate(
-                { file },
-                {
-                    previewDamUrls: Boolean(req.headers["x-preview-dam-urls"]),
-                },
-            );
-            return urlTemplate;
-        }
+        return this.createUrlTemplate(fileImage, { previewDamUrls: Boolean(req.headers["x-preview-dam-urls"]) });
     }
 
     @ResolveField(() => String, { nullable: true })
@@ -36,16 +26,20 @@ export class FileImagesResolver {
         @Parent() fileImage: DamFileImage,
         @Context("req") req: IncomingMessage,
     ): Promise<string | undefined> {
+        const urlTemplate = await this.createUrlTemplate(fileImage, { previewDamUrls: Boolean(req.headers["x-preview-dam-urls"]) });
+
+        return urlTemplate?.replace("$resizeWidth", String(width)).replace("$resizeHeight", String(height));
+    }
+
+    private async createUrlTemplate(fileImage: DamFileImage, { previewDamUrls }: { previewDamUrls: boolean }): Promise<string | undefined> {
         const file = await this.filesService.findOneByImageId(fileImage.id);
 
-        if (file) {
-            const urlTemplate = this.imagesService.createUrlTemplate(
-                { file },
-                {
-                    previewDamUrls: Boolean(req.headers["x-preview-dam-urls"]),
-                },
-            );
-            return urlTemplate.replace("$resizeWidth", String(width)).replace("$resizeHeight", String(height));
+        if (!file) {
+            return undefined;
         }
+
+        const image = await this.filesService.findImageToDeliver({ file }, { previewDamUrls });
+
+        return image ? this.imagesService.createUrlTemplate(image, { previewDamUrls }) : undefined;
     }
 }

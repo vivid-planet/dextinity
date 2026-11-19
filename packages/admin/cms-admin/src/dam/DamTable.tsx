@@ -17,6 +17,7 @@ import FolderDataGrid, {
 import type { RenderDamLabelOptions } from "./DataGrid/label/DamItemLabelColumn";
 import { DamSelectionProvider } from "./DataGrid/selection/DamSelectionContext";
 import EditFile from "./FileForm/EditFile";
+import { DamSettings } from "./settings/DamSettings";
 
 export interface DamFilter {
     allowedMimetypes?: string[];
@@ -60,6 +61,9 @@ const Folder = ({ id, filterApi, renderWithFullHeightMainContent, ...props }: Fo
                         return <EditFile id={selectedId} contentScopeIndicator={props.contentScopeIndicator} />;
                     }}
                 </StackPage>
+                <StackPage name="settings" title={intl.formatMessage({ id: "dextinity.pages.dam.settings", defaultMessage: "Settings" })}>
+                    <DamSettings contentScopeIndicator={props.contentScopeIndicator} />
+                </StackPage>
                 <StackPage name="folder" title={data?.damFolder.name}>
                     {(selectedId) => {
                         setSelectedFolderId(selectedId);
@@ -88,6 +92,7 @@ export interface DamConfig {
     hideDamActions?: boolean;
     toolbarOptions?: {
         hideSelectiveActions?: boolean;
+        hideSettingsAction?: boolean;
     };
     additionalToolbarItems?: ReactNode;
     disableFolderSelection?: boolean;

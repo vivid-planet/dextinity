@@ -14,7 +14,7 @@ import {
 } from "@mikro-orm/postgresql";
 import { Field, ID, InputType, ObjectType } from "@nestjs/graphql";
 import { IsNumber, IsObject, IsString } from "class-validator";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "crypto";
 
 import { Coordinates, CoordinatesType } from "../coordinates.type";
 import { ProductType } from "./product-type.enum";
@@ -104,7 +104,7 @@ export class Manufacturer extends BaseEntity {
 
     @PrimaryKey({ type: "uuid" })
     @Field(() => ID)
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property()
     @Field()

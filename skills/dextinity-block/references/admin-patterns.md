@@ -30,9 +30,7 @@ export const MyBlock = createCompositeBlock(
         name: "My", // PascalCase, no "Block" suffix; must match API
         displayName: <FormattedMessage id="myBlock.displayName" defaultMessage="My" />,
         category: BlockCategory.TextAndContent, // only when used inside a blocks block
-        blocks: {
-            /* ... */
-        },
+        blocks: {/* ... */},
     },
     (block) => {
         block.previewContent = (state) => [{ type: "text", content: state.title }];

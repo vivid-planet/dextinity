@@ -8,13 +8,12 @@ import { FormattedMessage } from "react-intl";
 import type { IFeatureConfig } from "../types";
 import { ControlButton } from "./ControlButton";
 
-interface IProps
-    extends ThemedComponentBaseProps<{
-        root: "div";
-        buttonWrapper: "div";
-        listItem: typeof MenuItem;
-        listItemIcon: typeof MuiListItemIcon;
-    }> {
+interface IProps extends ThemedComponentBaseProps<{
+    root: "div";
+    buttonWrapper: "div";
+    listItem: typeof MenuItem;
+    listItemIcon: typeof MuiListItemIcon;
+}> {
     features: IFeatureConfig[];
     disabled?: boolean;
     editorRef: RefObject<Editor | null>;

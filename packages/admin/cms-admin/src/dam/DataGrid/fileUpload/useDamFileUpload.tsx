@@ -2,7 +2,7 @@ import { useApolloClient } from "@apollo/client";
 import { Alert, useSnackbarApi } from "@dextinity/admin";
 import { Snackbar } from "@mui/material";
 import { type ReactNode, useCallback, useMemo, useState } from "react";
-import type { Accept, FileRejection } from "react-dropzone";
+import type { Accept, DropzoneOptions, FileRejection } from "react-dropzone";
 import { FormattedMessage } from "react-intl";
 
 import { NetworkError, UnknownError } from "../../../common/errors/errorMessages";
@@ -18,7 +18,7 @@ import {
     type FilenameData,
     useManualDuplicatedFilenamesHandler,
 } from "../duplicatedFilenames/ManualDuplicatedFilenamesHandler";
-import { convertMimetypesToDropzoneAccept } from "./fileUpload.utils";
+import { convertMimetypesToDropzoneAccept, getFilesWithMimeTypeFromEvent } from "./fileUpload.utils";
 import { type NewlyUploadedItem, useFileUploadContext } from "./FileUploadContext";
 import { FileUploadErrorDialog } from "./FileUploadErrorDialog";
 import {
@@ -82,6 +82,7 @@ export interface FileUploadApi {
         accept: Accept;
         multiple: boolean;
         maxSize: number;
+        getFilesFromEvent: NonNullable<DropzoneOptions["getFilesFromEvent"]>;
     };
     newlyUploadedItems: NewlyUploadedItem[];
 }
@@ -95,7 +96,7 @@ interface RejectedFile {
     file: File;
 }
 
-const addFolderPathToFiles = async (acceptedFiles: FileWithDamUploadMetadata[]): Promise<FileWithFolderPath[]> => {
+const addFolderPathToFiles = (acceptedFiles: FileWithDamUploadMetadata[]): FileWithFolderPath[] => {
     const newFiles = [];
 
     for (const file of acceptedFiles) {
@@ -110,14 +111,10 @@ const addFolderPathToFiles = async (acceptedFiles: FileWithDamUploadMetadata[]):
             harmonizedPath = file.path;
         }
 
-        // Create a new file because of a strange bug in Firefox that when uploading a folder via drag and drop
-        // changes the mimetype of all uploaded files to "application/octet-stream". This behavior only happens in Firefox
-        // (not in Chrome or Safari) and I couldn't find the reason for it.
-        // When looking at the formData in the web dev tools, the mimetype is still correct. It is only changed to a
-        // wrong type in the actual request.
-        // The bug could be avoided by creating a new file. Maybe an issue with Dropzone?
-        const buffer = await file.arrayBuffer();
-        const newFile: FileWithFolderPath = new File([buffer], file.name, { lastModified: file.lastModified, type: file.type });
+        // Firefox doesn't set a MIME type for files from an uploaded folder. Dropzone only patches the `type` property
+        // in JS, so the request would still be sent with "application/octet-stream". Wrapping the file in a new File
+        // sets the actual type without reading the file into memory.
+        const newFile: FileWithFolderPath = new File([file], file.name, { lastModified: file.lastModified, type: file.type });
         newFile.path = file.path;
         newFile.license = file.license;
         newFile.title = file.title;
@@ -390,7 +387,7 @@ export const useDamFileUpload = (options: UploadDamFileOptions): FileUploadApi =
         }
 
         if (acceptedFiles.length > 0) {
-            const filesWithFolderPaths = await addFolderPathToFiles(acceptedFiles);
+            const filesWithFolderPaths = addFolderPathToFiles(acceptedFiles);
             let folderIdMap = await createInitialFolderIdMap(filesWithFolderPaths, folderId);
 
             const fileSizes: { [key: string]: number } = {};
@@ -527,6 +524,7 @@ export const useDamFileUpload = (options: UploadDamFileOptions): FileUploadApi =
             accept: accept,
             multiple: true,
             maxSize: maxFileSizeInBytes,
+            getFilesFromEvent: getFilesWithMimeTypeFromEvent,
         },
         newlyUploadedItems,
     };

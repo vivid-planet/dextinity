@@ -29,8 +29,7 @@ export class EntityInfoService {
             if (typeof entityInfo === "string" || isEntityInfoSql(entityInfo)) {
                 const sql = typeof entityInfo === "string" ? entityInfo : entityInfo.sql;
                 const permissionMetadata = Reflect.getMetadata(REQUIRED_PERMISSION_METADATA_KEY, targetEntity.entity) as
-                    | RequiredPermissionMetadata
-                    | undefined;
+                    RequiredPermissionMetadata | undefined;
                 const requiredPermissionSql = requiredPermissionToSql(permissionMetadata?.requiredPermission);
 
                 indexSelects.push(
@@ -62,8 +61,7 @@ export class EntityInfoService {
                 }
 
                 const permissionMetadata = Reflect.getMetadata(REQUIRED_PERMISSION_METADATA_KEY, targetEntity.entity) as
-                    | RequiredPermissionMetadata
-                    | undefined;
+                    RequiredPermissionMetadata | undefined;
                 const requiredPermissionSql = requiredPermissionToSql(permissionMetadata?.requiredPermission);
 
                 const select = `SELECT

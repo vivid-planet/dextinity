@@ -164,7 +164,7 @@ const EditMainMenuItem = ({ item }: EditMainMenuItemProps) => {
                     saveAction={handleSaveAction}
                 />
             )}
-            <MainContent>
+            <MainContent disablePaddingBottom>
                 <IFrameBridgeProvider>
                     <SplitPreview url={`${siteConfig.blockPreviewBaseUrl}/main-menu`} previewState={previewState} previewApi={previewApi}>
                         <div>

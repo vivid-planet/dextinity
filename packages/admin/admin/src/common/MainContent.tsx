@@ -33,37 +33,45 @@ const Root = createComponentSlot("main")<MainContentClassKey, OwnerState>({
             padding: ${theme.spacing(4)};
         }
 
-        ${ownerState.fullHeight &&
-        css`
-            height: calc(100vh - ${ownerState.topOffset}px);
-        `}
+        ${
+            ownerState.fullHeight &&
+            css`
+                height: calc(100vh - ${ownerState.topOffset}px);
+            `
+        }
 
-        ${ownerState.disablePaddingTop &&
-        css`
-            padding-top: 0;
-
-            ${theme.breakpoints.up("md")} {
+        ${
+            ownerState.disablePaddingTop &&
+            css`
                 padding-top: 0;
-            }
-        `}
 
-        ${ownerState.disablePaddingBottom &&
-        css`
-            padding-bottom: 0;
+                ${theme.breakpoints.up("md")} {
+                    padding-top: 0;
+                }
+            `
+        }
 
-            ${theme.breakpoints.up("md")} {
+        ${
+            ownerState.disablePaddingBottom &&
+            css`
                 padding-bottom: 0;
-            }
-        `}
 
-        ${ownerState.disablePadding &&
-        css`
-            padding: 0;
+                ${theme.breakpoints.up("md")} {
+                    padding-bottom: 0;
+                }
+            `
+        }
 
-            ${theme.breakpoints.up("md")} {
+        ${
+            ownerState.disablePadding &&
+            css`
                 padding: 0;
-            }
-        `}
+
+                ${theme.breakpoints.up("md")} {
+                    padding: 0;
+                }
+            `
+        }
     `,
 );
 

@@ -17,12 +17,7 @@ import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBase
 import { ListItemTitle, PinnedContainer, PinnedIconButton, Root, Switch, SwitchTitleContainer } from "./DataGridColumnsManagementListItem.styles";
 
 export type DataGridColumnsManagementListItemClassKey =
-    | "root"
-    | "switchTitleContainer"
-    | "switch"
-    | "listItemTitle"
-    | "pinnedContainer"
-    | "pinnedButton";
+    "root" | "switchTitleContainer" | "switch" | "listItemTitle" | "pinnedContainer" | "pinnedButton";
 
 export type DataGridColumnsManagementListItemProps = ThemedComponentBaseProps<{
     root: typeof ListItem;

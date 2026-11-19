@@ -28,8 +28,7 @@ export function formValuesConfigToTree({
         let currentGqlType = gqlType;
         for (const part of fieldName.split(".")) {
             const introspectionObject = gqlIntrospection.__schema.types.find((type) => type.kind === "OBJECT" && type.name === currentGqlType) as
-                | IntrospectionObjectType
-                | undefined;
+                IntrospectionObjectType | undefined;
             if (!introspectionObject) {
                 throw new Error(`didn't find object ${gqlType} in gql introspection`);
             }

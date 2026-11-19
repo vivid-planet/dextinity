@@ -6,7 +6,8 @@ import LinksRemoveToolbarButton from "../extension/LinksRemove/ToolbarButton";
 import type { IControlProps } from "../types";
 
 export interface RteLinkControlsProps
-    extends IControlProps,
+    extends
+        IControlProps,
         ThemedComponentBaseProps<{
             root: typeof ButtonGroup;
             item: "div";
@@ -16,6 +17,9 @@ function StyledLinkControls(inProps: RteLinkControlsProps) {
     const props = useThemeProps({ props: inProps, name: "DextinityAdminRteLinkControls" });
     const {
         options: { supports: supportedThings, overwriteLinkButton, overwriteLinksRemoveButton },
+        editorRef,
+        editorState,
+        setEditorState,
         slotProps,
         ...restProps
     } = props;

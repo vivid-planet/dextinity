@@ -6,10 +6,13 @@ import { BooleanFilter } from "../../common/filter/boolean.filter";
 import { DateTimeFilter } from "../../common/filter/date-time.filter";
 import { createEnumFilter } from "../../common/filter/enum.filter.factory";
 import { StringFilter } from "../../common/filter/string.filter";
-import { RedirectSourceType } from "../redirects.enum";
+import { RedirectSourceType, RedirectType } from "../redirects.enum";
 
 @InputType()
 class RedirectSourceTypeEnumFilter extends createEnumFilter(RedirectSourceType) {}
+
+@InputType()
+class RedirectTypeEnumFilter extends createEnumFilter(RedirectType) {}
 
 @InputType()
 export class RedirectFilter {
@@ -38,6 +41,12 @@ export class RedirectFilter {
     @IsOptional()
     @Type(() => RedirectSourceTypeEnumFilter)
     sourceType?: RedirectSourceTypeEnumFilter;
+
+    @Field(() => RedirectTypeEnumFilter, { nullable: true })
+    @ValidateNested()
+    @IsOptional()
+    @Type(() => RedirectTypeEnumFilter)
+    redirectType?: RedirectTypeEnumFilter;
 
     @Field(() => DateTimeFilter, { nullable: true })
     @ValidateNested()

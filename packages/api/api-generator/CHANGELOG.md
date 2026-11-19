@@ -1,5 +1,101 @@
 # @comet/api-generator
 
+## 10.15.0
+
+### Patch Changes
+
+- Updated dependencies [41492ce]
+- Updated dependencies [d9c1a9b]
+- Updated dependencies [ba7823c]
+- Updated dependencies [db525c0]
+- Updated dependencies [aabf937]
+    - @dextinity/cms-api@10.15.0
+
+## 10.14.0
+
+### Patch Changes
+
+- Updated dependencies [bbd5b81]
+- Updated dependencies [5db7734]
+- Updated dependencies [a5e4799]
+- Updated dependencies [1595266]
+    - @dextinity/cms-api@10.14.0
+
+## 10.13.1
+
+### Patch Changes
+
+- 9f07f46: Keep `generate --watch` running when generating a changed entity fails
+
+    Previously, the failure caused an unhandled promise rejection that terminated the watcher instead of logging the error.
+
+- Updated dependencies [795901f]
+- Updated dependencies [94991f8]
+    - @dextinity/cms-api@10.13.1
+
+## 10.13.0
+
+### Patch Changes
+
+- Updated dependencies [7d8cbff]
+- Updated dependencies [ad3f6d5]
+- Updated dependencies [a476170]
+    - @dextinity/cms-api@10.13.0
+
+## 10.12.0
+
+### Patch Changes
+
+- Updated dependencies [2735896]
+- Updated dependencies [a3ba4c9]
+- Updated dependencies [6d552f0]
+    - @dextinity/cms-api@10.12.0
+
+## 10.11.0
+
+### Patch Changes
+
+- 75ebfd4: Require Node.js 22.12.0 or later
+
+    `@dextinity/cms-api` is a CommonJS package that loads dependencies which are only available as ES modules, for instance `content-disposition`.
+    Node.js supports loading ES modules with `require()` without a flag only from version 22.12.0.
+    On older versions, the API fails at startup with `ERR_REQUIRE_ESM`.
+    The other packages require the same version, so that all packages have the same Node.js minimum.
+    For `@dextinity/site-react` and `@dextinity/site-nextjs`, this drops support for Node.js 18 and 20, which no longer receive security updates.
+
+- 48a9757: Update `commander` to v14
+
+    Commands now fail with "too many arguments" when they receive positional arguments they don't declare. Before, these arguments were ignored.
+    For example, an unquoted glob passed to `dextinity-admin-generator generate --file` is expanded by the shell into several arguments, and only the first file was generated. Quote the glob so the admin generator receives it as one pattern:
+
+    ```bash
+    dextinity-admin-generator generate --file 'src/products/**/*.dextinityGen.tsx'
+    ```
+
+- Updated dependencies [97b3b42]
+- Updated dependencies [22bd832]
+- Updated dependencies [bc24036]
+- Updated dependencies [79c2746]
+- Updated dependencies [05ea45d]
+- Updated dependencies [79c2746]
+- Updated dependencies [75ebfd4]
+- Updated dependencies [9a5fd29]
+- Updated dependencies [c5f02ac]
+- Updated dependencies [a6050c4]
+    - @dextinity/cms-api@10.11.0
+
+## 10.10.0
+
+### Patch Changes
+
+- Updated dependencies [3862673]
+- Updated dependencies [b6441cb]
+- Updated dependencies [b6bca3b]
+- Updated dependencies [d5d2a85]
+- Updated dependencies [7a121f1]
+- Updated dependencies [ad1ad05]
+    - @dextinity/cms-api@10.10.0
+
 ## 10.9.1
 
 ### Patch Changes

@@ -13,15 +13,7 @@ import type { ErrorFileSelectItem, FileSelectItem, ValidFileSelectItem } from ".
 import { FileSelectListItem } from "./FileSelectListItem";
 
 export type FileSelectClassKey =
-    | "root"
-    | "listLayout"
-    | "gridLayout"
-    | "maxFilesReachedInfo"
-    | "dropzone"
-    | "fileList"
-    | "fileListItem"
-    | "error"
-    | "errorMessage";
+    "root" | "listLayout" | "gridLayout" | "maxFilesReachedInfo" | "dropzone" | "fileList" | "fileListItem" | "error" | "errorMessage";
 
 type Layout = "list" | "grid";
 
@@ -210,20 +202,22 @@ const FileList = createComponentSlot("div")<FileSelectClassKey, OwnerState>({
     ({ theme, ownerState }) => css`
         width: 100%;
 
-        ${ownerState.layout === "grid" &&
-        css`
-            display: grid;
-            gap: ${theme.spacing(2)};
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        ${
+            ownerState.layout === "grid" &&
+            css`
+                display: grid;
+                gap: ${theme.spacing(2)};
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
 
-            ${theme.breakpoints.up("md")} {
-                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                ${theme.breakpoints.up("md")} {
+                    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 
-                .DextinityAdminFormFieldContainer-horizontal & {
-                    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                    .DextinityAdminFormFieldContainer-horizontal & {
+                        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                    }
                 }
-            }
-        `}
+            `
+        }
     `,
 );
 

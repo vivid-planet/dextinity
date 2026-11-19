@@ -28,10 +28,6 @@ export class SliderBlockFixtureService {
             });
         }
 
-        return {
-            sliderList: {
-                blocks,
-            },
-        };
+        return { blocks };
     }
 }

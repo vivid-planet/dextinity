@@ -40,6 +40,7 @@ export interface RenderDamLabelOptions {
     matches?: TextMatch[];
     filterApi: IFilterApi<DamFilter>;
     showLicenseWarnings?: boolean;
+    showPath: boolean;
 }
 
 interface DamItemLabelColumnProps {
@@ -109,7 +110,12 @@ export const DamItemLabelColumn = ({
     return (
         <DamItemLabelWrapper ref={columnRef} isHovered={hoverApi.isHovered} {...(isFolder(item) && getFolderRootProps())}>
             {renderDamLabel ? (
-                renderDamLabel(item, { matches: matches.get(item.id), filterApi, showLicenseWarnings: damConfig.enableLicenseFeature })
+                renderDamLabel(item, {
+                    matches: matches.get(item.id),
+                    filterApi,
+                    showLicenseWarnings: damConfig.enableLicenseFeature,
+                    showPath: isSearching,
+                })
             ) : (
                 <StyledStackLink
                     pageName={isFile(item) ? "edit" : "folder"}

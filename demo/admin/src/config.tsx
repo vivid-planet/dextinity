@@ -18,6 +18,7 @@ export function createConfig() {
         ...dextinityConfig,
         apiUrl: `${window.location.origin}/api`,
         adminUrl: environmentVariables.ADMIN_URL,
+        previewUrl: environmentVariables.PREVIEW_URL,
         siteConfigs: JSON.parse(atob(environmentVariables.PUBLIC_SITE_CONFIGS)) as PublicSiteConfig[],
         buildDate: environmentVariables.BUILD_DATE,
         buildNumber: environmentVariables.BUILD_NUMBER,

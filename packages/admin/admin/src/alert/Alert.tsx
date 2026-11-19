@@ -7,14 +7,13 @@ import { forwardRef, type ReactNode } from "react";
 import { createComponentSlot } from "../helpers/createComponentSlot";
 import type { ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
 
-export interface AlertProps
-    extends ThemedComponentBaseProps<{
-        root: typeof MuiAlert;
-        title: typeof AlertTitle;
-        text: typeof Typography;
-        action: "div";
-        closeIcon: typeof IconButton;
-    }> {
+export interface AlertProps extends ThemedComponentBaseProps<{
+    root: typeof MuiAlert;
+    title: typeof AlertTitle;
+    text: typeof Typography;
+    action: "div";
+    closeIcon: typeof IconButton;
+}> {
     /**
      * The severity level of the alert
      * - 'info' (default): For general information or neutral messages
@@ -111,24 +110,28 @@ const Root = createComponentSlot(MuiAlert)<AlertClassKey, OwnerState>({
             flex-grow: 1;
         }
 
-        ${ownerState.hasTitle &&
-        css`
-            position: relative;
-            align-items: flex-start;
-            padding: ${theme.spacing(4, 6, 4, 4)};
-
-            & .${alertClasses.message} {
-                flex-direction: column;
+        ${
+            ownerState.hasTitle &&
+            css`
+                position: relative;
                 align-items: flex-start;
-            }
-        `}
+                padding: ${theme.spacing(4, 6, 4, 4)};
 
-        ${ownerState.renderAsSingleRow &&
-        css`
-            display: flex;
-            align-items: center;
-            padding: ${theme.spacing(2, 4, 2, 4)};
-        `}
+                & .${alertClasses.message} {
+                    flex-direction: column;
+                    align-items: flex-start;
+                }
+            `
+        }
+
+        ${
+            ownerState.renderAsSingleRow &&
+            css`
+                display: flex;
+                align-items: center;
+                padding: ${theme.spacing(2, 4, 2, 4)};
+            `
+        }
     `,
 );
 
@@ -151,10 +154,12 @@ const Action = createComponentSlot("div")<AlertClassKey, OwnerState>({
     slotName: "action",
 })(
     ({ theme, ownerState }) => css`
-        ${ownerState.hasTitle &&
-        css`
-            margin-top: ${theme.spacing(2)};
-        `}
+        ${
+            ownerState.hasTitle &&
+            css`
+                margin-top: ${theme.spacing(2)};
+            `
+        }
     `,
 );
 
@@ -163,17 +168,21 @@ const CloseIcon = createComponentSlot(IconButton)<AlertClassKey, OwnerState>({
     slotName: "closeIcon",
 })(
     ({ ownerState }) => css`
-        ${ownerState.hasTitle &&
-        css`
-            position: absolute;
-            right: 2px;
-            top: 2px;
-        `}
+        ${
+            ownerState.hasTitle &&
+            css`
+                position: absolute;
+                right: 2px;
+                top: 2px;
+            `
+        }
 
-        ${ownerState.renderAsSingleRow &&
-        css`
-            padding: 10px;
-        `}
+        ${
+            ownerState.renderAsSingleRow &&
+            css`
+                padding: 10px;
+            `
+        }
     `,
 );
 

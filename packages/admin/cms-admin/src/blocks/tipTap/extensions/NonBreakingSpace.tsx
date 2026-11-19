@@ -2,6 +2,8 @@ import { RteNonBreakingSpace } from "@dextinity/admin-icons";
 import { mergeAttributes, Node } from "@tiptap/core";
 import { NodeViewWrapper, ReactNodeViewRenderer } from "@tiptap/react";
 
+import { getMarksAtSelection } from "./getMarksAtSelection";
+
 declare module "@tiptap/core" {
     interface Commands<ReturnType> {
         nonBreakingSpace: {
@@ -42,8 +44,8 @@ export const NonBreakingSpace = Node.create({
         return {
             insertNonBreakingSpace:
                 () =>
-                ({ commands }) =>
-                    commands.insertContent({ type: this.name }),
+                ({ state, commands }) =>
+                    commands.insertContent({ type: this.name, marks: getMarksAtSelection(state) }),
         };
     },
 });

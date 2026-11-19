@@ -1,5 +1,341 @@
 # @comet/cms-api
 
+## 10.15.0
+
+### Minor Changes
+
+- 41492ce: Add `createExternalLinkBlock` factory
+
+    The `ExternalLinkBlock` always has the options "Open in new window" and "No follow" besides the URL, even where neither has an effect. The factory disables an option by passing `false`, both are enabled by default. A disabled option is neither offered in the editor nor part of the block: it is absent from `block-meta.json` and the generated types, and sending it as input is rejected by validation. `ExternalLinkBlock` is now created from the factory and still exported, so this is non-breaking.
+
+    **Example**
+
+    ```ts
+    // API
+    import { createExternalLinkBlock } from "@dextinity/cms-api";
+
+    export const UrlLinkBlock = createExternalLinkBlock({ openInNewWindow: false, noFollow: false }, "UrlLink");
+    ```
+
+    ```tsx
+    // Admin
+    import { createExternalLinkBlock } from "@dextinity/cms-admin";
+
+    export const UrlLinkBlock = createExternalLinkBlock({ name: "UrlLink", openInNewWindow: false, noFollow: false });
+    ```
+
+    Create the API and the admin block with the same name and the same options disabled, and add a site component.
+
+    A block created by the API factory carries the migrations shipped with the `ExternalLinkBlock` as vendor migrations, so it can replace the `ExternalLinkBlock` in an existing project: it reads the content the `ExternalLinkBlock` stored, and its own migrations start with version 1. Values stored for a disabled option aren't passed on to the admin or the site, and are dropped the next time an editor saves the block.
+
+    **Redirects no longer offer "Open in new window" and "No follow"**
+
+    A redirect resolves to an HTTP redirect, which has neither a `target` nor a `rel` attribute, so both options were without effect there. The external target of redirects is now a `RedirectsExternalLink` block without them, in the API and the admin. Stored redirects load as before.
+
+### Patch Changes
+
+- d9c1a9b: Fix images breaking with "Missing crop dimensions"
+
+    Clicking into the crop area without dragging cleared the selected crop area in the DAM's crop settings and in the image block's crop dialog. Saving afterwards stored a crop area that had a focal point but no dimensions. Such a crop area cannot be cropped: images using it fail to render with `Missing crop dimensions` when `aspectRatio="inherit"` is used, and their image URLs resolve to an invalid crop.
+
+    Crop areas without usable dimensions are now rejected by the API, existing ones in the DAM are reset to the full image by a migration, and existing ones in image blocks fall back to the DAM's crop settings.
+
+- ba7823c: Stop reporting `missingTarget` for links without a target page
+
+    The Admin creates an internal link without a target in every `createLinkBlock` with `allowEmpty: false` (the default) as soon as the parent block is saved, so every optional link produced a `missingTarget` warning although the site hides the empty link. An empty link is not an error; `InternalLinkBlock` now only reports `invalidTarget` for a link to a deleted page.
+
+- db525c0: Fix `TableBlock` running the migrations of its cells again when saving
+
+    This could break saving a cell, for instance, when the cell contains a link block with migrations.
+
+- aabf937: Reject one-of block input whose `activeType` has no matching entry in `attachedBlocks`
+
+    Previously, input such as `{ "attachedBlocks": [], "activeType": "external" }` was saved. The site then rendered nothing, and the admin failed when opening the block.
+    Blocks created with `allowEmpty: false` now also reject a missing `activeType`.
+
+## 10.14.0
+
+### Minor Changes
+
+- bbd5b81: Add default descriptions to `createOneOfBlock`, `createLinkBlock`, `createListBlock`, `createBlocksBlock` and `createOptionalBlock`
+
+    The descriptions state the rules of the block input that the fields in `block-meta.json` don't show, for instance that `activeType` of a one-of block must name an entry in `attachedBlocks`.
+    This lets tools outside the admin, such as AI agents, build valid input for these blocks from the block meta alone.
+    Pass `description` in the options to replace the default:
+
+    ```ts
+    createListBlock({ block: TeaserItemBlock }, { name: "Teaser", description: "Teaser items, shown side by side." });
+    ```
+
+- 5db7734: Add an optional redirect type to choose between temporary and permanent redirects
+
+    Redirects have a new `redirectType` field (`temporary` or `permanent`), which defaults to `temporary` for new and existing redirects.
+    The site must handle the redirect type, so the setting is hidden in the admin by default. To enable it, first respect the redirect type in the site:
+
+    ```tsx
+    const { redirectBySource } = await graphQLFetch(/* query including redirectBySource { target redirectType } */);
+
+    if (redirectBySource.redirectType === "permanent") {
+        permanentRedirect(destination); // 308
+    } else {
+        redirect(destination); // 307
+    }
+    ```
+
+    Then enable the setting in the admin:
+
+    ```tsx title="App.tsx"
+    <DextinityConfigProvider
+        redirects={{
+            scopeParts: ["domain"],
+            enableRedirectType: true,
+        }}
+    >
+    ```
+
+    The redirect type only applies to path redirects.
+
+- 1595266: Add a `textAlign` option to `createTipTapRichTextBlock`
+
+    Editors can align paragraphs and headings left, center, right, or justified, using the toolbar or the shortcuts `Mod-Shift-L`, `Mod-Shift-E`, `Mod-Shift-R`, and `Mod-Shift-J`.
+    The alignment is stored in the text block's `textAlign` attribute.
+    The option is disabled by default and must be enabled in both the API and the Admin:
+
+    ```ts
+    createTipTapRichTextBlock({ textAlign: true });
+    ```
+
+    To enable only some of the alignments, pass an object:
+
+    ```ts
+    createTipTapRichTextBlock({ textAlign: { left: true, center: true } });
+    ```
+
+    `renderTipTapRichText` renders the alignment as the text block's `text-align` style.
+    A custom `textBlock` handler has to apply `node.attrs.textAlign` itself.
+
+### Patch Changes
+
+- a5e4799: Support `@sentry/node` v10 and v11
+
+    The peer dependency now allows `^9.0.0 || ^10.0.0 || ^11.0.0`.
+
+    **Upgrading to v11**
+
+    Review the [Sentry v10 to v11 migration guide](https://github.com/getsentry/sentry-javascript/blob/master/MIGRATION.md) before upgrading. Changes that affect projects using `SentryModule`:
+
+    - `sendDefaultPii` was replaced by `dataCollection`, which collects more data by default (user info, cookies, request/response bodies and headers, database queries). Pass `dataCollection` to `SentryModule.forRootAsync()` to restrict it.
+    - `skipOpenTelemetrySetup` was replaced by `enableOpenTelemetrySetup` with inverted meaning.
+    - `Sentry.setupExpressErrorHandler(app)` is deprecated, but keep calling it. Sentry's automatic Express error capturing only works when Sentry is initialized before Express is loaded, and `SentryModule` initializes it afterwards.
+    - v11 supports self-hosted Sentry 26.4.2 or later.
+
+## 10.13.1
+
+### Patch Changes
+
+- 795901f: Support `@kubernetes/client-node` v2
+
+    The peer dependency now allows `^1.0.0 || ^2.0.0`. Note that v2 requires Node.js 22.19.0 or later.
+
+- 94991f8: Update `jose` to v6
+
+## 10.13.0
+
+### Minor Changes
+
+- 7d8cbff: Add `formatValidationErrors()` for readable validation errors
+
+    It turns the tree of class-validator errors into a list of `{ path, message }`, with paths like `content.blocks[3].props.height`, so that an API client, for instance an AI agent, can fix its input.
+    Use it, for instance, in a query that only validates an input:
+
+    ```ts
+    const errors = await validate(plainToInstance(PageInput, input), { whitelist: true, forbidNonWhitelisted: true });
+
+    return formatValidationErrors(errors);
+    // [{ path: "content.blocks[3].props.height", message: "height must be an integer number" }]
+    ```
+
+- ad3f6d5: Make blocking files with an invalid license opt-in with `blockFilesWithInvalidLicense`
+
+    A project decides whether files whose license has expired or isn't valid yet are blocked. While the option is off, which is the default, such files are delivered as before blocking was added: their URLs don't answer `410 Gone`, blocks don't hide them or replace them with the fallback image, and the DAM hides its "Settings" action, where the fallback image is chosen.
+
+    A project that blocks such files since blocking was added needs to enable the option in the API and in the Admin:
+
+    ```ts
+    DamModule.register({
+        damConfig: {
+            enableLicenseFeature: true,
+            blockFilesWithInvalidLicense: true,
+            // ...
+        },
+    });
+    ```
+
+    ```tsx
+    <DextinityConfigProvider dam={{ enableLicenseFeature: true, blockFilesWithInvalidLicense: true /* ... */ }}>
+    ```
+
+- a476170: Never treat a royalty-free license as expired or not valid yet
+
+    Switching a file's license from rights managed to royalty free keeps its duration. Such a file was still blocked once the duration ended: the DAM answered `410 Gone`, blocks replaced it with the invalid-license fallback image, and the warnings reported an expired license.
+    A royalty-free license now ignores its duration: `isLicenseValid` returns `true`, `expirationDate` is `null`, and no license warning is created.
+
+## 10.12.0
+
+### Minor Changes
+
+- 6d552f0: Add the TipTap editor schema of a `TipTapRichTextBlock` field to the block meta
+
+    The field's entry in `block-meta.json` now carries a `tipTap` description next to `childBlocks`: the node and mark types of the editor schema, the text blocks with their styles, the default text block, the ordered and unordered list (`null` when disabled), the inline styles, the placeholders, the link block (`null` when links are disabled), `maxTextBlocks` and `listLevelMax`.
+    This allows tools outside the editor, for instance an AI agent, to build content the API accepts instead of falling back to TipTap's defaults.
+    The block's default description explains how to build content from it.
+
+### Patch Changes
+
+- 2735896: TipTap Rich Text Block: disable the horizontal rule
+
+    The schema contained StarterKit's `horizontalRule` node, so the editor inserted one when typing `---`, `___ ` or `*** ` at the start of a text block. Neither the site nor the mail renderer renders it, so it silently disappeared on the site. The API now rejects content containing a `horizontalRule`, and the editor no longer creates one.
+
+    Remove horizontal rules from existing content before saving it again, as saving fails otherwise.
+
+- a3ba4c9: Fix combining multiple fields in a `RedirectFilter`
+
+    A filter like `{ sourceType: { equal: "domain" }, active: { equal: true } }` only applied its last field, so `paginatedRedirects` also returned redirects that didn't match the other fields. All fields of a filter now have to match.
+
+    If your site's domain redirect middleware (`redirectToMainHost.ts`) only filters on `sourceType`, add `active: { equal: true }` to the filter, so redirects that are deactivated in the admin no longer redirect:
+
+    ```ts
+    filter: { sourceType: { equal: "domain" }, active: { equal: true } },
+    ```
+
+## 10.11.0
+
+### Minor Changes
+
+- 05ea45d: Replace images with an invalid license with a fallback image
+
+    When the license feature is enabled (`enableLicenseFeature`), `PixelImageBlock` renders a fallback image instead of an image whose license has expired or isn't valid yet.
+    The fallback image is set per DAM scope in the DAM settings.
+    It is delivered under its own URL and with its own crop area, the crop area set in the block is ignored.
+    If no fallback image is set, the block renders no image.
+
+    `SvgImageBlock`, `DamVideoBlock` and `DamFileDownloadLinkBlock` render no file if its license is invalid, and `DamVideoBlock` leaves out captions with an invalid license.
+
+    The GraphQL fields `DamFile.fileUrl`, `DamFileImage.url` and `DamFileImage.urlTemplate` return the fallback image's URL for a pixel image with an invalid license.
+    `DamFileImage.url` and `DamFileImage.urlTemplate` return `null` if no fallback image is set.
+
+    None of this applies to requests for preview DAM URLs, so the Admin keeps showing the original file.
+
+    The public file and image URLs of a file with an invalid license respond with `410 Gone`.
+
+### Patch Changes
+
+- 97b3b42: Allow `graphql-scalars` v2
+
+    v2 only drops support for `graphql` below v16 and for Node 20, so projects can update to it whenever they want.
+
+- 22bd832: Fix the error after uploading files to the DAM when the asset list isn't sorted
+
+    When no sort column was selected in the asset list, `damItemListPosition` failed with an SQL error such as `column folder.undefined does not exist`, and the admin showed this error after every upload.
+    `damItemsList` and `damItemListPosition` now sort by `name` when no sort column is given, and the GraphQL schema declares `name` as the default of their `sortColumnName` argument.
+
+- bc24036: Keep inline styles and links in place after emojis when migrating Draft.js content to TipTap
+
+    Draft.js stores the offsets of inline styles and entities in code points, but `migrateFromDraftJs` used them as string indices, which count UTF-16 code units.
+    Every emoji or other character outside the Basic Multilingual Plane shifted the ranges after it by one character, and a range ending inside such a character split it into two broken characters.
+
+- 79c2746: Reject unknown block types in the input of `createBlocksBlock` and `createOneOfBlock`
+
+    Previously, an item with a `type` that isn't in `supportedBlocks` was removed from `blocks` or `attachedBlocks` before validation, and the mutation saved the block without it.
+    Now, such an input fails validation with an `isIn` error at the `type` of the item, for instance `blocks.1.type`.
+    The index in the error path is the index of the item in the input.
+    Code that calls `blockInputFactory` without validating the result keeps such an item now, and `transformToBlockData()` throws for it. Call `validate()` to detect it.
+
+    The Admin only sends supported block types and isn't affected.
+    Stored block data with unknown types is still filtered when loaded, as a block may have been removed from `supportedBlocks` since the data was saved.
+
+- 79c2746: Report invalid block input as validation errors instead of internal errors
+
+    - `createBlocksBlock` and `createOneOfBlock`: Report a `blocks` or `attachedBlocks` value that isn't an array with an `isArray` error. Previously, the mutation failed with `value.filter is not a function`. `createListBlock` additionally reports an `isArray` error. All three report an item that is an array with an `isObject` error, which `createListBlock` accepted before and which failed when saving.
+    - `ChildBlockInput`: Report a missing non-nullable child block with an `isDefined` error. Previously, the mutation failed with `Missing child block input for '<key>'`. Code that calls `blockInputFactory` without validating the result doesn't get this error anymore and must call `validate()` to detect a missing child block. This includes the `openGraphImage` of the SEO block, which was marked as optional although the mutation failed without it.
+    - `createRichTextBlock`: Add a message to the `isDraftContent` error, which was empty
+
+- 75ebfd4: Require Node.js 22.12.0 or later
+
+    `@dextinity/cms-api` is a CommonJS package that loads dependencies which are only available as ES modules, for instance `content-disposition`.
+    Node.js supports loading ES modules with `require()` without a flag only from version 22.12.0.
+    On older versions, the API fails at startup with `ERR_REQUIRE_ESM`.
+    The other packages require the same version, so that all packages have the same Node.js minimum.
+    For `@dextinity/site-react` and `@dextinity/site-nextjs`, this drops support for Node.js 18 and 20, which no longer receive security updates.
+
+- 9a5fd29: Report each validation error in the `openGraphImage` of the SEO block once
+
+    The field had an additional `@ValidateNested()` next to `@ChildBlockInput()`, which already adds it, so the image was validated twice.
+
+- c5f02ac: Keep bold, italic and links on soft hyphens and non-breaking spaces in TipTap rich texts
+
+    `migrateFromDraftJs` and the editor's soft hyphen and non-breaking space buttons created these nodes without the marks of the surrounding text.
+    On the site, a soft hyphen in a bold word was rendered outside the `<strong>`, so the hyphen at a line break was thinner than the letters around it, and a link containing one was split into two links.
+
+- a6050c4: Validate `damFileId` as UUID in `PixelImageBlock` and `SvgImageBlock`
+
+    Previously, any non-empty string was accepted and saved, resulting in a broken image.
+
+## 10.10.0
+
+### Minor Changes
+
+- 3862673: Add the `includeFormatExtensionInImageUrls` option to include a file extension in DAM image URLs
+
+    CDN features that cache an image per format, such as Cloudflare's [Vary for Images](https://developers.cloudflare.com/cache/advanced-configuration/vary-for-images/) or the WebP option of Bunny's [Vary Cache](https://bunny.net/docs/cdn/vary-cache), require the file extension in the URL path.
+    With the option enabled, image URLs end with the extension of the format the API delivers when the `Accept` header offers no modern format, e.g. `photo.png`.
+    Originals that aren't JPEG, PNG or GIF get `.jpg`, because the API delivers them as JPEG.
+    Image URLs with an outdated filename, i.e. without extension or from before the file was renamed, permanently redirect to the current URL.
+
+    The API accepts image URLs with and without extension regardless of the option, so disabling it again doesn't break URLs that are already in use.
+
+    **Example**
+
+    ```ts
+    DamModule.register({
+        damConfig: {
+            // ...
+            includeFormatExtensionInImageUrls: true,
+        },
+        // ...
+    });
+    ```
+
+- b6bca3b: TipTap Rich Text Block: fill in a missing text block style with the `defaultStyle` when reading the block
+
+    Content written before a `defaultStyle` was configured carries no style, so the site had to render a missing style like the default. The API now applies the `defaultStyle` of the text block, or inside a list item of the list, whenever it reads a text block without a style. The site always receives the style's name, and the content needs no migration.
+
+- 7a121f1: Rework the content scopes management in the user permissions panel
+
+    The user permissions panel now renders a consistent set of content scope columns for every user based on the content scope dimensions declared in the API (`userPermissionsAvailableContentScopeDimensions`). A dimension whose value is the `"*"` wildcard is shown as "All".
+    - Content scopes are assigned through an "Add scope" dialog that builds a scope from one dropdown per enumerable dimension, cascading so that only existing combinations can be selected. Each dropdown also offers an "All" option to grant every value of that dimension (`*` wildcard). Dimensions that are not part of `availableContentScopes` are entered as a free text value (`*` grants all values).
+    - The assigned content scopes and the permission-specific content scopes (override dialog) use the same paginated grid and add dialog, and show manually assigned scopes first.
+    - Removing a content scope asks for confirmation, consistent with removing a permission.
+    - The assignment type is shown in a consistent way across the permissions and content scopes grids.
+
+- ad1ad05: Add `visible` to `EntityInfo` and support filtering and sorting warnings by it
+
+    The `EntityInfo` GraphQL type now exposes the entity's visibility (e.g., whether a page is published).
+    The `warnings` query accepts a `visible` filter and sort field, resolved via the joined `EntityInfo`.
+    Warnings of entities without an `EntityInfo` are treated as visible.
+
+### Patch Changes
+
+- b6441cb: Convert a soft line break in DraftJS content to a `hardBreak` node when migrating to TipTap
+
+    DraftJS stores a soft line break (Shift+Enter) as a newline within the block's text. The migration kept it as a newline in a TipTap text node, which the rich text renderers don't render as a line break.
+
+- d5d2a85: Return one search text entry per text block in `createTipTapRichTextBlock`
+
+    Previously, `searchText()` returned one entry per TipTap text node. Since TipTap splits a line into several text nodes wherever a mark such as bold, italic or a link starts or ends, a single sentence ended up as several entries. Consumers that join the entries with spaces got stray spaces, for instance before a period following a link.
+
+    Now `searchText()` returns one entry per paragraph or heading, like the DraftJS-based rich text block. A hard break within a text block becomes a newline.
+
 ## 10.9.1
 
 ## 10.9.0

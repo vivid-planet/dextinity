@@ -10,12 +10,11 @@ export type FormSectionClassKey = "root" | "disableMarginBottom" | "title" | "ch
 
 type OwnerState = Pick<FormSectionProps, "disableMarginBottom">;
 
-export interface FormSectionProps
-    extends ThemedComponentBaseProps<{
-        root: "div";
-        title: typeof SectionHeadline;
-        children: "div";
-    }> {
+export interface FormSectionProps extends ThemedComponentBaseProps<{
+    root: "div";
+    title: typeof SectionHeadline;
+    children: "div";
+}> {
     children: ReactNode;
     title?: ReactNode;
     disableMarginBottom?: boolean;
@@ -63,10 +62,12 @@ const Root = createComponentSlot("div")<FormSectionClassKey, OwnerState>({
     },
 })(
     ({ theme, ownerState }) => css`
-        ${!ownerState.disableMarginBottom &&
-        css`
-            margin-bottom: ${theme.spacing(12)};
-        `}
+        ${
+            !ownerState.disableMarginBottom &&
+            css`
+                margin-bottom: ${theme.spacing(12)};
+            `
+        }
     `,
 );
 

@@ -1,5 +1,358 @@
 # @comet/cms-admin
 
+## 10.15.0
+
+### Minor Changes
+
+- c6ce8a8: Allow choosing the fallback image for invalid licenses before blocking is activated
+
+    The DAM's "Settings" action is now shown whenever the license feature is enabled, not only when `blockFilesWithInvalidLicense` is set.
+    This allows editors to prepare the fallback image before blocking files with invalid licenses is activated.
+    While blocking is disabled, the settings page shows a notice that the fallback image isn't used yet and that the website administrator needs to be contacted to activate it.
+
+- 41492ce: Add `createExternalLinkBlock` factory
+
+    The `ExternalLinkBlock` always has the options "Open in new window" and "No follow" besides the URL, even where neither has an effect. The factory disables an option by passing `false`, both are enabled by default. A disabled option is neither offered in the editor nor part of the block: it is absent from `block-meta.json` and the generated types, and sending it as input is rejected by validation. `ExternalLinkBlock` is now created from the factory and still exported, so this is non-breaking.
+
+    **Example**
+
+    ```ts
+    // API
+    import { createExternalLinkBlock } from "@dextinity/cms-api";
+
+    export const UrlLinkBlock = createExternalLinkBlock({ openInNewWindow: false, noFollow: false }, "UrlLink");
+    ```
+
+    ```tsx
+    // Admin
+    import { createExternalLinkBlock } from "@dextinity/cms-admin";
+
+    export const UrlLinkBlock = createExternalLinkBlock({ name: "UrlLink", openInNewWindow: false, noFollow: false });
+    ```
+
+    Create the API and the admin block with the same name and the same options disabled, and add a site component.
+
+    A block created by the API factory carries the migrations shipped with the `ExternalLinkBlock` as vendor migrations, so it can replace the `ExternalLinkBlock` in an existing project: it reads the content the `ExternalLinkBlock` stored, and its own migrations start with version 1. Values stored for a disabled option aren't passed on to the admin or the site, and are dropped the next time an editor saves the block.
+
+    **Redirects no longer offer "Open in new window" and "No follow"**
+
+    A redirect resolves to an HTTP redirect, which has neither a `target` nor a `rel` attribute, so both options were without effect there. The external target of redirects is now a `RedirectsExternalLink` block without them, in the API and the admin. Stored redirects load as before.
+
+### Patch Changes
+
+- d9c1a9b: Fix images breaking with "Missing crop dimensions"
+
+    Clicking into the crop area without dragging cleared the selected crop area in the DAM's crop settings and in the image block's crop dialog. Saving afterwards stored a crop area that had a focal point but no dimensions. Such a crop area cannot be cropped: images using it fail to render with `Missing crop dimensions` when `aspectRatio="inherit"` is used, and their image URLs resolve to an invalid crop.
+
+    Crop areas without usable dimensions are now rejected by the API, existing ones in the DAM are reset to the full image by a migration, and existing ones in image blocks fall back to the DAM's crop settings.
+
+- @dextinity/admin@10.15.0
+    - @dextinity/admin-icons@10.15.0
+    - @dextinity/admin-rte@10.15.0
+
+## 10.14.0
+
+### Minor Changes
+
+- da2f8e6: Show a "No pages yet" message in `PagesPage` when the page tree is empty
+- 5db7734: Add an optional redirect type to choose between temporary and permanent redirects
+
+    Redirects have a new `redirectType` field (`temporary` or `permanent`), which defaults to `temporary` for new and existing redirects.
+    The site must handle the redirect type, so the setting is hidden in the admin by default. To enable it, first respect the redirect type in the site:
+
+    ```tsx
+    const { redirectBySource } = await graphQLFetch(/* query including redirectBySource { target redirectType } */);
+
+    if (redirectBySource.redirectType === "permanent") {
+        permanentRedirect(destination); // 308
+    } else {
+        redirect(destination); // 307
+    }
+    ```
+
+    Then enable the setting in the admin:
+
+    ```tsx title="App.tsx"
+    <DextinityConfigProvider
+        redirects={{
+            scopeParts: ["domain"],
+            enableRedirectType: true,
+        }}
+    >
+    ```
+
+    The redirect type only applies to path redirects.
+
+- 1595266: Add a `textAlign` option to `createTipTapRichTextBlock`
+
+    Editors can align paragraphs and headings left, center, right, or justified, using the toolbar or the shortcuts `Mod-Shift-L`, `Mod-Shift-E`, `Mod-Shift-R`, and `Mod-Shift-J`.
+    The alignment is stored in the text block's `textAlign` attribute.
+    The option is disabled by default and must be enabled in both the API and the Admin:
+
+    ```ts
+    createTipTapRichTextBlock({ textAlign: true });
+    ```
+
+    To enable only some of the alignments, pass an object:
+
+    ```ts
+    createTipTapRichTextBlock({ textAlign: { left: true, center: true } });
+    ```
+
+    `renderTipTapRichText` renders the alignment as the text block's `text-align` style.
+    A custom `textBlock` handler has to apply `node.attrs.textAlign` itself.
+
+### Patch Changes
+
+- de4cc90: Prevent lost updates when several forms in a block change before the next render
+
+    `createFinalFormBlock` resolved each update against the field value of the render that created the handler.
+    When two forms in the block saved one after the other before the next render, for instance after a text edit and a link type change in a `createTextLinkBlock`, the second update overwrote the first one, and both changes could be lost.
+    The preview image of `createDamVideoBlock`, `YouTubeVideoBlock` and `VimeoVideoBlock` had the same problem together with the video options form.
+
+- de4cc90: Prevent an endless autosave loop in `BlocksFinalForm`
+
+    `BlocksFinalForm` scheduled an autosave on every render while the form was dirty, and each autosave called the `onSubmit` of the render that scheduled it.
+    In large blocks, these outdated autosaves wrote old block states, which made other forms dirty again, and the admin stopped responding.
+    Now each form has at most one pending autosave, which calls the latest `onSubmit` and only runs when the form values changed since the last autosave.
+
+- c586a3d: Fix page tree crashing when switching the category while a search without matches is active
+- def6e3e: Fix the page select dialog crashing when it opens with a selected page that isn't in the list yet
+- e6909e2: Prevent the runtime of a job from being truncated in the jobs grid of the CronJobs module
+
+    The runtime column is now as wide as in the CronJobs grid and the publisher, so start time, completion time and duration fit without being cut off.
+
+- e131e00: Show an error inside `LatestBuildsDashboardWidget` when the builds can't be loaded
+
+    Previously, a failing `builds` query replaced the whole dashboard with an error and opened the global error dialog. On deployments without Kubernetes, where the query is always forbidden, the dialog wrongly reported an expired login session.
+
+- Updated dependencies [1595266]
+- Updated dependencies [45cb8e2]
+    - @dextinity/admin-icons@10.14.0
+    - @dextinity/admin@10.14.0
+    - @dextinity/admin-rte@10.14.0
+
+## 10.13.1
+
+### Patch Changes
+
+- Updated dependencies [b6fde8f]
+    - @dextinity/admin@10.13.1
+    - @dextinity/admin-rte@10.13.1
+    - @dextinity/admin-icons@10.13.1
+
+## 10.13.0
+
+### Minor Changes
+
+- ad3f6d5: Make blocking files with an invalid license opt-in with `blockFilesWithInvalidLicense`
+
+    A project decides whether files whose license has expired or isn't valid yet are blocked. While the option is off, which is the default, such files are delivered as before blocking was added: their URLs don't answer `410 Gone`, blocks don't hide them or replace them with the fallback image, and the DAM hides its "Settings" action, where the fallback image is chosen.
+
+    A project that blocks such files since blocking was added needs to enable the option in the API and in the Admin:
+
+    ```ts
+    DamModule.register({
+        damConfig: {
+            enableLicenseFeature: true,
+            blockFilesWithInvalidLicense: true,
+            // ...
+        },
+    });
+    ```
+
+    ```tsx
+    <DextinityConfigProvider dam={{ enableLicenseFeature: true, blockFilesWithInvalidLicense: true /* ... */ }}>
+    ```
+
+### Patch Changes
+
+- 46a1a08: Render list items in `createTipTapRichTextBlock` through the list's `element`
+
+    The editor ignored the `element` of `orderedList` and `unorderedList`. A list item was rendered through the style its text block kept from before it was turned into a list item, or as a plain `p` without a style.
+    A text block in a list item is now rendered through the list's style, then the list's `element`, then the text block's style, then the text block's `element`.
+
+- b16df0b: Update `react-hotkeys-hook` to v5
+    - @dextinity/admin@10.13.0
+    - @dextinity/admin-icons@10.13.0
+    - @dextinity/admin-rte@10.13.0
+
+## 10.12.0
+
+### Minor Changes
+
+- ffcbdd7: Keep the text block style select of `createTipTapRichTextBlock` in the toolbar where the selected node has no styles
+
+    Previously, the toolbar hid the select where the selected node had no styles, for instance in a list without styles, and the toolbar buttons to its right moved to the left.
+    Now the select stays in the toolbar and is disabled there.
+    Blocks without any text block styles still show no select.
+
+### Patch Changes
+
+- 1b288ab: Copy referenced DAM assets to the target scope when pasting blocks
+
+    Previously, only pasting pages in the page tree copied the referenced DAM assets. Blocks pasted into another scope kept referencing the assets of the source scope, so deleting an asset in the source scope broke the page it was pasted into.
+
+    Pasting blocks now behaves like pasting pages: assets that don't live in the target DAM scope are copied into an inbox folder of the target scope (reusing an existing copy if there is one) and the pasted blocks reference the copies. Pasting within the same scope is unchanged.
+
+    Like when pasting pages, dependencies that can't be carried over to another scope are removed when pasting blocks into another content scope, e.g., links to pages of the source scope.
+
+- 2735896: TipTap Rich Text Block: disable the horizontal rule
+
+    The schema contained StarterKit's `horizontalRule` node, so the editor inserted one when typing `---`, `___ ` or `*** ` at the start of a text block. Neither the site nor the mail renderer renders it, so it silently disappeared on the site. The API now rejects content containing a `horizontalRule`, and the editor no longer creates one.
+
+    Remove horizontal rules from existing content before saving it again, as saving fails otherwise.
+
+- eb77fc2: Clarify the error thrown by `createOneOfBlock` when `activeType` has no entry in `attachedBlocks`
+
+    The message now names the active type and the types that `attachedBlocks` holds.
+    A missing `x-include-invisible-content` HTTP header is mentioned only as one possible cause, since the state can also come from malformed input to `output2State`.
+
+- 3d1fb7c: Keep the target of links and the data of child blocks when copying and pasting in `createTipTapRichTextBlock`
+
+    The editor wrote the data of links and child blocks into the clipboard as `[object Object]`, so a pasted link had no target and a pasted child block lost its content.
+    Saving a rich text with such a link failed.
+    - @dextinity/admin@10.12.0
+    - @dextinity/admin-icons@10.12.0
+    - @dextinity/admin-rte@10.12.0
+
+## 10.11.0
+
+### Minor Changes
+
+- 05ea45d: Add a DAM settings page to set the fallback image for invalid licenses
+
+    When the license feature is enabled (`enableLicenseFeature`), the "More actions" menu of the DAM contains a "Settings" item.
+    It opens a page where you can choose the image that replaces images whose license has expired or isn't valid yet on the site.
+
+- a6f647b: Render `TableBlock` with the data grid configured in `DextinityConfig`
+
+    `TableBlock` no longer needs `@mui/x-data-grid-pro`.
+    With the free `DataGrid`, rows and columns can only be moved with the menu items, not by dragging.
+    `TableBlock` treats every configured grid other than MUI's `DataGrid` as a Pro or Premium grid, so configure `DataGrid` itself, not a wrapper around it.
+
+    **Action required for drag-and-drop**
+
+    To keep drag-and-drop, configure the Pro or Premium grid:
+
+    ```tsx
+    <DextinityConfigProvider dataGrid={{ component: DataGridPro }}>
+    ```
+
+- 8a645b7: Allow moving `TableBlock` rows and columns without dragging
+
+### Patch Changes
+
+- 75ebfd4: Require Node.js 22.12.0 or later
+
+    `@dextinity/cms-api` is a CommonJS package that loads dependencies which are only available as ES modules, for instance `content-disposition`.
+    Node.js supports loading ES modules with `require()` without a flag only from version 22.12.0.
+    On older versions, the API fails at startup with `ERR_REQUIRE_ESM`.
+    The other packages require the same version, so that all packages have the same Node.js minimum.
+    For `@dextinity/site-react` and `@dextinity/site-nextjs`, this drops support for Node.js 18 and 20, which no longer receive security updates.
+
+- 43ee19a: Use dedicated icons to insert and move rows and columns in the `TableBlock` menus
+- 96bf6f1: Keep the focus in the child block dialog of `createTipTapRichTextBlock`
+
+    Choosing a child block from the toolbar's "Insert block" menu refocused the editor shortly after the dialog had opened, which moved the focus away from the dialog's fields, for instance from a field with `autoFocus`.
+
+- c5f02ac: Keep bold, italic and links on soft hyphens and non-breaking spaces in TipTap rich texts
+
+    `migrateFromDraftJs` and the editor's soft hyphen and non-breaking space buttons created these nodes without the marks of the surrounding text.
+    On the site, a soft hyphen in a bold word was rendered outside the `<strong>`, so the hyphen at a line break was thinner than the letters around it, and a link containing one was split into two links.
+
+- f423240: Update `react-window` to v2
+
+    The page tree, the page tree select dialog and the folder list in the "Move DAM item" dialog use the new `List` API.
+    `react-virtualized-auto-sizer` is no longer a dependency, as the lists size themselves to their container.
+
+- Updated dependencies [3e0526b]
+- Updated dependencies [5bb4070]
+- Updated dependencies [75ebfd4]
+- Updated dependencies [43ee19a]
+    - @dextinity/admin@10.11.0
+    - @dextinity/admin-icons@10.11.0
+    - @dextinity/admin-rte@10.11.0
+
+## 10.10.0
+
+### Minor Changes
+
+- d44bdd0: Add `isTipTapRichTextEmpty`
+
+    The TipTap counterpart of `isRichTextEmpty`: it returns `true` when the `tipTapContent` of a `createTipTapRichTextBlock` block holds neither text nor a child block.
+    It takes the content rather than the block state, so it works with the block's data and its state alike.
+
+    ```ts
+    if (isTipTapRichTextEmpty(notes.tipTapContent)) {
+        // show a placeholder
+    }
+    ```
+
+- 8ca42f5: Add a preview text to the table block
+- 7a121f1: Rework the content scopes management in the user permissions panel
+
+    The user permissions panel now renders a consistent set of content scope columns for every user based on the content scope dimensions declared in the API (`userPermissionsAvailableContentScopeDimensions`). A dimension whose value is the `"*"` wildcard is shown as "All".
+    - Content scopes are assigned through an "Add scope" dialog that builds a scope from one dropdown per enumerable dimension, cascading so that only existing combinations can be selected. Each dropdown also offers an "All" option to grant every value of that dimension (`*` wildcard). Dimensions that are not part of `availableContentScopes` are entered as a free text value (`*` grants all values).
+    - The assigned content scopes and the permission-specific content scopes (override dialog) use the same paginated grid and add dialog, and show manually assigned scopes first.
+    - Removing a content scope asks for confirmation, consistent with removing a permission.
+    - The assignment type is shown in a consistent way across the permissions and content scopes grids.
+
+- ad1ad05: Show only warnings of visible entities by default in the warnings grid
+
+    The grid has a new "Visible" column, and the default filter shows only warnings whose entity is visible (e.g., a published page).
+    Remove the filter to see warnings of unpublished entities as well.
+
+### Patch Changes
+
+- 7f5eefe: Show the correct error message when a DAM file upload is rejected by the API
+
+    Previously, rejected uploads (e.g., an image exceeding the maximum resolution) were treated as successful, resulting in a generic error like "Variable $id of required type ID! was not provided" instead of the specific validation message.
+
+    Replacing a file now also shows the HTTP status instead of a JSON parse error when the API responds with a non-JSON error.
+
+- bfc162a: Don't read files into memory before uploading them to the DAM
+
+    Previously, every file was fully loaded into the browser's memory before the upload started, which could cause high memory usage and a delay before the upload progress was shown for large files.
+
+- c1ac227: Fix hover marking between a block list and the block preview
+
+    Hovering a block in the block list didn't mark it in the block preview, and hovering a block in the block preview neither marked its entry in the block list nor scrolled the list to it. This affected the entries of `BlocksBlock`, `ListBlock` and `ColumnsBlock` and the child blocks of composite blocks.
+
+- 245faa3: Fix the "Each child in a list should have a unique key prop" warning in `createListBlock` and the TipTap block dialog
+
+    `FormattedMessage` returns an array when a value is a React element. The `itemName`, `itemsName` and `displayName` values are usually a `FormattedMessage` and are now wrapped in a keyed `Fragment`.
+
+- 98499dd: Remove the unsupported `rowsMax` prop from the description fields of `createSeoBlock`
+
+    MUI v5 removed `rowsMax`, so the prop had no effect and only caused the React warning "React does not recognize the `rowsMax` prop on a DOM element". The fields keep their height of three rows.
+
+- 43461dd: Show the folder path of search results in the dialogs for choosing DAM files
+
+    Files with the same name in different folders can now be told apart, as in the DAM search.
+
+- 4bd97fa: Make the content column of `SplitPreview` scrollable
+
+    Previously, when using `SplitPreview` without tabs, content taller than the viewport scrolled the whole page, moving the preview out of view.
+
+- 6683f95: Fix the empty line after a list at the end of a TipTap rich text that couldn't be deleted
+
+    The editor no longer adds an empty text block after a list at the end of the content. Deleting this empty line added it again right away. To continue writing after the list, press Enter in its empty last item.
+
+- a607533: Fix the TipTap rich text block keeping a text block style the new text block doesn't offer when no `defaultStyle` is configured
+
+    Changing a styled paragraph to a heading, e.g. with the `Mod-Alt-1` shortcut, kept the paragraph's style, so the API rejected the content and the block couldn't be saved.
+
+- fdce21f: Separate the lines of a `TipTapRichTextBlock` with a space in the block preview
+
+    Previously, the text of all paragraphs and list items was joined without a space, for example "First lineSecond line".
+
+- Updated dependencies [c6b573b]
+- Updated dependencies [fbb437a]
+    - @dextinity/admin@10.10.0
+    - @dextinity/admin-rte@10.10.0
+    - @dextinity/admin-icons@10.10.0
+
 ## 10.9.1
 
 ### Patch Changes
@@ -1972,9 +2325,7 @@
     const MediaGalleryBlock = createCompositeBlock({
         name: "MediaGallery",
         displayName: "Media Gallery",
-        blocks: {
-            /* ... */
-        },
+        blocks: {/* ... */},
         tags: [defineMessage({ id: "mediaGallery.tag.slider", defaultMessage: "Slider" })],
         /* ... */
     });

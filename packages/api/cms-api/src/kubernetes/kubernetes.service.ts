@@ -147,15 +147,15 @@ export class KubernetesService implements OnModuleInit {
 
     getStatusForKubernetesJob(job: V1Job): KubernetesJobStatus {
         let status = KubernetesJobStatus.pending;
-        if (job.status?.active ?? 0 > 0) {
+        if ((job.status?.active ?? 0) > 0) {
             status = KubernetesJobStatus.active;
         }
         // A job can have both succeeded = 1 and failed = 1 states. This may happend due to a job's restart policy. For instance, a job may fail on
         // the first attempt (failed = 1) and succeed on the second attempt (succeeded = 1). We therefore check the succeeded status before the failed
         // status.
-        else if (job.status?.succeeded ?? 0 > 0) {
+        else if ((job.status?.succeeded ?? 0) > 0) {
             status = KubernetesJobStatus.succeeded;
-        } else if (job.status?.failed ?? 0 > 0) {
+        } else if ((job.status?.failed ?? 0) > 0) {
             status = KubernetesJobStatus.failed;
         }
         return status;

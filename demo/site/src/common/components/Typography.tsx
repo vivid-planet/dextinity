@@ -3,7 +3,7 @@ import type { ComponentProps, ElementType, PropsWithChildren } from "react";
 
 import styles from "./Typography.module.scss";
 
-type TypographyVariant =
+export type TypographyVariant =
     | "headline600"
     | "headline550"
     | "headline500"

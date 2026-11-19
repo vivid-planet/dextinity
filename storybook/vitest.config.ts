@@ -5,7 +5,7 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
     test: {
         reporters: ["default", "junit"],
-        outputFile: { junit: "./junit.xml" },
+        outputFile: { junit: "./junit-storybook.xml" },
         projects: [
             {
                 plugins: [storybookTest({ configDir: ".storybook" })],
@@ -14,9 +14,11 @@ export default defineConfig({
                 },
                 optimizeDeps: {
                     include: ["storybook/internal/csf", "@storybook/react-vite"],
-                    esbuildOptions: {
-                        define: {
-                            global: "globalThis",
+                    rolldownOptions: {
+                        transform: {
+                            define: {
+                                global: "globalThis",
+                            },
                         },
                     },
                 },

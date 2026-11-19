@@ -1,7 +1,7 @@
 import { CrudField } from "@dextinity/cms-api";
 import { BaseEntity, defineConfig, Embeddable, Embedded, Entity, MikroORM, PrimaryKey, Property } from "@mikro-orm/postgresql";
 import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "crypto";
 import { describe, expect, it } from "vitest";
 
 import { formatGeneratedFiles, parseSource, testPermission } from "../../utils/test-helper";
@@ -17,7 +17,7 @@ export class TestEntityScope {
 export class TestEntity extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
     @CrudField({ filter: false, search: false })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Embedded(() => TestEntityScope)
     scope: TestEntityScope;

@@ -6,14 +6,13 @@ import type { ThemedComponentBaseProps } from "../helpers/ThemedComponentBasePro
 
 export type GridCellContentClassKey = "root" | "hasSecondaryText" | "iconContainer" | "textContainer" | "primaryText" | "secondaryText";
 
-export interface GridCellContentProps
-    extends ThemedComponentBaseProps<{
-        root: "div";
-        textContainer: "div";
-        iconContainer: "div";
-        primaryText: typeof Typography;
-        secondaryText: typeof Typography;
-    }> {
+export interface GridCellContentProps extends ThemedComponentBaseProps<{
+    root: "div";
+    textContainer: "div";
+    iconContainer: "div";
+    primaryText: typeof Typography;
+    secondaryText: typeof Typography;
+}> {
     primaryText?: ReactNode;
     secondaryText?: ReactNode;
     children?: ReactNode;

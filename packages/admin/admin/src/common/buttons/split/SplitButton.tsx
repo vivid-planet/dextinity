@@ -26,7 +26,8 @@ export type SplitButtonClassKey = "root" | "activeButton" | "popover" | "menuLis
  * @deprecated Use a simple `SaveButton` instead as we are retiring the SplitButton pattern.
  */
 export interface SplitButtonProps
-    extends ButtonGroupProps<any>,
+    extends
+        ButtonGroupProps<any>,
         ThemedComponentBaseProps<{
             root: typeof MuiButtonGroup;
             activeButton: typeof Button;

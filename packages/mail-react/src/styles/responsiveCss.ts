@@ -5,7 +5,7 @@ import { css } from "../utils/css.js";
 // `string | number` covers every responsive token today; widen it if a token of another value type is added.
 type VariantStylesConstraint = Record<string, ResponsiveValue<string | number> | undefined>;
 
-export interface ResponsiveVariantProperty<TVariantStyles> {
+interface ResponsiveVariantProperty<TVariantStyles> {
     themeKey: keyof TVariantStyles;
     /** CSS property name(s); defaults to the kebab-case form of `themeKey`. */
     cssProperties?: string | readonly string[];

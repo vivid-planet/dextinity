@@ -28,8 +28,7 @@ export const useFormApiRef = <FormValues = Record<string, any>, InitialFormValue
 
 // copy of FormProps from final-form, because Omit doen't work on it
 interface IProps<FormValues = Record<string, any>, InitialFormValues = Partial<FormValues>>
-    extends Omit<Config<FormValues, InitialFormValues>, "onSubmit">,
-        RenderableProps<FormRenderProps<FormValues, InitialFormValues>> {
+    extends Omit<Config<FormValues, InitialFormValues>, "onSubmit">, RenderableProps<FormRenderProps<FormValues, InitialFormValues>> {
     subscription?: FormSubscription;
     decorators?: Array<Decorator<FormValues, InitialFormValues>>;
     form?: FormApi<FormValues, InitialFormValues>;

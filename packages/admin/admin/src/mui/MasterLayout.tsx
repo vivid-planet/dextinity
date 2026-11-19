@@ -43,13 +43,12 @@ const ContentWrapper = createComponentSlot("div")<MasterLayoutClassKey>({
     width: calc(100% - var(--dextinity-admin-master-layout-menu-width));
 `);
 
-export interface MasterLayoutProps
-    extends ThemedComponentBaseProps<{
-        root: "div";
-        header: "div";
-        menuWrapper: "div";
-        contentWrapper: "div";
-    }> {
+export interface MasterLayoutProps extends ThemedComponentBaseProps<{
+    root: "div";
+    header: "div";
+    menuWrapper: "div";
+    contentWrapper: "div";
+}> {
     children: ReactNode;
     menuComponent: ComponentType;
     headerComponent?: ComponentType;

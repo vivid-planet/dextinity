@@ -18,7 +18,7 @@ import { getExpandableTreeNodeIds, TreeView } from "../../components/treeView/Tr
 import { TreeViewExpandButtons } from "../../components/treeViewExpandButtons/TreeViewExpandButtons";
 import type { ThemeColorScheme } from "../../theme/types";
 import { brandSetting } from "../brand";
-import { colorSchemeSetting } from "../colorScheme";
+import { colorSchemeSetting, getAppliedColorScheme } from "../colorScheme";
 import { densitySetting } from "../density";
 import { getComponentStoryIds } from "./componentStories";
 import { buildStoryTree, getStoryFolderIds, type IndexedStory } from "./storyTree";
@@ -46,11 +46,6 @@ async function fetchStories(): Promise<IndexedStory[]> {
         .filter((entry) => entry.type === "story" && entry.id !== shellStoryId && !entry.tags?.includes("development"))
         .map(({ id, title, name }) => ({ id, title, name }))
         .sort((a, b) => Number(b.title.startsWith("Workspace/")) - Number(a.title.startsWith("Workspace/")));
-}
-
-function getInitialColorScheme(): ThemeColorScheme {
-    const stored = colorSchemeSetting.get();
-    return stored === "system" ? "light" : stored;
 }
 
 function useElementSize(element: HTMLElement | null) {
@@ -87,14 +82,17 @@ function trackPointerDrag(event: ReactPointerEvent, { onMove, onEnd }: { onMove:
         onMove(moveEvent.clientX - start.x, moveEvent.clientY - start.y);
     }
 
-    function handleUp() {
+    // A touch drag can end in `pointercancel` instead of `pointerup`, e.g. when the browser takes it over for scrolling
+    function handleEnd() {
         onEnd();
         window.removeEventListener("pointermove", handleMove);
-        window.removeEventListener("pointerup", handleUp);
+        window.removeEventListener("pointerup", handleEnd);
+        window.removeEventListener("pointercancel", handleEnd);
     }
 
     window.addEventListener("pointermove", handleMove);
-    window.addEventListener("pointerup", handleUp);
+    window.addEventListener("pointerup", handleEnd);
+    window.addEventListener("pointercancel", handleEnd);
 }
 
 /**
@@ -105,7 +103,7 @@ export function WorkspaceShell() {
     const [state, updateState] = useWorkspaceState();
     const [stories, setStories] = useState<IndexedStory[]>([]);
     const [search, setSearch] = useState("");
-    const [colorScheme, setColorScheme] = useState(getInitialColorScheme);
+    const [colorScheme, setColorScheme] = useState(getAppliedColorScheme);
     const [brand, setBrand] = useState(brandSetting.get);
     const [density, setDensity] = useState(densitySetting.get);
     const [canvasElement, setCanvasElement] = useState<HTMLDivElement | null>(null);
@@ -140,7 +138,9 @@ export function WorkspaceShell() {
         void fetchStories().then(setStories);
     }, []);
 
-    const storyId = state.storyId ?? stories.find((story) => story.title.startsWith("Workspace/"))?.id ?? stories[0]?.id ?? null;
+    // A stored story may since have been removed or renamed; until the index has loaded, there's nothing to check it against
+    const storedStoryId = stories.length === 0 || stories.some((story) => story.id === state.storyId) ? state.storyId : null;
+    const storyId = storedStoryId ?? stories.find((story) => story.title.startsWith("Workspace/"))?.id ?? stories[0]?.id ?? null;
     const currentStory = stories.find((story) => story.id === storyId);
 
     const storyTree = useMemo(() => buildStoryTree(stories), [stories]);

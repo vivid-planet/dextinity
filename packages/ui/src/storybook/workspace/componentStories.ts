@@ -32,26 +32,29 @@ export function getComponentStoryIds(stories: IndexedStory[]): Map<string, strin
 }
 
 /**
- * The name of the component an element is the root of, read from the stable root class of the class-name contract, e.g.
- * `dextinityTopBar` for `TopBar`.
+ * The names of the components an element is the root of, read from the stable root classes of the class-name contract, e.g.
+ * `TopBar` for `dextinityTopBar`. A component that renders another one adds its class after the inner one's, e.g.
+ * `dextinityIconButton dextinityToolbarButton`, so the outermost component comes first in the result.
  */
-export function getComponentName(element: Element): string | undefined {
+export function getComponentNames(element: Element): string[] {
+    const names: string[] = [];
     for (const className of element.classList) {
         const componentName = componentClassPattern.exec(className)?.[1];
         if (componentName != null && !ignoredComponents.has(componentName)) {
-            return componentName;
+            names.unshift(componentName);
         }
     }
-    return undefined;
+    return names;
 }
 
-/** The closest element at or above `element` that is the root of a component with a story. */
+/** The closest element at or above `element` that is the root of a component with a story, preferring the outermost component. */
 export function findComponentWithStory(element: Element | null, componentStoryIds: Map<string, string>) {
     for (let current = element; current != null; current = current.parentElement) {
-        const componentName = getComponentName(current);
-        const storyId = componentName != null ? componentStoryIds.get(componentName) : undefined;
-        if (componentName != null && storyId != null) {
-            return { element: current, componentName, storyId };
+        for (const componentName of getComponentNames(current)) {
+            const storyId = componentStoryIds.get(componentName);
+            if (storyId != null) {
+                return { element: current, componentName, storyId };
+            }
         }
     }
     return undefined;

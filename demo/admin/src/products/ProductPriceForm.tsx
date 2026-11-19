@@ -2,9 +2,10 @@ import { useApolloClient, useQuery } from "@apollo/client/react";
 import { Field, filterByFragment, FinalForm, FinalFormInput, type FinalFormSubmitEvent, useFormApiRef } from "@dextinity/admin";
 import { queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@dextinity/cms-admin";
 import { CircularProgress } from "@mui/material";
+import { AiModeFormScope } from "@src/aiMode/AiModeFormScope";
 import { deepEqual } from "fast-equals";
 import type { FormApi } from "final-form";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 
 import { productPriceFormFragment, productPriceFormQuery, updateProductPriceFormMutation } from "./ProductPriceForm.gql";
 import type {
@@ -24,6 +25,7 @@ type FormValues = Omit<GQLProductPriceFormFragment, "price"> & {
 };
 
 export function ProductPriceForm({ id }: FormProps) {
+    const intl = useIntl();
     const client = useApolloClient();
     const formApiRef = useFormApiRef<FormValues>();
 
@@ -87,6 +89,19 @@ export function ProductPriceForm({ id }: FormProps) {
             {() => (
                 <>
                     {saveConflict.dialogs}
+                    <AiModeFormScope
+                        entityName="product_price"
+                        entityLabel="product price"
+                        id={id}
+                        fields={[
+                            {
+                                name: "price",
+                                label: intl.formatMessage({ id: "product.price", defaultMessage: "Price" }),
+                                description: "A decimal number with a dot, e.g. 19.9.",
+                                type: "text",
+                            },
+                        ]}
+                    />
                     <Field
                         fullWidth
                         name="price"

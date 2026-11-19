@@ -1,5 +1,5 @@
 import type { BlockContext, BlockInterface } from "@dextinity/cms-admin";
-import type { FormApi } from "final-form";
+import { type FormApi, getIn, setIn } from "final-form";
 
 import type { AiModeTool } from "./AiModeScopes";
 import { blockEditOperationsSchema, describeBlockEditBatch, describeBlockEditResults, describeBlockSchemaLookup } from "./blockEditTool";
@@ -7,11 +7,34 @@ import type { BlocksBlockChild } from "./blockProps";
 import { summarizeBlockState } from "./blockStateSummary";
 import { asBlockEditOperations, planBlockEdits } from "./editBlocks";
 
+type FormValues = Record<string, unknown>;
+
+type ReferenceOption = Record<string, unknown> & { id: string };
+
 /** A field of a form the AI Mode reads, and except for a single block, also changes. */
-export type AiModeFormField = { name: string; label: string } & (
+export type AiModeFormField = {
+    /** The field's name in the form, also a nested one, e.g. "address.street". */
+    name: string;
+    label: string;
+    /** What the agent needs to know to fill the field in that its type and label don't say, e.g. the format of a number. */
+    description?: string;
+} & (
     | { type: "text" }
     | { type: "date" }
+    | { type: "boolean" }
     | { type: "select"; options: Array<{ value: string; label: string }> }
+    | { type: "multiSelect"; options: Array<{ value: string; label: string }> }
+    /**
+     * A select of other entities, such as `AsyncSelectField`, whose value is the selected option object, or a list of
+     * them. The agent lists the options with `get_<entity>_form_options` and sets the field by their IDs.
+     */
+    | {
+          type: "reference";
+          multiple?: boolean;
+          /** Loads the options, as the field does. Receives the form values, which some options depend on. */
+          loadOptions: (values: FormValues) => Promise<ReferenceOption[]>;
+          getOptionLabel: (option: ReferenceOption) => string;
+      }
     /** A block the agent can read but not change, e.g. an image. */
     | { type: "block"; block: BlockInterface }
     /** A blocks block, whose blocks the agent inserts, updates, removes, moves, hides, and shows. */
@@ -25,42 +48,123 @@ export type AiModeFormField = { name: string; label: string } & (
       }
 );
 
-type ValueField = Extract<AiModeFormField, { type: "text" | "date" | "select" }>;
+type SettableField = Extract<AiModeFormField, { type: "text" | "date" | "boolean" | "select" | "multiSelect" | "reference" }>;
+type ReferenceField = Extract<AiModeFormField, { type: "reference" }>;
 type BlocksField = Extract<AiModeFormField, { type: "blocks" }>;
 type BlocksState = { blocks: BlocksBlockChild[] };
 
 const datePattern = /^\d{4}-\d{2}-\d{2}$/;
 
-function getValueSchema(field: ValueField) {
-    if (field.type === "date") {
-        return { type: "string", description: `${field.label}, as a date in the format YYYY-MM-DD.` };
+const isSettable = (field: AiModeFormField): field is SettableField => field.type !== "block" && field.type !== "blocks";
+
+const describeOptions = (options: Array<{ value: string; label: string }>) => options.map(({ value, label }) => `${value} (${label})`).join(", ");
+
+function getValueSchema(field: SettableField, entityName: string): Record<string, unknown> {
+    const describe = (text: string) => [`${field.label}, ${text}`, field.description].filter(Boolean).join(" ");
+
+    switch (field.type) {
+        case "date":
+            return { type: "string", description: describe("as a date in the format YYYY-MM-DD.") };
+        case "boolean":
+            return { type: "boolean", description: describe("true or false.") };
+        case "select":
+            return {
+                type: "string",
+                enum: field.options.map(({ value }) => value),
+                description: describe(`one of: ${describeOptions(field.options)}.`),
+            };
+        case "multiSelect":
+            return {
+                type: "array",
+                items: { type: "string", enum: field.options.map(({ value }) => value) },
+                description: describe(`a list of: ${describeOptions(field.options)}. The list replaces the current one.`),
+            };
+        case "reference":
+            return field.multiple
+                ? {
+                      type: "array",
+                      items: { type: "string" },
+                      description: describe(
+                          `a list of the IDs of options that get_${entityName}_form_options lists. The list replaces the current one.`,
+                      ),
+                  }
+                : {
+                      type: ["string", "null"],
+                      description: describe(`the ID of an option that get_${entityName}_form_options lists, or null to clear it.`),
+                  };
+        default:
+            return { type: "string", description: describe("a text.") };
     }
-    if (field.type === "select") {
-        return {
-            type: "string",
-            enum: field.options.map(({ value }) => value),
-            description: `${field.label}, one of: ${field.options.map(({ value, label }) => `${value} (${label})`).join(", ")}.`,
-        };
-    }
-    return { type: "string", description: field.label };
 }
 
-function checkValue(field: ValueField, value: unknown) {
+/** Checks a value and converts it to the form's value, or returns why it doesn't fit. */
+async function toFormValue(
+    field: SettableField,
+    value: unknown,
+    values: FormValues,
+    entityName: string,
+): Promise<{ value: unknown } | { problem: string }> {
+    const options = "options" in field ? field.options.map((option) => option.value) : [];
+
+    switch (field.type) {
+        case "boolean":
+            return typeof value === "boolean" ? { value } : { problem: `"${field.name}" must be true or false.` };
+        case "multiSelect":
+            if (!Array.isArray(value) || !value.every((item) => typeof item === "string" && options.includes(item))) {
+                return { problem: `"${field.name}" must be a list of: ${options.join(", ")}.` };
+            }
+            return { value };
+        case "reference": {
+            if (!field.multiple && value === null) {
+                return { value: null };
+            }
+            const ids = field.multiple ? value : [value];
+            if (!Array.isArray(ids) || !ids.every((id) => typeof id === "string")) {
+                return { problem: `"${field.name}" must be ${field.multiple ? "a list of IDs" : "an ID or null"}.` };
+            }
+            const loadedOptions = await field.loadOptions(values);
+            const selected = ids.map((id) => loadedOptions.find((option) => option.id === id));
+            const unknownIndex = selected.findIndex((option) => option === undefined);
+            if (unknownIndex !== -1) {
+                return { problem: `"${ids[unknownIndex]}" is no option of "${field.name}". List the options with get_${entityName}_form_options.` };
+            }
+            return { value: field.multiple ? selected : selected[0] };
+        }
+        default:
+            break;
+    }
+
     if (typeof value !== "string") {
-        return `"${field.name}" must be a string.`;
+        return { problem: `"${field.name}" must be a string.` };
     }
     if (field.type === "date" && !datePattern.test(value)) {
-        return `"${field.name}" must be a date in the format YYYY-MM-DD, but is "${value}".`;
+        return { problem: `"${field.name}" must be a date in the format YYYY-MM-DD, but is "${value}".` };
     }
-    if (field.type === "select" && !field.options.some((option) => option.value === value)) {
-        return `"${field.name}" must be one of: ${field.options.map((option) => option.value).join(", ")}, but is "${value}".`;
+    if (field.type === "select" && !options.includes(value)) {
+        return { problem: `"${field.name}" must be one of: ${options.join(", ")}, but is "${value}".` };
     }
-    return null;
+    return { value };
+}
+
+/** The value as the agent reads it: a summary for a block, the ID and label of a selected option. */
+function summarizeValue(field: AiModeFormField, value: unknown) {
+    if (field.type === "block" || field.type === "blocks") {
+        return summarizeBlockState(field.block, value);
+    }
+    if (field.type === "reference") {
+        const summarizeOption = (option: ReferenceOption) => ({ id: option.id, label: field.getOptionLabel(option) });
+        if (Array.isArray(value)) {
+            return value.map(summarizeOption);
+        }
+        return value ? summarizeOption(value as ReferenceOption) : null;
+    }
+    return value;
 }
 
 /**
- * The tools of an entity's create or edit form: `get_<entity>_form_state`, `set_<entity>_form_values`, and for a form with
- * a blocks field, `edit_<entity>_form_blocks`. Like `edit_blocks`, they change the form as unsaved changes, which the user saves.
+ * The tools of an entity's create or edit form: `get_<entity>_form_state` and `set_<entity>_form_values`, for a form with a
+ * reference field `get_<entity>_form_options`, and for a form with a blocks field `edit_<entity>_form_blocks`. Like
+ * `edit_blocks`, they change the form as unsaved changes, which the user saves.
  */
 export function createFormTools({
     entityName,
@@ -75,14 +179,16 @@ export function createFormTools({
     /** Names the entity in the tool descriptions, e.g. "news article". */
     entityLabel: string;
     fields: AiModeFormField[];
-    form: FormApi<Record<string, unknown>>;
+    form: FormApi<FormValues>;
     blockContext: BlockContext;
     /** Whether a block may be inserted in the current content scope, as `isBlockSupported` of the blocks config decides. */
     isBlockInsertable?: (block: BlockInterface) => boolean;
 }): AiModeTool[] {
-    const settableFields = fields.filter((field): field is ValueField => field.type !== "block" && field.type !== "blocks");
-    const blockFields = fields.filter((field) => field.type === "block" || field.type === "blocks");
+    const settableFields = fields.filter(isSettable);
+    const blockFields = fields.filter((field) => !isSettable(field));
     const blocksFields = fields.filter((field): field is BlocksField => field.type === "blocks");
+    const referenceFields = fields.filter((field): field is ReferenceField => field.type === "reference");
+    const listNames = (list: AiModeFormField[]) => list.map(({ name }) => name).join(", ");
 
     return [
         {
@@ -91,27 +197,44 @@ export function createFormTools({
                 `Get the live state of the ${entityLabel} form open in the admin: the value of every field, including unsaved changes, which fields the user changed, and which are invalid. ` +
                 `The fields are: ${fields.map(({ name, label }) => `${name} (${label})`).join(", ")}. ${
                     blockFields.length > 0
-                        ? `The block fields (${blockFields.map(({ name }) => name).join(", ")}) are summarized: their structure, text, files, and links. `
+                        ? `The block fields (${listNames(blockFields)}) are summarized: their structure, text, files, and links. `
                         : ""
+                }${
+                    referenceFields.length > 0 ? `The fields ${listNames(referenceFields)} have the ID and label of the selected option. ` : ""
                 }To change the fields, use set_${entityName}_form_values.`,
             inputSchema: { type: "object", properties: {} },
             readOnlyHint: true,
             handler: () => {
                 const { values, dirtyFields, errors = {} } = form.getState();
                 return {
-                    values: Object.fromEntries(
-                        fields.map((field) => [
-                            field.name,
-                            field.type === "block" || field.type === "blocks"
-                                ? summarizeBlockState(field.block, values[field.name])
-                                : values[field.name],
-                        ]),
-                    ),
+                    values: Object.fromEntries(fields.map((field) => [field.name, summarizeValue(field, getIn(values, field.name))])),
                     changedFields: Object.keys(dirtyFields).filter((name) => dirtyFields[name]),
                     invalidFields: Object.keys(errors),
                 };
             },
         },
+        ...(referenceFields.length > 0
+            ? [
+                  {
+                      name: `get_${entityName}_form_options`,
+                      description: `List the options of a field of the ${entityLabel} form that selects other entities (${listNames(referenceFields)}), with their IDs and labels, to set the field with set_${entityName}_form_values.`,
+                      inputSchema: {
+                          type: "object",
+                          properties: { field: { type: "string", enum: referenceFields.map(({ name }) => name) } },
+                          required: ["field"],
+                      },
+                      readOnlyHint: true,
+                      handler: async (args: Record<string, unknown>) => {
+                          const field = referenceFields.find((candidate) => candidate.name === args.field);
+                          if (!field) {
+                              throw new Error(`"${String(args.field)}" is no field with options. These have: ${listNames(referenceFields)}.`);
+                          }
+                          const options = await field.loadOptions(form.getState().values);
+                          return options.map((option) => ({ id: option.id, label: field.getOptionLabel(option) }));
+                      },
+                  } satisfies AiModeTool,
+              ]
+            : []),
         {
             name: `set_${entityName}_form_values`,
             description:
@@ -119,16 +242,14 @@ export function createFormTools({
                 `The chat asks the user to approve every call before it runs, so call the tool instead of asking for permission in the chat first. ` +
                 `The values are set as unsaved changes, exactly as if the user had typed them, so the user sees them in the form, and saves or discards them; afterwards, tell the user briefly what was changed and that it still has to be saved. ` +
                 `Pass only the fields to change. All of them are set, or none is when one doesn't fit.${
-                    blockFields.length > 0
-                        ? ` The block fields (${blockFields.map(({ name }) => name).join(", ")}) can't be changed with this tool.`
-                        : ""
-                }${blocksFields.length > 0 ? ` Change the blocks of ${blocksFields.map(({ name }) => name).join(", ")} with edit_${entityName}_form_blocks.` : ""}`,
+                    blockFields.length > 0 ? ` The block fields (${listNames(blockFields)}) can't be changed with this tool.` : ""
+                }${blocksFields.length > 0 ? ` Change the blocks of ${listNames(blocksFields)} with edit_${entityName}_form_blocks.` : ""}`,
             inputSchema: {
                 type: "object",
                 properties: {
                     values: {
                         type: "object",
-                        properties: Object.fromEntries(settableFields.map((field) => [field.name, getValueSchema(field)])),
+                        properties: Object.fromEntries(settableFields.map((field) => [field.name, getValueSchema(field, entityName)])),
                         additionalProperties: false,
                         description: "The new values, by field name.",
                     },
@@ -136,27 +257,39 @@ export function createFormTools({
                 required: ["values"],
             },
             readOnlyHint: false,
-            handler: (args) => {
+            handler: async (args) => {
                 const values = args.values;
                 if (typeof values !== "object" || values === null || Array.isArray(values)) {
                     throw new Error(`set_${entityName}_form_values requires "values", an object of the new values by field name.`);
                 }
 
                 const entries = Object.entries(values);
-                const problems = entries.map(([name, value]) => {
-                    const field = settableFields.find((candidate) => candidate.name === name);
-                    if (!field) {
-                        return `"${name}" is no field this tool can set. It can set: ${settableFields.map((candidate) => candidate.name).join(", ")}.`;
+                const unknownName = entries.map(([name]) => name).find((name) => !settableFields.some((field) => field.name === name));
+                if (unknownName !== undefined) {
+                    throw new Error(
+                        `"${unknownName}" is no field this tool can set. It can set: ${listNames(settableFields)}. No field was changed.`,
+                    );
+                }
+
+                // The options of a reference field may depend on other fields of the same call, e.g. the manufacturers on
+                // the country. The values are therefore converted in the order of the fields, and each reference loads its
+                // options with the values converted before it.
+                let proposedValues = form.getState().values;
+                const formValues: Array<[string, unknown]> = [];
+                for (const field of settableFields) {
+                    if (!(field.name in values)) {
+                        continue;
                     }
-                    return checkValue(field, value);
-                });
-                const problem = problems.find((candidate) => candidate !== null);
-                if (problem) {
-                    throw new Error(`${problem} No field was changed.`);
+                    const result = await toFormValue(field, (values as FormValues)[field.name], proposedValues, entityName);
+                    if ("problem" in result) {
+                        throw new Error(`${result.problem} No field was changed.`);
+                    }
+                    formValues.push([field.name, result.value]);
+                    proposedValues = setIn(proposedValues, field.name, result.value) as FormValues;
                 }
 
                 form.batch(() => {
-                    for (const [name, value] of entries) {
+                    for (const [name, value] of formValues) {
                         form.change(name, value);
                     }
                 });
@@ -179,7 +312,7 @@ function createEditBlocksTool({
     entityName: string;
     entityLabel: string;
     blocksFields: BlocksField[];
-    form: FormApi<Record<string, unknown>>;
+    form: FormApi<FormValues>;
     blockContext: BlockContext;
     isBlockInsertable: (block: BlockInterface) => boolean;
 }): AiModeTool {
@@ -218,7 +351,7 @@ function createEditBlocksTool({
                 );
             }
 
-            const plannedBlocks = (form.getState().values[field.name] as BlocksState).blocks;
+            const plannedBlocks = (getIn(form.getState().values, field.name) as BlocksState).blocks;
             const { apply, results } = await planBlockEdits({
                 blocks: plannedBlocks,
                 operations: asBlockEditOperations(args.operations),
@@ -231,7 +364,7 @@ function createEditBlocksTool({
             if (apply) {
                 // Planning awaits conversions that can query the API. Applied to blocks the user changed meanwhile, the batch
                 // would undo those changes, so it is rejected as a whole instead.
-                const current = form.getState().values[field.name] as BlocksState;
+                const current = getIn(form.getState().values, field.name) as BlocksState;
                 if (current.blocks !== plannedBlocks) {
                     throw new Error(
                         `The field '${field.name}' changed while the edits were prepared, so none of the operations were applied. Read the form state again and retry.`,

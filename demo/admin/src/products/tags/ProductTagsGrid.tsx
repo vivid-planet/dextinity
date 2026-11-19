@@ -14,10 +14,12 @@ import {
     useBufferedRowCount,
     useDataGridRemote,
     usePersistentColumnState,
+    useStackSwitchApi,
 } from "@dextinity/admin";
 import { Add as AddIcon, Edit as EditIcon } from "@dextinity/admin-icons";
 import { IconButton } from "@mui/material";
 import { DataGridPro, type GridSlotsComponent } from "@mui/x-data-grid-pro";
+import { useAiModeDataGridScope } from "@src/aiMode/useAiModeDataGridScope";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import type {
@@ -113,6 +115,17 @@ export function ProductTagsGrid() {
             sort: muiGridSortToGql(dataGridProps.sortModel, columns),
         },
         notifyOnNetworkStatusChange: false,
+    });
+    const stackSwitchApi = useStackSwitchApi();
+    useAiModeDataGridScope({
+        entityName: "product_tag",
+        entityLabel: "product tags",
+        columns,
+        dataGridProps,
+        rows: data?.productTags.nodes ?? [],
+        totalCount: data?.productTags.totalCount,
+        isLoading: loading,
+        openForm: (id) => (id ? stackSwitchApi.activatePage("edit", id) : stackSwitchApi.activatePage("add", "add")),
     });
     const rowCount = useBufferedRowCount(data?.productTags.totalCount);
     if (error) {

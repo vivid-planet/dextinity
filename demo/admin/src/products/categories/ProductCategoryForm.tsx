@@ -1,10 +1,11 @@
 import { skipToken, useApolloClient, useQuery } from "@apollo/client/react";
 import { filterByFragment, FinalForm, type FinalFormSubmitEvent, Loading, TextField, useFormApiRef, useStackSwitchApi } from "@dextinity/admin";
 import { queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@dextinity/cms-admin";
+import { AiModeFormScope } from "@src/aiMode/AiModeFormScope";
 import { deepEqual } from "fast-equals";
 import type { FormApi } from "final-form";
 import { useMemo } from "react";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 
 import {
     createProductCategoryMutation,
@@ -27,6 +28,7 @@ interface FormProps {
     id?: string;
 }
 export function ProductCategoryForm({ id }: FormProps) {
+    const intl = useIntl();
     const client = useApolloClient();
     const mode = id ? "edit" : "add";
     const formApiRef = useFormApiRef<FormValues>();
@@ -103,6 +105,15 @@ export function ProductCategoryForm({ id }: FormProps) {
             {() => (
                 <>
                     {saveConflict.dialogs}
+                    <AiModeFormScope
+                        entityName="product_category"
+                        entityLabel="product category"
+                        id={id}
+                        fields={[
+                            { name: "title", label: intl.formatMessage({ id: "productCategory.title", defaultMessage: "Title" }), type: "text" },
+                            { name: "slug", label: intl.formatMessage({ id: "productCategory.slug", defaultMessage: "Slug" }), type: "text" },
+                        ]}
+                    />
                     <>
                         <TextField
                             required

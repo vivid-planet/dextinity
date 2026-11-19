@@ -15,10 +15,12 @@ import {
 } from "@dextinity/admin";
 import { queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@dextinity/cms-admin";
 import { Collapse, Divider } from "@mui/material";
+import { AiModeFormScope } from "@src/aiMode/AiModeFormScope";
+import type { AiModeFormField } from "@src/aiMode/formTools";
 import { deepEqual } from "fast-equals";
 import type { FormApi } from "final-form";
 import { useMemo } from "react";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, type IntlShape, useIntl } from "react-intl";
 
 import { createManufacturerMutation, manufacturerFormFragment, manufacturerQuery, updateManufacturerMutation } from "./ManufacturerForm.gql";
 import type {
@@ -58,7 +60,56 @@ interface FormProps {
     id?: string;
 }
 
+const streetNumberDescription = "A whole number, as text.";
+
+function getAddressFields({ prefix, groupLabel, intl }: { prefix: string; groupLabel?: string; intl: IntlShape }): AiModeFormField[] {
+    const label = (text: string) => (groupLabel ? `${groupLabel}: ${text}` : text);
+    return [
+        {
+            name: `${prefix}.street`,
+            label: label(intl.formatMessage({ id: "manufacturer.address.street", defaultMessage: "Address Street" })),
+            type: "text",
+        },
+        {
+            name: `${prefix}.streetNumber`,
+            label: label(intl.formatMessage({ id: "manufacturer.address.streetNumber", defaultMessage: "Address Street Number" })),
+            description: streetNumberDescription,
+            type: "text",
+        },
+        { name: `${prefix}.zip`, label: label(intl.formatMessage({ id: "manufacturer.address.zip", defaultMessage: "Address Zip" })), type: "text" },
+        {
+            name: `${prefix}.country`,
+            label: label(intl.formatMessage({ id: "manufacturer.address.country", defaultMessage: "Address Country" })),
+            type: "text",
+        },
+        {
+            name: `${prefix}.alternativeAddress.street`,
+            label: label(intl.formatMessage({ id: "manufacturer.address.alternativeAddress.street", defaultMessage: "Alt-Address Street" })),
+            type: "text",
+        },
+        {
+            name: `${prefix}.alternativeAddress.streetNumber`,
+            label: label(
+                intl.formatMessage({ id: "manufacturer.address.alternativeAddress.streetNumber", defaultMessage: "Alt-Address Street Number" }),
+            ),
+            description: streetNumberDescription,
+            type: "text",
+        },
+        {
+            name: `${prefix}.alternativeAddress.zip`,
+            label: label(intl.formatMessage({ id: "manufacturer.address.alternativeAddress.zip", defaultMessage: "Alt-Address Zip" })),
+            type: "text",
+        },
+        {
+            name: `${prefix}.alternativeAddress.country`,
+            label: label(intl.formatMessage({ id: "manufacturer.address.alternativeAddress.country", defaultMessage: "Alt-Address Country" })),
+            type: "text",
+        },
+    ];
+}
+
 export function ManufacturerForm({ id }: FormProps) {
+    const intl = useIntl();
     const client = useApolloClient();
     const mode = id ? "edit" : "add";
     const formApiRef = useFormApiRef<FormValues>();
@@ -190,6 +241,29 @@ export function ManufacturerForm({ id }: FormProps) {
         >
             <>
                 {saveConflict.dialogs}
+                <AiModeFormScope
+                    entityName="manufacturer"
+                    entityLabel="manufacturer"
+                    id={id}
+                    fields={[
+                        { name: "name", label: intl.formatMessage({ id: "manufacturer.name", defaultMessage: "Name" }), type: "text" },
+                        ...getAddressFields({ prefix: "address", intl }),
+                        {
+                            name: "useAlternativeAddress",
+                            label: intl.formatMessage({
+                                id: "manufacturer.address.useAlternativeAddress",
+                                defaultMessage: "Use alternative address",
+                            }),
+                            description: "The alternative address of the address is shown in the form only when this is true.",
+                            type: "boolean",
+                        },
+                        ...getAddressFields({
+                            prefix: "addressAsEmbeddable",
+                            groupLabel: intl.formatMessage({ id: "manufacturer.addressAsEmbeddable.title", defaultMessage: "Address as embeddable" }),
+                            intl,
+                        }),
+                    ]}
+                />
                 <>
                     <FieldSet>
                         <TextField required fullWidth name="name" label={<FormattedMessage id="manufacturer.name" defaultMessage="Name" />} />

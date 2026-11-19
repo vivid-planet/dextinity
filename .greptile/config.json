@@ -19,5 +19,13 @@
     "ignoreKeywords": "Merge main\nMerge `main`\nMerge next\nMerge `next`\nMerge feature/\nMerge `feature/",
     "disabledLabels": ["skip-greptile-review"],
     "excludeAuthors": ["vivid-planet-bot", "github-actions[bot]", "renovate[bot]"],
-    "ignorePatterns": "pnpm-lock.yaml\n**/CHANGELOG.md\nCHANGELOG.old.md\n**/__snapshots__/**\n**/generated/**\n**/schema.gql\n**/block-meta.json"
+    "ignorePatterns": "pnpm-lock.yaml\n**/CHANGELOG.md\nCHANGELOG.old.md\n**/__snapshots__/**\n**/generated/**\n**/schema.gql\n**/block-meta.json",
+    "rules": [
+        {
+            "id": "migration-guide-for-breaking-changes",
+            "rule": "A pull request with a breaking change must add an entry for it to the migration guide of the upcoming major, docs/docs/7-migration-guide/migration-from-v<current>-to-v<next>.md (e.g. migration-from-v10-to-v11.md). Breaking changes include a changeset with a `major` bump, and removing, renaming or changing the signature or behavior of anything exported from a package's public API (src/index.ts or other exported entry points), raising a peer dependency or Node version, and changing the database schema, generated files or configuration a project must adapt to. Flag the pull request if it contains such a change and doesn't add or update the corresponding migration guide entry. Also flag entries that aren't actionable for an AI agent migrating a project: each entry needs an imperative heading, a way to find the affected code (e.g. a grep command) and the required change (e.g. a diff code block), and must not reference Dextinity-internal files such as demo or package source paths.",
+            "scope": ["packages/**", "docs/docs/7-migration-guide/**", ".changeset/**"],
+            "severity": "high"
+        }
+    ]
 }

@@ -75,7 +75,7 @@ describe("SideNav render contract", () => {
     it("announces the AppShell's collapse shortcut on the collapse button", () => {
         render(
             <AppShellContext.Provider value={{ navCollapsed: false, onNavCollapsedChange: vi.fn(), navCollapseKeyboardShortcut: "mod+\\" }}>
-                <SideNav groups={groups} currentId="dashboard" expandedIds={[]} onExpandedIdsChange={vi.fn()} onNavigate={vi.fn()} />
+                <SideNav title="App" groups={groups} currentId="dashboard" expandedIds={[]} onExpandedIdsChange={vi.fn()} onNavigate={vi.fn()} />
             </AppShellContext.Provider>,
         );
 

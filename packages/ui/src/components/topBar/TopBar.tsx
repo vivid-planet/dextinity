@@ -42,6 +42,11 @@ export interface TopBarProps extends Omit<HTMLAttributes<HTMLElement>, "classNam
      * and compact, e.g. icon buttons.
      */
     browseActions?: ReactNode;
+    /**
+     * The switch that shows the AI assistant, usually an `AiAssistantSwitch`, after the scope. Leave it out for users without the
+     * right to use the assistant.
+     */
+    assistantSwitch?: ReactNode;
     /** The user menu, usually a `UserMenu`. */
     userMenu?: ReactNode;
     /** Shows the menu button on narrow windows. Inside `AppShell`, leave it unset: the button opens the navigation drawer. */
@@ -53,7 +58,7 @@ export interface TopBarProps extends Omit<HTMLAttributes<HTMLElement>, "classNam
 }
 
 /**
- * The glass bar above the content: search, the app's own actions, scope, and user menu. It looks the same on every page; a page's own
+ * The glass bar above the content: search, the app's own actions, scope, AI assistant, and user menu. It looks the same on every page; a page's own
  * back and actions belong in its `PageHeader`. The app name never appears here, only in the navigation.
  */
 export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
@@ -62,6 +67,7 @@ export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
         searchKeyboardShortcut = "mod+k",
         scope,
         browseActions,
+        assistantSwitch,
         userMenu,
         onMenuClick: onMenuClickProp,
         labels: labelsProp,
@@ -99,6 +105,7 @@ export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
             <div className={styles.actions}>
                 {browseActions}
                 {scope}
+                {assistantSwitch}
                 {userMenu}
             </div>
         </header>

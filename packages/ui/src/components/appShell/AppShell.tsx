@@ -1,6 +1,16 @@
 import { Dialog as BaseDialog } from "@base-ui/react/dialog";
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type PropsWithChildren, type ReactNode, useState } from "react";
+import {
+    forwardRef,
+    type HTMLAttributes,
+    type KeyboardEvent,
+    type PropsWithChildren,
+    type ReactNode,
+    useEffect,
+    useLayoutEffect,
+    useRef,
+    useState,
+} from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
@@ -17,11 +27,17 @@ type AppShellLayout = "wide" | "medium" | "narrow";
 export interface AppShellLabels {
     /** Accessible name of the navigation drawer on narrow windows. */
     navigation: string;
+    /** Accessible name of the assistant column and of the assistant sheet on narrow windows. */
+    assistant: string;
 }
 
 const defaultLabels: AppShellLabels = {
     navigation: "Navigation",
+    assistant: "AI assistant",
 };
+
+// Moves focus into the assistant once its column has opened, so the focus doesn't jump while the column is still growing
+const assistantFocusDelay = 280;
 
 /**
  * The resolved configuration that influences the component's appearance or behavior.
@@ -30,6 +46,8 @@ export type AppShellOwnerState = {
     /** Follows the window width: `wide` from 1280px, `medium` from 768px, `narrow` below. */
     layout: AppShellLayout;
     navCollapsed: boolean;
+    /** Whether the assistant is shown. */
+    assistantOpen: boolean;
 };
 
 export interface AppShellSlotProps {
@@ -48,7 +66,17 @@ export interface AppShellProps extends Omit<HTMLAttributes<HTMLDivElement>, "cla
     navCollapsed: boolean;
     /** Called to collapse or expand the navigation, with its footer button or ⌘\ / Ctrl+\. */
     onNavCollapsedChange: (collapsed: boolean) => void;
-    /** Leaves out the shortcut ⌘\ / Ctrl+\, e.g. when the app handles it itself. */
+    /**
+     * The AI assistant, e.g. a chat. It gets a column of its own at the end, so the page gets narrower instead of being covered; on
+     * narrow windows it opens as a bottom sheet. It stays mounted while hidden, so a conversation is kept. Leave it out for users
+     * without the right to use the assistant, together with the `AiAssistantSwitch`.
+     */
+    assistant?: ReactNode;
+    /** Whether the assistant is shown. Toggled by the `AiAssistantSwitch` in the top bar and by ⌘J / Ctrl+J. */
+    assistantOpen?: boolean;
+    /** Called to show or hide the assistant: with the switch, ⌘J / Ctrl+J, or Escape inside the assistant. */
+    onAssistantOpenChange?: (open: boolean) => void;
+    /** Leaves out the shortcuts ⌘\ / Ctrl+\ and ⌘J / Ctrl+J, e.g. when the app handles them itself. */
     disableKeyboardShortcuts?: boolean;
     /** The built-in texts. */
     labels?: Partial<AppShellLabels>;
@@ -71,6 +99,9 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
         children,
         navCollapsed,
         onNavCollapsedChange,
+        assistant,
+        assistantOpen = false,
+        onAssistantOpenChange,
         disableKeyboardShortcuts = false,
         labels: labelsProp,
         className,
@@ -83,11 +114,44 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
     const narrow = useMediaQuery(narrowQuery);
     const medium = useMediaQuery(mediumQuery);
     const layout: AppShellLayout = narrow ? "narrow" : medium ? "medium" : "wide";
-    const ownerState: AppShellOwnerState = { layout, navCollapsed };
+    const hasAssistant = assistant != null;
+    const ownerState: AppShellOwnerState = { layout, navCollapsed, assistantOpen: hasAssistant && assistantOpen };
     const [navDrawerOpen, setNavDrawerOpen] = useState(false);
     const { anchorRef, container } = useThemePortalContainer<HTMLSpanElement>();
+    const assistantRef = useRef<HTMLElement>(null);
+    const assistantSwitchRef = useRef<HTMLButtonElement>(null);
+
+    const focusInAssistantRef = useRef(false);
+    const changeAssistantOpen = (open: boolean) => onAssistantOpenChange?.(open);
+
+    useLayoutEffect(() => {
+        if (!assistantOpen && focusInAssistantRef.current) {
+            focusInAssistantRef.current = false;
+            assistantSwitchRef.current?.focus();
+        }
+    }, [assistantOpen]);
 
     useKeyboardShortcut("mod+\\", () => onNavCollapsedChange(!navCollapsed), { enabled: !disableKeyboardShortcuts && layout === "wide" });
+    useKeyboardShortcut("mod+j", () => changeAssistantOpen(!assistantOpen), { enabled: !disableKeyboardShortcuts && hasAssistant });
+
+    useEffect(() => {
+        if (!ownerState.assistantOpen || layout === "narrow") {
+            return;
+        }
+        const timeout = window.setTimeout(() => {
+            const assistantElement = assistantRef.current;
+            const target = assistantElement?.querySelector<HTMLElement>("[data-autofocus], textarea, input") ?? assistantElement;
+            target?.focus();
+        }, assistantFocusDelay);
+        return () => window.clearTimeout(timeout);
+    }, [ownerState.assistantOpen, layout]);
+
+    const onAssistantKeyDown = (event: KeyboardEvent<HTMLElement>) => {
+        if (event.key === "Escape" && !event.defaultPrevented) {
+            event.preventDefault();
+            changeAssistantOpen(false);
+        }
+    };
 
     const columnContext: AppShellContextValue = {
         navCollapsed: navCollapsed || layout === "medium",
@@ -97,6 +161,10 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
     const mainContext: AppShellContextValue = {
         navCollapsed: columnContext.navCollapsed,
         onNavDrawerOpen: layout === "narrow" ? () => setNavDrawerOpen(true) : undefined,
+        layout,
+        assistantOpen: hasAssistant ? assistantOpen : undefined,
+        onAssistantOpenChange: hasAssistant ? changeAssistantOpen : undefined,
+        assistantSwitchRef,
     };
 
     const mainProps = resolveSlotProps<AppShellOwnerState, "main", "main">({
@@ -111,6 +179,7 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
             ref={ref}
             data-layout={ownerState.layout}
             data-navcollapsed={ownerState.navCollapsed ? "" : undefined}
+            data-assistantopen={ownerState.assistantOpen ? "" : undefined}
             className={clsx(styles.root, className)}
         >
             <span ref={anchorRef} hidden />
@@ -139,6 +208,38 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
                     <div className={styles.content}>{children}</div>
                 </main>
             </AppShellContext.Provider>
+            {hasAssistant &&
+                (layout === "narrow" ? (
+                    <BaseDialog.Root open={assistantOpen} onOpenChange={(open) => changeAssistantOpen(open)}>
+                        <BaseDialog.Portal container={container} keepMounted>
+                            <BaseDialog.Backdrop className={styles.backdrop} />
+                            <BaseDialog.Popup aria-label={labels.assistant} className={styles.assistantSheet}>
+                                {assistant}
+                            </BaseDialog.Popup>
+                        </BaseDialog.Portal>
+                    </BaseDialog.Root>
+                ) : (
+                    <div className={styles.assistant}>
+                        <aside
+                            ref={assistantRef}
+                            aria-label={labels.assistant}
+                            tabIndex={-1}
+                            inert={!assistantOpen}
+                            onKeyDown={onAssistantKeyDown}
+                            onFocus={() => {
+                                focusInAssistantRef.current = true;
+                            }}
+                            onBlur={(event) => {
+                                if (!event.currentTarget.contains(event.relatedTarget)) {
+                                    focusInAssistantRef.current = false;
+                                }
+                            }}
+                            className={styles.assistantPanel}
+                        >
+                            {assistant}
+                        </aside>
+                    </div>
+                ))}
             <div className={styles.grain} aria-hidden />
         </div>
     );

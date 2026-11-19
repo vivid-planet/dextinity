@@ -27,6 +27,10 @@
     --dextinity-app-shell-backdrop: oklch(0 0 0 / 0.28);
     // Width of the navigation drawer in narrow windows
     --dextinity-app-shell-drawer-width: min(320px, 86vw);
+    // Width of the assistant column, without the gap before it
+    --dextinity-app-shell-assistant-width: 380px;
+    // Height of the assistant sheet on narrow windows
+    --dextinity-app-shell-assistant-sheet-height: 86dvh;
     // Shadow of the navigation panel inside the drawer
     --dextinity-app-shell-overlay-shadow: var(--dextinity-shadow-3);
 

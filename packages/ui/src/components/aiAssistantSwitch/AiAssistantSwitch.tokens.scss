@@ -1,0 +1,46 @@
+@mixin tokens {
+    // Height of the switch, matching the other controls in the top bar
+    --dextinity-ai-assistant-switch-height: 34px;
+    // Corner radius of the switch
+    --dextinity-ai-assistant-switch-radius: var(--dextinity-radius-control);
+    // Space between the icon, the label and the track
+    --dextinity-ai-assistant-switch-gap: var(--dextinity-space-2);
+    // Space at the start and end of the switch
+    --dextinity-ai-assistant-switch-padding-inline: var(--dextinity-space-2-5);
+    // Outline of the switch while it is off
+    --dextinity-ai-assistant-switch-line: var(--dextinity-color-line-strong);
+    // Outline of the switch on hover
+    --dextinity-ai-assistant-switch-line-hover: var(--dextinity-color-control-line);
+    // Fill of the switch while the assistant is shown
+    --dextinity-ai-assistant-switch-background-checked: var(--dextinity-color-accent-soft);
+    // Color of the label
+    --dextinity-ai-assistant-switch-foreground: var(--dextinity-color-text);
+    // Color of the icon
+    --dextinity-ai-assistant-switch-icon-color: var(--dextinity-color-accent-text);
+    // Text size of the label
+    --dextinity-ai-assistant-switch-font-size: var(--dextinity-typography-ui-size);
+    // Font weight of the label
+    --dextinity-ai-assistant-switch-font-weight: var(--dextinity-font-weight-medium);
+    // Width of the track
+    --dextinity-ai-assistant-switch-track-width: var(--dextinity-switch-track-width-small);
+    // Height of the track
+    --dextinity-ai-assistant-switch-track-height: var(--dextinity-switch-track-height-small);
+    // Space between the track's edge and the thumb
+    --dextinity-ai-assistant-switch-thumb-inset: var(--dextinity-switch-thumb-inset-small);
+    // Fill of the track while the switch is off
+    --dextinity-ai-assistant-switch-track-background: var(--dextinity-color-text-disabled);
+    // Fill of the track while the switch is on; solid, never the brand gradient
+    --dextinity-ai-assistant-switch-track-background-checked: var(--dextinity-color-accent);
+    // Outline of the track; drawn only in high contrast
+    --dextinity-ai-assistant-switch-track-line: 0 0 transparent;
+    // Fill of the thumb
+    --dextinity-ai-assistant-switch-thumb-background: var(--dextinity-switch-thumb-background);
+    // Shadow of the thumb
+    --dextinity-ai-assistant-switch-thumb-shadow: var(--dextinity-switch-thumb-shadow);
+}
+
+@mixin high-contrast-tokens {
+    --dextinity-ai-assistant-switch-track-background: var(--dextinity-color-canvas);
+    --dextinity-ai-assistant-switch-track-line: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-text);
+    --dextinity-ai-assistant-switch-thumb-background: var(--dextinity-color-text);
+}

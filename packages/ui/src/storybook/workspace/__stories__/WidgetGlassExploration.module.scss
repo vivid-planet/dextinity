@@ -1,0 +1,21 @@
+// Floats over the page, so the cards can be compared while the switch stays in reach
+.switcher {
+    position: fixed;
+    z-index: 100;
+    inset-block-end: var(--dextinity-space-4);
+    inset-inline-start: 50%;
+    display: flex;
+    gap: var(--dextinity-space-3);
+    align-items: center;
+    padding: var(--dextinity-space-2) var(--dextinity-space-2) var(--dextinity-space-2) var(--dextinity-space-4);
+    border-radius: var(--dextinity-radius-pill);
+    background: var(--dextinity-material-glass-overlay);
+    box-shadow: var(--dextinity-shadow-3), var(--dextinity-material-edge-shadow);
+    transform: translateX(-50%);
+}
+
+.switcherLabel {
+    color: var(--dextinity-color-text-subtle);
+    font-size: var(--dextinity-typography-small-size);
+    white-space: nowrap;
+}

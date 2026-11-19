@@ -88,7 +88,7 @@ describe("open_admin_page", () => {
     });
 });
 
-describe("open_page", () => {
+describe("open_page_tree_node", () => {
     const nodeId = "0199b3c4-7d2e-7a10-9a4b-3f2c1d0e9f8a";
 
     it("opens the editor of a page tree node of the current scope, in the node's category", () => {

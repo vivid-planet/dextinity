@@ -1100,10 +1100,8 @@
                             "name": "props",
                             "kind": "OneOfBlocks",
                             "blocks": {
-                                "text": "RichText",
+                                "text": "EmailCampaignRichText",
                                 "twoListSizesText": "MailTwoListSizesRichText",
-                                "twoListSizesTipTapText": "MailTwoListSizesTipTapRichText",
-                                "tipTapText": "EmailCampaignTipTapRichText",
                                 "image": "MailImage",
                                 "button": "MailButton",
                                 "divider": "MailDivider",
@@ -1142,10 +1140,8 @@
                             "name": "props",
                             "kind": "OneOfBlocks",
                             "blocks": {
-                                "text": "RichText",
+                                "text": "EmailCampaignRichText",
                                 "twoListSizesText": "MailTwoListSizesRichText",
-                                "twoListSizesTipTapText": "MailTwoListSizesTipTapRichText",
-                                "tipTapText": "EmailCampaignTipTapRichText",
                                 "image": "MailImage",
                                 "button": "MailButton",
                                 "divider": "MailDivider",
@@ -1161,13 +1157,7 @@
         ]
     },
     {
-        "name": "EmailCampaignSalutation",
-        "description": "The salutation of an email campaign, filled with the name of the recipient.",
-        "fields": [],
-        "inputFields": []
-    },
-    {
-        "name": "EmailCampaignTipTapRichText",
+        "name": "EmailCampaignRichText",
         "description": "Formatted text, edited in the TipTap based rich text editor. `tipTapContent` is a TipTap JSON document. Build it from the field's `tipTap` entry, not from TipTap's defaults, otherwise the content is rejected: use only the node and mark types in `nodes` and `marks`. Store every paragraph and heading as a `textBlock` node whose `textBlock` attribute names one of `textBlocks`, and whose optional `textBlockStyle` attribute names one of that text block's `styles`. Without a `textBlock` attribute, a node becomes the `defaultTextBlock`. Use an ordered (`orderedList`) or unordered (`bulletList`) list only if `orderedList` or `unorderedList` isn't `null`. A list item holds text blocks with the tag `p`, which may also use the list's `styles`. An `inlineStyle` mark's `type` names one of `inlineStyles`, and is only allowed in the text blocks and lists of its `appliesTo`. A `placeholder` node's `name` names one of `placeholders`. A `link` mark is only allowed if `link` isn't `null`, and its `data` attribute holds that block's input (its `inputFields` in the block meta). A `cmsBlock` or `cmsInlineBlock` node's `blockType` attribute is one of the field's `childBlocks` keys, and its `data` attribute holds that block's input (its `inputFields` in the block meta). Stay within `maxTextBlocks` top-level nodes and `listLevelMax` list levels, if set.",
         "fields": [
             {
@@ -1285,6 +1275,12 @@
                 }
             }
         ]
+    },
+    {
+        "name": "EmailCampaignSalutation",
+        "description": "The salutation of an email campaign, filled with the name of the recipient.",
+        "fields": [],
+        "inputFields": []
     },
     {
         "name": "EmailLink",
@@ -2149,34 +2145,7 @@
         ]
     },
     {
-        "name": "MailSpacer",
-        "fields": [
-            {
-                "name": "spacing",
-                "kind": "Enum",
-                "enum": [
-                    "small",
-                    "medium",
-                    "large"
-                ],
-                "nullable": false
-            }
-        ],
-        "inputFields": [
-            {
-                "name": "spacing",
-                "kind": "Enum",
-                "enum": [
-                    "small",
-                    "medium",
-                    "large"
-                ],
-                "nullable": false
-            }
-        ]
-    },
-    {
-        "name": "MailTipTapRichText",
+        "name": "MailRichText",
         "description": "Formatted text, edited in the TipTap based rich text editor. `tipTapContent` is a TipTap JSON document. Build it from the field's `tipTap` entry, not from TipTap's defaults, otherwise the content is rejected: use only the node and mark types in `nodes` and `marks`. Store every paragraph and heading as a `textBlock` node whose `textBlock` attribute names one of `textBlocks`, and whose optional `textBlockStyle` attribute names one of that text block's `styles`. Without a `textBlock` attribute, a node becomes the `defaultTextBlock`. Use an ordered (`orderedList`) or unordered (`bulletList`) list only if `orderedList` or `unorderedList` isn't `null`. A list item holds text blocks with the tag `p`, which may also use the list's `styles`. An `inlineStyle` mark's `type` names one of `inlineStyles`, and is only allowed in the text blocks and lists of its `appliesTo`. A `placeholder` node's `name` names one of `placeholders`. A `link` mark is only allowed if `link` isn't `null`, and its `data` attribute holds that block's input (its `inputFields` in the block meta). A `cmsBlock` or `cmsInlineBlock` node's `blockType` attribute is one of the field's `childBlocks` keys, and its `data` attribute holds that block's input (its `inputFields` in the block meta). Stay within `maxTextBlocks` top-level nodes and `listLevelMax` list levels, if set.",
         "fields": [
             {
@@ -2290,6 +2259,33 @@
         ]
     },
     {
+        "name": "MailSpacer",
+        "fields": [
+            {
+                "name": "spacing",
+                "kind": "Enum",
+                "enum": [
+                    "small",
+                    "medium",
+                    "large"
+                ],
+                "nullable": false
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "spacing",
+                "kind": "Enum",
+                "enum": [
+                    "small",
+                    "medium",
+                    "large"
+                ],
+                "nullable": false
+            }
+        ]
+    },
+    {
         "name": "MailTwoColumns",
         "fields": [
             {
@@ -2384,7 +2380,7 @@
                             "name": "props",
                             "kind": "OneOfBlocks",
                             "blocks": {
-                                "text": "RichText",
+                                "text": "MailRichText",
                                 "image": "PixelImage",
                                 "button": "MailButton",
                                 "spacer": "MailSpacer"
@@ -2421,7 +2417,7 @@
                             "name": "props",
                             "kind": "OneOfBlocks",
                             "blocks": {
-                                "text": "RichText",
+                                "text": "MailRichText",
                                 "image": "PixelImage",
                                 "button": "MailButton",
                                 "spacer": "MailSpacer"
@@ -2436,24 +2432,6 @@
     },
     {
         "name": "MailTwoListSizesRichText",
-        "description": "Formatted text, edited in the Draft.js based rich text editor.",
-        "fields": [
-            {
-                "name": "draftContent",
-                "kind": "Json",
-                "nullable": false
-            }
-        ],
-        "inputFields": [
-            {
-                "name": "draftContent",
-                "kind": "Json",
-                "nullable": false
-            }
-        ]
-    },
-    {
-        "name": "MailTwoListSizesTipTapRichText",
         "description": "Formatted text, edited in the TipTap based rich text editor. `tipTapContent` is a TipTap JSON document. Build it from the field's `tipTap` entry, not from TipTap's defaults, otherwise the content is rejected: use only the node and mark types in `nodes` and `marks`. Store every paragraph and heading as a `textBlock` node whose `textBlock` attribute names one of `textBlocks`, and whose optional `textBlockStyle` attribute names one of that text block's `styles`. Without a `textBlock` attribute, a node becomes the `defaultTextBlock`. Use an ordered (`orderedList`) or unordered (`bulletList`) list only if `orderedList` or `unorderedList` isn't `null`. A list item holds text blocks with the tag `p`, which may also use the list's `styles`. An `inlineStyle` mark's `type` names one of `inlineStyles`, and is only allowed in the text blocks and lists of its `appliesTo`. A `placeholder` node's `name` names one of `placeholders`. A `link` mark is only allowed if `link` isn't `null`, and its `data` attribute holds that block's input (its `inputFields` in the block meta). A `cmsBlock` or `cmsInlineBlock` node's `blockType` attribute is one of the field's `childBlocks` keys, and its `data` attribute holds that block's input (its `inputFields` in the block meta). Stay within `maxTextBlocks` top-level nodes and `listLevelMax` list levels, if set.",
         "fields": [
             {
@@ -3616,24 +3594,6 @@
             {
                 "name": "activeType",
                 "kind": "String",
-                "nullable": false
-            }
-        ]
-    },
-    {
-        "name": "RichText",
-        "description": "Formatted text, edited in the Draft.js based rich text editor.",
-        "fields": [
-            {
-                "name": "draftContent",
-                "kind": "Json",
-                "nullable": false
-            }
-        ],
-        "inputFields": [
-            {
-                "name": "draftContent",
-                "kind": "Json",
                 "nullable": false
             }
         ]
@@ -5222,10 +5182,8 @@
                             "name": "props",
                             "kind": "OneOfBlocks",
                             "blocks": {
-                                "text": "RichText",
+                                "text": "MailRichText",
                                 "twoListSizesText": "MailTwoListSizesRichText",
-                                "twoListSizesTipTapText": "MailTwoListSizesTipTapRichText",
-                                "tipTapText": "MailTipTapRichText",
                                 "image": "MailImage",
                                 "button": "MailButton",
                                 "divider": "MailDivider",
@@ -5264,10 +5222,8 @@
                             "name": "props",
                             "kind": "OneOfBlocks",
                             "blocks": {
-                                "text": "RichText",
+                                "text": "MailRichText",
                                 "twoListSizesText": "MailTwoListSizesRichText",
-                                "twoListSizesTipTapText": "MailTwoListSizesTipTapRichText",
-                                "tipTapText": "MailTipTapRichText",
                                 "image": "MailImage",
                                 "button": "MailButton",
                                 "divider": "MailDivider",

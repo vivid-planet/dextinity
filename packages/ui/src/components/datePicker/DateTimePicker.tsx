@@ -54,6 +54,14 @@ export interface DateTimePickerProps extends DatePickerCalendarProps, PureContro
     value: string | null;
     /** Called with the new instant as an ISO 8601 date-time in UTC, or `null` when the value is removed; set `value` from it. */
     onChange: (value: string | null) => void;
+    /**
+     * The locale that formats and reads typed dates and times, and names months and weekdays, e.g. `de-AT`. Dates always use the Gregorian
+     * calendar and the digits 0–9. Times use the digits 0–9, and the 24-hour clock where the locale writes AM and PM in a form that can't
+     * be typed.
+     *
+     * @defaultValue the browser's locale
+     */
+    locale?: string;
     /** Shown in the date input while there is no value, e.g. the expected format. */
     placeholder?: string;
     /** Shown in the time input while there is no value. */

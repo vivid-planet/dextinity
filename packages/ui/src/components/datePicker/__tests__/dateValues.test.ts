@@ -73,6 +73,10 @@ describe("formatDate", () => {
         expect(formatDate("2026-11-06", "en-US")).toBe("11/06/2026");
         expect(formatDate("not a date", "en-US")).toBe("");
     });
+
+    it.each(["th-TH", "ar-EG", "fa-IR"])("shows a day in %s that parseDate reads back", (locale) => {
+        expect(parseDate(formatDate("2026-11-06", locale), locale)).toBe("2026-11-06");
+    });
 });
 
 describe("parseDate", () => {
@@ -125,6 +129,10 @@ describe("formatTime", () => {
     it("uses the locale's clock", () => {
         expect(formatTime({ hours: 21, minutes: 5 }, "de-AT")).toBe("21:05");
         expect(formatTime({ hours: 21, minutes: 5 }, "en-US")).toBe("09:05 PM");
+    });
+
+    it.each(["ko", "zh-TW", "ar-EG", "ms", "sq", "so"])("shows a time in %s that parseTime reads back", (locale) => {
+        expect(parseTime(formatTime({ hours: 21, minutes: 5 }, locale))).toStrictEqual({ hours: 21, minutes: 5 });
     });
 });
 

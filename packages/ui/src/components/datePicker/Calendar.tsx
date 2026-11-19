@@ -13,6 +13,7 @@ import {
     endOfMonth,
     endOfWeek,
     formatDate,
+    gregorianWithLatinDigits,
     type IsoDate,
     isWithin,
     monthsBetween,
@@ -172,7 +173,7 @@ export function Calendar({ start, end, range, onSelect, min, max, isDateDisabled
     const monthTitle = (month: IsoDate) => formatDate(month, locale, { year: "numeric", month: "long", day: undefined });
     const yearTitle = (date: IsoDate) => formatDate(date, locale, { year: "numeric", month: undefined, day: undefined });
     const visibleRange = (options: Intl.DateTimeFormatOptions) =>
-        new Intl.DateTimeFormat(locale, { ...options, timeZone: "UTC" }).formatRange(
+        new Intl.DateTimeFormat(locale, { ...options, ...gregorianWithLatinDigits, timeZone: "UTC" }).formatRange(
             new Date(`${visibleMonth}T00:00:00Z`),
             new Date(`${lastVisibleMonth}T00:00:00Z`),
         );

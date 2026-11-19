@@ -70,6 +70,8 @@ export const createPageTreeTools = ({
             },
             required: ["id", "category"],
         },
+        // Navigating changes no data, so the chat runs it without asking; see "Approval" in the README.
+        readOnlyHint: true,
         handler: (args) => {
             const id = String(args.id ?? "");
             if (!uuidPattern.test(id)) {

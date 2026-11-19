@@ -123,6 +123,8 @@ The descriptions are where the agent learns how to use the tools, so they say mo
 
 The user approves every edit. The chat runs a host tool without asking only if its `readOnlyHint` is `true`, and shows the call with an approve and a reject button otherwise; `edit_blocks` sets `readOnlyHint: false`. The description tells the agent about the approval, so that it calls the tool instead of first asking for permission in the chat, which would ask the user twice.
 
+A tool that only navigates or changes what a page shows, such as `open_page`, sets `readOnlyHint: true` although it changes the admin: it changes no data, and an approval for every step would slow the agent down without protecting anything. Unsaved changes aren't lost by it either, because the admin asks the user before it leaves a page with unsaved changes.
+
 ## Editing blocks
 
 `edit_blocks` inserts, updates, removes, moves, hides, and shows the content blocks of the open page. It is a host tool because it changes the state of the edit page, which the MCP server can't see. The changes are unsaved, like changes the user made by hand, and the user still saves the page.

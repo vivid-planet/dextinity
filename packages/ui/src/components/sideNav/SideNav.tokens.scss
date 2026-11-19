@@ -15,7 +15,11 @@
     --dextinity-side-nav-separator-color: var(--dextinity-material-edge);
 
     // Padding around the logo and app name
-    --dextinity-side-nav-header-padding: 22px 22px 14px;
+    --dextinity-side-nav-header-padding: 22px;
+    // Fill of the header, which sets it off from the entries below
+    --dextinity-side-nav-header-background: var(--dextinity-material-glass-strong);
+    // Line below the header
+    --dextinity-side-nav-header-border-color: var(--dextinity-side-nav-separator-color);
     // Height of the logo
     --dextinity-side-nav-logo-height: 29px;
     // Text color of the app name in the header

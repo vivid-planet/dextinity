@@ -76,6 +76,13 @@
     inline-size: 72px;
 }
 
+.toolbarDivider {
+    align-self: stretch;
+    inline-size: var(--dextinity-line-width);
+    margin-inline: 4px;
+    background: var(--dextinity-color-line);
+}
+
 .times {
     color: var(--dextinity-color-text-subtle);
 }
@@ -186,6 +193,30 @@
         0 0 0 1px color-mix(in oklch, var(--dextinity-color-text) 12%, transparent),
         0 8px 32px color-mix(in oklch, var(--dextinity-color-text) 14%, transparent);
     transform-origin: 0 0;
+}
+
+.inspectBox {
+    position: absolute;
+    z-index: 1;
+    box-sizing: border-box;
+    border: 2px solid var(--dextinity-color-accent);
+    border-radius: 2px;
+    background: color-mix(in oklch, var(--dextinity-color-accent) 8%, transparent);
+    pointer-events: none;
+}
+
+.inspectLabel {
+    position: absolute;
+    inset-block-end: 100%;
+    inset-inline-start: -2px;
+    padding: 1px 6px;
+    border-radius: 3px 3px 0 0;
+    background: var(--dextinity-color-accent);
+    color: var(--dextinity-color-accent-foreground);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 16px;
+    white-space: nowrap;
 }
 
 .iframe {

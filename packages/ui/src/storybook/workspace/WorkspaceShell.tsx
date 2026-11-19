@@ -22,7 +22,9 @@ import type { ThemeColorScheme, ThemeDensity } from "../../theme/types";
 import { brandSetting } from "../brand";
 import { colorSchemeSetting } from "../colorScheme";
 import { densitySetting } from "../density";
+import { getComponentStoryIds } from "./componentStories";
 import { buildStoryTree, getStoryFolderIds, type IndexedStory } from "./storyTree";
+import { type InspectedComponent, useCanvasInspector } from "./useCanvasInspector";
 import { workspaceLogo } from "./workspaceLogo";
 import styles from "./WorkspaceShell.module.scss";
 import { defaultWorkspaceState, useWorkspaceState, type WorkspaceZoom } from "./workspaceState";
@@ -140,6 +142,10 @@ export function WorkspaceShell() {
     const [canvasElement, setCanvasElement] = useState<HTMLDivElement | null>(null);
     const [resizing, setResizing] = useState<"frame" | "panel" | null>(null);
     const [reloadKey, setReloadKey] = useState(0);
+    const [frameLoadCount, setFrameLoadCount] = useState(0);
+    const [inspecting, setInspecting] = useState(false);
+    // The stories opened before the current one, most recent last, to go back to the page a component was picked on
+    const [storyHistory, setStoryHistory] = useState<string[]>([]);
     const frameRef = useRef<HTMLIFrameElement>(null);
     const treeRef = useRef<HTMLUListElement>(null);
     const canvasSize = useElementSize(canvasElement);
@@ -174,10 +180,42 @@ export function WorkspaceShell() {
         setSearchExpandedIds([...getSearchMatches(stories, value.trim().toLowerCase()).folderIds]);
     }
 
-    function selectTreeNode(nodeId: string) {
+    function openStory(nodeId: string) {
         const story = storiesById.get(nodeId);
-        if (story) {
-            updateState({ storyId: nodeId, expandedIds: [...new Set([...expandedIds, ...getStoryFolderIds(story)])] });
+        if (!story || nodeId === storyId) {
+            return;
+        }
+        if (storyId) {
+            setStoryHistory((history) => [...history, storyId]);
+        }
+        updateState({ storyId: nodeId, expandedIds: [...new Set([...expandedIds, ...getStoryFolderIds(story)])] });
+    }
+
+    function goBack() {
+        const previousStoryId = storyHistory.at(-1);
+        if (previousStoryId) {
+            setStoryHistory((history) => history.slice(0, -1));
+            updateState({ storyId: previousStoryId });
+        }
+    }
+
+    const componentStoryIds = useMemo(() => getComponentStoryIds(stories), [stories]);
+    const inspected = useCanvasInspector({
+        frameRef,
+        active: inspecting,
+        frameLoadCount,
+        componentStoryIds,
+        onPick: (component: InspectedComponent) => {
+            setInspecting(false);
+            openStory(component.storyId);
+        },
+        onExit: () => setInspecting(false),
+    });
+    const previousStory = storiesById.get(storyHistory.at(-1) ?? "");
+
+    function selectTreeNode(nodeId: string) {
+        if (storiesById.has(nodeId)) {
+            openStory(nodeId);
             return;
         }
         setVisibleExpandedIds(
@@ -266,6 +304,25 @@ export function WorkspaceShell() {
                     </div>
 
                     <div className={styles.toolbarGroup}>
+                        <IconButton
+                            variant={inspecting ? "contained" : "text"}
+                            color={inspecting ? "primary" : "secondary"}
+                            aria-label="Pick a component in the canvas"
+                            aria-pressed={inspecting}
+                            onClick={() => setInspecting(!inspecting)}
+                        >
+                            <Icon name="select" />
+                        </IconButton>
+                        <IconButton
+                            variant="text"
+                            color="secondary"
+                            aria-label={previousStory ? `Back to ${previousStory.title.split("/").at(-1)} · ${previousStory.name}` : "Back"}
+                            disabled={!previousStory}
+                            onClick={goBack}
+                        >
+                            <Icon name="back" />
+                        </IconButton>
+                        <span className={styles.toolbarDivider} />
                         <Select
                             name="viewport"
                             aria-label="Viewport"
@@ -449,10 +506,26 @@ export function WorkspaceShell() {
                                         className={styles.iframe}
                                         src={storyUrl}
                                         title={currentStory ? `${currentStory.title} · ${currentStory.name}` : "Story"}
-                                        onLoad={applyDensityToFrame}
+                                        onLoad={() => {
+                                            applyDensityToFrame();
+                                            setFrameLoadCount((count) => count + 1);
+                                        }}
                                     />
                                 )}
                             </div>
+                            {inspected && (
+                                <div
+                                    className={styles.inspectBox}
+                                    style={{
+                                        top: inspected.rect.top * scale,
+                                        left: inspected.rect.left * scale,
+                                        width: inspected.rect.width * scale,
+                                        height: inspected.rect.height * scale,
+                                    }}
+                                >
+                                    <span className={styles.inspectLabel}>{inspected.componentName}</span>
+                                </div>
+                            )}
                             <div className={styles.handleInline} onPointerDown={(event) => startFrameResize("inline", event)} />
                             <div className={styles.handleBlock} onPointerDown={(event) => startFrameResize("block", event)} />
                             <div className={styles.handleCorner} onPointerDown={(event) => startFrameResize("both", event)} />

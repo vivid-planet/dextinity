@@ -1,12 +1,14 @@
 import { sideNavGroups } from "../../components/sideNav/__stories__/sideNavStoryData";
 import type { SideNavItem } from "../../components/sideNav/SideNav";
+import { getCmsPageLabel } from "./cmsPrototype/cmsData";
 
-interface WorkspacePrototype {
+export interface WorkspacePrototype {
     storyId: string;
     appName: string;
     startPageId: string;
     /** The pages with a design, in the order of the navigation; the other entries of the navigation show a placeholder. */
     designedPageIds: string[];
+    /** The label of a page the prototype knows, `undefined` for any other id. */
     getPageLabel: (pageId: string) => string | undefined;
 }
 
@@ -32,5 +34,13 @@ export const careerPortalPrototype: WorkspacePrototype = {
         )?.label,
 };
 
+export const cmsPrototype: WorkspacePrototype = {
+    storyId: "workspace-prototypes--cms",
+    appName: "Website CMS",
+    startPageId: "dashboard",
+    designedPageIds: ["dashboard", "page-tree", "page-tree/home", "news", "news/article-1", "assets"],
+    getPageLabel: getCmsPageLabel,
+};
+
 /** The prototypes by their story's id, for the workspace to list their pages. */
-export const workspacePrototypes = new Map([careerPortalPrototype].map((prototype) => [prototype.storyId, prototype]));
+export const workspacePrototypes = new Map([careerPortalPrototype, cmsPrototype].map((prototype) => [prototype.storyId, prototype]));

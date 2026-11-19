@@ -1,11 +1,15 @@
 import { createContext, useContext } from "react";
 
+import type { SideNavGroup } from "../../components/sideNav/SideNav";
+
 export interface PrototypeNavigation {
     /** Opens the page of a navigation entry, e.g. `job-ads`. */
     navigate: (id: string) => void;
     /** The navigation shows only icons; kept across pages, as in the app. */
     navCollapsed: boolean;
     onNavCollapsedChange: (collapsed: boolean) => void;
+    /** The prototype's own navigation; without it, `PageTypeShell` shows the career portal's. */
+    navGroups?: SideNavGroup[];
 }
 
 /**

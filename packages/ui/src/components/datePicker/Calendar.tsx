@@ -118,6 +118,9 @@ export function Calendar({ start, end, range, onSelect, min, max, isDateDisabled
 
     const focusDate = (date: IsoDate) => {
         const next = clampDate(date, min, max);
+        if (next === focused) {
+            return;
+        }
         moveFocusRef.current = true;
         setFocused(next);
         if (next < visibleMonth) {

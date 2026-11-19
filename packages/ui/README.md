@@ -257,7 +257,7 @@ The `@dextinity-ui` group starts `dextinity-ui`. Start `storybook-dextinity-ui` 
 
 `Workspace/Shell` renders any story so that it behaves like the app in the browser: by default it fills all the room below the workspace's toolbar and follows the window's width; a viewport preset or size puts it in a frame on a canvas instead, whose width its media queries see. Open it on its own at `http://localhost:26648/iframe.html?id=workspace-shell--shell&viewMode=story`.
 
-- The Components tab lists the stories. The Prototypes tab lists the clickable prototypes of whole apps (`Workspace/Prototypes`) with their pages, and opens a page in one click.
+- The Prototypes tab lists the clickable prototypes of whole apps (`Workspace/Prototypes`) with their pages, and opens a page in one click. The Storybook tab lists the stories, as the Storybook's sidebar does.
 - The toolbar has one button with a menu each for the viewport, color scheme, brand, and density, and buttons to reload the story and open it in a new tab. Drag the frame's edges to resize it.
 - The pick button turns the frame into a picker: a click on a component in it opens that component's story, and the back button returns to the story or prototype page it was picked on.
 

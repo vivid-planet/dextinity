@@ -24,6 +24,8 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { Link as RouterLink } from "react-router";
 import ReactSplit from "react-split";
 
+import { AiModeFormToolset } from "../../aiMode/AiModeFormToolset";
+import type { AiModeFormField } from "../../aiMode/formTools";
 import { fullCropArea } from "../../common/image/cropArea";
 import { useContentScope } from "../../contentScope/Provider";
 import { useDependenciesConfig } from "../../dependencies/dependenciesConfig";
@@ -32,6 +34,7 @@ import type { GQLDamFileAiContentType, GQLFocalPoint, GQLImageCropAreaInput, GQL
 import { useUserPermissionCheck } from "../../userPermissions/hooks/currentUser";
 import { useDamConfig, useVideoPerformanceWarning } from "../config/damConfig";
 import { useDamAcceptedMimeTypes } from "../config/useDamAcceptedMimeTypes";
+import { useIsDamAiModeEnabled } from "../DamAiModeContext";
 import { ArchivedTag } from "../DataGrid/tags/ArchivedTag";
 import { LicenseValidityTags } from "../DataGrid/tags/LicenseValidityTags";
 import { MediaAlternativesGrid } from "../mediaAlternatives/MediaAlternativesGrid";
@@ -174,6 +177,58 @@ const EditFileInner = ({ file, id, contentScopeIndicator }: EditFileInnerProps) 
     const initialBlockListWidth = 100 / 3;
     const initialPreviewWidth = 100 - initialBlockListWidth;
 
+    const isAiModeEnabled = useIsDamAiModeEnabled();
+    const aiModeFields: AiModeFormField[] = [
+        { name: "name", label: intl.formatMessage({ id: "dextinity.dam.file.fileName", defaultMessage: "File Name" }), type: "text" },
+        {
+            name: "altText",
+            label: intl.formatMessage({ id: "dextinity.dam.file.altText", defaultMessage: "Alternative Text" }),
+            description: "Describes the file for people who can't see it, e.g. for screen readers.",
+            type: "text",
+        },
+        { name: "title", label: intl.formatMessage({ id: "dextinity.dam.file.title", defaultMessage: "Title" }), type: "text" },
+        ...(damConfig.enableLicenseFeature
+            ? ([
+                  {
+                      name: "license.type",
+                      label: intl.formatMessage({ id: "dextinity.dam.file.type", defaultMessage: "Type" }),
+                      type: "select",
+                      options: [
+                          { value: "NO_LICENSE", label: "-" },
+                          {
+                              value: "ROYALTY_FREE",
+                              label: intl.formatMessage({ id: "dextinity.dam.file.licenseType.royaltyFree", defaultMessage: "Royalty free" }),
+                          },
+                          {
+                              value: "RIGHTS_MANAGED",
+                              label: intl.formatMessage({ id: "dextinity.dam.file.licenseType.rightsManaged", defaultMessage: "Rights managed" }),
+                          },
+                      ],
+                  },
+                  {
+                      name: "license.details",
+                      label: intl.formatMessage({ id: "dextinity.dam.file.licenseDetails", defaultMessage: "License details" }),
+                      type: "text",
+                  },
+                  {
+                      name: "license.author",
+                      label: intl.formatMessage({ id: "dextinity.dam.file.creatorOrAuthor", defaultMessage: "Creator/Author" }),
+                      type: "text",
+                  },
+                  {
+                      name: "license.durationFrom",
+                      label: intl.formatMessage({ id: "dextinity.dam.file.licenseDurationFrom", defaultMessage: "From" }),
+                      type: "date",
+                  },
+                  {
+                      name: "license.durationTo",
+                      label: intl.formatMessage({ id: "dextinity.dam.file.licenseDurationTo", defaultMessage: "To" }),
+                      type: "date",
+                  },
+              ] satisfies AiModeFormField[])
+            : []),
+    ];
+
     return (
         <FinalForm<EditFileFormValues>
             mode="edit"
@@ -202,6 +257,7 @@ const EditFileInner = ({ file, id, contentScopeIndicator }: EditFileInnerProps) 
         >
             {() => (
                 <>
+                    {isAiModeEnabled && <AiModeFormToolset entityName="dam_file" entityLabel="DAM file" id={id} fields={aiModeFields} />}
                     <Toolbar scopeIndicator={contentScopeIndicator}>
                         <ToolbarBackButton />
                         <ToolbarTitleItem>{file.name}</ToolbarTitleItem>

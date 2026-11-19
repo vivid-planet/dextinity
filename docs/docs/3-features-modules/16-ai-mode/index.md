@@ -106,7 +106,7 @@ Don't use it for a grid that loads its rows without the grid's filter, sorting, 
 - A field's `description` tells the agent what its type and label don't, e.g. that a price is a number although the form holds it as text.
 - A field the form doesn't list is invisible to the agent. Leave out what the agent can't fill in usefully, such as file uploads.
 
-The redirects of `@dextinity/cms-admin` offer their grid and form this way.
+The redirects of `@dextinity/cms-admin` offer their grid and form this way. The DAM, whose grid shows folders and files and has a search of its own, offers tools of its own to read what the grid shows, search and page it, and open folders and files; the form of a file uses `AiModeFormToolset`.
 
 ## Blocks
 

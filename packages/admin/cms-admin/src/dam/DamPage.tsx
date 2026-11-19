@@ -7,6 +7,7 @@ import { useRoutePathBelowContentScope } from "../contentScope/useRoutePathBelow
 import { useDamConfig } from "./config/damConfig";
 import { DamScopeProvider } from "./config/DamScopeProvider";
 import { useDamScope } from "./config/useDamScope";
+import { DamAiModeProvider } from "./DamAiModeContext";
 import { DamTable } from "./DamTable";
 
 type Props = {
@@ -35,11 +36,13 @@ function DamPage({ renderContentScopeIndicator, additionalToolbarItems }: Props)
 
     return (
         <DamScopeProvider>
-            <DamTable
-                contentScopeIndicator={renderContentScopeIndicator ? renderContentScopeIndicator(scope) : <DefaultContentScopeIndicator />}
-                additionalToolbarItems={damConfig.additionalToolbarItems ?? additionalToolbarItems}
-                renderWithFullHeightMainContent
-            />
+            <DamAiModeProvider value>
+                <DamTable
+                    contentScopeIndicator={renderContentScopeIndicator ? renderContentScopeIndicator(scope) : <DefaultContentScopeIndicator />}
+                    additionalToolbarItems={damConfig.additionalToolbarItems ?? additionalToolbarItems}
+                    renderWithFullHeightMainContent
+                />
+            </DamAiModeProvider>
         </DamScopeProvider>
     );
 }

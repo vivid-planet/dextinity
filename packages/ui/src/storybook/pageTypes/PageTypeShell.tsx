@@ -7,8 +7,10 @@ import { StoryScopeSwitcher, StoryUserMenu } from "../../components/topBar/__sto
 import { TopBar } from "../../components/topBar/TopBar";
 import { ProductLogo, ProductSign } from "../ProductLogo";
 import styles from "./PageTypeShell.module.scss";
+import { usePrototypeNavigation } from "./prototypeNavigation";
 
 function ShellNav({ initialCurrentId }: { initialCurrentId: string }) {
+    const prototype = usePrototypeNavigation();
     const [currentId, setCurrentId] = useState(initialCurrentId);
     const [expandedIds, setExpandedIds] = useState(getSideNavAncestorIds(sideNavGroups, initialCurrentId));
     return (
@@ -24,6 +26,7 @@ function ShellNav({ initialCurrentId }: { initialCurrentId: string }) {
             onNavigate={(item, event) => {
                 event.preventDefault();
                 setCurrentId(item.id);
+                prototype?.navigate(item.id);
             }}
         />
     );
@@ -40,7 +43,10 @@ export interface PageTypeShellProps {
  * A page type's live example: the page inside the app frame with navigation, top bar, and scope.
  */
 export function PageTypeShell({ currentId, overlay, children }: PropsWithChildren<PageTypeShellProps>) {
-    const [navCollapsed, setNavCollapsed] = useState(false);
+    const prototype = usePrototypeNavigation();
+    const [ownNavCollapsed, setOwnNavCollapsed] = useState(false);
+    const navCollapsed = prototype?.navCollapsed ?? ownNavCollapsed;
+    const setNavCollapsed = prototype?.onNavCollapsedChange ?? setOwnNavCollapsed;
     return (
         <>
             <AppShell

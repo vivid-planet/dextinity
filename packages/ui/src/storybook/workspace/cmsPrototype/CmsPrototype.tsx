@@ -1,6 +1,8 @@
 import { PrototypeApp } from "../PrototypeApp";
 import { cmsPrototype } from "../prototypes";
-import { CmsAssets } from "./CmsAssets";
+import { AssetDetail } from "./assetLibrary/AssetDetail";
+import { AssetLibrary } from "./assetLibrary/AssetLibrary";
+import { AssetLibraryProvider } from "./assetLibrary/AssetLibraryContext";
 import { CmsDashboard } from "./CmsDashboard";
 import { cmsNavGroups, findArticle, findPage } from "./cmsData";
 import { CmsNews } from "./CmsNews";
@@ -14,6 +16,9 @@ function renderPage(pageId: string) {
     if (page) {
         return <CmsPageEditor page={page} />;
     }
+    if (section === "assets" && id != null) {
+        return <AssetDetail assetId={id} />;
+    }
     if (section === "news" && id != null) {
         return <CmsNewsEditor article={findArticle(id)} />;
     }
@@ -25,15 +30,20 @@ function renderPage(pageId: string) {
         case "news":
             return <CmsNews />;
         case "assets":
-            return <CmsAssets />;
+            return <AssetLibrary />;
         default:
             return undefined;
     }
 }
 
 /**
- * A classic website CMS: the overview, the page tree with the page editor, structured data (news) with list and form, and the assets.
+ * A classic website CMS: the overview, the page tree with the page editor, structured data (news) with list and form, and the asset
+ * library with the detail page of an asset.
  */
 export function CmsPrototype() {
-    return <PrototypeApp prototype={cmsPrototype} navGroups={cmsNavGroups} renderPage={renderPage} />;
+    return (
+        <AssetLibraryProvider>
+            <PrototypeApp prototype={cmsPrototype} navGroups={cmsNavGroups} renderPage={renderPage} />
+        </AssetLibraryProvider>
+    );
 }

@@ -14,35 +14,11 @@ export const supportedLanguages = ["en", "de"] as const;
 export type SupportedLanguage = (typeof supportedLanguages)[number];
 
 const fallbackLanguage: SupportedLanguage = "en";
-const storedLanguageKey = "adminLanguage";
-
-function isSupportedLanguage(language: string | null): language is SupportedLanguage {
+export function isSupportedLanguage(language: string | null): language is SupportedLanguage {
     return supportedLanguages.includes(language as SupportedLanguage);
 }
 
-function getStoredLanguage(): SupportedLanguage | undefined {
-    try {
-        const language = window.localStorage.getItem(storedLanguageKey);
-        return isSupportedLanguage(language) ? language : undefined;
-    } catch {
-        // localStorage throws when site data is blocked, e.g. in some private browsing modes
-        return undefined;
-    }
-}
-
-export function storeLanguage(language: SupportedLanguage) {
-    try {
-        window.localStorage.setItem(storedLanguageKey, language);
-    } catch {
-        // The choice then only lasts until the next reload, which is acceptable
-    }
-}
-
-export function getInitialLanguage(): SupportedLanguage {
-    return getStoredLanguage() ?? getClosestSupportedLanguageFromBrowserLanguages();
-}
-
-function getClosestSupportedLanguageFromBrowserLanguages(): SupportedLanguage {
+export function getClosestSupportedLanguageFromBrowserLanguages(): SupportedLanguage {
     const browserLanguages = typeof navigator !== "undefined" ? (navigator.languages ?? [navigator.language]) : [];
 
     const language = browserLanguages.map((browserLanguage) => browserLanguage.split("-")[0].toLowerCase()).find(isSupportedLanguage);

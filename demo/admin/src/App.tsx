@@ -1,7 +1,7 @@
 import "@fontsource-variable/roboto-flex/full.css";
 
 import { ApolloProvider } from "@apollo/client";
-import { ErrorDialogHandler, MasterLayout, MuiThemeProvider, RouterBrowserRouter, SnackbarProvider } from "@dextinity/admin";
+import { ErrorDialogHandler, MasterLayout, MuiThemeProvider, RouterBrowserRouter, SnackbarProvider, useStoredState } from "@dextinity/admin";
 import { BrevoConfigProvider } from "@dextinity/brevo-admin";
 import {
     AzureAiTranslatorProvider,
@@ -23,7 +23,7 @@ import { PageTreeNodeDependency } from "@src/pageTree/PageTreeNodeDependency";
 import type { ContentScope as BaseContentScope } from "@src/site-configs";
 import { createTheme } from "@src/theme";
 import { HTML5toTouch } from "rdndmb-html5-to-touch";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { DndProvider } from "react-dnd-multi-backend";
 import { FormattedMessage, IntlProvider } from "react-intl";
 import { Route, Switch } from "react-router";
@@ -36,7 +36,13 @@ import { ImportFromPicsum } from "./dam/ImportFromPicsum";
 import { Link } from "./documents/links/Link";
 import { Page } from "./documents/pages/Page";
 import type { GQLPermission } from "./graphql.generated";
-import { getInitialLanguage, getLanguageConfig, storeLanguage, type SupportedLanguage, supportedLanguages } from "./lang";
+import {
+    getClosestSupportedLanguageFromBrowserLanguages,
+    getLanguageConfig,
+    isSupportedLanguage,
+    type SupportedLanguage,
+    supportedLanguages,
+} from "./lang";
 import { NewsDetailBlock } from "./news/blocks/NewsDetailBlock";
 import { NewsLinkBlock } from "./news/blocks/NewsLinkBlock";
 import { NewsListBlock } from "./news/blocks/NewsListBlock";
@@ -68,19 +74,18 @@ declare module "@dextinity/cms-admin" {
 LicenseInfo.setLicenseKey(config.muiLicenseKey);
 
 export function App() {
-    const [language, setLanguage] = useState(getInitialLanguage);
+    // Only an explicit choice is stored, so the browser language keeps applying until the user picks one
+    const [selectedLanguage, setSelectedLanguage] = useStoredState<SupportedLanguage | null>("adminLanguage", null);
+    const language = isSupportedLanguage(selectedLanguage) ? selectedLanguage : getClosestSupportedLanguageFromBrowserLanguages();
     const { messages, dateFnsLocale, muiLocale } = useMemo(() => getLanguageConfig(language), [language]);
     const theme = useMemo(() => createTheme(muiLocale), [muiLocale]);
     const adminLanguage = useMemo(
         () => ({
             language,
             languages: supportedLanguages,
-            setLanguage: (newLanguage: SupportedLanguage) => {
-                storeLanguage(newLanguage);
-                setLanguage(newLanguage);
-            },
+            setLanguage: setSelectedLanguage,
         }),
-        [language],
+        [language, setSelectedLanguage],
     );
 
     useEffect(() => {

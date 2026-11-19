@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import type { ReactNode } from "react";
+import { type ReactNode, useState } from "react";
 import { expect } from "storybook/test";
 
 import { PageTypeShell, StructureFrame, StructureRegion } from "../../../storybook/pageTypes/PageTypeShell";
@@ -10,7 +10,12 @@ import { Button } from "../../button/Button";
 import { Card } from "../../card/Card";
 import { EmptyState } from "../../emptyState/EmptyState";
 import { Icon } from "../../icon/Icon";
+import { IconButton } from "../../iconButton/IconButton";
 import { Link } from "../../link/Link";
+import { Menu } from "../../menu/Menu";
+import { MenuItem } from "../../menu/MenuItem";
+import { MenuRadioGroup } from "../../menu/MenuRadioGroup";
+import { MenuRadioItem } from "../../menu/MenuRadioItem";
 import { MiniChart } from "../../miniChart/MiniChart";
 import { StatusIndicator } from "../../statusIndicator/StatusIndicator";
 import { OverviewLayout } from "../OverviewLayout";
@@ -53,13 +58,63 @@ function Row({ title, subtitle, end, href = "#" }: { title: string; subtitle: st
     );
 }
 
+const periods = [
+    { value: "7", label: "7 days" },
+    { value: "30", label: "30 days" },
+    { value: "90", label: "3 months" },
+];
+
+function PeriodMenu() {
+    const [open, setOpen] = useState(false);
+    const [period, setPeriod] = useState("30");
+
+    return (
+        <Menu
+            open={open}
+            onOpenChange={setOpen}
+            placement="bottom-end"
+            trigger={
+                <Button variant="text" color="secondary" size="small" endIcon={<Icon name="chevron-down" />}>
+                    {periods.find((option) => option.value === period)?.label}
+                </Button>
+            }
+        >
+            <MenuRadioGroup aria-label="Period" value={period} onChange={setPeriod}>
+                {periods.map((option) => (
+                    <MenuRadioItem key={option.value} value={option.value} label={option.label} />
+                ))}
+            </MenuRadioGroup>
+        </Menu>
+    );
+}
+
+function PublishedMenu() {
+    const [open, setOpen] = useState(false);
+
+    return (
+        <Menu
+            open={open}
+            onOpenChange={setOpen}
+            placement="bottom-end"
+            trigger={
+                <IconButton variant="outlined" color="secondary" size="small" aria-label="More actions">
+                    <Icon name="more-horizontal" />
+                </IconButton>
+            }
+        >
+            <MenuItem label="Open publishing log" icon={<Icon name="history" />} />
+            <MenuItem label="Export" icon={<Icon name="download" />} />
+        </Menu>
+    );
+}
+
 function OverviewCards() {
     return (
         <>
             <Card
                 title="Recently edited"
-                icon={<Icon name="clock" />}
-                link={
+                meta="12 pages"
+                actions={
                     <Link href="#page-tree" endIcon={<Icon name="arrow-right" />}>
                         Page tree
                     </Link>
@@ -79,7 +134,15 @@ function OverviewCards() {
                     />
                 ))}
             </Card>
-            <Card title="Published" icon={<Icon name="bolt" />} meta="30 days">
+            <Card
+                title="Published"
+                actions={
+                    <>
+                        <PeriodMenu />
+                        <PublishedMenu />
+                    </>
+                }
+            >
                 <div className={styles.published}>
                     <div className={styles.publishedHead}>
                         <div>
@@ -97,9 +160,8 @@ function OverviewCards() {
             </Card>
             <Card
                 title="Warnings"
-                icon={<Icon name="warning-triangle" />}
                 meta="3 open"
-                link={
+                actions={
                     <Link href="#warnings" endIcon={<Icon name="arrow-right" />}>
                         All
                     </Link>
@@ -114,7 +176,7 @@ function OverviewCards() {
                     />
                 ))}
             </Card>
-            <Card title="New form submissions" icon={<Icon name="form" />}>
+            <Card title="New form submissions">
                 <EmptyState
                     icon={<Icon name="alert" />}
                     title="Couldn't load"

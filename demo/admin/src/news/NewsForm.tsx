@@ -26,7 +26,7 @@ import type { FormApi } from "final-form";
 import { useMemo } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
-import { NewsContentBlock } from "./blocks/NewsContentBlock";
+import { NewsContentBlock, newsContentBlocks } from "./blocks/NewsContentBlock";
 import { createNewsMutation, newsFormFragment, newsQuery, updateNewsMutation } from "./NewsForm.gql";
 import type {
     GQLCreateNewsMutation,
@@ -167,8 +167,10 @@ export function NewsForm({ onCreate, id }: FormProps) {
                             {
                                 name: "content",
                                 label: intl.formatMessage({ id: "news.content", defaultMessage: "Content" }),
-                                type: "block",
+                                type: "blocks",
                                 block: rootBlocks.content,
+                                supportedBlocks: newsContentBlocks,
+                                schemaBlockName: "NewsContent",
                             },
                         ]}
                     />

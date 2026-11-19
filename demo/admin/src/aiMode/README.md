@@ -124,7 +124,8 @@ The tools read and change what the user sees rather than calling the API themsel
 - `set_<entity>_grid_view` changes the search, the filters, the sorting, or the page. Its description lists the filterable columns with the operators of their type, from MUI's lists, and the tool refuses any other: `muiGridFilterToGql` passes an unknown operator on to the API, whose error would replace the grid with an error page. A new search or filter goes back to the first page, as it does in the grid, because `useDataGridRemote` keeps the page. The changes are applied one after another, each once the grid rendered the one before: each change handler of `useDataGridRemote` writes the URL from the search params of its render, so a second change in the same render would undo the first.
 - `open_<entity>_form` opens the form of a row, or the form for a new one.
 - `get_<entity>_form_state` returns the values of the form's fields, which fields the user changed, and which are invalid. A block field is summarized like the content of a page.
-- `set_<entity>_form_values` sets fields as unsaved changes, which the user saves, like `edit_blocks`. Its schema lists the fields with their types and the options of a select, and the tool refuses a value that doesn't fit before it changes any field. Block fields can't be set yet.
+- `set_<entity>_form_values` sets fields as unsaved changes, which the user saves, like `edit_blocks`. Its schema lists the fields with their types and the options of a select, and the tool refuses a value that doesn't fit before it changes any field.
+- `edit_<entity>_form_blocks` changes the blocks of a blocks field, such as the content of a news article, with the planner of `edit_blocks` (see below): the same operations, all or nothing, and rejected when the field changed while the batch was planned. A field declares its blocks block's `supportedBlocks` and its name in block-meta, where the agent starts the schema lookup, because the two names differ as for the page (`NewsContentBlock` is `NewsContent`). A single block, such as the image of a news article, can be read but not changed.
 
 `AiModeFormToolset` is a component rather than a hook, so that it can read the form with `useForm` and so that only it re-renders when the form's `dirty` changes: the form of the news subscribes to nothing, so that typing doesn't re-render it.
 
@@ -159,7 +160,7 @@ The conversions are awaited and can query the API, and the user can keep typing 
 
 The tool schema states the fields each operation needs as an `anyOf` over the six operations. `anyOf` rather than `oneOf` because that is the keyword tool schemas support, and the `operation` constants make the branches exclusive anyway. A tool schema is guidance for the agent, not enforced before the handler runs, so `asBlockEditOperations` checks the same requirements itself and names the missing field and what it is for.
 
-`editBlocks.ts` holds the operations, the results, and the planner; `blockChildren.ts` what one kind of change does to the list of blocks; `blockProps.ts` the conversion and the checks.
+`editBlocks.ts` holds the operations, the results, and the planner; `blockEditTool.ts` the schema of the operations and the parts of the tool descriptions that `edit_blocks` and `edit_<entity>_form_blocks` share; `blockChildren.ts` what one kind of change does to the list of blocks; `blockProps.ts` the conversion and the checks.
 
 ### What is validated, and where
 

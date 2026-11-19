@@ -1,6 +1,6 @@
 import { categoryToUrlParam, pageTreeCategories } from "@src/pageTree/pageTreeCategories";
 
-import type { AiModeTool } from "./AiModeScopes";
+import type { AiModeTool } from "./AiModeToolsets";
 import { asBlockEditOperations, type EditBlocks, isBlockEditChange } from "./editBlocks";
 
 const categories = pageTreeCategories.map(({ category }) => category);

@@ -21,8 +21,9 @@ import { MenuSeparator } from "../../../../components/menu/MenuSeparator";
 import { MenuSubmenu } from "../../../../components/menu/MenuSubmenu";
 import { Tooltip } from "../../../../components/tooltip/Tooltip";
 import styles from "./assetLibrary.module.scss";
-import { describeAsset, formatDuration, type LibraryAsset } from "./assetLibraryData";
+import { describeAsset, formatDuration, type LibraryAsset, type LibraryFolder } from "./assetLibraryData";
 import type { LibraryItem } from "./libraryView";
+import { MoveToFolderMenu } from "./MoveToFolderMenu";
 
 /** What the items need from the library: selection, the menu's actions, renaming, and drag and drop. */
 export interface LibraryItemHandlers {
@@ -34,7 +35,7 @@ export interface LibraryItemHandlers {
     getMenuTargets: (item: LibraryItem) => LibraryItem[];
     onMenuOpen: (item: LibraryItem) => void;
     menuActions: MenuActions;
-    folderChoices: { id: string | null; label: string }[];
+    folders: LibraryFolder[];
     renamingId: string | null;
     onRenameEnd: (item: LibraryItem, name: string | null) => void;
     draggingIds: string[];
@@ -73,7 +74,7 @@ function itemName(item: LibraryItem) {
  * The context menu of an item, or of the selection it is part of. Shows only what applies, e.g. no "Rename" for several items.
  */
 export function ItemMenu({ item, className }: { item: LibraryItem; className?: string }) {
-    const { getMenuTargets, onMenuOpen, menuActions, folderChoices } = useItemHandlers();
+    const { getMenuTargets, onMenuOpen, menuActions, folders } = useItemHandlers();
     const [open, setOpen] = useState(false);
     const [moveOpen, setMoveOpen] = useState(false);
     const targets = open ? getMenuTargets(item) : [item];
@@ -125,14 +126,11 @@ export function ItemMenu({ item, className }: { item: LibraryItem; className?: s
                     />
                 )}
                 <MenuSubmenu label="Move to …" icon={<Icon name="folder" />} open={moveOpen} onOpenChange={setMoveOpen}>
-                    {folderChoices.map((choice) => (
-                        <MenuItem
-                            key={choice.id ?? "root"}
-                            label={choice.label}
-                            disabled={!menuActions.canMove(targets, choice.id)}
-                            onClick={() => menuActions.move(targets, choice.id, choice.label.split(" / ").pop() ?? choice.label)}
-                        />
-                    ))}
+                    <MoveToFolderMenu
+                        folders={folders}
+                        isDisabled={(folderId) => !menuActions.canMove(targets, folderId)}
+                        onMove={(folderId, folderName) => menuActions.move(targets, folderId, folderName)}
+                    />
                 </MenuSubmenu>
                 {onlyFiles && <MenuItem label="Download" icon={<Icon name="download" />} onClick={() => menuActions.download(targets)} />}
             </MenuGroup>

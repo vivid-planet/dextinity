@@ -1,4 +1,15 @@
-import { type ChangeEvent, type CSSProperties, type DragEvent, type KeyboardEvent, type MouseEvent, useEffect, useRef, useState } from "react";
+import {
+    type ChangeEvent,
+    type CSSProperties,
+    type DragEvent,
+    type KeyboardEvent,
+    type MouseEvent,
+    type RefObject,
+    useEffect,
+    useLayoutEffect,
+    useRef,
+    useState,
+} from "react";
 
 import { Breadcrumbs, type BreadcrumbsItem } from "../../../../components/breadcrumbs/Breadcrumbs";
 import { BulkActionBar } from "../../../../components/bulkActionBar/BulkActionBar";
@@ -10,7 +21,6 @@ import { Icon } from "../../../../components/icon/Icon";
 import { IconButton } from "../../../../components/iconButton/IconButton";
 import { Menu } from "../../../../components/menu/Menu";
 import { MenuGroup } from "../../../../components/menu/MenuGroup";
-import { MenuItem } from "../../../../components/menu/MenuItem";
 import { MenuRadioGroup } from "../../../../components/menu/MenuRadioGroup";
 import { MenuRadioItem } from "../../../../components/menu/MenuRadioItem";
 import { MenuSeparator } from "../../../../components/menu/MenuSeparator";
@@ -30,6 +40,7 @@ import { type AssetKind, getFolder, getFolderTrail, type LibraryAsset, today } f
 import { AssetTable } from "./AssetTable";
 import { AssetTile, FolderCard, LibraryItemContext, type LibraryItemHandlers } from "./LibraryItems";
 import { countFolderItems, getLibraryContent, getRelativePath, kindFilterLabels, type LibraryItem } from "./libraryView";
+import { MoveToFolderMenu } from "./MoveToFolderMenu";
 import { useLibraryActions } from "./useLibraryActions";
 
 const dragType = "application/x-dextinity-assets";
@@ -61,6 +72,38 @@ function kindOfFile(file: File): AssetKind {
     return file.type.startsWith("audio/") ? "audio" : "document";
 }
 
+/** Space kept free below the card, so that its edge stays visible. */
+const cardBottomGap = 24;
+
+/**
+ * The height that lets the element end at the bottom of the window, so that the card's footer always stays in view while its
+ * content scrolls. Never less than a usable minimum, e.g. in a short window.
+ */
+function useFillViewportHeight(ref: RefObject<HTMLElement | null>) {
+    const [height, setHeight] = useState<number>();
+    useLayoutEffect(() => {
+        const measure = () => {
+            const element = ref.current;
+            if (element == null) {
+                return;
+            }
+            const top = element.getBoundingClientRect().top + window.scrollY;
+            setHeight(Math.max(480, window.innerHeight - top - cardBottomGap));
+        };
+        measure();
+        window.addEventListener("resize", measure);
+        const observer = new ResizeObserver(measure);
+        if (ref.current?.parentElement) {
+            observer.observe(ref.current.parentElement);
+        }
+        return () => {
+            window.removeEventListener("resize", measure);
+            observer.disconnect();
+        };
+    }, [ref]);
+    return height;
+}
+
 function isFileDrag(event: DragEvent) {
     return event.dataTransfer.types.includes("Files");
 }
@@ -74,8 +117,11 @@ export function AssetLibrary() {
     const [dropTarget, setDropTarget] = useState<string | null>(null);
     const [fileDragOver, setFileDragOver] = useState(false);
     const [uploads, setUploads] = useState<Upload[]>([]);
-    const [moreOpen, setMoreOpen] = useState(false);
+    const [sortOpen, setSortOpen] = useState(false);
+    const [bulkMoveOpen, setBulkMoveOpen] = useState(false);
     const uploadInputRef = useRef<HTMLInputElement>(null);
+    const cardRef = useRef<HTMLDivElement>(null);
+    const cardHeight = useFillViewportHeight(cardRef);
 
     const content = getLibraryContent(location, folders, assets);
     const { mode } = content;
@@ -180,7 +226,8 @@ export function AssetLibrary() {
     const handlers: LibraryItemHandlers = {
         isSelected: selection.isSelected,
         onItemClick: (item: LibraryItem, event: MouseEvent) => {
-            if (renamingId === item.id) {
+            // Clicks in the item's menu reach the item too, since React passes events up through the menu's portal
+            if (renamingId === item.id || !event.currentTarget.contains(event.target as Node)) {
                 return;
             }
             if (event.metaKey || event.ctrlKey) {
@@ -236,17 +283,7 @@ export function AssetLibrary() {
                 setSelectedIds([]);
             },
         },
-        folderChoices: [
-            { id: null, label: "Assets" },
-            ...folders
-                .map((folder) => ({
-                    id: folder.id,
-                    label: getFolderTrail(folders, folder.id)
-                        .map((ancestor) => ancestor.name)
-                        .join(" / "),
-                }))
-                .sort((a, b) => a.label.localeCompare(b.label)),
-        ],
+        folders,
         renamingId,
         onRenameEnd: (item, name) => {
             if (name != null) {
@@ -462,201 +499,202 @@ export function AssetLibrary() {
                         event.target.value = "";
                     }}
                 />
-                <Panel
-                    className={styles.card}
-                    padding="none"
-                    onDragEnter={(event) => {
-                        if (acceptsUploads && isFileDrag(event)) {
-                            setFileDragOver(true);
-                        }
-                    }}
-                    onDragOver={(event) => {
-                        if (acceptsUploads && isFileDrag(event)) {
-                            event.preventDefault();
-                        }
-                    }}
-                    onDragLeave={(event) => {
-                        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
-                            setFileDragOver(false);
-                        }
-                    }}
-                    onDrop={(event) => {
-                        if (acceptsUploads && isFileDrag(event)) {
-                            event.preventDefault();
-                            setFileDragOver(false);
-                            upload(Array.from(event.dataTransfer.files));
-                        }
-                    }}
-                >
-                    <LibraryItemContext.Provider value={handlers}>
-                        <div className={styles.toolbar}>
-                            <FilterBar
-                                searchValue={location.search}
-                                onSearchChange={(search) => go({ search, flat: search.trim() === "" ? location.flat : false })}
-                                labels={{ search: "Search all assets", searchPlaceholder: "Search all assets" }}
-                                searchKeyboardShortcut={false}
-                                actions={
-                                    <>
-                                        <SegmentedControl<LibraryView>
-                                            aria-label="View"
-                                            value={location.view}
-                                            onChange={(view) => setLocation((current) => ({ ...current, view }))}
-                                            options={[
-                                                { value: "tiles", icon: <Icon name="grid" />, "aria-label": "Tiles" },
-                                                { value: "list", icon: <Icon name="list" />, "aria-label": "List" },
-                                            ]}
-                                        />
-                                        <Menu
-                                            open={moreOpen}
-                                            onOpenChange={setMoreOpen}
-                                            placement="bottom-end"
-                                            trigger={
-                                                <IconButton variant="text" color="secondary" aria-label="More actions">
-                                                    <Icon name="more-horizontal" />
-                                                </IconButton>
-                                            }
-                                        >
-                                            <MenuGroup label={currentFolderName}>
-                                                <MenuItem
-                                                    label="New folder"
-                                                    icon={<Icon name="folder-add" />}
-                                                    keyboardShortcut="shift+mod+n"
-                                                    onClick={createFolder}
-                                                />
-                                                <MenuItem
-                                                    label="Upload …"
-                                                    icon={<Icon name="cloud-upload" />}
-                                                    onClick={() => uploadInputRef.current?.click()}
-                                                />
-                                            </MenuGroup>
-                                            <MenuSeparator />
-                                            <MenuGroup label="View">
-                                                <MenuRadioGroup
-                                                    value={location.view}
-                                                    onChange={(view) => setLocation((current) => ({ ...current, view: view as LibraryView }))}
-                                                >
-                                                    <MenuRadioItem value="tiles" label="Tiles" icon={<Icon name="grid" />} />
-                                                    <MenuRadioItem value="list" label="List" icon={<Icon name="list" />} />
-                                                </MenuRadioGroup>
-                                            </MenuGroup>
-                                            <MenuSeparator />
-                                            <MenuGroup label="Sort by">
-                                                <MenuRadioGroup
-                                                    value={location.sort.key}
-                                                    onChange={(key) =>
-                                                        setLocation((current) => ({
-                                                            ...current,
-                                                            sort: { key: key as LibrarySortKey, direction: "ascending" },
-                                                        }))
-                                                    }
-                                                >
-                                                    {(Object.keys(sortLabels) as LibrarySortKey[]).map((key) => (
-                                                        <MenuRadioItem key={key} value={key} label={sortLabels[key]} />
-                                                    ))}
-                                                </MenuRadioGroup>
-                                            </MenuGroup>
-                                        </Menu>
-                                    </>
-                                }
-                            >
-                                {kindFilters.map((filter) => (
-                                    <FilterChip
-                                        key={filter.label}
-                                        selected={location.kind === filter.value}
-                                        onClick={() => go({ kind: filter.value })}
-                                    >
-                                        {filter.label}
-                                    </FilterChip>
-                                ))}
-                                <Tooltip content="Show the files of all subfolders in one view">
-                                    <FilterChip
-                                        selected={location.flat}
-                                        disabled={mode === "search" || mode === "smartFilter"}
-                                        onClick={() => go({ flat: !location.flat })}
-                                        startAdornment={<Icon name="layers" size="small" />}
-                                    >
-                                        Include subfolders
-                                    </FilterChip>
-                                </Tooltip>
-                                <span className={styles.chipDivider} aria-hidden />
-                                <FilterChip
-                                    selected={location.smartFilter === "unused"}
-                                    onClick={() => toggleSmartFilter("unused")}
-                                    startAdornment={<Icon name="eye-off" size="small" />}
-                                >
-                                    Unused
-                                </FilterChip>
-                                <FilterChip
-                                    selected={location.smartFilter === "archived"}
-                                    onClick={() => toggleSmartFilter("archived")}
-                                    startAdornment={<Icon name="archive" size="small" />}
-                                >
-                                    Archived
-                                </FilterChip>
-                            </FilterBar>
-                        </div>
-                        <div className={styles.pathBar}>
-                            {location.folderId != null && (mode === "folder" || mode === "flat") && (
-                                <Tooltip content="Up one level">
-                                    <IconButton
-                                        variant="outlined"
-                                        color="secondary"
-                                        size="small"
-                                        aria-label="Up one level"
-                                        onClick={() => openFolder(currentFolder?.parentId ?? null)}
-                                    >
-                                        <Icon name="arrow-left" />
-                                    </IconButton>
-                                </Tooltip>
-                            )}
-                            <Breadcrumbs items={breadcrumbItems} />
-                            {mode === "flat" && <span className={styles.flatBadge}>incl. subfolders</span>}
-                        </div>
-                        {pageItems.length > 0 && mode === "folder" && content.deeperMatches > 0 && (
-                            <p className={styles.hint}>
-                                {content.deeperMatches} more {kindLabel} in subfolders.{" "}
-                                <button type="button" className={styles.hintLink} onClick={() => go({ flat: true })}>
-                                    Show all
-                                </button>
-                            </p>
-                        )}
-                        {/* The list's keys: ⌘A selects all on this page, Escape clears the selection */}
-                        <div
-                            className={styles.content}
-                            style={{ "--tile-size": `${location.tileSize}px` } as CSSProperties}
-                            onKeyDown={selection.onKeyDown}
-                        >
-                            {pageItems.length === 0 ? (
-                                <div className={styles.empty}>{renderEmptyState()}</div>
-                            ) : location.view === "tiles" ? (
-                                renderTiles()
-                            ) : (
-                                <AssetTable
-                                    items={pageItems}
-                                    folders={folders}
-                                    sort={location.sort}
-                                    onSortChange={sortBy}
-                                    allSelected={selection.allSelected}
-                                    someSelected={selection.someSelected}
-                                    onSelectAll={(checked) => (checked ? selection.selectAll() : selection.clear())}
-                                    countItems={(folderId) => countFolderItems(folderId, folders, assets)}
-                                    folderColumnFrom={mode === "flat" ? { folderId: location.folderId, onOpen: openFolder } : undefined}
+                <div ref={cardRef} className={styles.cardFrame} style={{ blockSize: cardHeight }}>
+                    <Panel
+                        className={styles.card}
+                        padding="none"
+                        slotProps={{ body: { className: styles.cardBody } }}
+                        onDragEnter={(event) => {
+                            if (acceptsUploads && isFileDrag(event)) {
+                                setFileDragOver(true);
+                            }
+                        }}
+                        onDragOver={(event) => {
+                            if (acceptsUploads && isFileDrag(event)) {
+                                event.preventDefault();
+                            }
+                        }}
+                        onDragLeave={(event) => {
+                            if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+                                setFileDragOver(false);
+                            }
+                        }}
+                        onDrop={(event) => {
+                            if (acceptsUploads && isFileDrag(event)) {
+                                event.preventDefault();
+                                setFileDragOver(false);
+                                upload(Array.from(event.dataTransfer.files));
+                            }
+                        }}
+                    >
+                        <LibraryItemContext.Provider value={handlers}>
+                            <div className={styles.toolbar}>
+                                <FilterBar
+                                    className={styles.searchRow}
+                                    searchValue={location.search}
+                                    onSearchChange={(search) => go({ search, flat: search.trim() === "" ? location.flat : false })}
+                                    labels={{ search: "Search all assets", searchPlaceholder: "Search all assets" }}
+                                    searchKeyboardShortcut={false}
+                                    actions={
+                                        <>
+                                            <SegmentedControl<LibraryView>
+                                                aria-label="View"
+                                                value={location.view}
+                                                onChange={(view) => setLocation((current) => ({ ...current, view }))}
+                                                options={[
+                                                    { value: "tiles", icon: <Icon name="grid" />, "aria-label": "Tiles" },
+                                                    { value: "list", icon: <Icon name="list" />, "aria-label": "List" },
+                                                ]}
+                                            />
+                                            <Menu
+                                                open={sortOpen}
+                                                onOpenChange={setSortOpen}
+                                                placement="bottom-end"
+                                                trigger={
+                                                    <Button
+                                                        variant="outlined"
+                                                        color="secondary"
+                                                        startIcon={<Icon name="sort" />}
+                                                        endIcon={<Icon name="chevron-down" />}
+                                                        aria-label={`Sort by ${sortLabels[location.sort.key]}, ${location.sort.direction}`}
+                                                    >
+                                                        {sortLabels[location.sort.key]}
+                                                    </Button>
+                                                }
+                                            >
+                                                <MenuGroup label="Sort by">
+                                                    <MenuRadioGroup
+                                                        value={location.sort.key}
+                                                        onChange={(key) =>
+                                                            setLocation((current) => ({
+                                                                ...current,
+                                                                sort: { ...current.sort, key: key as LibrarySortKey },
+                                                            }))
+                                                        }
+                                                    >
+                                                        {(Object.keys(sortLabels) as LibrarySortKey[]).map((key) => (
+                                                            <MenuRadioItem key={key} value={key} label={sortLabels[key]} />
+                                                        ))}
+                                                    </MenuRadioGroup>
+                                                </MenuGroup>
+                                                <MenuSeparator />
+                                                <MenuGroup label="Order">
+                                                    <MenuRadioGroup
+                                                        value={location.sort.direction}
+                                                        onChange={(direction) =>
+                                                            setLocation((current) => ({
+                                                                ...current,
+                                                                sort: {
+                                                                    ...current.sort,
+                                                                    direction: direction as LibraryLocation["sort"]["direction"],
+                                                                },
+                                                            }))
+                                                        }
+                                                    >
+                                                        <MenuRadioItem value="ascending" label="Ascending" icon={<Icon name="arrow-up" />} />
+                                                        <MenuRadioItem value="descending" label="Descending" icon={<Icon name="arrow-down" />} />
+                                                    </MenuRadioGroup>
+                                                </MenuGroup>
+                                            </Menu>
+                                        </>
+                                    }
                                 />
-                            )}
-                            {fileDragOver && (
-                                <div className={styles.dropZone}>
-                                    <Icon name="cloud-upload" />
-                                    <strong>Drop files here</strong>
-                                    <span>They go into “{currentFolderName}”</span>
+                                <div className={styles.chips} role="group" aria-label="Filters">
+                                    {kindFilters.map((filter) => (
+                                        <FilterChip
+                                            key={filter.label}
+                                            selected={location.kind === filter.value}
+                                            onClick={() => go({ kind: filter.value })}
+                                        >
+                                            {filter.label}
+                                        </FilterChip>
+                                    ))}
+                                    <Tooltip content="Show the files of all subfolders in one view">
+                                        <FilterChip
+                                            selected={location.flat}
+                                            disabled={mode === "search" || mode === "smartFilter"}
+                                            onClick={() => go({ flat: !location.flat })}
+                                            startAdornment={<Icon name="layers" size="small" />}
+                                        >
+                                            Include subfolders
+                                        </FilterChip>
+                                    </Tooltip>
+                                    <span className={styles.chipDivider} aria-hidden />
+                                    <FilterChip
+                                        selected={location.smartFilter === "unused"}
+                                        onClick={() => toggleSmartFilter("unused")}
+                                        startAdornment={<Icon name="eye-off" size="small" />}
+                                    >
+                                        Unused
+                                    </FilterChip>
+                                    <FilterChip
+                                        selected={location.smartFilter === "archived"}
+                                        onClick={() => toggleSmartFilter("archived")}
+                                        startAdornment={<Icon name="archive" size="small" />}
+                                    >
+                                        Archived
+                                    </FilterChip>
                                 </div>
+                            </div>
+                            <div className={styles.pathBar}>
+                                {location.folderId != null && (mode === "folder" || mode === "flat") && (
+                                    <Tooltip content="Up one level">
+                                        <IconButton
+                                            variant="outlined"
+                                            color="secondary"
+                                            size="small"
+                                            aria-label="Up one level"
+                                            onClick={() => openFolder(currentFolder?.parentId ?? null)}
+                                        >
+                                            <Icon name="arrow-left" />
+                                        </IconButton>
+                                    </Tooltip>
+                                )}
+                                <Breadcrumbs items={breadcrumbItems} />
+                                {mode === "flat" && <span className={styles.flatBadge}>incl. subfolders</span>}
+                            </div>
+                            {pageItems.length > 0 && mode === "folder" && content.deeperMatches > 0 && (
+                                <p className={styles.hint}>
+                                    {content.deeperMatches} more {kindLabel} in subfolders.{" "}
+                                    <button type="button" className={styles.hintLink} onClick={() => go({ flat: true })}>
+                                        Show all
+                                    </button>
+                                </p>
                             )}
-                        </div>
-                        <div className={styles.footer}>
-                            <span className={styles.muted}>
-                                {selectedIds.length > 0 ? `${selectedIds.length} selected` : pageItems.length === 0 ? "0 items" : ""}
-                            </span>
-                            <div className={styles.footerEnd}>
-                                {content.items.length > 0 && (
+                            {/* The list's keys: ⌘A selects all on this page, Escape clears the selection */}
+                            <div
+                                className={styles.content}
+                                data-selecting={selectedIds.length > 0 ? "" : undefined}
+                                style={{ "--tile-size": `${location.tileSize}px` } as CSSProperties}
+                                onKeyDown={selection.onKeyDown}
+                            >
+                                {pageItems.length === 0 ? (
+                                    <div className={styles.empty}>{renderEmptyState()}</div>
+                                ) : location.view === "tiles" ? (
+                                    renderTiles()
+                                ) : (
+                                    <AssetTable
+                                        items={pageItems}
+                                        folders={folders}
+                                        sort={location.sort}
+                                        onSortChange={sortBy}
+                                        allSelected={selection.allSelected}
+                                        someSelected={selection.someSelected}
+                                        onSelectAll={(checked) => (checked ? selection.selectAll() : selection.clear())}
+                                        countItems={(folderId) => countFolderItems(folderId, folders, assets)}
+                                        folderColumnFrom={mode === "flat" ? { folderId: location.folderId, onOpen: openFolder } : undefined}
+                                    />
+                                )}
+                                {fileDragOver && (
+                                    <div className={styles.dropZone}>
+                                        <Icon name="cloud-upload" />
+                                        <strong>Drop files here</strong>
+                                        <span>They go into “{currentFolderName}”</span>
+                                    </div>
+                                )}
+                            </div>
+                            <div className={styles.footer}>
+                                {content.items.length > 0 ? (
                                     <Pagination
                                         page={location.page}
                                         pageSize={location.pageSize}
@@ -668,6 +706,8 @@ export function AssetLibrary() {
                                         }}
                                         onPageSizeChange={(pageSize) => go({ pageSize })}
                                     />
+                                ) : (
+                                    <span className={styles.muted}>0 items</span>
                                 )}
                                 {location.view === "tiles" && (
                                     <Slider
@@ -683,31 +723,49 @@ export function AssetLibrary() {
                                     />
                                 )}
                             </div>
-                        </div>
-                        {selectedIds.length > 0 && (
-                            <BulkActionBar
-                                className={styles.bulkActionBar}
-                                count={selectedIds.length}
-                                onClear={selection.clear}
-                                actions={[
-                                    {
-                                        label: "Move",
-                                        icon: <Icon name="move" />,
-                                        onClick: () =>
-                                            addToast({ message: "Drag the items onto a folder, or use “Move to …” in their menu", color: "info" }),
-                                    },
-                                    { label: "Download", icon: <Icon name="download" />, onClick: () => actions.download(selectedItems) },
-                                    {
-                                        label: "Archive",
-                                        icon: <Icon name="archive" />,
-                                        onClick: () => handlers.menuActions.setArchived(selectedItems, location.smartFilter !== "archived"),
-                                    },
-                                    { label: "Delete", icon: <Icon name="trash" />, onClick: () => handlers.menuActions.remove(selectedItems) },
-                                ]}
-                            />
-                        )}
-                    </LibraryItemContext.Provider>
-                </Panel>
+                            {selectedIds.length > 0 && (
+                                <BulkActionBar
+                                    className={styles.bulkActionBar}
+                                    count={selectedIds.length}
+                                    onClear={selection.clear}
+                                    actions={[
+                                        {
+                                            label: "Move",
+                                            icon: <Icon name="move" />,
+                                            open: bulkMoveOpen,
+                                            onOpenChange: setBulkMoveOpen,
+                                            menu: (
+                                                <MoveToFolderMenu
+                                                    folders={folders}
+                                                    isDisabled={(folderId) => !actions.canMove(selectedItems, folderId)}
+                                                    onMove={(folderId, folderName) => handlers.menuActions.move(selectedItems, folderId, folderName)}
+                                                />
+                                            ),
+                                        },
+                                        { label: "Download", icon: <Icon name="download" />, onClick: () => actions.download(selectedItems) },
+                                        location.smartFilter === "archived"
+                                            ? {
+                                                  label: "Restore",
+                                                  icon: <Icon name="restore" />,
+                                                  onClick: () => handlers.menuActions.setArchived(selectedItems, false),
+                                              }
+                                            : {
+                                                  label: "Archive",
+                                                  icon: <Icon name="archive" />,
+                                                  onClick: () => handlers.menuActions.setArchived(selectedItems, true),
+                                              },
+                                        {
+                                            label: "Delete",
+                                            icon: <Icon name="trash" />,
+                                            color: "error",
+                                            onClick: () => handlers.menuActions.remove(selectedItems),
+                                        },
+                                    ]}
+                                />
+                            )}
+                        </LibraryItemContext.Provider>
+                    </Panel>
+                </div>
             </div>
             {uploads.length > 0 && (
                 <div className={styles.uploadTray} role="status" aria-label="Uploads">

@@ -2,7 +2,6 @@
     display: flex;
     flex-direction: column;
     gap: var(--dextinity-space-6);
-    padding-block-end: var(--dextinity-space-8);
 }
 
 .eyebrow {
@@ -31,14 +30,81 @@
 
 // The card
 
+.cardFrame {
+    display: flex;
+    min-block-size: 480px;
+}
+
+// The card fills the window's height: the content scrolls between the toolbar and the footer, which stay in view
 .card {
     position: relative;
     display: flex;
+    flex: 1;
     flex-direction: column;
+    min-block-size: 0;
+    overflow: hidden;
+}
+
+.cardBody {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-block-size: 0;
 }
 
 .toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-space-3);
     padding: var(--dextinity-space-4) var(--dextinity-space-4) var(--dextinity-space-3);
+}
+
+.chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--dextinity-space-2);
+    align-items: center;
+}
+
+.menuSearch {
+    display: flex;
+    gap: var(--dextinity-space-2);
+    align-items: center;
+    margin: var(--dextinity-space-1);
+    padding: 0 var(--dextinity-space-2);
+    border: var(--dextinity-line-width) solid var(--dextinity-color-control-line);
+    border-radius: var(--dextinity-radius-field);
+    background: var(--dextinity-color-surface);
+    color: var(--dextinity-color-text-subtle);
+
+    &:focus-within {
+        border-color: var(--dextinity-color-accent);
+        box-shadow: var(--dextinity-focus-ring);
+    }
+
+    input {
+        flex: 1;
+        min-inline-size: 180px;
+        block-size: 32px;
+        padding: 0;
+        border: 0;
+        outline: none;
+        background: none;
+        color: var(--dextinity-color-text);
+        font: inherit;
+    }
+}
+
+.menuFolders {
+    max-block-size: 320px;
+    overflow: auto;
+}
+
+.menuEmpty {
+    margin: 0;
+    padding: var(--dextinity-space-2) var(--dextinity-space-3);
+    color: var(--dextinity-color-text-subtle);
+    font-size: var(--dextinity-typography-small-size);
 }
 
 .chipDivider {
@@ -131,7 +197,9 @@
     display: flex;
     flex-direction: column;
     gap: var(--dextinity-space-6);
-    min-block-size: 240px;
+    flex: 1;
+    min-block-size: 0;
+    overflow: auto;
     padding: var(--dextinity-space-2) var(--dextinity-space-4) var(--dextinity-space-4);
 }
 
@@ -281,7 +349,8 @@
     min-inline-size: 0;
 }
 
-// The checkbox and the menu show on hover, focus, or selection
+// The menu shows on hover or focus of the item. The checkbox shows only where it is: on hover or focus of its own area, on a
+// selected item, or on every item once something is selected, so that a click elsewhere on a folder clearly opens it
 .folderCheckbox,
 .tileCheckbox,
 .itemMenu,
@@ -290,23 +359,29 @@
     opacity: 0;
 }
 
-.folderCard:hover,
-.folderCard:focus-within,
-.folderCard[data-selected],
-.tile:hover,
-.tile:focus-within,
-.tile[data-selected],
-tr:hover,
-tr:focus-within,
-tr[data-selected] {
-    .folderCheckbox,
-    .tileCheckbox,
-    .itemMenu,
-    .tileMenu,
-    .rowMenu {
-        opacity: 1;
-    }
+.folderCheckbox:hover,
+.folderCheckbox:focus-within,
+.tileCheckbox:hover,
+.tileCheckbox:focus-within,
+[data-selected] .folderCheckbox,
+[data-selected] .tileCheckbox,
+.content[data-selecting] .folderCheckbox,
+.content[data-selecting] .tileCheckbox,
+.folderCard:hover .itemMenu,
+.folderCard:focus-within .itemMenu,
+.folderCard[data-selected] .itemMenu,
+.tile:hover .tileMenu,
+.tile:focus-within .tileMenu,
+.tile[data-selected] .tileMenu,
+tr:hover .rowMenu,
+tr:focus-within .rowMenu,
+tr[data-selected] .rowMenu {
+    opacity: 1;
+}
 
+.folderCard:has(.folderCheckbox:hover, .folderCheckbox:focus-within),
+.folderCard[data-selected],
+.content[data-selecting] .folderCard {
     .folderIcon {
         opacity: 0;
     }
@@ -550,23 +625,18 @@ tr[data-selected] {
     font-size: var(--dextinity-typography-small-size);
 }
 
-.footerEnd {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--dextinity-space-4);
-    align-items: center;
-    margin-inline-start: auto;
-}
-
 .sizeSlider {
     inline-size: 200px;
 }
 
+// Centered at the bottom of the window, whatever the card's height or scroll position
 .bulkActionBar {
-    position: sticky;
-    inset-block-end: var(--dextinity-space-4);
-    align-self: center;
-    margin-block-end: var(--dextinity-space-4);
+    position: fixed;
+    // The toasts move up by the bar's height from this offset while it's open
+    inset-block-end: var(--dextinity-toast-viewport-offset);
+    inset-inline-start: 50%;
+    z-index: 20;
+    translate: -50% 0;
 }
 
 .dropZone {

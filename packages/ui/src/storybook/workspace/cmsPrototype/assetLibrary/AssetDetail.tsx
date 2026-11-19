@@ -38,6 +38,7 @@ import {
 } from "./assetLibraryData";
 import { AssetPreview } from "./LibraryItems";
 import { fileItemId } from "./libraryView";
+import { MoveToFolderMenu } from "./MoveToFolderMenu";
 import { useLibraryActions } from "./useLibraryActions";
 
 type Draft = Pick<LibraryAsset, "name" | "alt" | "title" | "focalPoint" | "focalPointAuto" | "crop" | "aiGenerated" | "copyright">;
@@ -510,22 +511,11 @@ export function AssetDetail({ assetId }: { assetId: string }) {
                                 onClick={() => addToast({ message: "Replacing keeps the usages and the focal point", color: "info" })}
                             />
                             <MenuSubmenu label="Move …" icon={<Icon name="folder" />} open={moveOpen} onOpenChange={setMoveOpen}>
-                                {folders
-                                    .map((candidate) => ({
-                                        id: candidate.id,
-                                        label: getFolderTrail(folders, candidate.id)
-                                            .map((ancestor) => ancestor.name)
-                                            .join(" / "),
-                                    }))
-                                    .sort((a, b) => a.label.localeCompare(b.label))
-                                    .map((choice) => (
-                                        <MenuItem
-                                            key={choice.id}
-                                            label={choice.label}
-                                            disabled={choice.id === asset.folderId}
-                                            onClick={() => actions.move([item], choice.id, choice.label.split(" / ").pop() ?? choice.label)}
-                                        />
-                                    ))}
+                                <MoveToFolderMenu
+                                    folders={folders}
+                                    isDisabled={(folderId) => folderId == null || folderId === asset.folderId}
+                                    onMove={(folderId, folderName) => actions.move([item], folderId, folderName)}
+                                />
                             </MenuSubmenu>
                             <MenuSeparator />
                             {asset.archived ? (

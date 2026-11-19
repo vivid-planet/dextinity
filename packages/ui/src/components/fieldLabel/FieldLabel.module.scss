@@ -1,0 +1,30 @@
+@use "infoButton";
+
+.root {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: var(--dextinity-field-label-gap);
+    color: var(--dextinity-field-label-color);
+    font-family: var(--dextinity-font-family-text);
+    font-size: var(--dextinity-field-label-font-size);
+    font-weight: var(--dextinity-field-label-font-weight);
+    line-height: var(--dextinity-field-label-font-line-height);
+
+    &[data-error] {
+        color: var(--dextinity-field-label-error-foreground);
+    }
+}
+
+.label {
+    min-inline-size: 0;
+    overflow-wrap: break-word;
+}
+
+.required {
+    margin-inline-start: var(--dextinity-field-label-gap);
+    color: var(--dextinity-field-label-required-color);
+}
+
+.infoButton {
+    @include infoButton.button;
+}

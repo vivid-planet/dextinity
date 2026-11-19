@@ -22,8 +22,8 @@ describe("Menu", () => {
                         <MenuItem
                             label="Duplicate"
                             icon={<span>i</span>}
-                            shortcut="mod+d"
-                            slotProps={{ shortcut: { platform: "apple" } }}
+                            keyboardShortcut="mod+d"
+                            slotProps={{ keyboardShortcut: { platform: "apple" } }}
                             onClick={vi.fn()}
                         />
                         <MenuSeparator />
@@ -50,7 +50,7 @@ describe("Menu", () => {
         expect(duplicate.className).toContain("dextinityMenuItem");
         expect(duplicate.dataset.color).toBe("default");
         expect(screen.getByText("i").parentElement?.className).toContain("dextinityMenuItem__icon");
-        expect(screen.getByText("Command D").closest("kbd")?.className).toContain("dextinityMenuItem__shortcut");
+        expect(screen.getByText("Command D").closest("kbd")?.className).toContain("dextinityMenuItem__keyboardShortcut");
         expect(duplicate.getAttribute("aria-keyshortcuts")).toBe("Meta+D");
 
         const remove = screen.getByRole("menuitem", { name: "Delete" });

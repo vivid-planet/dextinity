@@ -19,11 +19,11 @@ import styles from "./Menu.stories.module.scss";
 
 const rowMenuItems = (
     <MenuGroup label="Senior UX Designer">
-        <MenuItem label="Edit" icon={<Icon name="edit" />} shortcut="Enter" onClick={fn()} />
-        <MenuItem label="Duplicate" icon={<Icon name="copy" />} shortcut="mod+d" onClick={fn()} />
+        <MenuItem label="Edit" icon={<Icon name="edit" />} keyboardShortcut="Enter" onClick={fn()} />
+        <MenuItem label="Duplicate" icon={<Icon name="copy" />} keyboardShortcut="mod+d" onClick={fn()} />
         <MenuSeparator />
         <MenuItem label="Archive" icon={<Icon name="archive" />} onClick={fn()} />
-        <MenuItem label="Delete" icon={<Icon name="trash" />} shortcut="Backspace" color="error" onClick={fn()} />
+        <MenuItem label="Delete" icon={<Icon name="trash" />} keyboardShortcut="Backspace" color="error" onClick={fn()} />
     </MenuGroup>
 );
 
@@ -174,7 +174,7 @@ export const WithSubmenu: Story = {
                 <MoveToSubmenu />
                 <MenuItem label="Download" icon={<Icon name="download" />} onClick={fn()} />
                 <MenuSeparator />
-                <MenuItem label="Delete" icon={<Icon name="trash" />} shortcut="mod+Backspace" color="error" onClick={fn()} />
+                <MenuItem label="Delete" icon={<Icon name="trash" />} keyboardShortcut="mod+Backspace" color="error" onClick={fn()} />
             </MenuGroup>
         ),
     },

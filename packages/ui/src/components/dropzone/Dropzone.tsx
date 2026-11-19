@@ -103,9 +103,12 @@ export interface DropzoneProps extends Omit<HTMLAttributes<HTMLDivElement>, "cla
      * @defaultValue `false`
      */
     overlay?: boolean;
-    /** What can be uploaded, e.g. "Images, PDF, video up to 200 MB". */
-    hint?: ReactNode;
-    /** A message about rejected files or a failed upload. */
+    /** What can be uploaded, e.g. "Images, PDF, video up to 200 MB". It stays when an `error` shows. */
+    description?: ReactNode;
+    /**
+     * A message about rejected files or a failed upload, shown below the drop area next to the `description`. Only the validation
+     * message of a `Field` replaces a description.
+     */
     error?: ReactNode;
     /** The uploads in progress or just finished, listed below the drop area. */
     uploads?: ReadonlyArray<DropzoneUpload>;
@@ -152,7 +155,7 @@ export const Dropzone = forwardRef<HTMLDivElement, DropzoneProps>(function Dropz
         disabled = false,
         overlay = false,
         children,
-        hint,
+        description,
         error,
         uploads = [],
         labels: labelsProp,
@@ -279,15 +282,15 @@ export const Dropzone = forwardRef<HTMLDivElement, DropzoneProps>(function Dropz
                 ) : (
                     <>
                         <span className={styles.title}>{labels.title}</span>
-                        <span className={styles.hint}>
+                        <span className={styles.description}>
                             {labels.or}{" "}
                             <button type="button" className={styles.browse} disabled={disabled}>
                                 {labels.browse}
                             </button>
-                            {hint != null && (
+                            {description != null && (
                                 <>
                                     <span aria-hidden="true">{" · "}</span>
-                                    {hint}
+                                    {description}
                                 </>
                             )}
                         </span>

@@ -124,8 +124,8 @@ export const CardHorizontal: Story = {
     args: { ...WithDescriptions.args, variant: "card", orientation: "horizontal" },
 };
 
-export const HelperText: Story = {
-    args: { helperText: "Shown as a filter on the job board." },
+export const Description: Story = {
+    args: { description: "Shown as a filter on the job board." },
 };
 
 export const DisabledOption: Story = {

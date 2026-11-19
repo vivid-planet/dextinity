@@ -6,14 +6,14 @@ import { LogViewer } from "../LogViewer";
 afterEach(cleanup);
 
 describe("LogViewer", () => {
-    it("lists the lines with hidden numbers and the tone of each line", () => {
+    it("lists the lines with hidden numbers and the color of each line", () => {
         render(
             <LogViewer
                 title="Publish job"
                 content={"Starting\nERROR Failed\n"}
                 wrap
                 follow
-                getLineTone={(line) => (line.startsWith("ERROR") ? "error" : undefined)}
+                getLineColor={(line) => (line.startsWith("ERROR") ? "error" : undefined)}
             />,
         );
 
@@ -27,7 +27,7 @@ describe("LogViewer", () => {
         ]);
         const lines = screen.getAllByRole("listitem");
         expect(lines.map((line) => line.textContent)).toStrictEqual(["1Starting", "2ERROR Failed"]);
-        expect(lines.map((line) => line.dataset.tone)).toStrictEqual([undefined, "error"]);
+        expect(lines.map((line) => line.dataset.color)).toStrictEqual([undefined, "error"]);
         expect(lines[0].querySelector(".dextinityLogViewer__number")?.getAttribute("aria-hidden")).toBe("true");
     });
 

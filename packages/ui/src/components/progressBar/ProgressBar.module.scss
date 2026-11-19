@@ -10,16 +10,16 @@
 
     --dextinity-progress-bar-indicator: var(--dextinity-progress-bar-indicator-accent);
 
-    &[data-tone="success"] {
+    &[data-color="success"] {
         --dextinity-progress-bar-indicator: var(--dextinity-progress-bar-indicator-success);
     }
 
-    &[data-tone="warning"] {
+    &[data-color="warning"] {
         --dextinity-progress-bar-indicator: var(--dextinity-progress-bar-indicator-warning);
     }
 
-    &[data-tone="danger"] {
-        --dextinity-progress-bar-indicator: var(--dextinity-progress-bar-indicator-danger);
+    &[data-color="error"] {
+        --dextinity-progress-bar-indicator: var(--dextinity-progress-bar-indicator-error);
     }
 }
 

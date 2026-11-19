@@ -58,10 +58,10 @@ export const WithIcon: Story = {
     },
 };
 
-export const Active: Story = {
+export const Current: Story = {
     args: {
         icon: <Icon name="dashboard" />,
-        active: true,
+        current: true,
     },
 };
 

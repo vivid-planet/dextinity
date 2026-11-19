@@ -49,7 +49,7 @@ export interface AppShellProps extends Omit<HTMLAttributes<HTMLDivElement>, "cla
     /** Called to collapse or expand the navigation, with its footer button or ⌘\ / Ctrl+\. */
     onNavCollapsedChange: (collapsed: boolean) => void;
     /** Leaves out the shortcut ⌘\ / Ctrl+\, e.g. when the app handles it itself. */
-    disableShortcuts?: boolean;
+    disableKeyboardShortcuts?: boolean;
     /** The built-in texts. */
     labels?: Partial<AppShellLabels>;
     /** Added alongside the component's own classes. */
@@ -65,7 +65,18 @@ export interface AppShellProps extends Omit<HTMLAttributes<HTMLDivElement>, "cla
  * `children`: The page: page header, then panels.
  */
 export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppShell(
-    { nav, topBar, children, navCollapsed, onNavCollapsedChange, disableShortcuts = false, labels: labelsProp, className, slotProps, ...restProps },
+    {
+        nav,
+        topBar,
+        children,
+        navCollapsed,
+        onNavCollapsedChange,
+        disableKeyboardShortcuts = false,
+        labels: labelsProp,
+        className,
+        slotProps,
+        ...restProps
+    },
     ref,
 ) {
     const labels = { ...defaultLabels, ...labelsProp };
@@ -76,7 +87,7 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
     const [navDrawerOpen, setNavDrawerOpen] = useState(false);
     const { anchorRef, container } = useThemePortalContainer<HTMLSpanElement>();
 
-    useKeyboardShortcut("mod+\\", () => onNavCollapsedChange(!navCollapsed), { enabled: !disableShortcuts && layout === "wide" });
+    useKeyboardShortcut("mod+\\", () => onNavCollapsedChange(!navCollapsed), { enabled: !disableKeyboardShortcuts && layout === "wide" });
 
     const columnContext: AppShellContextValue = {
         navCollapsed: navCollapsed || layout === "medium",

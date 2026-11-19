@@ -1,38 +1,47 @@
 @mixin tokens {
     // Corner radius of the card
     --dextinity-card-radius: var(--dextinity-radius-panel);
-    // Space between the card's edge and its header and body
-    --dextinity-card-padding: var(--dextinity-space-2-5);
+    // Space between the card's edge and its header and body; none by default, so the header bar reaches the edges
+    --dextinity-card-padding: 0;
     // Space around the header with the orb, title, and meta text
-    --dextinity-card-header-padding: var(--dextinity-space-2-5) var(--dextinity-space-3) 14px;
+    --dextinity-card-header-padding: var(--dextinity-space-2-5) var(--dextinity-space-4) var(--dextinity-space-2-5) var(--dextinity-space-2-5);
+    // Fill of the header bar, which sets it apart from the content so cards are quick to scan; ends closer to the accent than
+    // the brand gradient, so small text in the header keeps a contrast of 4.5:1 across the whole bar
+    --dextinity-card-header-background: linear-gradient(
+        120deg,
+        var(--dextinity-color-accent) 15%,
+        color-mix(in oklch, var(--dextinity-color-accent) 75%, var(--dextinity-color-accent-secondary)) 100%
+    );
+    // Text and icons on the header bar
+    --dextinity-card-header-foreground: var(--dextinity-color-accent-foreground);
     // Gap between the orb, the title, and the meta text in the header
     --dextinity-card-header-gap: var(--dextinity-space-3);
-    // Space around the body; none by default, as rows in the body bring their own padding
-    --dextinity-card-body-padding: 0;
+    // Space around the body; rows in the body bring their own padding on top of it
+    --dextinity-card-body-padding: var(--dextinity-space-2-5);
     // Glass fill of the card
     --dextinity-card-background: var(--dextinity-material-glass);
     // Blur of the content behind the glass
     --dextinity-card-blur: var(--dextinity-material-blur);
-    // Edge highlight and drop shadow of the card
-    --dextinity-card-shadow: var(--dextinity-material-edge-shadow), var(--dextinity-shadow-2);
+    // Glass edge of the card; cards rest on the page, so they cast no shadow
+    --dextinity-card-shadow: var(--dextinity-material-edge-shadow);
 
     // Size of the round icon badge at the start of the header
     --dextinity-card-orb-size: 38px;
     // Size of the icon inside the orb
     --dextinity-card-orb-icon-size: var(--dextinity-icon-size-default);
     // Color of the icon inside the orb
-    --dextinity-card-orb-foreground: var(--dextinity-color-accent-text);
-    // Fill of the orb
-    --dextinity-card-orb-background: var(--dextinity-material-glass-strong);
+    --dextinity-card-orb-foreground: var(--dextinity-card-header-foreground);
+    // Fill of the orb, a tint of the header's foreground over the header bar
+    --dextinity-card-orb-background: color-mix(in oklch, var(--dextinity-card-header-foreground) 18%, transparent);
     // Edge highlight of the orb
-    --dextinity-card-orb-shadow: var(--dextinity-material-edge-shadow);
+    --dextinity-card-orb-shadow: none;
 
     // Text size of the card title
     --dextinity-card-title-font-size: var(--dextinity-typography-title-size);
     // Font weight of the card title
     --dextinity-card-title-font-weight: var(--dextinity-typography-title-font-weight);
     // Color of the meta text next to the title
-    --dextinity-card-meta-color: var(--dextinity-color-text-subtle);
+    --dextinity-card-meta-color: var(--dextinity-card-header-foreground);
     // Text size of the meta text next to the title
     --dextinity-card-meta-font-size: var(--dextinity-typography-ui-size);
 

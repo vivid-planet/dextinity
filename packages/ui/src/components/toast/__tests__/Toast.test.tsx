@@ -8,13 +8,13 @@ import { useToasts } from "../useToasts";
 afterEach(cleanup);
 
 describe("Toast", () => {
-    it("renders the contract classes and the tone", () => {
-        render(<Toast message="Saved" tone="error" icon={<span>i</span>} action={{ label: "Undo", onClick: vi.fn() }} className="consumer-class" />);
+    it("renders the contract classes and the color", () => {
+        render(<Toast message="Saved" color="error" icon={<span>i</span>} action={{ label: "Undo", onClick: vi.fn() }} className="consumer-class" />);
 
         const toast = screen.getByRole("alert");
         expect(toast.className).toContain("dextinityToast");
         expect(toast.className).toContain("consumer-class");
-        expect(toast.dataset.tone).toBe("error");
+        expect(toast.dataset.color).toBe("error");
         expect(screen.getByText("i").parentElement?.className).toContain("dextinityToast__icon");
         expect(screen.getByText("Saved").className).toContain("dextinityToast__message");
         expect(screen.getByRole("button", { name: "Undo" }).className).toContain("dextinityToast__action");
@@ -41,9 +41,9 @@ describe("useToasts", () => {
         });
         let secondId = "";
         act(() => {
-            secondId = result.current.add({ message: "Second", tone: "info" });
+            secondId = result.current.add({ message: "Second", color: "info" });
         });
-        expect(result.current.toasts).toEqual([{ id: secondId, message: "Second", tone: "info" }]);
+        expect(result.current.toasts).toEqual([{ id: secondId, message: "Second", color: "info" }]);
 
         act(() => result.current.dismiss(secondId));
         expect(result.current.toasts).toEqual([]);

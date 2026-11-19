@@ -32,8 +32,8 @@ export interface MenuItemSlotProps<IconElement extends ElementType> {
     icon?: SlotPropsValue<MenuItemOwnerState, IconElement>;
     /** Props for the `label` slot. */
     label?: SlotPropsValue<MenuItemOwnerState, "span">;
-    /** Props for the `shortcut` slot. */
-    shortcut?: SlotPropsValue<MenuItemOwnerState, typeof KeyboardShortcut>;
+    /** Props for the `keyboardShortcut` slot. */
+    keyboardShortcut?: SlotPropsValue<MenuItemOwnerState, typeof KeyboardShortcut>;
 }
 
 export interface MenuItemProps<IconElement extends ElementType = "span"> extends Omit<
@@ -45,7 +45,7 @@ export interface MenuItemProps<IconElement extends ElementType = "span"> extends
     /** An icon before the label, e.g. `<Icon name="copy" />`. */
     icon?: ReactNode;
     /** The keyboard shortcut of the action, shown at the end, in the notation of `useKeyboardShortcut`, e.g. `"mod+d"`. */
-    shortcut?: string;
+    keyboardShortcut?: string;
     /**
      * `error` for destructive actions, e.g. Delete. Put them last, after a separator.
      *
@@ -79,7 +79,7 @@ export const MenuItem: <IconElement extends ElementType = "span">(props: MenuIte
         {
             label,
             icon,
-            shortcut,
+            keyboardShortcut,
             color = "default",
             disabled = false,
             disabledReason,
@@ -105,14 +105,14 @@ export const MenuItem: <IconElement extends ElementType = "span">(props: MenuIte
             slotProps: slotProps?.label,
             ownerState,
         });
-        const shortcutProps = resolveSlotProps<MenuItemOwnerState, typeof KeyboardShortcut, typeof KeyboardShortcut>({
+        const keyboardShortcutProps = resolveSlotProps<MenuItemOwnerState, typeof KeyboardShortcut, typeof KeyboardShortcut>({
             // The shortcut is announced through `aria-keyshortcuts`, so the item's name stays its label
-            ownProps: { className: styles.shortcut, shortcut, "aria-hidden": true },
-            slotProps: slotProps?.shortcut,
+            ownProps: { className: styles.keyboardShortcut, shortcut: keyboardShortcut, "aria-hidden": true },
+            slotProps: slotProps?.keyboardShortcut,
             ownerState,
         });
 
-        const ariaKeyShortcutsValue = useAriaKeyShortcuts(shortcutProps.shortcut, shortcutProps.platform);
+        const ariaKeyShortcutsValue = useAriaKeyShortcuts(keyboardShortcutProps.shortcut, keyboardShortcutProps.platform);
 
         const item = (
             <BaseMenu.Item
@@ -127,7 +127,7 @@ export const MenuItem: <IconElement extends ElementType = "span">(props: MenuIte
             >
                 {icon != null && <IconSlot {...iconProps}>{icon}</IconSlot>}
                 <span {...labelProps}>{label}</span>
-                {shortcut != null && <KeyboardShortcut {...shortcutProps} />}
+                {keyboardShortcut != null && <KeyboardShortcut {...keyboardShortcutProps} />}
             </BaseMenu.Item>
         );
 

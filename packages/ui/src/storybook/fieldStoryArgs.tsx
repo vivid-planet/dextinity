@@ -6,8 +6,8 @@ import { Field, type FieldLayout, type FieldProps } from "../components/field/Fi
 const fieldArgNames = [
     "label",
     "required",
-    "helpText",
-    "helperText",
+    "info",
+    "description",
     "validationMessage",
     "state",
     "disabled",
@@ -32,8 +32,8 @@ const fieldCategory = { category: "Field" };
 export const fieldArgTypes = {
     label: { control: "text", table: fieldCategory },
     required: { control: "boolean", table: fieldCategory },
-    helpText: { control: "text", table: fieldCategory },
-    helperText: { control: "text", table: fieldCategory },
+    info: { control: "text", table: fieldCategory },
+    description: { control: "text", table: fieldCategory },
     validationMessage: { control: "text", table: fieldCategory },
     state: { control: "select", options: ["default", "success", "warning", "error"], table: fieldCategory },
     disabled: { control: "boolean", table: fieldCategory },
@@ -51,8 +51,8 @@ export const fieldArgTypes = {
 export const groupFieldArgTypes = {
     label: fieldArgTypes.label,
     required: fieldArgTypes.required,
-    helpText: fieldArgTypes.helpText,
-    helperText: fieldArgTypes.helperText,
+    info: fieldArgTypes.info,
+    description: fieldArgTypes.description,
     validationMessage: fieldArgTypes.validationMessage,
     state: fieldArgTypes.state,
     disabled: fieldArgTypes.disabled,

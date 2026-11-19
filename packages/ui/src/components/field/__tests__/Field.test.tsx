@@ -40,9 +40,9 @@ describe("Field owner state", () => {
 });
 
 describe("Field control props", () => {
-    it("connects the control to the label and the message, preferring the validation message over the help", () => {
+    it("connects the control to the label and the message, preferring the validation message over the description", () => {
         render(
-            <Field label="Title" helperText="Help" validationMessage="Enter a title." state="error" controlId="title">
+            <Field label="Title" description="Help" validationMessage="Enter a title." state="error" controlId="title">
                 {(control) => <input {...control} />}
             </Field>,
         );
@@ -54,9 +54,9 @@ describe("Field control props", () => {
         expect(screen.queryByText("Help")).toBeNull();
     });
 
-    it("shows the help while the state is default, even with a validation message", () => {
+    it("shows the description while the state is default, even with a validation message", () => {
         render(
-            <Field label="Title" helperText="Help" validationMessage="Enter a title.">
+            <Field label="Title" description="Help" validationMessage="Enter a title.">
                 {(control) => <input {...control} />}
             </Field>,
         );
@@ -66,10 +66,10 @@ describe("Field control props", () => {
     });
 });
 
-describe("Field help text", () => {
-    it("puts a focusable info button right after the label and describes the control and the button by the help text", async () => {
+describe("Field info", () => {
+    it("puts a focusable info button right after the label and describes the control and the button by the info", async () => {
         render(
-            <Field label="Meta title" required helpText="Shown in search results." helperText="Up to 60 characters.">
+            <Field label="Meta title" required info="Shown in search results." description="Up to 60 characters.">
                 <Input />
             </Field>,
         );
@@ -87,7 +87,7 @@ describe("Field help text", () => {
 
     it("names the button from labels and takes another icon from slotProps", () => {
         const { container } = render(
-            <Field label="Titel" helpText="Hilfe" labels={{ helpText: "Mehr Informationen" }} slotProps={{ helpIcon: { name: "help" } }}>
+            <Field label="Titel" info="Hilfe" labels={{ infoButton: "Mehr Informationen" }} slotProps={{ infoIcon: { name: "help" } }}>
                 <Input />
             </Field>,
         );
@@ -131,7 +131,7 @@ describe("Field layouts and reports", () => {
             return <input {...field?.control} />;
         }
         render(
-            <Field label="Day" helperText="Help">
+            <Field label="Day" description="Help">
                 <ReportingControl />
             </Field>,
         );

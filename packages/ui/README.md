@@ -34,7 +34,7 @@ Changesets are not created for changes within this package.
 
 ### Exports
 
-- Props are exported as an interface named `<ComponentName>Props`, never a type alias.
+- Props are exported as an interface named `<ComponentName>Props`, never a type alias. Only when variants take different props is `<ComponentName>Props` a union of exported interfaces, one per group of variants with the same props.
 - The resolved configuration is exported as a type named `<ComponentName>OwnerState`.
 - The component is exported as `<ComponentName>`, wrapped in `forwardRef`.
 
@@ -80,20 +80,28 @@ A change that makes a comment inaccurate updates it in the same change.
 
 ### Controlled values
 
-Components are pure UI and always controlled: a value comes with its change handler (`value` + `onChange`, `checked` + `onChange`, `open` + `onOpenChange`), and there is no `defaultValue`. A controlled boolean is a required prop (`checked: boolean`), so a component never silently falls back to uncontrolled mode.
+Components are pure UI and always controlled: a value comes with its change handler (`value` + `onChange`, `checked` + `onChange`, `open` + `onOpenChange`), and there is no `defaultValue`. A value prop is required when the component always has that value (`Checkbox`'s `checked`), and optional when the component also works without it (`ToolbarButton`'s `selected`).
+
+### Prop names
+
+- **Ids** — a prop that holds one id ends in `Id`, one that holds a list of ids ends in `Ids`: `currentId`, `expandedIds`.
+- **The current item** — the item of the current page or place is `current`, as in `aria-current`: `MainNavigationItem`'s `current`, `SideNav`'s `currentId`. Don't call it `active`.
+- **Colors** — a prop that picks a color is `color`, not `tone`.
+- **Values** — a value with the same meaning has the same name in every component. For example, the status colors use the words of `Field`'s `state`: `success`, `warning`, `error`.
+- **Sizes** — `size` takes `small`, `default`, and `large`, and `xlarge` when a component needs a larger one. The default is `default`. Don't use abbreviations such as `md` or `lg`.
 
 ### Form controls and `Field`
 
-Form controls are pure controls, like `Input`: `Select`, `DatePicker`, `Textarea`, `RadioGroup`, and the others have no `label`, `required`, `helperText`, `validationMessage`, or `state` props. `Field` holds all of that and the control follows it through `useFieldContext()`: the field's id, `aria-labelledby`, `aria-describedby`, `required`, `disabled`, `readOnly`, and invalid state. Usage: `<Field label="Location" required helperText="…" validationMessage="…"><Select … /></Field>`.
+Form controls are pure controls, like `Input`: `Select`, `DatePicker`, `Textarea`, `RadioGroup`, and the others have no `label`, `required`, `description`, `validationMessage`, or `state` props. `Field` holds all of that and the control follows it through `useFieldContext()`: the field's id, `aria-labelledby`, `aria-describedby`, `required`, `disabled`, `readOnly`, and invalid state. Usage: `<Field label="Location" required description="…" validationMessage="…"><Select … /></Field>`.
 
-`Input` is the exception that still has `status` and `required`, for an input on its own with native form validation; inside a `Field`, the field's state and `required` apply.
+`Input` is the exception that still has `state` and `required`, for an input on its own with native form validation; inside a `Field`, the field's state and `required` apply.
 
 Controls take no other HTML attributes than their name, description, `id`, `className`, and `style`: put `onFocus`, `onBlur`, and `data-*` attributes on the `Field`, whose root receives the focus events that bubble up from the control. For a control on its own, wrap it in a `Field` without `label`. In development, a control warns when the surrounding field's `layout` doesn't fit it.
 
-- **Box controls** (e.g. `Select`, `DatePicker`, `NumberInput`, `Textarea`, `RichTextEditor`) render through the internal `ControlFrame`: inside a `Field` they take the field's box; on their own they draw a box without a label and take their name from `aria-label` or `aria-labelledby`. A control that finds an error itself, such as a date picker with typed text that is no date, reports it with `setControlReport`, and the field shows it as its message. `RichTextEditor` needs `<Field layout="stacked">`.
+- **Box controls** (e.g. `Select`, `DatePicker`, `NumberInput`, `Textarea`, `RichTextEditor`) render through the internal `ControlFrame`: inside a `Field` they take the field's box; on their own they draw a box without a label and take their name from `aria-label` or `aria-labelledby`. A control that finds an error itself, such as a date picker with typed text that is no date, reports it with `setControlReport`, and the field shows it as its validation message and sets its `state` to `error`. `RichTextEditor` needs `<Field layout="stacked">`.
 - **Group controls** (e.g. `RadioGroup`, `CheckboxGroup`, `SegmentedControl`, `Slider`, `FileUpload`, `FocalPointPicker`) draw their own frame and go in `<Field layout="group">`, which draws no box and renders the label as the name of the control's group element (`useGroupControl`). On their own, `aria-label` names the group. They follow the field's `readOnly`: the value stays visible and focusable, and changes are ignored. `role="group"` and `role="slider"` can't take `aria-required`, so in a required field, `CheckboxGroup`, `FileUpload`, `FocalPointPicker`, and `Slider` read the field's hidden `labels.required` ("Required") as part of their description instead.
 - **A single `Checkbox` or `Switch`** keeps its text as its name, so its `Field` takes no `label`: a label would name nothing. For a validation message, it goes in a `<Field layout="group">` without `label`.
-- **`helpText` vs. `helperText`.** `helperText` is what everyone needs to fill in a field, e.g. the expected format; it is always visible below the field. `helpText` (on `Field` and `FormLabel`) is background most users don't need; it sits behind a focusable info button right after the `<label>` element, shows in a tooltip on hover, focus, and tap, and describes the control through `aria-describedby`. The button's name comes from `labels.helpText` ("More information"), its icon from `slots.helpIcon` and `slotProps.helpIcon`.
+- **`description` vs. `info`.** `description` is what everyone needs to fill in a field, e.g. the expected format; it is visible below the field until a validation message takes its place in the `success`, `warning`, or `error` state. `info` (on `Field` and `FieldLabel`) is background most users don't need; it sits behind a focusable info button right after the `<label>` element, shows in a tooltip on hover, focus, and tap, and describes the control through `aria-describedby`. The button's name comes from `labels.infoButton` ("More information"), its icon from `slots.infoIcon` and `slotProps.infoIcon`.
 
 ### Text
 

@@ -23,19 +23,19 @@
         padding-inline-end: var(--dextinity-toast-padding-inline-start);
     }
 
-    &[data-tone="success"] {
+    &[data-color="success"] {
         --dextinity-toast-icon-color: var(--dextinity-toast-success-icon-color);
     }
 
-    &[data-tone="error"] {
+    &[data-color="error"] {
         --dextinity-toast-icon-color: var(--dextinity-toast-error-icon-color);
     }
 
-    &[data-tone="warning"] {
+    &[data-color="warning"] {
         --dextinity-toast-icon-color: var(--dextinity-toast-warning-icon-color);
     }
 
-    &[data-tone="info"] {
+    &[data-color="info"] {
         --dextinity-toast-icon-color: var(--dextinity-toast-info-icon-color);
     }
 

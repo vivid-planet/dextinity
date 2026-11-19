@@ -133,7 +133,7 @@ export default meta;
 type Story = StoryObj<ComboboxStoryArgs>;
 
 /**
- * Put it in a `Field` for the label, help, and validation message: `<Field label="Category"><Combobox … /></Field>`.
+ * Put it in a `Field` for the label, description, and validation message: `<Field label="Category"><Combobox … /></Field>`.
  *
  * **Rules**
  * - Use it when the options come from an API or are too many to load at once; for a fixed list, use a select with `searchable`.

@@ -1,8 +1,8 @@
 @mixin tokens {
     // Width of the expanded navigation
     --dextinity-side-nav-width: 300px;
-    // Width of the collapsed navigation, which shows only icons
-    --dextinity-side-nav-width-collapsed: 86px;
+    // Width of the collapsed navigation, which shows only icons: an entry plus a narrow gap on each side
+    --dextinity-side-nav-width-collapsed: calc(var(--dextinity-side-nav-collapsed-item-width) + 2 * var(--dextinity-space-2));
     // Glass panel over the ambient light field; solid in high contrast
     --dextinity-side-nav-background: var(--dextinity-material-glass);
     // Blur of the backdrop behind the navigation
@@ -10,7 +10,7 @@
     // Edge highlight and shadow of the navigation
     --dextinity-side-nav-shadow: var(--dextinity-material-edge-shadow), var(--dextinity-shadow-2);
     // Corner radius of the navigation
-    --dextinity-side-nav-radius: var(--dextinity-radius-panel);
+    --dextinity-side-nav-radius: var(--dextinity-radius-frame);
     // Line between groups and above the footer
     --dextinity-side-nav-separator-color: var(--dextinity-material-edge);
 
@@ -38,7 +38,7 @@
     // Space above and below an entry's label
     --dextinity-side-nav-item-padding-block: 7px;
     // Corner radius of an entry
-    --dextinity-side-nav-item-radius: var(--dextinity-radius-field);
+    --dextinity-side-nav-item-radius: var(--dextinity-radius-control);
     // Text size of an entry's label
     --dextinity-side-nav-item-font-size: 13.5px;
     // Text color of an entry
@@ -53,14 +53,14 @@
     --dextinity-side-nav-item-indent-level-3: 58px;
     // Fill of a hovered entry
     --dextinity-side-nav-item-background-hover: var(--dextinity-material-glass-strong);
-    // Text of an entry above the active one
+    // Text of an entry above the current one
     --dextinity-side-nav-item-ancestor-foreground: var(--dextinity-color-text);
-    // Fill of the active entry
-    --dextinity-side-nav-item-active-background: var(--dextinity-gradient-brand);
-    // Text and icon color of the active entry
-    --dextinity-side-nav-item-active-foreground: var(--dextinity-color-accent-foreground);
-    // Glow and top highlight of the active entry
-    --dextinity-side-nav-item-active-shadow: 0 10px 24px -12px var(--dextinity-color-accent-glow), inset 0 1px 0 oklch(1 0 0 / 0.2);
+    // Fill of the current entry
+    --dextinity-side-nav-item-current-background: var(--dextinity-gradient-brand);
+    // Text and icon color of the current entry
+    --dextinity-side-nav-item-current-foreground: var(--dextinity-color-accent-foreground);
+    // Glow and top highlight of the current entry
+    --dextinity-side-nav-item-current-shadow: 0 10px 24px -12px var(--dextinity-color-accent-glow), inset 0 1px 0 oklch(1 0 0 / 0.2);
     // Vertical line that leads the sub-entries
     --dextinity-side-nav-guide-color: var(--dextinity-color-line-strong);
     // Color of the chevron that expands an entry's sub-entries

@@ -156,7 +156,7 @@ interface ControlFrameProps extends ControlAriaProps {
     readOnly?: boolean;
     /** How the frame on its own holds the control, see the `layout` of `Field`. */
     layout?: "inline" | "stacked";
-    /** An error the control found itself, shown in place of the field's message. */
+    /** An error the control found itself. It shows as the field's validation message and sets the field's `state` to `error`. */
     error?: string;
     /** A count shown at the end of the label row. */
     counter?: string;

@@ -9,14 +9,14 @@ import { Switch, type SwitchProps } from "../Switch";
 import switchTokens from "../Switch.tokens.scss?raw";
 import styles from "./Switch.stories.module.scss";
 
-type SwitchStoryArgs = SwitchProps & Pick<FieldStoryArgs, "required" | "helperText" | "validationMessage" | "state">;
+type SwitchStoryArgs = SwitchProps & Pick<FieldStoryArgs, "required" | "validationMessage" | "state">;
 
 /**
  * Binds the value to its story arg, so the Controls panel drives it and a change on the canvas updates the arg. With a field arg, it
  * puts the switch in a `Field` with `layout="group"`.
  */
 function ControlledSwitch({ storyId, ...args }: SwitchStoryArgs & { storyId: string }) {
-    const { field, control } = splitFieldArgs(args, ["size"]);
+    const { field, control } = splitFieldArgs(args, ["size", "description"]);
     const [checked, setChecked] = useControlledArg(control, "checked", { id: storyId });
     const toggle = (
         <Switch
@@ -39,7 +39,7 @@ function ControlledSwitch({ storyId, ...args }: SwitchStoryArgs & { storyId: str
 
 /** A switch of a story that shows several side by side, each with its own state; the `checked` prop sets the initial state. */
 function StatefulSwitch(args: SwitchStoryArgs) {
-    const { field, control } = splitFieldArgs(args, ["size"]);
+    const { field, control } = splitFieldArgs(args, ["size", "description"]);
     const [checked, setChecked] = useState(control.checked);
     const toggle = (
         <Switch
@@ -73,7 +73,6 @@ const meta = {
     argTypes: {
         size: { control: "radio", options: ["default", "small"] },
         required: fieldArgTypes.required,
-        helperText: fieldArgTypes.helperText,
         validationMessage: fieldArgTypes.validationMessage,
         state: fieldArgTypes.state,
         className: { control: false },
@@ -195,7 +194,7 @@ export const Required: Story = {
 };
 
 /**
- * The field's message sits below the switch and describes it: `<Field layout="group" state="error" validationMessage="…"><Switch>…</Switch></Field>`.
+ * The field's validation message sits below the switch and describes it: `<Field layout="group" state="error" validationMessage="…"><Switch>…</Switch></Field>`.
  *
  * **Rules**
  * - Say what is missing and how to fix it.

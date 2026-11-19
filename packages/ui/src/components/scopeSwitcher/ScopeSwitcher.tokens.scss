@@ -4,7 +4,7 @@
     // Space on the left and right inside the trigger
     --dextinity-scope-switcher-padding: var(--dextinity-space-3);
     // Corner radius of the trigger
-    --dextinity-scope-switcher-radius: var(--dextinity-radius-field);
+    --dextinity-scope-switcher-radius: var(--dextinity-radius-control);
     // Fill of the trigger, a translucent glass material
     --dextinity-scope-switcher-background: var(--dextinity-material-glass-strong);
     // Fill of the hovered trigger
@@ -30,12 +30,12 @@
     --dextinity-scope-switcher-option-radius: var(--dextinity-radius-item);
     // Fill of a hovered scope option
     --dextinity-scope-switcher-option-background-hover: var(--dextinity-color-fill-hover);
-    // Fill of the selected scope option
-    --dextinity-scope-switcher-option-selected-background: var(--dextinity-color-accent-soft);
-    // Text color of the selected scope option
-    --dextinity-scope-switcher-option-selected-foreground: var(--dextinity-color-accent-text);
-    // Outline of the selected scope option; visible in high contrast
-    --dextinity-scope-switcher-option-selected-shadow: 0 0 transparent;
+    // Fill of the option of the current scope
+    --dextinity-scope-switcher-option-current-background: var(--dextinity-color-accent-soft);
+    // Text color of the option of the current scope
+    --dextinity-scope-switcher-option-current-foreground: var(--dextinity-color-accent-text);
+    // Outline of the option of the current scope; visible in high contrast
+    --dextinity-scope-switcher-option-current-shadow: 0 0 transparent;
     // Text color of the column and "recent" labels above the options
     --dextinity-scope-switcher-label-color: var(--dextinity-color-text-subtle);
     // Color of the line between the dimension columns
@@ -43,5 +43,5 @@
 }
 
 @mixin high-contrast-tokens {
-    --dextinity-scope-switcher-option-selected-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-text);
+    --dextinity-scope-switcher-option-current-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-text);
 }

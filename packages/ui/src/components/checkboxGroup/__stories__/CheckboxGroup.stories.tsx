@@ -147,8 +147,8 @@ export const Grouped: Story = {
     args: { label: "Content scopes", options: contentScopes, value: ["main-de"], selectableGroups: false },
 };
 
-export const HelperText: Story = {
-    args: { helperText: "Where the job is published." },
+export const Description: Story = {
+    args: { description: "Where the job is published." },
 };
 
 export const Disabled: Story = {

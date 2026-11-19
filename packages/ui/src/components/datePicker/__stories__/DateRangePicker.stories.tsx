@@ -108,7 +108,7 @@ export const Clearable: Story = {
 };
 
 export const MinAndMax: Story = {
-    args: { min: "2026-11-02", max: "2027-01-31", helperText: "Campaigns run until the end of January" },
+    args: { min: "2026-11-02", max: "2027-01-31", description: "Campaigns run until the end of January" },
 };
 
 export const Error: Story = {

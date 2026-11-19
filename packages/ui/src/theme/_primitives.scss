@@ -71,16 +71,22 @@ $scales: (
         // Spacing around large sections
         --dextinity-space-12: 48px;
 
+        // Corner radius of small parts, e.g. the options inside a segmented control
+        --dextinity-radius-small: calc(6px * var(--dextinity-brand-radius-factor));
         // Corner radius of small items, e.g. menu items and tags
         --dextinity-radius-item: calc(8px * var(--dextinity-brand-radius-factor));
         // Corner radius of controls such as buttons and inputs; set by the brand
         --dextinity-radius-control: var(--dextinity-brand-radius-control);
         // Corner radius of inputs on glass and of blocks
         --dextinity-radius-field: calc(14px * var(--dextinity-brand-radius-factor));
-        // Corner radius of rows and menus
-        --dextinity-radius-row: calc(20px * var(--dextinity-brand-radius-factor));
-        // Corner radius of panels
-        --dextinity-radius-panel: calc(30px * var(--dextinity-brand-radius-factor));
+        // Corner radius of the hover area of list and tree rows
+        --dextinity-radius-row: calc(8px * var(--dextinity-brand-radius-factor));
+        // Corner radius of panels, cards and the top bar
+        --dextinity-radius-panel: calc(14px * var(--dextinity-brand-radius-factor));
+        // Corner radius of overlays: menus, popovers and dialogs
+        --dextinity-radius-overlay: calc(20px * var(--dextinity-brand-radius-factor));
+        // Corner radius of the app frame: the side navigation and the command palette
+        --dextinity-radius-frame: calc(30px * var(--dextinity-brand-radius-factor));
         // Fully rounded ends, e.g. of pills and switches
         --dextinity-radius-pill: 999px;
     }

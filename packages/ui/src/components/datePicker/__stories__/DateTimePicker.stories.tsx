@@ -160,7 +160,7 @@ export const Clearable: Story = {
 };
 
 export const MinAndMax: Story = {
-    args: { min: "2026-11-01", max: "2026-12-31", helperText: "Until the end of the year" },
+    args: { min: "2026-11-01", max: "2026-12-31", description: "Until the end of the year" },
 };
 
 export const Error: Story = {

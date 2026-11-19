@@ -1,0 +1,78 @@
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { expect, screen, userEvent, waitFor } from "storybook/test";
+
+import { themeDecorator } from "../../../storybook/themeDecorator";
+import { FieldLabel } from "../FieldLabel";
+import fieldLabelTokens from "../FieldLabel.tokens.scss?raw";
+import styles from "./fieldLabel.module.scss";
+
+const meta = {
+    component: FieldLabel,
+    title: "Building blocks/Form fields/FieldLabel",
+    parameters: { tokens: fieldLabelTokens },
+    decorators: [themeDecorator],
+    args: {
+        children: "Label",
+    },
+    argTypes: {
+        info: { control: "text" },
+        labels: { control: false },
+        className: { control: false },
+        slots: { control: false },
+        slotProps: { control: false },
+        ref: { control: false },
+    },
+} satisfies Meta<typeof FieldLabel>;
+
+export default meta;
+
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {};
+
+export const Required: Story = {
+    args: {
+        required: true,
+    },
+};
+
+export const Error: Story = {
+    args: {
+        error: true,
+        required: true,
+    },
+};
+
+/**
+ * `info` adds an info button after the label. Hover, keyboard focus, or a tap shows the text in a tooltip; the button is named "More
+ * information" (`labels.infoButton`) and described by the text. Add `infoId` to the control's `aria-describedby` so the text describes
+ * the control too.
+ *
+ * **`info` or `description`?**
+ * - `info` is background most users don't need, e.g. where a value is used. It stays hidden until asked for.
+ * - `description` (on `Field`, or a `FieldDescription`) is what everyone needs to fill in the field, e.g. the expected format. It is always
+ *   visible below the field.
+ */
+export const WithInfo: Story = {
+    args: {
+        info: "Shown in search results and when the page is shared.",
+        infoId: "title-info",
+    },
+    play: async ({ canvas }) => {
+        const button = canvas.getByRole("button", { name: "More information" });
+        await expect(button).toHaveAccessibleDescription("Shown in search results and when the page is shared.");
+        await userEvent.tab();
+        await expect(button).toHaveFocus();
+        await waitFor(() => expect(screen.getByRole("tooltip")).toHaveTextContent("Shown in search results and when the page is shared."));
+        await expect(document.getElementById("title-info")).toHaveTextContent("Shown in search results and when the page is shared.");
+    },
+};
+
+export const LongLabel: Story = {
+    args: {
+        required: true,
+        info: "Shown in search results and when the page is shared.",
+        children: "The label of a field whose description is long enough to wrap onto a second line",
+    },
+    decorators: [(Story) => <div className={styles.longLabel}>{Story()}</div>],
+};

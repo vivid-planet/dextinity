@@ -4,7 +4,7 @@
     // Blur behind the glass of a menu
     --dextinity-menu-blur: var(--dextinity-material-blur);
     // Corner radius of a menu
-    --dextinity-menu-radius: var(--dextinity-radius-row);
+    --dextinity-menu-radius: var(--dextinity-radius-overlay);
     // Space between the edge of a menu and its items
     --dextinity-menu-padding: var(--dextinity-space-1-5);
     // Minimum width of a menu
@@ -35,7 +35,7 @@
     // Size of the icon of an item
     --dextinity-menu-item-icon-size: var(--dextinity-icon-size-small);
     // Color of the keyboard shortcut of an item
-    --dextinity-menu-item-shortcut-color: var(--dextinity-color-text-subtle);
+    --dextinity-menu-item-keyboard-shortcut-color: var(--dextinity-color-text-subtle);
     // Text color of destructive items, e.g. Delete
     --dextinity-menu-item-danger-foreground: var(--dextinity-color-danger-text);
     // Opacity of a disabled item

@@ -140,7 +140,7 @@ function RedirectForm({ redirect, onClose, onSave }: { redirect: Redirect; onClo
                 <Field label="Source" required prefix="example.com">
                     <Input name="source" value={draft.source} onChange={(event) => setDraft({ ...draft, source: event.target.value })} />
                 </Field>
-                <Field label="Target" required helperText="A page path or an external URL.">
+                <Field label="Target" required description="A page path or an external URL.">
                     <Input name="target" value={draft.target} onChange={(event) => setDraft({ ...draft, target: event.target.value })} />
                 </Field>
                 <div className={styles.group} role="group" aria-labelledby="redirect-type-label">
@@ -305,7 +305,7 @@ type Story = StoryObj<typeof meta>;
  */
 export const Default: Story = {
     render: () => (
-        <PageTypeShell activeId="redirects">
+        <PageTypeShell currentId="redirects">
             <RedirectsPage initialOpenId="r2" />
         </PageTypeShell>
     ),
@@ -316,7 +316,7 @@ export const Default: Story = {
  */
 export const CloseWithEscape: Story = {
     render: () => (
-        <PageTypeShell activeId="redirects">
+        <PageTypeShell currentId="redirects">
             <RedirectsPage initialOpenId="r2" />
         </PageTypeShell>
     ),
@@ -344,7 +344,7 @@ export const CloseWithEscape: Story = {
  */
 export const Closed: Story = {
     render: () => (
-        <PageTypeShell activeId="redirects">
+        <PageTypeShell currentId="redirects">
             <RedirectsPage />
         </PageTypeShell>
     ),

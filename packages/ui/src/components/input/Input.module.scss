@@ -49,7 +49,7 @@
         background: var(--dextinity-input-state-read-only-background);
     }
 
-    &[data-status="error"] {
+    &[data-state="error"] {
         border-color: var(--dextinity-input-state-error-border);
 
         &:has(> :focus) {
@@ -57,7 +57,7 @@
         }
     }
 
-    &[data-status="success"] {
+    &[data-state="success"] {
         border-color: var(--dextinity-input-state-success-border);
 
         &:has(> :focus) {
@@ -65,7 +65,7 @@
         }
     }
 
-    &[data-status="warning"] {
+    &[data-state="warning"] {
         border-color: var(--dextinity-input-state-warning-border);
 
         &:has(> :focus) {

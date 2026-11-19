@@ -113,15 +113,15 @@ describe("AI Mode toolsets", () => {
 
     it("lists the tools of the mounted toolsets only", () => {
         const { rerender } = renderToolsets(
-            <AiModeToolset id="pageTree" description="Page tree" tools={[createTool("open_page")]}>
+            <AiModeToolset id="pageTree" description="Page tree" tools={[createTool("open_page_tree_node")]}>
                 <RegisteredToolset toolset={{ id: "page", description: "Page", tools: [createTool("edit_blocks")] }} />
             </AiModeToolset>,
         );
-        expect(store.getTools().map(({ name }) => name)).toEqual(["open_page", "edit_blocks"]);
+        expect(store.getTools().map(({ name }) => name)).toEqual(["open_page_tree_node", "edit_blocks"]);
 
-        rerender(<AiModeToolset id="pageTree" description="Page tree" tools={[createTool("open_page")]} />);
+        rerender(<AiModeToolset id="pageTree" description="Page tree" tools={[createTool("open_page_tree_node")]} />);
 
-        expect(store.getTools().map(({ name }) => name)).toEqual(["open_page"]);
+        expect(store.getTools().map(({ name }) => name)).toEqual(["open_page_tree_node"]);
         expect(store.getTool("edit_blocks")).toBeUndefined();
     });
 });

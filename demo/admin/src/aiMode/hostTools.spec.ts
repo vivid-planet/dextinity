@@ -87,11 +87,11 @@ describe("open_admin_page", () => {
     });
 });
 
-describe("open_page", () => {
+describe("open_page_tree_node", () => {
     const nodeId = "0199b3c4-7d2e-7a10-9a4b-3f2c1d0e9f8a";
 
     it("opens the editor of a page tree node of the current scope, in the node's category", () => {
-        const { call, navigate } = getPageTreeTool("open_page");
+        const { call, navigate } = getPageTreeTool("open_page_tree_node");
 
         call({ id: nodeId, category: "topMenu" });
 
@@ -99,24 +99,24 @@ describe("open_page", () => {
     });
 
     it("runs without the user's approval, because it only navigates", () => {
-        expect(findTool(createPageTreeTools({ navigate: vi.fn(), scopeUrl }), "open_page").readOnlyHint).toBe(true);
+        expect(findTool(createPageTreeTools({ navigate: vi.fn(), scopeUrl }), "open_page_tree_node").readOnlyHint).toBe(true);
     });
 
     it("doesn't claim the page is open, as the user may decide to stay on a page with unsaved changes", () => {
-        const { call } = getPageTreeTool("open_page");
+        const { call } = getPageTreeTool("open_page_tree_node");
 
         expect(call({ id: nodeId, category: "topMenu" })).toContain("check with get_page_state");
     });
 
     it("refuses an ID that is no UUID, so it cannot reach another path", () => {
-        const { call, navigate } = getPageTreeTool("open_page");
+        const { call, navigate } = getPageTreeTool("open_page_tree_node");
 
         expect(() => call({ id: "../../dashboard", category: "mainNavigation" })).toThrow("UUID");
         expect(navigate).not.toHaveBeenCalled();
     });
 
     it("refuses a category the page tree does not have", () => {
-        const { call } = getPageTreeTool("open_page");
+        const { call } = getPageTreeTool("open_page_tree_node");
 
         expect(() => call({ id: nodeId, category: "footer" })).toThrow("mainNavigation, topMenu");
     });

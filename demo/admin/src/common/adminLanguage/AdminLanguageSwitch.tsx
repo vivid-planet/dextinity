@@ -18,17 +18,11 @@ export function AdminLanguageSwitch<Language extends string>({ languages, value,
             <Label id={labelId} variant="caption">
                 <FormattedMessage id="adminLanguageSwitch.label" defaultMessage="Admin language" />
             </Label>
-            <LanguageList role="radiogroup" aria-labelledby={labelId} dense disablePadding>
+            <LanguageList role="group" aria-labelledby={labelId} dense disablePadding>
                 {languages.map((language) => {
                     const isSelected = language === value;
                     return (
-                        <LanguageListItemButton
-                            key={language}
-                            role="radio"
-                            aria-checked={isSelected}
-                            selected={isSelected}
-                            onClick={() => onChange(language)}
-                        >
+                        <LanguageListItemButton key={language} aria-pressed={isSelected} selected={isSelected} onClick={() => onChange(language)}>
                             <ListItemText primary={getNativeLanguageName(language)} lang={language} />
                             {isSelected && <Check color="primary" />}
                         </LanguageListItemButton>

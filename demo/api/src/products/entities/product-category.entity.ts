@@ -1,3 +1,4 @@
+import { ActionLogs, RequiredPermission } from "@dextinity/cms-api";
 import { Entity, ManyToOne, OneToMany, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
 import { BaseEntity, Collection, OptionalProps, type Ref } from "@mikro-orm/postgresql";
 import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
@@ -7,8 +8,10 @@ import { randomUUID } from "crypto";
 import { Product } from "./product.entity.js";
 import { ProductCategoryType } from "./product-category-type.entity.js";
 
+@RequiredPermission("products", { skipScopeCheck: true })
 @ObjectType()
 @Entity()
+@ActionLogs()
 export class ProductCategory extends BaseEntity {
     [OptionalProps]?: "createdAt" | "updatedAt";
 

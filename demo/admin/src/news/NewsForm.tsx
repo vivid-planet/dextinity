@@ -20,10 +20,11 @@ import {
     useContentScope,
     useFormSaveConflict,
 } from "@dextinity/cms-admin";
+import { AiModeFormToolset } from "@src/aiMode/AiModeFormToolset";
 import { deepEqual } from "fast-equals";
 import type { FormApi } from "final-form";
 import { useMemo } from "react";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 
 import { NewsContentBlock } from "./blocks/NewsContentBlock";
 import { createNewsMutation, newsFormFragment, newsQuery, updateNewsMutation } from "./NewsForm.gql";
@@ -51,6 +52,7 @@ interface FormProps {
 }
 export function NewsForm({ onCreate, id }: FormProps) {
     const client = useApolloClient();
+    const intl = useIntl();
     const mode = id ? "edit" : "add";
     const formApiRef = useFormApiRef<FormValues>();
     const stackSwitchApi = useStackSwitchApi();
@@ -138,6 +140,38 @@ export function NewsForm({ onCreate, id }: FormProps) {
             {() => (
                 <>
                     {saveConflict.dialogs}
+                    <AiModeFormToolset
+                        entityName="news"
+                        entityLabel="news article"
+                        id={id}
+                        fields={[
+                            { name: "slug", label: intl.formatMessage({ id: "news.slug", defaultMessage: "Slug" }), type: "text" },
+                            { name: "title", label: intl.formatMessage({ id: "news.title", defaultMessage: "Title" }), type: "text" },
+                            { name: "date", label: intl.formatMessage({ id: "news.date", defaultMessage: "Date" }), type: "date" },
+                            {
+                                name: "category",
+                                label: intl.formatMessage({ id: "news.category", defaultMessage: "Category" }),
+                                type: "select",
+                                options: [
+                                    { value: "events", label: intl.formatMessage({ id: "news.category.events", defaultMessage: "Events" }) },
+                                    { value: "company", label: intl.formatMessage({ id: "news.category.company", defaultMessage: "Company" }) },
+                                    { value: "awards", label: intl.formatMessage({ id: "news.category.awards", defaultMessage: "Awards" }) },
+                                ],
+                            },
+                            {
+                                name: "image",
+                                label: intl.formatMessage({ id: "news.image", defaultMessage: "Image" }),
+                                type: "block",
+                                block: rootBlocks.image,
+                            },
+                            {
+                                name: "content",
+                                label: intl.formatMessage({ id: "news.content", defaultMessage: "Content" }),
+                                type: "block",
+                                block: rootBlocks.content,
+                            },
+                        ]}
+                    />
                     <>
                         <TextField
                             required

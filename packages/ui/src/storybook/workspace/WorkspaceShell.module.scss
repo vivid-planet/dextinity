@@ -44,18 +44,16 @@
     min-inline-size: 0;
 }
 
-.heading {
-    display: grid;
-    min-inline-size: 0;
-    line-height: 1.2;
-}
-
-.headingTitle {
-    font-weight: 600;
+.logo {
+    display: block;
+    flex: none;
+    block-size: 30px;
 }
 
 .headingStory {
     overflow: hidden;
+    padding-inline-start: 12px;
+    border-inline-start: var(--dextinity-line-width) solid var(--dextinity-color-line);
     color: var(--dextinity-color-text-subtle);
     font-size: 12px;
     text-overflow: ellipsis;
@@ -128,6 +126,22 @@
     align-items: center;
     justify-content: flex-end;
     padding: 0 6px 4px;
+}
+
+.panelEmpty {
+    margin: 0;
+    padding: 8px 10px;
+    color: var(--dextinity-color-text-subtle);
+}
+
+.visuallyHidden {
+    position: absolute;
+    overflow: hidden;
+    inline-size: 1px;
+    block-size: 1px;
+    margin: -1px;
+    clip-path: inset(50%);
+    white-space: nowrap;
 }
 
 .panelList {

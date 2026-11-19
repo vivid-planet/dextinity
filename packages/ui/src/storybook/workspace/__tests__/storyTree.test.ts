@@ -10,7 +10,7 @@ const stories = [
 ];
 
 describe("buildStoryTree", () => {
-    it("nests the stories by the segments of their title, in the order of the index", () => {
+    it("nests the stories by the segments of their title, in the order of the index, and counts the stories in each folder", () => {
         expect(buildStoryTree(stories)).toEqual([
             {
                 id: "folder:Workspace",
@@ -31,13 +31,13 @@ describe("buildStoryTree", () => {
                 id: "folder:Building blocks",
                 label: "Building blocks",
                 type: "folder",
-                count: 1,
+                count: 3,
                 children: [
                     {
                         id: "folder:Building blocks/Buttons",
                         label: "Buttons",
                         type: "folder",
-                        count: 2,
+                        count: 3,
                         children: [
                             {
                                 id: "folder:Building blocks/Buttons/Button",

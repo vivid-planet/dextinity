@@ -22,14 +22,15 @@ import type { ThemeColorScheme, ThemeDensity } from "../../theme/types";
 import { brandSetting } from "../brand";
 import { colorSchemeSetting } from "../colorScheme";
 import { densitySetting } from "../density";
-import { buildStoryTree, getStoryFolderIds, type IndexedStory, isFolderId } from "./storyTree";
+import { buildStoryTree, getStoryFolderIds, type IndexedStory } from "./storyTree";
+import { workspaceLogo } from "./workspaceLogo";
 import styles from "./WorkspaceShell.module.scss";
 import { defaultWorkspaceState, useWorkspaceState, type WorkspaceZoom } from "./workspaceState";
 
 const shellStoryId = "workspace-shell--shell";
 const minFrameSize = 280;
 const canvasPadding = 48;
-const minPanelWidth = 200;
+const minPanelWidth = 260;
 const maxPanelWidth = 520;
 const panelKeyboardStep = 20;
 
@@ -96,6 +97,12 @@ function useElementSize(element: HTMLElement | null) {
 
 type ResizeEdge = "inline" | "block" | "both";
 
+/** The stories whose title or name contains the query, and the folders around them. */
+function getSearchMatches(stories: IndexedStory[], query: string) {
+    const matches = query === "" ? [] : stories.filter((story) => `${story.title} ${story.name}`.toLowerCase().includes(query));
+    return { storyIds: new Set(matches.map((story) => story.id)), folderIds: new Set(matches.flatMap(getStoryFolderIds)) };
+}
+
 function clampPanelWidth(width: number) {
     return Math.min(maxPanelWidth, Math.max(minPanelWidth, Math.round(width)));
 }
@@ -134,6 +141,7 @@ export function WorkspaceShell() {
     const [resizing, setResizing] = useState<"frame" | "panel" | null>(null);
     const [reloadKey, setReloadKey] = useState(0);
     const frameRef = useRef<HTMLIFrameElement>(null);
+    const treeRef = useRef<HTMLUListElement>(null);
     const canvasSize = useElementSize(canvasElement);
 
     useEffect(() => {
@@ -147,20 +155,40 @@ export function WorkspaceShell() {
     const storiesById = useMemo(() => new Map(stories.map((story) => [story.id, story])), [stories]);
     const expandedIds = state.expandedIds ?? (currentStory ? getStoryFolderIds(currentStory) : []);
     const searchQuery = search.trim().toLowerCase();
+    const isSearching = searchQuery !== "";
+    const searchMatches = useMemo(() => getSearchMatches(stories, searchQuery), [stories, searchQuery]);
+    // While searching, the tree has its own expanded folders, so the search doesn't change the ones kept for later
+    const [searchExpandedIds, setSearchExpandedIds] = useState<string[]>([]);
+    const visibleExpandedIds = isSearching ? searchExpandedIds : expandedIds;
 
-    function matchesSearch(nodeId: string) {
-        const story = storiesById.get(nodeId);
-        return story != null && `${story.title} ${story.name}`.toLowerCase().includes(searchQuery);
+    function setVisibleExpandedIds(ids: string[]) {
+        if (isSearching) {
+            setSearchExpandedIds(ids);
+        } else {
+            updateState({ expandedIds: ids });
+        }
+    }
+
+    function changeSearch(value: string) {
+        setSearch(value);
+        setSearchExpandedIds([...getSearchMatches(stories, value.trim().toLowerCase()).folderIds]);
     }
 
     function selectTreeNode(nodeId: string) {
-        if (!isFolderId(nodeId)) {
-            updateState({ storyId: nodeId });
+        const story = storiesById.get(nodeId);
+        if (story) {
+            updateState({ storyId: nodeId, expandedIds: [...new Set([...expandedIds, ...getStoryFolderIds(story)])] });
             return;
         }
-        updateState({
-            expandedIds: expandedIds.includes(nodeId) ? expandedIds.filter((id) => id !== nodeId) : [...expandedIds, nodeId],
-        });
+        setVisibleExpandedIds(
+            visibleExpandedIds.includes(nodeId) ? visibleExpandedIds.filter((id) => id !== nodeId) : [...visibleExpandedIds, nodeId],
+        );
+    }
+
+    function collapseAll() {
+        setVisibleExpandedIds([]);
+        // The button stays where it is, but moving on to the tree is what's next after collapsing it
+        treeRef.current?.querySelector<HTMLElement>('[role="treeitem"][tabindex="0"]')?.focus();
     }
 
     function focusCurrentStory() {
@@ -171,9 +199,10 @@ export function WorkspaceShell() {
     }
 
     function applyDensityToFrame() {
-        const frameDocument = frameRef.current?.contentDocument;
-        if (frameDocument) {
-            frameDocument.documentElement.dataset.dextinityDensity = density;
+        // Before the story has loaded, the frame's document has no root element yet
+        const frameRoot = frameRef.current?.contentDocument?.documentElement;
+        if (frameRoot) {
+            frameRoot.dataset.dextinityDensity = density;
         }
     }
 
@@ -232,10 +261,8 @@ export function WorkspaceShell() {
                         >
                             <Icon name={state.panelOpen ? "sidebar-close" : "sidebar-open"} />
                         </IconButton>
-                        <div className={styles.heading}>
-                            <span className={styles.headingTitle}>Workspace</span>
-                            <span className={styles.headingStory}>{currentStory ? `${currentStory.title} · ${currentStory.name}` : "…"}</span>
-                        </div>
+                        <img className={styles.logo} src={workspaceLogo} alt="Next UI Workspace" />
+                        <span className={styles.headingStory}>{currentStory ? `${currentStory.title} · ${currentStory.name}` : "…"}</span>
                     </div>
 
                     <div className={styles.toolbarGroup}>
@@ -346,7 +373,7 @@ export function WorkspaceShell() {
                                     placeholder="Search stories"
                                     startAdornment={<Icon name="search" />}
                                     value={search}
-                                    onChange={(event) => setSearch(event.target.value)}
+                                    onChange={(event) => changeSearch(event.target.value)}
                                 />
                             </div>
                             <div className={styles.panelActions}>
@@ -361,21 +388,34 @@ export function WorkspaceShell() {
                                     <Icon name="locate" />
                                 </IconButton>
                                 <TreeViewExpandButtons
-                                    onExpandAll={() => updateState({ expandedIds: getExpandableTreeNodeIds(storyTree) })}
-                                    onCollapseAll={() => updateState({ expandedIds: [] })}
-                                    collapseAllDisabled={expandedIds.length === 0}
+                                    onExpandAll={() =>
+                                        setVisibleExpandedIds(isSearching ? [...searchMatches.folderIds] : getExpandableTreeNodeIds(storyTree))
+                                    }
+                                    onCollapseAll={collapseAll}
                                 />
                             </div>
+                            <p role="status" className={styles.visuallyHidden}>
+                                {isSearching ? `${searchMatches.storyIds.size} stories found` : ""}
+                            </p>
                             <div className={styles.panelList}>
-                                <TreeView
-                                    aria-label="Stories"
-                                    nodes={storyTree}
-                                    expandedIds={expandedIds}
-                                    onExpandedChange={(ids) => updateState({ expandedIds: ids })}
-                                    selectedId={storyId ?? undefined}
-                                    onSelect={selectTreeNode}
-                                    filter={searchQuery ? (node) => matchesSearch(node.id) : undefined}
-                                />
+                                {isSearching && searchMatches.storyIds.size === 0 ? (
+                                    <p className={styles.panelEmpty}>No stories match “{search.trim()}”</p>
+                                ) : (
+                                    <TreeView
+                                        ref={treeRef}
+                                        aria-label="Stories"
+                                        nodes={storyTree}
+                                        expandedIds={visibleExpandedIds}
+                                        onExpandedChange={setVisibleExpandedIds}
+                                        selectedId={storyId ?? undefined}
+                                        onSelect={selectTreeNode}
+                                        filter={
+                                            isSearching
+                                                ? (node) => searchMatches.storyIds.has(node.id) || searchMatches.folderIds.has(node.id)
+                                                : undefined
+                                        }
+                                    />
+                                )}
                             </div>
                         </nav>
                     )}

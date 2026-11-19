@@ -8,10 +8,6 @@ export interface IndexedStory {
 
 const folderIdPrefix = "folder:";
 
-export function isFolderId(id: string) {
-    return id.startsWith(folderIdPrefix);
-}
-
 function getFolderId(titlePath: string) {
     return `${folderIdPrefix}${titlePath}`;
 }
@@ -44,10 +40,14 @@ export function buildStoryTree(stories: IndexedStory[]): TreeNode[] {
     }
 
     for (const folder of folders.values()) {
-        folder.count = folder.children?.length;
+        folder.count = countStories(folder);
     }
 
     return roots;
+}
+
+function countStories(node: TreeNode): number {
+    return node.children == null ? 1 : node.children.reduce((sum, child) => sum + countStories(child), 0);
 }
 
 /** The ids of the folders around a story, e.g. to expand them so the story is visible. */

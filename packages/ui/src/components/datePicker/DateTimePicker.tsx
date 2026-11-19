@@ -232,6 +232,7 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
             disabled={disabledProp}
             readOnly={readOnlyProp}
             error={draftError}
+            errorInput={dateDraft.error != null ? inputRef : timeInputRef}
             className={className}
             style={style}
         >

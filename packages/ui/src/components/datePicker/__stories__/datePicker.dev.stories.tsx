@@ -3,6 +3,7 @@ import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
+import { Button } from "../../button/Button";
 import { Field } from "../../field/Field";
 import { DatePicker, type DatePickerProps } from "../DatePicker";
 import styles from "./DatePicker.stories.module.scss";
@@ -22,6 +23,22 @@ function StatefulDatePicker(props: DatePickerProps) {
                 />
             </Field>
         </div>
+    );
+}
+
+const formSubmit = fn();
+
+function DatePickerInForm(props: DatePickerProps) {
+    return (
+        <form
+            onSubmit={(event) => {
+                event.preventDefault();
+                formSubmit();
+            }}
+        >
+            <StatefulDatePicker {...props} />
+            <Button type="submit">Save</Button>
+        </form>
     );
 }
 
@@ -50,5 +67,34 @@ export const FocusStaysOnTheMonthButtonsAfterAKeyThatDoesntMove: Story = {
         await userEvent.click(nextMonth);
         await screen.findByRole("grid", { name: "December 2026" });
         await expect(nextMonth).toHaveFocus();
+    },
+};
+
+/**
+ * Enter with typed text that can't be used keeps the surrounding form from being submitted.
+ */
+export const EnterWithAnErrorKeepsTheFormFromSubmitting: Story = {
+    render: (args) => <DatePickerInForm {...args} />,
+    play: async ({ canvas }) => {
+        const input = canvas.getByRole("textbox", { name: "Published on" });
+        await userEvent.clear(input);
+        await userEvent.type(input, "next week{Enter}");
+        await expect(input).toHaveAttribute("aria-invalid", "true");
+        await expect(formSubmit).not.toHaveBeenCalled();
+    },
+};
+
+/**
+ * A click on a submit button right after typing text that can't be used keeps the surrounding form from being submitted.
+ */
+export const SubmitRightAfterTypingAnErrorKeepsTheFormFromSubmitting: Story = {
+    render: (args) => <DatePickerInForm {...args} />,
+    play: async ({ canvas }) => {
+        const input = canvas.getByRole("textbox", { name: "Published on" });
+        await userEvent.clear(input);
+        await userEvent.type(input, "next week");
+        await userEvent.click(canvas.getByRole("button", { name: "Save" }));
+        await expect(input).toHaveAttribute("aria-invalid", "true");
+        await expect(formSubmit).not.toHaveBeenCalled();
     },
 };

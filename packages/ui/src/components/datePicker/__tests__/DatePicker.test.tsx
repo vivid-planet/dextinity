@@ -77,6 +77,29 @@ describe("DatePicker", () => {
         expect(screen.getByRole("button", { name: "Saturday, 28 February 2026" })).toHaveFocus();
     });
 
+    it("keeps the surrounding form from being submitted while the typed text has an error", async () => {
+        const onSubmit = vi.fn();
+        const { container } = render(
+            <form
+                onSubmit={(event) => {
+                    event.preventDefault();
+                    onSubmit();
+                }}
+            >
+                <Field label="Published on">
+                    <DatePicker name="publishedOn" value="2026-11-06" onChange={vi.fn()} locale="de-AT" />
+                </Field>
+            </form>,
+        );
+
+        const input = screen.getByRole("textbox", { name: "Published on" });
+        fireEvent.change(input, { target: { value: "next week" } });
+        await act(async () => fireEvent.blur(input));
+        container.querySelector("form")?.requestSubmit();
+
+        expect(onSubmit).not.toHaveBeenCalled();
+    });
+
     it("draws its own box and takes its name from aria-label on its own", () => {
         const { container } = render(<DatePicker name="publishedOn" aria-label="Published on" value={null} onChange={vi.fn()} />);
 
@@ -95,6 +118,21 @@ describe("DateTimePicker", () => {
 
         expect(screen.getByRole("textbox", { name: "Publish at" })).toHaveProperty("value", "06.11.2026");
         expect(screen.getByRole("textbox", { name: "Publish at Time" })).toHaveProperty("value", "08:30");
+    });
+
+    it("blocks the form submission at the time input while the typed time has an error", async () => {
+        render(
+            <Field label="Publish at">
+                <DateTimePicker name="publishAt" value={new Date(2026, 10, 6, 8, 30).toISOString()} onChange={vi.fn()} locale="de-AT" />
+            </Field>,
+        );
+
+        const time = screen.getByRole("textbox", { name: "Publish at Time" });
+        fireEvent.change(time, { target: { value: "25:99" } });
+        await act(async () => fireEvent.blur(time));
+
+        expect(time).toHaveProperty("validity.valid", false);
+        expect(screen.getByRole("textbox", { name: "Publish at" })).toHaveProperty("validity.valid", true);
     });
 
     it("names the time input after its aria-label on its own", () => {
@@ -122,6 +160,21 @@ describe("DateRangePicker", () => {
             expect(input).toHaveAccessibleDescription("Choose a period.");
             expect(input).toHaveAttribute("aria-invalid", "true");
         }
+    });
+
+    it("blocks the form submission at the end input while the typed end has an error", async () => {
+        render(
+            <Field label="Period">
+                <DateRangePicker name="period" value={{ start: "2026-11-02", end: null }} onChange={vi.fn()} locale="de-AT" />
+            </Field>,
+        );
+
+        const end = screen.getByRole("textbox", { name: "Period End" });
+        fireEvent.change(end, { target: { value: "next week" } });
+        await act(async () => fireEvent.blur(end));
+
+        expect(end).toHaveProperty("validity.valid", false);
+        expect(screen.getByRole("textbox", { name: "Period Start" })).toHaveProperty("validity.valid", true);
     });
 
     it("names both inputs after its aria-label on its own", () => {

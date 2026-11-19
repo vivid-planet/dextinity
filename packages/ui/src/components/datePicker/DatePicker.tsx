@@ -152,6 +152,7 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(function
             disabled={disabledProp}
             readOnly={readOnlyProp}
             error={draft.error}
+            errorInput={inputRef}
             className={className}
             style={style}
         >

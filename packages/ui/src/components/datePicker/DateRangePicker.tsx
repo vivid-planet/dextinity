@@ -126,6 +126,7 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
     // The start chosen in the calendar, until the end is chosen too
     const [pendingStart, setPendingStart] = useState<IsoDate | null>(null);
     const inputRef = useRef<HTMLInputElement | null>(null);
+    const endInputRef = useRef<HTMLInputElement>(null);
     const setInputRef = useCallback(
         (element: HTMLInputElement | null) => {
             inputRef.current = element;
@@ -212,6 +213,7 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
             disabled={disabledProp}
             readOnly={readOnlyProp}
             error={draftError}
+            errorInput={startDraft.error != null ? inputRef : endInputRef}
             className={className}
             style={style}
         >
@@ -239,6 +241,7 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
                     />
                     <Icon name="arrow-right" className={styles.separator} />
                     <input
+                        ref={endInputRef}
                         type="text"
                         inputMode="numeric"
                         autoComplete="off"

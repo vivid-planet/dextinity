@@ -5,7 +5,6 @@ import { Icon } from "../../../components/icon/Icon";
 import { PageHeader } from "../../../components/pageHeader/PageHeader";
 import { PageTypeShell } from "../../pageTypes/PageTypeShell";
 import { themeDecorator } from "../../themeDecorator";
-import { WidgetHeaderVariants } from "./WidgetHeaderVariants";
 
 /**
  * What's currently being designed in the workspace. Replace the stories freely; each one shows up in the workspace's story list.
@@ -32,8 +31,4 @@ export const Current: Story = {
             />
         </PageTypeShell>
     ),
-};
-
-export const WidgetHeaders: Story = {
-    render: () => <WidgetHeaderVariants />,
 };

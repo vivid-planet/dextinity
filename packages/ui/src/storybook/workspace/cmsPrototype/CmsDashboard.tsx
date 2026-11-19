@@ -76,8 +76,7 @@ export function CmsDashboard() {
             >
                 <Card
                     title="Recently edited"
-                    icon={<Icon name="clock" />}
-                    link={
+                    actions={
                         <Link href="#page-tree" endIcon={<Icon name="arrow-right" />}>
                             Page tree
                         </Link>
@@ -100,9 +99,8 @@ export function CmsDashboard() {
                 </Card>
                 <Card
                     title="Unpublished news"
-                    icon={<Icon name="news" />}
                     meta={`${scheduled.length} drafts`}
-                    link={
+                    actions={
                         <Link href="#news" endIcon={<Icon name="arrow-right" />}>
                             News
                         </Link>
@@ -118,7 +116,7 @@ export function CmsDashboard() {
                         />
                     ))}
                 </Card>
-                <Card title="Published" icon={<Icon name="bolt" />} meta="30 days">
+                <Card title="Published" meta="30 days">
                     <div className={styles.published}>
                         <div className={styles.publishedHead}>
                             <div>
@@ -133,7 +131,7 @@ export function CmsDashboard() {
                         <MiniChart data={published} aria-label="Published changes per day" highlightLast startLabel="30 days ago" endLabel="Today" />
                     </div>
                 </Card>
-                <Card title="Warnings" icon={<Icon name="warning-triangle" />} meta={`${warnings.length} open`}>
+                <Card title="Warnings" meta={`${warnings.length} open`}>
                     {warnings.map((warning) => (
                         <Row
                             key={warning.title}

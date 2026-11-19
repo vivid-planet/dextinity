@@ -21,6 +21,7 @@ import { brandSetting } from "../brand";
 import { colorSchemeSetting, getAppliedColorScheme } from "../colorScheme";
 import { densitySetting } from "../density";
 import { getComponentStoryIds } from "./componentStories";
+import { workspacePrototypes } from "./prototypes";
 import { buildStoryTree, getStoryFolderIds, type IndexedStory } from "./storyTree";
 import { type InspectedComponent, useCanvasInspector } from "./useCanvasInspector";
 import { useFramePage } from "./useFramePage";
@@ -80,6 +81,10 @@ type ResizeEdge = "inline" | "block" | "both";
 
 function isPrototype(story: IndexedStory) {
     return story.title === prototypesTitle || story.title.startsWith(`${prototypesTitle}/`);
+}
+
+function getPrototypePageNodeId(storyId: string, pageId: string) {
+    return `${storyId}#${pageId}`;
 }
 
 function getStoryLabel(story: IndexedStory) {
@@ -181,9 +186,26 @@ export function WorkspaceShell() {
 
     const storyTree = useMemo(() => buildStoryTree(componentStories), [componentStories]);
     const prototypeNodes = useMemo<TreeNode[]>(
-        () => prototypes.map((story) => ({ id: story.id, label: story.name, icon: <Icon name="window" /> })),
+        () =>
+            prototypes.map((story) => {
+                const prototype = workspacePrototypes.get(story.id);
+                return {
+                    id: story.id,
+                    label: story.name,
+                    icon: <Icon name="window" />,
+                    children: prototype?.designedPageIds.map((pageId) => ({
+                        id: getPrototypePageNodeId(story.id, pageId),
+                        label: prototype.getPageLabel(pageId) ?? pageId,
+                        type: "page" as const,
+                    })),
+                };
+            }),
         [prototypes],
     );
+    // Until the tree is first changed, every prototype shows its pages
+    const [prototypeExpandedIds, setPrototypeExpandedIds] = useState<string[] | null>(null);
+    const visiblePrototypeExpandedIds = prototypeExpandedIds ?? prototypes.map((story) => story.id);
+    const currentPrototypePageId = framePage.hash || workspacePrototypes.get(prototypeId ?? "")?.startPageId;
     const storiesById = useMemo(() => new Map(componentStories.map((story) => [story.id, story])), [componentStories]);
     const expandedIds = state.expandedIds ?? (currentStory ? getStoryFolderIds(currentStory) : []);
     const searchQuery = search.trim().toLowerCase();
@@ -224,11 +246,26 @@ export function WorkspaceShell() {
         updateState({ mode: "components", storyId: nodeId, expandedIds: [...new Set([...expandedIds, ...getStoryFolderIds(story)])] });
     }
 
-    function openPrototype(nodeId: string) {
+    function selectPrototypeNode(nodeId: string) {
+        const [storyId, pageId] = nodeId.split("#");
+        if (pageId === undefined) {
+            setPrototypeExpandedIds(
+                visiblePrototypeExpandedIds.includes(nodeId)
+                    ? visiblePrototypeExpandedIds.filter((id) => id !== nodeId)
+                    : [...visiblePrototypeExpandedIds, nodeId],
+            );
+            return;
+        }
         setInspecting(false);
         setOverlayPanelOpen(false);
-        setPrototypeStartPage("");
-        updateState({ prototypeId: nodeId });
+        const frameWindow = frameRef.current?.contentWindow;
+        // The prototype in the frame navigates itself, which keeps its state, like a click in its own navigation
+        if (storyId === prototypeId && frameWindow) {
+            frameWindow.location.hash = pageId;
+        } else {
+            setPrototypeStartPage(pageId);
+            updateState({ prototypeId: storyId });
+        }
     }
 
     function changeMode(mode: WorkspaceMode) {
@@ -446,15 +483,6 @@ export function WorkspaceShell() {
                                 </IconButton>
                             )}
                             <IconButton
-                                variant={inspecting ? "contained" : "text"}
-                                color={inspecting ? "primary" : "secondary"}
-                                aria-label="Pick a component in the canvas"
-                                aria-pressed={inspecting}
-                                onClick={() => setInspecting(!inspecting)}
-                            >
-                                <Icon name="select" />
-                            </IconButton>
-                            <IconButton
                                 variant="text"
                                 color="secondary"
                                 aria-label={previousStory ? `Back to ${getStoryLabel(previousStory)}` : "Back"}
@@ -462,6 +490,15 @@ export function WorkspaceShell() {
                                 onClick={goBack}
                             >
                                 <Icon name="back" />
+                            </IconButton>
+                            <IconButton
+                                variant={inspecting ? "contained" : "text"}
+                                color={inspecting ? "primary" : "secondary"}
+                                aria-label="Pick a component in the canvas"
+                                aria-pressed={inspecting}
+                                onClick={() => setInspecting(!inspecting)}
+                            >
+                                <Icon name="select" />
                             </IconButton>
                         </div>
                     </div>
@@ -482,10 +519,14 @@ export function WorkspaceShell() {
                                     <TreeView
                                         aria-label="Prototypes"
                                         nodes={prototypeNodes}
-                                        expandedIds={[]}
-                                        onExpandedChange={() => {}}
-                                        selectedId={prototypeId ?? undefined}
-                                        onSelect={openPrototype}
+                                        expandedIds={visiblePrototypeExpandedIds}
+                                        onExpandedChange={setPrototypeExpandedIds}
+                                        selectedId={
+                                            prototypeId && currentPrototypePageId
+                                                ? getPrototypePageNodeId(prototypeId, currentPrototypePageId)
+                                                : undefined
+                                        }
+                                        onSelect={selectPrototypeNode}
                                     />
                                 </div>
                             ) : (

@@ -4,7 +4,7 @@ import { createContext, type PropsWithChildren, useCallback, useContext, useMemo
 type AiModeContextValue = {
     /** Whether the AI Hub is configured, see `isAiHubConfigured`, and the user has the `aiHub` permission. */
     isEnabled: boolean;
-    /** Whether the page that is open supports the AI Mode. For now, only the page tree does. */
+    /** Whether the page that is open registers an AI Mode scope. */
     isAvailable: boolean;
     isOpen: boolean;
     toggle: () => void;

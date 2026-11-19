@@ -10,6 +10,7 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vite
 
 import { AiModeProvider } from "./AiModeContext";
 import { AiModeFlyout } from "./AiModeFlyout";
+import { AiModeScope, type AiModeTool, useAiModeScope } from "./AiModeScopes";
 
 // `vi.mock` is hoisted above the imports, so what its factory reads has to be hoisted with it.
 const { scriptSrc } = vi.hoisted(() => ({ scriptSrc: "https://ai-hub.test/ai-hub-chat.mjs" }));
@@ -60,6 +61,42 @@ function CaptureDragDropManager() {
     return null;
 }
 
+function createTool(name: string, handler: AiModeTool["handler"] = () => name): AiModeTool {
+    return { name, description: `The tool ${name}`, inputSchema: { type: "object", properties: {} }, handler };
+}
+
+function OpenablePage() {
+    const [isOpen, setIsOpen] = useState(false);
+    const [title, setTitle] = useState("Home");
+
+    return (
+        <>
+            {isOpen && <Page title={title} />}
+            <button onClick={() => setIsOpen((value) => !value)}>Toggle page</button>
+            <button onClick={() => setTitle("About us")}>Rename page</button>
+        </>
+    );
+}
+
+function Page({ title }: { title: string }) {
+    useAiModeScope({
+        id: "page",
+        description: "A page",
+        context: { title },
+        tools: [
+            createTool("edit_page", (args, { clearTextSelection }) => {
+                clearTextSelection();
+                return `Edited ${title}`;
+            }),
+        ],
+    });
+    return null;
+}
+
+function getRegisteredTools() {
+    return bridge.registerHostTools.mock.lastCall?.[0] as Array<{ name: string; handler: (args: Record<string, unknown>) => unknown }>;
+}
+
 // Unmounts the flyout alone, as closing it does, while the admin's DndProvider stays.
 function RemovableFlyout() {
     const [isMounted, setIsMounted] = useState(true);
@@ -78,8 +115,11 @@ function renderFlyout({ isStrictMode = false }: { isStrictMode?: boolean } = {})
             <DndProvider options={HTML5toTouch}>
                 <CaptureDragDropManager />
                 <AiModeProvider isEnabled isAvailable>
-                    <RemovableFlyout />
-                    <OpenTopMenuButton />
+                    <AiModeScope id="pageTree" description="The page tree" tools={[createTool("open_page")]}>
+                        <RemovableFlyout />
+                        <OpenTopMenuButton />
+                        <OpenablePage />
+                    </AiModeScope>
                 </AiModeProvider>
             </DndProvider>
         </CurrentUserContext.Provider>,
@@ -109,6 +149,7 @@ describe("AiModeFlyout", () => {
     });
 
     beforeEach(() => {
+        vi.clearAllMocks();
         localStorage.setItem("ai-mode-open", "true");
         // Marks the script as loaded, so that `ScriptLoader` renders the chat right away.
         const script = document.createElement("script");
@@ -139,12 +180,81 @@ describe("AiModeFlyout", () => {
 
         expect(bridge.registerMcpServers).toHaveBeenCalledExactlyOnceWith([{ url: "https://admin.test/api/mcp" }]);
         expect(bridge.registerHostTools).toHaveBeenCalledTimes(1);
+        expect(getRegisteredTools().map(({ name }) => name)).toEqual(["open_page"]);
 
         fireEvent.click(screen.getByRole("button", { name: "Open top menu" }));
 
         expect(bridge.registerMcpServers).toHaveBeenCalledTimes(1);
         expect(bridge.registerHostTools).toHaveBeenCalledTimes(1);
         expect(bridge.setContext).toHaveBeenLastCalledWith(expect.objectContaining({ pathname: topMenuPath }));
+    });
+
+    it("registers the tools of every mounted scope again when a scope mounts or unmounts", () => {
+        renderFlyout();
+
+        fireEvent.click(screen.getByRole("button", { name: "Toggle page" }));
+
+        expect(bridge.registerHostTools).toHaveBeenCalledTimes(2);
+        expect(getRegisteredTools().map(({ name }) => name)).toEqual(["open_page", "edit_page"]);
+
+        fireEvent.click(screen.getByRole("button", { name: "Toggle page" }));
+
+        expect(bridge.registerHostTools).toHaveBeenCalledTimes(3);
+        expect(getRegisteredTools().map(({ name }) => name)).toEqual(["open_page"]);
+    });
+
+    it("calls the handler of the page's latest render, and doesn't register the tools again for it", async () => {
+        renderFlyout();
+        fireEvent.click(screen.getByRole("button", { name: "Toggle page" }));
+        const editPage = getRegisteredTools().find(({ name }) => name === "edit_page");
+
+        fireEvent.click(screen.getByRole("button", { name: "Rename page" }));
+
+        expect(bridge.registerHostTools).toHaveBeenCalledTimes(2);
+        expect(await editPage?.handler({})).toBe("Edited About us");
+    });
+
+    it("answers a call of a tool whose page is gone instead of failing", async () => {
+        renderFlyout();
+        fireEvent.click(screen.getByRole("button", { name: "Toggle page" }));
+        const editPage = getRegisteredTools().find(({ name }) => name === "edit_page");
+
+        fireEvent.click(screen.getByRole("button", { name: "Toggle page" }));
+
+        expect(await editPage?.handler({})).toBe("edit_page isn't available on the page that is open in the admin anymore.");
+    });
+
+    it("pushes the mounted scopes with their context and the names of their tools", () => {
+        vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
+        renderFlyout();
+
+        fireEvent.click(screen.getByRole("button", { name: "Toggle page" }));
+        vi.runAllTimers();
+
+        expect(bridge.setContext).toHaveBeenLastCalledWith(
+            expect.objectContaining({
+                scopes: [
+                    { id: "pageTree", description: "The page tree", context: undefined, tools: ["open_page"] },
+                    { id: "page", description: "A page", context: { title: "Home" }, tools: ["edit_page"] },
+                ],
+            }),
+        );
+    });
+
+    it("lets a tool forget the selected text", async () => {
+        vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
+        renderFlyout();
+        fireEvent.click(screen.getByRole("button", { name: "Toggle page" }));
+        const input = selectInTextField("Welcome to our website", { start: 11, end: 22 });
+        vi.runAllTimers();
+
+        await getRegisteredTools()
+            .find(({ name }) => name === "edit_page")
+            ?.handler({});
+        vi.runAllTimers();
+
+        expect(bridge.setContext).toHaveBeenLastCalledWith(expect.objectContaining({ selection: null }));
+        input.remove();
     });
 
     it("pushes the text the user selects in the admin", () => {

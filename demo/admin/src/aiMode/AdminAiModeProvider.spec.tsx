@@ -1,4 +1,4 @@
-import { ContentScopeProvider, CurrentUserContext, type CurrentUserInterface, type Permission } from "@dextinity/cms-admin";
+import { CurrentUserContext, type CurrentUserInterface, type Permission } from "@dextinity/cms-admin";
 import { renderAdmin } from "@src/testing/renderAdmin";
 import { screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
@@ -6,6 +6,7 @@ import { describe, expect, it, vi } from "vitest";
 import { AdminAiModeProvider } from "./AdminAiModeProvider";
 import { useAiMode } from "./AiModeContext";
 import { AiModeHeaderItem } from "./AiModeHeaderItem";
+import { useAiModeScope } from "./AiModeScopes";
 
 vi.mock("@src/config", () => ({
     createConfig: () => ({ aiHubWebComponentScriptSrc: "https://ai-hub.test/ai-hub-chat.mjs", aiHubWidgetId: "widget-1" }),
@@ -28,36 +29,37 @@ function MasterHeaderAiModeItem() {
     return isEnabled ? <AiModeHeaderItem /> : null;
 }
 
-function renderHeaderItemAt(route: string, { permissions = ["aiHub"] }: { permissions?: Permission[] } = {}) {
+function PageWithAiModeScope() {
+    useAiModeScope({ id: "page", description: "A page" });
+    return null;
+}
+
+function renderHeaderItem({ hasScope = true, permissions = ["aiHub"] }: { hasScope?: boolean; permissions?: Permission[] } = {}) {
     renderAdmin(
         <CurrentUserContext.Provider value={{ currentUser, isAllowed: (user, permission) => permissions.includes(permission) }}>
-            <ContentScopeProvider>
-                {() => (
-                    <AdminAiModeProvider>
-                        <MasterHeaderAiModeItem />
-                    </AdminAiModeProvider>
-                )}
-            </ContentScopeProvider>
+            <AdminAiModeProvider>
+                <MasterHeaderAiModeItem />
+                {hasScope && <PageWithAiModeScope />}
+            </AdminAiModeProvider>
         </CurrentUserContext.Provider>,
-        { route },
     );
 }
 
 describe("AdminAiModeProvider", () => {
-    it.each(["/main/en/pages/pagetree/main-navigation", "/main/en/pages/pagetree/top-menu/1/edit"])("makes the AI Mode available at %s", (route) => {
-        renderHeaderItemAt(route);
+    it("makes the AI Mode available on a page that registers an AI Mode scope", () => {
+        renderHeaderItem();
 
         expect(screen.getByRole("switch", { name: "AI Companion" })).toBeEnabled();
     });
 
-    it.each(["/main/en/dashboard", "/main/en/assets"])("makes the AI Mode unavailable at %s", (route) => {
-        renderHeaderItemAt(route);
+    it("makes the AI Mode unavailable on a page without an AI Mode scope", () => {
+        renderHeaderItem({ hasScope: false });
 
         expect(screen.getByRole("switch", { name: "AI Companion" })).toBeDisabled();
     });
 
     it("doesn't offer the AI Mode to a user without the aiHub permission", () => {
-        renderHeaderItemAt("/main/en/pages/pagetree/main-navigation", { permissions: ["pageTree"] });
+        renderHeaderItem({ permissions: ["pageTree"] });
 
         expect(screen.queryByRole("switch", { name: "AI Companion" })).not.toBeInTheDocument();
     });

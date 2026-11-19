@@ -11,42 +11,42 @@ export type AiModeTool = Omit<HostTool, "handler"> & {
     handler: (args: Record<string, unknown>, helpers: AiModeToolHelpers) => Promise<unknown> | unknown;
 };
 
-export type AiModeScopeOptions = {
-    /** Names the scope in the context pushed to the agent, e.g. "pageTree". */
+export type AiModeToolsetOptions = {
+    /** Names the toolset in the context pushed to the agent, e.g. "pageTree". */
     id: string;
     /** Tells the agent what the user is looking at. */
     description: string;
     /** Pushed to the agent whenever it changes, so it should stay small. Pull larger state with a tool instead. */
     context?: Record<string, unknown>;
-    /** The tool names must be unique across all scopes that are mounted at the same time. */
+    /** The tool names must be unique across all toolsets that are mounted at the same time. */
     tools?: AiModeTool[];
 };
 
 type Registration = {
     depth: number;
     order: number;
-    scope: AiModeScopeOptions;
+    toolset: AiModeToolsetOptions;
     signature: string;
 };
 
-export type AiModeScopesStore = {
-    /** The mounted scopes, outermost first. */
-    getScopes: () => AiModeScopeOptions[];
+export type AiModeToolsetsStore = {
+    /** The mounted toolsets, outermost first. */
+    getToolsets: () => AiModeToolsetOptions[];
     /**
-     * The tools of the mounted scopes, outermost scope first. A tool whose name an outer scope already uses is left out.
+     * The tools of the mounted toolsets, outermost toolset first. A tool whose name an outer toolset already uses is left out.
      * Their handlers may be stale: call a tool through `getTool`.
      */
     getTools: () => AiModeTool[];
-    /** The tool of a mounted scope, with the handler of the latest render. */
+    /** The tool of a mounted toolset, with the handler of the latest render. */
     getTool: (name: string) => AiModeTool | undefined;
-    register: (token: symbol, depth: number, scope: AiModeScopeOptions) => void;
+    register: (token: symbol, depth: number, toolset: AiModeToolsetOptions) => void;
     unregister: (token: symbol) => void;
-    /** Notifies when a scope mounts or unmounts, or its description, context, or tool definitions change. */
+    /** Notifies when a toolset mounts or unmounts, or its description, context, or tool definitions change. */
     subscribe: (listener: () => void) => () => void;
 };
 
 // The handlers are left out: a page creates them anew on every render, and only what the agent sees counts as a change.
-function getSignature(depth: number, { id, description, context, tools = [] }: AiModeScopeOptions) {
+function getSignature(depth: number, { id, description, context, tools = [] }: AiModeToolsetOptions) {
     return JSON.stringify({ depth, id, description, context, tools: tools.map(getToolDefinition) });
 }
 
@@ -54,26 +54,28 @@ export function getToolDefinition({ handler: _handler, ...definition }: AiModeTo
     return definition;
 }
 
-function createAiModeScopesStore(): AiModeScopesStore {
+function createAiModeToolsetsStore(): AiModeToolsetsStore {
     const registrations = new Map<symbol, Registration>();
     const listeners = new Set<() => void>();
     let nextOrder = 0;
-    let scopes: AiModeScopeOptions[] = [];
+    let toolsets: AiModeToolsetOptions[] = [];
     let tools: AiModeTool[] = [];
 
-    const updateScopes = () => {
-        scopes = [...registrations.values()]
+    const updateToolsets = () => {
+        toolsets = [...registrations.values()]
             .sort((first, second) => first.depth - second.depth || first.order - second.order)
-            .map(({ scope }) => scope);
+            .map(({ toolset }) => toolset);
     };
 
     const updateTools = () => {
         const toolsByName = new Map<string, AiModeTool>();
-        for (const scope of scopes) {
-            for (const tool of scope.tools ?? []) {
+        for (const toolset of toolsets) {
+            for (const tool of toolset.tools ?? []) {
                 if (toolsByName.has(tool.name)) {
                     // The chat would register it as "<name>_2", a name that no tool description mentions.
-                    console.error(`The AI Mode scope "${scope.id}" has a tool "${tool.name}", which an outer scope already has. It is left out.`);
+                    console.error(
+                        `The AI Mode toolset "${toolset.id}" has a tool "${tool.name}", which an outer toolset already has. It is left out.`,
+                    );
                     continue;
                 }
                 toolsByName.set(tool.name, tool);
@@ -90,22 +92,22 @@ function createAiModeScopesStore(): AiModeScopesStore {
     };
 
     return {
-        getScopes: () => scopes,
+        getToolsets: () => toolsets,
         getTools: () => tools,
         getTool: (name) => {
-            for (const scope of scopes) {
-                const tool = scope.tools?.find((candidate) => candidate.name === name);
+            for (const toolset of toolsets) {
+                const tool = toolset.tools?.find((candidate) => candidate.name === name);
                 if (tool) {
                     return tool;
                 }
             }
             return undefined;
         },
-        register: (token, depth, scope) => {
+        register: (token, depth, toolset) => {
             const previous = registrations.get(token);
-            const signature = getSignature(depth, scope);
-            registrations.set(token, { depth, order: previous?.order ?? nextOrder++, scope, signature });
-            updateScopes();
+            const signature = getSignature(depth, toolset);
+            registrations.set(token, { depth, order: previous?.order ?? nextOrder++, toolset, signature });
+            updateToolsets();
 
             if (previous?.signature !== signature) {
                 notify();
@@ -115,7 +117,7 @@ function createAiModeScopesStore(): AiModeScopesStore {
             if (!registrations.delete(token)) {
                 return;
             }
-            updateScopes();
+            updateToolsets();
             notify();
         },
         subscribe: (listener) => {
@@ -127,40 +129,40 @@ function createAiModeScopesStore(): AiModeScopesStore {
     };
 }
 
-const AiModeScopesContext = createContext<AiModeScopesStore>(createAiModeScopesStore());
+const AiModeToolsetsContext = createContext<AiModeToolsetsStore>(createAiModeToolsetsStore());
 
-const AiModeScopeDepthContext = createContext(0);
+const AiModeToolsetDepthContext = createContext(0);
 
-export function AiModeScopesProvider({ children }: PropsWithChildren) {
-    const [store] = useState(createAiModeScopesStore);
+export function AiModeToolsetsProvider({ children }: PropsWithChildren) {
+    const [store] = useState(createAiModeToolsetsStore);
 
-    return <AiModeScopesContext.Provider value={store}>{children}</AiModeScopesContext.Provider>;
+    return <AiModeToolsetsContext.Provider value={store}>{children}</AiModeToolsetsContext.Provider>;
 }
 
-export function useAiModeScopesStore() {
-    return useContext(AiModeScopesContext);
+export function useAiModeToolsetsStore() {
+    return useContext(AiModeToolsetsContext);
 }
 
-export function useHasAiModeScopes() {
-    const store = useAiModeScopesStore();
+export function useHasAiModeToolsets() {
+    const store = useAiModeToolsetsStore();
 
-    return useSyncExternalStore(store.subscribe, () => store.getScopes().length > 0);
+    return useSyncExternalStore(store.subscribe, () => store.getToolsets().length > 0);
 }
 
 /**
  * Registers what the agent sees and can do while the calling component is mounted. Pass null for nothing, e.g. while
- * loading. Use `AiModeScope` instead for a scope that contains other scopes, so that they are ordered below it.
+ * loading. Use `AiModeToolset` instead for a toolset that contains other toolsets, so that they are ordered below it.
  */
-export function useAiModeScope(scope: AiModeScopeOptions | null) {
-    const store = useAiModeScopesStore();
-    const depth = useContext(AiModeScopeDepthContext);
+export function useAiModeToolset(toolset: AiModeToolsetOptions | null) {
+    const store = useAiModeToolsetsStore();
+    const depth = useContext(AiModeToolsetDepthContext);
     const [token] = useState(() => Symbol());
 
     // Runs after every render, so that the store always holds the latest handlers. The store notifies only on a change
-    // the agent sees, so a page needn't memoize its scope.
+    // the agent sees, so a page needn't memoize its toolset.
     useEffect(() => {
-        if (scope) {
-            store.register(token, depth, scope);
+        if (toolset) {
+            store.register(token, depth, toolset);
         } else {
             store.unregister(token);
         }
@@ -173,9 +175,9 @@ export function useAiModeScope(scope: AiModeScopeOptions | null) {
     }, [store, token]);
 }
 
-export function AiModeScope({ children, ...scope }: PropsWithChildren<AiModeScopeOptions>) {
-    const depth = useContext(AiModeScopeDepthContext);
-    useAiModeScope(scope);
+export function AiModeToolset({ children, ...toolset }: PropsWithChildren<AiModeToolsetOptions>) {
+    const depth = useContext(AiModeToolsetDepthContext);
+    useAiModeToolset(toolset);
 
-    return <AiModeScopeDepthContext.Provider value={depth + 1}>{children}</AiModeScopeDepthContext.Provider>;
+    return <AiModeToolsetDepthContext.Provider value={depth + 1}>{children}</AiModeToolsetDepthContext.Provider>;
 }

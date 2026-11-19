@@ -22,7 +22,7 @@ import {
     WarningsPage,
 } from "@dextinity/cms-admin";
 import { Chip } from "@mui/material";
-import { PageTreeAiModeScope } from "@src/aiMode/PageTreeAiModeScope";
+import { PageTreeAiModeToolset } from "@src/aiMode/PageTreeAiModeToolset";
 import { type BrevoContactConfig, getBrevoContactConfig } from "@src/brevo/brevoModuleConfig/brevoContactsPageAttributesConfig";
 import { additionalFormConfig } from "@src/brevo/brevoModuleConfig/targetGroupFormConfig";
 import { EmailCampaignContentBlock } from "@src/brevo/emailCampaigns/blocks/EmailCampaignContentBlock";
@@ -67,7 +67,7 @@ function PageTreePage() {
     }
 
     return (
-        <PageTreeAiModeScope category={category}>
+        <PageTreeAiModeToolset category={category}>
             <PagesPage
                 path={`/pages/pagetree/${categoryParam}`}
                 documentTypes={(category): Record<DocumentType, DocumentInterface> => {
@@ -88,7 +88,7 @@ function PageTreePage() {
                 category={category}
                 renderContentScopeIndicator={(scope: ContentScope) => <ContentScopeIndicator scope={scope} />}
             />
-        </PageTreeAiModeScope>
+        </PageTreeAiModeToolset>
     );
 }
 

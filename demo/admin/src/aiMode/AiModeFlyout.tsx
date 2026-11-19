@@ -10,7 +10,7 @@ import { useLocation } from "react-router";
 
 import type { BridgeElement } from "./aiHubBridge";
 import { useAiMode } from "./AiModeContext";
-import { getToolDefinition, useAiModeScopesStore } from "./AiModeScopes";
+import { getToolDefinition, useAiModeToolsetsStore } from "./AiModeToolsets";
 import { ScriptLoader } from "./ScriptLoader";
 import { useTextSelectionStore } from "./textSelection";
 
@@ -64,14 +64,14 @@ export function AiModeFlyout() {
     useShareDragDropManagerWithChat();
 
     const bridgeRef = useRef<BridgeElement | null>(null);
-    const scopesStore = useAiModeScopesStore();
+    const toolsetsStore = useAiModeToolsetsStore();
     const textSelectionStore = useTextSelectionStore();
 
     const pushContext = useCallback(() => {
         bridgeRef.current?.bridge?.setContext({
             scope,
             pathname: location.pathname,
-            scopes: scopesStore.getScopes().map(({ id, description, context, tools = [] }) => ({
+            toolsets: toolsetsStore.getToolsets().map(({ id, description, context, tools = [] }) => ({
                 id,
                 description,
                 context,
@@ -79,7 +79,7 @@ export function AiModeFlyout() {
             })),
             selection: textSelectionStore.getCurrent(),
         });
-    }, [scope, location.pathname, scopesStore, textSelectionStore]);
+    }, [scope, location.pathname, toolsetsStore, textSelectionStore]);
 
     // Read via a ref so that registerBridge, the ref callback of the chat, doesn't change on navigation. A new ref
     // callback makes React detach and reattach the ref, which would register the MCP server and the tools again.
@@ -88,7 +88,7 @@ export function AiModeFlyout() {
 
     const registeredToolsSignatureRef = useRef<string | null>(null);
 
-    // Each call replaces the tools the chat had, so it gets the tools of every mounted scope. Only a change the agent
+    // Each call replaces the tools the chat had, so it gets the tools of every mounted toolset. Only a change the agent
     // sees registers them again: the handlers are looked up when a tool is called.
     const registerHostTools = useCallback(() => {
         const bridge = bridgeRef.current?.bridge;
@@ -96,7 +96,7 @@ export function AiModeFlyout() {
             return;
         }
 
-        const definitions = scopesStore.getTools().map(getToolDefinition);
+        const definitions = toolsetsStore.getTools().map(getToolDefinition);
         const signature = JSON.stringify(definitions);
         if (signature === registeredToolsSignatureRef.current) {
             return;
@@ -107,7 +107,7 @@ export function AiModeFlyout() {
             definitions.map((definition) => ({
                 ...definition,
                 handler: (args) => {
-                    const tool = scopesStore.getTool(definition.name);
+                    const tool = toolsetsStore.getTool(definition.name);
                     if (!tool) {
                         return `${definition.name} isn't available on the page that is open in the admin anymore.`;
                     }
@@ -115,12 +115,12 @@ export function AiModeFlyout() {
                 },
             })),
         );
-    }, [scopesStore, textSelectionStore]);
+    }, [toolsetsStore, textSelectionStore]);
 
     const registerBridge = useCallback(
         (element: BridgeElement | null) => {
             bridgeRef.current = element;
-            // A new chat has no host tools, so it needs no registration until a scope offers some.
+            // A new chat has no host tools, so it needs no registration until a toolset offers some.
             registeredToolsSignatureRef.current = JSON.stringify([]);
             if (!element?.bridge) {
                 return;
@@ -144,7 +144,7 @@ export function AiModeFlyout() {
         pushContext();
     }, [pushContext]);
 
-    // Re-push (debounced) when a scope or the selection changes — a scope's context can change with every keystroke,
+    // Re-push (debounced) when a toolset or the selection changes — a toolset's context can change with every keystroke,
     // and dragging a selection changes it on every mouse move.
     useEffect(() => {
         let timeout: number | undefined;
@@ -152,7 +152,7 @@ export function AiModeFlyout() {
             window.clearTimeout(timeout);
             timeout = window.setTimeout(pushContext, contextPushDebounceMs);
         };
-        const unsubscribeScopes = scopesStore.subscribe(() => {
+        const unsubscribeToolsets = toolsetsStore.subscribe(() => {
             // Right away rather than debounced, so that the agent doesn't call a tool of a page that is gone.
             registerHostTools();
             schedulePush();
@@ -160,11 +160,11 @@ export function AiModeFlyout() {
         const unsubscribeTextSelection = textSelectionStore.subscribe(schedulePush);
 
         return () => {
-            unsubscribeScopes();
+            unsubscribeToolsets();
             unsubscribeTextSelection();
             window.clearTimeout(timeout);
         };
-    }, [scopesStore, textSelectionStore, pushContext, registerHostTools]);
+    }, [toolsetsStore, textSelectionStore, pushContext, registerHostTools]);
 
     // Unmounted once closed, so the chat starts over with the next opening.
     return (

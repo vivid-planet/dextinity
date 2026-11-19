@@ -18,4 +18,4 @@ export class PageTools {
 }
 ```
 
-Before, the guards read the tool input instead of the HTTP request and denied every call. They now authenticate the user from the HTTP request of the call and read the scope arguments from the tool input. `CdnGuard`, `@GetCurrentUser()`, `@RequestContext()` and `getRequestFromExecutionContext()` support MCP calls as well. MCP calls over stdio have no HTTP request and are denied unless the tool disables the Dextinity guards.
+Before, the guards read the tool input instead of the HTTP request and denied every call. They now authenticate the user from the HTTP request of the call and read the scope arguments from the tool input. `CdnGuard`, `@GetCurrentUser()`, `@RequestContext()` and `getRequestFromExecutionContext()` support MCP calls as well. MCP calls over stdio have no HTTP request and are denied unless the tool disables the Dextinity guards. In such a tool, `@GetCurrentUser()` returns `undefined`, `@RequestContext()` returns the defaults and `CdnGuard` denies the call. `getRequestFromExecutionContext()` returns `undefined` for them, so its return type now includes `undefined`.

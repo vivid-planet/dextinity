@@ -22,7 +22,7 @@ export class DextinityAuthGuard implements CanActivate {
     ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
-        const request: (Request & { user: CurrentUser | SystemUser }) | undefined = getRequestFromExecutionContext(context);
+        const request = getRequestFromExecutionContext(context) as (Request & { user: CurrentUser | SystemUser }) | undefined;
 
         const disableDextinityGuard = this.reflector.getAllAndOverride(DISABLE_DEXTINITY_GUARDS_METADATA_KEY, [
             context.getHandler(),

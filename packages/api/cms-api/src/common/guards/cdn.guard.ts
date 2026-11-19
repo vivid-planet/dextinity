@@ -19,12 +19,17 @@ export class CdnGuard implements CanActivate {
         return !request.header("x-forwarded-for");
     }
 
-    getRequest(context: ExecutionContext): Request {
+    getRequest(context: ExecutionContext): Request | undefined {
         return getRequestFromExecutionContext(context);
     }
 
     canActivate(context: ExecutionContext): boolean {
         const request = this.getRequest(context);
+        if (!request) {
+            this.logger.debug("Can't check the CDN header without a request, e.g. for an MCP call over stdio.");
+            return false;
+        }
+
         if (this.isInternalRequest(request)) {
             // Internal requests (e.g. BFF) are allowed
             return true;

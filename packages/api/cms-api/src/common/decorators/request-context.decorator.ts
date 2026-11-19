@@ -23,6 +23,9 @@ export const getRequestContextHeadersFromRequest = (request: { headers: Incoming
 
 export const RequestContext = createParamDecorator((data: unknown, ctx: ExecutionContext): RequestContextInterface => {
     const request = getRequestFromExecutionContext(ctx);
+    if (!request) {
+        return { previewDamUrls: false };
+    }
 
     return getRequestContextHeadersFromRequest(request);
 });

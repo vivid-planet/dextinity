@@ -1,11 +1,13 @@
 import type { ExecutionContext } from "@nestjs/common";
 import { GqlExecutionContext } from "@nestjs/graphql";
+import type { Request } from "express";
 
 // The arguments of an `@nestjs/mcp` call are `[input, mcpContext]` (see `McpExecutionContext`). They're read by index so
 // that apps without an MCP server don't need to install `@nestjs/mcp`.
 const isMcpContext = (ctx: ExecutionContext) => ctx.getType().toString() === "mcp";
 
-export const getRequestFromExecutionContext = (ctx: ExecutionContext) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const getRequestFromExecutionContext = (ctx: ExecutionContext): (Request & Record<string, any>) | undefined => {
     if (ctx.getType().toString() === "graphql") {
         return GqlExecutionContext.create(ctx).getContext().req;
     }

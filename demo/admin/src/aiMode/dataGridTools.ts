@@ -209,6 +209,8 @@ export function createDataGridTools({
                     page: { type: "number", description: "The page to show, counted from 0." },
                 },
             },
+            // Changing the view changes no data, so the chat runs it without asking.
+            readOnlyHint: true,
             handler: async (args) => {
                 // Checked before anything changes, so that a wrong argument changes nothing.
                 const filterItems = args.filters === undefined ? undefined : asFilterItems(args.filters, columns);
@@ -273,6 +275,8 @@ export function createDataGridTools({
                 type: "object",
                 properties: { id: { type: "string", description: "The ID of the row to open. Leave it out to open the form for a new one." } },
             },
+            // Navigating changes no data, so the chat runs it without asking.
+            readOnlyHint: true,
             handler: (args) => {
                 if (args.id === undefined) {
                     openForm();

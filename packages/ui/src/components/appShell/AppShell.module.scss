@@ -230,6 +230,9 @@
     inset-block-end: 0;
     block-size: var(--dextinity-app-shell-assistant-sheet-height);
     outline: none;
+    border-start-start-radius: var(--dextinity-radius-panel);
+    border-start-end-radius: var(--dextinity-radius-panel);
+    background: var(--dextinity-color-canvas);
     color: var(--dextinity-color-text);
     font-family: var(--dextinity-font-family-text);
     transition: transform var(--dextinity-motion-duration-long) var(--dextinity-motion-easing);

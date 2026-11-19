@@ -87,7 +87,7 @@ pnpm run lint
 
 ## Demo application
 
-This repository includes a demo application which is showcasing the libraries.
+The demo application in this repository shows how to use the libraries. It is used mainly by developers who work on Dextinity, so its code and fixtures show the current best practice, not a state migrated from an earlier version. When you change block data or other database content, update the fixtures instead of adding a migration. Local data may break, and the fixtures regenerate it. Add a migration only to demonstrate the migration feature itself, for example a block migration or `migrateFromDraftJs`.
 
 **Api:**
 Demo backend API (NestJS, PostgreSQL)

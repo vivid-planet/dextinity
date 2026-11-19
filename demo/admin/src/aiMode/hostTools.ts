@@ -1,28 +1,20 @@
 import { categoryToUrlParam, pageTreeCategories } from "@src/pageTree/pageTreeCategories";
 
-import type { HostTool } from "./aiHubBridge";
-import type { AiModePageState } from "./AiModePageStateContext";
-import type { AiModePageTools } from "./AiModePageToolsContext";
-import { asBlockEditOperations, isBlockEditChange } from "./editBlocks";
+import type { AiModeTool } from "./AiModeScopes";
+import { asBlockEditOperations, type EditBlocks, isBlockEditChange } from "./editBlocks";
 
 const categories = pageTreeCategories.map(({ category }) => category);
 
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-export const createAdminHostTools = ({
+export const createPageTreeTools = ({
     navigate,
     scopeUrl,
-    getPageState,
-    getPageTools,
-    clearTextSelection,
 }: {
     navigate: (path: string) => void;
     /** The URL prefix of the current content scope, e.g. "/main/en". */
     scopeUrl: string;
-    getPageState: () => AiModePageState | null;
-    getPageTools: () => AiModePageTools | null;
-    clearTextSelection: () => void;
-}): HostTool[] => [
+}): AiModeTool[] => [
     {
         name: "open_page",
         description:
@@ -55,21 +47,35 @@ export const createAdminHostTools = ({
             return `Asked the editor to open the page at ${path}. If the page that was open has unsaved changes, the user first decides whether to discard them and may stay on it, so check with get_page_state ("pageTreeNodeId") which page is open before you refer to it.`;
         },
     },
+];
+
+export type AiModePageState = {
+    pageTreeNodeId: string;
+    documentType: string;
+    documentId?: string;
+    path: string;
+    activeTab?: string;
+    selectedBlockRoute?: string;
+    hasChanges: boolean;
+};
+
+export const createPageTools = ({
+    pageState,
+    getDocumentSummary,
+    editBlocks,
+}: {
+    pageState: AiModePageState;
+    getDocumentSummary: () => Record<string, unknown>;
+    editBlocks: EditBlocks;
+}): AiModeTool[] => [
     {
         name: "get_page_state",
         description:
             "Get the live state of the page currently open in the editor: per root block (content, stage, SEO) the block structure, text contents, and referenced files, links, and videos, plus the SEO settings. Use this whenever the user asks about the page they are editing — unlike get_page, it includes unsaved changes. To change the content, pass the keys it reports to edit_blocks. " +
-            "The text the user has selected in the admin is in the context as 'selection', not here: when the user refers to 'this text', 'the selection', or similar, they mean it. If a block is open ('selectedBlockRoute'), the selection is usually in that block.",
+            "The text the user has selected in the admin is in the context as 'selection', not here: when the user refers to 'this text', 'the selection', or similar, they mean it. If a block is open ('selectedBlockRoute' in the page's context), the selection is usually in that block.",
         inputSchema: { type: "object", properties: {} },
         readOnlyHint: true,
-        handler: () => {
-            const pageState = getPageState();
-            if (!pageState) {
-                return "No page is currently open in the editor.";
-            }
-
-            return { ...pageState.metadata, document: pageState.getDocumentSummary() };
-        },
+        handler: () => ({ ...pageState, document: getDocumentSummary() }),
     },
     {
         name: "edit_blocks",
@@ -140,12 +146,7 @@ export const createAdminHostTools = ({
         },
         // The chat runs a tool without asking only if it is read-only, so the user approves every edit.
         readOnlyHint: false,
-        handler: async (args) => {
-            const editBlocks = getPageTools()?.editBlocks;
-            if (!editBlocks) {
-                return "No page whose content blocks can be edited is currently open in the editor.";
-            }
-
+        handler: async (args, { clearTextSelection }) => {
             const { results } = await editBlocks({ operations: asBlockEditOperations(args.operations) });
             const changes = results.filter(isBlockEditChange).length;
 

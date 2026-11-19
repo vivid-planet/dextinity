@@ -31,11 +31,11 @@ import {
     useSiteConfig,
 } from "@dextinity/cms-admin";
 import { IconButton, Stack } from "@mui/material";
-import { useRegisterAiModePageState } from "@src/aiMode/AiModePageStateContext";
-import { useRegisterAiModePageTools } from "@src/aiMode/AiModePageToolsContext";
+import { useAiModeScope } from "@src/aiMode/AiModeScopes";
 import type { BlocksBlockChild } from "@src/aiMode/blockProps";
 import { summarizeBlockState, summarizeSeoBlockState } from "@src/aiMode/blockStateSummary";
 import { type EditBlocks, planBlockEdits } from "@src/aiMode/editBlocks";
+import { type AiModePageState, createPageTools } from "@src/aiMode/hostTools";
 import { useEffect, useRef } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { matchPath, useLocation } from "react-router";
@@ -197,8 +197,8 @@ export const EditPage = ({ id }: Props) => {
         latestContentBlocksRef.current = document?.content.blocks;
     });
 
-    // Deliberately not memoized: useRegisterAiModePageTools re-registers on every render, so the
-    // agent always reaches the callback of the latest one.
+    // Deliberately not memoized: useAiModeScope registers it again on every render, so the agent always reaches the
+    // callback of the latest one.
     const editBlocks: EditBlocks = async ({ operations }) => {
         const plannedContentBlocks = document?.content.blocks ?? [];
         const { apply, results } = await planBlockEdits({
@@ -229,28 +229,36 @@ export const EditPage = ({ id }: Props) => {
         return { results };
     };
 
-    useRegisterAiModePageTools(document ? { editBlocks } : null);
-
-    useRegisterAiModePageState(
+    const aiModePageState: AiModePageState | null =
         pageState && document
             ? {
-                  metadata: {
-                      pageTreeNodeId: id,
-                      documentType: document.__typename,
-                      documentId: document.id,
-                      path: pageState.path,
-                      activeTab: tab ?? "content",
-                      // Nested block editing is URL-driven, so the route below the active tab identifies the selected block.
-                      selectedBlockRoute:
-                          tabRouteMatch && pathname.length > tabRouteMatch.pathname.length
-                              ? pathname.slice(tabRouteMatch.pathname.length)
-                              : undefined,
-                      hasChanges: hasChanges ?? false,
-                  },
-                  getDocumentSummary: () => ({
-                      content: summarizeBlockState(PageContentBlock, document.content),
-                      stage: summarizeBlockState(StageBlock, document.stage),
-                      seo: summarizeSeoBlockState(SeoBlock, document.seo),
+                  pageTreeNodeId: id,
+                  documentType: document.__typename,
+                  documentId: document.id,
+                  path: pageState.path,
+                  activeTab: tab ?? "content",
+                  // Nested block editing is URL-driven, so the route below the active tab identifies the selected block.
+                  selectedBlockRoute:
+                      tabRouteMatch && pathname.length > tabRouteMatch.pathname.length ? pathname.slice(tabRouteMatch.pathname.length) : undefined,
+                  hasChanges: hasChanges ?? false,
+              }
+            : null;
+
+    useAiModeScope(
+        aiModePageState && document
+            ? {
+                  id: "page",
+                  description:
+                      "The editor of the page open in the page tree. It has the page's unsaved changes, which the MCP server's get_page doesn't.",
+                  context: aiModePageState,
+                  tools: createPageTools({
+                      pageState: aiModePageState,
+                      getDocumentSummary: () => ({
+                          content: summarizeBlockState(PageContentBlock, document.content),
+                          stage: summarizeBlockState(StageBlock, document.stage),
+                          seo: summarizeSeoBlockState(SeoBlock, document.seo),
+                      }),
+                      editBlocks,
                   }),
               }
             : null,

@@ -6,13 +6,11 @@ import { createConfig } from "@src/config";
 import { useCallback, useContext, useEffect, useLayoutEffect, useRef } from "react";
 import { useDragDropManager } from "react-dnd";
 import { FormattedMessage, useIntl } from "react-intl";
-import { useLocation, useNavigate } from "react-router";
+import { useLocation } from "react-router";
 
 import type { BridgeElement } from "./aiHubBridge";
 import { useAiMode } from "./AiModeContext";
-import { useAiModePageStateStore } from "./AiModePageStateContext";
-import { useAiModePageToolsStore } from "./AiModePageToolsContext";
-import { createAdminHostTools } from "./hostTools";
+import { getToolDefinition, useAiModeScopesStore } from "./AiModeScopes";
 import { ScriptLoader } from "./ScriptLoader";
 import { useTextSelectionStore } from "./textSelection";
 
@@ -60,56 +58,79 @@ export function AiModeFlyout() {
     const isMobile = useMediaQuery(theme.breakpoints.down("md"));
     const windowSize = useWindowSize();
     const intl = useIntl();
-    const navigate = useNavigate();
     const location = useLocation();
-    const { scope, match } = useContentScope();
+    const { scope } = useContentScope();
     const user = useCurrentUser();
     useShareDragDropManagerWithChat();
 
     const bridgeRef = useRef<BridgeElement | null>(null);
-    const pageStateStore = useAiModePageStateStore();
-    const pageToolsStore = useAiModePageToolsStore();
+    const scopesStore = useAiModeScopesStore();
     const textSelectionStore = useTextSelectionStore();
 
     const pushContext = useCallback(() => {
         bridgeRef.current?.bridge?.setContext({
             scope,
             pathname: location.pathname,
-            page: pageStateStore.getCurrent()?.metadata ?? null,
+            scopes: scopesStore.getScopes().map(({ id, description, context, tools = [] }) => ({
+                id,
+                description,
+                context,
+                tools: tools.map(({ name }) => name),
+            })),
             selection: textSelectionStore.getCurrent(),
         });
-    }, [scope, location.pathname, pageStateStore, textSelectionStore]);
+    }, [scope, location.pathname, scopesStore, textSelectionStore]);
 
     // Read via a ref so that registerBridge, the ref callback of the chat, doesn't change on navigation. A new ref
     // callback makes React detach and reattach the ref, which would register the MCP server and the tools again.
     const pushContextRef = useRef(pushContext);
     pushContextRef.current = pushContext;
 
-    // useNavigate returns a new function on every navigation, which would re-register the bridge each time.
-    const navigateRef = useRef(navigate);
-    navigateRef.current = navigate;
+    const registeredToolsSignatureRef = useRef<string | null>(null);
+
+    // Each call replaces the tools the chat had, so it gets the tools of every mounted scope. Only a change the agent
+    // sees registers them again: the handlers are looked up when a tool is called.
+    const registerHostTools = useCallback(() => {
+        const bridge = bridgeRef.current?.bridge;
+        if (!bridge) {
+            return;
+        }
+
+        const definitions = scopesStore.getTools().map(getToolDefinition);
+        const signature = JSON.stringify(definitions);
+        if (signature === registeredToolsSignatureRef.current) {
+            return;
+        }
+        registeredToolsSignatureRef.current = signature;
+
+        bridge.registerHostTools(
+            definitions.map((definition) => ({
+                ...definition,
+                handler: (args) => {
+                    const tool = scopesStore.getTool(definition.name);
+                    if (!tool) {
+                        return `${definition.name} isn't available on the page that is open in the admin anymore.`;
+                    }
+                    return tool.handler(args, { clearTextSelection: textSelectionStore.clear });
+                },
+            })),
+        );
+    }, [scopesStore, textSelectionStore]);
 
     const registerBridge = useCallback(
         (element: BridgeElement | null) => {
             bridgeRef.current = element;
+            // A new chat has no host tools, so it needs no registration until a scope offers some.
+            registeredToolsSignatureRef.current = JSON.stringify([]);
             if (!element?.bridge) {
                 return;
             }
 
             element.bridge.registerMcpServers([{ url: mcpServerUrl }]);
-            element.bridge.registerHostTools(
-                createAdminHostTools({
-                    navigate: (path) => void navigateRef.current(path),
-                    scopeUrl: match.url,
-                    getPageState: () => pageStateStore.getCurrent(),
-                    getPageTools: () => pageToolsStore.getCurrent(),
-                    clearTextSelection: textSelectionStore.clear,
-                }),
-            );
-
+            registerHostTools();
             pushContextRef.current();
         },
-        [match.url, pageStateStore, pageToolsStore, textSelectionStore],
+        [registerHostTools],
     );
 
     // The selection belongs to the page it was made on. Navigating while the chat has focus changes no selection the
@@ -123,23 +144,27 @@ export function AiModeFlyout() {
         pushContext();
     }, [pushContext]);
 
-    // Re-push (debounced) when the page state or the selection changes — block edits update the page state on
-    // every keystroke, and dragging a selection changes it on every mouse move.
+    // Re-push (debounced) when a scope or the selection changes — a scope's context can change with every keystroke,
+    // and dragging a selection changes it on every mouse move.
     useEffect(() => {
         let timeout: number | undefined;
         const schedulePush = () => {
             window.clearTimeout(timeout);
             timeout = window.setTimeout(pushContext, contextPushDebounceMs);
         };
-        const unsubscribePageState = pageStateStore.subscribe(schedulePush);
+        const unsubscribeScopes = scopesStore.subscribe(() => {
+            // Right away rather than debounced, so that the agent doesn't call a tool of a page that is gone.
+            registerHostTools();
+            schedulePush();
+        });
         const unsubscribeTextSelection = textSelectionStore.subscribe(schedulePush);
 
         return () => {
-            unsubscribePageState();
+            unsubscribeScopes();
             unsubscribeTextSelection();
             window.clearTimeout(timeout);
         };
-    }, [pageStateStore, textSelectionStore, pushContext]);
+    }, [scopesStore, textSelectionStore, pushContext, registerHostTools]);
 
     // Unmounted once closed, so the chat starts over with the next opening.
     return (

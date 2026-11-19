@@ -1,7 +1,7 @@
 import { dataGridDateColumn, type GridColDef } from "@dextinity/admin";
 import { describe, expect, it, vi } from "vitest";
 
-import type { AiModeTool } from "./AiModeScopes";
+import type { AiModeTool } from "./AiModeToolsets";
 import { type AiModeDataGridState, createDataGridTools } from "./dataGridTools";
 
 const columns: GridColDef[] = [

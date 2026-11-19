@@ -6,7 +6,7 @@ import { describe, expect, it, vi } from "vitest";
 import { AdminAiModeProvider } from "./AdminAiModeProvider";
 import { useAiMode } from "./AiModeContext";
 import { AiModeHeaderItem } from "./AiModeHeaderItem";
-import { useAiModeScope } from "./AiModeScopes";
+import { useAiModeToolset } from "./AiModeToolsets";
 
 vi.mock("@src/config", () => ({
     createConfig: () => ({ aiHubWebComponentScriptSrc: "https://ai-hub.test/ai-hub-chat.mjs", aiHubWidgetId: "widget-1" }),
@@ -29,31 +29,31 @@ function MasterHeaderAiModeItem() {
     return isEnabled ? <AiModeHeaderItem /> : null;
 }
 
-function PageWithAiModeScope() {
-    useAiModeScope({ id: "page", description: "A page" });
+function PageWithAiModeToolset() {
+    useAiModeToolset({ id: "page", description: "A page" });
     return null;
 }
 
-function renderHeaderItem({ hasScope = true, permissions = ["aiHub"] }: { hasScope?: boolean; permissions?: Permission[] } = {}) {
+function renderHeaderItem({ hasToolset = true, permissions = ["aiHub"] }: { hasToolset?: boolean; permissions?: Permission[] } = {}) {
     renderAdmin(
         <CurrentUserContext.Provider value={{ currentUser, isAllowed: (user, permission) => permissions.includes(permission) }}>
             <AdminAiModeProvider>
                 <MasterHeaderAiModeItem />
-                {hasScope && <PageWithAiModeScope />}
+                {hasToolset && <PageWithAiModeToolset />}
             </AdminAiModeProvider>
         </CurrentUserContext.Provider>,
     );
 }
 
 describe("AdminAiModeProvider", () => {
-    it("makes the AI Mode available on a page that registers an AI Mode scope", () => {
+    it("makes the AI Mode available on a page that registers an AI Mode toolset", () => {
         renderHeaderItem();
 
         expect(screen.getByRole("switch", { name: "AI Companion" })).toBeEnabled();
     });
 
-    it("makes the AI Mode unavailable on a page without an AI Mode scope", () => {
-        renderHeaderItem({ hasScope: false });
+    it("makes the AI Mode unavailable on a page without an AI Mode toolset", () => {
+        renderHeaderItem({ hasToolset: false });
 
         expect(screen.getByRole("switch", { name: "AI Companion" })).toBeDisabled();
     });

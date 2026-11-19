@@ -2,7 +2,7 @@ import { type BlockContext, type BlockInterface, DamImageBlock } from "@dextinit
 import { createForm } from "final-form";
 import { describe, expect, it, vi } from "vitest";
 
-import type { AiModeTool } from "./AiModeScopes";
+import type { AiModeTool } from "./AiModeToolsets";
 import type { BlocksBlockChild } from "./blockProps";
 import { type AiModeFormField, createFormTools } from "./formTools";
 

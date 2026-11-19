@@ -1,7 +1,7 @@
 import { categoryToUrlParam, pageTreeCategories } from "@src/pageTree/pageTreeCategories";
 
 import type { AdminPage } from "./adminPages";
-import type { AiModeTool } from "./AiModeScopes";
+import type { AiModeTool } from "./AiModeToolsets";
 import { blockEditOperationsSchema, describeBlockEditBatch, describeBlockEditResults, describeBlockSchemaLookup } from "./blockEditTool";
 import { asBlockEditOperations, type EditBlocks } from "./editBlocks";
 
@@ -23,7 +23,7 @@ export const createAdminTools = ({
         name: "open_admin_page",
         description:
             "Open a page of the admin's main navigation in the current content scope, e.g. when the user asks to go to the assets or the redirects, or for something only that page offers. " +
-            "Each page offers its own tools: once it is open, the context's 'scopes' list them. Unsaved changes of the page that is open are not lost silently: the user is asked whether to discard them, and may stay on it.",
+            "Each page offers its own tools: once it is open, the context's 'toolsets' list them. Unsaved changes of the page that is open are not lost silently: the user is asked whether to discard them, and may stay on it.",
         inputSchema: {
             type: "object",
             properties: {
@@ -44,7 +44,7 @@ export const createAdminTools = ({
             }
 
             navigate(`${scopeUrl}${page.path}`);
-            return `Asked the admin to open "${page.label}". If the page that was open has unsaved changes, the user first decides whether to discard them and may stay on it, so check the context's 'scopes' for which page is open before you use its tools.`;
+            return `Asked the admin to open "${page.label}". If the page that was open has unsaved changes, the user first decides whether to discard them and may stay on it, so check the context's 'toolsets' for which page is open before you use its tools.`;
         },
     },
 ];

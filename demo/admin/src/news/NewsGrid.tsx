@@ -22,6 +22,7 @@ import { Add as AddIcon, Edit as EditIcon } from "@dextinity/admin-icons";
 import { BlockPreviewContent, DamImageBlock, useContentScope } from "@dextinity/cms-admin";
 import { IconButton } from "@mui/material";
 import { DataGridPro, type DataGridProProps, type GridSlotsComponent } from "@mui/x-data-grid-pro";
+import { useAiModeDataGridScope } from "@src/aiMode/useAiModeDataGridScope";
 import { useMemo } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
@@ -180,10 +181,20 @@ export function NewsGrid() {
         notifyOnNetworkStatusChange: false,
     });
     const rowCount = useBufferedRowCount(data?.newsList.totalCount);
+    const rows = data?.newsList.nodes ?? [];
+    useAiModeDataGridScope({
+        entityName: "news",
+        entityLabel: "news articles",
+        columns,
+        dataGridProps,
+        rows,
+        totalCount: data?.newsList.totalCount,
+        isLoading: loading,
+        openForm: (id) => (id ? stackSwitchApi.activatePage("edit", id) : stackSwitchApi.activatePage("add", "add")),
+    });
     if (error) {
         throw error;
     }
-    const rows = data?.newsList.nodes ?? [];
     return (
         <DataGridPro
             {...dataGridProps}

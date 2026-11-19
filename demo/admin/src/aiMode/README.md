@@ -3,7 +3,7 @@
 The AI Mode puts the chat of the Dextinity AI Hub next to the admin. A switch in the header (`AiModeHeaderItem`) opens the chat as a flyout (`AiModeFlyout`), which loads the AI Hub's web component and registers two sets of tools with it:
 
 - the **MCP server** of the API (`demo/api/src/mcp`, at `/api/mcp`), which reads from the API: the page tree, pages as they were last saved, DAM files, and the block schemas,
-- the **host tools** of the admin, which act on what is open in the admin. The pages that are open offer them through AI Mode scopes (see below): the admin as a whole offers `open_admin_page`, the page tree `open_page`, and the page editor `get_page_state` and `edit_blocks` (`hostTools.ts`).
+- the **host tools** of the admin, which act on what is open in the admin. The pages that are open offer them through AI Mode scopes (see below): the admin as a whole offers `open_admin_page`, the page tree `open_page`, the page editor `get_page_state` and `edit_blocks` (`hostTools.ts`), and the grid and the form of an entity, such as the news, read and change them (`dataGridTools.ts`, `formTools.ts`).
 
 The AI Mode is ported from vivid-websites. This README explains the decisions the code doesn't show. It is written for developers who maintain the AI Mode in Demo or port it to a project.
 
@@ -111,6 +111,20 @@ A call that arrives for a tool whose page is gone gets an answer that says so, r
 The chat gives a tool whose name another tool already has a suffix (`_2`), which no tool description mentions. The store therefore leaves out a tool whose name an outer scope already has, and logs an error. It can't check the names of the MCP server's tools, so a host tool must not take one of those either.
 
 What the flyout owns rather than the page is passed to every handler as its second argument: `edit_blocks` clears the selected text with it.
+
+### Grids and forms of entities
+
+An entity's grid and form get their tools from `useAiModeDataGridScope` and `AiModeFormScope`, so an entity needs no tools of its own: the grid calls the hook with the props of `useDataGridRemote` and the rows of its query, and the form renders the component inside its `FinalForm` with a list of its fields. The news use both. The tools are named after the entity (`get_news_grid_rows`, `set_news_form_values`), rather than being one set of tools that takes the entity as an argument: different entities then never have the same tool name, and each description can name the entity and its fields.
+
+The tools read and change what the user sees rather than calling the API themselves, which keeps the permissions where they are: the grid's query and the form's mutations go through the API's guards, as they do when the user works without the AI Mode.
+
+- `get_<entity>_grid_rows` returns the rows of the page the grid shows, with the values of its columns that are text, numbers, or booleans. A column that shows a block preview, such as the image of a news article, is left out, because the agent can't read it. While the grid's query is loading, e.g. right after the view changed, the tool says so rather than returning the rows of the previous view.
+- `set_<entity>_grid_view` changes the search, the filters, the sorting, or the page. Its description lists the filterable columns with the operators of their type, from MUI's lists, and the tool refuses any other: `muiGridFilterToGql` passes an unknown operator on to the API, whose error would replace the grid with an error page. A new search or filter goes back to the first page, as it does in the grid, because `useDataGridRemote` keeps the page. The changes are applied one after another, each once the grid rendered the one before: each change handler of `useDataGridRemote` writes the URL from the search params of its render, so a second change in the same render would undo the first.
+- `open_<entity>_form` opens the form of a row, or the form for a new one.
+- `get_<entity>_form_state` returns the values of the form's fields, which fields the user changed, and which are invalid. A block field is summarized like the content of a page.
+- `set_<entity>_form_values` sets fields as unsaved changes, which the user saves, like `edit_blocks`. Its schema lists the fields with their types and the options of a select, and the tool refuses a value that doesn't fit before it changes any field. Block fields can't be set yet.
+
+`AiModeFormScope` is a component rather than a hook, so that it can read the form with `useForm` and so that only it re-renders when the form's `dirty` changes: the form of the news subscribes to nothing, so that typing doesn't re-render it.
 
 ### Tool descriptions
 

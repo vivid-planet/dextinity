@@ -21,7 +21,7 @@ import {
 import { Add as AddIcon, Edit, Info } from "@dextinity/admin-icons";
 import { IconButton } from "@mui/material";
 import { DataGridPro, GridColumnHeaderTitle } from "@mui/x-data-grid-pro";
-import { useAiModeDataGridScope } from "@src/aiMode/useAiModeDataGridScope";
+import { useAiModeDataGridToolset } from "@src/aiMode/useAiModeDataGridToolset";
 import type {
     GQLDeleteManufacturerMutation,
     GQLDeleteManufacturerMutationVariables,
@@ -152,7 +152,7 @@ export function ManufacturersGrid() {
         notifyOnNetworkStatusChange: false,
     });
     const stackSwitchApi = useStackSwitchApi();
-    useAiModeDataGridScope({
+    useAiModeDataGridToolset({
         entityName: "manufacturer",
         entityLabel: "manufacturers",
         columns,

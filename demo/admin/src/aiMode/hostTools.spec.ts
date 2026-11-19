@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import type { AiModeTool } from "./AiModeScopes";
+import type { AiModeTool } from "./AiModeToolsets";
 import type { EditBlocks } from "./editBlocks";
 import { type AiModePageState, createAdminTools, createPageTools, createPageTreeTools } from "./hostTools";
 

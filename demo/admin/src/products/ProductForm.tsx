@@ -30,7 +30,7 @@ import {
     useFormSaveConflict,
 } from "@dextinity/cms-admin";
 import { InputAdornment, MenuItem } from "@mui/material";
-import { AiModeFormScope } from "@src/aiMode/AiModeFormScope";
+import { AiModeFormToolset } from "@src/aiMode/AiModeFormToolset";
 import type { GQLProductMutationErrorCode, GQLProductType } from "@src/graphql.generated";
 import type {
     GQLManufacturerCountriesQuery,
@@ -298,7 +298,7 @@ export function ProductForm({ id, width, onCreate }: FormProps) {
             {({ values, form }) => (
                 <>
                     {saveConflict.dialogs}
-                    <AiModeFormScope
+                    <AiModeFormToolset
                         entityName="product"
                         entityLabel="product"
                         id={id}

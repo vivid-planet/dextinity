@@ -20,7 +20,7 @@ import {
     useContentScope,
     useFormSaveConflict,
 } from "@dextinity/cms-admin";
-import { AiModeFormScope } from "@src/aiMode/AiModeFormScope";
+import { AiModeFormToolset } from "@src/aiMode/AiModeFormToolset";
 import { deepEqual } from "fast-equals";
 import type { FormApi } from "final-form";
 import { useMemo } from "react";
@@ -140,7 +140,7 @@ export function NewsForm({ onCreate, id }: FormProps) {
             {() => (
                 <>
                     {saveConflict.dialogs}
-                    <AiModeFormScope
+                    <AiModeFormToolset
                         entityName="news"
                         entityLabel="news article"
                         id={id}

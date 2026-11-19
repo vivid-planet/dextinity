@@ -15,7 +15,7 @@ import {
 } from "@dextinity/admin";
 import { queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@dextinity/cms-admin";
 import { Collapse, Divider } from "@mui/material";
-import { AiModeFormScope } from "@src/aiMode/AiModeFormScope";
+import { AiModeFormToolset } from "@src/aiMode/AiModeFormToolset";
 import type { AiModeFormField } from "@src/aiMode/formTools";
 import { deepEqual } from "fast-equals";
 import type { FormApi } from "final-form";
@@ -241,7 +241,7 @@ export function ManufacturerForm({ id }: FormProps) {
         >
             <>
                 {saveConflict.dialogs}
-                <AiModeFormScope
+                <AiModeFormToolset
                     entityName="manufacturer"
                     entityLabel="manufacturer"
                     id={id}

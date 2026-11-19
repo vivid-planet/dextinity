@@ -17,7 +17,7 @@ import {
     resolveHasSaveConflict,
     useFormSaveConflict,
 } from "@dextinity/cms-admin";
-import { AiModeFormScope } from "@src/aiMode/AiModeFormScope";
+import { AiModeFormToolset } from "@src/aiMode/AiModeFormToolset";
 import type { GQLProductVariantMutationErrorCode } from "@src/graphql.generated";
 import { deepEqual } from "fast-equals";
 import { FORM_ERROR, type FormApi } from "final-form";
@@ -172,7 +172,7 @@ export function ProductVariantForm({ id, productId }: FormProps) {
             {() => (
                 <>
                     {saveConflict.dialogs}
-                    <AiModeFormScope
+                    <AiModeFormToolset
                         entityName="product_variant"
                         entityLabel="product variant"
                         id={id}

@@ -19,7 +19,7 @@ import {
 import { Add as AddIcon, Edit as EditIcon } from "@dextinity/admin-icons";
 import { IconButton } from "@mui/material";
 import { DataGridPro, type GridSlotsComponent } from "@mui/x-data-grid-pro";
-import { useAiModeDataGridScope } from "@src/aiMode/useAiModeDataGridScope";
+import { useAiModeDataGridToolset } from "@src/aiMode/useAiModeDataGridToolset";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import type {
@@ -117,7 +117,7 @@ export function ProductTagsGrid() {
         notifyOnNetworkStatusChange: false,
     });
     const stackSwitchApi = useStackSwitchApi();
-    useAiModeDataGridScope({
+    useAiModeDataGridToolset({
         entityName: "product_tag",
         entityLabel: "product tags",
         columns,

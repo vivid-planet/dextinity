@@ -36,7 +36,7 @@ import {
     type GridRowSelectionModel,
     type GridSlotsComponent,
 } from "@mui/x-data-grid-pro";
-import { useAiModeDataGridScope } from "@src/aiMode/useAiModeDataGridScope";
+import { useAiModeDataGridToolset } from "@src/aiMode/useAiModeDataGridToolset";
 import { ProductCategoryFilterOperators } from "@src/products/ProductCategoryFilter";
 import { useMemo, useState } from "react";
 import { FormattedMessage, FormattedNumber, useIntl } from "react-intl";
@@ -352,7 +352,7 @@ export function ProductsGrid() {
         notifyOnNetworkStatusChange: false,
     });
     const stackSwitchApi = useStackSwitchApi();
-    useAiModeDataGridScope({
+    useAiModeDataGridToolset({
         entityName: "product",
         entityLabel: "products",
         columns,

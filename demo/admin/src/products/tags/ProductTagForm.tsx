@@ -1,7 +1,7 @@
 import { skipToken, useApolloClient, useQuery } from "@apollo/client/react";
 import { filterByFragment, FinalForm, type FinalFormSubmitEvent, Loading, TextField, useFormApiRef, useStackSwitchApi } from "@dextinity/admin";
 import { queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@dextinity/cms-admin";
-import { AiModeFormScope } from "@src/aiMode/AiModeFormScope";
+import { AiModeFormToolset } from "@src/aiMode/AiModeFormToolset";
 import { deepEqual } from "fast-equals";
 import type { FormApi } from "final-form";
 import { useMemo } from "react";
@@ -100,7 +100,7 @@ export function ProductTagForm({ id }: FormProps) {
             {() => (
                 <>
                     {saveConflict.dialogs}
-                    <AiModeFormScope
+                    <AiModeFormToolset
                         entityName="product_tag"
                         entityLabel="product tag"
                         id={id}

@@ -120,7 +120,7 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
     const ownerState: AppShellOwnerState = { layout, navCollapsed, assistantOpen: hasAssistant && assistantOpen };
     const [navDrawerOpen, setNavDrawerOpen] = useState(false);
     const { anchorRef, container } = useThemePortalContainer<HTMLSpanElement>();
-    const assistantRef = useRef<HTMLElement | null>(null);
+    const assistantContentRef = useRef<HTMLDivElement>(null);
     const assistantSwitchRef = useRef<HTMLButtonElement>(null);
     // The assistant renders into one element that moves between the column and the narrow sheet, so its state, e.g. a conversation,
     // survives when the window crosses the breakpoint
@@ -134,13 +134,6 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
             }
         },
         [assistantHost],
-    );
-    const attachAssistantColumn = useCallback(
-        (node: HTMLElement | null) => {
-            assistantRef.current = node;
-            attachAssistantHost(node);
-        },
-        [attachAssistantHost],
     );
     const findAssistantFocusTarget = () => assistantHost?.querySelector<HTMLElement>("[data-autofocus], textarea, input") ?? null;
 
@@ -162,7 +155,7 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
             return;
         }
         const timeout = window.setTimeout(() => {
-            (findAssistantFocusTarget() ?? assistantRef.current)?.focus();
+            (findAssistantFocusTarget() ?? assistantContentRef.current)?.focus();
         }, assistantFocusDelay);
         return () => window.clearTimeout(timeout);
         // eslint-disable-next-line react-hooks/exhaustive-deps -- the focus target is looked up when the timeout fires
@@ -248,19 +241,15 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
                     </BaseDialog.Root>
                 ) : (
                     <div className={styles.assistant}>
-                        <aside
-                            ref={attachAssistantColumn}
-                            aria-label={labels.assistant}
-                            tabIndex={-1}
-                            inert={!assistantOpen}
-                            className={styles.assistantPanel}
-                        />
+                        <aside ref={attachAssistantHost} aria-label={labels.assistant} inert={!assistantOpen} className={styles.assistantPanel} />
                     </div>
                 ))}
             {hasAssistant &&
                 assistantHost != null &&
                 createPortal(
                     <div
+                        ref={assistantContentRef}
+                        tabIndex={-1}
                         onKeyDown={onAssistantKeyDown}
                         onFocus={() => {
                             focusInAssistantRef.current = true;

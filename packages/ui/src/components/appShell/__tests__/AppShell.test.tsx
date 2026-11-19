@@ -163,6 +163,36 @@ describe("AppShell", () => {
         expect(onAssistantOpenChange).toHaveBeenLastCalledWith(false);
     });
 
+    it("focuses an assistant without a text field as a whole, so Escape still closes it and returns focus to the switch", () => {
+        vi.useFakeTimers();
+        windowWidth = 1440;
+        const renderShellElement = (assistantOpen: boolean, onAssistantOpenChange = vi.fn()) => (
+            <AppShell
+                nav={<span />}
+                topBar={<TopBar assistantSwitch={<AiAssistantSwitch />} />}
+                navCollapsed={false}
+                onNavCollapsedChange={vi.fn()}
+                assistant={<p>Loading</p>}
+                assistantOpen={assistantOpen}
+                onAssistantOpenChange={onAssistantOpenChange}
+            >
+                Content
+            </AppShell>
+        );
+        const onAssistantOpenChange = vi.fn();
+        const { rerender } = render(renderShellElement(true, onAssistantOpenChange));
+        act(() => vi.runAllTimers());
+        vi.useRealTimers();
+
+        const focused = document.activeElement as HTMLElement;
+        expect(focused.textContent).toBe("Loading");
+        fireEvent.keyDown(focused, { key: "Escape" });
+        expect(onAssistantOpenChange).toHaveBeenLastCalledWith(false);
+
+        rerender(renderShellElement(false));
+        expect(document.activeElement).toBe(screen.getByRole("switch", { name: "AI assistant" }));
+    });
+
     it("leaves out the assistant's shortcut without an assistant", () => {
         windowWidth = 1440;
         const onAssistantOpenChange = vi.fn();

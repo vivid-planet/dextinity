@@ -212,7 +212,6 @@
     inline-size: calc(var(--dextinity-app-shell-assistant-width) + var(--dextinity-app-shell-gap));
     block-size: 100%;
     padding: var(--dextinity-app-shell-gap) var(--dextinity-app-shell-gap) var(--dextinity-app-shell-gap) 0;
-    outline: none;
 }
 
 .assistantHost,
@@ -222,6 +221,10 @@
     flex: 1;
     flex-direction: column;
     min-block-size: 0;
+}
+
+.assistantContent {
+    outline: none;
 }
 
 .assistantContent > * {

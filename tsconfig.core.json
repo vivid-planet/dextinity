@@ -5,7 +5,7 @@
         "skipLibCheck": true,
         "esModuleInterop": true,
         "noUncheckedSideEffectImports": false,
-        "strict": false,
+        "strict": true,
         "types": ["*"]
     }
 }

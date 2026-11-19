@@ -140,6 +140,8 @@ Every process loads `.env.local` itself: the demo packages and `dev:*` scripts r
 
 ## Packages
 
+Packages extend `tsconfig.core.json`, directly or through `packages/{admin,api,site}/tsconfig.base.json`, and inherit TypeScript strict mode from it. Don't set `strict` or its individual flags in a package's tsconfig; only opt out of a single flag when needed (e.g. `strictPropertyInitialization: false` in the API packages).
+
 ### Admin (`packages/admin/`)
 
 | Package                         | Description                                                          |

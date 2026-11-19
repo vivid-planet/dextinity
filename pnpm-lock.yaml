@@ -735,8 +735,8 @@ importers:
         specifier: 9.0.0-rc04
         version: 9.0.0-rc04(react@19.3.1)
       filesize:
-        specifier: ^11.0.32
-        version: 11.0.32
+        specifier: ^11.0.33
+        version: 11.0.35
       ioredis:
         specifier: ^6.0.0
         version: 6.0.0(supports-color@8.1.1)
@@ -12708,8 +12708,8 @@ packages:
   filelist@1.0.6:
     resolution: {integrity: sha512-5giy2PkLYY1cP39p17Ech+2xlpTRL9HLspOfEgm0L6CwBXBTgsK5ou0JtzYuepxkaQ/tvhCFIJ5uXo0OrM2DxA==}
 
-  filesize@11.0.32:
-    resolution: {integrity: sha512-XDm8d3VpwwIknUHaO+eZ79opT+do/j4jeST4JD4ip3QMncAy7UK1Qc+Bifly4FVkeXylM4wvKVAJrcsA0Hbm4A==}
+  filesize@11.0.35:
+    resolution: {integrity: sha512-nYIrQN/m4a0VYYoUeENvFf8mCDaB9PNbKETinw4DRdBcX5yB2nY3YtFz9iMfg/YDQWyYPOn/THVtsqLN/IH0Ag==}
     engines: {node: '>= 10.8.0'}
 
   fill-range@7.1.1:
@@ -30662,7 +30662,7 @@ snapshots:
     dependencies:
       minimatch: 5.1.9
 
-  filesize@11.0.32: {}
+  filesize@11.0.35: {}
 
   fill-range@7.1.1:
     dependencies:

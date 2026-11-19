@@ -15,6 +15,7 @@ import {
 } from "@dextinity/admin";
 import { Add, Delete, Preview } from "@dextinity/admin-icons";
 import {
+    ActionLogButton,
     BlockAdminComponentRoot,
     type BlockOutputApi,
     type BlockState,
@@ -151,6 +152,7 @@ const EditMainMenuItem = ({ item }: EditMainMenuItemProps) => {
                     >
                         <FormattedMessage id="pages.pages.page.edit.preview" defaultMessage="Site preview" />
                     </Button>
+                    <ActionLogButton entityId={item.id} entity="MainMenuItem" name={item.node.name} />
                     <SaveButton disabled={!hasChanges} loading={saving} hasErrors={saveError != null} onClick={handleSaveClick} />
                 </ToolbarActions>
             </Toolbar>

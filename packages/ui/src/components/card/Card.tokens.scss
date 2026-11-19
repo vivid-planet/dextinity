@@ -5,8 +5,13 @@
     --dextinity-card-padding: 0;
     // Space around the header with the orb, title, and meta text
     --dextinity-card-header-padding: var(--dextinity-space-2-5) var(--dextinity-space-4) var(--dextinity-space-2-5) var(--dextinity-space-2-5);
-    // Fill of the header bar, which sets it apart from the content so cards are quick to scan
-    --dextinity-card-header-background: var(--dextinity-gradient-brand);
+    // Fill of the header bar, which sets it apart from the content so cards are quick to scan; ends closer to the accent than
+    // the brand gradient, so small text in the header keeps a contrast of 4.5:1 across the whole bar
+    --dextinity-card-header-background: linear-gradient(
+        120deg,
+        var(--dextinity-color-accent) 15%,
+        color-mix(in oklch, var(--dextinity-color-accent) 75%, var(--dextinity-color-accent-secondary)) 100%
+    );
     // Text and icons on the header bar
     --dextinity-card-header-foreground: var(--dextinity-color-accent-foreground);
     // Gap between the orb, the title, and the meta text in the header
@@ -36,7 +41,7 @@
     // Font weight of the card title
     --dextinity-card-title-font-weight: var(--dextinity-typography-title-font-weight);
     // Color of the meta text next to the title
-    --dextinity-card-meta-color: color-mix(in oklch, var(--dextinity-card-header-foreground) 80%, transparent);
+    --dextinity-card-meta-color: var(--dextinity-card-header-foreground);
     // Text size of the meta text next to the title
     --dextinity-card-meta-font-size: var(--dextinity-typography-ui-size);
 

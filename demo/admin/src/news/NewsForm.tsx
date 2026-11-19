@@ -163,6 +163,7 @@ export function NewsForm({ onCreate, id }: FormProps) {
                                 label: intl.formatMessage({ id: "news.image", defaultMessage: "Image" }),
                                 type: "block",
                                 block: rootBlocks.image,
+                                schemaBlockName: "DamImage",
                             },
                             {
                                 name: "content",

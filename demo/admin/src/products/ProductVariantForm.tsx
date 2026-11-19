@@ -183,6 +183,7 @@ export function ProductVariantForm({ id, productId }: FormProps) {
                                 label: intl.formatMessage({ id: "productVariant.image", defaultMessage: "Image" }),
                                 type: "block",
                                 block: rootBlocks.image,
+                                schemaBlockName: "DamImage",
                             },
                         ]}
                     />

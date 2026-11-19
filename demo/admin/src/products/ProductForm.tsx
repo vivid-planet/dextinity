@@ -373,6 +373,7 @@ export function ProductForm({ id, width, onCreate }: FormProps) {
                                 label: intl.formatMessage({ id: "product.image", defaultMessage: "Image" }),
                                 type: "block",
                                 block: rootBlocks.image,
+                                schemaBlockName: "DamImage",
                             },
                         ]}
                     />

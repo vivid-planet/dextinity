@@ -4,7 +4,7 @@ import type { BlockContext } from "../blocks/context/BlockContext";
 import type { BlockInterface } from "../blocks/types";
 import type { AiModeTool } from "./AiModeScopes";
 import { blockEditOperationsSchema, describeBlockEditBatch, describeBlockEditResults, describeBlockSchemaLookup } from "./blockEditTool";
-import type { BlocksBlockChild } from "./blockProps";
+import { type BlocksBlockChild, mergeBlockProps, toBlockState } from "./blockProps";
 import { summarizeBlockState } from "./blockStateSummary";
 import { asBlockEditOperations, planBlockEdits } from "./editBlocks";
 
@@ -37,7 +37,11 @@ export type AiModeFormField = {
           getOptionLabel: (option: ReferenceOption) => string;
       }
     /** A block the agent can read but not change, e.g. an image. */
-    | { type: "block"; block: BlockInterface }
+    /**
+     * A single block, e.g. an image or a link. With its name in block-meta, the agent sets it in the shape it is saved in,
+     * merged into its current content; without it, the agent can only read it.
+     */
+    | { type: "block"; block: BlockInterface; schemaBlockName?: string }
     /** A blocks block, whose blocks the agent inserts, updates, removes, moves, hides, and shows. */
     | {
           type: "blocks";
@@ -49,14 +53,15 @@ export type AiModeFormField = {
       }
 );
 
-type SettableField = Extract<AiModeFormField, { type: "text" | "date" | "boolean" | "select" | "multiSelect" | "reference" }>;
+type SettableField = Exclude<AiModeFormField, { type: "blocks" }>;
 type ReferenceField = Extract<AiModeFormField, { type: "reference" }>;
 type BlocksField = Extract<AiModeFormField, { type: "blocks" }>;
 type BlocksState = { blocks: BlocksBlockChild[] };
 
 const datePattern = /^\d{4}-\d{2}-\d{2}$/;
 
-const isSettable = (field: AiModeFormField): field is SettableField => field.type !== "block" && field.type !== "blocks";
+const isSettable = (field: AiModeFormField): field is SettableField =>
+    field.type !== "blocks" && (field.type !== "block" || field.schemaBlockName !== undefined);
 
 const describeOptions = (options: Array<{ value: string; label: string }>) => options.map(({ value, label }) => `${value} (${label})`).join(", ");
 
@@ -64,6 +69,13 @@ function getValueSchema(field: SettableField, entityName: string): Record<string
     const describe = (text: string) => [`${field.label}, ${text}`, field.description].filter(Boolean).join(" ");
 
     switch (field.type) {
+        case "block":
+            return {
+                type: "object",
+                description: describe(
+                    `the block's fields in the shape it is saved in, as get_block_schema describes the '${field.schemaBlockName}' block. Fields left out keep their current value, nested fields included; a list replaces the current one.`,
+                ),
+            };
         case "date":
             return { type: "string", description: describe("as a date in the format YYYY-MM-DD.") };
         case "boolean":
@@ -102,12 +114,33 @@ function getValueSchema(field: SettableField, entityName: string): Record<string
 async function toFormValue(
     field: SettableField,
     value: unknown,
-    values: FormValues,
-    entityName: string,
+    { values, entityName, blockContext }: { values: FormValues; entityName: string; blockContext: BlockContext },
 ): Promise<{ value: unknown } | { problem: string }> {
     const options = "options" in field ? field.options.map((option) => option.value) : [];
 
     switch (field.type) {
+        case "block": {
+            if (typeof value !== "object" || value === null || Array.isArray(value)) {
+                return { problem: `"${field.name}" must be an object of the block's fields.` };
+            }
+            const schemaBlockName = field.schemaBlockName as string;
+            // Merged into the current content, so that the agent can change one field without restating the block.
+            const props = mergeBlockProps(field.block.state2Output(getIn(values, field.name)), value as Record<string, unknown>);
+            try {
+                const { state } = await toBlockState({
+                    block: field.block,
+                    type: schemaBlockName,
+                    schemaRootBlockName: schemaBlockName,
+                    props,
+                    givenFields: Object.keys(value),
+                    blockContext,
+                    schemaLookup: `call get_block_schema for "${schemaBlockName}"`,
+                });
+                return { value: state };
+            } catch (error) {
+                return { problem: `"${field.name}": ${error instanceof Error ? error.message : String(error)}` };
+            }
+        }
         case "boolean":
             return typeof value === "boolean" ? { value } : { problem: `"${field.name}" must be true or false.` };
         case "multiSelect":
@@ -186,7 +219,8 @@ export function createFormTools({
     isBlockInsertable?: (block: BlockInterface) => boolean;
 }): AiModeTool[] {
     const settableFields = fields.filter(isSettable);
-    const blockFields = fields.filter((field) => !isSettable(field));
+    const blockFields = fields.filter((field) => field.type === "block" || field.type === "blocks");
+    const readOnlyFields = fields.filter((field) => !isSettable(field) && field.type !== "blocks");
     const blocksFields = fields.filter((field): field is BlocksField => field.type === "blocks");
     const referenceFields = fields.filter((field): field is ReferenceField => field.type === "reference");
     const listNames = (list: AiModeFormField[]) => list.map(({ name }) => name).join(", ");
@@ -243,7 +277,7 @@ export function createFormTools({
                 `The chat asks the user to approve every call before it runs, so call the tool instead of asking for permission in the chat first. ` +
                 `The values are set as unsaved changes, exactly as if the user had typed them, so the user sees them in the form, and saves or discards them; afterwards, tell the user briefly what was changed and that it still has to be saved. ` +
                 `Pass only the fields to change. All of them are set, or none is when one doesn't fit.${
-                    blockFields.length > 0 ? ` The block fields (${listNames(blockFields)}) can't be changed with this tool.` : ""
+                    readOnlyFields.length > 0 ? ` The fields ${listNames(readOnlyFields)} can't be changed.` : ""
                 }${blocksFields.length > 0 ? ` Change the blocks of ${listNames(blocksFields)} with edit_${entityName}_form_blocks.` : ""}`,
             inputSchema: {
                 type: "object",
@@ -281,7 +315,7 @@ export function createFormTools({
                     if (!(field.name in values)) {
                         continue;
                     }
-                    const result = await toFormValue(field, (values as FormValues)[field.name], proposedValues, entityName);
+                    const result = await toFormValue(field, (values as FormValues)[field.name], { values: proposedValues, entityName, blockContext });
                     if ("problem" in result) {
                         throw new Error(`${result.problem} No field was changed.`);
                     }

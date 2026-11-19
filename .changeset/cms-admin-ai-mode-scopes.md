@@ -9,7 +9,9 @@ A page registers an AI Mode scope with `useAiModeScope`, or with the `AiModeScop
 An entity's grid and form get their tools without writing any:
 
 - `useAiModeDataGridScope` lets the agent read the rows of a grid with server-side filtering, sorting, and pagination, change its search, filters, sorting, and page, and open a row.
-- `AiModeFormScope`, rendered inside a `FinalForm`, lets the agent read the form's fields and fill them in as unsaved changes, which the user saves, including the blocks of a blocks block.
+- `AiModeFormScope`, rendered inside a `FinalForm`, lets the agent read the form's fields and fill them in as unsaved changes, which the user saves, including a single block and the blocks of a blocks block.
+
+The grid and the form of the redirects offer their tools this way.
 
 **Example**
 

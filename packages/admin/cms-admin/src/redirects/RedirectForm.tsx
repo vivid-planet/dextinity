@@ -22,6 +22,8 @@ import { deepEqual } from "fast-equals";
 import { type JSX, useMemo } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
+import { AiModeFormScope } from "../aiMode/AiModeFormScope";
+import type { AiModeFormField } from "../aiMode/formTools";
 import { createFinalFormBlock } from "../blocks/form/createFinalFormBlock";
 import type { BlockInterface, BlockState } from "../blocks/types";
 import { ContentScopeIndicator } from "../contentScope/ContentScopeIndicator";
@@ -132,6 +134,41 @@ export const RedirectForm = ({ mode, id, linkBlock, scope }: Props): JSX.Element
 
     const [submit] = useSubmitMutation(mode, id, linkBlock, scope);
 
+    const aiModeFields: AiModeFormField[] = [
+        {
+            name: "sourceType",
+            label: intl.formatMessage({ id: "dextinity.pages.redirects.redirect.source.type", defaultMessage: "Source type" }),
+            type: "select",
+            options: sourceTypeOptions,
+        },
+        {
+            name: "source",
+            label: intl.formatMessage({ id: "dextinity.pages.redirects.redirect.source", defaultMessage: "Source" }),
+            description: "A path starting with a slash, e.g. /example-path, or for the source type domain, a domain, e.g. example.com.",
+            type: "text",
+        },
+        {
+            name: "target",
+            label: intl.formatMessage({ id: "dextinity.pages.redirects.redirect.target", defaultMessage: "Target" }),
+            type: "block",
+            block: linkBlock,
+            // The name the API gives the link block of the redirects, also with custom targets.
+            schemaBlockName: "RedirectsLink",
+        },
+        ...(enableRedirectType
+            ? [
+                  {
+                      name: "redirectType",
+                      label: intl.formatMessage({ id: "dextinity.pages.redirects.redirect.redirectType", defaultMessage: "Redirect type" }),
+                      description: "Only for the source type path. Use permanent only if the source will never be used again.",
+                      type: "select",
+                      options: redirectTypeOptions,
+                  } satisfies AiModeFormField,
+              ]
+            : []),
+        { name: "comment", label: intl.formatMessage({ id: "dextinity.pages.redirects.redirect.comment", defaultMessage: "Comment" }), type: "text" },
+    ];
+
     if (mode === "edit" && initialValues === undefined) {
         return <Loading behavior="fillPageHeight" />;
     }
@@ -214,6 +251,7 @@ export const RedirectForm = ({ mode, id, linkBlock, scope }: Props): JSX.Element
         >
             {({ values, pristine, hasValidationErrors, submitting, handleSubmit, validating }) => (
                 <>
+                    <AiModeFormScope entityName="redirect" entityLabel="redirect" id={id} fields={aiModeFields} />
                     <Toolbar scopeIndicator={<ContentScopeIndicator scope={scope} />}>
                         <ToolbarBackButton />
                         <ToolbarTitleItem>

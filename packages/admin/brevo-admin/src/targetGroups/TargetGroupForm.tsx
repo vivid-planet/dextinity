@@ -18,7 +18,14 @@ import {
     useStackApi,
 } from "@dextinity/admin";
 import { ArrowLeft } from "@dextinity/admin-icons";
-import { type ContentScope, ContentScopeIndicator, queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@dextinity/cms-admin";
+import {
+    ActionLogButton,
+    type ContentScope,
+    ContentScopeIndicator,
+    queryUpdatedAt,
+    resolveHasSaveConflict,
+    useFormSaveConflict,
+} from "@dextinity/cms-admin";
 import { IconButton } from "@mui/material";
 import type { FormApi } from "final-form";
 import { FormattedMessage } from "react-intl";
@@ -143,6 +150,7 @@ export function TargetGroupForm<AdditionalTargetGroupFields extends object>({
                         </ToolbarTitleItem>
                         <ToolbarFillSpace />
                         <ToolbarActions>
+                            <ActionLogButton entityId={id} entity="BrevoTargetGroup" name={data?.brevoTargetGroup?.title} scope={scope} />
                             <FinalFormSaveButton hasConflict={saveConflict.hasConflict} />
                         </ToolbarActions>
                     </Toolbar>

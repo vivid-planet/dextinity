@@ -1,3 +1,18 @@
+// The theme declares the card tokens below this element, so the material goes on the cards themselves
+.root {
+    &[data-glass="glass"] :global(.dextinityCard) {
+        --dextinity-card-background: var(--dextinity-material-glass);
+    }
+
+    &[data-glass="glass-strong"] :global(.dextinityCard) {
+        --dextinity-card-background: var(--dextinity-material-glass-strong);
+    }
+
+    &[data-glass="glass-overlay"] :global(.dextinityCard) {
+        --dextinity-card-background: var(--dextinity-material-glass-overlay);
+    }
+}
+
 // Floats over the page, so the cards can be compared while the switch stays in reach
 .switcher {
     position: fixed;

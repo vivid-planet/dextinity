@@ -195,9 +195,16 @@
     transform-origin: 0 0;
 }
 
-.inspectBox {
+.inspectLayer {
     position: absolute;
     z-index: 1;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.inspectBox {
+    position: absolute;
     box-sizing: border-box;
     border: 2px solid var(--dextinity-color-accent);
     border-radius: 2px;
@@ -217,6 +224,12 @@
     font-weight: 600;
     line-height: 16px;
     white-space: nowrap;
+
+    [data-label-inside] > & {
+        inset-block: 0 auto;
+        inset-inline-start: 0;
+        border-radius: 0 0 3px;
+    }
 }
 
 .iframe {

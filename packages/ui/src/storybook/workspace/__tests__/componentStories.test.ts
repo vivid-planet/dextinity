@@ -7,26 +7,32 @@ const stories = [
     { id: "topbar--default", title: "Shell/Top bar & scope/TopBar", name: "Default" },
     { id: "avatar--sizes", title: "Building blocks/Status, tags & badges/Avatar", name: "Sizes" },
     { id: "avatar--colors", title: "Building blocks/Status, tags & badges/Avatar", name: "Colors" },
+    { id: "toolbar--vertical", title: "Building blocks/Buttons/Toolbar", name: "Vertical" },
+    { id: "patterns-toolbar--default", title: "Patterns/Toolbar", name: "Default" },
 ];
 
 describe("getComponentStoryIds", () => {
-    it("prefers a component's Default story and falls back to its first one", () => {
+    it("prefers a component's Default story, falls back to its first one, and skips pattern pages of the same name", () => {
         expect(getComponentStoryIds(stories)).toEqual(
             new Map([
                 ["TopBar", "topbar--default"],
                 ["Avatar", "avatar--sizes"],
+                ["Toolbar", "toolbar--vertical"],
             ]),
         );
     });
 });
 
 describe("getComponentName", () => {
-    it("reads the component from its root class, ignoring slot classes and the theme", () => {
+    it("reads the component from its root class, ignoring slot classes, the theme, and icons", () => {
         const element = document.createElement("div");
         element.className = "dextinityTopBar__search other";
         expect(getComponentName(element)).toBeUndefined();
 
         element.className = "dextinityTheme";
+        expect(getComponentName(element)).toBeUndefined();
+
+        element.className = "dextinityIcon";
         expect(getComponentName(element)).toBeUndefined();
 
         element.className = "dextinityTopBar";

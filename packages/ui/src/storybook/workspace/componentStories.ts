@@ -1,22 +1,34 @@
 import type { IndexedStory } from "./storyTree";
 
 const componentClassPattern = /^dextinity([A-Z][A-Za-z0-9]*)$/;
-// `Theme` wraps every story, so pointing at it would never lead anywhere useful
-const ignoredComponents = new Set(["Theme"]);
+// `Theme` wraps every story, and an `Icon` sits inside the button or item it belongs to, which is what's meant when pointing at it
+const ignoredComponents = new Set(["Theme", "Icon"]);
+// Pages about a pattern or a page type can end in a component's name, e.g. `Patterns/Toolbar`, but don't show the component itself
+const componentSections = ["Building blocks/", "Shell/", "Foundations/"];
+
+function getSectionRank(title: string) {
+    const rank = componentSections.findIndex((section) => title.startsWith(section));
+    return rank === -1 ? componentSections.length : rank;
+}
 
 /**
- * Maps each component name to the story that shows it: the `Default` story of the stories whose title ends in the component name,
- * e.g. `TopBar` to a story of `Shell/Top bar & scope/TopBar`, or the first of them if none is called `Default`.
+ * Maps each component name to the story that shows it: the `Default` story, or else the first, of the stories whose title ends in
+ * the component name, e.g. `TopBar` to a story of `Shell/Top bar & scope/TopBar`. Titles in the component sections win over
+ * pattern and page-type titles that end in the same name.
  */
 export function getComponentStoryIds(stories: IndexedStory[]): Map<string, string> {
-    const storyIds = new Map<string, string>();
+    const chosen = new Map<string, { storyId: string; title: string; rank: number }>();
     for (const story of stories) {
         const componentName = story.title.split("/").at(-1) ?? "";
-        if (!storyIds.has(componentName) || story.name === "Default") {
-            storyIds.set(componentName, story.id);
+        const rank = getSectionRank(story.title);
+        const current = chosen.get(componentName);
+        const isBetterTitle = current == null || rank < current.rank;
+        const isDefaultOfSameTitle = current?.title === story.title && story.name === "Default";
+        if (isBetterTitle || isDefaultOfSameTitle) {
+            chosen.set(componentName, { storyId: story.id, title: story.title, rank });
         }
     }
-    return storyIds;
+    return new Map([...chosen].map(([componentName, { storyId }]) => [componentName, storyId]));
 }
 
 /**

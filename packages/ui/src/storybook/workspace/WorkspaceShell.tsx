@@ -35,6 +35,7 @@ const canvasPadding = 48;
 const minPanelWidth = 260;
 const maxPanelWidth = 520;
 const panelKeyboardStep = 20;
+const inspectLabelHeight = 18;
 
 // The widths sit on both sides of the app shell's breakpoints at 768px and 1280px
 const viewportPresets = [
@@ -188,6 +189,7 @@ export function WorkspaceShell() {
         if (storyId) {
             setStoryHistory((history) => [...history, storyId]);
         }
+        setInspecting(false);
         updateState({ storyId: nodeId, expandedIds: [...new Set([...expandedIds, ...getStoryFolderIds(story)])] });
     }
 
@@ -195,6 +197,7 @@ export function WorkspaceShell() {
         const previousStoryId = storyHistory.at(-1);
         if (previousStoryId) {
             setStoryHistory((history) => history.slice(0, -1));
+            setInspecting(false);
             updateState({ storyId: previousStoryId });
         }
     }
@@ -514,16 +517,20 @@ export function WorkspaceShell() {
                                 )}
                             </div>
                             {inspected && (
-                                <div
-                                    className={styles.inspectBox}
-                                    style={{
-                                        top: inspected.rect.top * scale,
-                                        left: inspected.rect.left * scale,
-                                        width: inspected.rect.width * scale,
-                                        height: inspected.rect.height * scale,
-                                    }}
-                                >
-                                    <span className={styles.inspectLabel}>{inspected.componentName}</span>
+                                <div className={styles.inspectLayer}>
+                                    <div
+                                        className={styles.inspectBox}
+                                        // At the frame's top edge, the label goes inside the box, where the frame doesn't cut it off
+                                        data-label-inside={inspected.rect.top * scale < inspectLabelHeight || undefined}
+                                        style={{
+                                            top: inspected.rect.top * scale,
+                                            left: inspected.rect.left * scale,
+                                            width: inspected.rect.width * scale,
+                                            height: inspected.rect.height * scale,
+                                        }}
+                                    >
+                                        <span className={styles.inspectLabel}>{inspected.componentName}</span>
+                                    </div>
                                 </div>
                             )}
                             <div className={styles.handleInline} onPointerDown={(event) => startFrameResize("inline", event)} />

@@ -9,8 +9,21 @@ export interface InspectedComponent {
     rect: { top: number; left: number; width: number; height: number };
 }
 
-// Swallowed while inspecting, so pointing at the page doesn't also press its buttons or open its menus
-const blockedEvents = ["pointerdown", "mousedown", "pointerup", "mouseup", "dblclick", "contextmenu"] as const;
+// Swallowed while inspecting, so pointing at the page doesn't also press its buttons, open its menus, or show its hover states
+const blockedEvents = [
+    "pointerdown",
+    "mousedown",
+    "pointerup",
+    "mouseup",
+    "dblclick",
+    "contextmenu",
+    "pointerover",
+    "pointerout",
+    "pointerenter",
+    "mouseover",
+    "mouseout",
+    "mousemove",
+] as const;
 
 // The frame's elements come from another window, so `instanceof Element` of this one doesn't recognize them
 function asElement(target: EventTarget | null): Element | null {
@@ -46,16 +59,18 @@ export function useCanvasInspector({
 
     useEffect(() => {
         const frameDocument = frameRef.current?.contentDocument;
-        if (!active || !frameDocument?.documentElement) {
+        const frameRoot = frameDocument?.documentElement;
+        if (!active || !frameDocument || !frameRoot) {
             setHovered(null);
             return;
         }
+        const inspectedDocument: Document = frameDocument;
 
-        let hoveredElement: Element | null = null;
+        const frameWindow = frameDocument.defaultView;
+        let pointer: { x: number; y: number } | null = null;
 
         function inspect(target: EventTarget | null) {
             const found = findComponentWithStory(asElement(target), componentStoryIds);
-            hoveredElement = found?.element ?? null;
             if (!found) {
                 setHovered(null);
                 return undefined;
@@ -70,11 +85,32 @@ export function useCanvasInspector({
             return inspected;
         }
 
+        // After a scroll or resize, a different component may be under the pointer that hasn't moved
+        function inspectUnderPointer() {
+            if (pointer) {
+                inspect(inspectedDocument.elementFromPoint(pointer.x, pointer.y));
+            }
+        }
+
+        // Only the user's own input picks: a story's play function also clicks, and its clicks mustn't navigate away
         function handlePointerMove(event: PointerEvent) {
-            inspect(event.target);
+            if (event.isTrusted) {
+                pointer = { x: event.clientX, y: event.clientY };
+                inspect(event.target);
+            }
+        }
+
+        function handlePointerLeave(event: PointerEvent) {
+            if (event.target === frameRoot) {
+                pointer = null;
+                setHovered(null);
+            }
         }
 
         function handleClick(event: MouseEvent) {
+            if (!event.isTrusted) {
+                return;
+            }
             event.preventDefault();
             event.stopPropagation();
             const inspected = inspect(event.target);
@@ -84,13 +120,9 @@ export function useCanvasInspector({
         }
 
         function blockEvent(event: Event) {
-            event.preventDefault();
-            event.stopPropagation();
-        }
-
-        function handleScroll() {
-            if (hoveredElement) {
-                inspect(hoveredElement);
+            if (event.isTrusted) {
+                event.preventDefault();
+                event.stopPropagation();
             }
         }
 
@@ -106,7 +138,9 @@ export function useCanvasInspector({
 
         frameDocument.addEventListener("pointermove", handlePointerMove, true);
         frameDocument.addEventListener("click", handleClick, true);
-        frameDocument.addEventListener("scroll", handleScroll, true);
+        frameDocument.addEventListener("pointerleave", handlePointerLeave, true);
+        frameDocument.addEventListener("scroll", inspectUnderPointer, true);
+        frameWindow?.addEventListener("resize", inspectUnderPointer);
         frameDocument.addEventListener("keydown", handleKeyDown, true);
         window.addEventListener("keydown", handleKeyDown);
         for (const type of blockedEvents) {
@@ -117,7 +151,9 @@ export function useCanvasInspector({
             cursorStyle.remove();
             frameDocument.removeEventListener("pointermove", handlePointerMove, true);
             frameDocument.removeEventListener("click", handleClick, true);
-            frameDocument.removeEventListener("scroll", handleScroll, true);
+            frameDocument.removeEventListener("pointerleave", handlePointerLeave, true);
+            frameDocument.removeEventListener("scroll", inspectUnderPointer, true);
+            frameWindow?.removeEventListener("resize", inspectUnderPointer);
             frameDocument.removeEventListener("keydown", handleKeyDown, true);
             window.removeEventListener("keydown", handleKeyDown);
             for (const type of blockedEvents) {

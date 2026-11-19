@@ -48,7 +48,7 @@ const densityOptions: { value: ThemeDensity; icon: ReactNode; "aria-label": stri
 ];
 
 /** The preset the frame size matches, if any. */
-export function getViewportPreset(width: number, height: number) {
+function getViewportPreset(width: number, height: number) {
     return viewportPresets.find((preset) => preset.width === width && preset.height === height);
 }
 

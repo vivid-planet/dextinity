@@ -1,22 +1,75 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { useState } from "react";
 import { expect } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Avatar } from "../../avatar/Avatar";
+import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
+import { IconButton } from "../../iconButton/IconButton";
 import { Link } from "../../link/Link";
+import { Menu } from "../../menu/Menu";
+import { MenuItem } from "../../menu/MenuItem";
+import { MenuRadioGroup } from "../../menu/MenuRadioGroup";
+import { MenuRadioItem } from "../../menu/MenuRadioItem";
 import { Card } from "../Card";
 import cardTokens from "../Card.tokens.scss?raw";
 import styles from "./Card.stories.module.scss";
 
-const iconOptions = {
-    Recent: <Icon name="clock" />,
-    Page: <Icon name="file" />,
-    Live: <Icon name="bolt" />,
-};
+function PeriodMenu() {
+    const [open, setOpen] = useState(false);
+    const [period, setPeriod] = useState("7");
 
-const linkOptions = {
-    PageTree: (
+    return (
+        <Menu
+            open={open}
+            onOpenChange={setOpen}
+            placement="bottom-end"
+            trigger={
+                <Button variant="text" color="secondary" size="small" endIcon={<Icon name="chevron-down" />}>
+                    {period === "7" ? "Last 7 days" : "Last 30 days"}
+                </Button>
+            }
+        >
+            <MenuRadioGroup aria-label="Period" value={period} onChange={setPeriod}>
+                <MenuRadioItem value="7" label="Last 7 days" />
+                <MenuRadioItem value="30" label="Last 30 days" />
+            </MenuRadioGroup>
+        </Menu>
+    );
+}
+
+function MoreMenu() {
+    const [open, setOpen] = useState(false);
+
+    return (
+        <Menu
+            open={open}
+            onOpenChange={setOpen}
+            placement="bottom-end"
+            trigger={
+                <IconButton variant="outlined" color="secondary" size="small" aria-label="More actions">
+                    <Icon name="more-horizontal" />
+                </IconButton>
+            }
+        >
+            <MenuItem label="Open page tree" icon={<Icon name="page-tree" />} />
+            <MenuItem label="Hide card" icon={<Icon name="eye-off" />} />
+        </Menu>
+    );
+}
+
+const actionsOptions = {
+    Toolbar: (
+        <>
+            <PeriodMenu />
+            <Button variant="outlined" color="secondary" size="small" startIcon={<Icon name="plus" />}>
+                New page
+            </Button>
+            <MoreMenu />
+        </>
+    ),
+    Link: (
         <Link href="#page-tree" endIcon={<Icon name="arrow-right" />}>
             Page tree
         </Link>
@@ -57,8 +110,7 @@ const meta = {
         className: styles.card,
     },
     argTypes: {
-        icon: { control: "select", options: Object.keys(iconOptions), mapping: iconOptions },
-        link: { control: "select", options: Object.keys(linkOptions), mapping: linkOptions },
+        actions: { control: "select", options: Object.keys(actionsOptions), mapping: actionsOptions },
         children: { control: false },
         className: { control: false },
         slots: { control: false },
@@ -74,6 +126,8 @@ type Story = StoryObj<typeof meta>;
  * **Rules**
  *
  * - Show an excerpt and link to the full view; the card is not the full list.
+ * - Order the actions: filter, own action, then the menu with everything else as an outlined icon button.
+ * - No icon before the title; the title and the content say what the card is about.
  * - One card per topic on the overview.
  */
 export const Default: Story = {
@@ -83,15 +137,23 @@ export const Default: Story = {
 };
 
 /**
- * As on the overview: an icon in the orb and a link to the full view.
+ * `meta` adds context after the title, e.g. the number of entries.
  */
-export const WithIconAndLink: Story = {
-    args: { icon: iconOptions.Recent, link: linkOptions.PageTree },
+export const WithMeta: Story = {
+    args: { meta: "12 pages" },
 };
 
 /**
- * `meta` adds context after the title, e.g. the period.
+ * `actions` at the end of the header: a filter such as the period, the card's own action, then an outlined menu button with the
+ * remaining actions.
  */
-export const WithMeta: Story = {
-    args: { icon: iconOptions.Live, title: "Changes", meta: "30 days", link: linkOptions.PageTree },
+export const WithActions: Story = {
+    args: { meta: "12 pages", actions: actionsOptions.Toolbar },
+};
+
+/**
+ * A link to the full view in place of the menu, when the card has no actions of its own.
+ */
+export const WithLink: Story = {
+    args: { actions: actionsOptions.Link },
 };

@@ -45,8 +45,12 @@ const finder: KeyboardShortcutListItem[] = [
 ];
 
 const rules = {
-    dos: ["Use the operating system's shortcut where one exists.", "Show shortcuts in tooltips and menus."],
-    donts: ["Shortcuts that override browser shortcuts (except ⌘S and ⌘K).", "Single letters as shortcuts while typing in a field."],
+    dos: ["Use the operating system's shortcut where one exists.", "Show shortcuts only in overlays: tooltips, menus, and the command palette."],
+    donts: [
+        "Shortcuts that override browser shortcuts (except ⌘S and ⌘K).",
+        "Single letters as shortcuts while typing in a field.",
+        "Key caps on the page itself: in its content, the top bar, search and filter fields, or toolbars.",
+    ],
 };
 
 function KeyboardShortcutsPage() {
@@ -105,8 +109,9 @@ type Story = StoryObj<typeof meta>;
  *
  * **Rules**
  *
- * - Do: use the operating system's shortcut where one exists; show shortcuts in tooltips and menus.
- * - Don't: override browser shortcuts (except ⌘S and ⌘K); use single letters as shortcuts while typing in a field.
+ * - Do: use the operating system's shortcut where one exists; show shortcuts only in overlays: tooltips, menus, and the command palette.
+ * - Don't: override browser shortcuts (except ⌘S and ⌘K); use single letters as shortcuts while typing in a field; show key caps on the
+ *   page itself: in its content, the top bar, search and filter fields, or toolbars.
  */
 export const Default: Story = {
     render: () => <KeyboardShortcutsPage />,

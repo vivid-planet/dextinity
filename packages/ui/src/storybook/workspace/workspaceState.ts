@@ -4,6 +4,8 @@ export type WorkspaceZoom = "fit" | "0.5" | "0.75" | "1" | "1.5";
 
 export interface WorkspaceState {
     storyId: string | null;
+    /** The page fills all the room below the toolbar and follows the window's width, instead of sitting on the canvas at `width` × `height`. */
+    responsive: boolean;
     width: number;
     height: number;
     zoom: WorkspaceZoom;
@@ -17,6 +19,7 @@ const storageKey = "dextinity-ui-workspace";
 
 export const defaultWorkspaceState: WorkspaceState = {
     storyId: null,
+    responsive: true,
     width: 1440,
     height: 900,
     zoom: "fit",

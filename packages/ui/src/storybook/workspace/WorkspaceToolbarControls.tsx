@@ -56,12 +56,16 @@ export function getViewportPreset(width: number, height: number) {
  * The frame size and zoom behind one button that shows the current size: presets, the exact size, rotating, and zoom.
  */
 export function ViewportControl({
+    responsive,
+    onResponsiveChange,
     width,
     height,
     zoom,
     onSizeChange,
     onZoomChange,
 }: {
+    responsive: boolean;
+    onResponsiveChange: () => void;
     width: number;
     height: number;
     zoom: WorkspaceZoom;
@@ -69,7 +73,8 @@ export function ViewportControl({
     onZoomChange: (zoom: WorkspaceZoom) => void;
 }) {
     const [open, setOpen] = useState(false);
-    const activePreset = getViewportPreset(width, height);
+    const activePreset = responsive ? undefined : getViewportPreset(width, height);
+    const triggerLabel = responsive ? "Responsive" : (activePreset?.label ?? "Custom");
 
     return (
         <Popover
@@ -81,21 +86,32 @@ export function ViewportControl({
                 <Button
                     variant="text"
                     color="secondary"
-                    aria-label={`Viewport: ${activePreset?.label ?? "Custom"}, ${width} × ${height}`}
+                    aria-label={responsive ? "Viewport: Responsive" : `Viewport: ${triggerLabel}, ${width} × ${height}`}
                     startIcon={<Icon name={activePreset?.icon ?? "devices"} />}
                     endIcon={<Icon name="chevron-down" />}
                 >
                     <span className={styles.viewportText}>
-                        <span className={styles.viewportName}>{activePreset?.label ?? "Custom"}</span>
-                        <span className={styles.viewportSize}>
-                            {width} × {height}
-                        </span>
+                        {responsive ? (
+                            <span>Responsive</span>
+                        ) : (
+                            <>
+                                <span className={styles.viewportName}>{triggerLabel}</span>
+                                <span className={styles.viewportSize}>
+                                    {width} × {height}
+                                </span>
+                            </>
+                        )}
                     </span>
                 </Button>
             }
         >
             <div className={styles.popoverBody}>
                 <div className={styles.presets} role="group" aria-label="Presets">
+                    <button type="button" className={styles.preset} aria-pressed={responsive} onClick={onResponsiveChange}>
+                        <Icon name="devices" />
+                        <span className={styles.presetLabel}>Responsive</span>
+                        <span className={styles.presetSize}>Fills the window</span>
+                    </button>
                     {viewportPresets.map((preset) => (
                         <button
                             key={preset.value}
@@ -138,9 +154,11 @@ export function ViewportControl({
                         <Icon name="swap" />
                     </IconButton>
                 </div>
-                <Field label="Zoom" layout="group">
-                    <SegmentedControl size="small" options={zoomOptions} value={zoom} onChange={onZoomChange} />
-                </Field>
+                {!responsive && (
+                    <Field label="Zoom" layout="group">
+                        <SegmentedControl size="small" options={zoomOptions} value={zoom} onChange={onZoomChange} />
+                    </Field>
+                )}
             </div>
         </Popover>
     );

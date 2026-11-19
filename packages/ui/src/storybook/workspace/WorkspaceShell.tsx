@@ -238,7 +238,7 @@ export function WorkspaceShell() {
     // Matches the canvas padding in the stylesheet: the room around the frame, plus the frame label above it
     const canvasInset = narrow ? { inline: 16, block: 16 * 2 + 28 } : { inline: 48, block: 48 * 2 };
     const fitScale = Math.min(1, (canvasSize.width - canvasInset.inline * 2) / state.width, (canvasSize.height - canvasInset.block) / state.height);
-    const scale = state.zoom === "fit" ? Math.max(fitScale, 0.1) : Number(state.zoom);
+    const scale = state.responsive ? 1 : state.zoom === "fit" ? Math.max(fitScale, 0.1) : Number(state.zoom);
     const storyUrl = storyId ? `iframe.html?id=${encodeURIComponent(storyId)}&viewMode=story` : null;
 
     function startFrameResize(edge: ResizeEdge, event: ReactPointerEvent) {
@@ -313,10 +313,12 @@ export function WorkspaceShell() {
                             <Icon name="back" />
                         </IconButton>
                         <ViewportControl
+                            responsive={state.responsive}
+                            onResponsiveChange={() => updateState({ responsive: true })}
                             width={state.width}
                             height={state.height}
                             zoom={state.zoom}
-                            onSizeChange={updateState}
+                            onSizeChange={(size) => updateState({ ...size, responsive: false })}
                             onZoomChange={(zoom) => updateState({ zoom })}
                         />
                     </div>
@@ -426,17 +428,25 @@ export function WorkspaceShell() {
                         />
                     )}
 
-                    <div ref={setCanvasElement} className={styles.canvas}>
-                        <div className={styles.stage} style={{ width: state.width * scale, height: state.height * scale }}>
-                            <div className={styles.frameLabel}>
-                                <span className={styles.frameStory}>
-                                    {currentStory ? `${currentStory.title.split("/").at(-1)} · ${currentStory.name}` : ""}
-                                </span>
-                                <span>
-                                    {state.width} × {state.height} · {Math.round(scale * 100)} %
-                                </span>
-                            </div>
-                            <div className={styles.frame} style={{ width: state.width, height: state.height, transform: `scale(${scale})` }}>
+                    <div ref={setCanvasElement} className={styles.canvas} data-responsive={state.responsive || undefined}>
+                        <div
+                            className={styles.stage}
+                            style={state.responsive ? undefined : { width: state.width * scale, height: state.height * scale }}
+                        >
+                            {!state.responsive && (
+                                <div className={styles.frameLabel}>
+                                    <span className={styles.frameStory}>
+                                        {currentStory ? `${currentStory.title.split("/").at(-1)} · ${currentStory.name}` : ""}
+                                    </span>
+                                    <span>
+                                        {state.width} × {state.height} · {Math.round(scale * 100)} %
+                                    </span>
+                                </div>
+                            )}
+                            <div
+                                className={styles.frame}
+                                style={state.responsive ? undefined : { width: state.width, height: state.height, transform: `scale(${scale})` }}
+                            >
                                 {storyUrl && (
                                     <iframe
                                         key={`${storyUrl}-${reloadKey}`}
@@ -468,9 +478,13 @@ export function WorkspaceShell() {
                                     </div>
                                 </div>
                             )}
-                            <div className={styles.handleInline} onPointerDown={(event) => startFrameResize("inline", event)} />
-                            <div className={styles.handleBlock} onPointerDown={(event) => startFrameResize("block", event)} />
-                            <div className={styles.handleCorner} onPointerDown={(event) => startFrameResize("both", event)} />
+                            {!state.responsive && (
+                                <>
+                                    <div className={styles.handleInline} onPointerDown={(event) => startFrameResize("inline", event)} />
+                                    <div className={styles.handleBlock} onPointerDown={(event) => startFrameResize("block", event)} />
+                                    <div className={styles.handleCorner} onPointerDown={(event) => startFrameResize("both", event)} />
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>

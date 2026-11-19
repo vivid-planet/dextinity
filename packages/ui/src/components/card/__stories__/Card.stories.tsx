@@ -95,3 +95,32 @@ export const WithIconAndLink: Story = {
 export const WithMeta: Story = {
     args: { icon: iconOptions.Live, title: "Changes", meta: "30 days", link: linkOptions.PageTree },
 };
+
+/**
+ * In a narrow card, e.g. while the assistant column narrows the page, the link moves to a line of its own instead of covering the
+ * title, and a word longer than the line breaks, with a hyphen where the page's language allows it.
+ */
+export const NarrowWithLongTitle: Story = {
+    args: {
+        icon: iconOptions.Recent,
+        title: "Letzte Inhaltsänderungen",
+        meta: "5 offen",
+        link: (
+            <Link href="#page-tree" endIcon={<Icon name="arrow-right" />}>
+                Seitenbaum
+            </Link>
+        ),
+        className: styles.narrowCard,
+        lang: "de",
+    },
+    play: async ({ canvas }) => {
+        const title = canvas.getByRole("heading", { name: "Letzte Inhaltsänderungen" });
+        const link = canvas.getByRole("link", { name: "Seitenbaum" });
+        const titleBox = title.getBoundingClientRect();
+        const linkBox = link.getBoundingClientRect();
+        const overlaps =
+            titleBox.left < linkBox.right && linkBox.left < titleBox.right && titleBox.top < linkBox.bottom && linkBox.top < titleBox.bottom;
+        await expect(overlaps).toBe(false);
+        await expect(title.scrollWidth).toBeLessThanOrEqual(title.clientWidth);
+    },
+};

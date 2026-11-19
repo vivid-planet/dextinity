@@ -11,6 +11,10 @@
     max-inline-size: 560px;
 }
 
+.narrowCard {
+    max-inline-size: 300px;
+}
+
 .row {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto 22px;

@@ -17,6 +17,7 @@
 
 .header {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: var(--dextinity-card-header-gap);
     padding: var(--dextinity-card-header-padding);
@@ -44,8 +45,15 @@
 }
 
 .title {
+    // Where the title doesn't fit next to the meta text and the link, they wrap to a line of their own
+    flex: 1 1 auto;
     min-inline-size: 0;
+    // Keeps the title next to the orb, so only the meta text and the link wrap
+    max-inline-size: calc(100% - var(--dextinity-card-orb-size) - var(--dextinity-card-header-gap));
     margin: 0;
+    // A word longer than the line, e.g. a German compound, breaks instead of running under the link
+    overflow-wrap: anywhere;
+    hyphens: auto;
     font-size: var(--dextinity-card-title-font-size);
     font-weight: var(--dextinity-card-title-font-weight);
     line-height: var(--dextinity-typography-title-line-height);
@@ -53,6 +61,7 @@
 }
 
 .meta {
+    flex: none;
     color: var(--dextinity-card-meta-color);
     font-size: var(--dextinity-card-meta-font-size);
     white-space: nowrap;
@@ -60,6 +69,7 @@
 
 .link {
     display: flex;
+    flex: none;
     align-items: center;
     margin-inline-start: auto;
     padding-inline-end: var(--dextinity-space-1-5);

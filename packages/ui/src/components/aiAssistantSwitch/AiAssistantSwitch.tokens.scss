@@ -1,18 +1,22 @@
 @mixin tokens {
-    // Height of the switch, matching the other controls in the top bar
-    --dextinity-ai-assistant-switch-height: 34px;
+    // Height of the switch, the same as the scope picker next to it
+    --dextinity-ai-assistant-switch-height: var(--dextinity-scope-switcher-height);
     // Corner radius of the switch
-    --dextinity-ai-assistant-switch-radius: var(--dextinity-radius-control);
+    --dextinity-ai-assistant-switch-radius: var(--dextinity-scope-switcher-radius);
     // Space between the icon, the label and the track
     --dextinity-ai-assistant-switch-gap: var(--dextinity-space-2);
     // Space at the start and end of the switch
-    --dextinity-ai-assistant-switch-padding-inline: var(--dextinity-space-2-5);
-    // Outline of the switch while it is off
-    --dextinity-ai-assistant-switch-line: var(--dextinity-color-line-strong);
-    // Outline of the switch on hover
-    --dextinity-ai-assistant-switch-line-hover: var(--dextinity-color-control-line);
+    --dextinity-ai-assistant-switch-padding-inline: var(--dextinity-scope-switcher-padding);
+    // Fill of the switch while it is off, the same as the scope picker
+    --dextinity-ai-assistant-switch-background: var(--dextinity-scope-switcher-background);
+    // Fill of the switch on hover while it is off, the same as the scope picker
+    --dextinity-ai-assistant-switch-background-hover: var(--dextinity-scope-switcher-background-hover);
     // Fill of the switch while the assistant is shown
     --dextinity-ai-assistant-switch-background-checked: var(--dextinity-color-accent-soft);
+    // Fill of the switch on hover while the assistant is shown
+    --dextinity-ai-assistant-switch-background-checked-hover: color-mix(in oklch, var(--dextinity-color-text) 6%, var(--dextinity-color-accent-soft));
+    // Edge of the switch, the same as the scope picker
+    --dextinity-ai-assistant-switch-shadow: var(--dextinity-scope-switcher-shadow);
     // Color of the label
     --dextinity-ai-assistant-switch-foreground: var(--dextinity-color-text);
     // Color of the icon

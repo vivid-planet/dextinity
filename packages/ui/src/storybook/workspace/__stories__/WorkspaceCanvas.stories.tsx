@@ -22,7 +22,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Current: Story = {
     render: () => (
-        <PageTypeShell activeId="job-ads">
+        <PageTypeShell currentId="job-ads">
             <PageHeader
                 eyebrow="Content · Careers"
                 title="Job ads"

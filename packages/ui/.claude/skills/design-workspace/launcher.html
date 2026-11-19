@@ -1,0 +1,127 @@
+<title>Dextinity Design Workspace</title>
+<style>
+    /* One fixed look: the workspace shell inside the frame stays light whatever the viewer's theme */
+    :root {
+        --bg: #f3f4f7;
+        --fg: #1d1f24;
+        --notice-bg: #fff4d6;
+        --notice-line: #e7c56b;
+        --notice-fg: #4a3800;
+        --font: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+        height: 100%;
+    }
+    body {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: var(--font);
+    }
+    .notice {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 12px;
+        align-items: baseline;
+        padding-block: 8px;
+        padding-left: max(16px, env(safe-area-inset-left, 0px));
+        padding-right: max(16px, env(safe-area-inset-right, 0px));
+        border-bottom: 1px solid var(--notice-line);
+        background: var(--notice-bg);
+        color: var(--notice-fg);
+        font-size: 13px;
+        line-height: 1.4;
+    }
+    .notice strong {
+        font-weight: 600;
+    }
+    .notice details {
+        min-width: 0;
+    }
+    .notice summary {
+        cursor: pointer;
+    }
+    .notice ul {
+        margin: 4px 0 0;
+        padding-left: 18px;
+    }
+    .notice code {
+        font-family: ui-monospace, "SF Mono", Menlo, monospace;
+        font-size: 12px;
+    }
+    .notice button {
+        margin-left: auto;
+        padding: 2px 10px;
+        border: 1px solid var(--notice-line);
+        border-radius: 6px;
+        background: transparent;
+        color: inherit;
+        font: inherit;
+        cursor: pointer;
+    }
+    .notice button:focus-visible {
+        outline: 2px solid var(--notice-fg);
+        outline-offset: 2px;
+    }
+    iframe {
+        display: block;
+        flex: 1;
+        width: 100%;
+        min-height: 0;
+        border: 0;
+    }
+</style>
+<meta name="claude:viewport-fit-sides" content="cover" />
+
+<div class="notice" id="notice" role="status" hidden>
+    <span><strong id="notice-title"></strong> <span id="notice-text"></span></span>
+    <details>
+        <summary>New commits</summary>
+        <ul id="notice-commits"></ul>
+    </details>
+    <button type="button" id="notice-dismiss">Dismiss</button>
+</div>
+<iframe src="iframe.html?id=workspace-shell--shell&amp;viewMode=story" title="Dextinity design workspace"></iframe>
+
+<script>
+    (async () => {
+        let status;
+        try {
+            const response = await fetch("status.json", { cache: "no-store" });
+            status = await response.json();
+        } catch {
+            return;
+        }
+        if (!status || status.behind < 1) return;
+
+        const dismissKey = "workspace-notice-dismissed";
+        const noticeId = `${status.builtFrom}-${status.behind}`;
+        try {
+            if (localStorage.getItem(dismissKey) === noticeId) return;
+        } catch {}
+
+        const checked = new Date(status.checkedAt).toLocaleString(undefined, { dateStyle: "short", timeStyle: "short" });
+        document.getElementById("notice-title").textContent =
+            status.behind === 1 ? `${status.base} has 1 new commit.` : `${status.base} has ${status.behind} new commits.`;
+        document.getElementById("notice-text").textContent = `Checked ${checked}. Ask Claude to update the workspace to show them.`;
+
+        const list = document.getElementById("notice-commits");
+        for (const commit of status.commits) {
+            const item = document.createElement("li");
+            const sha = document.createElement("code");
+            sha.textContent = commit.sha;
+            item.append(sha, " ", commit.subject);
+            list.append(item);
+        }
+
+        const notice = document.getElementById("notice");
+        notice.hidden = false;
+        document.getElementById("notice-dismiss").addEventListener("click", () => {
+            notice.hidden = true;
+            try {
+                localStorage.setItem(dismissKey, noticeId);
+            } catch {}
+        });
+    })();
+</script>

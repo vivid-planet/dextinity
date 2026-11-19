@@ -6,7 +6,7 @@
     // Edge highlight and drop shadow of the bar
     --dextinity-top-bar-shadow: var(--dextinity-material-edge-shadow), var(--dextinity-shadow-2);
     // Corner radius of the bar
-    --dextinity-top-bar-radius: var(--dextinity-radius-row);
+    --dextinity-top-bar-radius: var(--dextinity-radius-panel);
     // Space between the bar's edge and its content
     --dextinity-top-bar-padding: 7px;
     // Gap between the items in the bar
@@ -17,7 +17,7 @@
     // Largest width of the search field
     --dextinity-top-bar-search-max-width: 520px;
     // Corner radius of the search field
-    --dextinity-top-bar-search-radius: var(--dextinity-radius-field);
+    --dextinity-top-bar-search-radius: var(--dextinity-radius-control);
     // Fill of the search field
     --dextinity-top-bar-search-background: var(--dextinity-material-glass-strong);
     // Outline of the search field

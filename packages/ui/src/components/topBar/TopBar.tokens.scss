@@ -3,8 +3,8 @@
     --dextinity-top-bar-background: var(--dextinity-material-glass);
     // Blur of the content behind the glass bar
     --dextinity-top-bar-blur: var(--dextinity-material-blur);
-    // Edge highlight and drop shadow of the bar
-    --dextinity-top-bar-shadow: var(--dextinity-material-edge-shadow), var(--dextinity-shadow-2);
+    // Glass edge of the bar
+    --dextinity-top-bar-shadow: var(--dextinity-material-edge-shadow);
     // Corner radius of the bar
     --dextinity-top-bar-radius: var(--dextinity-radius-panel);
     // Space between the bar's edge and its content

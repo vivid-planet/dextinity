@@ -35,7 +35,7 @@ const zoomOptions: { value: WorkspaceZoom; label: string }[] = [
     { value: "1.5", label: "150 %" },
 ];
 
-export const colorSchemeOptions: { value: ThemeColorScheme; icon: ReactNode; label?: string; "aria-label": string }[] = [
+export const colorSchemeOptions: { value: ThemeColorScheme; icon: ReactNode; "aria-label": string }[] = [
     { value: "light", icon: <Icon name="sun" />, "aria-label": "Light" },
     { value: "dark", icon: <Icon name="moon" />, "aria-label": "Dark" },
     { value: "high-contrast", icon: <Icon name="contrast" />, "aria-label": "High contrast" },
@@ -166,6 +166,7 @@ export function AppearanceControl({
 }) {
     const [open, setOpen] = useState(false);
     const brandTitle = brandSetting.options.find((option) => option.value === brand)?.title ?? brand;
+    const colorSchemeTitle = colorSchemeOptions.find((option) => option.value === colorScheme)?.["aria-label"] ?? colorScheme;
     const densityTitle = densityOptions.find((option) => option.value === density)?.["aria-label"] ?? density;
 
     return (
@@ -175,17 +176,9 @@ export function AppearanceControl({
             title="Appearance"
             placement="bottom-end"
             trigger={
-                <Button
-                    variant="text"
-                    color="secondary"
-                    aria-label={`Appearance: ${brandTitle} theme, ${densityTitle} density`}
-                    startIcon={<Icon name="tune" />}
-                    endIcon={<Icon name="chevron-down" />}
-                >
-                    <span className={styles.appearanceText}>
-                        {brandTitle} · {densityTitle}
-                    </span>
-                </Button>
+                <IconButton variant="text" color="secondary" aria-label={`Appearance: ${brandTitle} theme, ${densityTitle} density`}>
+                    <Icon name="tune" />
+                </IconButton>
             }
         >
             <div className={styles.popoverBody}>
@@ -197,23 +190,11 @@ export function AppearanceControl({
                         onChange={(value) => value && onBrandChange(value)}
                     />
                 </Field>
-                <Field label="Color scheme" layout="group">
-                    <SegmentedControl
-                        size="small"
-                        overflow="wrap"
-                        options={colorSchemeOptions.map((option) => ({ ...option, label: option["aria-label"] }))}
-                        value={colorScheme}
-                        onChange={onColorSchemeChange}
-                    />
+                <Field label={`Color scheme · ${colorSchemeTitle}`} layout="group">
+                    <SegmentedControl size="small" options={colorSchemeOptions} value={colorScheme} onChange={onColorSchemeChange} />
                 </Field>
-                <Field label="Density" layout="group">
-                    <SegmentedControl
-                        size="small"
-                        overflow="wrap"
-                        options={densityOptions.map((option) => ({ ...option, label: option["aria-label"] }))}
-                        value={density}
-                        onChange={onDensityChange}
-                    />
+                <Field label={`Density · ${densityTitle}`} layout="group">
+                    <SegmentedControl size="small" options={densityOptions} value={density} onChange={onDensityChange} />
                 </Field>
             </div>
         </Popover>

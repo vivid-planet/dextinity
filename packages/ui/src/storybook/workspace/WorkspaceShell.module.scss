@@ -55,11 +55,12 @@
 .logo {
     display: block;
     flex: none;
-    block-size: 30px;
+    block-size: 24px;
+    margin-inline-start: 8px;
 
     // Only the sign, the left square of the logo, where the full logo doesn't fit
     @media (width < 900px) {
-        inline-size: 30px;
+        inline-size: 24px;
         object-fit: cover;
         object-position: left;
     }

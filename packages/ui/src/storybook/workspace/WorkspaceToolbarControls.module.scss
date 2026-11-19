@@ -23,18 +23,11 @@
     }
 }
 
-.appearanceText {
-    white-space: nowrap;
-
-    @media (width < 900px) {
-        display: none;
-    }
-}
-
 .popoverBody {
     display: grid;
     gap: 14px;
-    inline-size: min(340px, calc(100vw - 48px));
+    // The popover is at most 360px wide including its 14px padding, so wider content would scroll sideways
+    inline-size: min(330px, calc(100vw - 64px));
 }
 
 .presets {

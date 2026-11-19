@@ -47,7 +47,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {};
 
 /**
- * 72 / 1.02 · display font — the greeting on an overview.
+ * 56 / 1.02 · display font — the greeting on an overview.
  */
 export const DisplayXl: Story = {
     args: {
@@ -56,7 +56,7 @@ export const DisplayXl: Story = {
 };
 
 /**
- * 54 / 1.02 · display font — the page title, one per view.
+ * 40 / 1.02 · display font — the page title, one per view.
  */
 export const DisplayL: Story = {
     args: {
@@ -110,8 +110,8 @@ export const Mono: Story = {
 };
 
 const specimen = [
-    { variant: "displayXl", sample: "Good morning, Max", metrics: "72 / 1.02 · display", usage: "Greeting on an overview" },
-    { variant: "displayL", sample: "Job postings", metrics: "54 / 1.02 · display", usage: "Page title" },
+    { variant: "displayXl", sample: "Good morning, Max", metrics: "56 / 1.02 · display", usage: "Greeting on an overview" },
+    { variant: "displayL", sample: "Job postings", metrics: "40 / 1.02 · display", usage: "Page title" },
     { variant: "title", sample: "Recently edited", metrics: "17 / 1.3 · 500", usage: "Panel and card titles" },
     { variant: "section", sample: "General", metrics: "15 / 1.35 · 600", usage: "Sections in forms" },
     {

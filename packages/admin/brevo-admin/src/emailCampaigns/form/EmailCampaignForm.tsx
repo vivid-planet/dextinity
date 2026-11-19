@@ -15,6 +15,7 @@ import {
 } from "@dextinity/admin";
 import { ArrowLeft } from "@dextinity/admin-icons";
 import {
+    ActionLogButton,
     BlockAdminComponentRoot,
     BlockAdminTabLabel,
     type BlockInterface,
@@ -244,7 +245,10 @@ export function EmailCampaignForm({ id, EmailCampaignContentBlock, scope }: Form
                     <FormattedMessage id="dextinity.emailCampaigns.EmailCampaign" defaultMessage="Email Campaign" />
                 </ToolbarTitleItem>
                 <ToolbarFillSpace />
-                <ToolbarActions>{saveButton}</ToolbarActions>
+                <ToolbarActions>
+                    {id && <ActionLogButton entityId={id} entity="BrevoEmailCampaign" name={state.title} scope={scope} />}
+                    {saveButton}
+                </ToolbarActions>
             </Toolbar>
             <MainContent disablePaddingBottom>
                 <BlockPreviewWithTabs previewUrl={previewUrl} previewState={previewState} previewApi={previewApi}>

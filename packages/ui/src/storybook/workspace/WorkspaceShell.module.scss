@@ -31,17 +31,17 @@
 
 .toolbar {
     display: flex;
-    gap: 12px;
+    gap: 4px;
     align-items: center;
     justify-content: space-between;
     min-inline-size: 0;
-    padding: 6px 12px;
+    padding: 6px;
     border-block-end: var(--dextinity-line-width) solid var(--dextinity-color-line);
     background: var(--dextinity-color-surface);
 
-    @media (width < 640px) {
-        gap: 4px;
-        padding-inline: 6px;
+    @media (width >= 640px) {
+        gap: 12px;
+        padding-inline: 12px;
     }
 }
 
@@ -55,21 +55,24 @@
 .logo {
     display: block;
     flex: none;
+    // Only the sign, the left square of the logo, until the full logo fits
+    inline-size: 24px;
     block-size: 24px;
     margin-inline-start: 8px;
+    object-fit: cover;
+    object-position: left;
 
-    // Only the sign, the left square of the logo, where the full logo doesn't fit
-    @media (width < 900px) {
-        inline-size: 24px;
-        object-fit: cover;
-        object-position: left;
+    @media (width >= 900px) {
+        inline-size: auto;
     }
 }
 
 // The appearance popover has the color scheme too, for where it doesn't fit here
 .colorScheme {
-    @media (width < 640px) {
-        display: none;
+    display: none;
+
+    @media (width >= 640px) {
+        display: inline-flex;
     }
 }
 
@@ -106,6 +109,7 @@
 
 .panelHandle {
     position: relative;
+    touch-action: none;
     z-index: 1;
     flex: 0 0 var(--dextinity-line-width);
     background: var(--dextinity-color-line);
@@ -169,10 +173,10 @@
     min-inline-size: 0;
     overflow: auto;
     place-items: center;
-    padding: 48px;
+    padding: 44px 16px 16px;
 
-    @media (width < 760px) {
-        padding: 44px 16px 16px;
+    @media (width >= 760px) {
+        padding: 48px;
     }
 
     // The page takes all the room, like the app in the browser, so there's no sheet on a canvas around it
@@ -277,6 +281,7 @@
 
 %handle {
     position: absolute;
+    touch-action: none;
     z-index: 1;
 
     &::after {

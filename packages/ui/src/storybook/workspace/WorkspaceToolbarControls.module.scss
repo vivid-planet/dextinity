@@ -1,5 +1,5 @@
 .viewportText {
-    display: inline-flex;
+    display: none;
     gap: 6px;
     align-items: baseline;
     white-space: nowrap;
@@ -10,16 +10,18 @@
     font-variant-numeric: tabular-nums;
 }
 
-// The size says enough on narrow screens, and the icon names the kind of device
-@media (width < 1100px) {
-    .viewportName {
-        display: none;
+// On narrow screens the icon names the kind of device; the size and then the name join it as the toolbar gets room
+@media (width >= 640px) {
+    .viewportText {
+        display: inline-flex;
     }
 }
 
-@media (width < 640px) {
-    .viewportText {
-        display: none;
+.viewportName {
+    display: none;
+
+    @media (width >= 1100px) {
+        display: inline;
     }
 }
 

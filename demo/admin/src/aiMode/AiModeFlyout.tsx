@@ -134,7 +134,7 @@ export function AiModeFlyout() {
     );
 
     // The selection belongs to the page it was made on. Navigating while the chat has focus changes no selection the
-    // store would see, e.g. with open_page, so it is forgotten here. Before the push below, which runs on the same navigation.
+    // store would see, e.g. with open_page_tree_node, so it is forgotten here. Before the push below, which runs on the same navigation.
     useEffect(() => {
         textSelectionStore.clear();
     }, [textSelectionStore, location.pathname]);

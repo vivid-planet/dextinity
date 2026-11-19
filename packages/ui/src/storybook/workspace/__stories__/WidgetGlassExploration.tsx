@@ -1,5 +1,5 @@
 import { composeStories } from "@storybook/react-vite";
-import { type CSSProperties, useState } from "react";
+import { useState } from "react";
 
 import * as overviewStories from "../../../components/overviewLayout/__stories__/OverviewLayout.stories";
 import { SegmentedControl } from "../../../components/segmentedControl/SegmentedControl";
@@ -23,7 +23,7 @@ export function WidgetGlassExploration() {
     const [level, setLevel] = useState<GlassLevel>("glass-strong");
 
     return (
-        <div style={{ "--dextinity-card-background": `var(--dextinity-material-${level})` } as CSSProperties}>
+        <div className={styles.root} data-glass={level}>
             <Overview />
             <div className={styles.switcher}>
                 <span className={styles.switcherLabel}>Card glass</span>

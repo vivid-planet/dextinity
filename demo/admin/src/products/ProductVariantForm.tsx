@@ -17,11 +17,12 @@ import {
     resolveHasSaveConflict,
     useFormSaveConflict,
 } from "@dextinity/cms-admin";
+import { AiModeFormToolset } from "@src/aiMode/AiModeFormToolset";
 import type { GQLProductVariantMutationErrorCode } from "@src/graphql.generated";
 import { deepEqual } from "fast-equals";
 import { FORM_ERROR, type FormApi } from "final-form";
 import type { ReactNode } from "react";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 
 import {
     createProductVariantFormMutation,
@@ -62,6 +63,7 @@ const submissionErrorMessages: { [K in GQLProductVariantMutationErrorCode]: Reac
 };
 
 export function ProductVariantForm({ id, productId }: FormProps) {
+    const intl = useIntl();
     const client = useApolloClient();
     const mode = id ? "edit" : "add";
     const formApiRef = useFormApiRef<FormValues>();
@@ -170,6 +172,20 @@ export function ProductVariantForm({ id, productId }: FormProps) {
             {() => (
                 <>
                     {saveConflict.dialogs}
+                    <AiModeFormToolset
+                        entityName="product_variant"
+                        entityLabel="product variant"
+                        id={id}
+                        fields={[
+                            { name: "name", label: intl.formatMessage({ id: "productVariant.name", defaultMessage: "Name" }), type: "text" },
+                            {
+                                name: "image",
+                                label: intl.formatMessage({ id: "productVariant.image", defaultMessage: "Image" }),
+                                type: "block",
+                                block: rootBlocks.image,
+                            },
+                        ]}
+                    />
                     <Field
                         required
                         fullWidth

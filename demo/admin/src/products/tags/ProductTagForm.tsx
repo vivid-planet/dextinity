@@ -1,10 +1,11 @@
 import { skipToken, useApolloClient, useQuery } from "@apollo/client/react";
 import { filterByFragment, FinalForm, type FinalFormSubmitEvent, Loading, TextField, useFormApiRef, useStackSwitchApi } from "@dextinity/admin";
 import { queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@dextinity/cms-admin";
+import { AiModeFormToolset } from "@src/aiMode/AiModeFormToolset";
 import { deepEqual } from "fast-equals";
 import type { FormApi } from "final-form";
 import { useMemo } from "react";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 
 import { createProductTagMutation, productTagFormFragment, productTagQuery, updateProductTagMutation } from "./ProductTagForm.gql";
 import type {
@@ -22,6 +23,7 @@ interface FormProps {
     id?: string;
 }
 export function ProductTagForm({ id }: FormProps) {
+    const intl = useIntl();
     const client = useApolloClient();
     const mode = id ? "edit" : "add";
     const formApiRef = useFormApiRef<FormValues>();
@@ -98,6 +100,12 @@ export function ProductTagForm({ id }: FormProps) {
             {() => (
                 <>
                     {saveConflict.dialogs}
+                    <AiModeFormToolset
+                        entityName="product_tag"
+                        entityLabel="product tag"
+                        id={id}
+                        fields={[{ name: "title", label: intl.formatMessage({ id: "productTag.title", defaultMessage: "Title" }), type: "text" }]}
+                    />
                     <TextField
                         required
                         variant="horizontal"

@@ -13,10 +13,12 @@ import {
     useBufferedRowCount,
     useDataGridRemote,
     usePersistentColumnState,
+    useStackSwitchApi,
 } from "@dextinity/admin";
 import { Add as AddIcon, Edit } from "@dextinity/admin-icons";
 import { IconButton } from "@mui/material";
 import { DataGridPro } from "@mui/x-data-grid-pro";
+import { useAiModeDataGridToolset } from "@src/aiMode/useAiModeDataGridToolset";
 import { FormattedMessage } from "react-intl";
 
 import type {
@@ -110,6 +112,17 @@ export function ProductVariantsGrid({ productId }: { productId: string }) {
             sort: muiGridSortToGql(sortModel),
         },
         notifyOnNetworkStatusChange: false,
+    });
+    const stackSwitchApi = useStackSwitchApi();
+    useAiModeDataGridToolset({
+        entityName: "product_variant",
+        entityLabel: "variants of the product",
+        columns,
+        dataGridProps,
+        rows: data?.productVariants.nodes ?? [],
+        totalCount: data?.productVariants.totalCount,
+        isLoading: loading,
+        openForm: (id) => (id ? stackSwitchApi.activatePage("edit", id) : stackSwitchApi.activatePage("add", "add")),
     });
     if (error) {
         throw error;

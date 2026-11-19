@@ -80,10 +80,10 @@ describe("set_<entity>_form_values", () => {
         });
     });
 
-    it("sets the values as unsaved changes", () => {
+    it("sets the values as unsaved changes", async () => {
         const { form, call } = createTools();
 
-        expect(call("set_news_form_values", { values: { title: "Award won", category: "awards" } })).toContain("The changes are unsaved");
+        expect(await call("set_news_form_values", { values: { title: "Award won", category: "awards" } })).toContain("The changes are unsaved");
         expect(form.getState().values).toMatchObject({ title: "Award won", category: "awards" });
         expect(form.getState().dirty).toBe(true);
     });
@@ -94,10 +94,10 @@ describe("set_<entity>_form_values", () => {
         [{ category: "sports" }, '"category" must be one of: events, awards'],
         [{ title: 42 }, '"title" must be a string'],
         [{ image: {} }, '"image" is no field this tool can set'],
-    ])("refuses %o and changes no field", (values, message) => {
+    ])("refuses %o and changes no field", async (values, message) => {
         const { form, call } = createTools();
 
-        expect(() => call("set_news_form_values", { values: { title: "Changed", ...values } })).toThrow(message);
+        await expect(async () => call("set_news_form_values", { values: { title: "Changed", ...values } })).rejects.toThrow(message);
         expect(form.getState().values.title).toBe("Hello");
     });
 });
@@ -204,5 +204,124 @@ describe("edit_<entity>_form_blocks", () => {
             tools.call({ field: "content", operations: [{ operation: "insert", type: "text", props: { text: "New" } }] }),
         ).rejects.toThrow("The field 'content' changed while the edits were prepared");
         expect(tools.getKeys()).toEqual(["c"]);
+    });
+});
+
+describe("fields beyond text", () => {
+    const countries = [
+        { id: "at", label: "Austria" },
+        { id: "de", label: "Germany" },
+    ];
+    const manufacturers = [
+        { id: "m1", name: "Alpine", country: "at" },
+        { id: "m2", name: "Bavaria", country: "de" },
+    ];
+    const tags = [
+        { id: "t1", title: "New" },
+        { id: "t2", title: "Sale" },
+    ];
+
+    function createProductTools() {
+        const form = createForm<Record<string, unknown>>({
+            onSubmit: vi.fn(),
+            initialValues: {
+                inStock: false,
+                additionalTypes: [],
+                manufacturerCountry: countries[0],
+                manufacturer: null,
+                tags: [],
+                address: { street: "Main St" },
+            },
+        });
+        for (const name of ["inStock", "additionalTypes", "manufacturerCountry", "manufacturer", "tags", "address.street"]) {
+            form.registerField(name, () => undefined, { value: true });
+        }
+        const tools = createFormTools({
+            entityName: "product",
+            entityLabel: "product",
+            fields: [
+                { name: "inStock", label: "In stock", type: "boolean" },
+                {
+                    name: "additionalTypes",
+                    label: "Additional types",
+                    type: "multiSelect",
+                    options: [
+                        { value: "cap", label: "Cap" },
+                        { value: "tie", label: "Tie" },
+                    ],
+                },
+                {
+                    name: "manufacturerCountry",
+                    label: "Manufacturer country",
+                    type: "reference",
+                    loadOptions: async () => countries,
+                    getOptionLabel: (option) => String(option.label),
+                },
+                {
+                    name: "manufacturer",
+                    label: "Manufacturer",
+                    type: "reference",
+                    // As in the product form, the manufacturers are those of the selected country.
+                    loadOptions: async (values) =>
+                        manufacturers.filter(({ country }) => country === (values.manufacturerCountry as { id: string } | null)?.id),
+                    getOptionLabel: (option) => String(option.name),
+                },
+                {
+                    name: "tags",
+                    label: "Tags",
+                    type: "reference",
+                    multiple: true,
+                    loadOptions: async () => tags,
+                    getOptionLabel: (option) => String(option.title),
+                },
+                { name: "address.street", label: "Street", type: "text" },
+            ],
+            form,
+            blockContext: {} as BlockContext,
+        });
+        const call = (name: string, args: Record<string, unknown>) => findTool(tools, name).handler(args, { clearTextSelection: vi.fn() });
+        return { form, tools, call };
+    }
+
+    it("lists the options of a reference field by ID and label", async () => {
+        const { call } = createProductTools();
+
+        expect(await call("get_product_form_options", { field: "manufacturer" })).toEqual([{ id: "m1", label: "Alpine" }]);
+    });
+
+    it("sets references by ID, loading the options with the other values of the same call", async () => {
+        const { form, call } = createProductTools();
+
+        await call("set_product_form_values", { values: { manufacturerCountry: "de", manufacturer: "m2", tags: ["t2", "t1"] } });
+
+        expect(form.getState().values).toMatchObject({ manufacturerCountry: countries[1], manufacturer: manufacturers[1], tags: [tags[1], tags[0]] });
+    });
+
+    it("reads a reference as the ID and label of the selected option", async () => {
+        const { call } = createProductTools();
+
+        expect(await call("get_product_form_state", {})).toMatchObject({
+            values: { manufacturerCountry: { id: "at", label: "Austria" }, manufacturer: null },
+        });
+    });
+
+    it("sets a checkbox, a multi-select, and a nested field", async () => {
+        const { form, call } = createProductTools();
+
+        await call("set_product_form_values", { values: { inStock: true, additionalTypes: ["tie"], "address.street": "Side St" } });
+
+        expect(form.getState().values).toMatchObject({ inStock: true, additionalTypes: ["tie"], address: { street: "Side St" } });
+    });
+
+    it.each([
+        [{ manufacturer: "m2" }, '"m2" is no option of "manufacturer"'],
+        [{ tags: "t1" }, '"tags" must be a list of IDs'],
+        [{ inStock: "yes" }, '"inStock" must be true or false'],
+        [{ additionalTypes: ["shirt"] }, '"additionalTypes" must be a list of: cap, tie'],
+    ])("refuses %o and changes no field", async (values, message) => {
+        const { form, call } = createProductTools();
+
+        await expect(async () => call("set_product_form_values", { values: { "address.street": "Changed", ...values } })).rejects.toThrow(message);
+        expect(form.getState().values).toMatchObject({ address: { street: "Main St" } });
     });
 });

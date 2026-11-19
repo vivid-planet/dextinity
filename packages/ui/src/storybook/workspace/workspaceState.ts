@@ -2,8 +2,13 @@ import { useEffect, useState } from "react";
 
 export type WorkspaceZoom = "fit" | "0.5" | "0.75" | "1" | "1.5";
 
+export type WorkspaceMode = "components" | "prototypes";
+
 export interface WorkspaceState {
+    /** The tab: a single story of the components, or a clickable prototype of a whole app. */
+    mode: WorkspaceMode;
     storyId: string | null;
+    prototypeId: string | null;
     /** The page fills all the room below the toolbar and follows the window's width, instead of sitting on the canvas at `width` × `height`. */
     responsive: boolean;
     width: number;
@@ -18,7 +23,9 @@ export interface WorkspaceState {
 const storageKey = "dextinity-ui-workspace";
 
 export const defaultWorkspaceState: WorkspaceState = {
+    mode: "components",
     storyId: null,
+    prototypeId: null,
     responsive: true,
     width: 1440,
     height: 900,
@@ -38,7 +45,7 @@ function readStoredState(): WorkspaceState {
 }
 
 /**
- * The workspace's own settings — the shown story, frame size, zoom, and panel — kept across reloads.
+ * The workspace's own settings — the tab, the shown story and prototype, frame size, zoom, and panel — kept across reloads.
  */
 export function useWorkspaceState() {
     const [state, setState] = useState(readStoredState);

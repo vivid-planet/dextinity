@@ -29,20 +29,82 @@
     }
 }
 
+.header {
+    min-inline-size: 0;
+    border-block-end: var(--dextinity-line-width) solid var(--dextinity-color-line);
+    background: var(--dextinity-color-surface);
+}
+
+// The global row: the panel, the tabs, and the settings that apply to every story
 .toolbar {
     display: flex;
     gap: 4px;
     align-items: center;
-    justify-content: space-between;
     min-inline-size: 0;
-    padding: 6px;
+    min-block-size: 48px;
+    padding-inline: 6px;
     border-block-end: var(--dextinity-line-width) solid var(--dextinity-color-line);
-    background: var(--dextinity-color-surface);
 
     @media (width >= 640px) {
         gap: 12px;
         padding-inline: 12px;
     }
+}
+
+// The tabs sit on the row's bottom line, which takes the place of their own
+.modeTabs {
+    align-self: flex-end;
+    min-inline-size: 0;
+    margin-inline-end: auto;
+
+    [role="tablist"] {
+        box-shadow: none;
+    }
+}
+
+// The row for what the canvas shows: where it is, and the tools for the frame
+.contextBar {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: space-between;
+    min-inline-size: 0;
+    padding: 4px 6px 4px 12px;
+
+    @media (width >= 640px) {
+        padding-inline-end: 12px;
+    }
+}
+
+.location {
+    display: flex;
+    gap: 6px;
+    align-items: baseline;
+    min-inline-size: 0;
+    margin: 0;
+    white-space: nowrap;
+}
+
+// Only the current story fits on a phone; the path before it joins on wider screens
+.locationTrail {
+    display: none;
+    overflow: hidden;
+    color: var(--dextinity-color-text-subtle);
+    text-overflow: ellipsis;
+
+    &::after {
+        content: " /";
+    }
+
+    @media (width >= 640px) {
+        display: inline;
+    }
+}
+
+.locationCurrent {
+    overflow: hidden;
+    font-weight: 600;
+    text-overflow: ellipsis;
 }
 
 .toolbarGroup {

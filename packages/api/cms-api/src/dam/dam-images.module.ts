@@ -6,6 +6,7 @@ import { DamDominantColorService } from "./images/dam-dominant-color.service";
 import { FileImagesResolver } from "./images/file-image.resolver";
 import { createImagesController } from "./images/images.controller";
 import { ImagesService } from "./images/images.service";
+import { ScaledImagesService } from "./images/scaled-images.service";
 import { IsAllowedImageAspectRatioConstraint } from "./images/validators/is-allowed-aspect-ratio.validator";
 import { IsAllowedImageSizeConstraint } from "./images/validators/is-allowed-image-size.validator";
 import { IsValidImageAspectRatioConstraint } from "./images/validators/is-valid-aspect-ratio.validator";
@@ -33,6 +34,7 @@ export class DamImagesModule {
             module: DamImagesModule,
             providers: [
                 ImagesService,
+                ScaledImagesService,
                 DamDominantColorService,
                 { provide: DAM_DOMINANT_COLOR_CALCULATOR, useExisting: DamDominantColorService },
                 CalculateDominantImageColorCommand,

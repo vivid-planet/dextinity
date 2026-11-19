@@ -3,10 +3,9 @@ import { type FormApi, getIn, setIn } from "final-form";
 import type { BlockContext } from "../blocks/context/BlockContext";
 import type { BlockInterface } from "../blocks/types";
 import type { AiModeTool } from "./AiModeToolsets";
-import { blockEditOperationsSchema, describeBlockEditBatch, describeBlockEditResults, describeBlockSchemaLookup } from "./blockEditTool";
+import { createBlockEditOperationsSchema, describeBlockEditBatch, describeBlockSchemaLookup, editBlocksBlock } from "./blockEditTool";
 import { type BlocksBlockChild, mergeBlockProps, toBlockState } from "./blockProps";
 import { summarizeBlockState } from "./blockStateSummary";
-import { asBlockEditOperations, planBlockEdits } from "./editBlocks";
 
 type FormValues = Record<string, unknown>;
 
@@ -332,11 +331,13 @@ export function createFormTools({
                 return `Set ${entries.map(([name]) => name).join(", ")} in the ${entityLabel} form. The changes are unsaved — the user has to save the form.`;
             },
         },
-        ...(blocksFields.length > 0 ? [createEditBlocksTool({ entityName, entityLabel, blocksFields, form, blockContext, isBlockInsertable })] : []),
+        ...(blocksFields.length > 0
+            ? [createEditFormBlocksTool({ entityName, entityLabel, blocksFields, form, blockContext, isBlockInsertable })]
+            : []),
     ];
 }
 
-function createEditBlocksTool({
+function createEditFormBlocksTool({
     entityName,
     entityLabel,
     blocksFields,
@@ -373,12 +374,15 @@ function createEditBlocksTool({
             type: "object",
             properties: {
                 field: { type: "string", enum: blocksFields.map(({ name }) => name), description: "The block field to change." },
-                operations: blockEditOperationsSchema,
+                operations: createBlockEditOperationsSchema({
+                    stateToolName,
+                    schemaBlockName: blocksFields.length === 1 ? blocksFields[0].schemaBlockName : undefined,
+                }),
             },
             required: ["field", "operations"],
         },
         readOnlyHint: false,
-        handler: async (args, { clearTextSelection }) => {
+        handler: (args, helpers) => {
             const field = blocksFields.find((candidate) => candidate.name === args.field);
             if (!field) {
                 throw new Error(
@@ -386,34 +390,24 @@ function createEditBlocksTool({
                 );
             }
 
-            const plannedBlocks = (getIn(form.getState().values, field.name) as BlocksState).blocks;
-            const { apply, results } = await planBlockEdits({
-                blocks: plannedBlocks,
-                operations: asBlockEditOperations(args.operations),
-                supportedBlocks: field.supportedBlocks,
-                insertableBlocks: Object.fromEntries(Object.entries(field.supportedBlocks).filter(([, block]) => isBlockInsertable(block))),
-                schemaRootBlockName: field.schemaBlockName,
-                blockContext,
+            const getBlocksState = () => getIn(form.getState().values, field.name) as BlocksState;
+            return editBlocksBlock({
+                operations: args.operations,
+                blocksBlock: {
+                    supportedBlocks: field.supportedBlocks,
+                    insertableBlocks: Object.fromEntries(Object.entries(field.supportedBlocks).filter(([, block]) => isBlockInsertable(block))),
+                    schemaBlockName: field.schemaBlockName,
+                    blockContext,
+                    getBlocks: () => getBlocksState().blocks,
+                    updateBlocks: (update) => {
+                        const current = getBlocksState();
+                        form.change(field.name, { ...current, blocks: update(current.blocks) });
+                    },
+                },
+                contentName: `the field '${field.name}' of the ${entityLabel}`,
+                stateToolName,
+                ...helpers,
             });
-
-            if (apply) {
-                // Planning awaits conversions that can query the API. Applied to blocks the user changed meanwhile, the batch
-                // would undo those changes, so it is rejected as a whole instead.
-                const current = getIn(form.getState().values, field.name) as BlocksState;
-                if (current.blocks !== plannedBlocks) {
-                    throw new Error(
-                        `The field '${field.name}' changed while the edits were prepared, so none of the operations were applied. Read the form state again and retry.`,
-                    );
-                }
-                form.change(field.name, { ...current, blocks: apply(current.blocks) });
-            }
-
-            const { changes, ...result } = describeBlockEditResults({ results, unsavedIn: `the field '${field.name}' of the ${entityLabel}` });
-            if (changes > 0) {
-                // The selection is the text before the change. The user selects again to ask about the new text.
-                clearTextSelection();
-            }
-            return result;
         },
     };
 }

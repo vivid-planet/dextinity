@@ -204,7 +204,7 @@ describe("edit_<entity>_form_blocks", () => {
 
         await expect(async () =>
             tools.call({ field: "content", operations: [{ operation: "insert", type: "text", props: { text: "New" } }] }),
-        ).rejects.toThrow("The field 'content' changed while the edits were prepared");
+        ).rejects.toThrow("The field 'content' of the news article changed while the edits were prepared");
         expect(tools.getKeys()).toEqual(["c"]);
     });
 });

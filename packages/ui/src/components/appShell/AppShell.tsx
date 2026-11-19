@@ -1,6 +1,6 @@
 import { Dialog as BaseDialog } from "@base-ui/react/dialog";
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type PropsWithChildren, type ReactNode, useState } from "react";
+import { forwardRef, type HTMLAttributes, type PropsWithChildren, type ReactNode, useEffect, useRef, useState } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
@@ -44,7 +44,10 @@ export interface AppShellProps extends Omit<HTMLAttributes<HTMLDivElement>, "cla
      * The top bar, usually a `TopBar`; it sticks to the top. Without `onMenuClick`, its menu button opens the navigation drawer.
      */
     topBar: ReactNode;
-    /** Whether the navigation shows only icons. A user setting; on medium windows the navigation is always collapsed. */
+    /**
+     * Whether the navigation shows only icons. A user setting for wide windows; on medium windows the navigation starts collapsed,
+     * and expanding it lays it over the content until a page is picked.
+     */
     navCollapsed: boolean;
     /** Called to collapse or expand the navigation, with its footer button or ⌘\ / Ctrl+\. */
     onNavCollapsedChange: (collapsed: boolean) => void;
@@ -60,7 +63,8 @@ export interface AppShellProps extends Omit<HTMLAttributes<HTMLDivElement>, "cla
 
 /**
  * The frame of every admin app: navigation, top bar, and content, as glass panels over the ambient light field. It stays in place
- * when the page changes and adapts to the window width: the navigation collapses to icons, then moves into a drawer.
+ * when the page changes and adapts to the window width: the navigation collapses to icons, then moves into a drawer. On medium
+ * windows, the collapsed navigation can still be expanded; it then lies over the content instead of pushing it aside.
  *
  * `children`: The page: page header, then panels.
  */
@@ -85,17 +89,55 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
     const layout: AppShellLayout = narrow ? "narrow" : medium ? "medium" : "wide";
     const ownerState: AppShellOwnerState = { layout, navCollapsed };
     const [navDrawerOpen, setNavDrawerOpen] = useState(false);
+    const [navOverlayOpen, setNavOverlayOpen] = useState(false);
+    const [overlayLayout, setOverlayLayout] = useState(layout);
+    // The navigation opened over the content on a medium window closes when the window leaves that size
+    if (overlayLayout !== layout) {
+        setOverlayLayout(layout);
+        setNavOverlayOpen(false);
+    }
+    const navRef = useRef<HTMLDivElement>(null);
     const { anchorRef, container } = useThemePortalContainer<HTMLSpanElement>();
 
-    useKeyboardShortcut("mod+\\", () => onNavCollapsedChange(!navCollapsed), { enabled: !disableKeyboardShortcuts && layout === "wide" });
+    const isMedium = layout === "medium";
+    const columnNavCollapsed = isMedium ? !navOverlayOpen : navCollapsed;
+    const changeColumnNavCollapsed = isMedium ? (collapsed: boolean) => setNavOverlayOpen(!collapsed) : onNavCollapsedChange;
+    const navCollapseShortcutEnabled = !disableKeyboardShortcuts && layout !== "narrow";
+    useKeyboardShortcut("mod+\\", () => changeColumnNavCollapsed(!columnNavCollapsed), {
+        enabled: navCollapseShortcutEnabled,
+    });
+
+    // Like a popup, the navigation over the content closes on Escape and on a press outside it
+    useEffect(() => {
+        if (!isMedium || !navOverlayOpen) {
+            return;
+        }
+        function handleKeyDown(event: KeyboardEvent) {
+            if (event.key === "Escape") {
+                setNavOverlayOpen(false);
+            }
+        }
+        function handlePointerDown(event: PointerEvent) {
+            if (event.target instanceof Node && !navRef.current?.contains(event.target)) {
+                setNavOverlayOpen(false);
+            }
+        }
+        document.addEventListener("keydown", handleKeyDown);
+        document.addEventListener("pointerdown", handlePointerDown);
+        return () => {
+            document.removeEventListener("keydown", handleKeyDown);
+            document.removeEventListener("pointerdown", handlePointerDown);
+        };
+    }, [isMedium, navOverlayOpen]);
 
     const columnContext: AppShellContextValue = {
-        navCollapsed: navCollapsed || layout === "medium",
-        onNavCollapsedChange: layout === "wide" ? onNavCollapsedChange : undefined,
+        navCollapsed: columnNavCollapsed,
+        onNavCollapsedChange: layout === "narrow" ? undefined : changeColumnNavCollapsed,
+        onNavigate: isMedium ? () => setNavOverlayOpen(false) : undefined,
     };
     const drawerContext: AppShellContextValue = { navCollapsed: false, onNavigate: () => setNavDrawerOpen(false) };
     const mainContext: AppShellContextValue = {
-        navCollapsed: columnContext.navCollapsed,
+        navCollapsed: navCollapsed || isMedium,
         onNavDrawerOpen: layout === "narrow" ? () => setNavDrawerOpen(true) : undefined,
     };
 
@@ -111,6 +153,7 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
             ref={ref}
             data-layout={ownerState.layout}
             data-navcollapsed={ownerState.navCollapsed ? "" : undefined}
+            data-navoverlay={isMedium && navOverlayOpen ? "" : undefined}
             className={clsx(styles.root, className)}
         >
             <span ref={anchorRef} hidden />
@@ -130,7 +173,9 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
                 </AppShellContext.Provider>
             ) : (
                 <AppShellContext.Provider value={columnContext}>
-                    <div className={styles.nav}>{nav}</div>
+                    <div ref={navRef} className={styles.nav}>
+                        {nav}
+                    </div>
                 </AppShellContext.Provider>
             )}
             <AppShellContext.Provider value={mainContext}>

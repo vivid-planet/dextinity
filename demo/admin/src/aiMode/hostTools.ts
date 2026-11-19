@@ -16,7 +16,7 @@ export const createPageTreeTools = ({
     scopeUrl: string;
 }): AiModeTool[] => [
     {
-        name: "open_page",
+        name: "open_page_tree_node",
         description:
             "Open the document of a page tree node of the current content scope in the editor, e.g. a node found with list_page_tree_nodes. Unsaved changes of the page that is open are not lost silently: the user is asked whether to discard them.",
         inputSchema: {
@@ -36,7 +36,7 @@ export const createPageTreeTools = ({
         handler: (args) => {
             const id = String(args.id ?? "");
             if (!uuidPattern.test(id)) {
-                throw new Error(`open_page requires the ID of a page tree node, a UUID, but got "${id}".`);
+                throw new Error(`open_page_tree_node requires the ID of a page tree node, a UUID, but got "${id}".`);
             }
             const category = String(args.category ?? "");
             if (!categories.includes(category)) {

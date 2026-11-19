@@ -16,9 +16,9 @@ import {
     useStackSwitchApi,
 } from "@dextinity/admin";
 import { Add as AddIcon, Edit } from "@dextinity/admin-icons";
+import { useAiModeDataGridScope } from "@dextinity/cms-admin";
 import { IconButton } from "@mui/material";
 import { DataGridPro } from "@mui/x-data-grid-pro";
-import { useAiModeDataGridScope } from "@src/aiMode/useAiModeDataGridScope";
 import { FormattedMessage } from "react-intl";
 
 import type {

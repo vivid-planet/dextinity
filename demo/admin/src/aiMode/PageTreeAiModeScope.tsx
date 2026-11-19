@@ -1,8 +1,7 @@
-import { useContentScope } from "@dextinity/cms-admin";
+import { AiModeScope, useContentScope } from "@dextinity/cms-admin";
 import type { PropsWithChildren } from "react";
 import { useNavigate } from "react-router";
 
-import { AiModeScope } from "./AiModeScopes";
 import { createPageTreeTools } from "./hostTools";
 
 export function PageTreeAiModeScope({ category, children }: PropsWithChildren<{ category: string }>) {

@@ -12,6 +12,7 @@ import {
     useStackSwitchApi,
 } from "@dextinity/admin";
 import {
+    AiModeFormScope,
     type BlockState,
     createFinalFormBlock,
     DamImageBlock,
@@ -20,7 +21,6 @@ import {
     useContentScope,
     useFormSaveConflict,
 } from "@dextinity/cms-admin";
-import { AiModeFormScope } from "@src/aiMode/AiModeFormScope";
 import { deepEqual } from "fast-equals";
 import type { FormApi } from "final-form";
 import { useMemo } from "react";

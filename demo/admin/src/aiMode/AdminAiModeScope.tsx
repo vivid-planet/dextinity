@@ -1,10 +1,9 @@
-import { type MasterMenuData, useContentScope, useUserPermissionCheck } from "@dextinity/cms-admin";
+import { AiModeScope, type MasterMenuData, useContentScope, useUserPermissionCheck } from "@dextinity/cms-admin";
 import { type PropsWithChildren, useMemo } from "react";
 import { useIntl } from "react-intl";
 import { useLocation, useNavigate } from "react-router";
 
 import { findOpenAdminPage, getAdminPages } from "./adminPages";
-import { AiModeScope } from "./AiModeScopes";
 import { createAdminTools } from "./hostTools";
 
 /** The scope of the whole admin, so that the AI Mode is available on every page and can open any page of the menu. */

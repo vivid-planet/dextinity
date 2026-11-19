@@ -1,10 +1,9 @@
-import { useUserPermissionCheck } from "@dextinity/cms-admin";
+import { AiModeScopesProvider, useHasAiModeScopes, useUserPermissionCheck } from "@dextinity/cms-admin";
 import { createConfig } from "@src/config";
 import type { PropsWithChildren } from "react";
 
 import { isAiHubConfigured } from "./aiHubConfig";
 import { AiModeProvider } from "./AiModeContext";
-import { AiModeScopesProvider, useHasAiModeScopes } from "./AiModeScopes";
 
 const config = createConfig();
 

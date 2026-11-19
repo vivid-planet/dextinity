@@ -18,6 +18,7 @@ import {
     useFormApiRef,
 } from "@dextinity/admin";
 import {
+    AiModeFormScope,
     type BlockState,
     createFinalFormBlock,
     DamImageBlock,
@@ -30,7 +31,6 @@ import {
     useFormSaveConflict,
 } from "@dextinity/cms-admin";
 import { InputAdornment, MenuItem } from "@mui/material";
-import { AiModeFormScope } from "@src/aiMode/AiModeFormScope";
 import type { GQLProductMutationErrorCode, GQLProductType } from "@src/graphql.generated";
 import type {
     GQLManufacturerCountriesQuery,

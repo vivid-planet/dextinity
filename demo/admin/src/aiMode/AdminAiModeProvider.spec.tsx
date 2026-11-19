@@ -1,4 +1,4 @@
-import { CurrentUserContext, type CurrentUserInterface, type Permission } from "@dextinity/cms-admin";
+import { CurrentUserContext, type CurrentUserInterface, type Permission, useAiModeScope } from "@dextinity/cms-admin";
 import { renderAdmin } from "@src/testing/renderAdmin";
 import { screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
@@ -6,7 +6,6 @@ import { describe, expect, it, vi } from "vitest";
 import { AdminAiModeProvider } from "./AdminAiModeProvider";
 import { useAiMode } from "./AiModeContext";
 import { AiModeHeaderItem } from "./AiModeHeaderItem";
-import { useAiModeScope } from "./AiModeScopes";
 
 vi.mock("@src/config", () => ({
     createConfig: () => ({ aiHubWebComponentScriptSrc: "https://ai-hub.test/ai-hub-chat.mjs", aiHubWidgetId: "widget-1" }),

@@ -16,14 +16,20 @@ import {
     BlockAdminComponentRoot,
     BlockAdminTabLabel,
     BlockPreviewWithTabs,
+    type BlocksBlockChild,
     ContentGenerationConfigProvider,
     ContentScopeIndicator,
     createUsePage,
     DependenciesList,
     DependentsList,
+    type EditBlocks,
     openSitePreviewWindow,
     PageName,
+    planBlockEdits,
+    summarizeBlockState,
+    summarizeSeoBlockState,
     TranslateContentMenuItem,
+    useAiModeScope,
     useBlockContext,
     useBlockPreview,
     useBlocksConfig,
@@ -31,10 +37,6 @@ import {
     useSiteConfig,
 } from "@dextinity/cms-admin";
 import { IconButton, Stack } from "@mui/material";
-import { useAiModeScope } from "@src/aiMode/AiModeScopes";
-import type { BlocksBlockChild } from "@src/aiMode/blockProps";
-import { summarizeBlockState, summarizeSeoBlockState } from "@src/aiMode/blockStateSummary";
-import { type EditBlocks, planBlockEdits } from "@src/aiMode/editBlocks";
 import { type AiModePageState, createPageTools } from "@src/aiMode/hostTools";
 import { useEffect, useRef } from "react";
 import { FormattedMessage, useIntl } from "react-intl";

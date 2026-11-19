@@ -1,7 +1,6 @@
+import type { AiModeTool, EditBlocks } from "@dextinity/cms-admin";
 import { describe, expect, it, vi } from "vitest";
 
-import type { AiModeTool } from "./AiModeScopes";
-import type { EditBlocks } from "./editBlocks";
 import { type AiModePageState, createAdminTools, createPageTools, createPageTreeTools } from "./hostTools";
 
 const scopeUrl = "/main/en";

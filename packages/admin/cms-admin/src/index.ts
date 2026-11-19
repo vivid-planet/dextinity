@@ -1,3 +1,21 @@
+export { AiModeFormScope } from "./aiMode/AiModeFormScope";
+export {
+    AiModeScope,
+    type AiModeScopeOptions,
+    AiModeScopesProvider,
+    type AiModeScopesStore,
+    type AiModeTool,
+    type AiModeToolHelpers,
+    useAiModeScope,
+    useAiModeScopesStore,
+    useHasAiModeScopes,
+} from "./aiMode/AiModeScopes";
+export { blockEditOperationsSchema, describeBlockEditBatch, describeBlockEditResults, describeBlockSchemaLookup } from "./aiMode/blockEditTool";
+export type { BlocksBlockChild } from "./aiMode/blockProps";
+export { summarizeBlockState, summarizeSeoBlockState } from "./aiMode/blockStateSummary";
+export { asBlockEditOperations, type EditBlocks, planBlockEdits } from "./aiMode/editBlocks";
+export type { AiModeFormField } from "./aiMode/formTools";
+export { useAiModeDataGridScope } from "./aiMode/useAiModeDataGridScope";
 export { AnchorBlock } from "./blocks/AnchorBlock";
 export { BlockAdminComponentButton } from "./blocks/common/BlockAdminComponentButton";
 export { BlockAdminComponentNestedButton } from "./blocks/common/BlockAdminComponentNestedButton";

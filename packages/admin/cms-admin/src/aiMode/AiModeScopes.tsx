@@ -1,13 +1,20 @@
 import { createContext, type PropsWithChildren, useContext, useEffect, useState, useSyncExternalStore } from "react";
 
-import type { HostTool } from "./aiHubBridge";
-
-/** What the flyout hands every tool call besides its arguments, for what the flyout owns rather than the page. */
-type AiModeToolHelpers = {
+/** What the chat hands every tool call besides its arguments, for what the chat owns rather than the page. */
+export type AiModeToolHelpers = {
     clearTextSelection: () => void;
 };
 
-export type AiModeTool = Omit<HostTool, "handler"> & {
+/** A tool the agent calls, as the host tools of the AI Hub's chat describe it. */
+export type AiModeTool = {
+    /** Unique among the tools of all mounted scopes, in snake case. */
+    name: string;
+    description: string;
+    /** The JSON schema of the arguments. */
+    inputSchema: Record<string, unknown>;
+    /** Whether the tool only reads. The chat asks the user to approve every call of a tool that isn't read-only. */
+    readOnlyHint?: boolean;
+    metadata?: Record<string, string>;
     handler: (args: Record<string, unknown>, helpers: AiModeToolHelpers) => Promise<unknown> | unknown;
 };
 
@@ -50,7 +57,7 @@ function getSignature(depth: number, { id, description, context, tools = [] }: A
     return JSON.stringify({ depth, id, description, context, tools: tools.map(getToolDefinition) });
 }
 
-export function getToolDefinition({ handler: _handler, ...definition }: AiModeTool) {
+function getToolDefinition({ handler: _handler, ...definition }: AiModeTool) {
     return definition;
 }
 

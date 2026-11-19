@@ -13,10 +13,8 @@ import {
     useFormApiRef,
     useStackSwitchApi,
 } from "@dextinity/admin";
-import { queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@dextinity/cms-admin";
+import { type AiModeFormField, AiModeFormScope, queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@dextinity/cms-admin";
 import { Collapse, Divider } from "@mui/material";
-import { AiModeFormScope } from "@src/aiMode/AiModeFormScope";
-import type { AiModeFormField } from "@src/aiMode/formTools";
 import { deepEqual } from "fast-equals";
 import type { FormApi } from "final-form";
 import { useMemo } from "react";

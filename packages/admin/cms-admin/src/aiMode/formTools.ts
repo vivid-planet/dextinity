@@ -1,6 +1,7 @@
-import type { BlockContext, BlockInterface } from "@dextinity/cms-admin";
 import { type FormApi, getIn, setIn } from "final-form";
 
+import type { BlockContext } from "../blocks/context/BlockContext";
+import type { BlockInterface } from "../blocks/types";
 import type { AiModeTool } from "./AiModeScopes";
 import { blockEditOperationsSchema, describeBlockEditBatch, describeBlockEditResults, describeBlockSchemaLookup } from "./blockEditTool";
 import type { BlocksBlockChild } from "./blockProps";

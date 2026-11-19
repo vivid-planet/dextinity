@@ -1,7 +1,9 @@
-import { type BlockContext, type BlockInterface, DamImageBlock } from "@dextinity/cms-admin";
 import { createForm } from "final-form";
 import { describe, expect, it, vi } from "vitest";
 
+import type { BlockContext } from "../blocks/context/BlockContext";
+import type { BlockInterface } from "../blocks/types";
+import { DamImageBlock } from "../dam/blocks/DamImageBlock";
 import type { AiModeTool } from "./AiModeScopes";
 import type { BlocksBlockChild } from "./blockProps";
 import { type AiModeFormField, createFormTools } from "./formTools";

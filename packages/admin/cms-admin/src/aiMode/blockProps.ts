@@ -1,5 +1,6 @@
-import type { BlockContext, BlockInterface, BlocksBlockState } from "@dextinity/cms-admin";
-
+import type { BlockContext } from "../blocks/context/BlockContext";
+import type { BlocksBlockState } from "../blocks/factories/createBlocksBlock";
+import type { BlockInterface } from "../blocks/types";
 import { collectBlockKeys } from "./blockStateSummary";
 
 export type BlocksBlockChild = BlocksBlockState["blocks"][number];

@@ -1,5 +1,5 @@
-import { render } from "@testing-library/react";
 import { type PropsWithChildren, type ReactNode, StrictMode } from "react";
+import { render } from "test-utils";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {

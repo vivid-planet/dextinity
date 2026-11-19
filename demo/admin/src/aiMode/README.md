@@ -5,6 +5,8 @@ The AI Mode puts the chat of the Dextinity AI Hub next to the admin. A switch in
 - the **MCP server** of the API (`demo/api/src/mcp`, at `/api/mcp`), which reads from the API: the page tree, pages as they were last saved, DAM files, and the block schemas,
 - the **host tools** of the admin, which act on what is open in the admin. The pages that are open offer them through AI Mode scopes (see below): the admin as a whole offers `open_admin_page`, the page tree `open_page`, the page editor `get_page_state` and `edit_blocks` (`hostTools.ts`), and the grid and the form of an entity, such as the news, read and change them (`dataGridTools.ts`, `formTools.ts`).
 
+What a page needs to offer the agent its context and tools is part of `@dextinity/cms-admin` (`packages/admin/cms-admin/src/aiMode`), so that the pages of the package, such as the redirects, can offer them too: the AI Mode scopes, the tools of grids and forms, and the planner of block edits. The chat, the AI Hub proxy, the MCP server, and the tools of Demo's own pages are part of Demo. A page of a project without the AI Mode registers its scope with no chat listening, which does nothing.
+
 The AI Mode is ported from vivid-websites. This README explains the decisions the code doesn't show. It is written for developers who maintain the AI Mode in Demo or port it to a project.
 
 ## When the AI Mode is on

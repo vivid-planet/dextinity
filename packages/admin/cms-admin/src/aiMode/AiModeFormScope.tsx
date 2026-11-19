@@ -1,6 +1,8 @@
-import { useBlockContext, useBlocksConfig, useContentScope } from "@dextinity/cms-admin";
 import { useForm, useFormState } from "react-final-form";
 
+import { useBlocksConfig } from "../blocks/config/BlocksConfigContext";
+import { useBlockContext } from "../blocks/context/useBlockContext";
+import { useContentScope } from "../contentScope/Provider";
 import { useAiModeScope } from "./AiModeScopes";
 import { type AiModeFormField, createFormTools } from "./formTools";
 

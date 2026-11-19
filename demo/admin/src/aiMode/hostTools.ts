@@ -1,9 +1,15 @@
+import {
+    type AiModeTool,
+    asBlockEditOperations,
+    blockEditOperationsSchema,
+    describeBlockEditBatch,
+    describeBlockEditResults,
+    describeBlockSchemaLookup,
+    type EditBlocks,
+} from "@dextinity/cms-admin";
 import { categoryToUrlParam, pageTreeCategories } from "@src/pageTree/pageTreeCategories";
 
 import type { AdminPage } from "./adminPages";
-import type { AiModeTool } from "./AiModeScopes";
-import { blockEditOperationsSchema, describeBlockEditBatch, describeBlockEditResults, describeBlockSchemaLookup } from "./blockEditTool";
-import { asBlockEditOperations, type EditBlocks } from "./editBlocks";
 
 const categories = pageTreeCategories.map(({ category }) => category);
 

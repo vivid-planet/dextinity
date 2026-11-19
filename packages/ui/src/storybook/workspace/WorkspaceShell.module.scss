@@ -30,32 +30,63 @@
 }
 
 .header {
+    --workspace-bar-height: 48px;
+
     min-inline-size: 0;
     border-block-end: var(--dextinity-line-width) solid var(--dextinity-color-line);
     background: var(--dextinity-color-surface);
 }
 
-// The global row: the panel, the tabs, and the settings that apply to every story
+// The global row: the panel and the logo, the tabs, and the settings for the canvas. On a phone, the tabs get a row of their own.
 .toolbar {
+    display: grid;
+    grid-template-areas:
+        "brand settings"
+        "tabs tabs";
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 12px;
+    align-items: center;
+    min-inline-size: 0;
+    padding-inline: 8px;
+    border-block-end: var(--dextinity-line-width) solid var(--dextinity-color-line);
+
+    @media (width >= 760px) {
+        grid-template-areas: "brand tabs settings";
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+        padding-inline: 16px;
+    }
+}
+
+.brand {
+    grid-area: brand;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    min-block-size: var(--workspace-bar-height);
+}
+
+.settings {
+    grid-area: settings;
     display: flex;
     gap: 4px;
     align-items: center;
-    min-inline-size: 0;
-    min-block-size: 48px;
-    padding-inline: 6px;
-    border-block-end: var(--dextinity-line-width) solid var(--dextinity-color-line);
+    justify-content: flex-end;
+}
 
-    @media (width >= 640px) {
-        gap: 12px;
-        padding-inline: 12px;
-    }
+.divider {
+    flex: none;
+    inline-size: var(--dextinity-line-width);
+    block-size: 20px;
+    margin-inline: 4px;
+    background: var(--dextinity-color-line);
 }
 
 // The tabs sit on the row's bottom line, which takes the place of their own
 .modeTabs {
-    align-self: flex-end;
+    grid-area: tabs;
+    align-self: end;
+    justify-self: center;
     min-inline-size: 0;
-    margin-inline-end: auto;
 
     [role="tablist"] {
         box-shadow: none;
@@ -69,10 +100,11 @@
     align-items: center;
     justify-content: space-between;
     min-inline-size: 0;
-    padding: 4px 6px 4px 12px;
+    min-block-size: var(--workspace-bar-height);
+    padding-inline: 16px 8px;
 
-    @media (width >= 640px) {
-        padding-inline-end: 12px;
+    @media (width >= 760px) {
+        padding-inline-end: 16px;
     }
 }
 
@@ -120,21 +152,11 @@
     // Only the sign, the left square of the logo, until the full logo fits
     inline-size: 24px;
     block-size: 24px;
-    margin-inline-start: 8px;
     object-fit: cover;
     object-position: left;
 
     @media (width >= 900px) {
         inline-size: auto;
-    }
-}
-
-// The appearance popover has the color scheme too, for where it doesn't fit here
-.colorScheme {
-    display: none;
-
-    @media (width >= 640px) {
-        display: inline-flex;
     }
 }
 

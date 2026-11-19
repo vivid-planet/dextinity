@@ -1,17 +1,15 @@
 import { type ReactNode, useState } from "react";
 
-import { Button } from "../../components/button/Button";
 import { Field } from "../../components/field/Field";
 import { Icon } from "../../components/icon/Icon";
 import { IconButton } from "../../components/iconButton/IconButton";
 import { Menu } from "../../components/menu/Menu";
-import { MenuItem } from "../../components/menu/MenuItem";
+import { MenuRadioGroup } from "../../components/menu/MenuRadioGroup";
+import { MenuRadioItem } from "../../components/menu/MenuRadioItem";
 import { NumberInput } from "../../components/numberInput/NumberInput";
 import { Popover } from "../../components/popover/Popover";
 import { SegmentedControl } from "../../components/segmentedControl/SegmentedControl";
-import { Select } from "../../components/select/Select";
 import type { ThemeColorScheme, ThemeDensity } from "../../theme/types";
-import { brandSetting } from "../brand";
 import type { WorkspaceZoom } from "./workspaceState";
 import styles from "./WorkspaceToolbarControls.module.scss";
 
@@ -41,7 +39,7 @@ export const colorSchemeOptions: { value: ThemeColorScheme; icon: ReactNode; "ar
     { value: "high-contrast", icon: <Icon name="contrast" />, "aria-label": "High contrast" },
 ];
 
-const densityOptions: { value: ThemeDensity; icon: ReactNode; "aria-label": string }[] = [
+export const densityOptions: { value: ThemeDensity; icon: ReactNode; "aria-label": string }[] = [
     { value: "comfortable", icon: <Icon name="density-comfortable" />, "aria-label": "Comfortable" },
     { value: "standard", icon: <Icon name="density-standard" />, "aria-label": "Standard" },
     { value: "compact", icon: <Icon name="density-compact" />, "aria-label": "Compact" },
@@ -53,7 +51,7 @@ function getViewportPreset(width: number, height: number) {
 }
 
 /**
- * The frame size and zoom behind one button that shows the current size: presets, the exact size, rotating, and zoom.
+ * The frame size and zoom behind one button, whose tooltip names the current size: presets, the exact size, rotating, and zoom.
  */
 export function ViewportControl({
     responsive,
@@ -81,28 +79,15 @@ export function ViewportControl({
             open={open}
             onOpenChange={setOpen}
             title="Viewport"
-            placement="bottom-start"
+            placement="bottom-end"
             trigger={
-                <Button
+                <IconButton
                     variant="text"
                     color="secondary"
-                    aria-label={responsive ? "Viewport: Responsive" : `Viewport: ${triggerLabel}, ${width} × ${height}`}
-                    startIcon={<Icon name={activePreset?.icon ?? "devices"} />}
-                    endIcon={<Icon name="chevron-down" />}
+                    aria-label={responsive ? "Viewport · Responsive" : `Viewport · ${triggerLabel}, ${width} × ${height}`}
                 >
-                    <span className={styles.viewportText}>
-                        {responsive ? (
-                            <span>Responsive</span>
-                        ) : (
-                            <>
-                                <span className={styles.viewportName}>{triggerLabel}</span>
-                                <span className={styles.viewportSize}>
-                                    {width} × {height}
-                                </span>
-                            </>
-                        )}
-                    </span>
-                </Button>
+                    <Icon name={activePreset?.icon ?? "devices"} />
+                </IconButton>
             }
         >
             <div className={styles.popoverBody}>
@@ -164,66 +149,32 @@ export function ViewportControl({
     );
 }
 
-/**
- * The look of the page in the canvas: the brand, the color scheme, and the density.
- */
-export function AppearanceControl({
-    brand,
-    onBrandChange,
-    colorScheme,
-    onColorSchemeChange,
-    density,
-    onDensityChange,
-}: {
-    brand: string;
-    onBrandChange: (brand: string) => void;
-    colorScheme: ThemeColorScheme;
-    onColorSchemeChange: (colorScheme: ThemeColorScheme) => void;
-    density: ThemeDensity;
-    onDensityChange: (density: ThemeDensity) => void;
-}) {
-    const [open, setOpen] = useState(false);
-    const brandTitle = brandSetting.options.find((option) => option.value === brand)?.title ?? brand;
-    const colorSchemeTitle = colorSchemeOptions.find((option) => option.value === colorScheme)?.["aria-label"] ?? colorScheme;
-    const densityTitle = densityOptions.find((option) => option.value === density)?.["aria-label"] ?? density;
-
-    return (
-        <Popover
-            open={open}
-            onOpenChange={setOpen}
-            title="Appearance"
-            placement="bottom-end"
-            trigger={
-                <IconButton variant="text" color="secondary" aria-label={`Appearance: ${brandTitle} theme, ${densityTitle} density`}>
-                    <Icon name="tune" />
-                </IconButton>
-            }
-        >
-            <div className={styles.popoverBody}>
-                <Field label="Theme">
-                    <Select
-                        name="brand"
-                        options={brandSetting.options.map(({ value, title }) => ({ value, label: title }))}
-                        value={brand}
-                        onChange={(value) => value && onBrandChange(value)}
-                    />
-                </Field>
-                <Field label={`Color scheme · ${colorSchemeTitle}`} layout="group">
-                    <SegmentedControl size="small" options={colorSchemeOptions} value={colorScheme} onChange={onColorSchemeChange} />
-                </Field>
-                <Field label={`Density · ${densityTitle}`} layout="group">
-                    <SegmentedControl size="small" options={densityOptions} value={density} onChange={onDensityChange} />
-                </Field>
-            </div>
-        </Popover>
-    );
+interface SettingOption<Value extends string> {
+    value: Value;
+    icon: ReactNode;
+    "aria-label": string;
 }
 
 /**
- * The actions needed now and then: reloading the story, and opening it on its own.
+ * One setting of the canvas behind a button that shows its current option, e.g. the color scheme. The tooltip names the setting
+ * and the option, the menu offers all options.
  */
-export function MoreActionsMenu({ onReload, storyUrl }: { onReload: () => void; storyUrl: string | null }) {
+export function SettingMenu<Value extends string>({
+    label,
+    icon,
+    options,
+    value,
+    onChange,
+}: {
+    label: string;
+    /** Shown on the button instead of the current option's icon, for options without icons of their own. */
+    icon?: ReactNode;
+    options: ReadonlyArray<SettingOption<Value>>;
+    value: Value;
+    onChange: (value: Value) => void;
+}) {
     const [open, setOpen] = useState(false);
+    const current = options.find((option) => option.value === value);
 
     return (
         <Menu
@@ -231,18 +182,16 @@ export function MoreActionsMenu({ onReload, storyUrl }: { onReload: () => void; 
             onOpenChange={setOpen}
             placement="bottom-end"
             trigger={
-                <IconButton variant="text" color="secondary" aria-label="More actions">
-                    <Icon name="more-horizontal" />
+                <IconButton variant="text" color="secondary" aria-label={`${label} · ${current?.["aria-label"] ?? value}`}>
+                    {icon ?? current?.icon}
                 </IconButton>
             }
         >
-            <MenuItem label="Reload story" icon={<Icon name="refresh" />} onClick={onReload} />
-            <MenuItem
-                label="Open story in a new tab"
-                icon={<Icon name="external-link" />}
-                disabled={!storyUrl}
-                onClick={() => storyUrl && window.open(storyUrl, "_blank")}
-            />
+            <MenuRadioGroup aria-label={label} value={value} onChange={(newValue) => onChange(newValue as Value)}>
+                {options.map((option) => (
+                    <MenuRadioItem key={option.value} value={option.value} label={option["aria-label"]} icon={option.icon} />
+                ))}
+            </MenuRadioGroup>
         </Menu>
     );
 }

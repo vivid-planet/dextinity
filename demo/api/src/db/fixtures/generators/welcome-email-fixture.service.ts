@@ -31,6 +31,10 @@ function linkedText(value: string, linkData: object): TextNode {
     return { type: "text", text: value, marks: [{ type: "link", attrs: { data: linkData } }] };
 }
 
+function heading(value: string, textBlock: "title" | "header") {
+    return { type: "textBlock", attrs: { textBlock }, content: [text(value)] };
+}
+
 function paragraph(content: Array<TextNode | string>, textBlockStyle?: MailTextStyle) {
     return {
         type: "textBlock",
@@ -76,8 +80,8 @@ export class WelcomeEmailFixtureService {
                     {
                         key: faker.string.uuid(),
                         visible: true,
-                        type: "text",
-                        props: richText(paragraph(["Welcome to our newsletter"], "title")),
+                        type: "heading",
+                        props: richText(heading("Welcome to our newsletter", "title")),
                     },
                     { key: faker.string.uuid(), visible: true, type: "spacer", props: { spacing: MailSpacing.medium } },
                     {

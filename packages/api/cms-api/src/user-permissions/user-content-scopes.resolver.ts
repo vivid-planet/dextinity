@@ -5,7 +5,7 @@ import { GraphQLJSONObject } from "graphql-scalars";
 
 import { SkipBuild } from "../builds/skip-build.decorator";
 import { RequiredPermission } from "./decorators/required-permission.decorator";
-import { ContentScopeDimension, ContentScopeWithLabel } from "./dto/content-scope";
+import { ContentScopeDimension, ContentScopeWithLabel, UserAssignedContentScopes } from "./dto/content-scope";
 import { UserContentScopesInput } from "./dto/user-content-scopes.input";
 import { UserContentScopes } from "./entities/user-content-scopes.entity";
 import { ContentScope } from "./interfaces/content-scope.interface";
@@ -36,7 +36,7 @@ export class UserContentScopesResolver {
         return true;
     }
 
-    @Query(() => [GraphQLJSONObject])
+    @Query(() => [GraphQLJSONObject], { deprecationReason: "Use userPermissionsAssignedContentScopes instead." })
     async userPermissionsContentScopes(
         @Args("userId", { type: () => String }) userId: string,
         @Args("skipManual", { type: () => Boolean, nullable: true }) skipManual = false,
@@ -47,9 +47,13 @@ export class UserContentScopesResolver {
         });
     }
 
-    @Query(() => [GraphQLJSONObject])
-    async userPermissionsManualContentScopes(@Args("userId", { type: () => String }) userId: string): Promise<ContentScope[]> {
-        return this.userService.getManualContentScopesForUser(await this.userService.findUserOrThrow(userId));
+    @Query(() => UserAssignedContentScopes)
+    async userPermissionsAssignedContentScopes(@Args("userId", { type: () => String }) userId: string): Promise<UserAssignedContentScopes> {
+        const user = await this.userService.findUserOrThrow(userId);
+        return {
+            byRule: await this.userService.filterContentScopesForUser({ user, includeContentScopesManual: false }),
+            manual: await this.userService.getManualContentScopesForUser(user),
+        };
     }
 
     @Query(() => [ContentScopeWithLabel])

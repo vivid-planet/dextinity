@@ -33,8 +33,10 @@ export const ContentScopeGrid = ({ userId }: { userId: string }) => {
     const { data, error } = useQuery<GQLContentScopesQuery, GQLContentScopesQueryVariables>(
         gql`
             query ContentScopes($userId: String!) {
-                userContentScopesSkipManual: userPermissionsContentScopes(userId: $userId, skipManual: true)
-                userContentScopesManual: userPermissionsManualContentScopes(userId: $userId)
+                assignedContentScopes: userPermissionsAssignedContentScopes(userId: $userId) {
+                    byRule
+                    manual
+                }
                 availableContentScopes: userPermissionsAvailableContentScopes {
                     scope
                     label
@@ -59,20 +61,20 @@ export const ContentScopeGrid = ({ userId }: { userId: string }) => {
     }
 
     // A scope that is both rule-based and manually assigned is in both lists, so the union can contain duplicates.
-    const userContentScopes = deduplicateContentScopes([...data.userContentScopesSkipManual, ...data.userContentScopesManual]);
+    const userContentScopes = deduplicateContentScopes([...data.assignedContentScopes.byRule, ...data.assignedContentScopes.manual]);
 
     // A user has all content scopes (e.g. an admin) when the rule-based scopes cover every available content scope. Such a
     // user also has all values for dimensions that are not part of the available content scopes (e.g. an optional dimension).
     const hasAllContentScopes =
         data.availableContentScopes.length > 0 &&
         data.availableContentScopes.every((availableContentScope) =>
-            data.userContentScopesSkipManual.some((scope) => isEqual(scope, availableContentScope.scope)),
+            data.assignedContentScopes.byRule.some((scope) => isEqual(scope, availableContentScope.scope)),
         );
 
     // The manually assigned scopes as persisted, taken directly from the API (not derived by subtracting the rule-based
     // scopes), so a scope that is both manually assigned and rule-based is preserved and not silently dropped on the next edit.
     // Only manually assigned scopes can be deleted here.
-    const manualContentScopes = deduplicateContentScopes(data.userContentScopesManual);
+    const manualContentScopes = deduplicateContentScopes(data.assignedContentScopes.manual);
     const isManualScope = (scope: ContentScope) => manualContentScopes.some((manualScope) => isEqual(manualScope, scope));
 
     // Show manually assigned scopes before purely rule-based ones (sort is stable, so the order within each group is preserved).

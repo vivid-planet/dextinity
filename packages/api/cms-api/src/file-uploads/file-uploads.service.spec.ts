@@ -32,6 +32,7 @@ const mockOrm = {};
 
 const mockRepository = {
     create: vi.fn(),
+    count: vi.fn(),
 };
 
 const mockConfig: FileUploadsConfig = {
@@ -104,6 +105,29 @@ describe("FileUploadsService", () => {
         });
     });
 
+    describe("delete", () => {
+        it("should remove the blob if no other file upload has the same content", async () => {
+            mockRepository.count.mockResolvedValue(0);
+            mockBlobStorageBackendService.fileExists.mockResolvedValue(true);
+
+            await service.delete(fileUpload);
+
+            expect(mockRepository.count).toHaveBeenCalledWith({ contentHash: fileUpload.contentHash, id: { $ne: fileUpload.id } });
+            expect(mockBlobStorageBackendService.removeFile).toHaveBeenCalled();
+            expect(mockEntityManager.remove).toHaveBeenCalledWith(fileUpload);
+        });
+
+        it("should keep the blob if another file upload has the same content", async () => {
+            mockRepository.count.mockResolvedValue(1);
+            mockBlobStorageBackendService.fileExists.mockResolvedValue(true);
+
+            await service.delete(fileUpload);
+
+            expect(mockBlobStorageBackendService.removeFile).not.toHaveBeenCalled();
+            expect(mockEntityManager.remove).toHaveBeenCalledWith(fileUpload);
+        });
+    });
+
     describe("getFileContent expiration", () => {
         it("should handle expired files correctly", async () => {
             // Advance time by 1 hour and 1 second (past expiration)
@@ -113,6 +137,7 @@ describe("FileUploadsService", () => {
             mockBlobStorageBackendService.fileExists.mockResolvedValue(true);
             mockBlobStorageBackendService.getFile.mockResolvedValue(Readable.from([buffer]));
             mockBlobStorageBackendService.removeFile.mockResolvedValue(undefined);
+            mockRepository.count.mockResolvedValue(0);
 
             // expiration is handled by the subscriber when the entity is loaded
             await expirationSubscriber.onLoad({ entity: fileUpload, em: mockEntityManager, meta: {} } as unknown as EventArgs<FileUpload>);

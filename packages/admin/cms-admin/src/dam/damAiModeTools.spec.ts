@@ -32,6 +32,23 @@ function findTool(tools: AiModeTool[], name: string) {
     return tool;
 }
 
+it("runs every tool without the user's approval, because none changes data", () => {
+    const tools = createDamTools({
+        folder: null,
+        items,
+        isLoading: false,
+        search: "",
+        page: 0,
+        pageSize: 20,
+        setSearch: vi.fn(),
+        setPage: vi.fn(),
+        openFolder: vi.fn(),
+        openFile: vi.fn(),
+    });
+
+    expect(tools.every(({ readOnlyHint }) => readOnlyHint === true)).toBe(true);
+});
+
 describe("get_dam_items", () => {
     it("returns the folder with its path, and its folders and files", () => {
         const { call } = createTools();

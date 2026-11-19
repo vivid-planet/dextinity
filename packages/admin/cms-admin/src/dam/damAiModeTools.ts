@@ -80,6 +80,8 @@ export function createDamTools({
                     page: { type: "number", description: "The page to show, counted from 0." },
                 },
             },
+            // Navigating and changing the view change no data, so the chat runs them without asking.
+            readOnlyHint: true,
             handler: (args) => {
                 const newSearch = args.search === undefined ? undefined : String(args.search);
                 const requestedPage = args.page === undefined ? undefined : Number(args.page);
@@ -107,6 +109,8 @@ export function createDamTools({
                 properties: { id: { type: "string", description: "The ID of the folder." } },
                 required: ["id"],
             },
+            // Navigating and changing the view change no data, so the chat runs them without asking.
+            readOnlyHint: true,
             handler: (args) => {
                 const id = String(args.id ?? "");
                 if (id === "") {
@@ -125,6 +129,8 @@ export function createDamTools({
                 properties: { id: { type: "string", description: "The ID of the file." } },
                 required: ["id"],
             },
+            // Navigating and changing the view change no data, so the chat runs them without asking.
+            readOnlyHint: true,
             handler: (args) => {
                 const id = String(args.id ?? "");
                 if (id === "") {

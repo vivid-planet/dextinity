@@ -33,7 +33,6 @@ export const ContentScopeGrid = ({ userId }: { userId: string }) => {
     const { data, error } = useQuery<GQLContentScopesQuery, GQLContentScopesQueryVariables>(
         gql`
             query ContentScopes($userId: String!) {
-                userContentScopes: userPermissionsContentScopes(userId: $userId)
                 userContentScopesSkipManual: userPermissionsContentScopes(userId: $userId, skipManual: true)
                 userContentScopesManual: userPermissionsManualContentScopes(userId: $userId)
                 availableContentScopes: userPermissionsAvailableContentScopes {
@@ -59,8 +58,8 @@ export const ContentScopeGrid = ({ userId }: { userId: string }) => {
         return <Loading />;
     }
 
-    // The user's content scopes are a union of rule-based and manually assigned scopes and can therefore contain duplicates.
-    const userContentScopes = deduplicateContentScopes(data.userContentScopes);
+    // A scope that is both rule-based and manually assigned is in both lists, so the union can contain duplicates.
+    const userContentScopes = deduplicateContentScopes([...data.userContentScopesSkipManual, ...data.userContentScopesManual]);
 
     // A user has all content scopes (e.g. an admin) when the rule-based scopes cover every available content scope. Such a
     // user also has all values for dimensions that are not part of the available content scopes (e.g. an optional dimension).

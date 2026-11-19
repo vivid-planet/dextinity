@@ -1,14 +1,22 @@
+import { FilesService } from "@dextinity/cms-api";
+import { DamFile } from "@src/dam/entities/dam-file.entity.js";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
-import { createMcpTestApp } from "./mcp.test-helper.js";
+import { createMcpTestApp, createOrmProvider } from "./mcp.test-helper.js";
 
 const damFile = { id: "0190a5f4-0000-7000-8000-000000000021", name: "spring.jpg", scope: { domain: "secondary" } };
-const findDamFiles = vi.fn(async (): Promise<[(typeof damFile)[], number]> => [[], 0]);
+const findDamFiles = vi.fn(async () => [[], 0]);
 
 let mcpTestApp: Awaited<ReturnType<typeof createMcpTestApp>>;
 
 beforeAll(async () => {
-    mcpTestApp = await createMcpTestApp({ damFiles: [damFile], findDamFiles });
+    mcpTestApp = await createMcpTestApp([
+        {
+            provide: FilesService,
+            useValue: { findAndCount: findDamFiles, findOneById: async (id: string) => (id === damFile.id ? damFile : null) },
+        },
+        createOrmProvider(new Map([[DamFile, [damFile]]])),
+    ]);
 });
 
 afterAll(async () => {

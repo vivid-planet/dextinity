@@ -1,11 +1,47 @@
-import { PageTreeNodeVisibility } from "@dextinity/cms-api";
+import {
+    BlocksTransformerService,
+    getRequestContextHeadersFromRequest,
+    PageTreeNodeVisibility,
+    PageTreeService,
+    type RequestContextInterface,
+} from "@dextinity/cms-api";
+import { EntityManager } from "@mikro-orm/postgresql";
+import { Inject, Injectable, Scope } from "@nestjs/common";
+import { CONTEXT } from "@nestjs/graphql";
+import { Page } from "@src/documents/pages/entities/page.entity.js";
+import { PageTreeNode } from "@src/page-tree/entities/page-tree-node.entity.js";
+import type { Request } from "express";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { allowedScope, createBlockData, createMcpTestApp, transformedBlocks } from "./mcp.test-helper.js";
+import { allowedScope, createMcpTestApp, createOrmProvider } from "./mcp.test-helper.js";
+
+const transformedBlocks: { blockContext: unknown; requestContext: RequestContextInterface | undefined }[] = [];
+
+// Stands in for the service of a block transformer, such as the `PageTreeReadApiService` an internal link resolves its
+// target with: request-scoped, and reading its context off the request the real `BlocksTransformerService` resolves it
+// under.
+@Injectable({ scope: Scope.REQUEST })
+class RequestScopedBlockTransformerService {
+    private readonly requestContext?: RequestContextInterface;
+
+    constructor(@Inject(CONTEXT) context: { req?: Request } | undefined) {
+        this.requestContext = context?.req ? getRequestContextHeadersFromRequest(context.req) : undefined;
+    }
+
+    async transformToPlain(_block: unknown, blockContext: unknown) {
+        transformedBlocks.push({ blockContext, requestContext: this.requestContext });
+        return { transformed: true };
+    }
+}
+
+function createBlockData() {
+    return { transformToPlain: () => RequestScopedBlockTransformerService, transformToSave: () => ({}) };
+}
 
 const otherScope = { domain: "secondary", language: "en" };
 const homeNode = { id: "0190a5f4-0000-7000-8000-000000000001", name: "Home", slug: "home", documentType: "Page", scope: allowedScope };
 const otherScopeNode = { id: "0190a5f4-0000-7000-8000-000000000002", name: "Other", slug: "other", documentType: "Page", scope: otherScope };
+const nodes = [homeNode, otherScopeNode];
 const pages = [
     { id: "0190a5f4-0000-7000-8000-000000000011", node: homeNode, content: createBlockData(), stage: createBlockData(), seo: createBlockData() },
     {
@@ -19,10 +55,46 @@ const pages = [
 const unknownId = "0190a5f4-0000-7000-8000-000000000099";
 const getNodes = vi.fn(async () => [homeNode]);
 
+const readApi = {
+    preloadNodes: async () => undefined,
+    getNodes,
+    getNodesCount: async () => 1,
+    getNode: async (id: string) => nodes.find((node) => node.id === id) ?? null,
+    getNodeByPath: async (path: string, { scope }: { scope: unknown }) =>
+        nodes.find((node) => `/${node.slug}` === path && node.scope === scope) ?? null,
+    getFirstNodeByAttachedPageId: async (pageId: string) => pages.find((page) => page.id === pageId)?.node ?? null,
+    nodePath: async (node: { slug: string }) => `/${node.slug}`,
+    parentNodes: async () => [],
+    getChildNodes: async () => [],
+};
+
 let mcpTestApp: Awaited<ReturnType<typeof createMcpTestApp>>;
 
 beforeAll(async () => {
-    mcpTestApp = await createMcpTestApp({ pageTreeNodes: [homeNode, otherScopeNode], pages, getPageTreeNodes: getNodes });
+    mcpTestApp = await createMcpTestApp([
+        BlocksTransformerService,
+        RequestScopedBlockTransformerService,
+        {
+            provide: PageTreeService,
+            useValue: {
+                createReadApi: () => readApi,
+                getActiveAttachedDocument: async (nodeId: string) => {
+                    const page = pages.find((candidate) => candidate.node.id === nodeId);
+                    return page ? { documentId: page.id } : null;
+                },
+            },
+        },
+        {
+            provide: EntityManager,
+            useValue: { findOne: async (_: unknown, id: string) => pages.find((page) => page.id === id) ?? null },
+        },
+        createOrmProvider(
+            new Map<unknown, { id: string }[]>([
+                [PageTreeNode, nodes],
+                [Page, pages],
+            ]),
+        ),
+    ]);
 });
 
 beforeEach(() => {

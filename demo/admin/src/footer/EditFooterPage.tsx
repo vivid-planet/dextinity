@@ -12,6 +12,7 @@ import {
     useCurrentRouteMatch,
 } from "@dextinity/admin";
 import {
+    ActionLogButton,
     BlockAdminComponentRoot,
     BlockPreviewWithTabs,
     type BlockState,
@@ -146,6 +147,7 @@ export function EditFooterPage(): JSX.Element | null {
                 </ToolbarTitleItem>
                 <FillSpace />
                 <ToolbarActions>
+                    {data?.footer && <ActionLogButton entityId={data.footer.id} entity="Footer" />}
                     <SaveButton disabled={!hasChanges} loading={saving} hasErrors={hasSaveErrors != null} onClick={handleSavePage} />
                 </ToolbarActions>
             </StackToolbar>

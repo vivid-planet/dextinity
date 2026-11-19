@@ -15,6 +15,12 @@ export default defineConfig({
     ],
     overrides: [
         {
+            files: ["**/*.test-helper.ts"],
+            rules: {
+                "import-js/no-extraneous-dependencies": ["error", { devDependencies: true }],
+            },
+        },
+        {
             files: ["**/*.stories.ts", "**/*.stories.tsx"],
             rules: {
                 "storybook/await-interactions": "error",

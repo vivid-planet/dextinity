@@ -49,3 +49,9 @@ jobs:
               with:
                   projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN_DEMO_SITE }}
                   workingDir: demo/site
+
+            - name: Publish dextinity-demo-admin to Chromatic
+              uses: chromaui/action@v18
+              with:
+                  projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN_DEMO_ADMIN }}
+                  workingDir: demo/admin

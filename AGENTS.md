@@ -102,6 +102,14 @@ Demo admin app (Vite, React, Apollo)
 - access at: http://localhost:8000/
 - Usually Login as "Admin" in the IDP Login Page
 
+**Admin Storybook:**
+Storybook for the demo admin components (Vite, `@storybook/react-vite`)
+
+- Start using `pnpm exec dev-pm start demo-admin-storybook`
+- access at: http://localhost:26649/
+- stories live in `__stories__` folders next to the component
+- run the story tests with `pnpm --filter dextinity-demo-admin run test:storybook`
+
 **Site:**
 Demo frontend site (Next.js)
 

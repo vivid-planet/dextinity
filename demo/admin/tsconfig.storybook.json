@@ -1,0 +1,4 @@
+{
+    "extends": "./tsconfig.json",
+    "include": [".storybook/**/*.ts", ".storybook/**/*.tsx", "vitest.config.ts", "src/vendors.d.ts"]
+}

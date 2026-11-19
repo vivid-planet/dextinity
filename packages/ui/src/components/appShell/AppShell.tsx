@@ -97,6 +97,7 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
         setNavOverlayOpen(false);
     }
     const navRef = useRef<HTMLDivElement>(null);
+    const restoreNavFocusRef = useRef(false);
     const { anchorRef, container } = useThemePortalContainer<HTMLSpanElement>();
 
     const isMedium = layout === "medium";
@@ -114,6 +115,8 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
         }
         function handleKeyDown(event: KeyboardEvent) {
             if (event.key === "Escape") {
+                // Collapsing replaces the entries, so the focus would fall back to the page if it was on one of them
+                restoreNavFocusRef.current = navRef.current?.contains(document.activeElement) ?? false;
                 setNavOverlayOpen(false);
             }
         }
@@ -129,6 +132,13 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
             document.removeEventListener("pointerdown", handlePointerDown);
         };
     }, [isMedium, navOverlayOpen]);
+
+    useEffect(() => {
+        if (!navOverlayOpen && restoreNavFocusRef.current) {
+            restoreNavFocusRef.current = false;
+            navRef.current?.querySelector<HTMLElement>(".dextinitySideNav__collapseButton")?.focus();
+        }
+    }, [navOverlayOpen]);
 
     const columnContext: AppShellContextValue = {
         navCollapsed: columnNavCollapsed,

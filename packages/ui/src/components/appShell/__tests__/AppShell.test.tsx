@@ -71,6 +71,16 @@ describe("AppShell", () => {
         expect(screen.getByRole("navigation").hasAttribute("data-collapsed")).toBe(true);
     });
 
+    it("moves the focus to the expand button when Escape collapses the navigation over the content", () => {
+        windowWidth = 1000;
+        renderShell();
+
+        fireEvent.keyDown(document, { key: "\\", ctrlKey: true });
+        screen.getByRole("link", { name: "Job ads" }).focus();
+        fireEvent.keyDown(document.activeElement ?? document, { key: "Escape" });
+        expect(document.activeElement).toBe(screen.getByRole("button", { name: "Expand" }));
+    });
+
     it("toggles the navigation with Ctrl+\\ on wide windows", () => {
         windowWidth = 1440;
         const onNavCollapsedChange = vi.fn();

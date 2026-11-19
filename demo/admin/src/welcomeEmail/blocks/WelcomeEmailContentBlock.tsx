@@ -1,6 +1,7 @@
 import { createBlocksBlock } from "@dextinity/cms-admin";
 import { MailButtonBlock } from "@src/mail/blocks/MailButtonBlock";
 import { MailDividerBlock } from "@src/mail/blocks/MailDividerBlock";
+import { MailHeadingBlock } from "@src/mail/blocks/MailHeadingBlock";
 import { MailImageBlock } from "@src/mail/blocks/MailImageBlock";
 import { MailRichTextBlock } from "@src/mail/blocks/MailRichTextBlock";
 import { MailSpacerBlock } from "@src/mail/blocks/MailSpacerBlock";
@@ -10,6 +11,7 @@ import { MailTwoListSizesRichTextBlock } from "@src/mail/blocks/MailTwoListSizes
 export const WelcomeEmailContentBlock = createBlocksBlock({
     name: "WelcomeEmailContent",
     supportedBlocks: {
+        heading: MailHeadingBlock,
         text: MailRichTextBlock,
         twoListSizesText: MailTwoListSizesRichTextBlock,
         image: MailImageBlock,

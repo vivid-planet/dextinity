@@ -1,9 +1,9 @@
 import { type EntityName, MikroORM } from "@mikro-orm/postgresql";
 import { type ExecutionContext, Injectable, Optional } from "@nestjs/common";
 import { ModuleRef, Reflector } from "@nestjs/core";
-import { GqlExecutionContext } from "@nestjs/graphql";
 import { isUUID } from "class-validator";
 
+import { getArgsFromExecutionContext } from "../common/decorators/utils.js";
 import { DextinityValidationException } from "../common/errors/validation.exception.js";
 import { PageTreeService } from "../page-tree/page-tree.service.js";
 import { SCOPED_ENTITY_METADATA_KEY, type ScopedEntityMeta } from "../user-permissions/decorators/scoped-entity.decorator.js";
@@ -29,7 +29,7 @@ export class ContentScopeService {
 
     async getScopesForPermissionCheck(context: ExecutionContext): Promise<ContentScope[][]> {
         const contentScopes: ContentScope[][] = [];
-        const args = await this.getArgs(context);
+        const args = getArgsFromExecutionContext(context);
         const location = `${context.getClass().name}::${context.getHandler().name}()`;
 
         // AffectedEntities
@@ -159,15 +159,5 @@ export class ContentScopeService {
     private hasUuidPrimaryKey(entity: EntityName<object>): boolean {
         const primaryProps = this.orm.em.getMetadata().get(entity).getPrimaryProps();
         return primaryProps.length === 1 && (primaryProps[0].type === "uuid" || (primaryProps[0].columnTypes ?? []).includes("uuid"));
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    private async getArgs(context: ExecutionContext): Promise<Record<string, any>> {
-        if (context.getType().toString() === "graphql") {
-            return GqlExecutionContext.create(context).getArgs();
-        } else {
-            const request = context.switchToHttp().getRequest();
-            return { ...request.params, ...request.query };
-        }
     }
 }

@@ -4,6 +4,9 @@ import type { Request } from "express";
 import type { GraphQLResolveInfo } from "graphql";
 import { getClientIp } from "request-ip";
 
+import { getArgsFromExecutionContext, getRequestFromExecutionContext } from "../common/decorators/utils.js";
+import { AFFECTED_ENTITY_METADATA_KEY, type AffectedEntityMeta } from "../user-permissions/decorators/affected-entity.decorator.js";
+import { AFFECTED_SCOPE_METADATA_KEY, type AffectedScopeMeta } from "../user-permissions/decorators/affected-scope.decorator.js";
 import type { CurrentUser } from "../user-permissions/dto/current-user.js";
 import type { User } from "../user-permissions/interfaces/user.js";
 import { ACCESS_LOG_CONFIG } from "./access-log.constants.js";
@@ -51,6 +54,21 @@ export class AccessLogInterceptor implements NestInterceptor {
             }
             requestData.push(`resolver function: ${gqlInfo.fieldName}`);
             requestData.push(`args: ${JSON.stringify(gqlArgs)}`);
+        } else if (requestType === "mcp") {
+            const request: (Request & { user?: CurrentUser }) | undefined = getRequestFromExecutionContext(context);
+
+            if (request && this.config?.shouldLogRequest?.({ user: request.user, req: request }) === false) {
+                ignored = true;
+            }
+
+            if (request) {
+                requestData.push(`ip: ${getClientIp(request)}`);
+                this.pushUserToRequestData(request.user, requestData);
+            }
+
+            const mcpContext = context.getArgByIndex(1);
+            requestData.push(`${mcpContext?.kind ?? "call"}: ${mcpContext?.name}`);
+            requestData.push(`args: ${JSON.stringify(this.getIdentifyingMcpArgs(context))}`);
         } else {
             const httpContext = context.switchToHttp();
             const httpRequest = httpContext.getRequest<Request>();
@@ -77,7 +95,34 @@ export class AccessLogInterceptor implements NestInterceptor {
         return next.handle();
     }
 
-    private pushUserToRequestData(currentUser: CurrentUser, requestData: string[]) {
+    // MCP tool inputs are flat, so unlike GraphQL mutations there's no `input` or `data` argument that holds the content.
+    // Only the arguments the permission check identifies the affected entities and scopes by are logged.
+    private getIdentifyingMcpArgs(context: ExecutionContext): Record<string, unknown> {
+        const args = getArgsFromExecutionContext(context);
+        const identifyingArgs: Record<string, unknown> = {};
+
+        const affectedEntities: AffectedEntityMeta[] = Reflect.getMetadata(AFFECTED_ENTITY_METADATA_KEY, context.getHandler()) ?? [];
+        for (const { options } of affectedEntities) {
+            for (const argName of [options.idArg, options.pageTreeNodeIdArg]) {
+                if (argName && args[argName] !== undefined) {
+                    identifyingArgs[argName] = args[argName];
+                }
+            }
+        }
+
+        if (args.scope !== undefined) {
+            identifyingArgs.scope = args.scope;
+        }
+
+        const affectedScope: AffectedScopeMeta | undefined = Reflect.getMetadata(AFFECTED_SCOPE_METADATA_KEY, context.getHandler());
+        if (affectedScope) {
+            identifyingArgs.affectedScope = affectedScope.argsToScope(args);
+        }
+
+        return identifyingArgs;
+    }
+
+    private pushUserToRequestData(currentUser: CurrentUser | undefined, requestData: string[]) {
         if (currentUser) {
             const user = currentUser.authenticatedUser ? currentUser.authenticatedUser : currentUser;
             const impersonatedUser = currentUser.authenticatedUser ? currentUser : undefined;

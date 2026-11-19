@@ -41,7 +41,9 @@ export class UserPermissionsGuard implements CanActivate {
             requiredContentScopes = await this.contentScopeService.getScopesForPermissionCheck(context);
 
             const request = getRequestFromExecutionContext(context);
-            request.contentScopes = this.contentScopeService.getUniqueScopes(requiredContentScopes);
+            if (request) {
+                request.contentScopes = this.contentScopeService.getUniqueScopes(requiredContentScopes);
+            }
         }
 
         if (this.getDecorator(context, DISABLE_DEXTINITY_GUARDS_METADATA_KEY)) {
@@ -110,9 +112,7 @@ export class UserPermissionsGuard implements CanActivate {
     }
 
     private getUser(context: ExecutionContext): CurrentUser | SystemUser | undefined {
-        const request =
-            context.getType().toString() === "graphql" ? GqlExecutionContext.create(context).getContext().req : context.switchToHttp().getRequest();
-        return request.user as CurrentUser | SystemUser | undefined;
+        return getRequestFromExecutionContext(context)?.user as CurrentUser | SystemUser | undefined;
     }
 
     private getDecorator<T = object>(context: ExecutionContext, decorator: string): T {

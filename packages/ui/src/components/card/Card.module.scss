@@ -18,6 +18,8 @@
 .header {
     display: flex;
     flex-wrap: wrap;
+    // The title grows to fill its line, so what wraps below it, the meta text and the link, sits at the end
+    justify-content: flex-end;
     align-items: center;
     gap: var(--dextinity-card-header-gap);
     padding: var(--dextinity-card-header-padding);
@@ -48,8 +50,6 @@
     // Where the title doesn't fit next to the meta text and the link, they wrap to a line of their own
     flex: 1 1 auto;
     min-inline-size: 0;
-    // Keeps the title next to the orb, so only the meta text and the link wrap
-    max-inline-size: calc(100% - var(--dextinity-card-orb-size) - var(--dextinity-card-header-gap));
     margin: 0;
     // A word longer than the line, e.g. a German compound, breaks instead of running under the link
     overflow-wrap: anywhere;
@@ -58,6 +58,11 @@
     font-weight: var(--dextinity-card-title-font-weight);
     line-height: var(--dextinity-typography-title-line-height);
     letter-spacing: var(--dextinity-typography-title-letter-spacing);
+}
+
+// Keeps the title next to the orb, so only the meta text and the link wrap
+.orb + .title {
+    max-inline-size: calc(100% - var(--dextinity-card-orb-size) - var(--dextinity-card-header-gap));
 }
 
 .meta {
@@ -71,7 +76,6 @@
     display: flex;
     flex: none;
     align-items: center;
-    margin-inline-start: auto;
     padding-inline-end: var(--dextinity-space-1-5);
 
     --dextinity-link-secondary-foreground: var(--dextinity-card-header-foreground);

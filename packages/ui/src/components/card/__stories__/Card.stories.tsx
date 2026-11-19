@@ -122,5 +122,8 @@ export const NarrowWithLongTitle: Story = {
             titleBox.left < linkBox.right && linkBox.left < titleBox.right && titleBox.top < linkBox.bottom && linkBox.top < titleBox.bottom;
         await expect(overlaps).toBe(false);
         await expect(title.scrollWidth).toBeLessThanOrEqual(title.clientWidth);
+        const metaBox = canvas.getByText("5 offen").getBoundingClientRect();
+        await expect(metaBox.right).toBeLessThanOrEqual(linkBox.left);
+        await expect(Math.abs(metaBox.top + metaBox.height / 2 - (linkBox.top + linkBox.height / 2))).toBeLessThan(2);
     },
 };

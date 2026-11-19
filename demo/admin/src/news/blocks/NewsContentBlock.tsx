@@ -3,12 +3,14 @@ import { HeadingBlock } from "@src/common/blocks/HeadingBlock";
 import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
 import { TextImageBlock } from "@src/common/blocks/TextImageBlock";
 
+export const newsContentBlocks = {
+    heading: HeadingBlock,
+    richText: RichTextBlock,
+    image: DamImageBlock,
+    textImage: TextImageBlock,
+};
+
 export const NewsContentBlock = createBlocksBlock({
     name: "NewsContentBlock",
-    supportedBlocks: {
-        heading: HeadingBlock,
-        richText: RichTextBlock,
-        image: DamImageBlock,
-        textImage: TextImageBlock,
-    },
+    supportedBlocks: newsContentBlocks,
 });

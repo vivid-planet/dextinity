@@ -3,7 +3,7 @@
 The AI Mode puts the chat of the Dextinity AI Hub next to the admin. A switch in the header (`AiModeHeaderItem`) opens the chat as a flyout (`AiModeFlyout`), which loads the AI Hub's web component and registers two sets of tools with it:
 
 - the **MCP server** of the API (`demo/api/src/mcp`, at `/api/mcp`), which reads from the API: the page tree, pages as they were last saved, DAM files, and the block schemas,
-- the **host tools** of the admin, which act on what is open in the admin. The pages that are open offer them through AI Mode toolsets (see below): the admin as a whole offers `open_admin_page` and `open_page_tree_node`, and the page editor `get_page_state` and `edit_blocks` (`hostTools.ts`).
+- the **host tools** of the admin, which act on what is open in the admin. The pages that are open offer them through AI Mode toolsets (see below): the admin as a whole offers `open_admin_page`, the page tree `open_page_tree_node`, the page editor `get_page_state` and `edit_blocks` (`hostTools.ts`), and the grid and the form of an entity, such as the news, read and change them (`dataGridTools.ts`, `formTools.ts`).
 
 The AI Mode is ported from vivid-websites. This README explains the decisions the code doesn't show. It is written for developers who maintain the AI Mode in Demo or port it to a project.
 
@@ -112,6 +112,21 @@ The chat gives a tool whose name another tool already has a suffix (`_2`), which
 
 What the flyout owns rather than the page is passed to every handler as its second argument: `edit_blocks` clears the selected text with it.
 
+### Grids and forms of entities
+
+An entity's grid and form get their tools from `useAiModeDataGridToolset` and `AiModeFormToolset`, so an entity needs no tools of its own: the grid calls the hook with the props of `useDataGridRemote` and the rows of its query, and the form renders the component inside its `FinalForm` with a list of its fields. The news use both. The tools are named after the entity (`get_news_grid_rows`, `set_news_form_values`), rather than being one set of tools that takes the entity as an argument: different entities then never have the same tool name, and each description can name the entity and its fields.
+
+The tools read and change what the user sees rather than calling the API themselves, which keeps the permissions where they are: the grid's query and the form's mutations go through the API's guards, as they do when the user works without the AI Mode.
+
+- `get_<entity>_grid_rows` returns the rows of the page the grid shows, with the values of its columns that are text, numbers, or booleans. A column that shows a block preview, such as the image of a news article, is left out, because the agent can't read it. While the grid's query is loading, e.g. right after the view changed, the tool says so rather than returning the rows of the previous view.
+- `set_<entity>_grid_view` changes the search, the filters, the sorting, or the page. Its description lists the filterable columns with the operators of their type, from MUI's lists, and the tool refuses any other: `muiGridFilterToGql` passes an unknown operator on to the API, whose error would replace the grid with an error page. A new search or filter goes back to the first page, as it does in the grid, because `useDataGridRemote` keeps the page. The changes are applied one after another, each once the grid rendered the one before: each change handler of `useDataGridRemote` writes the URL from the search params of its render, so a second change in the same render would undo the first.
+- `open_<entity>_form` opens the form of a row, or the form for a new one.
+- `get_<entity>_form_state` returns the values of the form's fields, which fields the user changed, and which are invalid. A block field is summarized like the content of a page.
+- `set_<entity>_form_values` sets fields as unsaved changes, which the user saves, like `edit_blocks`. Its schema lists the fields with their types and the options of a select, and the tool refuses a value that doesn't fit before it changes any field.
+- `edit_<entity>_form_blocks` changes the blocks of a blocks field, such as the content of a news article, with the planner of `edit_blocks` (see below): the same operations, all or nothing, and rejected when the field changed while the batch was planned. A field declares its blocks block's `supportedBlocks` and its name in block-meta, where the agent starts the schema lookup, because the two names differ as for the page (`NewsContentBlock` is `NewsContent`). A single block, such as the image of a news article, can be read but not changed.
+
+`AiModeFormToolset` is a component rather than a hook, so that it can read the form with `useForm` and so that only it re-renders when the form's `dirty` changes: the form of the news subscribes to nothing, so that typing doesn't re-render it.
+
 ### Tool descriptions
 
 The descriptions are where the agent learns how to use the tools, so they say more than what a tool does:
@@ -123,7 +138,7 @@ The descriptions are where the agent learns how to use the tools, so they say mo
 
 The user approves every edit. The chat runs a host tool without asking only if its `readOnlyHint` is `true`, and shows the call with an approve and a reject button otherwise; `edit_blocks` sets `readOnlyHint: false`. The description tells the agent about the approval, so that it calls the tool instead of first asking for permission in the chat, which would ask the user twice.
 
-A tool that only navigates or changes what a page shows, such as `open_page_tree_node` and `open_admin_page`, sets `readOnlyHint: true` although it changes the admin: it changes no data, and an approval for every step would slow the agent down without protecting anything. Unsaved changes aren't lost by it either, because the admin asks the user before it leaves a page with unsaved changes.
+A tool that only navigates or changes what a page shows, such as `open_page_tree_node`, `open_admin_page`, or the tools that change a grid's view and open a form, sets `readOnlyHint: true` although it changes the admin: it changes no data, and an approval for every step would slow the agent down without protecting anything. Unsaved changes aren't lost by it either, because the admin asks the user before it leaves a page with unsaved changes.
 
 ## Editing blocks
 
@@ -143,7 +158,7 @@ The conversions are awaited and can query the API, and the user can keep typing 
 
 The tool schema states the fields each operation needs as an `anyOf` over the six operations. `anyOf` rather than `oneOf` because that is the keyword tool schemas support, and the `operation` constants make the branches exclusive anyway. A tool schema is guidance for the agent, not enforced before the handler runs, so `asBlockEditOperations` checks the same requirements itself and names the missing field and what it is for.
 
-`editBlocks.ts` holds the operations, the results, and the planner; `blockChildren.ts` what one kind of change does to the list of blocks; `blockProps.ts` the conversion and the checks.
+`editBlocks.ts` holds the operations, the results, and the planner; `blockEditTool.ts` the schema of the operations and the parts of the tool descriptions that `edit_blocks` and `edit_<entity>_form_blocks` share; `blockChildren.ts` what one kind of change does to the list of blocks; `blockProps.ts` the conversion and the checks.
 
 ### What is validated, and where
 

@@ -45,7 +45,7 @@ type BlockEditOperation =
       };
 
 /** The positions are the ones the batch produced, i.e. as of that operation having been applied. */
-type BlockEditResult =
+export type BlockEditResult =
     | {
           operation: "insert";
           key: string;
@@ -259,7 +259,7 @@ export async function planBlockEdits({
             const reason = error instanceof Error ? error.message : String(error);
             const scope = operations.length === 1 ? "so nothing was applied" : `so none of the ${operations.length} operations were applied`;
 
-            throw new Error(`${describeOperation(position, edit.operation)} failed, ${scope} and the page is unchanged. ${reason}`);
+            throw new Error(`${describeOperation(position, edit.operation)} failed, ${scope} and the content is unchanged. ${reason}`);
         }
     }
 

@@ -1,4 +1,13 @@
-import { type PointerEvent as ReactPointerEvent, type ReactNode, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import {
+    type KeyboardEvent as ReactKeyboardEvent,
+    type PointerEvent as ReactPointerEvent,
+    type ReactNode,
+    useEffect,
+    useLayoutEffect,
+    useMemo,
+    useRef,
+    useState,
+} from "react";
 
 import { Icon } from "../../components/icon/Icon";
 import { IconButton } from "../../components/iconButton/IconButton";
@@ -7,16 +16,22 @@ import { NumberInput } from "../../components/numberInput/NumberInput";
 import { SegmentedControl } from "../../components/segmentedControl/SegmentedControl";
 import { Select } from "../../components/select/Select";
 import { Theme } from "../../components/theme/Theme";
+import { getExpandableTreeNodeIds, TreeView } from "../../components/treeView/TreeView";
+import { TreeViewExpandButtons } from "../../components/treeViewExpandButtons/TreeViewExpandButtons";
 import type { ThemeColorScheme, ThemeDensity } from "../../theme/types";
 import { brandSetting } from "../brand";
 import { colorSchemeSetting } from "../colorScheme";
 import { densitySetting } from "../density";
+import { buildStoryTree, getStoryFolderIds, type IndexedStory, isFolderId } from "./storyTree";
 import styles from "./WorkspaceShell.module.scss";
-import { useWorkspaceState, type WorkspaceZoom } from "./workspaceState";
+import { defaultWorkspaceState, useWorkspaceState, type WorkspaceZoom } from "./workspaceState";
 
 const shellStoryId = "workspace-shell--shell";
 const minFrameSize = 280;
 const canvasPadding = 48;
+const minPanelWidth = 200;
+const maxPanelWidth = 520;
+const panelKeyboardStep = 20;
 
 // The widths sit on both sides of the app shell's breakpoints at 768px and 1280px
 const viewportPresets = [
@@ -48,12 +63,6 @@ const densityOptions: { value: ThemeDensity; icon: ReactNode; "aria-label": stri
     { value: "compact", icon: <Icon name="density-compact" />, "aria-label": "Compact" },
 ];
 
-interface IndexedStory {
-    id: string;
-    title: string;
-    name: string;
-}
-
 interface StoryIndex {
     entries: Record<string, { id: string; title: string; name: string; type: string; tags?: string[] }>;
 }
@@ -65,14 +74,6 @@ async function fetchStories(): Promise<IndexedStory[]> {
         .filter((entry) => entry.type === "story" && entry.id !== shellStoryId && !entry.tags?.includes("development"))
         .map(({ id, title, name }) => ({ id, title, name }))
         .sort((a, b) => Number(b.title.startsWith("Workspace/")) - Number(a.title.startsWith("Workspace/")));
-}
-
-function groupByTitle(stories: IndexedStory[]) {
-    const groups = new Map<string, IndexedStory[]>();
-    for (const story of stories) {
-        groups.set(story.title, [...(groups.get(story.title) ?? []), story]);
-    }
-    return [...groups.entries()];
 }
 
 function getInitialColorScheme(): ThemeColorScheme {
@@ -95,6 +96,29 @@ function useElementSize(element: HTMLElement | null) {
 
 type ResizeEdge = "inline" | "block" | "both";
 
+function clampPanelWidth(width: number) {
+    return Math.min(maxPanelWidth, Math.max(minPanelWidth, Math.round(width)));
+}
+
+/** Calls `onMove` with the distance from where the pointer went down until it's released, and `onEnd` on release. */
+function trackPointerDrag(event: ReactPointerEvent, { onMove, onEnd }: { onMove: (deltaX: number, deltaY: number) => void; onEnd: () => void }) {
+    event.preventDefault();
+    const start = { x: event.clientX, y: event.clientY };
+
+    function handleMove(moveEvent: PointerEvent) {
+        onMove(moveEvent.clientX - start.x, moveEvent.clientY - start.y);
+    }
+
+    function handleUp() {
+        onEnd();
+        window.removeEventListener("pointermove", handleMove);
+        window.removeEventListener("pointerup", handleUp);
+    }
+
+    window.addEventListener("pointermove", handleMove);
+    window.addEventListener("pointerup", handleUp);
+}
+
 /**
  * A design workspace: the stories of the Storybook in a frame that behaves like a browser window, with the theme, color scheme,
  * density, and viewport size switchable around it. The shell itself always keeps the same look.
@@ -107,7 +131,7 @@ export function WorkspaceShell() {
     const [brand, setBrand] = useState(brandSetting.get);
     const [density, setDensity] = useState(densitySetting.get);
     const [canvasElement, setCanvasElement] = useState<HTMLDivElement | null>(null);
-    const [resizing, setResizing] = useState(false);
+    const [resizing, setResizing] = useState<"frame" | "panel" | null>(null);
     const [reloadKey, setReloadKey] = useState(0);
     const frameRef = useRef<HTMLIFrameElement>(null);
     const canvasSize = useElementSize(canvasElement);
@@ -119,11 +143,32 @@ export function WorkspaceShell() {
     const storyId = state.storyId ?? stories.find((story) => story.title.startsWith("Workspace/"))?.id ?? stories[0]?.id ?? null;
     const currentStory = stories.find((story) => story.id === storyId);
 
-    const filteredGroups = useMemo(() => {
-        const query = search.trim().toLowerCase();
-        const matches = query ? stories.filter((story) => `${story.title} ${story.name}`.toLowerCase().includes(query)) : stories;
-        return groupByTitle(matches);
-    }, [stories, search]);
+    const storyTree = useMemo(() => buildStoryTree(stories), [stories]);
+    const storiesById = useMemo(() => new Map(stories.map((story) => [story.id, story])), [stories]);
+    const expandedIds = state.expandedIds ?? (currentStory ? getStoryFolderIds(currentStory) : []);
+    const searchQuery = search.trim().toLowerCase();
+
+    function matchesSearch(nodeId: string) {
+        const story = storiesById.get(nodeId);
+        return story != null && `${story.title} ${story.name}`.toLowerCase().includes(searchQuery);
+    }
+
+    function selectTreeNode(nodeId: string) {
+        if (!isFolderId(nodeId)) {
+            updateState({ storyId: nodeId });
+            return;
+        }
+        updateState({
+            expandedIds: expandedIds.includes(nodeId) ? expandedIds.filter((id) => id !== nodeId) : [...expandedIds, nodeId],
+        });
+    }
+
+    function focusCurrentStory() {
+        if (currentStory) {
+            setSearch("");
+            updateState({ expandedIds: getStoryFolderIds(currentStory) });
+        }
+    }
 
     function applyDensityToFrame() {
         const frameDocument = frameRef.current?.contentDocument;
@@ -139,35 +184,44 @@ export function WorkspaceShell() {
     const activePreset = viewportPresets.find((preset) => preset.width === state.width && preset.height === state.height);
     const storyUrl = storyId ? `iframe.html?id=${encodeURIComponent(storyId)}&viewMode=story` : null;
 
-    function startResize(edge: ResizeEdge, event: ReactPointerEvent<HTMLDivElement>) {
-        event.preventDefault();
-        const start = { x: event.clientX, y: event.clientY, width: state.width, height: state.height };
-        setResizing(true);
+    function startFrameResize(edge: ResizeEdge, event: ReactPointerEvent) {
+        const start = { width: state.width, height: state.height };
+        setResizing("frame");
+        trackPointerDrag(event, {
+            onMove: (deltaX, deltaY) => {
+                const changes: { width?: number; height?: number } = {};
+                if (edge !== "block") {
+                    changes.width = Math.max(minFrameSize, Math.round(start.width + deltaX / scale));
+                }
+                if (edge !== "inline") {
+                    changes.height = Math.max(minFrameSize, Math.round(start.height + deltaY / scale));
+                }
+                updateState(changes);
+            },
+            onEnd: () => setResizing(null),
+        });
+    }
 
-        function handleMove(moveEvent: PointerEvent) {
-            const changes: { width?: number; height?: number } = {};
-            if (edge !== "block") {
-                changes.width = Math.max(minFrameSize, Math.round(start.width + (moveEvent.clientX - start.x) / scale));
-            }
-            if (edge !== "inline") {
-                changes.height = Math.max(minFrameSize, Math.round(start.height + (moveEvent.clientY - start.y) / scale));
-            }
-            updateState(changes);
+    function startPanelResize(event: ReactPointerEvent) {
+        const startWidth = state.panelWidth;
+        setResizing("panel");
+        trackPointerDrag(event, {
+            onMove: (deltaX) => updateState({ panelWidth: clampPanelWidth(startWidth + deltaX) }),
+            onEnd: () => setResizing(null),
+        });
+    }
+
+    function resizePanelWithKeyboard(event: ReactKeyboardEvent) {
+        const steps: Record<string, number> = { ArrowLeft: -panelKeyboardStep, ArrowRight: panelKeyboardStep };
+        if (event.key in steps) {
+            event.preventDefault();
+            updateState({ panelWidth: clampPanelWidth(state.panelWidth + steps[event.key]) });
         }
-
-        function handleUp() {
-            setResizing(false);
-            window.removeEventListener("pointermove", handleMove);
-            window.removeEventListener("pointerup", handleUp);
-        }
-
-        window.addEventListener("pointermove", handleMove);
-        window.addEventListener("pointerup", handleUp);
     }
 
     return (
         <Theme colorScheme="light" brand="dextinity" density="compact" className={styles.themeRoot}>
-            <div className={styles.root} data-resizing={resizing || undefined}>
+            <div className={styles.root} data-resizing={resizing ?? undefined}>
                 <header className={styles.toolbar}>
                     <div className={styles.toolbarGroup}>
                         <IconButton
@@ -285,7 +339,7 @@ export function WorkspaceShell() {
 
                 <div className={styles.body}>
                     {state.panelOpen && (
-                        <nav className={styles.panel} aria-label="Stories">
+                        <nav className={styles.panel} aria-label="Stories" style={{ inlineSize: state.panelWidth }}>
                             <div className={styles.panelSearch}>
                                 <Input
                                     aria-label="Search stories"
@@ -295,25 +349,50 @@ export function WorkspaceShell() {
                                     onChange={(event) => setSearch(event.target.value)}
                                 />
                             </div>
+                            <div className={styles.panelActions}>
+                                <IconButton
+                                    variant="text"
+                                    color="secondary"
+                                    size="small"
+                                    aria-label="Show only the current story"
+                                    disabled={!currentStory}
+                                    onClick={focusCurrentStory}
+                                >
+                                    <Icon name="locate" />
+                                </IconButton>
+                                <TreeViewExpandButtons
+                                    onExpandAll={() => updateState({ expandedIds: getExpandableTreeNodeIds(storyTree) })}
+                                    onCollapseAll={() => updateState({ expandedIds: [] })}
+                                    collapseAllDisabled={expandedIds.length === 0}
+                                />
+                            </div>
                             <div className={styles.panelList}>
-                                {filteredGroups.map(([title, groupStories]) => (
-                                    <section key={title} className={styles.group}>
-                                        <h2 className={styles.groupTitle}>{title}</h2>
-                                        {groupStories.map((story) => (
-                                            <button
-                                                key={story.id}
-                                                type="button"
-                                                className={styles.storyItem}
-                                                aria-current={story.id === storyId || undefined}
-                                                onClick={() => updateState({ storyId: story.id })}
-                                            >
-                                                {story.name}
-                                            </button>
-                                        ))}
-                                    </section>
-                                ))}
+                                <TreeView
+                                    aria-label="Stories"
+                                    nodes={storyTree}
+                                    expandedIds={expandedIds}
+                                    onExpandedChange={(ids) => updateState({ expandedIds: ids })}
+                                    selectedId={storyId ?? undefined}
+                                    onSelect={selectTreeNode}
+                                    filter={searchQuery ? (node) => matchesSearch(node.id) : undefined}
+                                />
                             </div>
                         </nav>
+                    )}
+                    {state.panelOpen && (
+                        <div
+                            role="separator"
+                            aria-orientation="vertical"
+                            aria-label="Resize stories panel"
+                            aria-valuemin={minPanelWidth}
+                            aria-valuemax={maxPanelWidth}
+                            aria-valuenow={state.panelWidth}
+                            tabIndex={0}
+                            className={styles.panelHandle}
+                            onPointerDown={startPanelResize}
+                            onKeyDown={resizePanelWithKeyboard}
+                            onDoubleClick={() => updateState({ panelWidth: defaultWorkspaceState.panelWidth })}
+                        />
                     )}
 
                     <div ref={setCanvasElement} className={styles.canvas}>
@@ -334,9 +413,9 @@ export function WorkspaceShell() {
                                     />
                                 )}
                             </div>
-                            <div className={styles.handleInline} onPointerDown={(event) => startResize("inline", event)} />
-                            <div className={styles.handleBlock} onPointerDown={(event) => startResize("block", event)} />
-                            <div className={styles.handleCorner} onPointerDown={(event) => startResize("both", event)} />
+                            <div className={styles.handleInline} onPointerDown={(event) => startFrameResize("inline", event)} />
+                            <div className={styles.handleBlock} onPointerDown={(event) => startFrameResize("block", event)} />
+                            <div className={styles.handleCorner} onPointerDown={(event) => startFrameResize("both", event)} />
                         </div>
                     </div>
                 </div>

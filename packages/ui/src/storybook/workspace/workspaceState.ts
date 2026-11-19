@@ -8,6 +8,9 @@ export interface WorkspaceState {
     height: number;
     zoom: WorkspaceZoom;
     panelOpen: boolean;
+    panelWidth: number;
+    /** The expanded folders of the story tree; until the tree is first changed, the folders around the shown story. */
+    expandedIds: string[] | null;
 }
 
 const storageKey = "dextinity-ui-workspace";
@@ -18,6 +21,8 @@ export const defaultWorkspaceState: WorkspaceState = {
     height: 900,
     zoom: "fit",
     panelOpen: true,
+    panelWidth: 300,
+    expandedIds: null,
 };
 
 function readStoredState(): WorkspaceState {

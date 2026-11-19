@@ -1,8 +1,8 @@
 @mixin tokens {
     // Width of the expanded navigation
     --dextinity-side-nav-width: 300px;
-    // Width of the collapsed navigation, which shows only icons
-    --dextinity-side-nav-width-collapsed: 86px;
+    // Width of the collapsed navigation, which shows only icons: an entry plus a narrow gap on each side
+    --dextinity-side-nav-width-collapsed: calc(var(--dextinity-side-nav-collapsed-item-width) + 2 * var(--dextinity-space-2));
     // Glass panel over the ambient light field; solid in high contrast
     --dextinity-side-nav-background: var(--dextinity-material-glass);
     // Blur of the backdrop behind the navigation

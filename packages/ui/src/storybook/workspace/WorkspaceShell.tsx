@@ -40,8 +40,9 @@ const prototypesTitle = "Workspace/Prototypes";
 const brandOptions = brandSetting.options.map(({ value, title }) => ({ value, "aria-label": title, icon: null }));
 
 const modeTabs: Array<{ value: WorkspaceMode; label: string }> = [
-    { value: "components", label: "Components" },
     { value: "prototypes", label: "Prototypes" },
+    // The stories of the Storybook, as its sidebar lists them
+    { value: "components", label: "Storybook" },
 ];
 
 /** A story the workspace showed before, to go back to: in the prototypes, with the prototype's page then. */

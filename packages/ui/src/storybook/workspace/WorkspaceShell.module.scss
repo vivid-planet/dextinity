@@ -102,6 +102,7 @@
     min-inline-size: 0;
     min-block-size: var(--workspace-bar-height);
     padding-inline: 16px 8px;
+    background: var(--dextinity-color-surface-raised);
 
     @media (width >= 760px) {
         padding-inline-end: 16px;

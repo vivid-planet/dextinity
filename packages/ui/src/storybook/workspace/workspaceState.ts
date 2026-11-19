@@ -5,7 +5,7 @@ export type WorkspaceZoom = "fit" | "0.5" | "0.75" | "1" | "1.5";
 export type WorkspaceMode = "components" | "prototypes";
 
 export interface WorkspaceState {
-    /** The tab: a single story of the components, or a clickable prototype of a whole app. */
+    /** The tab: a clickable prototype of a whole app, or a single story of the Storybook. */
     mode: WorkspaceMode;
     storyId: string | null;
     prototypeId: string | null;
@@ -23,7 +23,7 @@ export interface WorkspaceState {
 const storageKey = "dextinity-ui-workspace";
 
 export const defaultWorkspaceState: WorkspaceState = {
-    mode: "components",
+    mode: "prototypes",
     storyId: null,
     prototypeId: null,
     responsive: true,

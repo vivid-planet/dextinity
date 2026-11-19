@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import type { AiModeTool } from "./AiModeScopes";
 import type { EditBlocks } from "./editBlocks";
-import { type AiModePageState, createPageTools, createPageTreeTools } from "./hostTools";
+import { type AiModePageState, createAdminTools, createPageTools, createPageTreeTools } from "./hostTools";
 
 const scopeUrl = "/main/en";
 
@@ -41,6 +41,7 @@ function getPageTool(name: string, { editBlocks = vi.fn<EditBlocks>() }: { editB
 
 it("keeps every description within 4096 characters, the limit for a tool description", () => {
     const tools = [
+        ...createAdminTools({ pages: [], navigate: vi.fn(), scopeUrl }),
         ...createPageTreeTools({ navigate: vi.fn(), scopeUrl }),
         ...createPageTools({ pageState, getDocumentSummary: () => ({}), editBlocks: vi.fn() }),
     ];
@@ -48,6 +49,39 @@ it("keeps every description within 4096 characters, the limit for a tool descrip
     for (const tool of tools) {
         expect(tool.description.length, tool.name).toBeLessThanOrEqual(4096);
     }
+});
+
+describe("open_admin_page", () => {
+    const pages = [
+        { path: "/assets", label: "Assets" },
+        { path: "/system/redirects", label: "System › Redirects" },
+    ];
+
+    function getOpenAdminPage() {
+        const navigate = vi.fn();
+        const tool = findTool(createAdminTools({ pages, navigate, scopeUrl }), "open_admin_page");
+        return { tool, navigate, call: (args: Record<string, unknown>) => tool.handler(args, { clearTextSelection: vi.fn() }) };
+    }
+
+    it("lists the pages with their labels in the description of the path", () => {
+        const { tool } = getOpenAdminPage();
+
+        expect(JSON.stringify(tool.inputSchema)).toContain("/system/redirects: System › Redirects");
+    });
+
+    it("opens a page in the current content scope", () => {
+        const { call, navigate } = getOpenAdminPage();
+
+        expect(call({ path: "/system/redirects" })).toContain('Asked the admin to open "System › Redirects"');
+        expect(navigate).toHaveBeenCalledWith(`${scopeUrl}/system/redirects`);
+    });
+
+    it("refuses a path that isn't a page of the list, so it cannot reach any other route", () => {
+        const { call, navigate } = getOpenAdminPage();
+
+        expect(() => call({ path: "/user-permissions" })).toThrow("It must be one of: /assets, /system/redirects.");
+        expect(navigate).not.toHaveBeenCalled();
+    });
 });
 
 describe("open_page", () => {

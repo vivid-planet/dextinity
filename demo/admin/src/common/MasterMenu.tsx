@@ -22,6 +22,7 @@ import {
     WarningsPage,
 } from "@dextinity/cms-admin";
 import { Chip } from "@mui/material";
+import { AdminAiModeScope } from "@src/aiMode/AdminAiModeScope";
 import { PageTreeAiModeScope } from "@src/aiMode/PageTreeAiModeScope";
 import { type BrevoContactConfig, getBrevoContactConfig } from "@src/brevo/brevoModuleConfig/brevoContactsPageAttributesConfig";
 import { additionalFormConfig } from "@src/brevo/brevoModuleConfig/targetGroupFormConfig";
@@ -376,18 +377,24 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
     ];
 };
 
-export const AppMasterMenu = () => {
+function useAppMasterMenuData() {
     const intl = useIntl();
 
-    const masterMenuData = useMemo(() => getMasterMenuData({ brevoContactConfig: getBrevoContactConfig(intl) }), [intl]);
+    return useMemo(() => getMasterMenuData({ brevoContactConfig: getBrevoContactConfig(intl) }), [intl]);
+}
+
+export const AppMasterMenu = () => {
+    const masterMenuData = useAppMasterMenuData();
 
     return <MasterMenu menu={masterMenuData} />;
 };
 
 export const AppMasterMenuRoutes = () => {
-    const intl = useIntl();
+    const masterMenuData = useAppMasterMenuData();
 
-    const masterMenuData = useMemo(() => getMasterMenuData({ brevoContactConfig: getBrevoContactConfig(intl) }), [intl]);
-
-    return <MasterMenuRoutes menu={masterMenuData} />;
+    return (
+        <AdminAiModeScope menu={masterMenuData}>
+            <MasterMenuRoutes menu={masterMenuData} />
+        </AdminAiModeScope>
+    );
 };

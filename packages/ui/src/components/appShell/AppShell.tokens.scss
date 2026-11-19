@@ -27,7 +27,7 @@
     --dextinity-app-shell-backdrop: oklch(0 0 0 / 0.28);
     // Width of the navigation drawer in narrow windows
     --dextinity-app-shell-drawer-width: min(320px, 86vw);
-    // Shadow of the navigation panel inside the drawer
+    // Shadow of the navigation when it lies over the page: in the drawer, and expanded on medium windows
     --dextinity-app-shell-overlay-shadow: var(--dextinity-shadow-3);
 
     // Stacking order of the sticky top bar, below the navigation

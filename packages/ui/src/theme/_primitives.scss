@@ -86,7 +86,7 @@ $scales: (
         // Corner radius of overlays: menus, popovers and dialogs
         --dextinity-radius-overlay: calc(20px * var(--dextinity-brand-radius-factor));
         // Corner radius of the app frame: the side navigation and the command palette
-        --dextinity-radius-frame: calc(30px * var(--dextinity-brand-radius-factor));
+        --dextinity-radius-frame: calc(24px * var(--dextinity-brand-radius-factor));
         // Fully rounded ends, e.g. of pills and switches
         --dextinity-radius-pill: 999px;
     }

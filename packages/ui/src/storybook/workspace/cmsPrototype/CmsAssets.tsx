@@ -30,6 +30,11 @@ function getFolderTrail(folderId: string): AssetFolder[] {
     return folder.parentId == null ? [folder] : [...getFolderTrail(folder.parentId), folder];
 }
 
+function countFiles(folderId: string): number {
+    const subfolderFiles = assetFolders.filter((folder) => folder.parentId === folderId).reduce((count, folder) => count + countFiles(folder.id), 0);
+    return assets.filter((asset) => asset.folderId === folderId).length + subfolderFiles;
+}
+
 function AssetDetail({ asset, onAltChange, onQuickLook }: { asset: Asset; onAltChange: (alt: string) => void; onQuickLook: () => void }) {
     return (
         <aside className={styles.assetDetail} aria-label={asset.name}>
@@ -144,80 +149,81 @@ export function CmsAssets() {
                     />
                 }
             >
-                <div className={styles.finder} data-detail={selected ? "" : undefined}>
-                    <nav aria-label="Folders" className={styles.sidebar}>
-                        {assetFolders.map((folder) => (
-                            <button
-                                key={folder.id}
-                                type="button"
-                                aria-current={folder.id === folderId ? "true" : undefined}
-                                onClick={() => openFolder(folder.id)}
-                                className={styles.folderButton}
-                                style={{ paddingInlineStart: `calc(var(--dextinity-space-2) + ${getDepth(folder)} * var(--dextinity-space-4))` }}
-                            >
-                                <Icon name="folder" />
-                                {folder.name}
-                            </button>
-                        ))}
-                    </nav>
-                    <div className={styles.finderMain}>
-                        <Breadcrumbs
-                            className={styles.finderPath}
-                            items={getFolderTrail(folderId).map((folder) => ({ label: folder.name, onClick: () => openFolder(folder.id) }))}
-                        />
-                        {subfolders.length + folderAssets.length > 0 ? (
-                            <ul className={styles.finderContent} aria-label="Files">
-                                {subfolders.map((folder) => (
-                                    <li key={folder.id}>
-                                        <button
-                                            type="button"
-                                            className={styles.assetChoice}
-                                            onDoubleClick={() => openFolder(folder.id)}
-                                            onClick={() => setSelectedId(null)}
-                                        >
-                                            <AssetThumbnail
-                                                type="folder"
-                                                title={folder.name}
-                                                meta={`${assets.filter((asset) => asset.folderId === folder.id).length} files`}
-                                            />
-                                        </button>
-                                    </li>
-                                ))}
-                                {folderAssets.map((asset) => (
-                                    <li key={asset.id}>
-                                        <button
-                                            type="button"
-                                            className={styles.assetChoice}
-                                            aria-pressed={asset.id === selectedId}
-                                            onClick={() => setSelectedId(asset.id)}
-                                            onDoubleClick={() => asset.type === "image" && setQuickLookOpen(true)}
-                                            onKeyDown={(event) => handleAssetKeyDown(event, asset)}
-                                        >
-                                            <AssetThumbnail
-                                                type={asset.type}
-                                                src={asset.src}
-                                                fileType={asset.fileType}
-                                                duration={asset.duration}
-                                                badges={asset.badges}
-                                                title={asset.name}
-                                                meta={asset.size}
-                                                selected={asset.id === selectedId}
-                                            />
-                                        </button>
-                                    </li>
-                                ))}
-                            </ul>
-                        ) : (
-                            <EmptyState icon={<Icon name="folder" />} title="This folder is empty" description="Drop files here or upload them." />
+                <div className={styles.finderContainer}>
+                    <div className={styles.finder} data-detail={selected ? "" : undefined}>
+                        <nav aria-label="Folders" className={styles.sidebar}>
+                            {assetFolders.map((folder) => (
+                                <button
+                                    key={folder.id}
+                                    type="button"
+                                    aria-current={folder.id === folderId ? "true" : undefined}
+                                    onClick={() => openFolder(folder.id)}
+                                    className={styles.folderButton}
+                                    style={{ paddingInlineStart: `calc(var(--dextinity-space-2) + ${getDepth(folder)} * var(--dextinity-space-4))` }}
+                                >
+                                    <Icon name="folder" />
+                                    {folder.name}
+                                </button>
+                            ))}
+                        </nav>
+                        <div className={styles.finderMain}>
+                            <Breadcrumbs
+                                className={styles.finderPath}
+                                items={getFolderTrail(folderId).map((folder) => ({ label: folder.name, onClick: () => openFolder(folder.id) }))}
+                            />
+                            {subfolders.length + folderAssets.length > 0 ? (
+                                <ul className={styles.finderContent} aria-label="Files">
+                                    {subfolders.map((folder) => (
+                                        <li key={folder.id}>
+                                            <button type="button" className={styles.assetChoice} onClick={() => openFolder(folder.id)}>
+                                                <AssetThumbnail
+                                                    type="folder"
+                                                    title={folder.name}
+                                                    meta={countFiles(folder.id) === 1 ? "1 file" : `${countFiles(folder.id)} files`}
+                                                />
+                                            </button>
+                                        </li>
+                                    ))}
+                                    {folderAssets.map((asset) => (
+                                        <li key={asset.id}>
+                                            <button
+                                                type="button"
+                                                className={styles.assetChoice}
+                                                aria-pressed={asset.id === selectedId}
+                                                onClick={() => setSelectedId(asset.id)}
+                                                onDoubleClick={() => asset.type === "image" && setQuickLookOpen(true)}
+                                                onKeyDown={(event) => handleAssetKeyDown(event, asset)}
+                                            >
+                                                <AssetThumbnail
+                                                    type={asset.type}
+                                                    src={asset.src}
+                                                    fileType={asset.fileType}
+                                                    duration={asset.duration}
+                                                    badges={asset.badges}
+                                                    title={asset.name}
+                                                    meta={asset.size}
+                                                    selected={asset.id === selectedId}
+                                                />
+                                            </button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <EmptyState
+                                    icon={<Icon name="folder" />}
+                                    title="This folder is empty"
+                                    description="Drop files here or upload them."
+                                />
+                            )}
+                        </div>
+                        {selected && (
+                            <AssetDetail
+                                asset={selected}
+                                onAltChange={(alt) => setAltTexts((current) => ({ ...current, [selected.id]: alt }))}
+                                onQuickLook={() => setQuickLookOpen(true)}
+                            />
                         )}
                     </div>
-                    {selected && (
-                        <AssetDetail
-                            asset={selected}
-                            onAltChange={(alt) => setAltTexts((current) => ({ ...current, [selected.id]: alt }))}
-                            onQuickLook={() => setQuickLookOpen(true)}
-                        />
-                    )}
                 </div>
             </FinderLayout>
             <QuickLook

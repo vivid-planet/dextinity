@@ -3,6 +3,7 @@ import { Icon } from "../../../components/icon/Icon";
 import type { SideNavGroup, SideNavItem } from "../../../components/sideNav/SideNav";
 import type { TreeNode } from "../../../components/treeView/TreeView";
 import { documentImage, interiorImage, landscapeImage, portraitImage } from "../../sampleImages";
+import { libraryAssets } from "./assetLibrary/assetLibraryData";
 
 export const cmsNavGroups: SideNavGroup[] = [
     {
@@ -358,6 +359,10 @@ export function getCmsPageLabel(pageId: string): string | undefined {
     }
     if (section === "news") {
         return id === "new" ? "New article" : findArticle(id)?.title;
+    }
+    if (section === "assets") {
+        // Assets added in the prototype, e.g. by an upload, aren't in the mock data
+        return libraryAssets.find((asset) => asset.id === id)?.name ?? "Asset";
     }
     return undefined;
 }

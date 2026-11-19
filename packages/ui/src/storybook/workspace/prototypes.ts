@@ -38,7 +38,7 @@ export const cmsPrototype: WorkspacePrototype = {
     storyId: "workspace-prototypes--cms",
     appName: "Website CMS",
     startPageId: "dashboard",
-    designedPageIds: ["dashboard", "page-tree", "page-tree/home", "news", "news/article-1", "assets"],
+    designedPageIds: ["dashboard", "page-tree", "page-tree/home", "news", "news/article-1", "assets", "assets/a-joyful-woman-standing-near-building"],
     getPageLabel: getCmsPageLabel,
 };
 

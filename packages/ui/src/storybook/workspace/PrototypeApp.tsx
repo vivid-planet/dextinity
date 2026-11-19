@@ -1,10 +1,10 @@
-import { Fragment, type ReactNode, useEffect, useState } from "react";
+import { Fragment, type ReactNode, useEffect, useRef, useState } from "react";
 
 import { EmptyState } from "../../components/emptyState/EmptyState";
 import { Icon } from "../../components/icon/Icon";
 import type { SideNavGroup } from "../../components/sideNav/SideNav";
 import { PageTypeShell } from "../pageTypes/PageTypeShell";
-import { PrototypeNavigationContext } from "../pageTypes/prototypeNavigation";
+import { type LeaveGuard, PrototypeNavigationContext } from "../pageTypes/prototypeNavigation";
 import type { WorkspacePrototype } from "./prototypes";
 
 function PageNotInPrototype({ prototype, pageId }: { prototype: WorkspacePrototype; pageId: string }) {
@@ -40,9 +40,26 @@ function readPageId({ getPageLabel, startPageId }: WorkspacePrototype) {
 export function PrototypeApp({ prototype, navGroups, renderPage }: PrototypeAppProps) {
     const [pageId, setPageId] = useState(() => readPageId(prototype));
     const [navCollapsed, setNavCollapsed] = useState(false);
+    const pageIdRef = useRef(pageId);
+    const leaveGuardRef = useRef<LeaveGuard | null>(null);
+    pageIdRef.current = pageId;
 
     useEffect(() => {
-        const handleHashChange = () => setPageId(readPageId(prototype));
+        const handleHashChange = () => {
+            const nextPageId = readPageId(prototype);
+            const leaveGuard = leaveGuardRef.current;
+            if (leaveGuard != null && nextPageId !== pageIdRef.current) {
+                // The hash already changed: put the current page back until the guard lets the user leave
+                window.history.replaceState(null, "", `#${pageIdRef.current}`);
+                leaveGuard(() => {
+                    leaveGuardRef.current = null;
+                    window.location.hash = nextPageId;
+                });
+                return;
+            }
+            leaveGuardRef.current = null;
+            setPageId(nextPageId);
+        };
         window.addEventListener("hashchange", handleHashChange);
         return () => window.removeEventListener("hashchange", handleHashChange);
     }, [prototype]);
@@ -63,6 +80,9 @@ export function PrototypeApp({ prototype, navGroups, renderPage }: PrototypeAppP
                 navCollapsed,
                 onNavCollapsedChange: setNavCollapsed,
                 navGroups,
+                setLeaveGuard: (guard) => {
+                    leaveGuardRef.current = guard;
+                },
             }}
         >
             <Fragment key={pageId}>{page ?? <PageNotInPrototype prototype={prototype} pageId={pageId} />}</Fragment>

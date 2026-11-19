@@ -3,6 +3,7 @@ import {
     type ContentScope,
     CorePermission,
     type CurrentUser,
+    ExceptionFilter,
     FilesService,
     getRequestContextHeadersFromRequest,
     getRequestFromExecutionContext,
@@ -46,6 +47,7 @@ const otherScope = { domain: "secondary", language: "en" };
 
 const users: Record<string, CurrentUser | string> = {
     editor: { id: "editor", name: "Editor" } as CurrentUser,
+    editorWithoutAiHub: { id: "editorWithoutAiHub", name: "Editor without AI Hub" } as CurrentUser,
     system: "system-user",
 };
 
@@ -119,8 +121,10 @@ const readApi = {
 
 const accessControlService = {
     isAllowed: (user: CurrentUser, permission: string, scope?: ContentScope) =>
-        ["pageTree", CorePermission.dam].includes(permission) &&
-        Object.entries(scope ?? {}).every(([dimension, value]) => value === (allowedScope as Record<string, string>)[dimension]),
+        permission === "aiHub"
+            ? user.id !== "editorWithoutAiHub"
+            : ["pageTree", CorePermission.dam].includes(permission) &&
+              Object.entries(scope ?? {}).every(([dimension, value]) => value === (allowedScope as Record<string, string>)[dimension]),
 };
 
 // The rows `@AffectedEntity` reads the scope of.
@@ -193,7 +197,10 @@ const appProviders: Provider[] = [
 @Module({ providers: appProviders, exports: appProviders })
 class AppServicesModule {}
 
+const adminUrl = "https://admin.example.com";
+
 let app: INestApplication;
+let endpoint: string;
 const clients: Record<string, Client> = {};
 
 async function callTool(name: string, args: Record<string, unknown>, user = "editor") {
@@ -205,11 +212,16 @@ async function callTool(name: string, args: Record<string, unknown>, user = "edi
 
 beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-        imports: [AppServicesModule, AiModeMcpModule.forRoot({ adminUrl: "http://localhost:8000" })],
+        imports: [AppServicesModule, AiModeMcpModule.forRoot({ adminUrl })],
         providers: [{ provide: APP_GUARD, useClass: HeaderAuthGuard }, userPermissionsGuardProvider],
     }).compile();
 
-    app = await moduleRef.createNestApplication().init();
+    app = moduleRef.createNestApplication();
+    // As main.ts sets them up. The global filter also catches the exceptions of tool calls that no filter of the tool catches.
+    app.setGlobalPrefix("api");
+    app.useGlobalFilters(new ExceptionFilter(false));
+    await app.listen(0);
+    endpoint = `${await app.getUrl()}/api/mcp`.replace("[::1]", "127.0.0.1");
 });
 
 beforeEach(() => {
@@ -324,10 +336,53 @@ describe("MCP server of the API", () => {
         expect(JSON.parse(text)).toContain("PageContent");
     });
 
+    it("answers an unknown block name with the reason", async () => {
+        const { text, isError } = await callTool("get_block_schema", { name: "Unknown" });
+
+        expect(isError).toBe(true);
+        expect(text).toBe('Unknown block "Unknown". Use the list_available_blocks tool to get the available block names.');
+    });
+
     it("answers get_block_schema with the TipTap schema of a rich text block", async () => {
         const { text, isError } = await callTool("get_block_schema", { name: "richtext" });
 
         expect(isError).toBe(false);
         expect(text).toContain('"tipTap"');
+    });
+});
+
+// The in-memory client skips the route, its guards, and the checks of the request's origin.
+describe("HTTP endpoint of the MCP server", () => {
+    async function listTools(headers: Record<string, string>) {
+        return fetch(endpoint, {
+            method: "POST",
+            headers: {
+                "content-type": "application/json",
+                accept: "application/json, text/event-stream",
+                "mcp-protocol-version": "2025-11-25",
+                "x-test-user": "editor",
+                ...headers,
+            },
+            body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/list" }),
+        });
+    }
+
+    it("answers the chat in the admin", async () => {
+        const response = await listTools({ origin: adminUrl });
+
+        expect(response.status).toBe(200);
+        expect(await response.text()).toContain('"name":"get_page"');
+    });
+
+    it("refuses a page of another site", async () => {
+        const response = await listTools({ origin: "https://other.example.com" });
+
+        expect(response.status).toBe(403);
+    });
+
+    it("refuses a user without the aiHub permission", async () => {
+        const response = await listTools({ origin: adminUrl, "x-test-user": "editorWithoutAiHub" });
+
+        expect(response.status).toBe(403);
     });
 });

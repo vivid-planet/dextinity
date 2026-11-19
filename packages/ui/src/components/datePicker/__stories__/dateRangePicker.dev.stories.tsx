@@ -111,3 +111,17 @@ export const OnlyAStartDisablesEndsBeyondADisabledDay: Story = {
         await expect(within(grid).getByRole("button", { name: "Monday, 16 November 2026" })).toHaveAttribute("aria-disabled", "true");
     },
 };
+
+/**
+ * With only an end, the calendar opens on the month of the end, with the focus on the nearest shown day that can be chosen as the start,
+ * also when that day is in the next month.
+ */
+export const OnlyAnEndOpensOnItsMonth: Story = {
+    args: { value: { start: null, end: "2028-03-31" }, isDateDisabled: startsOnMondaysEndsOnFridays },
+    play: async ({ canvas }) => {
+        await userEvent.click(canvas.getByRole("button", { name: "Choose dates" }));
+        await screen.findByRole("grid", { name: "March 2028" });
+        const nextMonthGrid = screen.getByRole("grid", { name: "April 2028" });
+        await waitFor(() => expect(within(nextMonthGrid).getByRole("button", { name: "Monday, 3 April 2028" })).toHaveFocus());
+    },
+};

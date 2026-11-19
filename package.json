@@ -14,7 +14,7 @@
         "build:packages": "pnpm --recursive --filter '@dextinity/*' run build",
         "build:docs": "pnpm --filter dextinity-docs run build",
         "clean": "pnpm --recursive run clean",
-        "copy-project-files": "node copy-project-files.js",
+        "copy-project-files": "node copy-project-files.mjs",
         "dev": "pnpm dev:admin && pnpm dev:cms && pnpm dev:mail-react && pnpm dev:ui && pnpm dev:brevo && pnpm dev:demo",
         "dev:admin": "dev-pm start @dextinity-admin",
         "dev:cms": "dev-pm start @cms",

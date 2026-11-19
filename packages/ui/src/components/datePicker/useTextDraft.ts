@@ -31,6 +31,7 @@ export function useTextDraft(formatted: string, read: (text: string) => TextRead
 
     return {
         text: draft ?? formatted,
+        hasDraft: draft != null,
         error,
         onChange: (event: ChangeEvent<HTMLInputElement>) => {
             setDraft(event.target.value);

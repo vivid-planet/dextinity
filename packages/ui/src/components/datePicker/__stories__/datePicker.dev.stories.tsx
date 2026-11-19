@@ -4,6 +4,7 @@ import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
+import { Dialog } from "../../dialog/Dialog";
 import { Field } from "../../field/Field";
 import { DatePicker, type DatePickerProps } from "../DatePicker";
 import styles from "./DatePicker.stories.module.scss";
@@ -49,6 +50,24 @@ function DatePickerWithEarlierDates(props: DatePickerProps) {
             <StatefulDatePicker {...props} min={min} />
             <Button onClick={() => setMin("2026-10-01")}>Allow earlier dates</Button>
         </>
+    );
+}
+
+const dialogOpenChange = fn();
+
+function DatePickerInDialog(props: DatePickerProps) {
+    const [open, setOpen] = useState(true);
+    return (
+        <Dialog
+            open={open}
+            onOpenChange={(nextOpen) => {
+                dialogOpenChange(nextOpen);
+                setOpen(nextOpen);
+            }}
+            title="Edit article"
+        >
+            <StatefulDatePicker {...props} />
+        </Dialog>
     );
 }
 
@@ -125,5 +144,23 @@ export const RejectedDayAllowedOnceTheRulesChange: Story = {
         await userEvent.click(canvas.getByRole("button", { name: "Allow earlier dates" }));
         await waitFor(() => expect(args.onChange).toHaveBeenCalledWith("2026-11-01"));
         await expect(input).not.toHaveAttribute("aria-invalid");
+    },
+};
+
+/**
+ * Escape first discards typed text and leaves a surrounding dialog open; without typed text, it closes the dialog.
+ */
+export const EscapeInADialog: Story = {
+    render: (args) => <DatePickerInDialog {...args} />,
+    play: async () => {
+        const input = await screen.findByRole("textbox", { name: "Published on" });
+        await userEvent.clear(input);
+        await userEvent.type(input, "07/11");
+        await userEvent.keyboard("{Escape}");
+        await expect(input).toHaveValue("16/11/2026");
+        await expect(dialogOpenChange).not.toHaveBeenCalled();
+
+        await userEvent.keyboard("{Escape}");
+        await waitFor(() => expect(screen.queryByRole("dialog", { name: "Edit article" })).not.toBeInTheDocument());
     },
 };

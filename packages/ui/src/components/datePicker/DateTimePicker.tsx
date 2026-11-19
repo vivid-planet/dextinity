@@ -212,7 +212,8 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
     const onKeyDown = (draft: typeof dateDraft, openPopup: (open: boolean) => void) => (event: KeyboardEvent<HTMLInputElement>) => {
         if (event.key === "Enter") {
             draft.commit();
-        } else if (event.key === "Escape") {
+        } else if (event.key === "Escape" && draft.hasDraft) {
+            event.stopPropagation();
             draft.reset();
         } else if (event.key === "ArrowDown" && event.altKey && editable) {
             event.preventDefault();

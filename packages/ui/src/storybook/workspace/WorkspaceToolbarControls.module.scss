@@ -23,6 +23,14 @@
     }
 }
 
+.appearanceText {
+    white-space: nowrap;
+
+    @media (width < 900px) {
+        display: none;
+    }
+}
+
 .popoverBody {
     display: grid;
     gap: 14px;

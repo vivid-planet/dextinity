@@ -165,6 +165,8 @@ export function AppearanceControl({
     onDensityChange: (density: ThemeDensity) => void;
 }) {
     const [open, setOpen] = useState(false);
+    const brandTitle = brandSetting.options.find((option) => option.value === brand)?.title ?? brand;
+    const densityTitle = densityOptions.find((option) => option.value === density)?.["aria-label"] ?? density;
 
     return (
         <Popover
@@ -173,9 +175,17 @@ export function AppearanceControl({
             title="Appearance"
             placement="bottom-end"
             trigger={
-                <IconButton variant="text" color="secondary" aria-label="Appearance: theme, color scheme, and density">
-                    <Icon name="tune" />
-                </IconButton>
+                <Button
+                    variant="text"
+                    color="secondary"
+                    aria-label={`Appearance: ${brandTitle} theme, ${densityTitle} density`}
+                    startIcon={<Icon name="tune" />}
+                    endIcon={<Icon name="chevron-down" />}
+                >
+                    <span className={styles.appearanceText}>
+                        {brandTitle} · {densityTitle}
+                    </span>
+                </Button>
             }
         >
             <div className={styles.popoverBody}>

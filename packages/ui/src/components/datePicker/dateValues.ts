@@ -353,8 +353,9 @@ export function splitDateTime(value: string | null | undefined): { date: IsoDate
  */
 export function joinDateTime(date: IsoDate, time: TimeOfDay): string {
     const { year, month, day } = partsOf(date);
-    const instant = new Date(2000, month - 1, day, time.hours, time.minutes);
-    instant.setFullYear(year);
+    const instant = new Date(0);
+    instant.setFullYear(year, month - 1, day);
+    instant.setHours(time.hours, time.minutes, 0, 0);
     return instant.toISOString();
 }
 

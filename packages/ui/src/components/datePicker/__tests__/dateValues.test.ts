@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import {
     addMonths,
@@ -141,6 +141,14 @@ describe("joinDateTime and splitDateTime", () => {
 
         expect(value).toBe(new Date(2026, 10, 6, 8, 30).toISOString());
         expect(splitDateTime(value)).toStrictEqual({ date: "2026-11-06", time: { hours: 8, minutes: 30 } });
+    });
+
+    it("keeps a time that only the daylight saving change of another year skips", () => {
+        vi.stubEnv("TZ", "Europe/Berlin");
+        const value = joinDateTime("2026-03-26", { hours: 2, minutes: 30 });
+        vi.unstubAllEnvs();
+
+        expect(value).toBe("2026-03-26T01:30:00.000Z");
     });
 
     it("reads nothing from an empty or invalid value", () => {

@@ -29,7 +29,7 @@ useAiModeScope({
 
 - The context is sent to the agent whenever it changes, so keep it small. Return larger state from a tool, which the agent calls when it needs it.
 - The tools are available to the agent only while the scope is mounted. A tool's name must be unique among the mounted scopes: the AI Mode leaves out a tool whose name an outer scope already has.
-- The chat asks the user to approve every call of a tool that isn't read-only (`readOnlyHint: true`). The tool description should tell the agent so, so that it calls the tool instead of asking for permission in the chat first.
+- The chat asks the user to approve every call of a tool that isn't read-only (`readOnlyHint: true`). The tool description should tell the agent so, so that it calls the tool instead of asking for permission in the chat first. Mark a tool that only navigates or changes what a page shows as read-only too: it changes no data, and an approval for every step slows the agent down.
 - The scope is registered again on every render, so that the handlers are always those of the latest render. Only a change of the description, the context, or the tools' definitions reaches the agent, so the scope needn't be memoized.
 
 Use the `AiModeScope` component instead of the hook for a scope that other scopes are rendered in, e.g. a page that opens its editor in a stack. The agent then gets the inner scopes after it.

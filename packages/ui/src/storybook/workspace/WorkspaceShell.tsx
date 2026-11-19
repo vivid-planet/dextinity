@@ -12,7 +12,6 @@ import { useMediaQuery } from "../../components/appShell/useMediaQuery";
 import { Icon } from "../../components/icon/Icon";
 import { IconButton } from "../../components/iconButton/IconButton";
 import { Input } from "../../components/input/Input";
-import { SegmentedControl } from "../../components/segmentedControl/SegmentedControl";
 import { Tabs } from "../../components/tabs/Tabs";
 import { Theme } from "../../components/theme/Theme";
 import { getExpandableTreeNodeIds, type TreeNode, TreeView } from "../../components/treeView/TreeView";
@@ -28,7 +27,7 @@ import { useFramePage } from "./useFramePage";
 import { workspaceLogo } from "./workspaceLogo";
 import styles from "./WorkspaceShell.module.scss";
 import { defaultWorkspaceState, useWorkspaceState, type WorkspaceMode } from "./workspaceState";
-import { AppearanceControl, colorSchemeOptions, minFrameSize, MoreActionsMenu, ViewportControl } from "./WorkspaceToolbarControls";
+import { colorSchemeOptions, densityOptions, minFrameSize, SettingMenu, ViewportControl } from "./WorkspaceToolbarControls";
 
 const shellStoryId = "workspace-shell--shell";
 const narrowQuery = "(width < 760px)";
@@ -37,6 +36,7 @@ const maxPanelWidth = 520;
 const panelKeyboardStep = 20;
 const inspectLabelHeight = 18;
 const prototypesTitle = "Workspace/Prototypes";
+const brandOptions = brandSetting.options.map(({ value, title }) => ({ value, "aria-label": title, icon: null }));
 
 const modeTabs: Array<{ value: WorkspaceMode; label: string }> = [
     { value: "components", label: "Components" },
@@ -362,7 +362,7 @@ export function WorkspaceShell() {
             <div className={styles.root} data-resizing={resizing ?? undefined}>
                 <header className={styles.header}>
                     <div className={styles.toolbar}>
-                        <div className={styles.toolbarGroup}>
+                        <div className={styles.brand}>
                             <IconButton
                                 variant="text"
                                 color="secondary"
@@ -377,30 +377,49 @@ export function WorkspaceShell() {
 
                         <Tabs className={styles.modeTabs} aria-label="Workspace" items={modeTabs} value={state.mode} onChange={changeMode} />
 
-                        <div className={styles.toolbarGroup}>
-                            <SegmentedControl
-                                size="small"
-                                aria-label="Color scheme"
-                                className={styles.colorScheme}
-                                options={colorSchemeOptions}
-                                value={colorScheme}
-                                onChange={changeColorScheme}
+                        <div className={styles.settings}>
+                            <ViewportControl
+                                responsive={state.responsive}
+                                onResponsiveChange={() => updateState({ responsive: true })}
+                                width={state.width}
+                                height={state.height}
+                                zoom={state.zoom}
+                                onSizeChange={(size) => updateState({ ...size, responsive: false })}
+                                onZoomChange={(zoom) => updateState({ zoom })}
                             />
-                            <AppearanceControl
-                                brand={brand}
-                                onBrandChange={(value) => {
+                            <SettingMenu label="Color scheme" options={colorSchemeOptions} value={colorScheme} onChange={changeColorScheme} />
+                            <SettingMenu
+                                label="Theme"
+                                icon={<Icon name="layers" />}
+                                options={brandOptions}
+                                value={brand}
+                                onChange={(value) => {
                                     brandSetting.store(value);
                                     setBrand(brandSetting.get());
                                 }}
-                                colorScheme={colorScheme}
-                                onColorSchemeChange={changeColorScheme}
-                                density={density}
-                                onDensityChange={(value) => {
+                            />
+                            <SettingMenu
+                                label="Density"
+                                options={densityOptions}
+                                value={density}
+                                onChange={(value) => {
                                     densitySetting.store(value);
                                     setDensity(value);
                                 }}
                             />
-                            <MoreActionsMenu storyUrl={storyUrl} onReload={reloadFrame} />
+                            <span className={styles.divider} />
+                            <IconButton variant="text" color="secondary" aria-label="Reload story" onClick={reloadFrame}>
+                                <Icon name="refresh" />
+                            </IconButton>
+                            <IconButton
+                                variant="text"
+                                color="secondary"
+                                aria-label="Open story in a new tab"
+                                disabled={!storyUrl}
+                                onClick={() => storyUrl && window.open(storyUrl, "_blank")}
+                            >
+                                <Icon name="external-link" />
+                            </IconButton>
                         </div>
                     </div>
 
@@ -444,15 +463,6 @@ export function WorkspaceShell() {
                             >
                                 <Icon name="back" />
                             </IconButton>
-                            <ViewportControl
-                                responsive={state.responsive}
-                                onResponsiveChange={() => updateState({ responsive: true })}
-                                width={state.width}
-                                height={state.height}
-                                zoom={state.zoom}
-                                onSizeChange={(size) => updateState({ ...size, responsive: false })}
-                                onZoomChange={(zoom) => updateState({ zoom })}
-                            />
                         </div>
                     </div>
                 </header>

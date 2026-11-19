@@ -1,7 +1,5 @@
-import { AiModeToolset, useContentScope } from "@dextinity/cms-admin";
+import { AiModeToolset } from "@dextinity/cms-admin";
 import type { PropsWithChildren } from "react";
-
-import { createPageTreeTools } from "./hostTools";
 
 export function PageTreeAiModeToolset({ category, children }: PropsWithChildren<{ category: string }>) {
     return (

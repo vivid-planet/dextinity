@@ -9,10 +9,17 @@ rm -rf .storybook-static-build "$OUT"
 cp -r .storybook .storybook-static-build
 trap 'rm -rf "$UI/.storybook-static-build"' EXIT
 python3 - <<'PY'
+import sys
 path = ".storybook-static-build/main.ts"
 source = open(path).read()
-source = source.replace("            build: {", "            build: {\n                assetsInlineLimit: 10_000_000,\n                cssCodeSplit: false,", 1)
-source = source.replace(
+# Each option goes next to a line of the Storybook's Vite config; if that line changed, the build would quietly lose the option
+def replace_once(old, new):
+    global source
+    if source.count(old) != 1:
+        sys.exit(f"build-static.sh: expected exactly one {old!r} in .storybook/main.ts, adjust the script to the changed config")
+    source = source.replace(old, new)
+replace_once("            build: {", "            build: {\n                assetsInlineLimit: 10_000_000,\n                cssCodeSplit: false,")
+replace_once(
     "rolldownOptions: { checks: { moduleLevelDirective: false } }",
     'rolldownOptions: { checks: { moduleLevelDirective: false }, output: { inlineDynamicImports: true, entryFileNames: "assets/[name].js", chunkFileNames: "assets/[name].js", assetFileNames: "assets/[name][extname]" } }',
 )

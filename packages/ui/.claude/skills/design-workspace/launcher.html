@@ -33,6 +33,8 @@
         font-size: 13px;
         line-height: 1.4;
     }
+    /* The flex layout above would otherwise keep the banner visible while it's hidden */
+    .notice[hidden] { display: none; }
     .notice strong {
         font-weight: 600;
     }

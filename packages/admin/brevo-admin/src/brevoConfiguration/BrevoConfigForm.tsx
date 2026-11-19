@@ -21,7 +21,7 @@ import {
     useStackSwitchApi,
 } from "@dextinity/admin";
 import { Info } from "@dextinity/admin-icons";
-import { type ContentScope, ContentScopeIndicator, resolveHasSaveConflict, useFormSaveConflict } from "@dextinity/cms-admin";
+import { ActionLogButton, type ContentScope, ContentScopeIndicator, resolveHasSaveConflict, useFormSaveConflict } from "@dextinity/cms-admin";
 import type { FormApi } from "final-form";
 import { type ReactElement, type ReactNode, useMemo } from "react";
 import { FormattedMessage } from "react-intl";
@@ -268,6 +268,7 @@ export function BrevoConfigForm({ scope }: FormProps): ReactElement {
                             </ToolbarTitleItem>
                             <FillSpace />
                             <ToolbarActions>
+                                {data?.brevoConfig && <ActionLogButton entityId={data.brevoConfig.id} entity="BrevoConfig" scope={scope} />}
                                 <FinalFormSaveButton hasConflict={saveConflict.hasConflict} />
                             </ToolbarActions>
                         </Toolbar>

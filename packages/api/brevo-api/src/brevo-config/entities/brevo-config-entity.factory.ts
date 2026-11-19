@@ -1,4 +1,4 @@
-import { DocumentInterface } from "@dextinity/cms-api";
+import { ActionLogs, DocumentInterface, RequiredPermission } from "@dextinity/cms-api";
 import { Embedded, Entity, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
 import { OptionalProps } from "@mikro-orm/postgresql";
 import type { Type } from "@nestjs/common";
@@ -24,6 +24,8 @@ export interface BrevoConfigInterface {
 export class BrevoConfigEntityFactory {
     static create({ Scope }: { Scope: Type<EmailCampaignScopeInterface> }): Type<BrevoConfigInterface> {
         @Entity()
+        @RequiredPermission("brevoNewsletterConfig")
+        @ActionLogs()
         @ObjectType({
             implements: () => [DocumentInterface],
         })

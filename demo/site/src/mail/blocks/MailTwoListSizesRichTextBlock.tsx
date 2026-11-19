@@ -1,16 +1,11 @@
 import "./smallListStyles";
 
-import { createRichTextBlock, MjmlColumn, MjmlSection, type PropsWithData, withPreview } from "@dextinity/mail-react";
+import { createTipTapRichTextBlock, MjmlColumn, MjmlSection, type PropsWithData, withPreview } from "@dextinity/mail-react";
 import type { MailTwoListSizesRichTextBlockData, PhoneLinkBlockData } from "@src/blocks.generated";
 
-const { MjmlRichTextBlock } = createRichTextBlock({
-    blockTypes: {
-        copy: { variant: "copy" },
-        "copy-small": { variant: "copySmall" },
-        "unordered-list-item": { variant: "copy" },
-        "ordered-list-item": { variant: "copy" },
-        "unordered-list-item-small": { variant: "copySmall", list: "unordered" },
-        "ordered-list-item-small": { variant: "copySmall", list: "ordered" },
+const { MjmlTipTapRichTextBlock: MjmlRichTextBlock } = createTipTapRichTextBlock({
+    textBlockStyles: {
+        small: { variant: "copySmall" },
     },
     linkTypes: {
         phone: (props: PhoneLinkBlockData) => (props.phone ? `tel:${props.phone}` : undefined),

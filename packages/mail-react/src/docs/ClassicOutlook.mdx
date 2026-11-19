@@ -4,7 +4,7 @@ import * as ClassicOutlookStories from "./__stories__/ClassicOutlook.stories";
 
 <Meta
     title="Docs/Client Issues/Classic Outlook"
-    summary="Classic Outlook for Windows: `line-height` and `mso-line-height-rule`, `line-height: 0` around images, `background-image`, and `border-radius` with VML."
+    summary="Classic Outlook for Windows: `line-height` and `mso-line-height-rule`, a small `line-height` around images, `background-image`, and `border-radius` with VML."
 />
 
 # Classic Outlook
@@ -13,12 +13,17 @@ import * as ClassicOutlookStories from "./__stories__/ClassicOutlook.stories";
 
 Outlook calculates line-height using its own rules, causing unexpected vertical spacing. **Every time** you set `line-height` on a raw HTML element inside an ending tag (`MjmlRaw`, `MjmlText`, etc.), you must also set `mso-line-height-rule: exactly` as an inline style on the same element. This applies to `<span>`, `<td>`, `<div>`, or any other element where you manually control line height. `HtmlText` and built-in MJML components handle this automatically — but any hand-written HTML needs it explicitly.
 
-## Do Not Set `line-height: 0` Around Images
+## Leave `line-height` Unset Around Images
 
-Classic Outlook cuts off the top of an image when `line-height: 0` is set on the `<td>` that holds the image, or on its `<table>`: about `3px` with `font-size: 0`, about `20px` with the default font size. A `line-height: 0` on a `<span>` or link inside that `<td>` does not prevent it.
+Classic Outlook cuts an image to a small `line-height` on the `<td>` that holds it, or on its `<table>`:
 
-- Use `1px` instead of `0`, or leave `line-height` unset. Without `mso-line-height-rule: exactly`, any other `line-height` smaller than the image does not cut it: classic Outlook treats the value as a minimum. `MjmlTable` has a default `line-height` of `22px`, and that value does no harm. Do not set `lineHeight={0}` on `MjmlTable`.
-- With `mso-line-height-rule: exactly`, a `line-height` smaller than the image cuts the image to that height. `HtmlText` sets the theme `line-height` (`20px` by default) with `mso-line-height-rule: exactly`, so do not put images in it.
+- `line-height: 0` cuts off about `4px` at the top of the image.
+- Inside an MJML section, `line-height: 1px` shows the image only about `1px` high. MJML puts every section in an Outlook-only `<td>` with `mso-line-height-rule: exactly`, so classic Outlook does not treat the value as a minimum.
+
+Leave `line-height` unset on the `<td>` that holds an image, or set it to `100%`. A `line-height: 0` on a `<span>` or link inside that `<td>` does not prevent the cut.
+
+- `MjmlTable` has a default `line-height` of `22px`, and that value does no harm. Do not set `lineHeight={0}` on `MjmlTable`.
+- `HtmlText` sets the theme `line-height` (`20px` by default) with `mso-line-height-rule: exactly`, so do not put images in it.
 
 ### Example: Image in a Table Cell
 

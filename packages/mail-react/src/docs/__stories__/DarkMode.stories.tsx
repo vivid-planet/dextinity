@@ -28,11 +28,11 @@ export const SmallLogoProblem: Story = {
                             <table role="presentation" cellPadding={0} cellSpacing={0} style={{ borderCollapse: "separate" }}>
                                 <tbody>
                                     <tr>
-                                        <td width={40} style={{ fontSize: 0, lineHeight: "1px" }}>
+                                        <td width={40} style={{ fontSize: 0 }}>
                                             <HtmlImage src="/dark-mode/logo-filled-40.png" width={40} height={40} alt="Dextinity" />
                                         </td>
                                         <td width={24} />
-                                        <td width={40} style={{ fontSize: 0, lineHeight: "1px", backgroundColor: "#0e0c2b", borderRadius: "13px" }}>
+                                        <td width={40} style={{ fontSize: 0, backgroundColor: "#0e0c2b", borderRadius: "13px" }}>
                                             <HtmlImage src="/dark-mode/logo-mark-40.png" width={40} height={40} alt="Dextinity" />
                                         </td>
                                     </tr>
@@ -64,7 +64,7 @@ export const SmallLogoFix: Story = {
                             <table role="presentation" cellPadding={0} cellSpacing={0}>
                                 <tbody>
                                     <tr>
-                                        <td width={64} style={{ fontSize: 0, lineHeight: "1px" }}>
+                                        <td width={64} style={{ fontSize: 0 }}>
                                             <HtmlImage src="/dark-mode/logo-filled-64x40.png" width={64} height={40} alt="Dextinity" />
                                         </td>
                                     </tr>

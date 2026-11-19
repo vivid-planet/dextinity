@@ -362,6 +362,10 @@
     padding: var(--dextinity-space-4);
 }
 
+.assetDetailPreview {
+    max-inline-size: 320px;
+}
+
 .assetDetailTitle {
     margin: 0;
     font-size: var(--dextinity-typography-section-size);

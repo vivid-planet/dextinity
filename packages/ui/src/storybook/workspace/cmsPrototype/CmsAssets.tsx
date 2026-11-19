@@ -38,7 +38,14 @@ function countFiles(folderId: string): number {
 function AssetDetail({ asset, onAltChange, onQuickLook }: { asset: Asset; onAltChange: (alt: string) => void; onQuickLook: () => void }) {
     return (
         <aside className={styles.assetDetail} aria-label={asset.name}>
-            <AssetThumbnail type={asset.type} src={asset.src} fileType={asset.fileType} duration={asset.duration} badges={asset.badges} />
+            <AssetThumbnail
+                className={styles.assetDetailPreview}
+                type={asset.type}
+                src={asset.src}
+                fileType={asset.fileType}
+                duration={asset.duration}
+                badges={asset.badges}
+            />
             <div className={styles.detailHeading}>
                 <Typography variant="label">{asset.type}</Typography>
                 <h3 className={styles.assetDetailTitle}>{asset.name}</h3>

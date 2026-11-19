@@ -3,7 +3,7 @@
 The AI Mode puts the chat of the Dextinity AI Hub next to the admin. A switch in the header (`AiModeHeaderItem`) opens the chat as a flyout (`AiModeFlyout`), which loads the AI Hub's web component and registers two sets of tools with it:
 
 - the **MCP server** of the API (`demo/api/src/mcp`, at `/api/mcp`), which reads from the API: the page tree, pages as they were last saved, DAM files, and the block schemas,
-- the **host tools** of the admin, which act on what is open in the admin. The pages that are open offer them through AI Mode scopes (see below): the admin as a whole offers `open_admin_page`, the page tree `open_page`, and the page editor `get_page_state` and `edit_blocks` (`hostTools.ts`).
+- the **host tools** of the admin, which act on what is open in the admin. The pages that are open offer them through AI Mode toolsets (see below): the admin as a whole offers `open_admin_page`, the page tree `open_page`, and the page editor `get_page_state` and `edit_blocks` (`hostTools.ts`).
 
 The AI Mode is ported from vivid-websites. This README explains the decisions the code doesn't show. It is written for developers who maintain the AI Mode in Demo or port it to a project.
 
@@ -16,7 +16,7 @@ The AI Mode needs three settings: the script of the web component (`AI_HUB_WEB_C
 
 The user also needs the `aiHub` permission, for the switch as much as for the proxy. It is a permission of its own rather than the page tree's because the AI Hub will serve more than the editing of pages. In Demo, every user has it, as every permission other than `userPermissions`.
 
-The AI Mode is available wherever an AI Mode scope is mounted. In Demo, that is every page, because the admin as a whole has a scope. Without one, the switch is disabled and its tooltip says the AI Mode isn't available on this page. The flyout closes there and opens again on returning to a page with a scope, because whether it is open is stored separately from whether it is available.
+The AI Mode is available wherever an AI Mode toolset is mounted. In Demo, that is every page, because the admin as a whole has a toolset. Without one, the switch is disabled and its tooltip says the AI Mode isn't available on this page. The flyout closes there and opens again on returning to a page with a toolset, because whether it is open is stored separately from whether it is available.
 
 ## The chat goes through the API
 
@@ -67,7 +67,7 @@ The admin's Content Security Policy (`demo/admin/server/index.ts`) allows the ho
 
 The agent needs to see the page that is being edited, including unsaved changes, which exist only in the state of the edit page. Pushing the content with every change (`bridge.setContext`) would cost too many tokens: the block state of a page is tens of kilobytes of JSON and changes with every keystroke. Pulling it only on demand leaves the agent unaware of what is open and whether it changed. So the context is split:
 
-- **Pushed on change, debounced**: the content scope, the pathname, the AI Mode scopes with their context, which for the page editor is the page's metadata (page tree node ID, document type and ID, path, active tab, selected block route, `hasChanges`), and the selected text (see below). This keeps the agent oriented for a few hundred bytes per update.
+- **Pushed on change, debounced**: the content scope, the pathname, the AI Mode toolsets with their context, which for the page editor is the page's metadata (page tree node ID, document type and ID, path, active tab, selected block route, `hasChanges`), and the selected text (see below). This keeps the agent oriented for a few hundred bytes per update.
 - **Pulled on demand** with `get_page_state`: a summary of the page's content, stage, and SEO, computed at call time, so it is never stale.
 
 `summarizeBlockState` (`blockStateSummary.ts`) reduces the block state to what the agent can act on, because the full output of a page overflows its context:
@@ -100,15 +100,15 @@ The host tools are tools of the admin rather than of the MCP server, because the
 - `get_page_state` returns the page's metadata and the summary described above.
 - `edit_blocks` changes the content blocks, see below.
 
-### AI Mode scopes
+### AI Mode toolsets
 
-A page offers its context and tools by registering an AI Mode scope (`AiModeScopes.tsx`): an ID, a description of what the user is looking at, a small context to push, and its tools. The admin (`AdminAiModeScope`, around the routes of the master menu) and the page tree (`PageTreeAiModeScope`) register their scopes with the `AiModeScope` component, because other scopes are rendered inside them. The page editor registers its own with `useAiModeScope`. A scope rendered inside another is listed after it, so the agent reads the scopes from the outside in. React runs the effects of children first, so the order of the registrations alone would put the page editor before the page tree.
+A page offers its context and tools by registering an AI Mode toolset (`AiModeToolsets.tsx`): an ID, a description of what the user is looking at, a small context to push, and its tools. The admin (`AdminAiModeToolset`, around the routes of the master menu) and the page tree (`PageTreeAiModeToolset`) register their toolsets with the `AiModeToolset` component, because other toolsets are rendered inside them. The page editor registers its own with `useAiModeToolset`. A toolset rendered inside another is listed after it, so the agent reads the toolsets from the outside in. React runs the effects of children first, so the order of the registrations alone would put the page editor before the page tree.
 
-The chat gets the tools of the scopes that are mounted, so the agent sees only the tools of the page that is open. Each `registerHostTools` call of the bridge replaces the tools the chat had, so the flyout passes the tools of all mounted scopes whenever a scope mounts, unmounts, or changes a tool's definition. It registers them right away rather than debounced, so that the agent doesn't call a tool of a page that is gone. A page registers its scope again on every render, so that the store always has the handlers of the latest render, but only a change the agent sees notifies the flyout: the handlers are looked up when a tool is called. The scopes are kept in a store the flyout subscribes to, not in React context state, so that block edits don't re-render the flyout.
+The chat gets the tools of the toolsets that are mounted, so the agent sees only the tools of the page that is open. Each `registerHostTools` call of the bridge replaces the tools the chat had, so the flyout passes the tools of all mounted toolsets whenever a toolset mounts, unmounts, or changes a tool's definition. It registers them right away rather than debounced, so that the agent doesn't call a tool of a page that is gone. A page registers its toolset again on every render, so that the store always has the handlers of the latest render, but only a change the agent sees notifies the flyout: the handlers are looked up when a tool is called. The toolsets are kept in a store the flyout subscribes to, not in React context state, so that block edits don't re-render the flyout.
 
 A call that arrives for a tool whose page is gone gets an answer that says so, rather than an error. The chat itself refuses a tool it no longer has with `Unknown client tool`, e.g. when the user leaves the page while the chat waits for the approval of an edit.
 
-The chat gives a tool whose name another tool already has a suffix (`_2`), which no tool description mentions. The store therefore leaves out a tool whose name an outer scope already has, and logs an error. It can't check the names of the MCP server's tools, so a host tool must not take one of those either.
+The chat gives a tool whose name another tool already has a suffix (`_2`), which no tool description mentions. The store therefore leaves out a tool whose name an outer toolset already has, and logs an error. It can't check the names of the MCP server's tools, so a host tool must not take one of those either.
 
 What the flyout owns rather than the page is passed to every handler as its second argument: `edit_blocks` clears the selected text with it.
 

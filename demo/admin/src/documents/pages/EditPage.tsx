@@ -31,7 +31,7 @@ import {
     useSiteConfig,
 } from "@dextinity/cms-admin";
 import { IconButton, Stack } from "@mui/material";
-import { useAiModeScope } from "@src/aiMode/AiModeScopes";
+import { useAiModeToolset } from "@src/aiMode/AiModeToolsets";
 import type { BlocksBlockChild } from "@src/aiMode/blockProps";
 import { summarizeBlockState, summarizeSeoBlockState } from "@src/aiMode/blockStateSummary";
 import { type EditBlocks, planBlockEdits } from "@src/aiMode/editBlocks";
@@ -197,7 +197,7 @@ export const EditPage = ({ id }: Props) => {
         latestContentBlocksRef.current = document?.content.blocks;
     });
 
-    // Deliberately not memoized: useAiModeScope registers it again on every render, so the agent always reaches the
+    // Deliberately not memoized: useAiModeToolset registers it again on every render, so the agent always reaches the
     // callback of the latest one.
     const editBlocks: EditBlocks = async ({ operations }) => {
         const plannedContentBlocks = document?.content.blocks ?? [];
@@ -244,7 +244,7 @@ export const EditPage = ({ id }: Props) => {
               }
             : null;
 
-    useAiModeScope(
+    useAiModeToolset(
         aiModePageState && document
             ? {
                   id: "page",

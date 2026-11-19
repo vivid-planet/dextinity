@@ -15,8 +15,8 @@
     --dextinity-card-actions-gap: var(--dextinity-space-1-5);
     // Space around the body; rows in the body bring their own padding on top of it
     --dextinity-card-body-padding: var(--dextinity-space-2-5);
-    // Glass fill of the card
-    --dextinity-card-background: var(--dextinity-material-glass);
+    // Glass fill of the card; the strong glass keeps the light field behind it faint, so the header's line and the rows stay calm
+    --dextinity-card-background: var(--dextinity-material-glass-strong);
     // Blur of the content behind the glass
     --dextinity-card-blur: var(--dextinity-material-blur);
     // Glass edge of the card; cards rest on the page, so they cast no shadow

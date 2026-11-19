@@ -42,6 +42,16 @@ function DatePickerInForm(props: DatePickerProps) {
     );
 }
 
+function DatePickerWithEarlierDates(props: DatePickerProps) {
+    const [min, setMin] = useState(props.min);
+    return (
+        <>
+            <StatefulDatePicker {...props} min={min} />
+            <Button onClick={() => setMin("2026-10-01")}>Allow earlier dates</Button>
+        </>
+    );
+}
+
 const meta = {
     component: DatePicker,
     title: "Building blocks/Form fields/DatePicker",
@@ -96,5 +106,24 @@ export const SubmitRightAfterTypingAnErrorKeepsTheFormFromSubmitting: Story = {
         await userEvent.click(canvas.getByRole("button", { name: "Save" }));
         await expect(input).toHaveAttribute("aria-invalid", "true");
         await expect(formSubmit).not.toHaveBeenCalled();
+    },
+};
+
+/**
+ * Typed text that can't be used is read again when the rules change, e.g. `min` of a linked picker, and used once they allow it.
+ */
+export const RejectedDayAllowedOnceTheRulesChange: Story = {
+    args: { min: "2026-11-05" },
+    render: (args) => <DatePickerWithEarlierDates {...args} />,
+    play: async ({ args, canvas }) => {
+        const input = canvas.getByRole("textbox", { name: "Published on" });
+        await userEvent.clear(input);
+        await userEvent.type(input, "01/11/2026");
+        await userEvent.tab();
+        await expect(input).toHaveAccessibleDescription("Choose 05/11/2026 or later.");
+
+        await userEvent.click(canvas.getByRole("button", { name: "Allow earlier dates" }));
+        await waitFor(() => expect(args.onChange).toHaveBeenCalledWith("2026-11-01"));
+        await expect(input).not.toHaveAttribute("aria-invalid");
     },
 };

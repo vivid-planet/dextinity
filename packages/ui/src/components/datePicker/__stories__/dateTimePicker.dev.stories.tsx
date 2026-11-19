@@ -181,3 +181,26 @@ export const KeptTimeAllowedOnceTheTimesLoad: Story = {
         await expect(time).not.toHaveAttribute("aria-invalid");
     },
 };
+
+/**
+ * A typed time that the loaded times allow replaces the kept time of a day that waits for an allowed time.
+ */
+export const RejectedTimeUsedOnceTheTimesLoad: Story = {
+    args: { value: new Date(2026, 10, 6, 8, 30).toISOString() },
+    render: (args) => <DateTimePickerWithLoadedTimes {...args} />,
+    play: async ({ args, canvas }) => {
+        const time = canvas.getByRole("textbox", { name: "Publish at Time" });
+        await userEvent.click(canvas.getByRole("button", { name: "Choose date" }));
+        const grid = await screen.findByRole("grid", { name: "November 2026" });
+        await userEvent.click(within(grid).getByRole("button", { name: "Samstag, 7. November 2026" }));
+        await userEvent.clear(time);
+        await userEvent.type(time, "9:00");
+        await userEvent.tab();
+        await expect(time).toHaveAccessibleDescription("09:00 can't be chosen.");
+
+        await userEvent.click(canvas.getByRole("button", { name: "Load times" }));
+        await waitFor(() => expect(args.onChange).toHaveBeenCalledWith(new Date(2026, 10, 7, 9, 0).toISOString()));
+        await expect(args.onChange).toHaveBeenCalledTimes(1);
+        await expect(time).toHaveValue("09:00");
+    },
+};

@@ -8,7 +8,7 @@ import { CalendarPopover } from "./CalendarPopover";
 import styles from "./DatePicker.module.scss";
 import { formatDate, isIsoDate, localeWeekStart } from "./dateValues";
 import { type DateInputErrorLabels, defaultDateInputErrorLabels, readTypedDay } from "./typedDay";
-import { useTextDraft } from "./useTextDraft";
+import { useRejectedTextReread, useTextDraft } from "./useTextDraft";
 
 /**
  * Texts of the date picker, for translation.
@@ -82,7 +82,8 @@ export interface DatePickerProps extends DatePickerCalendarProps, PureControlPro
 
 /**
  * A day, typed in the locale's format or chosen in a calendar. Typed text is read on blur or Enter; text that is no valid day, or a day
- * that can't be chosen, stays in the field with an error and leaves the value unchanged until it is corrected.
+ * that can't be chosen, stays in the field with an error and leaves the value unchanged until it is corrected, or until `min`, `max`, or
+ * `isDateDisabled` change to allow it.
  */
 export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(function DatePicker(
     {
@@ -124,11 +125,9 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(function
     const date = isIsoDate(value) ? value : null;
     const draft = useTextDraft(date == null ? "" : formatDate(date, locale), (text) => {
         const typed = readTypedDay(text, { locale, min, max, isDateDisabled, labels });
-        if (typed.error != null) {
-            return typed.error;
-        }
-        onChange(typed.day);
+        return typed.error != null ? { error: typed.error } : { apply: () => onChange(typed.day) };
     });
+    useRejectedTextReread([draft]);
     const { disabled, readOnly } = useControlState(disabledProp, readOnlyProp);
     const editable = !disabled && !readOnly;
 

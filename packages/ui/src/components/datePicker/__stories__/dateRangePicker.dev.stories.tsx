@@ -3,6 +3,7 @@ import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor, within } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
+import { Button } from "../../button/Button";
 import { Field } from "../../field/Field";
 import type { DateRangePosition } from "../dateRange";
 import { DateRangePicker, type DateRangePickerProps } from "../DateRangePicker";
@@ -23,6 +24,16 @@ function StatefulDateRangePicker(props: DateRangePickerProps) {
                 />
             </Field>
         </div>
+    );
+}
+
+function DateRangePickerWithEarlierDates(props: DateRangePickerProps) {
+    const [min, setMin] = useState(props.min);
+    return (
+        <>
+            <StatefulDateRangePicker {...props} min={min} />
+            <Button onClick={() => setMin("2026-10-01")}>Allow earlier dates</Button>
+        </>
     );
 }
 
@@ -123,5 +134,22 @@ export const OnlyAnEndOpensOnItsMonth: Story = {
         await screen.findByRole("grid", { name: "March 2028" });
         const nextMonthGrid = screen.getByRole("grid", { name: "April 2028" });
         await waitFor(() => expect(within(nextMonthGrid).getByRole("button", { name: "Monday, 3 April 2028" })).toHaveFocus());
+    },
+};
+
+/**
+ * Typed start and end that both can't be used are read again together when the rules change, so the range changes once.
+ */
+export const RejectedRangeAllowedOnceTheRulesChange: Story = {
+    args: { value: { start: null, end: null }, min: "2026-11-10" },
+    render: (args) => <DateRangePickerWithEarlierDates {...args} />,
+    play: async ({ args, canvas }) => {
+        await userEvent.type(canvas.getByRole("textbox", { name: "Campaign period Start" }), "01/11/2026");
+        await userEvent.type(canvas.getByRole("textbox", { name: "Campaign period End" }), "05/11/2026");
+        await userEvent.tab();
+
+        await userEvent.click(canvas.getByRole("button", { name: "Allow earlier dates" }));
+        await waitFor(() => expect(args.onChange).toHaveBeenCalledWith({ start: "2026-11-01", end: "2026-11-05" }));
+        await expect(args.onChange).toHaveBeenCalledOnce();
     },
 };

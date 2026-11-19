@@ -10,7 +10,7 @@ import { type DateRangePosition, disabledDayBetween, disabledRangeDay, disabledR
 import styles from "./DateRangePicker.module.scss";
 import { formatDate, isIsoDate, type IsoDate, isWithin, localeWeekStart } from "./dateValues";
 import { readTypedDay } from "./typedDay";
-import { useTextDraft } from "./useTextDraft";
+import { type TextReading, useRejectedTextReread, useTextDraft } from "./useTextDraft";
 
 /**
  * A range of days as `YYYY-MM-DD`, both ends inclusive. An end is `null` while it isn't set.
@@ -93,7 +93,7 @@ function toRange(start: IsoDate | null, end: IsoDate | null): DateRange | null {
  * A range of days, typed in the locale's format or chosen in a calendar: the first click chooses the start, the second the end; with
  * only a start that can be chosen, the first click chooses the end. Typed text is read on blur or Enter; text that is no valid day, a
  * day that can't be chosen, or an end before the start stays in its input with an error and leaves the value unchanged until it is
- * corrected.
+ * corrected, or until the other end or the rules change to allow it.
  */
 export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps>(function DateRangePicker(
     {
@@ -157,10 +157,14 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
         return day.position === "start" ? labels.dateDisabledAsStart(formattedDay) : labels.dateDisabledAsEnd(formattedDay);
     };
 
-    const readDay = (text: string, position: "start" | "end", otherDraft: { text: string; error: string | undefined; reset: () => void }) => {
+    const readDay = (
+        text: string,
+        position: "start" | "end",
+        otherDraft: { text: string; error: string | undefined; reset: () => void },
+    ): TextReading => {
         const typed = readTypedText(text);
         if (typed.error != null) {
-            return typed.error;
+            return { error: typed.error };
         }
         const otherTypedDay = otherDraft.error == null ? undefined : readTypedText(otherDraft.text).day;
         const otherDay = otherTypedDay === undefined ? (position === "start" ? end : start) : otherTypedDay;
@@ -171,18 +175,23 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
             isDateDisabled && ((date, dayPosition) => (dayPosition === "between" || typedDays.includes(date)) && isDateDisabled(date, dayPosition)),
         );
         if (disabledDay != null) {
-            return disabledDayMessage(disabledDay, position);
+            return { error: disabledDayMessage(disabledDay, position) };
         }
         if (nextRange.start != null && nextRange.end != null && nextRange.end < nextRange.start) {
-            return labels.endBeforeStart;
+            return { error: labels.endBeforeStart };
         }
-        if (otherTypedDay !== undefined) {
-            otherDraft.reset();
-        }
-        onChange(nextRange.start == null && nextRange.end == null ? null : nextRange);
+        return {
+            apply: () => {
+                if (otherTypedDay !== undefined) {
+                    otherDraft.reset();
+                }
+                onChange(nextRange.start == null && nextRange.end == null ? null : nextRange);
+            },
+        };
     };
     const startDraft = useTextDraft(start == null ? "" : formatDate(start, locale), (text) => readDay(text, "start", endDraft));
     const endDraft = useTextDraft(end == null ? "" : formatDate(end, locale), (text) => readDay(text, "end", startDraft));
+    useRejectedTextReread([startDraft, endDraft]);
     const canBeChosenAsStart = (day: IsoDate) => isWithin(day, min, max) && disabledRangeEnd({ start: day, end: null }, isDateDisabled) == null;
     const startAwaitingEnd = pendingStart ?? (end == null && start != null && canBeChosenAsStart(start) ? start : null);
     const disabledDayBetweenStartAwaitingEndAnd =

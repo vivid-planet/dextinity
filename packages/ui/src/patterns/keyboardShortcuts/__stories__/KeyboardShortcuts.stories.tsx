@@ -4,9 +4,9 @@ import { expect, userEvent, waitFor, within } from "storybook/test";
 
 import { Button } from "../../../components/button/Button";
 import { Dialog } from "../../../components/dialog/Dialog";
-import { KeyboardShortcut } from "../../../components/keyboardShortcut/KeyboardShortcut";
 import { useKeyboardShortcut } from "../../../components/keyboardShortcut/useKeyboardShortcut";
 import { KeyboardShortcutList, type KeyboardShortcutListItem } from "../../../components/keyboardShortcutList/KeyboardShortcutList";
+import { Tooltip } from "../../../components/tooltip/Tooltip";
 import { PatternKeyboardShortcuts, PatternPage, PatternRules, PatternSection } from "../../../storybook/patterns/PatternPage";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import styles from "./KeyboardShortcuts.stories.module.scss";
@@ -73,11 +73,11 @@ function ShortcutOverview() {
         <PatternPage>
             <PatternSection title="Example" description="Live: press ? anywhere outside a text field to see every shortcut.">
                 <div className={styles.hint}>
-                    <KeyboardShortcut shortcut="?" />
-                    <span>Show keyboard shortcuts</span>
-                    <Button variant="outlined" color="secondary" size="small" onClick={() => setOpen(true)}>
-                        Show shortcuts
-                    </Button>
+                    <Tooltip content="Show keyboard shortcuts" keyboardShortcut="?">
+                        <Button variant="outlined" color="secondary" size="small" aria-keyshortcuts="?" onClick={() => setOpen(true)}>
+                            Show shortcuts
+                        </Button>
+                    </Tooltip>
                 </div>
             </PatternSection>
             <Dialog open={open} onOpenChange={setOpen} title="Keyboard shortcuts" size="large">

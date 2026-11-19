@@ -1,6 +1,6 @@
 import type { ExternalLinkBlockData, MailButtonBlockData } from "@src/blocks.generated";
 
-export function createMailLink(targetUrl = "https://www.dextinity.com"): ExternalLinkBlockData {
+function createMailLink(targetUrl = "https://www.dextinity.com"): ExternalLinkBlockData {
     return { targetUrl, openInNewWindow: false, noFollow: false };
 }
 

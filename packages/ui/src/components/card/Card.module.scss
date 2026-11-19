@@ -20,6 +20,13 @@
     align-items: center;
     gap: var(--dextinity-card-header-gap);
     padding: var(--dextinity-card-header-padding);
+    border-start-start-radius: inherit;
+    border-start-end-radius: inherit;
+    background: var(--dextinity-card-header-background);
+    color: var(--dextinity-card-header-foreground);
+
+    @include forced-colors.surface;
+    @include forced-colors.separator(block-end);
 }
 
 .orb {
@@ -56,6 +63,11 @@
     align-items: center;
     margin-inline-start: auto;
     padding-inline-end: var(--dextinity-space-1-5);
+
+    --dextinity-link-secondary-foreground: var(--dextinity-card-header-foreground);
+    --dextinity-link-secondary-foreground-hover: var(--dextinity-card-header-foreground);
+    --dextinity-link-accent-foreground: var(--dextinity-card-header-foreground);
+    --dextinity-link-accent-foreground-hover: var(--dextinity-card-header-foreground);
 }
 
 .body {

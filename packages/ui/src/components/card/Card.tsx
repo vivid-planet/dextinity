@@ -53,7 +53,7 @@ export interface CardProps extends Omit<HTMLAttributes<HTMLElement>, "className"
 }
 
 /**
- * A card on an overview: an icon in an orb, a title, a link to the full view, and a short excerpt of the content.
+ * A card on an overview: a header bar in the brand gradient with an icon in an orb, a title, and a link to the full view, then a short excerpt of the content.
  *
  * `children`: The content, e.g. rows that bring their own padding.
  */

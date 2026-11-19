@@ -312,6 +312,7 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
                         aria-labelledby={clsx(nameId, timeLabelId)}
                         aria-describedby={control["aria-describedby"]}
                         aria-invalid={control["aria-invalid"]}
+                        aria-required={control["aria-required"]}
                         onChange={timeDraft.onChange}
                         onBlur={timeDraft.commit}
                         onKeyDown={onKeyDown(timeDraft, setTimeListOpen)}

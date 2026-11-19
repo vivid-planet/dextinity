@@ -94,20 +94,7 @@ export const isBlockEditChange = (result: BlockEditResult): boolean => {
     }
 };
 
-type EditBlocksRequest = {
-    /** Applied in the order given; see `planBlockEdits`. */
-    operations: BlockEditOperation[];
-};
-
-type EditBlocksResult = {
-    results: BlockEditResult[];
-};
-
-export type EditBlocks = (request: EditBlocksRequest) => Promise<EditBlocksResult>;
-
 const blockEditOperations = ["insert", "update", "remove", "move", "show", "hide"] as const;
-
-const blockKeyPurpose = "the key of the block to act on, as get_page_state reports it";
 
 const isBlockEditOperation = (value: unknown): value is BlockEditOperation["operation"] =>
     blockEditOperations.some((candidate) => candidate === value);
@@ -146,7 +133,9 @@ const requireField = ({
  * whether the props fit are questions for the page's actual content, answered while the batch is
  * planned.
  */
-export function asBlockEditOperations(value: unknown): BlockEditOperation[] {
+export function asBlockEditOperations(value: unknown, { stateToolName }: { stateToolName: string }): BlockEditOperation[] {
+    const blockKeyPurpose = `the key of the block to act on, as ${stateToolName} reports it`;
+
     if (!Array.isArray(value)) {
         throw new Error(`"operations" must be an array of the changes to apply, but was ${describeType(value)}.`);
     }

@@ -10,10 +10,8 @@ export {
     useAiModeToolsetsStore,
     useHasAiModeToolsets,
 } from "./aiMode/AiModeToolsets";
-export { blockEditOperationsSchema, describeBlockEditBatch, describeBlockEditResults, describeBlockSchemaLookup } from "./aiMode/blockEditTool";
-export type { BlocksBlockChild } from "./aiMode/blockProps";
+export { createEditBlocksTool, type EditableBlocksBlock } from "./aiMode/blockEditTool";
 export { summarizeBlockState, summarizeSeoBlockState } from "./aiMode/blockStateSummary";
-export { asBlockEditOperations, type EditBlocks, planBlockEdits } from "./aiMode/editBlocks";
 export type { AiModeFormField } from "./aiMode/formTools";
 export { useAiModeDataGridToolset } from "./aiMode/useAiModeDataGridToolset";
 export { AnchorBlock } from "./blocks/AnchorBlock";

@@ -107,3 +107,26 @@ Don't use it for a grid that loads its rows without the grid's filter, sorting, 
 - A field the form doesn't list is invisible to the agent. Leave out what the agent can't fill in usefully, such as file uploads.
 
 The redirects of `@dextinity/cms-admin` offer their grid and form this way. The DAM, whose grid shows folders and files and has a search of its own, offers tools of its own to read what the grid shows, search and page it, and open folders and files; the form of a file uses `AiModeFormToolset`.
+
+## Blocks
+
+`createEditBlocksTool` creates a tool that inserts, updates, removes, moves, hides, and shows the top-level blocks of a blocks block outside a form, e.g. the content of a page. Add it to the tools of the toolset, next to a tool that reports the keys of the blocks, e.g. with `summarizeBlockState`:
+
+```tsx
+createEditBlocksTool({
+    name: "edit_footer_blocks",
+    description: "Change the content of the footer of the current content scope: insert, update, remove, move, hide, and show its blocks.",
+    contentName: "the footer's content",
+    stateToolName: "get_footer_state",
+    supportedBlocks: footerContentBlocks,
+    schemaBlockName: "FooterContent",
+    blockContext,
+    getBlocks: () => latestStateRef.current.blocks,
+    updateBlocks: (update) => setState((previous) => ({ ...previous, blocks: update(previous.blocks) })),
+});
+```
+
+- A batch of operations applies as a whole or not at all. It is rejected when `getBlocks` returns other blocks after the batch was planned, because the user changed them meanwhile, so read the latest blocks there rather than those of a render.
+- `updateBlocks` applies the batch in one update, so that the content is marked as changed once.
+- `insertableBlocks` narrows the blocks an insertion may add, e.g. to those `isBlockSupported` allows in the content scope, and `additionalItemFields` are the blocks block's, whose defaults an inserted block starts with.
+- `schemaNameExamples` names block types whose name in block-meta differs from their type, e.g. `'image' is the 'DamImage' block`, and `restrictions` what the tool can't change.

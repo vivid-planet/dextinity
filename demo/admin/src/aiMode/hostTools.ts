@@ -1,12 +1,4 @@
-import {
-    type AiModeTool,
-    asBlockEditOperations,
-    blockEditOperationsSchema,
-    describeBlockEditBatch,
-    describeBlockEditResults,
-    describeBlockSchemaLookup,
-    type EditBlocks,
-} from "@dextinity/cms-admin";
+import { type AiModeTool, createEditBlocksTool, type EditableBlocksBlock } from "@dextinity/cms-admin";
 import { categoryToUrlParam, pageTreeCategories } from "@src/pageTree/pageTreeCategories";
 
 import type { AdminPage } from "./adminPages";
@@ -112,11 +104,12 @@ export type AiModePageState = {
 export const createPageTools = ({
     pageState,
     getDocumentSummary,
-    editBlocks,
+    contentBlocks,
 }: {
     pageState: AiModePageState;
     getDocumentSummary: () => Record<string, unknown>;
-    editBlocks: EditBlocks;
+    /** The blocks of the page's `PageContent` block. */
+    contentBlocks: Omit<EditableBlocksBlock, "schemaBlockName">;
 }): AiModeTool[] => [
     {
         name: "get_page_state",
@@ -127,40 +120,19 @@ export const createPageTools = ({
         readOnlyHint: true,
         handler: () => ({ ...pageState, document: getDocumentSummary() }),
     },
-    {
+    createEditBlocksTool({
+        ...contentBlocks,
         name: "edit_blocks",
         description:
-            `Change the content of the page currently open in the editor: insert, update, remove, move, hide, and show its content blocks. ` +
-            `Use this tool whenever the user asks for anything in the page's content to be written, changed, or rearranged — e.g. to write or rewrite a text, shorten, translate, or correct it, change a headline, button, link, or image, add or remove a section, or reorder blocks. ` +
-            `Make the change with this tool rather than writing the new text into the chat or telling the user how to make it by hand. The chat asks the user to approve every call before it runs, so call the tool instead of asking for permission in the chat first. ` +
-            `The changes are applied as unsaved changes, exactly as if the user had made them by hand, so the user sees them in the editor, and saves or discards them. ` +
-            `A request about 'this text' is about the text in the context's 'selection': change only that part of the block's text and keep the rest. ` +
-            `Typical flow: get_page_state for the keys and types of the blocks, get_block_schema for the fields of the blocks to change (see below), then one edit_blocks call; afterwards, tell the user briefly what was changed and that the page still has to be saved. ${describeBlockEditBatch(
-                { stateToolName: "get_page_state" },
-            )}The page's content is the 'PageContent' block. ${describeBlockSchemaLookup({
-                schemaRootBlockName: "PageContent",
-                stateToolName: "get_page_state",
-            })}: 'media' is the 'StandaloneMedia' block rather than the 'Media' block that also exists, 'richtext' is the 'StandaloneRichText' block rather than the 'RichText' block, 'heading' is the 'StandaloneHeading' block rather than the 'Heading' block, and 'image' is the 'DamImage' block. ` +
-            `Only the page's top-level content blocks can be edited, not the stage or the SEO settings; passing the key of a nested block says so.`,
-        inputSchema: {
-            type: "object",
-            properties: {
-                operations: blockEditOperationsSchema,
-            },
-            required: ["operations"],
-        },
-        // The chat runs a tool without asking only if it is read-only, so the user approves every edit.
-        readOnlyHint: false,
-        handler: async (args, { clearTextSelection }) => {
-            const { results } = await editBlocks({ operations: asBlockEditOperations(args.operations) });
-            const { changes, ...result } = describeBlockEditResults({ results, unsavedIn: "the page's content" });
-
-            if (changes > 0) {
-                // The selection is the text before the change. The user selects again to ask about the new text.
-                clearTextSelection();
-            }
-
-            return result;
-        },
-    },
+            "Change the content of the page currently open in the editor: insert, update, remove, move, hide, and show its content blocks. " +
+            "Use this tool whenever the user asks for anything in the page's content to be written, changed, or rearranged — e.g. to write or rewrite a text, shorten, translate, or correct it, change a headline, button, link, or image, add or remove a section, or reorder blocks.",
+        contentName: "the page's content",
+        stateToolName: "get_page_state",
+        // PageContentBlock's name in block-meta, where the agent resolves the block schemas.
+        schemaBlockName: "PageContent",
+        schemaNameExamples:
+            "'media' is the 'StandaloneMedia' block rather than the 'Media' block that also exists, 'richtext' is the 'StandaloneRichText' block rather than the 'RichText' block, 'heading' is the 'StandaloneHeading' block rather than the 'Heading' block, and 'image' is the 'DamImage' block",
+        restrictions:
+            "Only the page's top-level content blocks can be edited, not the stage or the SEO settings; passing the key of a nested block says so.",
+    }),
 ];

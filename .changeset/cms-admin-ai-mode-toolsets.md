@@ -40,4 +40,4 @@ useAiModeDataGridToolset({
 />;
 ```
 
-The planner of block edits (`planBlockEdits`), the summary of a block's state (`summarizeBlockState`), and the parts of the tool descriptions for block edits are exported too, for a page that offers its own block editing tool.
+A page that edits a blocks block outside a form, such as the content of a page, offers the same block editing with `createEditBlocksTool`, and reports the blocks with `summarizeBlockState`.

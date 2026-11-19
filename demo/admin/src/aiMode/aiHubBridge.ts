@@ -2,7 +2,7 @@
 
 type McpServer = { url: string; headers?: Record<string, string> };
 
-export type HostTool = {
+type HostTool = {
     name: string;
     description: string;
     inputSchema: Record<string, unknown>;

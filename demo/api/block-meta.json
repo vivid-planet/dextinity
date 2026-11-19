@@ -2833,7 +2833,7 @@
                             "name": "props",
                             "kind": "OneOfBlocks",
                             "blocks": {
-                                "headline": "Heading",
+                                "heading": "Heading",
                                 "richText": "RichText",
                                 "image": "DamImage",
                                 "textImage": "TextImage"
@@ -2870,7 +2870,7 @@
                             "name": "props",
                             "kind": "OneOfBlocks",
                             "blocks": {
-                                "headline": "Heading",
+                                "heading": "Heading",
                                 "richText": "RichText",
                                 "image": "DamImage",
                                 "textImage": "TextImage"

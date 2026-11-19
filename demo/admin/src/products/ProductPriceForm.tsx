@@ -1,6 +1,6 @@
 import { useApolloClient, useQuery } from "@apollo/client/react";
 import { Field, filterByFragment, FinalForm, FinalFormInput, type FinalFormSubmitEvent, useFormApiRef } from "@dextinity/admin";
-import { AiModeFormScope, queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@dextinity/cms-admin";
+import { AiModeFormToolset, queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@dextinity/cms-admin";
 import { CircularProgress } from "@mui/material";
 import { deepEqual } from "fast-equals";
 import type { FormApi } from "final-form";
@@ -88,7 +88,7 @@ export function ProductPriceForm({ id }: FormProps) {
             {() => (
                 <>
                     {saveConflict.dialogs}
-                    <AiModeFormScope
+                    <AiModeFormToolset
                         entityName="product_price"
                         entityLabel="product price"
                         id={id}

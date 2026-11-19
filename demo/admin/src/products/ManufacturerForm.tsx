@@ -13,7 +13,7 @@ import {
     useFormApiRef,
     useStackSwitchApi,
 } from "@dextinity/admin";
-import { type AiModeFormField, AiModeFormScope, queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@dextinity/cms-admin";
+import { type AiModeFormField, AiModeFormToolset, queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@dextinity/cms-admin";
 import { Collapse, Divider } from "@mui/material";
 import { deepEqual } from "fast-equals";
 import type { FormApi } from "final-form";
@@ -239,7 +239,7 @@ export function ManufacturerForm({ id }: FormProps) {
         >
             <>
                 {saveConflict.dialogs}
-                <AiModeFormScope
+                <AiModeFormToolset
                     entityName="manufacturer"
                     entityLabel="manufacturer"
                     id={id}

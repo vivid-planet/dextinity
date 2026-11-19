@@ -11,7 +11,7 @@ import {
     type GridSortModel,
 } from "@mui/x-data-grid-pro";
 
-import type { AiModeTool } from "./AiModeScopes";
+import type { AiModeTool } from "./AiModeToolsets";
 
 /** The controlled state of a grid with server-side filtering, sorting, and pagination, as `useDataGridRemote` returns it. */
 export type AiModeDataGridState = {

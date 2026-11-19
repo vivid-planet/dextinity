@@ -18,7 +18,7 @@ import {
     useFormApiRef,
 } from "@dextinity/admin";
 import {
-    AiModeFormScope,
+    AiModeFormToolset,
     type BlockState,
     createFinalFormBlock,
     DamImageBlock,
@@ -298,7 +298,7 @@ export function ProductForm({ id, width, onCreate }: FormProps) {
             {({ values, form }) => (
                 <>
                     {saveConflict.dialogs}
-                    <AiModeFormScope
+                    <AiModeFormToolset
                         entityName="product"
                         entityLabel="product"
                         id={id}

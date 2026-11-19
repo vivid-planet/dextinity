@@ -4,14 +4,14 @@ title: AI Mode (experimental)
 
 The AI Mode puts the chat of the Dextinity AI Hub next to the pages of the admin. The agent in the chat knows what the user is looking at, and it calls tools to read and change it: it fills in a form, edits the blocks of a page, or filters a grid. It changes only what the user sees, as unsaved changes the user saves, so the API checks the permissions as it does without the AI Mode.
 
-`@dextinity/cms-admin` contains what a page needs to offer the agent its context and tools. The chat itself, the AI Hub proxy in the API, and the MCP server are set up by the project; the Demo shows how, see [its README](https://github.com/vivid-planet/dextinity/blob/main/demo/admin/src/aiMode/README.md). Without the chat, a page's AI Mode scope does nothing, so a project without the AI Mode needs no changes.
+`@dextinity/cms-admin` contains what a page needs to offer the agent its context and tools. The chat itself, the AI Hub proxy in the API, and the MCP server are set up by the project; the Demo shows how, see [its README](https://github.com/vivid-planet/dextinity/blob/main/demo/admin/src/aiMode/README.md). Without the chat, a page's AI Mode toolset does nothing, so a project without the AI Mode needs no changes.
 
-## AI Mode scopes
+## AI Mode toolsets
 
-A page offers its context and tools by registering an AI Mode scope while it is mounted. A scope has an ID, a description of what the user is looking at, a small context, and its tools:
+A page offers its context and tools by registering an AI Mode toolset while it is mounted. A toolset has an ID, a description of what the user is looking at, a small context, and its tools:
 
 ```tsx
-useAiModeScope({
+useAiModeToolset({
     id: "footer",
     description: "The editor of the footer of the current content scope.",
     context: { hasChanges },
@@ -28,22 +28,22 @@ useAiModeScope({
 ```
 
 - The context is sent to the agent whenever it changes, so keep it small. Return larger state from a tool, which the agent calls when it needs it.
-- The tools are available to the agent only while the scope is mounted. A tool's name must be unique among the mounted scopes: the AI Mode leaves out a tool whose name an outer scope already has.
+- The tools are available to the agent only while the toolset is mounted. A tool's name must be unique among the mounted toolsets: the AI Mode leaves out a tool whose name an outer toolset already has.
 - The chat asks the user to approve every call of a tool that isn't read-only (`readOnlyHint: true`). The tool description should tell the agent so, so that it calls the tool instead of asking for permission in the chat first. Mark a tool that only navigates or changes what a page shows as read-only too: it changes no data, and an approval for every step slows the agent down.
-- The scope is registered again on every render, so that the handlers are always those of the latest render. Only a change of the description, the context, or the tools' definitions reaches the agent, so the scope needn't be memoized.
+- The toolset is registered again on every render, so that the handlers are always those of the latest render. Only a change of the description, the context, or the tools' definitions reaches the agent, so the toolset needn't be memoized.
 
-Use the `AiModeScope` component instead of the hook for a scope that other scopes are rendered in, e.g. a page that opens its editor in a stack. The agent then gets the inner scopes after it.
+Use the `AiModeToolset` component instead of the hook for a toolset that other toolsets are rendered in, e.g. a page that opens its editor in a stack. The agent then gets the inner toolsets after it.
 
 ## Grids
 
-`useAiModeDataGridScope` gives a grid with server-side filtering, sorting, and pagination tools to read its rows, change its search, filters, sorting, and page, and open a row. Call it in the component that renders the grid, with the props of `useDataGridRemote` and the result of the grid's query:
+`useAiModeDataGridToolset` gives a grid with server-side filtering, sorting, and pagination tools to read its rows, change its search, filters, sorting, and page, and open a row. Call it in the component that renders the grid, with the props of `useDataGridRemote` and the result of the grid's query:
 
 ```tsx
 const dataGridProps = { ...useDataGridRemote(), ...usePersistentColumnState("NewsGrid") };
 const { data, loading } = useQuery(newsQuery, { variables });
 const stackSwitchApi = useStackSwitchApi();
 
-useAiModeDataGridScope({
+useAiModeDataGridToolset({
     entityName: "news",
     entityLabel: "news articles",
     columns,
@@ -61,13 +61,13 @@ Don't use it for a grid that loads its rows without the grid's filter, sorting, 
 
 ## Forms
 
-`AiModeFormScope`, rendered inside a `FinalForm`, gives the form tools to read its fields and fill them in. It takes the fields the agent may read and change, with their labels:
+`AiModeFormToolset`, rendered inside a `FinalForm`, gives the form tools to read its fields and fill them in. It takes the fields the agent may read and change, with their labels:
 
 ```tsx
 <FinalForm<FormValues> apiRef={formApiRef} onSubmit={handleSubmit} mode={mode} initialValues={initialValues}>
     {() => (
         <>
-            <AiModeFormScope
+            <AiModeFormToolset
                 entityName="news"
                 entityLabel="news article"
                 id={id}

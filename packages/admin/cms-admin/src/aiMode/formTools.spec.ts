@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 import type { BlockContext } from "../blocks/context/BlockContext";
 import type { BlockInterface } from "../blocks/types";
 import { DamImageBlock } from "../dam/blocks/DamImageBlock";
-import type { AiModeTool } from "./AiModeScopes";
+import type { AiModeTool } from "./AiModeToolsets";
 import type { BlocksBlockChild } from "./blockProps";
 import { type AiModeFormField, createFormTools } from "./formTools";
 

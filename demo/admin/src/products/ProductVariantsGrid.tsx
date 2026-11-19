@@ -16,7 +16,7 @@ import {
     useStackSwitchApi,
 } from "@dextinity/admin";
 import { Add as AddIcon, Edit } from "@dextinity/admin-icons";
-import { useAiModeDataGridScope } from "@dextinity/cms-admin";
+import { useAiModeDataGridToolset } from "@dextinity/cms-admin";
 import { IconButton } from "@mui/material";
 import { DataGridPro } from "@mui/x-data-grid-pro";
 import { FormattedMessage } from "react-intl";
@@ -114,7 +114,7 @@ export function ProductVariantsGrid({ productId }: { productId: string }) {
         notifyOnNetworkStatusChange: false,
     });
     const stackSwitchApi = useStackSwitchApi();
-    useAiModeDataGridScope({
+    useAiModeDataGridToolset({
         entityName: "product_variant",
         entityLabel: "variants of the product",
         columns,

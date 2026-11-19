@@ -17,7 +17,7 @@ import {
     useStackSwitchApi,
 } from "@dextinity/admin";
 import { Add as AddIcon, Edit as EditIcon } from "@dextinity/admin-icons";
-import { useAiModeDataGridScope } from "@dextinity/cms-admin";
+import { useAiModeDataGridToolset } from "@dextinity/cms-admin";
 import { IconButton } from "@mui/material";
 import { DataGridPro, type GridSlotsComponent } from "@mui/x-data-grid-pro";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -117,7 +117,7 @@ export function ProductTagsGrid() {
         notifyOnNetworkStatusChange: false,
     });
     const stackSwitchApi = useStackSwitchApi();
-    useAiModeDataGridScope({
+    useAiModeDataGridToolset({
         entityName: "product_tag",
         entityLabel: "product tags",
         columns,

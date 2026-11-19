@@ -19,7 +19,7 @@ import {
     useStackSwitchApi,
 } from "@dextinity/admin";
 import { Add as AddIcon, Edit, Info } from "@dextinity/admin-icons";
-import { useAiModeDataGridScope } from "@dextinity/cms-admin";
+import { useAiModeDataGridToolset } from "@dextinity/cms-admin";
 import { IconButton } from "@mui/material";
 import { DataGridPro, GridColumnHeaderTitle } from "@mui/x-data-grid-pro";
 import type {
@@ -152,7 +152,7 @@ export function ManufacturersGrid() {
         notifyOnNetworkStatusChange: false,
     });
     const stackSwitchApi = useStackSwitchApi();
-    useAiModeDataGridScope({
+    useAiModeDataGridToolset({
         entityName: "manufacturer",
         entityLabel: "manufacturers",
         columns,

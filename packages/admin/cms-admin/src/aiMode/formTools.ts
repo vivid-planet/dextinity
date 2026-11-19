@@ -2,7 +2,7 @@ import { type FormApi, getIn, setIn } from "final-form";
 
 import type { BlockContext } from "../blocks/context/BlockContext";
 import type { BlockInterface } from "../blocks/types";
-import type { AiModeTool } from "./AiModeScopes";
+import type { AiModeTool } from "./AiModeToolsets";
 import { blockEditOperationsSchema, describeBlockEditBatch, describeBlockEditResults, describeBlockSchemaLookup } from "./blockEditTool";
 import { type BlocksBlockChild, mergeBlockProps, toBlockState } from "./blockProps";
 import { summarizeBlockState } from "./blockStateSummary";

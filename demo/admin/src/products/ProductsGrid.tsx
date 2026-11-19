@@ -28,7 +28,7 @@ import {
     useStackSwitchApi,
 } from "@dextinity/admin";
 import { Add as AddIcon, Disabled, Edit, Education as EducationIcon, Excel, Online } from "@dextinity/admin-icons";
-import { useAiModeDataGridScope } from "@dextinity/cms-admin";
+import { useAiModeDataGridToolset } from "@dextinity/cms-admin";
 import { CircularProgress, IconButton, useTheme } from "@mui/material";
 import {
     DataGridPro,
@@ -352,7 +352,7 @@ export function ProductsGrid() {
         notifyOnNetworkStatusChange: false,
     });
     const stackSwitchApi = useStackSwitchApi();
-    useAiModeDataGridScope({
+    useAiModeDataGridToolset({
         entityName: "product",
         entityLabel: "products",
         columns,

@@ -13,8 +13,8 @@
     --dextinity-card-background: var(--dextinity-material-glass);
     // Blur of the content behind the glass
     --dextinity-card-blur: var(--dextinity-material-blur);
-    // Edge highlight and drop shadow of the card
-    --dextinity-card-shadow: var(--dextinity-material-edge-shadow), var(--dextinity-shadow-2);
+    // Glass edge of the card; cards rest on the page, so they cast no shadow
+    --dextinity-card-shadow: var(--dextinity-material-edge-shadow);
 
     // Size of the round icon badge at the start of the header
     --dextinity-card-orb-size: 38px;

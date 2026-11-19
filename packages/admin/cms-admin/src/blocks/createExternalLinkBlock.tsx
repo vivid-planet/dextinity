@@ -66,7 +66,7 @@ export function createExternalLinkBlock<const Options extends ExternalLinkBlockF
         displayName: <FormattedMessage id="dextinity.blocks.externalLink" defaultMessage="External Link" />,
 
         defaultValues: () => ({
-            targetUrl: undefined,
+            targetUrl: null,
             ...(openInNewWindow ? { openInNewWindow: false } : {}),
             ...(noFollow ? { noFollow: false } : {}),
         }),

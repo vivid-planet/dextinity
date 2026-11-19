@@ -287,6 +287,22 @@ The vendor migrations belong to the data, so they are inherited along with it: t
 Its own migrations start at 1, whatever the extended block's vendor chain is counting at.
 The data and input classes have to be exported by the library for this, which is why `VideoBlockData` above is imported from it rather than taken from `VideoBlock`.
 
+## Core migrations
+
+Besides the block's own and vendor migrations, Dextinity runs _core migrations_ on the data of every block, counted in `$$coreVersion`.
+They migrate the stored data of all blocks when the way Dextinity stores block data changes, so you don't have to write a migration for each of your blocks.
+They run after the block's own migrations, once per block instance:
+
+```json
+{ "$$version": 2, "$$vendorVersion": 1, "$$coreVersion": 1 }
+```
+
+For instance, an optional field without a value is stored as `null`.
+The first core migration sets the optional fields that block data saved before then is missing to `null`.
+
+The core migrations only migrate data stored before they were introduced.
+A field you add to a block later on is missing from the existing data, whose `$$coreVersion` is already up to date, so it needs a migration of its own (see [When do I need a migration?](#when-do-i-need-a-migration)).
+
 ## FAQ
 
 ### When do I need a migration?
@@ -294,14 +310,40 @@ The data and input classes have to be exported by the library for this, which is
 You will need a migration when
 
 - adding a _required_ field to the block (you will need to provide a default value for existing block instances)
+- adding an _optional_ field to the block (set it to `null` for existing block instances, see below)
 - changing an existing field of the block
 
 You don't necessarily need a migration when
 
-- adding an _optional_ field to the block
 - removing an existing field from the block
 - adding an additionally supported block to a `BlocksBlock` or an `OneOfBlock`
 - removing a supported block from a `BlocksBlock` or an `OneOfBlock`
+
+### How do I add an optional field?
+
+An optional field without a value is always `null`, never missing.
+Add a migration that sets the new field to `null` in the existing block instances:
+
+```ts title="2-add-subtitle.migration.ts"
+interface From {
+    headline: unknown;
+}
+
+interface To extends From {
+    subtitle: string | null;
+}
+
+export class AddSubtitleMigration
+    extends BlockMigration<(from: From) => To>
+    implements BlockMigrationInterface
+{
+    public readonly toVersion = 2;
+
+    protected migrate(from: From): To {
+        return { ...from, subtitle: null };
+    }
+}
+```
 
 ### How do I test a migration?
 

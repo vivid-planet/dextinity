@@ -40,7 +40,7 @@ DamImageBlock.AdminComponent = function AdminComponent({ state, updateState }) {
         throw new Error(`No block found for type ${state.activeType}`);
     }
 
-    const isEmpty = (activeBlock.props as PixelImageBlockData | SvgImageBlockData).damFile === undefined;
+    const isEmpty = !(activeBlock.props as PixelImageBlockData | SvgImageBlockData).damFile;
 
     if (isEmpty) {
         return (

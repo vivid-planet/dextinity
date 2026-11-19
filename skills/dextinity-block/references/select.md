@@ -15,7 +15,7 @@ An optional select uses a nullable API field (see [api-patterns.md](api-patterns
 ```tsx
 badgeColor: {
     block: createCompositeBlockField<ExampleBlockData["badgeColor"]>({
-        defaultValue: undefined,
+        defaultValue: null,
         AdminComponent: ({ state, updateState }) => (
             <BlocksFinalForm<{ value: typeof state }> onSubmit={({ value }) => updateState(value)} initialValues={{ value: state }}>
                 <SelectField

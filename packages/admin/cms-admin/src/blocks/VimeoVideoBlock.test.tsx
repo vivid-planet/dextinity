@@ -8,36 +8,56 @@ const previewImageDamFile = {
     size: 100,
     mimetype: "image/png",
     contentHash: "image-hash",
+    title: null,
+    altText: null,
+    aiContentType: null,
     archived: false,
+    scope: null,
+    image: null,
     fileUrl: "https://example.com/preview.png",
 };
+
+const videoSettings = { autoplay: null, loop: null, showControls: null };
 
 describe("VimeoVideoBlock", () => {
     describe("dependencies", () => {
         it("should return the preview image", () => {
-            expect(VimeoVideoBlock.dependencies?.({ previewImage: { damFile: previewImageDamFile } })).toEqual([
-                { targetGraphqlObjectType: "DamFile", id: "image-1", data: { damFile: previewImageDamFile } },
-            ]);
+            expect(
+                VimeoVideoBlock.dependencies?.({
+                    vimeoIdentifier: null,
+                    ...videoSettings,
+                    previewImage: { damFile: previewImageDamFile, cropArea: null },
+                }),
+            ).toEqual([{ targetGraphqlObjectType: "DamFile", id: "image-1", data: { damFile: previewImageDamFile } }]);
         });
 
         it("should return no dependencies without a preview image", () => {
-            expect(VimeoVideoBlock.dependencies?.({ previewImage: {} })).toEqual([]);
+            expect(
+                VimeoVideoBlock.dependencies?.({ vimeoIdentifier: null, ...videoSettings, previewImage: { damFile: null, cropArea: null } }),
+            ).toEqual([]);
         });
     });
 
     describe("replaceDependenciesInOutput", () => {
         it("should replace the preview image file", () => {
             expect(
-                VimeoVideoBlock.replaceDependenciesInOutput({ vimeoIdentifier: "76979871", previewImage: { damFileId: "image-1" } }, [
-                    { type: "DamFile", originalId: "image-1", replaceWithId: "image-2" },
-                ]),
-            ).toEqual({ vimeoIdentifier: "76979871", previewImage: { damFileId: "image-2" } });
+                VimeoVideoBlock.replaceDependenciesInOutput(
+                    { ...videoSettings, vimeoIdentifier: "76979871", previewImage: { damFileId: "image-1", cropArea: null } },
+                    [{ type: "DamFile", originalId: "image-1", replaceWithId: "image-2" }],
+                ),
+            ).toEqual({ ...videoSettings, vimeoIdentifier: "76979871", previewImage: { damFileId: "image-2", cropArea: null } });
         });
 
         it("should keep the id without a replacement", () => {
-            expect(VimeoVideoBlock.replaceDependenciesInOutput({ vimeoIdentifier: "76979871", previewImage: { damFileId: "image-1" } }, [])).toEqual({
+            expect(
+                VimeoVideoBlock.replaceDependenciesInOutput(
+                    { ...videoSettings, vimeoIdentifier: "76979871", previewImage: { damFileId: "image-1", cropArea: null } },
+                    [],
+                ),
+            ).toEqual({
+                ...videoSettings,
                 vimeoIdentifier: "76979871",
-                previewImage: { damFileId: "image-1" },
+                previewImage: { damFileId: "image-1", cropArea: null },
             });
         });
     });

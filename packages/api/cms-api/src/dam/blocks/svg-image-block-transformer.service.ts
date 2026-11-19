@@ -6,33 +6,33 @@ import type { DamScopeInterface } from "../types.js";
 import type { SvgImageBlockData } from "./svg-image.block.js";
 
 type TransformResponse = {
-    damFile?: {
+    damFile: {
         id: string;
         name: string;
         size: number;
         mimetype: string;
         contentHash: string;
-        title?: string;
-        altText?: string;
+        title: string | null;
+        altText: string | null;
         archived: boolean;
-        scope?: DamScopeInterface;
+        scope: DamScopeInterface | null;
         fileUrl?: string;
-    };
+    } | null;
 };
 
 @Injectable()
 export class SvgImageBlockTransformerService implements BlockTransformerServiceInterface<SvgImageBlockData, TransformResponse> {
     constructor(private readonly filesService: FilesService) {}
 
-    async transformToPlain(block: SvgImageBlockData, { includeInvisibleContent, previewDamUrls }: BlockContext) {
+    async transformToPlain(block: SvgImageBlockData, { includeInvisibleContent, previewDamUrls }: BlockContext): Promise<TransformResponse> {
         if (!block.damFileId) {
-            return {};
+            return { damFile: null };
         }
 
         const file = await this.filesService.findOneById(block.damFileId);
 
         if (!file || this.filesService.isBlockedByLicense(file, { previewDamUrls })) {
-            return {};
+            return { damFile: null };
         }
 
         const fileUrl = await this.filesService.createFileUrl(file, { previewDamUrls });
@@ -44,10 +44,10 @@ export class SvgImageBlockTransformerService implements BlockTransformerServiceI
                 size: file.size,
                 mimetype: file.mimetype,
                 contentHash: file.contentHash,
-                title: file.title,
-                altText: file.altText,
+                title: file.title ?? null,
+                altText: file.altText ?? null,
                 archived: file.archived,
-                scope: file.scope,
+                scope: file.scope ?? null,
                 fileUrl,
             },
         };

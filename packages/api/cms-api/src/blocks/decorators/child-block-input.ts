@@ -1,6 +1,7 @@
 import { Expose, Transform } from "class-transformer";
 import { IsDefined, ValidateNested } from "class-validator";
 
+import { IsNullable } from "../../common/validators/is-nullable.js";
 import { type Block, isBlockInputInterface } from "../block.js";
 import { BlockField } from "./field.js";
 
@@ -21,8 +22,9 @@ export function ChildBlockInput(block: Block, options?: ChildBlockInputOptions):
         if (!disableValidateNested) {
             ValidateNested()(target, key); // by default valdidate all child blocks
         }
-        if (!nullable) {
-            IsDefined()(target, key);
+        IsDefined()(target, key);
+        if (nullable) {
+            IsNullable()(target, key);
         }
         BlockField({ type: "block", block, nullable })(target, key);
         // We need add `@Expose()` to make sure that `@Transform()` is called even when no value is provided.
@@ -32,7 +34,9 @@ export function ChildBlockInput(block: Block, options?: ChildBlockInputOptions):
             ({ value }) => {
                 if (isBlockInputInterface(value)) {
                     return value;
-                } else if (value == null) {
+                } else if (value === null) {
+                    return null;
+                } else if (value === undefined) {
                     return undefined;
                 } else {
                     return block.blockInputFactory(value);

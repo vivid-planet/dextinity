@@ -22,7 +22,7 @@ export function InternalLinkBlock({ data: { targetPage, targetPageAnchor }, chil
         return <span className={className}>{children}</span>;
     }
 
-    const href = targetPageAnchor !== undefined ? `${targetPage.path}#${targetPageAnchor}` : targetPage.path;
+    const href = targetPageAnchor ? `${targetPage.path}#${targetPageAnchor}` : targetPage.path;
 
     if (legacyBehavior) {
         return (

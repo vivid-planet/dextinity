@@ -1,5 +1,6 @@
-import { IsBoolean, IsOptional } from "class-validator";
+import { IsBoolean } from "class-validator";
 
+import { IsNullable } from "../../common/validators/is-nullable.js";
 import { BlockData, BlockInput, createBlock } from "../block.js";
 import { BlockField } from "../decorators/field.js";
 import type { BlockFactoryNameOrOptions } from "../factories/types.js";
@@ -40,14 +41,14 @@ export function createExternalLinkBlock(options: ExternalLinkBlockFactoryOptions
     const supportedFields = allOptions.filter((option) => options[option] !== false);
 
     // Picks the fields the block has, so that values stored before an option was left out aren't passed on
-    const pickSupportedFields = (source: { targetUrl?: string; openInNewWindow?: boolean; noFollow?: boolean }) => ({
+    const pickSupportedFields = (source: { targetUrl: string | null; openInNewWindow?: boolean; noFollow?: boolean }) => ({
         targetUrl: source.targetUrl,
         ...Object.fromEntries(supportedFields.map((field) => [field, source[field]])),
     });
 
     class ExternalLinkBlockData extends BlockData {
-        @BlockField({ nullable: true })
-        targetUrl?: string;
+        @BlockField({ type: "string", nullable: true })
+        targetUrl: string | null;
 
         openInNewWindow?: boolean;
 
@@ -59,10 +60,10 @@ export function createExternalLinkBlock(options: ExternalLinkBlockFactoryOptions
     }
 
     class ExternalLinkBlockInput extends BlockInput {
-        @IsOptional()
+        @IsNullable()
         @IsLinkTarget()
-        @BlockField({ nullable: true })
-        targetUrl?: string;
+        @BlockField({ type: "string", nullable: true })
+        targetUrl: string | null;
 
         openInNewWindow?: boolean;
 

@@ -1,5 +1,6 @@
-import { IsOptional, IsString } from "class-validator";
+import { IsString } from "class-validator";
 
+import { IsNullable } from "../../common/validators/is-nullable.js";
 import { BaseVideoBlockData, BaseVideoBlockInput } from "../base-video-block.js";
 import { type BlockDataInterface, blockInputToData, createBlock } from "../block.js";
 import { BlockField } from "../decorators/field.js";
@@ -9,16 +10,16 @@ import { RemoveAspectRatioMigration } from "./migrations/1-remove-aspect-ratio.m
 import { AddPreviewImageMigration } from "./migrations/2-add-preview-image.migration.js";
 
 class YouTubeVideoBlockData extends BaseVideoBlockData {
-    @BlockField({ nullable: true })
-    youtubeIdentifier?: string;
+    @BlockField({ type: "string", nullable: true })
+    youtubeIdentifier: string | null;
 }
 
 class YouTubeVideoBlockInput extends BaseVideoBlockInput {
-    @IsOptional()
+    @IsNullable()
     @IsString()
-    @BlockField({ nullable: true })
+    @BlockField({ type: "string", nullable: true })
     @IsValidYouTubeIdentifier()
-    youtubeIdentifier?: string;
+    youtubeIdentifier: string | null;
 
     transformToBlockData(): BlockDataInterface {
         return blockInputToData(YouTubeVideoBlockData, this);

@@ -38,6 +38,9 @@ class RemoveControlsAndPreviewImageMigration
 }
 
 const damFileId = "0a3a4f9c-1b19-4f7e-bd0a-8e0b6b1a2c3d";
+const noControls = { autoplay: null, showControls: null, loop: null };
+const emptyPreviewImageInput = { damFileId: null, cropArea: null };
+const emptyPreviewImage = { ...emptyPreviewImageInput, $$coreVersion: 1 };
 
 describe("createDamVideoBlock", () => {
     it("should support controls and preview image by default", () => {
@@ -75,14 +78,14 @@ describe("createDamVideoBlock", () => {
 
     it("should store only the supported options", () => {
         const block = createDamVideoBlock({ controls: false, previewImage: false }, "StoringFileOnlyVideo");
-        const input = block.blockInputFactory({ damFileId, autoplay: true, showControls: true, loop: true, previewImage: {} });
+        const input = block.blockInputFactory({ damFileId, autoplay: true, showControls: true, loop: true, previewImage: emptyPreviewImageInput });
 
-        expect(transformToBlockSave(input.transformToBlockData())).toEqual({ damFileId, $$vendorVersion: 1 });
+        expect(transformToBlockSave(input.transformToBlockData())).toEqual({ damFileId, $$vendorVersion: 1, $$coreVersion: 1 });
     });
 
     it("should reject input for a disabled option", async () => {
         const block = createDamVideoBlock({ controls: false, previewImage: false }, "ValidatingFileOnlyVideo");
-        const input = block.blockInputFactory({ damFileId, autoplay: true, showControls: true, loop: true, previewImage: {} });
+        const input = block.blockInputFactory({ damFileId, autoplay: true, showControls: true, loop: true, previewImage: emptyPreviewImageInput });
 
         const errors = await validate(input, { whitelist: true, forbidNonWhitelisted: true });
 
@@ -91,36 +94,51 @@ describe("createDamVideoBlock", () => {
 
     it("should accept input for the enabled options", async () => {
         const block = createDamVideoBlock({}, "ValidatingFullVideo");
-        const input = block.blockInputFactory({ damFileId, autoplay: true, showControls: true, loop: true, previewImage: {} });
+        const input = block.blockInputFactory({ damFileId, autoplay: true, showControls: true, loop: true, previewImage: emptyPreviewImageInput });
 
         expect(await validate(input, { whitelist: true, forbidNonWhitelisted: true })).toEqual([]);
     });
 
     it("should create input for a block without a preview image", () => {
         const block = createDamVideoBlock({ previewImage: false }, "InputWithoutPreviewImage");
-        const input = block.blockInputFactory({ damFileId, autoplay: true });
+        const input = block.blockInputFactory({ damFileId, autoplay: true, showControls: null, loop: null });
 
-        expect(transformToBlockSave(input.transformToBlockData())).toEqual({ damFileId, autoplay: true, $$vendorVersion: 1 });
+        expect(transformToBlockSave(input.transformToBlockData())).toEqual({
+            damFileId,
+            autoplay: true,
+            showControls: null,
+            loop: null,
+            $$vendorVersion: 1,
+            $$coreVersion: 1,
+        });
     });
 
     it("should create input for a block that supports nothing but the file", () => {
         const block = createDamVideoBlock({ controls: false, previewImage: false }, "InputWithFileOnly");
         const input = block.blockInputFactory({ damFileId });
 
-        expect(transformToBlockSave(input.transformToBlockData())).toEqual({ damFileId, $$vendorVersion: 1 });
+        expect(transformToBlockSave(input.transformToBlockData())).toEqual({ damFileId, $$vendorVersion: 1, $$coreVersion: 1 });
     });
 
     it("should store the supported options", () => {
         const block = createDamVideoBlock({}, "StoringFullVideo");
-        const input = block.blockInputFactory({ damFileId, autoplay: true, previewImage: {} });
+        const input = block.blockInputFactory({ damFileId, autoplay: true, showControls: null, loop: null, previewImage: emptyPreviewImageInput });
 
-        expect(transformToBlockSave(input.transformToBlockData())).toEqual({ damFileId, autoplay: true, previewImage: {}, $$vendorVersion: 1 });
+        expect(transformToBlockSave(input.transformToBlockData())).toEqual({
+            damFileId,
+            autoplay: true,
+            showControls: null,
+            loop: null,
+            previewImage: emptyPreviewImage,
+            $$vendorVersion: 1,
+            $$coreVersion: 1,
+        });
     });
 
     it("should require a preview image in the input when it is supported", () => {
         const block = createDamVideoBlock({}, "InputRequiringPreviewImage");
 
-        const errors = validateSync(block.blockInputFactory({ damFileId }));
+        const errors = validateSync(block.blockInputFactory({ damFileId, ...noControls }));
 
         expect(errors.map((error) => error.property)).toEqual(["previewImage"]);
     });
@@ -133,7 +151,15 @@ describe("createDamVideoBlock preview image default", () => {
 
         expect(data.previewImage?.constructor.name).toBe("PixelImageBlockData");
         expect(data.childBlocksInfo().map((child) => child.name)).toEqual(["PixelImage"]);
-        expect(transformToBlockSave(data)).toEqual({ damFileId, autoplay: true, previewImage: {}, $$vendorVersion: 1 });
+        expect(transformToBlockSave(data)).toEqual({
+            damFileId,
+            autoplay: true,
+            showControls: null,
+            loop: null,
+            previewImage: emptyPreviewImage,
+            $$vendorVersion: 1,
+            $$coreVersion: 1,
+        });
     });
 
     it("should default a preview image of content that is past the block's migrations", () => {
@@ -143,7 +169,16 @@ describe("createDamVideoBlock preview image default", () => {
         const data = block.blockDataFactory({ damFileId, autoplay: true, $$version: 1, $$vendorVersion: 1 });
 
         expect(data.previewImage?.constructor.name).toBe("PixelImageBlockData");
-        expect(transformToBlockSave(data)).toEqual({ damFileId, autoplay: true, previewImage: {}, $$version: 1, $$vendorVersion: 1 });
+        expect(transformToBlockSave(data)).toEqual({
+            damFileId,
+            autoplay: true,
+            showControls: null,
+            loop: null,
+            previewImage: emptyPreviewImage,
+            $$version: 1,
+            $$vendorVersion: 1,
+            $$coreVersion: 1,
+        });
     });
 
     it("should keep a stored preview image", () => {
@@ -151,8 +186,10 @@ describe("createDamVideoBlock preview image default", () => {
 
         expect(transformToBlockSave(block.blockDataFactory({ damFileId, previewImage: { damFileId }, $$vendorVersion: 1 }))).toEqual({
             damFileId,
-            previewImage: { damFileId },
+            ...noControls,
+            previewImage: { damFileId, cropArea: null, $$coreVersion: 1 },
             $$vendorVersion: 1,
+            $$coreVersion: 1,
         });
     });
 
@@ -162,7 +199,10 @@ describe("createDamVideoBlock preview image default", () => {
         expect(transformToBlockSave(block.blockDataFactory({ damFileId, autoplay: true, $$vendorVersion: 1 }))).toEqual({
             damFileId,
             autoplay: true,
+            showControls: null,
+            loop: null,
             $$vendorVersion: 1,
+            $$coreVersion: 1,
         });
     });
 
@@ -176,7 +216,13 @@ describe("createDamVideoBlock preview image default", () => {
 
 describe("createDamVideoBlock migrations", () => {
     it("should add a preview image to data from before the exported block had one", () => {
-        expect(transformToBlockSave(DamVideoBlock.blockDataFactory({ damFileId }))).toEqual({ damFileId, previewImage: {}, $$vendorVersion: 1 });
+        expect(transformToBlockSave(DamVideoBlock.blockDataFactory({ damFileId }))).toEqual({
+            damFileId,
+            ...noControls,
+            previewImage: emptyPreviewImage,
+            $$vendorVersion: 1,
+            $$coreVersion: 1,
+        });
     });
 
     it("should move the version of data saved before the migration moved into the vendor chain", () => {
@@ -184,15 +230,22 @@ describe("createDamVideoBlock migrations", () => {
 
         expect(transformToBlockSave(DamVideoBlock.blockDataFactory({ damFileId, previewImage, $$version: 1 }))).toEqual({
             damFileId,
-            previewImage,
+            ...noControls,
+            previewImage: { ...previewImage, ...emptyPreviewImage },
             $$vendorVersion: 1,
+            $$coreVersion: 1,
         });
     });
 
     it("should carry the exported block's vendor migrations in a block created by the factory", () => {
         const block = createDamVideoBlock({ controls: false }, "VendorMigratedVideo");
 
-        expect(transformToBlockSave(block.blockDataFactory({ damFileId }))).toEqual({ damFileId, previewImage: {}, $$vendorVersion: 1 });
+        expect(transformToBlockSave(block.blockDataFactory({ damFileId }))).toEqual({
+            damFileId,
+            previewImage: emptyPreviewImage,
+            $$vendorVersion: 1,
+            $$coreVersion: 1,
+        });
     });
 
     it("should apply migrations passed to the factory", () => {
@@ -206,6 +259,7 @@ describe("createDamVideoBlock migrations", () => {
             loop: true,
             $$version: 1,
             $$vendorVersion: 1,
+            $$coreVersion: 1,
         });
     });
 
@@ -226,7 +280,7 @@ describe("createDamVideoBlock migrations", () => {
         ])("should remove the unsupported options from content %s", (_, data) => {
             const saved = transformToBlockSave(block.blockDataFactory(data));
 
-            expect(saved).toEqual({ damFileId, $$version: 1, $$vendorVersion: 1 });
+            expect(saved).toEqual({ damFileId, $$version: 1, $$vendorVersion: 1, $$coreVersion: 1 });
         });
     });
 });

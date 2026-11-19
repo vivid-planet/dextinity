@@ -22,7 +22,7 @@ class NoValidationBlockInput extends BlockInput {
 const NoValidationBlock = createBlock(NoValidationBlockData, NoValidationBlockInput, "NoValidation");
 
 const LinkBlock = createLinkBlock({ supportedBlocks: { noValidation: NoValidationBlock } }, "NoValidationLink");
-const linkData = { attachedBlocks: [{ type: "noValidation", props: {} }], activeType: "noValidation" };
+const linkData = { attachedBlocks: [{ type: "noValidation", props: {} }], activeType: "noValidation", title: null };
 
 describe("block input without validation annotations", () => {
     it("should validate", async () => {

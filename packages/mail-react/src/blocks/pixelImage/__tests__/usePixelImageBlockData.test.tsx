@@ -57,14 +57,20 @@ const smartImageData: PixelImageBlockData = {
         size: 1000,
         mimetype: "image/jpeg",
         contentHash: "hash",
+        title: null,
+        altText: null,
+        aiContentType: null,
         archived: false,
+        scope: null,
         fileUrl: "/dam/files/id-1.jpg",
         image: {
             width: 4000,
             height: 2000,
-            cropArea: { focalPoint: "SMART" },
+            cropArea: { focalPoint: "SMART", width: null, height: null, x: null, y: null },
+            dominantColor: null,
         },
     },
+    cropArea: null,
     urlTemplate: smartUrlTemplate,
 };
 
@@ -143,14 +149,20 @@ describe("usePixelImageBlockData — aspect ratio", () => {
                 size: 1000,
                 mimetype: "image/jpeg",
                 contentHash: "hash",
+                title: null,
+                altText: null,
+                aiContentType: null,
                 archived: false,
+                scope: null,
                 fileUrl: "/dam/files/id-2.jpg",
                 image: {
                     width: 4000,
                     height: 2000,
                     cropArea: { focalPoint: "CENTER", width: 50, height: 100, x: 25, y: 0 },
+                    dominantColor: null,
                 },
             },
+            cropArea: null,
             urlTemplate: smartUrlTemplate,
         };
         const result = expectNonNull(captureUsePixelImageData({ data: nonSmartData, defaultRenderWidth: 200, config }));
@@ -166,14 +178,20 @@ describe("usePixelImageBlockData — aspect ratio", () => {
                 size: 1000,
                 mimetype: "image/jpeg",
                 contentHash: "hash",
+                title: null,
+                altText: null,
+                aiContentType: null,
                 archived: false,
+                scope: null,
                 fileUrl: "/dam/files/id-3.jpg",
                 image: {
                     width: 4000,
                     height: 2000,
-                    cropArea: { focalPoint: "CENTER" },
+                    cropArea: { focalPoint: "CENTER", width: null, height: null, x: null, y: null },
+                    dominantColor: null,
                 },
             },
+            cropArea: null,
             urlTemplate: smartUrlTemplate,
         };
         expect(() => captureUsePixelImageData({ data: malformedData, defaultRenderWidth: 200, config })).toThrow(/Missing crop dimensions/);
@@ -211,14 +229,20 @@ describe("usePixelImageBlockData — aspectRatio override", () => {
                 size: 1000,
                 mimetype: "image/jpeg",
                 contentHash: "hash",
+                title: null,
+                altText: null,
+                aiContentType: null,
                 archived: false,
+                scope: null,
                 fileUrl: "/dam/files/id-override.jpg",
                 image: {
                     width: 4000,
                     height: 2000,
                     cropArea: { focalPoint: "CENTER", width: 50, height: 100, x: 25, y: 0 },
+                    dominantColor: null,
                 },
             },
+            cropArea: null,
             urlTemplate: smartUrlTemplate,
         };
         const result = expectNonNull(captureUsePixelImageData({ data: nonSmartData, defaultRenderWidth: 200, aspectRatio: "16x9", config }));
@@ -235,7 +259,11 @@ describe("usePixelImageBlockData — aspectRatio override", () => {
 
 describe("usePixelImageBlockData — incomplete data", () => {
     it("returns null when damFile is absent", () => {
-        const result = captureUsePixelImageData({ data: { urlTemplate: smartUrlTemplate }, defaultRenderWidth: 200, config });
+        const result = captureUsePixelImageData({
+            data: { damFile: null, cropArea: null, urlTemplate: smartUrlTemplate },
+            defaultRenderWidth: 200,
+            config,
+        });
         expect(result).toBeNull();
     });
 
@@ -247,9 +275,15 @@ describe("usePixelImageBlockData — incomplete data", () => {
                 size: 0,
                 mimetype: "image/jpeg",
                 contentHash: "hash",
+                title: null,
+                altText: null,
+                aiContentType: null,
                 archived: false,
+                scope: null,
                 fileUrl: "/dam/files/id-4.jpg",
+                image: null,
             },
+            cropArea: null,
             urlTemplate: smartUrlTemplate,
         };
         const result = captureUsePixelImageData({ data: noImageData, defaultRenderWidth: 200, config });

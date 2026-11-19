@@ -15,21 +15,27 @@ function createService(pageTreeNode: PageTreeNodeBase | null) {
 describe("InternalLinkBlockWarningsService", () => {
     it("should not warn about a link without a target page", async () => {
         const service = createService(null);
-        const block = InternalLinkBlock.blockInputFactory({}).transformToBlockData();
+        const block = InternalLinkBlock.blockInputFactory({ targetPageId: null, targetPageAnchor: null }).transformToBlockData();
 
         expect(await service.warnings(block)).toEqual([]);
     });
 
     it("should not warn about a link to an existing page", async () => {
         const service = createService({ id: "b1b1b1b1-0000-4000-8000-000000000001" } as PageTreeNodeBase);
-        const block = InternalLinkBlock.blockInputFactory({ targetPageId: "b1b1b1b1-0000-4000-8000-000000000001" }).transformToBlockData();
+        const block = InternalLinkBlock.blockInputFactory({
+            targetPageId: "b1b1b1b1-0000-4000-8000-000000000001",
+            targetPageAnchor: null,
+        }).transformToBlockData();
 
         expect(await service.warnings(block)).toEqual([]);
     });
 
     it("should warn about a link to a missing page", async () => {
         const service = createService(null);
-        const block = InternalLinkBlock.blockInputFactory({ targetPageId: "b1b1b1b1-0000-4000-8000-000000000001" }).transformToBlockData();
+        const block = InternalLinkBlock.blockInputFactory({
+            targetPageId: "b1b1b1b1-0000-4000-8000-000000000001",
+            targetPageAnchor: null,
+        }).transformToBlockData();
 
         expect(await service.warnings(block)).toEqual([{ message: "invalidTarget", severity: "high" }]);
     });

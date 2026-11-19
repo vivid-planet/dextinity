@@ -3,6 +3,7 @@ import type { ClassConstructor } from "class-transformer";
 export interface VersionDataInterface {
     $$version?: number;
     $$vendorVersion?: number;
+    $$coreVersion?: number;
 }
 
 // Instead of passing 2 Generics to BlockMigrationInterface

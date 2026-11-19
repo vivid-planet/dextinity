@@ -9,6 +9,7 @@ const urls = ["https://vivid-planet.com/", "https://github.com/", "https://gitla
 export class LinkBlockFixtureService {
     async generateBlockInput(): Promise<ExtractBlockInputFactoryProps<typeof LinkBlock>> {
         return {
+            title: null,
             attachedBlocks: [
                 {
                     type: "external",

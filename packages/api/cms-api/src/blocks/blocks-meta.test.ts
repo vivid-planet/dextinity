@@ -143,7 +143,7 @@ describe("getBlocksMeta", () => {
 
             expect(getDescription(listBlock)).toContain("unique `key`");
             expect(getDescription(blocksBlock)).toContain("unique `key`");
-            expect(getDescription(optionalBlock)).toContain('`{"visible":false}`');
+            expect(getDescription(optionalBlock)).toContain('`{"block":null,"visible":false}`');
         });
 
         it("should prefer the description passed as options", () => {

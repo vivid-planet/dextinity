@@ -1,4 +1,4 @@
-import { IsOptional, IsUUID } from "class-validator";
+import { IsUUID } from "class-validator";
 
 import {
     BlockData,
@@ -10,18 +10,19 @@ import {
     createBlock,
 } from "../../blocks/block.js";
 import { AnnotationBlockMeta } from "../../blocks/decorators/field.js";
+import { IsNullable } from "../../common/validators/is-nullable.js";
 import { FILE_ENTITY } from "../files/entities/file.entity.js";
 import { SvgImageBlockTransformerService } from "./svg-image-block-transformer.service.js";
 
 class SvgImageBlockData extends BlockData {
-    damFileId?: string;
+    damFileId: string | null = null;
 
     async transformToPlain() {
         return SvgImageBlockTransformerService;
     }
 
     indexData(): BlockIndexData {
-        if (this.damFileId === undefined) {
+        if (!this.damFileId) {
             return {};
         }
 
@@ -37,9 +38,9 @@ class SvgImageBlockData extends BlockData {
 }
 
 class SvgImageBlockInput extends BlockInput {
-    @IsOptional()
+    @IsNullable()
     @IsUUID()
-    damFileId?: string;
+    damFileId: string | null;
 
     transformToBlockData(): SvgImageBlockData {
         return blockInputToData(SvgImageBlockData, this);

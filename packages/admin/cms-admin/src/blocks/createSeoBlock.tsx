@@ -50,12 +50,12 @@ export function createSeoBlock(
         priority: "0_5",
         changeFrequency: "weekly",
         alternativeLinks: [],
-        htmlTitle: undefined,
-        metaDescription: undefined,
-        openGraphTitle: undefined,
-        openGraphDescription: undefined,
-        structuredData: undefined,
-        canonicalUrl: undefined,
+        htmlTitle: null,
+        metaDescription: null,
+        openGraphTitle: null,
+        openGraphDescription: null,
+        structuredData: null,
+        canonicalUrl: null,
     })(composedBlock);
 
     type State = BlockState<typeof block>;
@@ -120,7 +120,10 @@ export function createSeoBlock(
 
                                 canonicalUrl: values.canonicalUrl,
 
-                                alternativeLinks: values.alternativeLinks,
+                                alternativeLinks: values.alternativeLinks.map(({ code, url }: { code?: string | null; url?: string | null }) => ({
+                                    code: code ?? null,
+                                    url: url ?? null,
+                                })),
                             }));
                         }}
                         mutators={{ ...arrayMutators }}

@@ -8,17 +8,18 @@ import {
     type BlockMetaField,
     BlockMetaFieldKind,
     createBlock,
+    IsNullable,
 } from "@dextinity/cms-api";
-import { IsOptional, IsUUID } from "class-validator";
+import { IsUUID } from "class-validator";
 
 import { NewsLinkBlockTransformerService } from "./news-link-block-transformer.service.js";
 
 class NewsLinkBlockData extends BlockData {
-    @BlockField({ nullable: true })
-    id?: string;
+    @BlockField({ type: "string", nullable: true })
+    id: string | null;
 
     indexData(): BlockIndexData {
-        if (this.id === undefined) {
+        if (!this.id) {
             return {};
         }
 
@@ -84,10 +85,10 @@ class Meta extends AnnotationBlockMeta {
 }
 
 class NewsLinkBlockInput extends BlockInput {
-    @BlockField({ nullable: true })
+    @BlockField({ type: "string", nullable: true })
     @IsUUID()
-    @IsOptional()
-    id?: string;
+    @IsNullable()
+    id: string | null;
 
     transformToBlockData(): NewsLinkBlockData {
         return blockInputToData(NewsLinkBlockData, this);

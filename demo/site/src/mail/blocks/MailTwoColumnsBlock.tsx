@@ -76,7 +76,7 @@ const ColumnImageBlock = withPreview<PropsWithData<PixelImageBlockData>>(
 
 const ColumnButtonBlock = withPreview<PropsWithData<MailButtonBlockData>>(
     ({ data, className }) => (
-        <MjmlButton href={data.link.targetUrl} variant={data.variant} align={data.align} className={className}>
+        <MjmlButton href={data.link.targetUrl ?? undefined} variant={data.variant} align={data.align} className={className}>
             {data.text}
         </MjmlButton>
     ),

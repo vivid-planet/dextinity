@@ -51,16 +51,16 @@ export function calculateInheritAspectRatio(
     imageDimensions: ImageDimensions,
     cropArea: {
         focalPoint: "SMART" | "CENTER" | "NORTHWEST" | "NORTHEAST" | "SOUTHWEST" | "SOUTHEAST";
-        width?: number;
-        height?: number;
-        x?: number;
-        y?: number;
+        width?: number | null;
+        height?: number | null;
+        x?: number | null;
+        y?: number | null;
     },
 ): number {
     if (cropArea.focalPoint === "SMART") {
         return imageDimensions.width / imageDimensions.height;
     } else {
-        if (cropArea.width === undefined || cropArea.height === undefined) {
+        if (cropArea.width == null || cropArea.height == null) {
             throw new Error("Missing crop dimensions");
         }
 

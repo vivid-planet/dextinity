@@ -35,10 +35,10 @@ import type { GQLFocalPoint } from "../../graphql.generated";
 
 type CropArea = {
     focalPoint: GQLFocalPoint;
-    width?: number;
-    height?: number;
-    x?: number;
-    y?: number;
+    width: number | null;
+    height: number | null;
+    x: number | null;
+    y: number | null;
 };
 
 const imageStyle = { maxWidth: "60vw", maxHeight: "70vh" };
@@ -61,7 +61,7 @@ interface Props {
         useInheritedDamSettings?: boolean;
         cropArea?: CropArea;
     };
-    onSubmit: (cropArea: CropArea | undefined) => void;
+    onSubmit: (cropArea: CropArea | null) => void;
     inheritedDamSettings?: { cropArea: CropArea };
 }
 
@@ -79,17 +79,17 @@ export function EditImageDialog({ image, initialValues, onSubmit, onClose, inher
 
     const handleSubmit = (values: FormValues) => {
         if (values.useInheritedDamSettings) {
-            onSubmit(undefined);
+            onSubmit(null);
         } else {
             let cropArea: CropArea;
 
             if (values.focalPoint === "SMART") {
                 cropArea = {
                     focalPoint: "SMART",
-                    x: undefined,
-                    y: undefined,
-                    width: undefined,
-                    height: undefined,
+                    x: null,
+                    y: null,
+                    width: null,
+                    height: null,
                 };
             } else if (values.crop.width && values.crop.height) {
                 cropArea = {

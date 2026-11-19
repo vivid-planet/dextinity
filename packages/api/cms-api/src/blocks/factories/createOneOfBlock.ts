@@ -40,7 +40,7 @@ type BaseBlockMap = Record<string, Block<BlockDataInterface, BlockInputInterface
 
 type OneOfBlockDataInterface<BlockMap extends BaseBlockMap, Data extends BlockDataInterface> = Data & {
     attachedBlocks: SupportedBlocksDataInterfaces<BlockMap>[];
-    activeType?: keyof BlockMap;
+    activeType: keyof BlockMap | null;
 };
 
 type SupportedBlocksDataInterfaces<BlockMap extends BaseBlockMap> = {
@@ -56,7 +56,7 @@ type OneOfBlockInputInterface<
     Input extends SimpleBlockInputInterface<Data>,
 > = Input & {
     attachedBlocks: SupportedBlocksInputInterfaces<BlockMap>[];
-    activeType?: keyof BlockMap;
+    activeType: keyof BlockMap | null;
 };
 
 type SupportedBlocksInputInterfaces<BlockMap extends BaseBlockMap> = {
@@ -130,15 +130,15 @@ export function BaseOneOfBlockData<BlockMap extends BaseBlockMap, Data extends B
         attachedBlocks: OneOfBlockDataInterface<BlockMap, Data>["attachedBlocks"][number][];
 
         // index of blocks
-        activeType?: string;
+        activeType: string | null = null;
 
         async transformToPlain({ includeInvisibleContent }: BlockContext): Promise<TraversableTransformBlockResponse> {
             const { attachedBlocks, activeType, ...additionalFields } = this;
             const block = attachedBlocks.find((c) => c.type === this.activeType);
             return {
                 attachedBlocks: includeInvisibleContent ? attachedBlocks : [], // only admin must see inactive blocks
-                block: block,
-                activeType: activeType && supportedBlocks[activeType] ? activeType : undefined,
+                block: block ?? null,
+                activeType: activeType && supportedBlocks[activeType] ? activeType : null,
                 ...additionalFields,
             };
         }
@@ -258,18 +258,19 @@ export function BaseOneOfBlockInput<
         @ValidateNested({ each: true })
         attachedBlocks: OneOfBlockInputInterface<BlockMap, Data, Input>["attachedBlocks"];
 
-        @ValidateIf((_, activeType) => !allowEmpty || activeType != null)
+        // An empty block has to name `null` explicitly, a missing value isn't accepted
+        @ValidateIf((_, activeType) => !allowEmpty || activeType !== null)
         @IsIn(supportedBlockTypes)
         @Validate(IsAttachedBlockTypeConstraint)
-        @BlockField({ nullable: allowEmpty })
-        activeType?: string;
+        @BlockField({ type: "string", nullable: allowEmpty })
+        activeType: string | null;
 
         transformToBlockData(): OneOfBlockDataInterface<BlockMap, Data> {
             const { attachedBlocks, activeType, ...additionalFields } = this;
 
             return plainToInstance(OneOfBlockData, {
                 attachedBlocks: attachedBlocks.map((block) => block.transformToBlockData()),
-                activeType: this.activeType && supportedBlocks[this.activeType] ? this.activeType : undefined,
+                activeType: this.activeType && supportedBlocks[this.activeType] ? this.activeType : null,
                 ...additionalFields,
             });
         }

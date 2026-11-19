@@ -17,8 +17,8 @@ class HeadlineWithBackgroundBlockData extends BlockData {
     @ChildBlock(RichTextBlock)
     headline: BlockDataInterface;
 
-    @BlockField({ nullable: true })
-    eyebrow?: string;
+    @BlockField({ type: "string", nullable: true })
+    eyebrow: string | null;
 
 +   @BlockField({ type: "enum", enum: BackgroundColor })
 +   background: BackgroundColor;
@@ -28,10 +28,10 @@ class HeadlineWithBackgroundBlockInput extends BlockInput {
     @ChildBlockInput(RichTextBlock)
     headline: ExtractBlockInput<typeof RichTextBlock>;
 
-    @BlockField({ nullable: true })
-    @IsUndefinable()
+    @BlockField({ type: "string", nullable: true })
+    @IsNullable()
     @IsString()
-    eyebrow?: string;
+    eyebrow: string | null;
 
 +   @IsEnum(BackgroundColor)
 +   @BlockField({ type: "enum", enum: BackgroundColor })

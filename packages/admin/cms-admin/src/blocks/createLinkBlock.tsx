@@ -49,7 +49,7 @@ function createLinkBlock(
 
     return {
         ...OneOfBlock,
-        defaultValues: () => ({ ...OneOfBlock.defaultValues(), title: undefined }),
+        defaultValues: () => ({ ...OneOfBlock.defaultValues(), title: null }),
         AdminComponent: ({ state, updateState }) => {
             const isInPaper = useBlockAdminComponentPaper();
 

@@ -29,7 +29,7 @@ export const SvgImageBlock: BlockInterface<SvgImageBlockData, SvgImageBlockState
 
     displayName: <FormattedMessage id="dextinity.blocks.svgImage" defaultMessage="SVG" />,
 
-    defaultValues: () => ({}),
+    defaultValues: () => ({ damFile: null }),
 
     category: BlockCategory.Media,
 
@@ -41,14 +41,14 @@ export const SvgImageBlock: BlockInterface<SvgImageBlockData, SvgImageBlockState
                       ...state.damFile,
                       fileUrl: createPreviewUrl(state, { apiUrl: previewContext.apiUrl }),
                   }
-                : undefined,
+                : null,
             adminMeta: { route: previewContext.parentUrl },
         };
     },
 
     state2Output: (v) => {
         if (!v.damFile) {
-            return {};
+            return { damFileId: null };
         }
         return {
             damFileId: v.damFile.id,
@@ -57,7 +57,7 @@ export const SvgImageBlock: BlockInterface<SvgImageBlockData, SvgImageBlockState
 
     output2State: async (output, { apolloClient }): Promise<SvgImageBlockState> => {
         if (!output.damFileId) {
-            return {};
+            return { damFile: null };
         }
 
         const { data } = await apolloClient.query<GQLSvgImageBlockDamFileQuery, GQLSvgImageBlockDamFileQueryVariables>({
@@ -107,7 +107,7 @@ export const SvgImageBlock: BlockInterface<SvgImageBlockData, SvgImageBlockState
         const replacement = replacements.find((replacement) => replacement.type === "DamFile" && replacement.originalId === output.damFileId);
 
         if (replacement) {
-            clonedOutput.damFileId = replacement.replaceWithId;
+            clonedOutput.damFileId = replacement.replaceWithId ?? null;
         }
 
         return clonedOutput;
@@ -125,7 +125,7 @@ export const SvgImageBlock: BlockInterface<SvgImageBlockData, SvgImageBlockState
             <SelectPreviewComponent>
                 <BlocksFinalForm<{ damFile?: SvgImageBlockState["damFile"] }>
                     onSubmit={(newValues) => {
-                        updateState((prevState) => ({ ...prevState, damFile: newValues.damFile || undefined }));
+                        updateState((prevState) => ({ ...prevState, damFile: newValues.damFile || null }));
                     }}
                     initialValues={{ damFile: state.damFile }}
                 >

@@ -454,7 +454,9 @@ export function WorkspaceShell() {
                                 color="secondary"
                                 aria-label="Open story in a new tab"
                                 disabled={!storyUrl}
-                                onClick={() => storyUrl && window.open(storyUrl, "_blank")}
+                                onClick={() =>
+                                    storyUrl && window.open(isPrototypeMode && framePage.hash ? `${storyUrl}#${framePage.hash}` : storyUrl, "_blank")
+                                }
                             >
                                 <Icon name="external-link" />
                             </IconButton>

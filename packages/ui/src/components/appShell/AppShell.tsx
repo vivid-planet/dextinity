@@ -11,6 +11,7 @@ import { useMediaQuery } from "./useMediaQuery";
 
 const narrowQuery = "(width < 768px)";
 const mediumQuery = "(width < 1280px)";
+const navCollapseKeyboardShortcut = "mod+\\";
 
 type AppShellLayout = "wide" | "medium" | "narrow";
 
@@ -87,11 +88,13 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
     const [navDrawerOpen, setNavDrawerOpen] = useState(false);
     const { anchorRef, container } = useThemePortalContainer<HTMLSpanElement>();
 
-    useKeyboardShortcut("mod+\\", () => onNavCollapsedChange(!navCollapsed), { enabled: !disableKeyboardShortcuts && layout === "wide" });
+    const navCollapseShortcutEnabled = !disableKeyboardShortcuts && layout === "wide";
+    useKeyboardShortcut(navCollapseKeyboardShortcut, () => onNavCollapsedChange(!navCollapsed), { enabled: navCollapseShortcutEnabled });
 
     const columnContext: AppShellContextValue = {
         navCollapsed: navCollapsed || layout === "medium",
         onNavCollapsedChange: layout === "wide" ? onNavCollapsedChange : undefined,
+        navCollapseKeyboardShortcut: navCollapseShortcutEnabled ? navCollapseKeyboardShortcut : undefined,
     };
     const drawerContext: AppShellContextValue = { navCollapsed: false, onNavigate: () => setNavDrawerOpen(false) };
     const mainContext: AppShellContextValue = {

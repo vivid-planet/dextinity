@@ -132,6 +132,7 @@ export function CmsNewsEditor({ article }: { article?: NewsArticle }) {
                 variant="formWithPreview"
                 header={
                     <PageHeader
+                        variant="compact"
                         back={{ label: "Back to news", href: "#news" }}
                         eyebrow="News · Austria · German"
                         title={title || "New article"}

@@ -19,6 +19,7 @@ import {
     useBufferedRowCount,
     useDataGridRemote,
     usePersistentColumnState,
+    useStackSwitchApi,
 } from "@dextinity/admin";
 import { Add as AddIcon, Delete as DeleteIcon, Edit } from "@dextinity/admin-icons";
 import { IconButton, Typography } from "@mui/material";
@@ -33,6 +34,7 @@ import {
 import { type JSX, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
+import { useAiModeDataGridToolset } from "../aiMode/useAiModeDataGridToolset";
 import { BlockPreviewContent } from "../blocks/common/blockRow/BlockPreviewContent";
 import type { BlockInterface } from "../blocks/types";
 import { DataGrid } from "../dataGrid/DataGrid";
@@ -269,6 +271,17 @@ export function RedirectsGrid({ linkBlock, scope }: Props): JSX.Element {
         context: LocalErrorScopeApolloContext,
         fetchPolicy: "cache-and-network",
         notifyOnNetworkStatusChange: false,
+    });
+    const stackSwitchApi = useStackSwitchApi();
+    useAiModeDataGridToolset({
+        entityName: "redirect",
+        entityLabel: "redirects",
+        columns,
+        dataGridProps,
+        rows: data?.paginatedRedirects.nodes ?? [],
+        totalCount: data?.paginatedRedirects.totalCount,
+        isLoading: loading,
+        openForm: (id) => (id ? stackSwitchApi.activatePage("edit", id) : stackSwitchApi.activatePage("add", "add")),
     });
 
     if (error) {

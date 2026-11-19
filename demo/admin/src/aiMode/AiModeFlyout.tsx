@@ -1,5 +1,5 @@
 import { Alert, MasterLayoutContext, useWindowSize } from "@dextinity/admin";
-import { useContentScope, useCurrentUser } from "@dextinity/cms-admin";
+import { useAiModeToolsetsStore, useContentScope, useCurrentUser } from "@dextinity/cms-admin";
 import { Slide, useMediaQuery, useTheme } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { createConfig } from "@src/config";
@@ -10,7 +10,6 @@ import { useLocation } from "react-router";
 
 import type { BridgeElement } from "./aiHubBridge";
 import { useAiMode } from "./AiModeContext";
-import { getToolDefinition, useAiModeToolsetsStore } from "./AiModeToolsets";
 import { ScriptLoader } from "./ScriptLoader";
 import { useTextSelectionStore } from "./textSelection";
 
@@ -96,7 +95,7 @@ export function AiModeFlyout() {
             return;
         }
 
-        const definitions = toolsetsStore.getTools().map(getToolDefinition);
+        const definitions = toolsetsStore.getTools().map(({ handler: _handler, ...definition }) => definition);
         const signature = JSON.stringify(definitions);
         if (signature === registeredToolsSignatureRef.current) {
             return;

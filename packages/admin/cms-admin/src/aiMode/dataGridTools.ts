@@ -15,12 +15,14 @@ import type { AiModeTool } from "./AiModeToolsets";
 
 /** The controlled state of a grid with server-side filtering, sorting, and pagination, as `useDataGridRemote` returns it. */
 export type AiModeDataGridState = {
+    // Methods rather than function properties, so that both the community and the pro grid's handlers fit: their
+    // details differ in the grid API they carry, which the tools don't pass.
     filterModel: GridFilterModel;
-    onFilterModelChange?: (model: GridFilterModel, details: GridCallbackDetails) => void;
+    onFilterModelChange?(model: GridFilterModel, details: GridCallbackDetails): void;
     sortModel: GridSortModel;
-    onSortModelChange?: (model: GridSortModel, details: GridCallbackDetails) => void;
+    onSortModelChange?(model: GridSortModel, details: GridCallbackDetails): void;
     paginationModel: GridPaginationModel;
-    onPaginationModelChange?: (model: GridPaginationModel, details: GridCallbackDetails) => void;
+    onPaginationModelChange?(model: GridPaginationModel, details: GridCallbackDetails): void;
 };
 
 // The change handlers of `useDataGridRemote` read only the model; the details describe a change made in the grid itself.

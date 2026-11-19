@@ -1,5 +1,5 @@
-import type { BlockContext, BlockInterface } from "@dextinity/cms-admin";
-
+import type { BlockContext } from "../blocks/context/BlockContext";
+import type { BlockInterface } from "../blocks/types";
 import { asBlockProps, type BlocksBlockChild, mergeBlockProps, toBlockState } from "./blockProps";
 
 /** The `additionalItemFields` of a blocks block, e.g. the user group of each block on a page. */

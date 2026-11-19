@@ -1,8 +1,7 @@
 import { useApolloClient, useQuery } from "@apollo/client/react";
 import { Field, filterByFragment, FinalForm, FinalFormInput, type FinalFormSubmitEvent, useFormApiRef } from "@dextinity/admin";
-import { queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@dextinity/cms-admin";
+import { AiModeFormToolset, queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@dextinity/cms-admin";
 import { CircularProgress } from "@mui/material";
-import { AiModeFormToolset } from "@src/aiMode/AiModeFormToolset";
 import { deepEqual } from "fast-equals";
 import type { FormApi } from "final-form";
 import { FormattedMessage, useIntl } from "react-intl";

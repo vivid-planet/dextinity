@@ -19,9 +19,9 @@ import {
     useStackSwitchApi,
 } from "@dextinity/admin";
 import { Add as AddIcon, Edit, Info } from "@dextinity/admin-icons";
+import { useAiModeDataGridToolset } from "@dextinity/cms-admin";
 import { IconButton } from "@mui/material";
 import { DataGridPro, GridColumnHeaderTitle } from "@mui/x-data-grid-pro";
-import { useAiModeDataGridToolset } from "@src/aiMode/useAiModeDataGridToolset";
 import type {
     GQLDeleteManufacturerMutation,
     GQLDeleteManufacturerMutationVariables,

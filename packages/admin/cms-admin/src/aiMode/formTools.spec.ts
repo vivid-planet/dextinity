@@ -1,7 +1,9 @@
-import { type BlockContext, type BlockInterface, DamImageBlock } from "@dextinity/cms-admin";
 import { createForm } from "final-form";
 import { describe, expect, it, vi } from "vitest";
 
+import type { BlockContext } from "../blocks/context/BlockContext";
+import type { BlockInterface } from "../blocks/types";
+import { DamImageBlock } from "../dam/blocks/DamImageBlock";
 import type { AiModeTool } from "./AiModeToolsets";
 import type { BlocksBlockChild } from "./blockProps";
 import { type AiModeFormField, createFormTools } from "./formTools";
@@ -202,7 +204,7 @@ describe("edit_<entity>_form_blocks", () => {
 
         await expect(async () =>
             tools.call({ field: "content", operations: [{ operation: "insert", type: "text", props: { text: "New" } }] }),
-        ).rejects.toThrow("The field 'content' changed while the edits were prepared");
+        ).rejects.toThrow("The field 'content' of the news article changed while the edits were prepared");
         expect(tools.getKeys()).toEqual(["c"]);
     });
 });
@@ -323,5 +325,59 @@ describe("fields beyond text", () => {
 
         await expect(async () => call("set_product_form_values", { values: { "address.street": "Changed", ...values } })).rejects.toThrow(message);
         expect(form.getState().values).toMatchObject({ address: { street: "Main St" } });
+    });
+});
+
+describe("a single block field", () => {
+    // Converts like a link block that declares the fields "url" and "openInNewWindow".
+    const linkBlock = {
+        defaultValues: () => ({ url: "", openInNewWindow: false }),
+        output2State: async (output: Record<string, unknown>) => ({ url: output.url, openInNewWindow: output.openInNewWindow }),
+        state2Output: (state: unknown) => state,
+        isValid: async () => true,
+        extractTextContents: () => [],
+    } as unknown as BlockInterface;
+
+    function createLinkTools({ schemaBlockName }: { schemaBlockName?: string } = {}) {
+        const form = createForm<Record<string, unknown>>({
+            onSubmit: vi.fn(),
+            initialValues: { target: { url: "https://example.com", openInNewWindow: true } },
+        });
+        form.registerField("target", () => undefined, { value: true });
+        const tools = createFormTools({
+            entityName: "redirect",
+            entityLabel: "redirect",
+            fields: [{ name: "target", label: "Target", type: "block", block: linkBlock, schemaBlockName }],
+            form,
+            blockContext: {} as BlockContext,
+        });
+        const call = (args: Record<string, unknown>) => findTool(tools, "set_redirect_form_values").handler(args, { clearTextSelection: vi.fn() });
+        return { form, tools, call };
+    }
+
+    it("sets the block in its saved shape, merged into its current content", async () => {
+        const { form, call } = createLinkTools({ schemaBlockName: "RedirectsLink" });
+
+        await call({ values: { target: { url: "https://example.org" } } });
+
+        expect(form.getState().values.target).toEqual({ url: "https://example.org", openInNewWindow: true });
+    });
+
+    it("refuses a field the block doesn't have, and names the block to look up", async () => {
+        const { form, call } = createLinkTools({ schemaBlockName: "RedirectsLink" });
+
+        await expect(async () => call({ values: { target: { href: "https://example.org" } } })).rejects.toThrow(
+            'call get_block_schema for "RedirectsLink"',
+        );
+        expect(form.getState().values.target).toEqual({ url: "https://example.com", openInNewWindow: true });
+    });
+
+    it("can only be read without its name in block-meta", async () => {
+        const { tools, call } = createLinkTools();
+
+        expect(findTool(tools, "set_redirect_form_values").description).toContain("The fields target can't be changed.");
+        await expect(async () => call({ values: { target: { url: "https://example.org" } } })).rejects.toThrow(
+            '"target" is no field this tool can set',
+        );
     });
 });

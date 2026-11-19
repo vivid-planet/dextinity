@@ -12,6 +12,7 @@ import {
     useStackSwitchApi,
 } from "@dextinity/admin";
 import {
+    AiModeFormToolset,
     type BlockState,
     createFinalFormBlock,
     DamImageBlock,
@@ -20,7 +21,6 @@ import {
     useContentScope,
     useFormSaveConflict,
 } from "@dextinity/cms-admin";
-import { AiModeFormToolset } from "@src/aiMode/AiModeFormToolset";
 import { deepEqual } from "fast-equals";
 import type { FormApi } from "final-form";
 import { useMemo } from "react";
@@ -163,6 +163,7 @@ export function NewsForm({ onCreate, id }: FormProps) {
                                 label: intl.formatMessage({ id: "news.image", defaultMessage: "Image" }),
                                 type: "block",
                                 block: rootBlocks.image,
+                                schemaBlockName: "DamImage",
                             },
                             {
                                 name: "content",

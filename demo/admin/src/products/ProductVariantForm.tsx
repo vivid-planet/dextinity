@@ -10,6 +10,7 @@ import {
     useStackSwitchApi,
 } from "@dextinity/admin";
 import {
+    AiModeFormToolset,
     type BlockState,
     createFinalFormBlock,
     DamImageBlock,
@@ -17,7 +18,6 @@ import {
     resolveHasSaveConflict,
     useFormSaveConflict,
 } from "@dextinity/cms-admin";
-import { AiModeFormToolset } from "@src/aiMode/AiModeFormToolset";
 import type { GQLProductVariantMutationErrorCode } from "@src/graphql.generated";
 import { deepEqual } from "fast-equals";
 import { FORM_ERROR, type FormApi } from "final-form";
@@ -183,6 +183,7 @@ export function ProductVariantForm({ id, productId }: FormProps) {
                                 label: intl.formatMessage({ id: "productVariant.image", defaultMessage: "Image" }),
                                 type: "block",
                                 block: rootBlocks.image,
+                                schemaBlockName: "DamImage",
                             },
                         ]}
                     />

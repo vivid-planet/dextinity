@@ -11,6 +11,10 @@
     &[data-glass="glass-overlay"] :global(.dextinityCard) {
         --dextinity-card-background: var(--dextinity-material-glass-overlay);
     }
+
+    &[data-glass="solid"] :global(.dextinityCard) {
+        --dextinity-card-background: var(--dextinity-color-surface);
+    }
 }
 
 // Floats over the page, so the cards can be compared while the switch stays in reach

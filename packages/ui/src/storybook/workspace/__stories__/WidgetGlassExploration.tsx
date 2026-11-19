@@ -7,17 +7,18 @@ import styles from "./WidgetGlassExploration.module.scss";
 
 const { Default: Overview } = composeStories(overviewStories);
 
-type GlassLevel = "glass" | "glass-strong" | "glass-overlay";
+type GlassLevel = "glass" | "glass-strong" | "glass-overlay" | "solid";
 
 const levels: Array<{ value: GlassLevel; label: string }> = [
     { value: "glass", label: "Glass" },
     { value: "glass-strong", label: "Strong" },
     { value: "glass-overlay", label: "Overlay" },
+    { value: "solid", label: "Solid" },
 ];
 
 /**
- * The overview with the cards on a switchable glass material, from the current, most see-through one to the overlays' almost
- * opaque one.
+ * The overview with the cards on a switchable glass material, from the current, most see-through one over the overlays' almost
+ * opaque one to the opaque surface.
  */
 export function WidgetGlassExploration() {
     const [level, setLevel] = useState<GlassLevel>("glass-strong");

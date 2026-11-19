@@ -61,6 +61,10 @@ describe("open_page", () => {
         expect(navigate).toHaveBeenCalledWith(`${scopeUrl}/pages/pagetree/top-menu/${nodeId}/edit`);
     });
 
+    it("runs without the user's approval, because it only navigates", () => {
+        expect(findTool(createPageTreeTools({ navigate: vi.fn(), scopeUrl }), "open_page").readOnlyHint).toBe(true);
+    });
+
     it("doesn't claim the page is open, as the user may decide to stay on a page with unsaved changes", () => {
         const { call } = getPageTreeTool("open_page");
 

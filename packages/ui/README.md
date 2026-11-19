@@ -245,6 +245,10 @@ The package has two dev-pm scripts:
 
 The `@dextinity-ui` group starts `dextinity-ui`. Start `storybook-dextinity-ui` on its own, or with the `@storybook` group. The Storybook then runs at `http://localhost:26648`.
 
+### Design workspace
+
+`Workspace/Shell` renders any story in a frame that behaves like a browser window — media queries see the frame's width — with the brand, color scheme, density, viewport size, and zoom switchable around it. Open it on its own at `http://localhost:26648/iframe.html?id=workspace-shell--shell&viewMode=story`. Drag the frame's edges to resize it. Work in progress goes into `Workspace/Canvas` ([`src/storybook/workspace/__stories__/WorkspaceCanvas.stories.tsx`](src/storybook/workspace/__stories__/WorkspaceCanvas.stories.tsx)), whose stories the workspace lists first.
+
 ## Testing
 
 Test the behavior and contracts a consumer depends on, not the implementation. Each test protects one such behavior; anything written only for coverage, or that just restates the type checker or the implementation, is left out.

@@ -6,7 +6,9 @@
     position: fixed;
     inset: 0;
     display: grid;
-    grid-template-rows: auto 1fr;
+    // The canvas scrolls a frame larger than the window, so the column mustn't grow with it and push the toolbar out of view
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
     background: var(--dextinity-color-canvas);
     color: var(--dextinity-color-text);
     font-family: var(--dextinity-font-family-text);
@@ -73,6 +75,7 @@
 .body {
     position: relative;
     display: flex;
+    min-inline-size: 0;
     min-block-size: 0;
 }
 
@@ -162,6 +165,7 @@
     position: relative;
     display: grid;
     flex: 1;
+    min-inline-size: 0;
     overflow: auto;
     place-items: center;
     padding: 48px;

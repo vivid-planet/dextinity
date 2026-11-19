@@ -5,7 +5,7 @@ export function createBlockPreviewFetch(originalFetch: typeof fetch, getContentS
             headers.set(name, value);
         }
 
-        const url = new URL(typeof input === "string" ? input : input.toString(), window.location.origin);
+        const url = new URL(input instanceof Request ? input.url : input.toString(), window.location.origin);
         const contentScopeJwt = getContentScopeJwt();
         if (url.host === window.location.host && contentScopeJwt) {
             headers.set("X-Block-Preview", contentScopeJwt);

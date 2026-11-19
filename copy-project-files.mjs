@@ -52,16 +52,20 @@ const files = [
     },
 ];
 
-for (const { file, targetDir } of files) {
-    for (const dir of targetDir) {
-        const targetFile = `${dir}/${path.basename(file)}`;
-        if (process.env.CI === "true") {
-            fs.copyFileSync(file, targetFile);
-        } else {
-            try {
-                fs.unlinkSync(targetFile);
-            } catch (e) {}
-            fs.symlinkSync(path.relative(dir, file), targetFile);
+module.exports = { files };
+
+if (require.main === module) {
+    for (const { file, targetDir } of files) {
+        for (const dir of targetDir) {
+            const targetFile = `${dir}/${path.basename(file)}`;
+            if (process.env.CI === "true") {
+                fs.copyFileSync(file, targetFile);
+            } else {
+                try {
+                    fs.unlinkSync(targetFile);
+                } catch (e) {}
+                fs.symlinkSync(path.relative(dir, file), targetFile);
+            }
         }
     }
 }

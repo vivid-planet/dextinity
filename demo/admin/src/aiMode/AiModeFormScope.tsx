@@ -1,3 +1,4 @@
+import { useBlockContext, useBlocksConfig, useContentScope } from "@dextinity/cms-admin";
 import { useForm, useFormState } from "react-final-form";
 
 import { useAiModeScope } from "./AiModeScopes";
@@ -20,6 +21,9 @@ type AiModeFormScopeProps = {
 export function AiModeFormScope({ entityName, entityLabel, id, fields }: AiModeFormScopeProps) {
     const form = useForm<Record<string, unknown>>();
     const { dirty } = useFormState({ subscription: { dirty: true } });
+    const blockContext = useBlockContext();
+    const { isBlockSupported } = useBlocksConfig();
+    const { scope } = useContentScope();
 
     useAiModeScope({
         id: `${entityName}_form`,
@@ -27,7 +31,15 @@ export function AiModeFormScope({ entityName, entityLabel, id, fields }: AiModeF
             ? `The form of the ${entityLabel} with the ID ${id}.`
             : `The form for a new ${entityLabel}, which is created when the user saves it.`,
         context: { id: id ?? null, hasChanges: dirty },
-        tools: createFormTools({ entityName, entityLabel, fields, form }),
+        tools: createFormTools({
+            entityName,
+            entityLabel,
+            fields,
+            form,
+            blockContext,
+            // As the admin's own block picker, which offers fewer blocks in some content scopes.
+            isBlockInsertable: isBlockSupported ? (block) => isBlockSupported(block, scope) : undefined,
+        }),
     });
 
     return null;

@@ -22,6 +22,7 @@ function DateTimePickerWithReset(props: DateTimePickerProps) {
                     }}
                 />
             </Field>
+            <Button onClick={() => setValue(new Date(2026, 10, 6, 13, 0).toISOString())}>Load record</Button>
             <Button onClick={() => setValue(null)}>Reset</Button>
         </div>
     );
@@ -60,6 +61,21 @@ export const ResetAfterTypingTheTimeFirst: Story = {
         await userEvent.type(canvas.getByRole("textbox", { name: "Publish at" }), "1.12.2026");
         await userEvent.tab();
         await waitFor(() => expect(args.onChange).toHaveBeenCalledTimes(1));
+        await userEvent.click(canvas.getByRole("button", { name: "Reset" }));
+        await waitFor(() => expect(time).toHaveValue(""));
+    },
+};
+
+/**
+ * A time typed before the day is discarded once the value changes from outside, so it doesn't come back after a later reset.
+ */
+export const ResetAfterLoadingARecord: Story = {
+    play: async ({ canvas }) => {
+        const time = canvas.getByRole("textbox", { name: "Publish at Time" });
+        await userEvent.type(time, "10:00");
+        await userEvent.tab();
+        await userEvent.click(canvas.getByRole("button", { name: "Load record" }));
+        await waitFor(() => expect(time).toHaveValue("13:00"));
         await userEvent.click(canvas.getByRole("button", { name: "Reset" }));
         await waitFor(() => expect(time).toHaveValue(""));
     },

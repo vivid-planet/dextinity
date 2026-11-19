@@ -109,7 +109,7 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
     const [open, setOpen] = useState(false);
     const [timeListOpen, setTimeListOpen] = useState(false);
     // A time typed before there is a day, used once a day is chosen
-    const [pendingTime, setPendingTime] = useState<TimeOfDay | null>(null);
+    const [pendingTime, setPendingTime] = useState<{ time: TimeOfDay; value: string | null } | null>(null);
     // A day chosen while the kept time is disabled on it, used once an allowed time is set
     const [pendingDay, setPendingDay] = useState<{ date: IsoDate; value: string | null } | null>(null);
     const inputRef = useRef<HTMLInputElement | null>(null);
@@ -127,7 +127,10 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
     );
 
     const current = splitDateTime(value);
-    const time = current?.time ?? pendingTime;
+    if (pendingTime != null && pendingTime.value !== value) {
+        setPendingTime(null);
+    }
+    const time = current?.time ?? pendingTime?.time ?? null;
     if (pendingDay != null && pendingDay.value !== value) {
         setPendingDay(null);
     }
@@ -154,7 +157,7 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
             return invalidTimeMessage(locale, labels);
         }
         if (date == null) {
-            setPendingTime(parsed);
+            setPendingTime({ time: parsed, value });
         } else if (isTimeDisabledOn(date, parsed)) {
             return labels.timeDisabled(formatTime(parsed, locale));
         } else {
@@ -217,7 +220,7 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
     const chooseTime = (nextTime: TimeOfDay) => {
         timeDraft.reset();
         if (date == null) {
-            setPendingTime(nextTime);
+            setPendingTime({ time: nextTime, value });
         } else {
             change(date, nextTime);
         }

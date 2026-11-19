@@ -29,17 +29,23 @@
 
 .toolbar {
     display: flex;
-    gap: 16px;
+    gap: 12px;
     align-items: center;
     justify-content: space-between;
+    min-inline-size: 0;
     padding: 6px 12px;
     border-block-end: var(--dextinity-line-width) solid var(--dextinity-color-line);
     background: var(--dextinity-color-surface);
+
+    @media (width < 640px) {
+        gap: 4px;
+        padding-inline: 6px;
+    }
 }
 
 .toolbarGroup {
     display: flex;
-    gap: 6px;
+    gap: 4px;
     align-items: center;
     min-inline-size: 0;
 }
@@ -48,46 +54,24 @@
     display: block;
     flex: none;
     block-size: 30px;
+
+    // Only the sign, the left square of the logo, where the full logo doesn't fit
+    @media (width < 900px) {
+        inline-size: 30px;
+        object-fit: cover;
+        object-position: left;
+    }
 }
 
-.headingStory {
-    overflow: hidden;
-    padding-inline-start: 12px;
-    border-inline-start: var(--dextinity-line-width) solid var(--dextinity-color-line);
-    color: var(--dextinity-color-text-subtle);
-    font-size: 12px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.viewportSelect {
-    inline-size: 190px;
-}
-
-.zoomSelect {
-    inline-size: 90px;
-}
-
-.brandSelect {
-    inline-size: 170px;
-}
-
-.sizeInput {
-    inline-size: 72px;
-}
-
-.toolbarDivider {
-    align-self: stretch;
-    inline-size: var(--dextinity-line-width);
-    margin-inline: 4px;
-    background: var(--dextinity-color-line);
-}
-
-.times {
-    color: var(--dextinity-color-text-subtle);
+// The appearance popover has the color scheme too, for where it doesn't fit here
+.colorScheme {
+    @media (width < 640px) {
+        display: none;
+    }
 }
 
 .body {
+    position: relative;
     display: flex;
     min-block-size: 0;
 }
@@ -98,6 +82,22 @@
     flex-direction: column;
     min-block-size: 0;
     background: var(--dextinity-color-surface);
+
+    &[data-overlay] {
+        position: absolute;
+        z-index: 2;
+        inset-block: 0;
+        inset-inline-start: 0;
+        inline-size: min(320px, calc(100% - 48px));
+        box-shadow: 0 8px 32px color-mix(in oklch, var(--dextinity-color-text) 18%, transparent);
+    }
+}
+
+.panelBackdrop {
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+    background: color-mix(in oklch, var(--dextinity-color-text) 20%, transparent);
 }
 
 .panelHandle {
@@ -165,6 +165,10 @@
     overflow: auto;
     place-items: center;
     padding: 48px;
+
+    @media (width < 760px) {
+        padding: 44px 16px 16px;
+    }
     background-color: var(--dextinity-color-surface-sunken);
     background-image: radial-gradient(color-mix(in oklch, var(--dextinity-color-text) 14%, transparent) 1px, transparent 1px);
     background-size: 16px 16px;
@@ -177,12 +181,21 @@
 .frameLabel {
     position: absolute;
     inset-block-end: 100%;
-    inset-inline-start: 0;
+    inset-inline: 0;
+    display: flex;
+    gap: 12px;
+    justify-content: space-between;
     padding-block-end: 6px;
     color: var(--dextinity-color-text-subtle);
     font-family: var(--dextinity-font-family-mono);
     font-size: 11px;
     white-space: nowrap;
+}
+
+.frameStory {
+    overflow: hidden;
+    color: var(--dextinity-color-text);
+    text-overflow: ellipsis;
 }
 
 .frame {

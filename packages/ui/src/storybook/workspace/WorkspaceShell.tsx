@@ -1,7 +1,6 @@
 import {
     type KeyboardEvent as ReactKeyboardEvent,
     type PointerEvent as ReactPointerEvent,
-    type ReactNode,
     useEffect,
     useLayoutEffect,
     useMemo,
@@ -9,16 +8,15 @@ import {
     useState,
 } from "react";
 
+import { useMediaQuery } from "../../components/appShell/useMediaQuery";
 import { Icon } from "../../components/icon/Icon";
 import { IconButton } from "../../components/iconButton/IconButton";
 import { Input } from "../../components/input/Input";
-import { NumberInput } from "../../components/numberInput/NumberInput";
 import { SegmentedControl } from "../../components/segmentedControl/SegmentedControl";
-import { Select } from "../../components/select/Select";
 import { Theme } from "../../components/theme/Theme";
 import { getExpandableTreeNodeIds, TreeView } from "../../components/treeView/TreeView";
 import { TreeViewExpandButtons } from "../../components/treeViewExpandButtons/TreeViewExpandButtons";
-import type { ThemeColorScheme, ThemeDensity } from "../../theme/types";
+import type { ThemeColorScheme } from "../../theme/types";
 import { brandSetting } from "../brand";
 import { colorSchemeSetting } from "../colorScheme";
 import { densitySetting } from "../density";
@@ -27,45 +25,15 @@ import { buildStoryTree, getStoryFolderIds, type IndexedStory } from "./storyTre
 import { type InspectedComponent, useCanvasInspector } from "./useCanvasInspector";
 import { workspaceLogo } from "./workspaceLogo";
 import styles from "./WorkspaceShell.module.scss";
-import { defaultWorkspaceState, useWorkspaceState, type WorkspaceZoom } from "./workspaceState";
+import { defaultWorkspaceState, useWorkspaceState } from "./workspaceState";
+import { AppearanceControl, colorSchemeOptions, minFrameSize, MoreActionsMenu, ViewportControl } from "./WorkspaceToolbarControls";
 
 const shellStoryId = "workspace-shell--shell";
-const minFrameSize = 280;
-const canvasPadding = 48;
+const narrowQuery = "(width < 760px)";
 const minPanelWidth = 260;
 const maxPanelWidth = 520;
 const panelKeyboardStep = 20;
 const inspectLabelHeight = 18;
-
-// The widths sit on both sides of the app shell's breakpoints at 768px and 1280px
-const viewportPresets = [
-    { value: "desktop-large", label: "Desktop large · 1920", width: 1920, height: 1080 },
-    { value: "desktop", label: "Desktop · 1440", width: 1440, height: 900 },
-    { value: "laptop", label: "Laptop · 1280", width: 1280, height: 800 },
-    { value: "laptop-small", label: "Small laptop · 1024", width: 1024, height: 768 },
-    { value: "tablet", label: "Tablet · 768", width: 768, height: 1024 },
-    { value: "phone", label: "Phone · 390", width: 390, height: 844 },
-];
-
-const zoomOptions: { value: WorkspaceZoom; label: string }[] = [
-    { value: "fit", label: "Fit" },
-    { value: "0.5", label: "50 %" },
-    { value: "0.75", label: "75 %" },
-    { value: "1", label: "100 %" },
-    { value: "1.5", label: "150 %" },
-];
-
-const colorSchemeOptions: { value: ThemeColorScheme; icon: ReactNode; "aria-label": string }[] = [
-    { value: "light", icon: <Icon name="sun" />, "aria-label": "Light" },
-    { value: "dark", icon: <Icon name="moon" />, "aria-label": "Dark" },
-    { value: "high-contrast", icon: <Icon name="contrast" />, "aria-label": "High contrast" },
-];
-
-const densityOptions: { value: ThemeDensity; icon: ReactNode; "aria-label": string }[] = [
-    { value: "comfortable", icon: <Icon name="density-comfortable" />, "aria-label": "Comfortable" },
-    { value: "standard", icon: <Icon name="density-standard" />, "aria-label": "Standard" },
-    { value: "compact", icon: <Icon name="density-compact" />, "aria-label": "Compact" },
-];
 
 interface StoryIndex {
     entries: Record<string, { id: string; title: string; name: string; type: string; tags?: string[] }>;
@@ -150,6 +118,23 @@ export function WorkspaceShell() {
     const frameRef = useRef<HTMLIFrameElement>(null);
     const treeRef = useRef<HTMLUListElement>(null);
     const canvasSize = useElementSize(canvasElement);
+    const narrow = useMediaQuery(narrowQuery);
+    // On a narrow screen, the stories cover the canvas, so they start closed and close again once a story is picked
+    const [overlayPanelOpen, setOverlayPanelOpen] = useState(false);
+    const panelVisible = narrow ? overlayPanelOpen : state.panelOpen;
+
+    function togglePanel() {
+        if (narrow) {
+            setOverlayPanelOpen(!overlayPanelOpen);
+        } else {
+            updateState({ panelOpen: !state.panelOpen });
+        }
+    }
+
+    function changeColorScheme(value: ThemeColorScheme) {
+        colorSchemeSetting.store(value);
+        setColorScheme(value);
+    }
 
     useEffect(() => {
         void fetchStories().then(setStories);
@@ -190,6 +175,7 @@ export function WorkspaceShell() {
             setStoryHistory((history) => [...history, storyId]);
         }
         setInspecting(false);
+        setOverlayPanelOpen(false);
         updateState({ storyId: nodeId, expandedIds: [...new Set([...expandedIds, ...getStoryFolderIds(story)])] });
     }
 
@@ -249,9 +235,10 @@ export function WorkspaceShell() {
 
     useEffect(applyDensityToFrame);
 
-    const fitScale = Math.min(1, (canvasSize.width - canvasPadding * 2) / state.width, (canvasSize.height - canvasPadding * 2) / state.height);
+    // Matches the canvas padding in the stylesheet: the room around the frame, plus the frame label above it
+    const canvasInset = narrow ? { inline: 16, block: 16 * 2 + 28 } : { inline: 48, block: 48 * 2 };
+    const fitScale = Math.min(1, (canvasSize.width - canvasInset.inline * 2) / state.width, (canvasSize.height - canvasInset.block) / state.height);
     const scale = state.zoom === "fit" ? Math.max(fitScale, 0.1) : Number(state.zoom);
-    const activePreset = viewportPresets.find((preset) => preset.width === state.width && preset.height === state.height);
     const storyUrl = storyId ? `iframe.html?id=${encodeURIComponent(storyId)}&viewMode=story` : null;
 
     function startFrameResize(edge: ResizeEdge, event: ReactPointerEvent) {
@@ -297,13 +284,13 @@ export function WorkspaceShell() {
                         <IconButton
                             variant="text"
                             color="secondary"
-                            aria-label={state.panelOpen ? "Hide stories" : "Show stories"}
-                            onClick={() => updateState({ panelOpen: !state.panelOpen })}
+                            aria-label={panelVisible ? "Hide stories" : "Show stories"}
+                            aria-expanded={panelVisible}
+                            onClick={togglePanel}
                         >
-                            <Icon name={state.panelOpen ? "sidebar-close" : "sidebar-open"} />
+                            <Icon name={panelVisible ? "sidebar-close" : "sidebar-open"} />
                         </IconButton>
                         <img className={styles.logo} src={workspaceLogo} alt="Next UI Workspace" />
-                        <span className={styles.headingStory}>{currentStory ? `${currentStory.title} · ${currentStory.name}` : "…"}</span>
                     </div>
 
                     <div className={styles.toolbarGroup}>
@@ -325,108 +312,52 @@ export function WorkspaceShell() {
                         >
                             <Icon name="back" />
                         </IconButton>
-                        <span className={styles.toolbarDivider} />
-                        <Select
-                            name="viewport"
-                            aria-label="Viewport"
-                            className={styles.viewportSelect}
-                            placeholder={`Custom · ${state.width}`}
-                            options={viewportPresets.map(({ value, label }) => ({ value, label }))}
-                            value={activePreset?.value ?? null}
-                            onChange={(value) => {
-                                const preset = viewportPresets.find((candidate) => candidate.value === value);
-                                if (preset) {
-                                    updateState({ width: preset.width, height: preset.height });
-                                }
-                            }}
-                        />
-                        <NumberInput
-                            aria-label="Width"
-                            className={styles.sizeInput}
-                            min={minFrameSize}
-                            steppers={false}
-                            value={state.width}
-                            onChange={(width) => width && updateState({ width })}
-                        />
-                        <span className={styles.times}>×</span>
-                        <NumberInput
-                            aria-label="Height"
-                            className={styles.sizeInput}
-                            min={minFrameSize}
-                            steppers={false}
-                            value={state.height}
-                            onChange={(height) => height && updateState({ height })}
-                        />
-                        <IconButton
-                            variant="text"
-                            color="secondary"
-                            aria-label="Swap width and height"
-                            onClick={() => updateState({ width: state.height, height: state.width })}
-                        >
-                            <Icon name="swap" />
-                        </IconButton>
-                        <Select
-                            name="zoom"
-                            aria-label="Zoom"
-                            className={styles.zoomSelect}
-                            options={zoomOptions}
-                            value={state.zoom}
-                            onChange={(zoom) => zoom && updateState({ zoom })}
+                        <ViewportControl
+                            width={state.width}
+                            height={state.height}
+                            zoom={state.zoom}
+                            onSizeChange={updateState}
+                            onZoomChange={(zoom) => updateState({ zoom })}
                         />
                     </div>
 
                     <div className={styles.toolbarGroup}>
-                        <Select
-                            name="brand"
-                            aria-label="Theme"
-                            className={styles.brandSelect}
-                            options={brandSetting.options.map(({ value, title }) => ({ value, label: title }))}
-                            value={brand}
-                            onChange={(value) => {
-                                if (value) {
-                                    brandSetting.store(value);
-                                    setBrand(brandSetting.get());
-                                }
-                            }}
-                        />
                         <SegmentedControl
                             size="small"
                             aria-label="Color scheme"
+                            className={styles.colorScheme}
                             options={colorSchemeOptions}
                             value={colorScheme}
-                            onChange={(value) => {
-                                colorSchemeSetting.store(value);
-                                setColorScheme(value);
-                            }}
+                            onChange={changeColorScheme}
                         />
-                        <SegmentedControl
-                            size="small"
-                            aria-label="Density"
-                            options={densityOptions}
-                            value={density}
-                            onChange={(value) => {
+                        <AppearanceControl
+                            brand={brand}
+                            onBrandChange={(value) => {
+                                brandSetting.store(value);
+                                setBrand(brandSetting.get());
+                            }}
+                            colorScheme={colorScheme}
+                            onColorSchemeChange={changeColorScheme}
+                            density={density}
+                            onDensityChange={(value) => {
                                 densitySetting.store(value);
                                 setDensity(value);
                             }}
                         />
-                        <IconButton variant="text" color="secondary" aria-label="Reload story" onClick={() => setReloadKey((key) => key + 1)}>
-                            <Icon name="refresh" />
-                        </IconButton>
-                        <IconButton
-                            variant="text"
-                            color="secondary"
-                            aria-label="Open story in a new tab"
-                            disabled={!storyUrl}
-                            onClick={() => storyUrl && window.open(storyUrl, "_blank")}
-                        >
-                            <Icon name="external-link" />
-                        </IconButton>
+                        <MoreActionsMenu storyUrl={storyUrl} onReload={() => setReloadKey((key) => key + 1)} />
                     </div>
                 </header>
 
                 <div className={styles.body}>
-                    {state.panelOpen && (
-                        <nav className={styles.panel} aria-label="Stories" style={{ inlineSize: state.panelWidth }}>
+                    {panelVisible && narrow && <div className={styles.panelBackdrop} onClick={() => setOverlayPanelOpen(false)} />}
+                    {panelVisible && (
+                        <nav
+                            className={styles.panel}
+                            aria-label="Stories"
+                            data-overlay={narrow || undefined}
+                            style={{ inlineSize: narrow ? undefined : state.panelWidth }}
+                            onKeyDown={(event) => narrow && event.key === "Escape" && setOverlayPanelOpen(false)}
+                        >
                             <div className={styles.panelSearch}>
                                 <Input
                                     aria-label="Search stories"
@@ -479,7 +410,7 @@ export function WorkspaceShell() {
                             </div>
                         </nav>
                     )}
-                    {state.panelOpen && (
+                    {panelVisible && !narrow && (
                         <div
                             role="separator"
                             aria-orientation="vertical"
@@ -498,8 +429,12 @@ export function WorkspaceShell() {
                     <div ref={setCanvasElement} className={styles.canvas}>
                         <div className={styles.stage} style={{ width: state.width * scale, height: state.height * scale }}>
                             <div className={styles.frameLabel}>
-                                {activePreset?.label.split(" · ")[0] ?? "Custom"} · {state.width} × {state.height}
-                                {state.zoom === "fit" && ` · ${Math.round(scale * 100)} %`}
+                                <span className={styles.frameStory}>
+                                    {currentStory ? `${currentStory.title.split("/").at(-1)} · ${currentStory.name}` : ""}
+                                </span>
+                                <span>
+                                    {state.width} × {state.height} · {Math.round(scale * 100)} %
+                                </span>
                             </div>
                             <div className={styles.frame} style={{ width: state.width, height: state.height, transform: `scale(${scale})` }}>
                                 {storyUrl && (

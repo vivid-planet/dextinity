@@ -1,0 +1,82 @@
+.viewportText {
+    display: inline-flex;
+    gap: 6px;
+    align-items: baseline;
+    white-space: nowrap;
+}
+
+.viewportSize {
+    color: var(--dextinity-color-text-subtle);
+    font-variant-numeric: tabular-nums;
+}
+
+// The size says enough on narrow screens, and the icon names the kind of device
+@media (width < 1100px) {
+    .viewportName {
+        display: none;
+    }
+}
+
+@media (width < 640px) {
+    .viewportText {
+        display: none;
+    }
+}
+
+.popoverBody {
+    display: grid;
+    gap: 14px;
+    inline-size: min(340px, calc(100vw - 48px));
+}
+
+.presets {
+    display: grid;
+    gap: 2px;
+}
+
+.preset {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 10px;
+    align-items: center;
+    padding: 6px 8px;
+    border: 0;
+    border-radius: var(--dextinity-radius-item);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+
+    &:hover {
+        background: var(--dextinity-color-fill-hover);
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--dextinity-color-focus);
+        outline-offset: -2px;
+    }
+
+    &[aria-pressed="true"] {
+        background: var(--dextinity-color-accent-soft);
+        color: var(--dextinity-color-accent-text);
+        font-weight: 600;
+    }
+}
+
+.presetSize {
+    color: var(--dextinity-color-text-subtle);
+    font-variant-numeric: tabular-nums;
+    font-weight: 400;
+}
+
+.sizeRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 8px;
+    align-items: end;
+}
+
+.sizeField {
+    min-inline-size: 0;
+}

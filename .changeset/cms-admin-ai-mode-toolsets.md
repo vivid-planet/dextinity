@@ -2,14 +2,14 @@
 "@dextinity/cms-admin": minor
 ---
 
-Add AI Mode scopes, so that a page can offer its context and tools to the chat of the Dextinity AI Hub
+Add AI Mode toolsets, so that a page can offer its context and tools to the chat of the Dextinity AI Hub
 
-A page registers an AI Mode scope with `useAiModeScope`, or with the `AiModeScope` component for a scope that other scopes are rendered in. A scope has a description of what the user is looking at, a small context, and the tools the agent can call while the page is open. The chat that reads them is set up by the project: `AiModeScopesProvider` holds the mounted scopes, and `useAiModeScopesStore` reads them. Without a provider, a scope does nothing.
+A page registers an AI Mode toolset with `useAiModeToolset`, or with the `AiModeToolset` component for a toolset that other toolsets are rendered in. A toolset has a description of what the user is looking at, a small context, and the tools the agent can call while the page is open. The chat that reads them is set up by the project: `AiModeToolsetsProvider` holds the mounted toolsets, and `useAiModeToolsetsStore` reads them. Without a provider, a toolset does nothing.
 
 An entity's grid and form get their tools without writing any:
 
-- `useAiModeDataGridScope` lets the agent read the rows of a grid with server-side filtering, sorting, and pagination, change its search, filters, sorting, and page, and open a row.
-- `AiModeFormScope`, rendered inside a `FinalForm`, lets the agent read the form's fields and fill them in as unsaved changes, which the user saves, including a single block and the blocks of a blocks block.
+- `useAiModeDataGridToolset` lets the agent read the rows of a grid with server-side filtering, sorting, and pagination, change its search, filters, sorting, and page, and open a row.
+- `AiModeFormToolset`, rendered inside a `FinalForm`, lets the agent read the form's fields and fill them in as unsaved changes, which the user saves, including a single block and the blocks of a blocks block.
 
 The grid and the form of the redirects offer their tools this way.
 
@@ -17,7 +17,7 @@ The grid and the form of the redirects offer their tools this way.
 
 ```tsx
 // In the component that renders the grid
-useAiModeDataGridScope({
+useAiModeDataGridToolset({
     entityName: "news",
     entityLabel: "news articles",
     columns,
@@ -29,7 +29,7 @@ useAiModeDataGridScope({
 });
 
 // Inside the FinalForm of the form
-<AiModeFormScope
+<AiModeFormToolset
     entityName="news"
     entityLabel="news article"
     id={id}

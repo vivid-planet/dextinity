@@ -2,14 +2,14 @@ import type { GridColDef } from "@dextinity/admin";
 import type { GridFilterModel } from "@mui/x-data-grid-pro";
 import { useRef } from "react";
 
-import { useAiModeScope } from "./AiModeScopes";
+import { useAiModeToolset } from "./AiModeToolsets";
 import { type AiModeDataGridState, createDataGridTools } from "./dataGridTools";
 
 /**
  * Lets the AI Mode read and change the view of a grid with server-side filtering, sorting, and pagination, and open its
  * rows. Call it in the component that renders the grid, with the props of `useDataGridRemote` and the rows of the grid's query.
  */
-export function useAiModeDataGridScope({
+export function useAiModeDataGridToolset({
     entityName,
     entityLabel,
     columns,
@@ -19,7 +19,7 @@ export function useAiModeDataGridScope({
     isLoading,
     openForm,
 }: {
-    /** Names the scope and the tools, in snake case, e.g. "news" or "product_variant". */
+    /** Names the toolset and the tools, in snake case, e.g. "news" or "product_variant". */
     entityName: string;
     /** Names the entities for the agent, in the plural, e.g. "news articles". */
     entityLabel: string;
@@ -38,7 +38,7 @@ export function useAiModeDataGridScope({
 
     const { filterModel, sortModel, paginationModel } = state;
 
-    useAiModeScope({
+    useAiModeToolset({
         id: `${entityName}_grid`,
         description: `The grid of the ${entityLabel}, where the user finds them and opens one to edit it.`,
         context: {

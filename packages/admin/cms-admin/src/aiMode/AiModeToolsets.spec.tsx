@@ -1,0 +1,127 @@
+import { type PropsWithChildren, type ReactNode, StrictMode } from "react";
+import { render } from "test-utils";
+import { afterEach, describe, expect, it, vi } from "vitest";
+
+import {
+    type AiModeTool,
+    AiModeToolset,
+    type AiModeToolsetOptions,
+    AiModeToolsetsProvider,
+    type AiModeToolsetsStore,
+    useAiModeToolset,
+    useAiModeToolsetsStore,
+} from "./AiModeToolsets";
+
+function createTool(name: string, handler: AiModeTool["handler"] = () => name): AiModeTool {
+    return { name, description: `The tool ${name}`, inputSchema: { type: "object", properties: {} }, handler };
+}
+
+function RegisteredToolset({ toolset }: { toolset: AiModeToolsetOptions | null }) {
+    useAiModeToolset(toolset);
+    return null;
+}
+
+let store: AiModeToolsetsStore;
+
+function CaptureStore({ children }: PropsWithChildren) {
+    store = useAiModeToolsetsStore();
+    return <>{children}</>;
+}
+
+function renderToolsets(children: ReactNode, { isStrictMode = false }: { isStrictMode?: boolean } = {}) {
+    const tree = (node: ReactNode) => (
+        <AiModeToolsetsProvider>
+            <CaptureStore>{node}</CaptureStore>
+        </AiModeToolsetsProvider>
+    );
+    const result = render(isStrictMode ? <StrictMode>{tree(children)}</StrictMode> : tree(children));
+    return { ...result, rerender: (node: ReactNode) => result.rerender(isStrictMode ? <StrictMode>{tree(node)}</StrictMode> : tree(node)) };
+}
+
+describe("AI Mode toolsets", () => {
+    afterEach(() => {
+        vi.restoreAllMocks();
+    });
+
+    // React runs the effects of children before those of their parents, so the registration order alone would put
+    // the edit page before the page tree it is opened in.
+    it("orders a toolset below the toolset it is rendered in, whatever the order they register in", () => {
+        renderToolsets(
+            <AiModeToolset id="pageTree" description="Page tree">
+                <RegisteredToolset toolset={{ id: "page", description: "Page" }} />
+            </AiModeToolset>,
+        );
+
+        expect(store.getToolsets().map(({ id }) => id)).toEqual(["pageTree", "page"]);
+    });
+
+    it("unregisters a toolset when it unmounts or is passed null, also in StrictMode", () => {
+        const { rerender } = renderToolsets(<RegisteredToolset toolset={{ id: "page", description: "Page" }} />, { isStrictMode: true });
+        expect(store.getToolsets()).toHaveLength(1);
+
+        rerender(<RegisteredToolset toolset={null} />);
+        expect(store.getToolsets()).toHaveLength(0);
+
+        rerender(<RegisteredToolset toolset={{ id: "page", description: "Page" }} />);
+        expect(store.getToolsets()).toHaveLength(1);
+
+        rerender(null);
+        expect(store.getToolsets()).toHaveLength(0);
+    });
+
+    it("notifies only of a change the agent sees, not of new handlers", () => {
+        const { rerender } = renderToolsets(
+            <RegisteredToolset toolset={{ id: "page", description: "Page", context: { hasChanges: false }, tools: [createTool("a")] }} />,
+        );
+        const listener = vi.fn();
+        store.subscribe(listener);
+
+        rerender(
+            <RegisteredToolset
+                toolset={{ id: "page", description: "Page", context: { hasChanges: false }, tools: [createTool("a", () => "new")] }}
+            />,
+        );
+        expect(listener).not.toHaveBeenCalled();
+
+        rerender(<RegisteredToolset toolset={{ id: "page", description: "Page", context: { hasChanges: true }, tools: [createTool("a")] }} />);
+        expect(listener).toHaveBeenCalledTimes(1);
+    });
+
+    it("hands out the handler of the latest render", async () => {
+        const { rerender } = renderToolsets(
+            <RegisteredToolset toolset={{ id: "page", description: "Page", tools: [createTool("a", () => "first")] }} />,
+        );
+
+        rerender(<RegisteredToolset toolset={{ id: "page", description: "Page", tools: [createTool("a", () => "second")] }} />);
+
+        expect(await store.getTool("a")?.handler({}, { clearTextSelection: vi.fn() })).toBe("second");
+    });
+
+    it("leaves out a tool whose name an outer toolset already has, and says so", () => {
+        const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
+
+        renderToolsets(
+            <AiModeToolset id="pageTree" description="Page tree" tools={[createTool("a", () => "outer")]}>
+                <RegisteredToolset toolset={{ id: "page", description: "Page", tools: [createTool("a", () => "inner"), createTool("b")] }} />
+            </AiModeToolset>,
+        );
+
+        expect(store.getTools().map(({ name }) => name)).toEqual(["a", "b"]);
+        expect(store.getTool("a")?.handler({}, { clearTextSelection: vi.fn() })).toBe("outer");
+        expect(consoleError).toHaveBeenCalledWith(expect.stringContaining('The AI Mode toolset "page" has a tool "a"'));
+    });
+
+    it("lists the tools of the mounted toolsets only", () => {
+        const { rerender } = renderToolsets(
+            <AiModeToolset id="pageTree" description="Page tree" tools={[createTool("open_page")]}>
+                <RegisteredToolset toolset={{ id: "page", description: "Page", tools: [createTool("edit_blocks")] }} />
+            </AiModeToolset>,
+        );
+        expect(store.getTools().map(({ name }) => name)).toEqual(["open_page", "edit_blocks"]);
+
+        rerender(<AiModeToolset id="pageTree" description="Page tree" tools={[createTool("open_page")]} />);
+
+        expect(store.getTools().map(({ name }) => name)).toEqual(["open_page"]);
+        expect(store.getTool("edit_blocks")).toBeUndefined();
+    });
+});

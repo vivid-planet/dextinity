@@ -10,7 +10,7 @@ import {
     useStackSwitchApi,
 } from "@dextinity/admin";
 import {
-    AiModeFormScope,
+    AiModeFormToolset,
     type BlockState,
     createFinalFormBlock,
     DamImageBlock,
@@ -172,7 +172,7 @@ export function ProductVariantForm({ id, productId }: FormProps) {
             {() => (
                 <>
                     {saveConflict.dialogs}
-                    <AiModeFormScope
+                    <AiModeFormToolset
                         entityName="product_variant"
                         entityLabel="product variant"
                         id={id}

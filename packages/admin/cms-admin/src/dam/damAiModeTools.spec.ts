@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import type { AiModeTool } from "../aiMode/AiModeScopes";
+import type { AiModeTool } from "../aiMode/AiModeToolsets";
 import { createDamTools, type DamAiModeItem } from "./damAiModeTools";
 
 const items: DamAiModeItem[] = [

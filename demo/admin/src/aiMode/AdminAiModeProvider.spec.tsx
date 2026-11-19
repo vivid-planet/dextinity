@@ -1,4 +1,4 @@
-import { CurrentUserContext, type CurrentUserInterface, type Permission, useAiModeScope } from "@dextinity/cms-admin";
+import { CurrentUserContext, type CurrentUserInterface, type Permission, useAiModeToolset } from "@dextinity/cms-admin";
 import { renderAdmin } from "@src/testing/renderAdmin";
 import { screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
@@ -28,31 +28,31 @@ function MasterHeaderAiModeItem() {
     return isEnabled ? <AiModeHeaderItem /> : null;
 }
 
-function PageWithAiModeScope() {
-    useAiModeScope({ id: "page", description: "A page" });
+function PageWithAiModeToolset() {
+    useAiModeToolset({ id: "page", description: "A page" });
     return null;
 }
 
-function renderHeaderItem({ hasScope = true, permissions = ["aiHub"] }: { hasScope?: boolean; permissions?: Permission[] } = {}) {
+function renderHeaderItem({ hasToolset = true, permissions = ["aiHub"] }: { hasToolset?: boolean; permissions?: Permission[] } = {}) {
     renderAdmin(
         <CurrentUserContext.Provider value={{ currentUser, isAllowed: (user, permission) => permissions.includes(permission) }}>
             <AdminAiModeProvider>
                 <MasterHeaderAiModeItem />
-                {hasScope && <PageWithAiModeScope />}
+                {hasToolset && <PageWithAiModeToolset />}
             </AdminAiModeProvider>
         </CurrentUserContext.Provider>,
     );
 }
 
 describe("AdminAiModeProvider", () => {
-    it("makes the AI Mode available on a page that registers an AI Mode scope", () => {
+    it("makes the AI Mode available on a page that registers an AI Mode toolset", () => {
         renderHeaderItem();
 
         expect(screen.getByRole("switch", { name: "AI Companion" })).toBeEnabled();
     });
 
-    it("makes the AI Mode unavailable on a page without an AI Mode scope", () => {
-        renderHeaderItem({ hasScope: false });
+    it("makes the AI Mode unavailable on a page without an AI Mode toolset", () => {
+        renderHeaderItem({ hasToolset: false });
 
         expect(screen.getByRole("switch", { name: "AI Companion" })).toBeDisabled();
     });

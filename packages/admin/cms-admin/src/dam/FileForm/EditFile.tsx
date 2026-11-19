@@ -24,7 +24,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { Link as RouterLink } from "react-router";
 import ReactSplit from "react-split";
 
-import { AiModeFormScope } from "../../aiMode/AiModeFormScope";
+import { AiModeFormToolset } from "../../aiMode/AiModeFormToolset";
 import type { AiModeFormField } from "../../aiMode/formTools";
 import { fullCropArea } from "../../common/image/cropArea";
 import { useContentScope } from "../../contentScope/Provider";
@@ -257,7 +257,7 @@ const EditFileInner = ({ file, id, contentScopeIndicator }: EditFileInnerProps) 
         >
             {() => (
                 <>
-                    {isAiModeEnabled && <AiModeFormScope entityName="dam_file" entityLabel="DAM file" id={id} fields={aiModeFields} />}
+                    {isAiModeEnabled && <AiModeFormToolset entityName="dam_file" entityLabel="DAM file" id={id} fields={aiModeFields} />}
                     <Toolbar scopeIndicator={contentScopeIndicator}>
                         <ToolbarBackButton />
                         <ToolbarTitleItem>{file.name}</ToolbarTitleItem>

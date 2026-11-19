@@ -34,7 +34,7 @@ import {
 import { type JSX, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
-import { useAiModeDataGridScope } from "../aiMode/useAiModeDataGridScope";
+import { useAiModeDataGridToolset } from "../aiMode/useAiModeDataGridToolset";
 import { BlockPreviewContent } from "../blocks/common/blockRow/BlockPreviewContent";
 import type { BlockInterface } from "../blocks/types";
 import { DataGrid } from "../dataGrid/DataGrid";
@@ -273,7 +273,7 @@ export function RedirectsGrid({ linkBlock, scope }: Props): JSX.Element {
         notifyOnNetworkStatusChange: false,
     });
     const stackSwitchApi = useStackSwitchApi();
-    useAiModeDataGridScope({
+    useAiModeDataGridToolset({
         entityName: "redirect",
         entityLabel: "redirects",
         columns,

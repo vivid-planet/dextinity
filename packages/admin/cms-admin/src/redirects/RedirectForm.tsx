@@ -22,7 +22,7 @@ import { deepEqual } from "fast-equals";
 import { type JSX, useMemo } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
-import { AiModeFormScope } from "../aiMode/AiModeFormScope";
+import { AiModeFormToolset } from "../aiMode/AiModeFormToolset";
 import type { AiModeFormField } from "../aiMode/formTools";
 import { createFinalFormBlock } from "../blocks/form/createFinalFormBlock";
 import type { BlockInterface, BlockState } from "../blocks/types";
@@ -251,7 +251,7 @@ export const RedirectForm = ({ mode, id, linkBlock, scope }: Props): JSX.Element
         >
             {({ values, pristine, hasValidationErrors, submitting, handleSubmit, validating }) => (
                 <>
-                    <AiModeFormScope entityName="redirect" entityLabel="redirect" id={id} fields={aiModeFields} />
+                    <AiModeFormToolset entityName="redirect" entityLabel="redirect" id={id} fields={aiModeFields} />
                     <Toolbar scopeIndicator={<ContentScopeIndicator scope={scope} />}>
                         <ToolbarBackButton />
                         <ToolbarTitleItem>

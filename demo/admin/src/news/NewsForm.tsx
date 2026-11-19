@@ -12,7 +12,7 @@ import {
     useStackSwitchApi,
 } from "@dextinity/admin";
 import {
-    AiModeFormScope,
+    AiModeFormToolset,
     type BlockState,
     createFinalFormBlock,
     DamImageBlock,
@@ -140,7 +140,7 @@ export function NewsForm({ onCreate, id }: FormProps) {
             {() => (
                 <>
                     {saveConflict.dialogs}
-                    <AiModeFormScope
+                    <AiModeFormToolset
                         entityName="news"
                         entityLabel="news article"
                         id={id}

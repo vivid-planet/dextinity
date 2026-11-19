@@ -34,7 +34,7 @@ import { type FileRejection, useDropzone } from "react-dropzone";
 import { FormattedDate, FormattedMessage, useIntl } from "react-intl";
 import { useDebouncedCallback } from "use-debounce";
 
-import { useAiModeScope } from "../../aiMode/AiModeScopes";
+import { useAiModeToolset } from "../../aiMode/AiModeToolsets";
 import { DataGrid } from "../../dataGrid/DataGrid";
 import type { GQLDamItemType } from "../../graphql.generated";
 import { useDamConfig } from "../config/damConfig";
@@ -456,7 +456,7 @@ const FolderDataGrid = ({
 
     const isAiModeEnabled = useIsDamAiModeEnabled();
     const currentFolder = currentFolderId !== undefined ? (currentFolderData?.damFolder ?? null) : null;
-    useAiModeScope(
+    useAiModeToolset(
         isAiModeEnabled
             ? {
                   id: "dam_grid",

@@ -1,21 +1,21 @@
-export { AiModeFormScope } from "./aiMode/AiModeFormScope";
+export { AiModeFormToolset } from "./aiMode/AiModeFormToolset";
 export {
-    AiModeScope,
-    type AiModeScopeOptions,
-    AiModeScopesProvider,
-    type AiModeScopesStore,
     type AiModeTool,
     type AiModeToolHelpers,
-    useAiModeScope,
-    useAiModeScopesStore,
-    useHasAiModeScopes,
-} from "./aiMode/AiModeScopes";
+    AiModeToolset,
+    type AiModeToolsetOptions,
+    AiModeToolsetsProvider,
+    type AiModeToolsetsStore,
+    useAiModeToolset,
+    useAiModeToolsetsStore,
+    useHasAiModeToolsets,
+} from "./aiMode/AiModeToolsets";
 export { blockEditOperationsSchema, describeBlockEditBatch, describeBlockEditResults, describeBlockSchemaLookup } from "./aiMode/blockEditTool";
 export type { BlocksBlockChild } from "./aiMode/blockProps";
 export { summarizeBlockState, summarizeSeoBlockState } from "./aiMode/blockStateSummary";
 export { asBlockEditOperations, type EditBlocks, planBlockEdits } from "./aiMode/editBlocks";
 export type { AiModeFormField } from "./aiMode/formTools";
-export { useAiModeDataGridScope } from "./aiMode/useAiModeDataGridScope";
+export { useAiModeDataGridToolset } from "./aiMode/useAiModeDataGridToolset";
 export { AnchorBlock } from "./blocks/AnchorBlock";
 export { BlockAdminComponentButton } from "./blocks/common/BlockAdminComponentButton";
 export { BlockAdminComponentNestedButton } from "./blocks/common/BlockAdminComponentNestedButton";

@@ -19,7 +19,7 @@ import {
     useStackSwitchApi,
 } from "@dextinity/admin";
 import { Add as AddIcon, Edit as EditIcon } from "@dextinity/admin-icons";
-import { BlockPreviewContent, DamImageBlock, useAiModeDataGridScope, useContentScope } from "@dextinity/cms-admin";
+import { BlockPreviewContent, DamImageBlock, useAiModeDataGridToolset, useContentScope } from "@dextinity/cms-admin";
 import { IconButton } from "@mui/material";
 import { DataGridPro, type DataGridProProps, type GridSlotsComponent } from "@mui/x-data-grid-pro";
 import { useMemo } from "react";
@@ -181,7 +181,7 @@ export function NewsGrid() {
     });
     const rowCount = useBufferedRowCount(data?.newsList.totalCount);
     const rows = data?.newsList.nodes ?? [];
-    useAiModeDataGridScope({
+    useAiModeDataGridToolset({
         entityName: "news",
         entityLabel: "news articles",
         columns,

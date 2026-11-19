@@ -29,7 +29,7 @@ import {
     summarizeBlockState,
     summarizeSeoBlockState,
     TranslateContentMenuItem,
-    useAiModeScope,
+    useAiModeToolset,
     useBlockContext,
     useBlockPreview,
     useBlocksConfig,
@@ -199,7 +199,7 @@ export const EditPage = ({ id }: Props) => {
         latestContentBlocksRef.current = document?.content.blocks;
     });
 
-    // Deliberately not memoized: useAiModeScope registers it again on every render, so the agent always reaches the
+    // Deliberately not memoized: useAiModeToolset registers it again on every render, so the agent always reaches the
     // callback of the latest one.
     const editBlocks: EditBlocks = async ({ operations }) => {
         const plannedContentBlocks = document?.content.blocks ?? [];
@@ -246,7 +246,7 @@ export const EditPage = ({ id }: Props) => {
               }
             : null;
 
-    useAiModeScope(
+    useAiModeToolset(
         aiModePageState && document
             ? {
                   id: "page",

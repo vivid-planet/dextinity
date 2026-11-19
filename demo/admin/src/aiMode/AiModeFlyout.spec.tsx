@@ -1,4 +1,4 @@
-import { AiModeScope, type AiModeTool, CurrentUserContext, type CurrentUserInterface, useAiModeScope } from "@dextinity/cms-admin";
+import { type AiModeTool, AiModeToolset, CurrentUserContext, type CurrentUserInterface, useAiModeToolset } from "@dextinity/cms-admin";
 import { renderAdmin } from "@src/testing/renderAdmin";
 import { fireEvent, screen } from "@testing-library/react";
 import { HTML5toTouch } from "rdndmb-html5-to-touch";
@@ -78,7 +78,7 @@ function OpenablePage() {
 }
 
 function Page({ title }: { title: string }) {
-    useAiModeScope({
+    useAiModeToolset({
         id: "page",
         description: "A page",
         context: { title },
@@ -114,11 +114,11 @@ function renderFlyout({ isStrictMode = false }: { isStrictMode?: boolean } = {})
             <DndProvider options={HTML5toTouch}>
                 <CaptureDragDropManager />
                 <AiModeProvider isEnabled isAvailable>
-                    <AiModeScope id="pageTree" description="The page tree" tools={[createTool("open_page")]}>
+                    <AiModeToolset id="pageTree" description="The page tree" tools={[createTool("open_page")]}>
                         <RemovableFlyout />
                         <OpenTopMenuButton />
                         <OpenablePage />
-                    </AiModeScope>
+                    </AiModeToolset>
                 </AiModeProvider>
             </DndProvider>
         </CurrentUserContext.Provider>,
@@ -188,7 +188,7 @@ describe("AiModeFlyout", () => {
         expect(bridge.setContext).toHaveBeenLastCalledWith(expect.objectContaining({ pathname: topMenuPath }));
     });
 
-    it("registers the tools of every mounted scope again when a scope mounts or unmounts", () => {
+    it("registers the tools of every mounted toolset again when a toolset mounts or unmounts", () => {
         renderFlyout();
 
         fireEvent.click(screen.getByRole("button", { name: "Toggle page" }));
@@ -223,7 +223,7 @@ describe("AiModeFlyout", () => {
         expect(await editPage?.handler({})).toBe("edit_page isn't available on the page that is open in the admin anymore.");
     });
 
-    it("pushes the mounted scopes with their context and the names of their tools", () => {
+    it("pushes the mounted toolsets with their context and the names of their tools", () => {
         vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
         renderFlyout();
 
@@ -232,7 +232,7 @@ describe("AiModeFlyout", () => {
 
         expect(bridge.setContext).toHaveBeenLastCalledWith(
             expect.objectContaining({
-                scopes: [
+                toolsets: [
                     { id: "pageTree", description: "The page tree", context: undefined, tools: ["open_page"] },
                     { id: "page", description: "A page", context: { title: "Home" }, tools: ["edit_page"] },
                 ],

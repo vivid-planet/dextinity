@@ -1,4 +1,4 @@
-import type { AiModeTool } from "../aiMode/AiModeScopes";
+import type { AiModeTool } from "../aiMode/AiModeToolsets";
 
 type DamFolderItem = { __typename: "DamFolder"; id: string; name: string; numberOfFiles: number; numberOfChildFolders: number };
 type DamFileItem = { __typename: "DamFile"; id: string; name: string; mimetype: string; archived: boolean; fileUrl: string };

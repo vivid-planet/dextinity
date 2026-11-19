@@ -10,6 +10,7 @@ import { type DateRangePosition, disabledDayBetween, disabledRangeDay, disabledR
 import styles from "./DateRangePicker.module.scss";
 import { formatDate, isIsoDate, type IsoDate, isWithin, localeWeekStart } from "./dateValues";
 import { readTypedDay } from "./typedDay";
+import { useFormReset } from "./useFormReset";
 import { type TextReading, useRejectedTextReread, useTextDraft } from "./useTextDraft";
 
 /**
@@ -93,7 +94,8 @@ function toRange(start: IsoDate | null, end: IsoDate | null): DateRange | null {
  * A range of days, typed in the locale's format or chosen in a calendar: the first click chooses the start, the second the end; with
  * only a start that can be chosen, the first click chooses the end. Typed text is read on blur or Enter; text that is no valid day, a
  * day that can't be chosen, or an end before the start stays in its input with an error and leaves the value unchanged until it is
- * corrected, or until the other end or the rules change to allow it.
+ * corrected, or until the other end or the rules change to allow it. Resetting the surrounding form discards the typed text; to discard
+ * it from code, render the picker with a new `key`.
  */
 export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps>(function DateRangePicker(
     {
@@ -192,6 +194,11 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
     const startDraft = useTextDraft(start == null ? "" : formatDate(start, locale), (text) => readDay(text, "start", endDraft));
     const endDraft = useTextDraft(end == null ? "" : formatDate(end, locale), (text) => readDay(text, "end", startDraft));
     useRejectedTextReread([startDraft, endDraft]);
+    useFormReset(inputRef, () => {
+        startDraft.reset();
+        endDraft.reset();
+        setPendingStart(null);
+    });
     const canBeChosenAsStart = (day: IsoDate) => isWithin(day, min, max) && disabledRangeEnd({ start: day, end: null }, isDateDisabled) == null;
     const startAwaitingEnd = pendingStart ?? (end == null && start != null && canBeChosenAsStart(start) ? start : null);
     const disabledDayBetweenStartAwaitingEndAnd =

@@ -20,6 +20,7 @@ import {
 } from "./dateValues";
 import { TimePopover } from "./TimePopover";
 import { invalidTimeMessage, readTypedDay } from "./typedDay";
+import { useFormReset } from "./useFormReset";
 import { type TextReading, useRejectedTextReread, useTextDraft } from "./useTextDraft";
 
 /**
@@ -77,7 +78,8 @@ export interface DateTimePickerProps extends DatePickerCalendarProps, PureContro
  * one, the time is midnight. Typed text is read on blur or Enter; text that can't be read, or a day or time that can't be chosen, stays in
  * its input with an error and leaves the value unchanged until it is corrected, or until the day or the rules change to allow it. A kept
  * time that can't be chosen on the new day shows an error too, until the time is changed or `isTimeDisabled` allows it; without a time, a
- * day on which midnight can't be chosen waits for a time without an error.
+ * day on which midnight can't be chosen waits for a time without an error. Resetting the surrounding form discards typed text and a day
+ * or time that waits; to discard them from code, render the picker with a new `key`.
  */
 export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(function DateTimePicker(
     {
@@ -195,6 +197,12 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
         if (isPendingDayAllowed) {
             change(pendingDate, time);
         }
+    });
+    useFormReset(inputRef, () => {
+        dateDraft.reset();
+        timeDraft.reset();
+        setPendingTime(null);
+        setPendingDay(null);
     });
 
     const keptTimeError =

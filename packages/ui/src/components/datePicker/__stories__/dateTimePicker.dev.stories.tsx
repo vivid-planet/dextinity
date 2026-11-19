@@ -38,6 +38,15 @@ function DateTimePickerWithLoadedTimes(props: DateTimePickerProps) {
     );
 }
 
+function DateTimePickerInForm(props: DateTimePickerProps) {
+    return (
+        <form>
+            <DateTimePickerWithReset {...props} />
+            <Button type="reset">Reset form</Button>
+        </form>
+    );
+}
+
 const meta = {
     component: DateTimePicker,
     title: "Building blocks/Form fields/DateTimePicker",
@@ -78,6 +87,48 @@ export const ResetAfterLoadingARecord: Story = {
         await waitFor(() => expect(time).toHaveValue("13:00"));
         await userEvent.click(canvas.getByRole("button", { name: "Reset" }));
         await waitFor(() => expect(time).toHaveValue(""));
+    },
+};
+
+/**
+ * Resetting the surrounding form discards typed text and a time typed before the day, also while the value stays the same.
+ */
+export const FormReset: Story = {
+    render: (args) => <DateTimePickerInForm {...args} />,
+    play: async ({ canvas }) => {
+        const date = canvas.getByRole("textbox", { name: "Publish at" });
+        const time = canvas.getByRole("textbox", { name: "Publish at Time" });
+        await userEvent.type(date, "next week");
+        await userEvent.type(time, "10:00");
+        await userEvent.tab();
+        await expect(date).toHaveAttribute("aria-invalid", "true");
+
+        await userEvent.click(canvas.getByRole("button", { name: "Reset form" }));
+        await waitFor(() => expect(date).not.toHaveAttribute("aria-invalid"));
+        await expect(date).toHaveValue("");
+        await expect(time).toHaveValue("");
+    },
+};
+
+/**
+ * A form reset that the app cancels keeps the typed text.
+ */
+export const FormResetCanceledByTheApp: Story = {
+    render: (args) => (
+        <form onReset={(event) => event.preventDefault()}>
+            <DateTimePickerWithReset {...args} />
+            <Button type="reset">Reset form</Button>
+        </form>
+    ),
+    play: async ({ canvas }) => {
+        const date = canvas.getByRole("textbox", { name: "Publish at" });
+        await userEvent.type(date, "next week");
+        await userEvent.tab();
+
+        await userEvent.click(canvas.getByRole("button", { name: "Reset form" }));
+        await new Promise((resolve) => setTimeout(resolve));
+        await expect(date).toHaveValue("next week");
+        await expect(date).toHaveAttribute("aria-invalid", "true");
     },
 };
 

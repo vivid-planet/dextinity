@@ -69,6 +69,10 @@ describe("open_admin_page", () => {
         expect(JSON.stringify(tool.inputSchema)).toContain("/system/redirects: System › Redirects");
     });
 
+    it("runs without the user's approval, because it only navigates", () => {
+        expect(getOpenAdminPage().tool.readOnlyHint).toBe(true);
+    });
+
     it("opens a page in the current content scope", () => {
         const { call, navigate } = getOpenAdminPage();
 

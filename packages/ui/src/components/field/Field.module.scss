@@ -1,5 +1,5 @@
 @use "../../theme/forcedColors" as forced-colors;
-@use "../formLabel/helpButton";
+@use "../fieldLabel/infoButton";
 
 .root {
     display: flex;
@@ -38,8 +38,8 @@
     }
 }
 
-.helpButton {
-    @include helpButton.button;
+.infoButton {
+    @include infoButton.button;
 }
 
 .counter {

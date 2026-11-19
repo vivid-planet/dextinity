@@ -13,11 +13,11 @@ import {
 } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
+import type { FieldState } from "../field/Field";
 import { useFieldContext } from "../field/fieldContext";
 import { Spinner } from "../spinner/Spinner";
 import styles from "./Input.module.scss";
 
-type InputStatus = "error" | "success" | "warning";
 type InputSlotElement = "input" | JSXElementConstructor<ComponentPropsWithRef<"input">>;
 
 type InputElementProps<InputElement extends InputSlotElement> = ComponentPropsWithRef<InputElement> & { className?: string };
@@ -26,7 +26,7 @@ type InputElementProps<InputElement extends InputSlotElement> = ComponentPropsWi
  * The resolved configuration that influences the component's appearance or behavior.
  */
 export type InputOwnerState = {
-    status: InputStatus | undefined;
+    state: FieldState;
     disabled: boolean;
     readOnly: boolean;
     loading: boolean;
@@ -63,8 +63,10 @@ export interface InputProps<
     /**
      * Shows the result of validating the value. `error` also marks the input as invalid. Inside a `Field`, set `state` on the field
      * instead, which draws the box.
+     *
+     * @defaultValue `"default"`
      */
-    status?: InputStatus;
+    state?: FieldState;
     /**
      * Prevents interaction with the input. Ignored inside a `Field`, which takes it from its own `disabled`.
      *
@@ -130,7 +132,8 @@ function focusInputOnFieldClick(event: MouseEvent<HTMLDivElement>) {
 
 /**
  * A single line of text. Inside a `Field`, it takes the field's label, message and state and leaves the box to the field, which
- * makes a complete text field. On its own, it draws its own box, to combine with `FormLabel` and `FormHelperText`.
+ * makes a complete text field. On its own, it draws its own box, to combine with `FieldLabel`, `FieldDescription`, and
+ * `FieldValidationMessage`.
  */
 export const Input: <InputElement extends InputSlotElement = typeof BaseInput, LoadingSpinner extends ElementType = typeof Spinner>(
     props: InputProps<InputElement, LoadingSpinner> & RefAttributes<HTMLInputElement>,
@@ -139,7 +142,7 @@ export const Input: <InputElement extends InputSlotElement = typeof BaseInput, L
     LoadingSpinner extends ElementType = typeof Spinner,
 >(
     {
-        status,
+        state = "default",
         disabled,
         readOnly,
         loading,
@@ -156,7 +159,7 @@ export const Input: <InputElement extends InputSlotElement = typeof BaseInput, L
     const field = useFieldContext();
     const fieldControl = field?.control;
     const ownerState: InputOwnerState = {
-        status,
+        state,
         disabled: (fieldControl ? fieldControl.disabled : disabled) === true,
         readOnly: (fieldControl ? fieldControl.readOnly : readOnly) === true,
         loading: loading === true,
@@ -175,7 +178,7 @@ export const Input: <InputElement extends InputSlotElement = typeof BaseInput, L
             id: fieldControl ? fieldControl.id : restProps.id,
             required: fieldControl ? fieldControl.required : restProps.required,
             "aria-describedby": clsx(fieldControl?.["aria-describedby"], restProps["aria-describedby"]) || undefined,
-            "aria-invalid": ownerState.status === "error" || fieldControl?.["aria-invalid"] || restProps["aria-invalid"],
+            "aria-invalid": ownerState.state === "error" || fieldControl?.["aria-invalid"] || restProps["aria-invalid"],
             "aria-busy": ownerState.loading || fieldControl?.["aria-busy"] || restProps["aria-busy"],
             className: styles.input,
         },
@@ -197,7 +200,7 @@ export const Input: <InputElement extends InputSlotElement = typeof BaseInput, L
     return (
         <div
             {...rootProps}
-            data-status={ownerState.status}
+            data-state={ownerState.state}
             data-disabled={ownerState.disabled ? "" : undefined}
             data-readonly={ownerState.readOnly ? "" : undefined}
             data-loading={ownerState.loading ? "" : undefined}

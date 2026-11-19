@@ -62,7 +62,7 @@ export interface FilterBarProps extends Omit<HTMLAttributes<HTMLDivElement>, "cl
      *
      * @defaultValue `"/"`
      */
-    searchShortcut?: string | false;
+    searchKeyboardShortcut?: string | false;
     /** Texts; English defaults. */
     labels?: Partial<FilterBarLabels>;
     /** Added alongside the component's own classes. */
@@ -85,7 +85,7 @@ export const FilterBar = forwardRef<HTMLDivElement, FilterBarProps>(function Fil
         children,
         resultCount,
         actions,
-        searchShortcut = "/",
+        searchKeyboardShortcut = "/",
         labels: labelsProp,
         className,
         slotProps,
@@ -97,7 +97,9 @@ export const FilterBar = forwardRef<HTMLDivElement, FilterBarProps>(function Fil
     const labels = { ...defaultLabels, ...labelsProp };
     const inputRef = useRef<HTMLInputElement>(null);
 
-    useKeyboardShortcut(searchShortcut === false ? "" : searchShortcut, () => inputRef.current?.focus(), { enabled: searchShortcut !== false });
+    useKeyboardShortcut(searchKeyboardShortcut === false ? "" : searchKeyboardShortcut, () => inputRef.current?.focus(), {
+        enabled: searchKeyboardShortcut !== false,
+    });
 
     const startProps = resolveSlotProps<FilterBarOwnerState, "div", "div">({
         ownProps: { className: styles.start },

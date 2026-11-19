@@ -26,8 +26,8 @@ describe("AssetThumbnail", () => {
         expect(container.querySelector("img")?.style.objectPosition).toBe("25% 80%");
     });
 
-    it("renders the name and meta in the caption part", () => {
-        const { container } = render(<AssetThumbnail type="image" src="a.jpg" name="a.jpg" meta="JPG" />);
+    it("renders the title and meta in the caption part", () => {
+        const { container } = render(<AssetThumbnail type="image" src="a.jpg" title="a.jpg" meta="JPG" />);
 
         expect(container.querySelector(".dextinityAssetThumbnail__caption")?.textContent).toBe("a.jpgJPG");
     });

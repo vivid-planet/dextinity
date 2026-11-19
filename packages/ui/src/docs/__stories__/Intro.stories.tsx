@@ -3,8 +3,7 @@ import { useState } from "react";
 
 import { Button } from "../../components/button/Button";
 import { Chip } from "../../components/chip/Chip";
-import { FormHelperText } from "../../components/formHelperText/FormHelperText";
-import { FormLabel } from "../../components/formLabel/FormLabel";
+import { Field } from "../../components/field/Field";
 import { Icon } from "../../components/icon/Icon";
 import { IconButton } from "../../components/iconButton/IconButton";
 import { Input } from "../../components/input/Input";
@@ -31,7 +30,7 @@ export const Showcase: Story = {
             { name: "Assets", icon: <Icon name="images" /> },
             { name: "Target groups", icon: <Icon name="target-group" /> },
         ];
-        const [activePage, setActivePage] = useState("Pages");
+        const [currentPage, setCurrentPage] = useState("Pages");
 
         return (
             <div className={styles.showcase}>
@@ -49,13 +48,9 @@ export const Showcase: Story = {
                     </section>
 
                     <section className={styles.card}>
-                        <div className={styles.field}>
-                            <FormLabel htmlFor="showcase-title" required>
-                                Page title
-                            </FormLabel>
-                            <Input id="showcase-title" required defaultValue="Spring campaign" aria-describedby="showcase-title-hint" />
-                            <FormHelperText id="showcase-title-hint">Shown in the browser tab and in search results.</FormHelperText>
-                        </div>
+                        <Field label="Page title" required description="Shown in the browser tab and in search results.">
+                            <Input defaultValue="Spring campaign" />
+                        </Field>
                         <div className={styles.actions}>
                             <Button variant="outlined">Cancel</Button>
                             <Button>Save</Button>
@@ -77,8 +72,8 @@ export const Showcase: Story = {
                                 <li key={name}>
                                     <MainNavigationItem
                                         icon={icon}
-                                        active={name === activePage}
-                                        render={<button type="button" onClick={() => setActivePage(name)} />}
+                                        current={name === currentPage}
+                                        render={<button type="button" onClick={() => setCurrentPage(name)} />}
                                     >
                                         {name}
                                     </MainNavigationItem>

@@ -10,27 +10,27 @@ How to build a form from fields, sections, and buttons, and how to show the resu
 
 ## When to use which component
 
-- [`Field`](?path=/docs/building-blocks-form-fields-field--docs) around any control: the field holds the label, the required star, the help, and the validation message, and the control takes them over, e.g. `<Field label="Title"><Input /></Field>` or `<Field label="Location" required><Select … /></Field>`. The controls under "Building blocks/Form fields" and "Selection & toggles" have no label or validation props of their own. Prefer `Field` to composing a field from `FormLabel`, `Input`, and `FormHelperText`.
+- [`Field`](?path=/docs/building-blocks-form-fields-field--docs) around any control: the field holds the label, the required star, the info, the description, and the validation message, and the control takes them over, e.g. `<Field label="Title"><Input /></Field>` or `<Field label="Location" required><Select … /></Field>`. The controls under "Building blocks/Form fields" and "Selection & toggles" have no label or validation props of their own. Prefer `Field` to composing a field from `FieldLabel`, `Input`, `FieldDescription`, and `FieldValidationMessage`.
 - For a control that groups several inputs, such as `RadioGroup`, `CheckboxGroup`, `Slider`, or `FileUpload`, set `layout="group"` on the `Field`: its label names the group. A single `Checkbox` or `Switch` keeps its text as its name and goes in a `Field` with `layout="group"` and no label when it needs a validation message.
-- [`FormLabel`](?path=/docs/building-blocks-form-fields-formlabel--docs): names a field you compose yourself.
-- [`Input`](?path=/docs/building-blocks-form-fields-input--docs) on its own: the box of a single line of text, for a field you compose from `FormLabel`, `Input`, and `FormHelperText` as shown below.
-- [`FormHelperText`](?path=/docs/building-blocks-form-fields-formhelpertext--docs): a hint below a field when the field needs one, or, with `error`, the message that says what is wrong.
+- [`FieldLabel`](?path=/docs/building-blocks-form-fields-fieldlabel--docs): names a field you compose yourself.
+- [`Input`](?path=/docs/building-blocks-form-fields-input--docs) on its own: the box of a single line of text, for a field you compose from `FieldLabel`, `Input`, `FieldDescription`, and `FieldValidationMessage`.
+- [`FieldDescription`](?path=/docs/building-blocks-form-fields-fielddescription--docs): what everyone needs to fill in a field you compose yourself, below the field.
+- [`FieldValidationMessage`](?path=/docs/building-blocks-form-fields-fieldvalidationmessage--docs): the result of validating a field you compose yourself, with the icon of its `state`.
 - [`Button`](?path=/docs/building-blocks-buttons-button--docs): `type="submit"` saves the form. For the other buttons, see [Actions](?path=/docs/patterns-actions--docs).
 
-## Help
+## Description and info
 
-- `helperText` on the `Field` is what everyone needs to fill in the field, e.g. the expected format. It is always visible below the field.
-- `helpText` on the `Field` or the `FormLabel` is background most users don't need, e.g. where a value is shown. It sits behind an info button after the label and shows in a tooltip on hover, keyboard focus, and tap.
+- `description` on the `Field` is what everyone needs to fill in the field, e.g. the expected format. It is visible below the field until a validation message takes its place.
+- `info` on the `Field` or the `FieldLabel` is background most users don't need, e.g. where a value is shown. It sits behind an info button after the label and shows in a tooltip on hover, keyboard focus, and tap.
 
 ## Fields
 
-- The label is above the input, and the hint is below it, with a space of `var(--dextinity-space-1)` between them.
-- Give the `Input` an `id`, and set the same value as `htmlFor` on the `FormLabel`.
-- Give the `FormHelperText` an `id`, and set it as `aria-describedby` on the `Input`.
-- For a required field, set `required` on the `FormLabel` and on the `Input`.
-- For a field without a visible label, such as a search field, give the `Input` an `aria-label`.
+- Put the control in a `Field` with a `label`, and set `description` for what everyone needs to fill it in. The `Field` shows the label above the control and the description below it, and connects both to the control.
+- For a required field, set `required` on the `Field`.
+- For a field without a visible label, such as a search field, give the control an `aria-label`.
+- In a field you compose yourself, give the `Input` an `id` and set it as `htmlFor` on the `FieldLabel`, and give the `FieldDescription` or `FieldValidationMessage` an `id` and set it as `aria-describedby` on the `Input`.
 
-<Canvas of={FormsStories.Field} />
+<Canvas of={FormsStories.Fields} />
 
 ## Layout
 
@@ -43,9 +43,10 @@ How to build a form from fields, sections, and buttons, and how to show the resu
 
 ## Validation
 
-- **Error:** the value is not valid, and the form can't be saved. Set `status="error"` on the `Input` and `error` on the `FormLabel`, and show the message in a `FormHelperText` with `error`.
-- **Warning:** the value can be saved, but the user should check it. Set `status="warning"` on the `Input`, and show the message in a `FormHelperText`.
-- **Success:** a check of the value passed, for example that a domain is reachable. Set `status="success"` on the `Input`.
-- An error about the whole form, for example when saving fails, goes above the buttons, in a `FormHelperText` with `error`.
+- **Error:** the value is not valid, and the form can't be saved. Set `state="error"` on the `Field`, and the message as its `validationMessage`.
+- **Warning:** the value can be saved, but the user should check it. Set `state="warning"` on the `Field`, and the message as its `validationMessage`.
+- **Success:** a check of the value passed, for example that a domain is reachable. Set `state="success"` on the `Field`, and the message as its `validationMessage`.
+- The validation message replaces the description until the `state` is `default` again.
+- An error about the whole form, for example when saving fails, goes above the buttons, in a `FieldValidationMessage` with `state="error"`.
 
 <Canvas of={FormsStories.Validation} />

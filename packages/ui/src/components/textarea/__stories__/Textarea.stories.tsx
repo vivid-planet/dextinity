@@ -52,8 +52,8 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * Starts with three lines and grows with the content up to `maxRows`. The `Field` around it adds the label, help, and validation message:
- * `<Field label="Tasks"><Textarea … /></Field>`.
+ * Starts with three lines and grows with the content up to `maxRows`. The `Field` around it adds the label, description, and validation
+ * message: `<Field label="Tasks"><Textarea … /></Field>`.
  */
 export const Default: Story = {
     play: async ({ args, canvas }) => {
@@ -65,9 +65,9 @@ export const Default: Story = {
     },
 };
 
-export const HelperText: Story = {
+export const Description: Story = {
     args: {
-        helperText: "One item per line.",
+        description: "One item per line.",
     },
 };
 

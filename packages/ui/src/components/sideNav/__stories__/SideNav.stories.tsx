@@ -22,21 +22,21 @@ const meta = {
     ],
     parameters: { tokens: sideNavTokens, layout: "fullscreen" },
     render: (args, context) => {
-        const [activeId, setActiveId] = useControlledArg(args, "activeId", context);
-        const [expanded, setExpanded] = useControlledArg(args, "expanded", context);
+        const [currentId, setCurrentId] = useControlledArg(args, "currentId", context);
+        const [expandedIds, setExpandedIds] = useControlledArg(args, "expandedIds", context);
         const [collapsed, setCollapsed] = useControlledArg(args, "collapsed", context);
         return (
             <SideNav
                 {...args}
-                activeId={activeId}
-                expanded={expanded}
-                onExpandedChange={(nextExpanded) => {
-                    setExpanded(nextExpanded);
-                    args.onExpandedChange(nextExpanded);
+                currentId={currentId}
+                expandedIds={expandedIds}
+                onExpandedIdsChange={(nextExpandedIds) => {
+                    setExpandedIds(nextExpandedIds);
+                    args.onExpandedIdsChange(nextExpandedIds);
                 }}
                 onNavigate={(item, event) => {
                     event.preventDefault();
-                    setActiveId(item.id);
+                    setCurrentId(item.id);
                     args.onNavigate(item, event);
                 }}
                 collapsed={collapsed ?? false}
@@ -57,9 +57,9 @@ const meta = {
         title: "Career portal",
         subtitle: "Example Ltd · Production",
         groups: sideNavGroups,
-        activeId: "job-ads",
-        expanded: getSideNavAncestorIds(sideNavGroups, "job-ads"),
-        onExpandedChange: fn(),
+        currentId: "job-ads",
+        expandedIds: getSideNavAncestorIds(sideNavGroups, "job-ads"),
+        onExpandedIdsChange: fn(),
         onNavigate: fn(),
         onCollapsedChange: fn(),
     },
@@ -80,14 +80,14 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * App header with logo, app name, and tenant, then groups with up to three levels. The active entry's ancestors start open, via
+ * App header with logo, app name, and tenant, then groups with up to three levels. The current entry's ancestors start open, via
  * `getSideNavAncestorIds`.
  *
  * **Rules**
  *
  * - Up to three levels; long labels may wrap.
  * - Icons only on the first level.
- * - Open the active entry's ancestors automatically.
+ * - Open the current entry's ancestors automatically.
  * - Don't add a fourth level, repeat a label in different groups, or give an entry with sub-entries a target of its own.
  */
 export const Default: Story = {
@@ -97,7 +97,7 @@ export const Default: Story = {
         await expect(canvas.getByRole("link", { name: "Job ads" })).toHaveAttribute("aria-current", "page");
 
         await userEvent.click(canvas.getByRole("button", { name: "Structure" }));
-        await waitFor(() => expect(args.onExpandedChange).toHaveBeenLastCalledWith(["website", "careers", "structure"]));
+        await waitFor(() => expect(args.onExpandedIdsChange).toHaveBeenLastCalledWith(["website", "careers", "structure"]));
         await userEvent.click(canvas.getByRole("link", { name: "Main navigation" }));
         await waitFor(() => expect(args.onNavigate).toHaveBeenLastCalledWith(expect.objectContaining({ id: "main-navigation" }), expect.anything()));
         await expect(canvas.getByRole("link", { name: "Main navigation" })).toHaveAttribute("aria-current", "page");
@@ -135,8 +135,8 @@ export const WithoutCollapse: Story = {
  */
 export const Keyboard: Story = {
     args: {
-        activeId: "dashboard",
-        expanded: [],
+        currentId: "dashboard",
+        expandedIds: [],
     },
     play: async ({ canvas }) => {
         const website = canvas.getByRole("button", { name: "Website" });
@@ -180,13 +180,13 @@ function ancestorsClippingFocusRing(element: HTMLElement) {
 }
 
 /**
- * The focus ring of a sub-entry follows the entry's own shape, also for the active entry and on the third level; the open sub-entries
+ * The focus ring of a sub-entry follows the entry's own shape, also for the current entry and on the third level; the open sub-entries
  * don't cut it off.
  */
 export const FocusRing: Story = {
     args: {
-        activeId: "main-navigation",
-        expanded: ["website", "careers", "structure"],
+        currentId: "main-navigation",
+        expandedIds: ["website", "careers", "structure"],
     },
     play: async ({ canvas }) => {
         canvas.getByRole("button", { name: "Structure" }).focus();

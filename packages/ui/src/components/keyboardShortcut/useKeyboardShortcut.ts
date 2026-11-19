@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-import { isSymbolKey, normalizeKey, parseShortcut } from "./formatShortcut";
+import { isSymbolKey, normalizeKey, parseKeyboardShortcut } from "./formatKeyboardShortcut";
 import { isApplePlatform, useKeyboardShortcutPlatform } from "./keyboardShortcutPlatform";
 
 /**
@@ -9,12 +9,12 @@ import { isApplePlatform, useKeyboardShortcutPlatform } from "./keyboardShortcut
  * `mod` is ⌘ on Apple platforms and Ctrl elsewhere. Shift and Alt are ignored for keys that are symbols (e.g. `"?"` or `"\\"`), since
  * keyboard layouts differ in whether they need them: `\\` is AltGr+ß on German Windows keyboards and ⌥⇧7 on German Macs.
  */
-export function matchesShortcut(
+export function matchesKeyboardShortcut(
     event: Pick<KeyboardEvent, "key" | "metaKey" | "ctrlKey" | "shiftKey" | "altKey">,
     shortcut: string,
     apple = isApplePlatform(),
 ) {
-    const parsed = parseShortcut(shortcut);
+    const parsed = parseKeyboardShortcut(shortcut);
     const modPressed = apple ? event.metaKey : event.ctrlKey;
     const otherModifierPressed = apple ? event.ctrlKey : event.metaKey;
     const isSymbol = isSymbolKey(parsed.key);
@@ -69,9 +69,9 @@ export function useKeyboardShortcut(shortcut: string, onShortcut: (event: Keyboa
         if (!enabled) {
             return;
         }
-        const hasModifier = parseShortcut(shortcut).mod;
+        const hasModifier = parseKeyboardShortcut(shortcut).mod;
         const handleKeyDown = (event: KeyboardEvent) => {
-            if (event.defaultPrevented || event.isComposing || !matchesShortcut(event, shortcut, apple)) {
+            if (event.defaultPrevented || event.isComposing || !matchesKeyboardShortcut(event, shortcut, apple)) {
                 return;
             }
             if (!hasModifier && !allowInEditable && isEditable(event.target)) {

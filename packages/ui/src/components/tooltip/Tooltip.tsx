@@ -30,8 +30,8 @@ export type TooltipOwnerState = {
 export interface TooltipSlotProps {
     /** Props for the `positioner` slot, which places the tooltip next to its trigger. */
     positioner?: SlotPropsValue<TooltipOwnerState, typeof BaseTooltip.Positioner>;
-    /** Props for the `shortcut` slot. */
-    shortcut?: SlotPropsValue<TooltipOwnerState, typeof KeyboardShortcut>;
+    /** Props for the `keyboardShortcut` slot. */
+    keyboardShortcut?: SlotPropsValue<TooltipOwnerState, typeof KeyboardShortcut>;
 }
 
 export interface TooltipProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "content"> {
@@ -43,7 +43,7 @@ export interface TooltipProps extends Omit<HTMLAttributes<HTMLDivElement>, "clas
      * A keyboard shortcut for the action, shown after the text, in the notation of `useKeyboardShortcut`, e.g. `"mod+s"`: `⌘S` on
      * Apple platforms and `Ctrl+S` elsewhere.
      */
-    shortcut?: string;
+    keyboardShortcut?: string;
     /**
      * The preferred side. The tooltip flips to the opposite side when there isn't enough room.
      *
@@ -100,7 +100,7 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(function Tooltip
     {
         content,
         children,
-        shortcut,
+        keyboardShortcut,
         placement = "bottom",
         delay,
         open,
@@ -122,9 +122,9 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(function Tooltip
         slotProps: slotProps?.positioner,
         ownerState,
     });
-    const shortcutProps = resolveSlotProps<TooltipOwnerState, typeof KeyboardShortcut, typeof KeyboardShortcut>({
-        ownProps: { className: styles.shortcut, shortcut },
-        slotProps: slotProps?.shortcut,
+    const keyboardShortcutProps = resolveSlotProps<TooltipOwnerState, typeof KeyboardShortcut, typeof KeyboardShortcut>({
+        ownProps: { className: styles.keyboardShortcut, shortcut: keyboardShortcut },
+        slotProps: slotProps?.keyboardShortcut,
         ownerState,
     });
 
@@ -146,7 +146,7 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(function Tooltip
                             className={clsx(styles.root, className)}
                         >
                             {content}
-                            {shortcut != null && <KeyboardShortcut {...shortcutProps} />}
+                            {keyboardShortcut != null && <KeyboardShortcut {...keyboardShortcutProps} />}
                         </BaseTooltip.Popup>
                     </BaseTooltip.Positioner>
                 </FieldContextReset>

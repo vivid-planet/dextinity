@@ -5,14 +5,14 @@ import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import styles from "./ProgressBar.module.scss";
 
-type ProgressBarTone = "accent" | "success" | "warning" | "danger";
+type ProgressBarColor = "accent" | "success" | "warning" | "error";
 type ProgressBarSize = "default" | "small";
 
 /**
  * The resolved configuration that influences the component's appearance or behavior.
  */
 export type ProgressBarOwnerState = {
-    tone: ProgressBarTone;
+    color: ProgressBarColor;
     size: ProgressBarSize;
     indeterminate: boolean;
 };
@@ -28,7 +28,7 @@ export interface ProgressBarSlotProps {
     indicator?: SlotPropsValue<ProgressBarOwnerState, typeof Progress.Indicator>;
 }
 
-export interface ProgressBarProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children"> {
+export interface ProgressBarProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "color"> {
     /** How far the task is, between `min` and `max`. `null` while it is unknown: the bar then moves without a value. */
     value: number | null;
     /**
@@ -56,11 +56,11 @@ export interface ProgressBarProps extends Omit<HTMLAttributes<HTMLDivElement>, "
     /** The locale the value is formatted in. Defaults to the browser's. */
     locale?: Intl.LocalesArgument;
     /**
-     * The bar's color: `success` once a task finished, `warning` and `danger` when it ran into problems.
+     * The bar's color: `success` once a task finished, `warning` and `error` when it ran into problems.
      *
      * @defaultValue `"accent"`
      */
-    tone?: ProgressBarTone;
+    color?: ProgressBarColor;
     /**
      * The bar's thickness: `small` inside rows and lists.
      *
@@ -77,10 +77,10 @@ export interface ProgressBarProps extends Omit<HTMLAttributes<HTMLDivElement>, "
  * Shows how far a task is, e.g. an upload or an import. Without a known value, the bar moves to show that the task is running.
  */
 export const ProgressBar = forwardRef<HTMLDivElement, ProgressBarProps>(function ProgressBar(
-    { value, min = 0, max = 100, label, showValue = false, format, locale, tone = "accent", size = "default", className, slotProps, ...restProps },
+    { value, min = 0, max = 100, label, showValue = false, format, locale, color = "accent", size = "default", className, slotProps, ...restProps },
     ref,
 ) {
-    const ownerState: ProgressBarOwnerState = { tone, size, indeterminate: value === null };
+    const ownerState: ProgressBarOwnerState = { color, size, indeterminate: value === null };
 
     const labelProps = resolveSlotProps<ProgressBarOwnerState, typeof Progress.Label, typeof Progress.Label>({
         ownProps: { className: styles.label },
@@ -114,7 +114,7 @@ export const ProgressBar = forwardRef<HTMLDivElement, ProgressBarProps>(function
             max={max}
             format={format}
             locale={locale}
-            data-tone={ownerState.tone}
+            data-color={ownerState.color}
             data-size={ownerState.size}
             className={clsx(styles.root, className)}
         >

@@ -53,14 +53,14 @@
     --dextinity-side-nav-item-indent-level-3: 58px;
     // Fill of a hovered entry
     --dextinity-side-nav-item-background-hover: var(--dextinity-material-glass-strong);
-    // Text of an entry above the active one
+    // Text of an entry above the current one
     --dextinity-side-nav-item-ancestor-foreground: var(--dextinity-color-text);
-    // Fill of the active entry
-    --dextinity-side-nav-item-active-background: var(--dextinity-gradient-brand);
-    // Text and icon color of the active entry
-    --dextinity-side-nav-item-active-foreground: var(--dextinity-color-accent-foreground);
-    // Glow and top highlight of the active entry
-    --dextinity-side-nav-item-active-shadow: 0 10px 24px -12px var(--dextinity-color-accent-glow), inset 0 1px 0 oklch(1 0 0 / 0.2);
+    // Fill of the current entry
+    --dextinity-side-nav-item-current-background: var(--dextinity-gradient-brand);
+    // Text and icon color of the current entry
+    --dextinity-side-nav-item-current-foreground: var(--dextinity-color-accent-foreground);
+    // Glow and top highlight of the current entry
+    --dextinity-side-nav-item-current-shadow: 0 10px 24px -12px var(--dextinity-color-accent-glow), inset 0 1px 0 oklch(1 0 0 / 0.2);
     // Vertical line that leads the sub-entries
     --dextinity-side-nav-guide-color: var(--dextinity-color-line-strong);
     // Color of the chevron that expands an entry's sub-entries

@@ -9,7 +9,7 @@ export {
     type AssetThumbnailSlotProps,
 } from "./components/assetThumbnail/AssetThumbnail";
 export { Avatar, type AvatarOwnerState, type AvatarProps, type AvatarSlotProps, getInitials } from "./components/avatar/Avatar";
-export { Badge, type BadgeOwnerState, type BadgeProps } from "./components/badge/Badge";
+export { Badge, type BadgeCountProps, type BadgeMarkProps, type BadgeOwnerState, type BadgeProps } from "./components/badge/Badge";
 export { Banner, type BannerOwnerState, type BannerProps, type BannerSlotProps } from "./components/banner/Banner";
 export { Block, type BlockLabels, type BlockOwnerState, type BlockProps, type BlockSlotProps } from "./components/blockList/Block";
 export {
@@ -93,6 +93,14 @@ export {
 export { type FieldSize, type FieldState } from "./components/field/Field";
 export { type FieldLayout } from "./components/field/Field";
 export { FieldActions, type FieldActionsLabels, type FieldActionsOwnerState, type FieldActionsProps } from "./components/fieldActions/FieldActions";
+export { FieldDescription, type FieldDescriptionOwnerState, type FieldDescriptionProps } from "./components/fieldDescription/FieldDescription";
+export { FieldLabel, type FieldLabelLabels, type FieldLabelOwnerState, type FieldLabelProps } from "./components/fieldLabel/FieldLabel";
+export {
+    FieldValidationMessage,
+    type FieldValidationMessageOwnerState,
+    type FieldValidationMessageProps,
+    type FieldValidationMessageState,
+} from "./components/fieldValidationMessage/FieldValidationMessage";
 export { formatFileSize } from "./components/fileUpload/fileSize";
 export type { FileUploadContext, FileUploadFile, FileUploadLabels } from "./components/fileUpload/FileUpload";
 export { FileUpload, type FileUploadOwnerState, type FileUploadProps, type FileUploadSlotProps } from "./components/fileUpload/FileUpload";
@@ -108,14 +116,17 @@ export {
     type FocalPointPickerProps,
     type FocalPointPickerSlotProps,
 } from "./components/focalPointPicker/FocalPointPicker";
-export { FormHelperText, type FormHelperTextOwnerState, type FormHelperTextProps } from "./components/formHelperText/FormHelperText";
-export { FormLabel, type FormLabelLabels, type FormLabelOwnerState, type FormLabelProps } from "./components/formLabel/FormLabel";
 export { Icon, type IconOwnerState, type IconProps } from "./components/icon/Icon";
 export type { DefaultIconName, DefaultIconRegistry, DeprecatedIconAlias, IconName, IconRegistry } from "./components/icon/iconRegistry";
 export { IconButton, type IconButtonOwnerState, type IconButtonProps } from "./components/iconButton/IconButton";
 export { type IconButtonSlotProps, type IconButtonSlots } from "./components/iconButton/IconButton";
 export { Input, type InputOwnerState, type InputProps } from "./components/input/Input";
-export { describeShortcut, formatShortcut, formatShortcutText, type KeyboardShortcutLabels } from "./components/keyboardShortcut/formatShortcut";
+export {
+    describeKeyboardShortcut,
+    formatKeyboardShortcut,
+    formatKeyboardShortcutText,
+    type KeyboardShortcutLabels,
+} from "./components/keyboardShortcut/formatKeyboardShortcut";
 export { KeyboardShortcut, type KeyboardShortcutOwnerState, type KeyboardShortcutProps } from "./components/keyboardShortcut/KeyboardShortcut";
 export {
     isApplePlatform,
@@ -124,7 +135,14 @@ export {
     type KeyboardShortcutProviderProps,
     useKeyboardShortcutPlatform,
 } from "./components/keyboardShortcut/keyboardShortcutPlatform";
-export { type KeyboardShortcutOptions, matchesShortcut, useKeyboardShortcut } from "./components/keyboardShortcut/useKeyboardShortcut";
+export { type KeyboardShortcutOptions, matchesKeyboardShortcut, useKeyboardShortcut } from "./components/keyboardShortcut/useKeyboardShortcut";
+export {
+    KeyboardShortcutList,
+    type KeyboardShortcutListItem,
+    type KeyboardShortcutListLabels,
+    type KeyboardShortcutListSlotProps,
+} from "./components/keyboardShortcutList/KeyboardShortcutList";
+export { type KeyboardShortcutListOwnerState, type KeyboardShortcutListProps } from "./components/keyboardShortcutList/KeyboardShortcutList";
 export { KeyValueList, type KeyValueListItem, type KeyValueListOwnerState, type KeyValueListProps } from "./components/keyValueList/KeyValueList";
 export { type KeyValueListSlotProps } from "./components/keyValueList/KeyValueList";
 export { Link, type LinkLabels, type LinkOwnerState, type LinkProps, type LinkSlotProps } from "./components/link/Link";
@@ -138,7 +156,7 @@ export { ListDetailLayout, type ListDetailLayoutOwnerState, type ListDetailLayou
 export { type ListDetailLayoutSlotProps } from "./components/listDetailLayout/ListDetailLayout";
 export { ListLayout, type ListLayoutOwnerState, type ListLayoutProps } from "./components/listLayout/ListLayout";
 export { type ListLayoutSlotProps } from "./components/listLayout/ListLayout";
-export { LogViewer, type LogViewerLabels, type LogViewerLineTone, type LogViewerOwnerState } from "./components/logViewer/LogViewer";
+export { LogViewer, type LogViewerLabels, type LogViewerLineColor, type LogViewerOwnerState } from "./components/logViewer/LogViewer";
 export { type LogViewerProps, type LogViewerSlotProps } from "./components/logViewer/LogViewer";
 export {
     MainNavigationItem,
@@ -206,8 +224,6 @@ export { type SegmentedControlProps, type SegmentedControlSlotProps } from "./co
 export { Select, type SelectLabels, type SelectOption, type SelectOwnerState, type SelectProps } from "./components/select/Select";
 export { type SelectValue } from "./components/select/Select";
 export { type Selection, type SelectionOptions, type SelectionToggleOptions, useSelection } from "./components/selection/useSelection";
-export { ShortcutList, type ShortcutListItem, type ShortcutListLabels, type ShortcutListSlotProps } from "./components/shortcutList/ShortcutList";
-export { type ShortcutListOwnerState, type ShortcutListProps } from "./components/shortcutList/ShortcutList";
 export { getSideNavAncestorIds, SideNav, type SideNavGroup, type SideNavItem } from "./components/sideNav/SideNav";
 export { type SideNavLabels, type SideNavOwnerState, type SideNavProps } from "./components/sideNav/SideNav";
 export { type SideNavSlotProps, type SideNavSlots } from "./components/sideNav/SideNav";
@@ -225,7 +241,7 @@ export { Tabs, type TabsItem, type TabsOwnerState, type TabsProps, type TabsSlot
 export { type TabsLabels, type TabsSlots } from "./components/tabs/Tabs";
 export { Textarea, type TextareaOwnerState, type TextareaProps } from "./components/textarea/Textarea";
 export { Theme, type ThemeProps } from "./components/theme/Theme";
-export { Toast, type ToastAction, type ToastOwnerState, type ToastProps, type ToastSlotProps, type ToastTone } from "./components/toast/Toast";
+export { Toast, type ToastAction, type ToastColor, type ToastOwnerState, type ToastProps, type ToastSlotProps } from "./components/toast/Toast";
 export { ToastViewport, type ToastViewportOwnerState, type ToastViewportProps } from "./components/toast/ToastViewport";
 export { type ToastViewportSlotProps } from "./components/toast/ToastViewport";
 export { type NewToast, type ToastData, useToasts } from "./components/toast/useToasts";

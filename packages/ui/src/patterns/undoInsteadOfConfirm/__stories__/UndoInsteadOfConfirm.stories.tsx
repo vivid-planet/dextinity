@@ -65,7 +65,7 @@ function UndoExample() {
             <ConfirmDialog
                 open={deleteDialogOpen}
                 onOpenChange={setDeleteDialogOpen}
-                tone="danger"
+                color="error"
                 title="Delete “Benefits” permanently?"
                 description="The page and its content are gone for good. This can't be undone."
                 confirmLabel="Delete permanently"

@@ -23,26 +23,26 @@ const meta = {
         themeDecorator,
     ],
     parameters: { tokens: toolbarTokens },
-    args: { "aria-label": "Bold", children: <Icon name="bold" />, onClick: fn() },
+    args: { "aria-label": "Bold", children: <Icon name="bold" />, onClick: fn(), onSelectedChange: fn() },
     argTypes: {
         onClick: { description: "Called when the button is clicked." },
-        pressed: { control: "boolean" },
+        selected: { control: "boolean" },
         disabled: { control: "boolean" },
         keepFocus: { control: "boolean" },
-        shortcut: { control: "text" },
+        keyboardShortcut: { control: "text" },
         children: { control: false },
         className: { control: false },
         slotProps: { control: false },
     },
     render: (args, context) => {
-        const [pressed, setPressed] = useControlledArg(args, "pressed", context);
+        const [selected, setSelected] = useControlledArg(args, "selected", context);
         return (
             <ToolbarButton
                 {...args}
-                pressed={pressed}
-                onClick={(event) => {
-                    setPressed(pressed === undefined ? undefined : !pressed);
-                    args.onClick?.(event);
+                selected={selected}
+                onSelectedChange={(next) => {
+                    args.onSelectedChange?.(next);
+                    setSelected(next);
                 }}
             />
         );
@@ -62,17 +62,19 @@ export const Default: Story = {
         await expect(button).not.toHaveAttribute("aria-pressed");
         await userEvent.click(button);
         await expect(args.onClick).toHaveBeenCalledOnce();
+        await expect(args.onSelectedChange).not.toHaveBeenCalled();
     },
 };
 
 /**
- * With `pressed`, the button is a toggle, e.g. whether the text at the cursor is bold.
+ * With `selected`, the button is a toggle, e.g. whether the text at the cursor is bold.
  */
 export const Toggle: Story = {
-    args: { pressed: false },
-    play: async ({ canvasElement }) => {
+    args: { selected: false },
+    play: async ({ args, canvasElement }) => {
         const button = within(canvasElement).getByRole("button", { name: "Bold" });
         await userEvent.click(button);
+        await expect(args.onSelectedChange).toHaveBeenCalledWith(true);
         await expect(button).toHaveAttribute("aria-pressed", "true");
     },
 };
@@ -80,8 +82,8 @@ export const Toggle: Story = {
 /**
  * The shortcut shows in the tooltip next to the name.
  */
-export const Shortcut: Story = {
-    args: { shortcut: "mod+b" },
+export const KeyboardShortcut: Story = {
+    args: { keyboardShortcut: "mod+b" },
 };
 
 /**

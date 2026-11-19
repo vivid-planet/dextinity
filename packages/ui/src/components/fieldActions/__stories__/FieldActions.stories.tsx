@@ -16,7 +16,7 @@ function MetaTitleField(props: FieldActionsProps) {
     return (
         <Field
             label="Meta title"
-            helperText="Recommended: up to 60 characters."
+            description="Recommended: up to 60 characters."
             counter={`${value.length} / ${maxLength}`}
             actions={<FieldActions {...props} />}
         >
@@ -34,7 +34,7 @@ function AltTextField(props: FieldActionsProps) {
     return (
         <Field
             label="Alt text"
-            helperText="Per language."
+            description="Per language."
             state={translationFailed ? "error" : "default"}
             validationMessage={translationFailed ? translationFailedMessage : undefined}
             actions={

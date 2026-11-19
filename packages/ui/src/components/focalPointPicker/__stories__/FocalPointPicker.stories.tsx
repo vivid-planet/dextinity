@@ -9,7 +9,7 @@ import { FocalPointPicker, type FocalPointPickerProps } from "../FocalPointPicke
 import focalPointPickerTokens from "../FocalPointPicker.tokens.scss?raw";
 import styles from "./FocalPointPicker.stories.module.scss";
 
-type FocalPointPickerStoryArgs = FocalPointPickerProps & Pick<FieldStoryArgs, "label" | "helperText" | "validationMessage" | "state">;
+type FocalPointPickerStoryArgs = FocalPointPickerProps & Pick<FieldStoryArgs, "label" | "description" | "validationMessage" | "state">;
 
 /**
  * Binds the value to its story arg, so the Controls panel drives it and a change on the canvas updates the arg. With a field arg, it
@@ -58,7 +58,7 @@ const meta = {
         auto: { control: "boolean" },
         disabled: { control: "boolean" },
         label: fieldArgTypes.label,
-        helperText: fieldArgTypes.helperText,
+        description: fieldArgTypes.description,
         validationMessage: fieldArgTypes.validationMessage,
         state: fieldArgTypes.state,
         ratios: { control: "object" },

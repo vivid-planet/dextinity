@@ -1,6 +1,6 @@
 import { type ReactNode, useCallback, useRef, useState } from "react";
 
-import type { ToastAction, ToastTone } from "./Toast";
+import type { ToastAction, ToastColor } from "./Toast";
 
 export interface ToastData {
     /** Identifies the toast, e.g. to dismiss it. */
@@ -13,8 +13,8 @@ export interface ToastData {
      *
      * @defaultValue `"success"`
      */
-    tone?: ToastTone;
-    /** Replaces the tone's icon. */
+    color?: ToastColor;
+    /** Replaces the icon of the color. */
     icon?: ReactNode;
     /** One action, usually "Undo". */
     action?: ToastAction;

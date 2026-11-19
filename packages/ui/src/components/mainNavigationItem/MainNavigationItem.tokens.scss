@@ -13,10 +13,10 @@
     // Size of the chevron of an item with sub-items
     --dextinity-main-navigation-item-expand-icon-size: var(--dextinity-icon-size-xxsmall);
 
-    // Width of the bar that marks the active item
-    --dextinity-main-navigation-item-active-indicator-width: var(--dextinity-indicator-width-strong);
-    // Height of the bar that marks the active item
-    --dextinity-main-navigation-item-active-indicator-height: 24px;
+    // Width of the bar that marks the current item
+    --dextinity-main-navigation-item-current-indicator-width: var(--dextinity-indicator-width-strong);
+    // Height of the bar that marks the current item
+    --dextinity-main-navigation-item-current-indicator-height: 24px;
 
     // Start padding of a top-level item
     --dextinity-main-navigation-item-indent-level-1: var(--dextinity-space-3);
@@ -46,12 +46,12 @@
     // Icon color of an item on hover
     --dextinity-main-navigation-item-hover-icon: var(--dextinity-color-text);
 
-    // Fill of the active item
-    --dextinity-main-navigation-item-active-background: var(--dextinity-color-accent-soft);
-    // Label color of the active item
-    --dextinity-main-navigation-item-active-foreground: var(--dextinity-color-accent-text);
-    // Icon color of the active item
-    --dextinity-main-navigation-item-active-icon: var(--dextinity-color-accent-text);
-    // Color of the bar that marks the active item
-    --dextinity-main-navigation-item-active-indicator: var(--dextinity-color-accent);
+    // Fill of the current item
+    --dextinity-main-navigation-item-current-background: var(--dextinity-color-accent-soft);
+    // Label color of the current item
+    --dextinity-main-navigation-item-current-foreground: var(--dextinity-color-accent-text);
+    // Icon color of the current item
+    --dextinity-main-navigation-item-current-icon: var(--dextinity-color-accent-text);
+    // Color of the bar that marks the current item
+    --dextinity-main-navigation-item-current-indicator: var(--dextinity-color-accent);
 }

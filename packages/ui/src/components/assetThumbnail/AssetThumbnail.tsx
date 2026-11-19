@@ -45,16 +45,16 @@ export interface AssetThumbnailSlotProps {
     badges?: SlotPropsValue<AssetThumbnailOwnerState, "span">;
     /** Props for the `badge` slot, applied to each badge. Pass `tabIndex: -1` when the thumbnail sits inside a focusable item. */
     badge?: SlotPropsValue<AssetThumbnailOwnerState, "span">;
-    /** Props for the `caption` slot, which holds the name and the meta line. */
+    /** Props for the `caption` slot, which holds the title and the meta line. */
     caption?: SlotPropsValue<AssetThumbnailOwnerState, "div">;
 }
 
-export interface AssetThumbnailProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children"> {
+export interface AssetThumbnailProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "title"> {
     /** What the asset is: images and videos show their picture, documents their first page, folders a folder. */
     type: AssetThumbnailType;
     /** The URL of the preview picture. Leave it out for folders, and for documents without a page preview. */
     src?: string;
-    /** The picture's text alternative. Leave it out when the name next to it already describes the asset. */
+    /** The picture's text alternative. Leave it out when the title next to it already describes the asset. */
     alt?: string;
     /**
      * The point the crop is centered on.
@@ -75,8 +75,8 @@ export interface AssetThumbnailProps extends Omit<HTMLAttributes<HTMLDivElement>
     /** The length shown next to the play mark of videos, e.g. "0:42". */
     duration?: string;
     /** The file or folder name below the picture. */
-    name?: ReactNode;
-    /** Details below the name, e.g. "JPG · 2.4 MB" or "12 items". */
+    title?: ReactNode;
+    /** Details below the title, e.g. "JPG · 2.4 MB" or "12 items". */
     meta?: ReactNode;
     /**
      * Marks the asset as selected with a ring.
@@ -97,7 +97,7 @@ function toPercent(value: number) {
 }
 
 /**
- * The preview of a file or folder: the picture cropped around its focal point, badges for exceptions, and an optional name and meta
+ * The preview of a file or folder: the picture cropped around its focal point, badges for exceptions, and an optional title and meta
  * line.
  */
 export const AssetThumbnail = forwardRef<HTMLDivElement, AssetThumbnailProps>(function AssetThumbnail(
@@ -110,7 +110,7 @@ export const AssetThumbnail = forwardRef<HTMLDivElement, AssetThumbnailProps>(fu
         badges = [],
         fileType,
         duration,
-        name,
+        title,
         meta,
         selected = false,
         labels: labelsProp,
@@ -189,9 +189,9 @@ export const AssetThumbnail = forwardRef<HTMLDivElement, AssetThumbnailProps>(fu
                     </span>
                 )}
             </div>
-            {(name != null || meta != null) && (
+            {(title != null || meta != null) && (
                 <div {...captionProps}>
-                    {name != null && <span className={styles.name}>{name}</span>}
+                    {title != null && <span className={styles.title}>{title}</span>}
                     {meta != null && <span className={styles.meta}>{meta}</span>}
                 </div>
             )}

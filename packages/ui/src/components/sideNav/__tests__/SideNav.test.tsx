@@ -30,23 +30,30 @@ describe("getSideNavAncestorIds", () => {
 });
 
 describe("SideNav render contract", () => {
-    it("marks the level, the active entry, and its ancestors", () => {
+    it("marks the level, the current entry, and its ancestors", () => {
         render(
-            <SideNav title="App" groups={groups} activeId="jobs" expanded={["website", "careers"]} onExpandedChange={vi.fn()} onNavigate={vi.fn()} />,
+            <SideNav
+                title="App"
+                groups={groups}
+                currentId="jobs"
+                expandedIds={["website", "careers"]}
+                onExpandedIdsChange={vi.fn()}
+                onNavigate={vi.fn()}
+            />,
         );
 
         const nav = screen.getByRole("navigation");
         expect(nav.className).toContain("dextinitySideNav");
         expect(nav.hasAttribute("data-collapsed")).toBe(false);
         const jobs = screen.getByRole("link", { name: "Job ads" });
-        expect([jobs.dataset.level, jobs.dataset.active, jobs.getAttribute("aria-current")]).toStrictEqual(["3", "", "page"]);
+        expect([jobs.dataset.level, jobs.dataset.current, jobs.getAttribute("aria-current")]).toStrictEqual(["3", "", "page"]);
         expect(jobs.className).toContain("dextinitySideNav__item");
         const website = screen.getByRole("button", { name: "Website" });
         expect([website.dataset.level, website.dataset.ancestor]).toStrictEqual(["1", ""]);
     });
 
     it("keeps closed sub-entries out of the tab order", () => {
-        render(<SideNav title="App" groups={groups} activeId="dashboard" expanded={[]} onExpandedChange={vi.fn()} onNavigate={vi.fn()} />);
+        render(<SideNav title="App" groups={groups} currentId="dashboard" expandedIds={[]} onExpandedIdsChange={vi.fn()} onNavigate={vi.fn()} />);
 
         const website = screen.getByRole("button", { name: "Website" });
         expect(document.getElementById(website.getAttribute("aria-controls") ?? "")?.hasAttribute("inert")).toBe(true);
@@ -56,7 +63,7 @@ describe("SideNav render contract", () => {
         const onNavCollapsedChange = vi.fn();
         render(
             <AppShellContext.Provider value={{ navCollapsed: true, onNavCollapsedChange }}>
-                <SideNav title="App" groups={groups} activeId="dashboard" expanded={[]} onExpandedChange={vi.fn()} onNavigate={vi.fn()} />
+                <SideNav title="App" groups={groups} currentId="dashboard" expandedIds={[]} onExpandedIdsChange={vi.fn()} onNavigate={vi.fn()} />
             </AppShellContext.Provider>,
         );
 

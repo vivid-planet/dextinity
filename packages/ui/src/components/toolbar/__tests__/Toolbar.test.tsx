@@ -39,13 +39,13 @@ describe("Toolbar", () => {
 });
 
 describe("ToolbarButton", () => {
-    it("is a toggle only with `pressed`", () => {
+    it("is a toggle only with `selected`", () => {
         render(
             <Toolbar aria-label="Formatting">
-                <ToolbarButton aria-label="Bold" pressed>
+                <ToolbarButton aria-label="Bold" selected>
                     B
                 </ToolbarButton>
-                <ToolbarButton aria-label="Italic" pressed={false}>
+                <ToolbarButton aria-label="Italic" selected={false}>
                     I
                 </ToolbarButton>
                 <ToolbarButton aria-label="Undo">U</ToolbarButton>
@@ -55,12 +55,12 @@ describe("ToolbarButton", () => {
         const bold = screen.getByRole("button", { name: "Bold" });
         const italic = screen.getByRole("button", { name: "Italic" });
         const undo = screen.getByRole("button", { name: "Undo" });
-        expect([bold.getAttribute("aria-pressed"), bold.hasAttribute("data-pressed"), bold.hasAttribute("data-toggle")]).toStrictEqual([
+        expect([bold.getAttribute("aria-pressed"), bold.hasAttribute("data-selected"), bold.hasAttribute("data-toggle")]).toStrictEqual([
             "true",
             true,
             true,
         ]);
-        expect([italic.getAttribute("aria-pressed"), italic.hasAttribute("data-pressed")]).toStrictEqual(["false", false]);
+        expect([italic.getAttribute("aria-pressed"), italic.hasAttribute("data-selected")]).toStrictEqual(["false", false]);
         expect([undo.hasAttribute("aria-pressed"), undo.hasAttribute("data-toggle")]).toStrictEqual([false, false]);
     });
 });

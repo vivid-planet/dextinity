@@ -270,7 +270,7 @@ export const DevicePreview = forwardRef<HTMLDivElement, DevicePreviewProps>(func
                             {overlay != null && <div {...overlayProps}>{overlay}</div>}
                         </div>
                         {ownerState.loading && (
-                            <div {...loadingOverlayProps}>{loadingIndicator ?? <Spinner size="lg" aria-label={labels.loading} />}</div>
+                            <div {...loadingOverlayProps}>{loadingIndicator ?? <Spinner size="large" aria-label={labels.loading} />}</div>
                         )}
                     </div>
                 </div>

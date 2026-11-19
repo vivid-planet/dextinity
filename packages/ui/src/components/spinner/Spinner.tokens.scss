@@ -6,9 +6,9 @@
     // Size of a small spinner, e.g. inside a field
     --dextinity-spinner-size-small: var(--dextinity-icon-size-xsmall);
     // Size of the default spinner
-    --dextinity-spinner-size-md: var(--dextinity-icon-size-small);
+    --dextinity-spinner-size-default: var(--dextinity-icon-size-small);
     // Size of a large spinner, e.g. over a loading preview
-    --dextinity-spinner-size-lg: 32px;
+    --dextinity-spinner-size-large: 32px;
     // Size of the largest spinner
-    --dextinity-spinner-size-xl: 64px;
+    --dextinity-spinner-size-xlarge: 64px;
 }

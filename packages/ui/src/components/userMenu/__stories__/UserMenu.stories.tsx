@@ -36,7 +36,7 @@ function UserSettings() {
                 </MenuRadioGroup>
             </MenuGroup>
             <MenuSeparator />
-            <MenuItem label="Keyboard shortcuts" icon={<Icon name="keyboard" />} shortcut="?" onClick={fn()} />
+            <MenuItem label="Keyboard shortcuts" icon={<Icon name="keyboard" />} keyboardShortcut="?" onClick={fn()} />
         </>
     );
 }

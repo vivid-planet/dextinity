@@ -8,9 +8,9 @@ import { TopBar } from "../../components/topBar/TopBar";
 import { ProductLogo, ProductSign } from "../ProductLogo";
 import styles from "./PageTypeShell.module.scss";
 
-function ShellNav({ activeId }: { activeId: string }) {
-    const [currentId, setCurrentId] = useState(activeId);
-    const [expanded, setExpanded] = useState(getSideNavAncestorIds(sideNavGroups, activeId));
+function ShellNav({ initialCurrentId }: { initialCurrentId: string }) {
+    const [currentId, setCurrentId] = useState(initialCurrentId);
+    const [expandedIds, setExpandedIds] = useState(getSideNavAncestorIds(sideNavGroups, initialCurrentId));
     return (
         <SideNav
             logo={<ProductLogo />}
@@ -18,9 +18,9 @@ function ShellNav({ activeId }: { activeId: string }) {
             title="Career portal"
             subtitle="Example Ltd · Production"
             groups={sideNavGroups}
-            activeId={currentId}
-            expanded={expanded}
-            onExpandedChange={setExpanded}
+            currentId={currentId}
+            expandedIds={expandedIds}
+            onExpandedIdsChange={setExpandedIds}
             onNavigate={(item, event) => {
                 event.preventDefault();
                 setCurrentId(item.id);
@@ -31,7 +31,7 @@ function ShellNav({ activeId }: { activeId: string }) {
 
 export interface PageTypeShellProps {
     /** The navigation item of the page, e.g. `job-ads`. */
-    activeId: string;
+    currentId: string;
     /** Content above the top bar's page, e.g. a dialog. */
     overlay?: ReactNode;
 }
@@ -39,16 +39,16 @@ export interface PageTypeShellProps {
 /**
  * A page type's live example: the page inside the app frame with navigation, top bar, and scope.
  */
-export function PageTypeShell({ activeId, overlay, children }: PropsWithChildren<PageTypeShellProps>) {
+export function PageTypeShell({ currentId, overlay, children }: PropsWithChildren<PageTypeShellProps>) {
     const [navCollapsed, setNavCollapsed] = useState(false);
     return (
         <>
             <AppShell
-                nav={<ShellNav activeId={activeId} />}
+                nav={<ShellNav initialCurrentId={currentId} />}
                 topBar={<TopBar onSearchClick={() => undefined} scope={<StoryScopeSwitcher />} userMenu={<StoryUserMenu />} />}
                 navCollapsed={navCollapsed}
                 onNavCollapsedChange={setNavCollapsed}
-                disableShortcuts
+                disableKeyboardShortcuts
             >
                 {children}
             </AppShell>

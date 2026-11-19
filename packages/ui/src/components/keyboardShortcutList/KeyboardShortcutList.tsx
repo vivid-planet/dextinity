@@ -4,84 +4,84 @@ import { forwardRef, Fragment, type TableHTMLAttributes } from "react";
 import { keysByContent } from "../../utils/keysByContent";
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { KeyboardShortcut } from "../keyboardShortcut/KeyboardShortcut";
-import styles from "./ShortcutList.module.scss";
+import styles from "./KeyboardShortcutList.module.scss";
 
 /**
  * The resolved configuration that influences the component's appearance or behavior.
  */
-export type ShortcutListOwnerState = Record<string, never>;
+export type KeyboardShortcutListOwnerState = Record<string, never>;
 
-interface ShortcutListItemBase {
+interface KeyboardShortcutListItemBase {
     /** What the shortcut does, e.g. "Open the command palette". */
     description: string;
 }
 
-interface ShortcutListItemWithShortcut extends ShortcutListItemBase {
+interface KeyboardShortcutListItemWithKeyboardShortcut extends KeyboardShortcutListItemBase {
     /**
      * The shortcut in the notation of `useKeyboardShortcut`, e.g. `"mod+k"`, shown for the platform as one key cap. Several shortcuts
      * are listed side by side and read as a list, for alternatives, e.g. `["mod+ArrowDown", "mod+o"]` for "Open", or one per part of
      * the description, e.g. `["mod+x", "mod+v"]` for "Cut and paste". The notation has no sequences of keys pressed one after another.
      */
-    shortcut: string | string[];
+    keyboardShortcut: string | string[];
     keys?: never;
 }
 
-interface ShortcutListItemWithKeys extends ShortcutListItemBase {
+interface KeyboardShortcutListItemWithKeys extends KeyboardShortcutListItemBase {
     /** Fixed key caps for what the notation doesn't cover, e.g. `["⇧", "Click"]` or `["Right-click"]`. */
     keys: string[];
-    shortcut?: never;
+    keyboardShortcut?: never;
 }
 
 /**
- * One row of a `ShortcutList`: a shortcut, or fixed key caps, with what it does.
+ * One row of a `KeyboardShortcutList`: a shortcut, or fixed key caps, with what it does.
  */
-export type ShortcutListItem = ShortcutListItemWithShortcut | ShortcutListItemWithKeys;
+export type KeyboardShortcutListItem = KeyboardShortcutListItemWithKeyboardShortcut | KeyboardShortcutListItemWithKeys;
 
-function shortcutsOf(item: ShortcutListItem): string[] {
-    if (item.shortcut == null) {
+function keyboardShortcutsOf(item: KeyboardShortcutListItem): string[] {
+    if (item.keyboardShortcut == null) {
         return [];
     }
-    return typeof item.shortcut === "string" ? [item.shortcut] : item.shortcut;
+    return typeof item.keyboardShortcut === "string" ? [item.keyboardShortcut] : item.keyboardShortcut;
 }
 
-export interface ShortcutListLabels {
+export interface KeyboardShortcutListLabels {
     /** Header of the key column. */
     keys: string;
     /** Header of the description column. */
     description: string;
 }
 
-const defaultLabels: ShortcutListLabels = {
+const defaultLabels: KeyboardShortcutListLabels = {
     keys: "Key",
     description: "Action",
 };
 
-export interface ShortcutListSlotProps {
+export interface KeyboardShortcutListSlotProps {
     /** Props for the `keys` slot, the key caps of one shortcut. */
-    keys?: SlotPropsValue<ShortcutListOwnerState, "span">;
+    keys?: SlotPropsValue<KeyboardShortcutListOwnerState, "span">;
 }
 
-export interface ShortcutListProps extends Omit<TableHTMLAttributes<HTMLTableElement>, "className" | "children"> {
-    /** The shortcuts, in the order they are listed. */
-    shortcuts: ShortcutListItem[];
+export interface KeyboardShortcutListProps extends Omit<TableHTMLAttributes<HTMLTableElement>, "className" | "children"> {
+    /** The keyboard shortcuts, in the order they are listed. */
+    keyboardShortcuts: KeyboardShortcutListItem[];
     /** Column headers; English defaults. */
-    labels?: Partial<ShortcutListLabels>;
+    labels?: Partial<KeyboardShortcutListLabels>;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
-    slotProps?: ShortcutListSlotProps;
+    slotProps?: KeyboardShortcutListSlotProps;
 }
 
 /**
  * Lists keyboard shortcuts with what they do, e.g. on a help page or in a "Keyboard shortcuts" dialog opened with `?`.
  */
-export const ShortcutList = forwardRef<HTMLTableElement, ShortcutListProps>(function ShortcutList(
-    { shortcuts, labels: labelsProp, className, slotProps, ...restProps },
+export const KeyboardShortcutList = forwardRef<HTMLTableElement, KeyboardShortcutListProps>(function KeyboardShortcutList(
+    { keyboardShortcuts, labels: labelsProp, className, slotProps, ...restProps },
     ref,
 ) {
-    const ownerState: ShortcutListOwnerState = {};
+    const ownerState: KeyboardShortcutListOwnerState = {};
     const labels = { ...defaultLabels, ...labelsProp };
-    const keysProps = resolveSlotProps<ShortcutListOwnerState, "span", "span">({
+    const keysProps = resolveSlotProps<KeyboardShortcutListOwnerState, "span", "span">({
         ownProps: { className: styles.keys },
         slotProps: slotProps?.keys,
         ownerState,
@@ -96,18 +96,18 @@ export const ShortcutList = forwardRef<HTMLTableElement, ShortcutListProps>(func
                 </tr>
             </thead>
             <tbody>
-                {shortcuts.map((item) => {
-                    const itemShortcuts = shortcutsOf(item);
-                    const shortcutKeys = keysByContent(itemShortcuts);
+                {keyboardShortcuts.map((item) => {
+                    const itemKeyboardShortcuts = keyboardShortcutsOf(item);
+                    const shortcutKeys = keysByContent(itemKeyboardShortcuts);
                     const capKeys = keysByContent(item.keys ?? []);
                     return (
-                        <tr key={`${[...itemShortcuts, ...(item.keys ?? [])].join(" ")} ${item.description}`}>
+                        <tr key={`${[...itemKeyboardShortcuts, ...(item.keys ?? [])].join(" ")} ${item.description}`}>
                             <td>
                                 <span {...keysProps}>
-                                    {itemShortcuts.map((shortcut, index) => (
+                                    {itemKeyboardShortcuts.map((keyboardShortcut, index) => (
                                         <Fragment key={shortcutKeys[index]}>
                                             {index > 0 && <span className={styles.separator}>{", "}</span>}
-                                            <KeyboardShortcut shortcut={shortcut} />
+                                            <KeyboardShortcut shortcut={keyboardShortcut} />
                                         </Fragment>
                                     ))}
                                     {item.keys?.map((key, index) => (

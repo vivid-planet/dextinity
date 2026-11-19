@@ -58,7 +58,7 @@ export function useUndoToast({ addToast, labels: labelsProp }: UndoToastOptions)
         [addToast, undoLabel],
     );
 
-    const block = useCallback((reason: string) => addToast({ message: reason, tone: "error" }), [addToast]);
+    const block = useCallback((reason: string) => addToast({ message: reason, color: "error" }), [addToast]);
 
     return { perform, block };
 }

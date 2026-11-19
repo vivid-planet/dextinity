@@ -127,10 +127,10 @@ describe("IconButton", () => {
         render(
             <>
                 <KeyboardShortcutProvider platform="apple">
-                    <IconButton aria-label="Edit" shortcut="mod+e" />
+                    <IconButton aria-label="Edit" keyboardShortcut="mod+e" />
                 </KeyboardShortcutProvider>
                 <KeyboardShortcutProvider platform="other">
-                    <IconButton aria-label="Save" shortcut="shift+mod+s" />
+                    <IconButton aria-label="Save" keyboardShortcut="shift+mod+s" />
                 </KeyboardShortcutProvider>
             </>,
         );

@@ -15,7 +15,7 @@ const meta = {
     args: {
         type: "image",
         src: landscapeImage,
-        name: "sunset-hills.jpg",
+        title: "sunset-hills.jpg",
         meta: "JPG · 2.4 MB",
     },
     argTypes: {
@@ -57,7 +57,7 @@ export const Square: Story = {
 };
 
 export const Original: Story = {
-    args: { ratio: "original", src: portraitImage, name: "product.png", meta: "PNG · 840 KB" },
+    args: { ratio: "original", src: portraitImage, title: "product.png", meta: "PNG · 840 KB" },
 };
 
 /**
@@ -66,22 +66,22 @@ export const Original: Story = {
  * - Alt texts are kept per language; a missing one shows as a badge.
  */
 export const Badges: Story = {
-    args: { src: interiorImage, name: "lobby.jpg", badges: ["missingAlt"] },
+    args: { src: interiorImage, title: "lobby.jpg", badges: ["missingAlt"] },
     play: async ({ canvas }) => {
         await expect(canvas.getByRole("img", { name: "Alt text missing" })).toBeVisible();
     },
 };
 
 export const Document: Story = {
-    args: { type: "document", src: documentImage, fileType: "PDF", name: "annual-report.pdf", meta: "PDF · 1.2 MB" },
+    args: { type: "document", src: documentImage, fileType: "PDF", title: "annual-report.pdf", meta: "PDF · 1.2 MB" },
 };
 
 export const Video: Story = {
-    args: { type: "video", src: landscapeImage, duration: "0:42", name: "campaign.mp4", meta: "MP4 · 18 MB" },
+    args: { type: "video", src: landscapeImage, duration: "0:42", title: "campaign.mp4", meta: "MP4 · 18 MB" },
 };
 
 export const Folder: Story = {
-    args: { type: "folder", src: undefined, name: "Campaigns", meta: "12 items" },
+    args: { type: "folder", src: undefined, title: "Campaigns", meta: "12 items" },
 };
 
 export const Selected: Story = {
@@ -92,7 +92,7 @@ export const Selected: Story = {
  * Without a picture, the type's icon stands in.
  */
 export const WithoutPreview: Story = {
-    args: { type: "document", src: undefined, fileType: "DOCX", name: "contract.docx", meta: "DOCX · 48 KB" },
+    args: { type: "document", src: undefined, fileType: "DOCX", title: "contract.docx", meta: "DOCX · 48 KB" },
 };
 
 /**
@@ -113,10 +113,10 @@ export const Interactive: Story = {
 export const Overview: Story = {
     render: () => (
         <div className={styles.row}>
-            <AssetThumbnail type="image" src={interiorImage} badges={["missingAlt"]} name="lobby.jpg" meta="JPG · 3.1 MB" />
-            <AssetThumbnail type="image" src={portraitImage} name="product.png" meta="PNG · 840 KB" />
-            <AssetThumbnail type="document" src={documentImage} fileType="PDF" name="annual-report.pdf" meta="PDF · 1.2 MB" />
-            <AssetThumbnail type="folder" name="Campaigns" meta="12 items" />
+            <AssetThumbnail type="image" src={interiorImage} badges={["missingAlt"]} title="lobby.jpg" meta="JPG · 3.1 MB" />
+            <AssetThumbnail type="image" src={portraitImage} title="product.png" meta="PNG · 840 KB" />
+            <AssetThumbnail type="document" src={documentImage} fileType="PDF" title="annual-report.pdf" meta="PDF · 1.2 MB" />
+            <AssetThumbnail type="folder" title="Campaigns" meta="12 items" />
         </div>
     ),
 };

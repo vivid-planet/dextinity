@@ -16,17 +16,17 @@
     font-size: var(--dextinity-banner-font-size);
     line-height: var(--dextinity-typography-body-line-height);
 
-    &[data-tone="warning"] {
+    &[data-color="warning"] {
         background: var(--dextinity-banner-warning-background);
         --dextinity-banner-icon-color: var(--dextinity-banner-warning-icon);
     }
 
-    &[data-tone="error"] {
+    &[data-color="error"] {
         background: var(--dextinity-banner-error-background);
         --dextinity-banner-icon-color: var(--dextinity-banner-error-icon);
     }
 
-    &[data-tone="info"] {
+    &[data-color="info"] {
         background: var(--dextinity-banner-info-background);
         --dextinity-banner-icon-color: var(--dextinity-banner-info-icon);
     }

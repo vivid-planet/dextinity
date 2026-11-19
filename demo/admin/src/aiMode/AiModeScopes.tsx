@@ -3,7 +3,7 @@ import { createContext, type PropsWithChildren, useContext, useEffect, useState,
 import type { HostTool } from "./aiHubBridge";
 
 /** What the flyout hands every tool call besides its arguments, for what the flyout owns rather than the page. */
-export type AiModeToolHelpers = {
+type AiModeToolHelpers = {
     clearTextSelection: () => void;
 };
 
@@ -54,7 +54,7 @@ export function getToolDefinition({ handler: _handler, ...definition }: AiModeTo
     return definition;
 }
 
-export function createAiModeScopesStore(): AiModeScopesStore {
+function createAiModeScopesStore(): AiModeScopesStore {
     const registrations = new Map<symbol, Registration>();
     const listeners = new Set<() => void>();
     let nextOrder = 0;

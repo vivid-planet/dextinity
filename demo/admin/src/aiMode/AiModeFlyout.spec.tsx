@@ -115,7 +115,7 @@ function renderFlyout({ isStrictMode = false }: { isStrictMode?: boolean } = {})
             <DndProvider options={HTML5toTouch}>
                 <CaptureDragDropManager />
                 <AiModeProvider isEnabled isAvailable>
-                    <AiModeToolset id="pageTree" description="The page tree" tools={[createTool("open_page")]}>
+                    <AiModeToolset id="pageTree" description="The page tree" tools={[createTool("open_page_tree_node")]}>
                         <RemovableFlyout />
                         <OpenTopMenuButton />
                         <OpenablePage />
@@ -180,7 +180,7 @@ describe("AiModeFlyout", () => {
 
         expect(bridge.registerMcpServers).toHaveBeenCalledExactlyOnceWith([{ url: "https://admin.test/api/mcp" }]);
         expect(bridge.registerHostTools).toHaveBeenCalledTimes(1);
-        expect(getRegisteredTools().map(({ name }) => name)).toEqual(["open_page"]);
+        expect(getRegisteredTools().map(({ name }) => name)).toEqual(["open_page_tree_node"]);
 
         fireEvent.click(screen.getByRole("button", { name: "Open top menu" }));
 
@@ -195,12 +195,12 @@ describe("AiModeFlyout", () => {
         fireEvent.click(screen.getByRole("button", { name: "Toggle page" }));
 
         expect(bridge.registerHostTools).toHaveBeenCalledTimes(2);
-        expect(getRegisteredTools().map(({ name }) => name)).toEqual(["open_page", "edit_page"]);
+        expect(getRegisteredTools().map(({ name }) => name)).toEqual(["open_page_tree_node", "edit_page"]);
 
         fireEvent.click(screen.getByRole("button", { name: "Toggle page" }));
 
         expect(bridge.registerHostTools).toHaveBeenCalledTimes(3);
-        expect(getRegisteredTools().map(({ name }) => name)).toEqual(["open_page"]);
+        expect(getRegisteredTools().map(({ name }) => name)).toEqual(["open_page_tree_node"]);
     });
 
     it("calls the handler of the page's latest render, and doesn't register the tools again for it", async () => {
@@ -234,7 +234,7 @@ describe("AiModeFlyout", () => {
         expect(bridge.setContext).toHaveBeenLastCalledWith(
             expect.objectContaining({
                 toolsets: [
-                    { id: "pageTree", description: "The page tree", context: undefined, tools: ["open_page"] },
+                    { id: "pageTree", description: "The page tree", context: undefined, tools: ["open_page_tree_node"] },
                     { id: "page", description: "A page", context: { title: "Home" }, tools: ["edit_page"] },
                 ],
             }),

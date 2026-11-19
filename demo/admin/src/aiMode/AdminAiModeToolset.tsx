@@ -4,7 +4,7 @@ import { useIntl } from "react-intl";
 import { useLocation, useNavigate } from "react-router";
 
 import { findOpenAdminPage, getAdminPages } from "./adminPages";
-import { createAdminTools } from "./hostTools";
+import { createAdminTools, createPageTreeTools } from "./hostTools";
 
 /** The toolset of the whole admin, so that the AI Mode is available on every page and can open any page of the menu. */
 export function AdminAiModeToolset({ menu, children }: PropsWithChildren<{ menu: MasterMenuData }>) {

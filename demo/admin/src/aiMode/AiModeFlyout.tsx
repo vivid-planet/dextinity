@@ -83,6 +83,8 @@ export function AiModeFlyout() {
 
     // Read via a ref so that registerBridge, the ref callback of the chat, doesn't change on navigation. A new ref
     // callback makes React detach and reattach the ref, which would register the MCP server and the tools again.
+    // The subscription to the toolsets reads it via the ref too: subscribing again on navigation would miss a toolset
+    // that a page registers in the same commit, because React runs every effect's cleanup before the new effects.
     const pushContextRef = useRef(pushContext);
     pushContextRef.current = pushContext;
 
@@ -150,7 +152,7 @@ export function AiModeFlyout() {
         let timeout: number | undefined;
         const schedulePush = () => {
             window.clearTimeout(timeout);
-            timeout = window.setTimeout(pushContext, contextPushDebounceMs);
+            timeout = window.setTimeout(() => pushContextRef.current(), contextPushDebounceMs);
         };
         const unsubscribeToolsets = toolsetsStore.subscribe(() => {
             // Right away rather than debounced, so that the agent doesn't call a tool of a page that is gone.
@@ -164,7 +166,7 @@ export function AiModeFlyout() {
             unsubscribeTextSelection();
             window.clearTimeout(timeout);
         };
-    }, [toolsetsStore, textSelectionStore, pushContext, registerHostTools]);
+    }, [toolsetsStore, textSelectionStore, registerHostTools]);
 
     // Unmounted once closed, so the chat starts over with the next opening.
     return (

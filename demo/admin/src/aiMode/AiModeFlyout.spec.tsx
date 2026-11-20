@@ -2,10 +2,10 @@ import { CurrentUserContext, type CurrentUserInterface } from "@dextinity/cms-ad
 import { renderAdmin } from "@src/testing/renderAdmin";
 import { fireEvent, screen } from "@testing-library/react";
 import { HTML5toTouch } from "rdndmb-html5-to-touch";
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import { useDragDropManager } from "react-dnd";
 import { DndProvider } from "react-dnd-multi-backend";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { AiModeProvider } from "./AiModeContext";
@@ -93,6 +93,13 @@ function Page({ title }: { title: string }) {
     return null;
 }
 
+// Registers its toolset in the commit that navigates to the top menu, like a page whose data is cached.
+function TopMenuToolset() {
+    const { pathname } = useLocation();
+    useAiModeToolset(pathname === topMenuPath ? { id: "topMenu", description: "The top menu", tools: [createTool("edit_top_menu")] } : null);
+    return null;
+}
+
 function getRegisteredTools() {
     return bridge.registerHostTools.mock.lastCall?.[0] as Array<{ name: string; handler: (args: Record<string, unknown>) => unknown }>;
 }
@@ -109,13 +116,14 @@ function RemovableFlyout() {
     );
 }
 
-function renderFlyout({ isStrictMode = false }: { isStrictMode?: boolean } = {}) {
+function renderFlyout({ isStrictMode = false, beforeFlyout }: { isStrictMode?: boolean; beforeFlyout?: ReactNode } = {}) {
     return renderAdmin(
         <CurrentUserContext.Provider value={{ currentUser, isAllowed: () => true }}>
             <DndProvider options={HTML5toTouch}>
                 <CaptureDragDropManager />
                 <AiModeProvider isEnabled isAvailable>
                     <AiModeToolset id="pageTree" description="The page tree" tools={[createTool("open_page_tree_node")]}>
+                        {beforeFlyout}
                         <RemovableFlyout />
                         <OpenTopMenuButton />
                         <OpenablePage />
@@ -201,6 +209,14 @@ describe("AiModeFlyout", () => {
 
         expect(bridge.registerHostTools).toHaveBeenCalledTimes(3);
         expect(getRegisteredTools().map(({ name }) => name)).toEqual(["open_page_tree_node"]);
+    });
+
+    it("registers the tools of a toolset that mounts in the same commit as a navigation", () => {
+        renderFlyout({ beforeFlyout: <TopMenuToolset /> });
+
+        fireEvent.click(screen.getByRole("button", { name: "Open top menu" }));
+
+        expect(getRegisteredTools().map(({ name }) => name)).toEqual(["open_page_tree_node", "edit_top_menu"]);
     });
 
     it("calls the handler of the page's latest render, and doesn't register the tools again for it", async () => {

@@ -179,7 +179,7 @@ function PageTreePage({ surface }: Pick<TreeDetailLayoutProps, "surface">) {
                         eyebrow={`Austria · German · ${nodes} pages`}
                         title="Page tree"
                         subtitle={`${unpublishedCount} unpublished · ${archivedCount} archived`}
-                        actions={<Button startIcon={<Icon name="plus" />}>New page</Button>}
+                        primaryAction={{ label: "New page", icon: <Icon name="plus" /> }}
                     />
                 }
                 toolbar={

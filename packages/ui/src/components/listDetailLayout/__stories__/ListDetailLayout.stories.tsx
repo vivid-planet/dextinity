@@ -204,11 +204,7 @@ function RedirectsPage({ initialOpenId }: { initialOpenId?: string }) {
                     eyebrow="Website"
                     title="Redirects"
                     subtitle={`${redirects.length} redirects in Austria · German`}
-                    actions={
-                        <Button startIcon={<Icon name="plus" />} onClick={() => setOpenId("new")}>
-                            New redirect
-                        </Button>
-                    }
+                    primaryAction={{ label: "New redirect", icon: <Icon name="plus" />, onClick: () => setOpenId("new") }}
                 />
             }
             toolbar={

@@ -51,6 +51,25 @@
             flex: none;
             flex-wrap: nowrap;
         }
+
+        // Buttons with an icon show only the icon; the hidden label still names them
+        .action[data-has-icon] {
+            padding-inline: 0;
+            inline-size: var(--dextinity-page-header-narrow-action-size);
+
+            .actionLabel {
+                position: absolute;
+                inline-size: 1px;
+                block-size: 1px;
+                overflow: hidden;
+                clip-path: inset(50%);
+                white-space: nowrap;
+            }
+        }
+
+        .moreButton :global(.dextinityButton__endIcon) {
+            display: none;
+        }
     }
 
     &[data-has-back] .heading {
@@ -97,8 +116,44 @@
     text-transform: var(--dextinity-typography-display-text-transform);
 }
 
+.titleInput {
+    box-sizing: border-box;
+    display: block;
+    inline-size: calc(100% + 2 * var(--dextinity-page-header-title-input-padding));
+    // A text field doesn't take its height from the line height, so it gets the height of the title's line
+    block-size: calc(var(--dextinity-typography-display-l-line-height) * 1em);
+    margin: 0;
+    margin-inline-start: calc(var(--dextinity-page-header-title-input-padding) * -1);
+    padding: 0 var(--dextinity-page-header-title-input-padding);
+    border: 0;
+    border-radius: var(--dextinity-radius-field);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    letter-spacing: inherit;
+    text-overflow: ellipsis;
+    text-transform: inherit;
+
+    // The field's edge as a shadow, so that it doesn't add to the title's height
+    &:hover {
+        box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line);
+    }
+
+    &:focus-visible {
+        outline: none;
+        background: var(--dextinity-color-surface);
+        box-shadow:
+            inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-accent),
+            var(--dextinity-focus-ring);
+    }
+}
+
 .subtitle {
     grid-area: subtitle;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: var(--dextinity-page-header-status-gap);
     margin-block-start: var(--dextinity-page-header-subtitle-spacing);
     color: var(--dextinity-page-header-subtitle-color);
     font-size: var(--dextinity-typography-body-size);
@@ -110,4 +165,18 @@
     flex-wrap: wrap;
     align-items: center;
     gap: var(--dextinity-page-header-actions-gap);
+}
+
+.status {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--dextinity-space-2);
+}
+
+.moreButton :global(.dextinityButton__startIcon) {
+    display: none;
+
+    @media (width < 768px) {
+        display: inline-flex;
+    }
 }

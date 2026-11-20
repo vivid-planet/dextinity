@@ -1,4 +1,5 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { useState } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { PageHeader } from "../PageHeader";
@@ -12,7 +13,7 @@ describe("PageHeader", () => {
                 title="Page tree"
                 eyebrow="Austria · German"
                 subtitle="3 unpublished"
-                actions={<button type="button">New page</button>}
+                primaryAction={{ label: "New page" }}
                 back={{ label: "Overview", href: "/" }}
                 className="consumer-class"
             />,
@@ -43,7 +44,7 @@ describe("PageHeader", () => {
 
     it("shows a back button before the title that calls onClick", () => {
         const onClick = vi.fn();
-        render(<PageHeader title="Frontend developer" back={{ label: "Back to job ads", onClick }} actions={<button type="button">Save</button>} />);
+        render(<PageHeader title="Frontend developer" back={{ label: "Back to job ads", onClick }} primaryAction={{ label: "Save" }} />);
 
         const back = screen.getByRole("button", { name: "Back to job ads" });
         expect(back.nextElementSibling).toBe(screen.getByRole("heading", { level: 1, name: "Frontend developer" }));
@@ -60,5 +61,59 @@ describe("PageHeader", () => {
         );
 
         expect(Array.from(container.children).map((header) => (header as HTMLElement).dataset.variant)).toStrictEqual(["default", "compact"]);
+    });
+
+    it("shows the primary and one secondary action as buttons", () => {
+        const onSave = vi.fn();
+        const onDownload = vi.fn();
+        render(
+            <PageHeader
+                title="Photo"
+                primaryAction={{ label: "Save", onClick: onSave }}
+                secondaryActions={[{ label: "Download", onClick: onDownload }]}
+            />,
+        );
+
+        const buttons = screen.getAllByRole("button");
+        expect(buttons.map((button) => button.textContent)).toStrictEqual(["Download", "Save"]);
+        fireEvent.click(buttons[0]);
+        fireEvent.click(buttons[1]);
+        expect(onDownload).toHaveBeenCalledTimes(1);
+        expect(onSave).toHaveBeenCalledTimes(1);
+    });
+
+    it("puts more than one secondary action into a menu, so that it shows at most two buttons", () => {
+        render(
+            <PageHeader
+                title="Photo"
+                primaryAction={{ label: "Save" }}
+                secondaryActions={[{ label: "Download" }, { label: "Archive" }, { label: "Delete", color: "error" }]}
+                labels={{ moreActions: "Actions" }}
+            />,
+        );
+
+        expect(screen.getAllByRole("button").map((button) => button.textContent)).toStrictEqual(["Actions", "Save"]);
+        expect(screen.queryByRole("button", { name: "Download" })).toBeNull();
+    });
+
+    it("makes the title editable in place with onTitleChange", () => {
+        function EditableHeader() {
+            const [title, setTitle] = useState("photo.jpg");
+            return <PageHeader title={title} onTitleChange={setTitle} labels={{ titleInput: "File name" }} />;
+        }
+        const { container } = render(<EditableHeader />);
+
+        const input = screen.getByRole("textbox", { name: "File name" });
+        expect(screen.getByRole("heading", { level: 1 }).contains(input)).toBe(true);
+        expect(input.className).toContain("dextinityPageHeader__titleInput");
+        fireEvent.change(input, { target: { value: "offsite.jpg" } });
+        expect(input).toHaveProperty("value", "offsite.jpg");
+        expect((container.firstElementChild as HTMLElement).dataset.titleEditable).toBe("");
+    });
+
+    it("shows the status before the subtitle", () => {
+        render(<PageHeader title="Careers" status={<span>Published</span>} subtitle="/careers" />);
+
+        expect(screen.getByText("Published").closest(".dextinityPageHeader__subtitle")?.textContent).toBe("Published/careers");
     });
 });

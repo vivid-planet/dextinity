@@ -4,10 +4,13 @@ import {
     ChangeSetType,
     type EntityClass,
     EntityManager,
+    type EntityProperty,
     type EventSubscriber,
     type FlushEventArgs,
     PostgreSqlDriver,
     raw,
+    Reference,
+    ReferenceKind,
     wrap,
 } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
@@ -16,6 +19,19 @@ import { UserPermissionsStorageService } from "../user-permissions/user-permissi
 import { ACTION_LOGS_METADATA_KEY, type ActionLogMetadata } from "./action-logs.decorator.js";
 import { ActionLogsService } from "./action-logs.service.js";
 import { ActionLog } from "./entities/action-log.entity.js";
+
+// The snapshot holds the primary key of a referenced entity instead of the entity itself, so that a change of the
+// reference is visible without copying the referenced entity. Collections are left out.
+function getReferencedPrimaryKeys(entity: AnyEntity, relations: EntityProperty[]): Record<string, unknown> {
+    const referencedPrimaryKeys: Record<string, unknown> = {};
+    for (const relation of relations) {
+        if (relation.kind === ReferenceKind.MANY_TO_ONE || (relation.kind === ReferenceKind.ONE_TO_ONE && relation.owner)) {
+            const referencedEntity = Reference.unwrapReference(entity[relation.name]);
+            referencedPrimaryKeys[relation.name] = referencedEntity ? wrap(referencedEntity, true).getPrimaryKey() : null;
+        }
+    }
+    return referencedPrimaryKeys;
+}
 
 @Injectable()
 export class ActionLogsSubscriber implements EventSubscriber {
@@ -67,7 +83,10 @@ export class ActionLogsSubscriber implements EventSubscriber {
         let snapshot: AnyEntity | undefined = undefined;
         if (changeSet.type !== ChangeSetType.DELETE) {
             const ignoreFields = entityMetadata.relations.map((entityProperty) => entityProperty.name);
-            snapshot = wrap(changeSet.entity, true).toObject(ignoreFields);
+            snapshot = {
+                ...wrap(changeSet.entity, true).toObject(ignoreFields),
+                ...getReferencedPrimaryKeys(changeSet.entity, entityMetadata.relations),
+            };
         }
 
         return this.entityManager.create(

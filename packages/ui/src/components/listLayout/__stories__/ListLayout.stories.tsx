@@ -110,14 +110,8 @@ function JobAdsPage() {
                     eyebrow="Content · Careers"
                     title="Job ads"
                     subtitle={`${jobs.length} job ads in Austria · German`}
-                    actions={
-                        <>
-                            <Button variant="outlined" color="secondary" startIcon={<Icon name="download" />}>
-                                Export
-                            </Button>
-                            <Button startIcon={<Icon name="plus" />}>New job ad</Button>
-                        </>
-                    }
+                    secondaryActions={[{ label: "Export", icon: <Icon name="download" /> }]}
+                    primaryAction={{ label: "New job ad", icon: <Icon name="plus" /> }}
                 />
             }
             toolbar={

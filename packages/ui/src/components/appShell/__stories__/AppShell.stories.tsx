@@ -7,7 +7,6 @@ import { useControlledArg } from "../../../storybook/storyArgs";
 import { StoryAssistant } from "../../../storybook/StoryAssistant";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { AiAssistantSwitch } from "../../aiAssistantSwitch/AiAssistantSwitch";
-import { Button } from "../../button/Button";
 import { CommandPalette } from "../../commandPalette/CommandPalette";
 import { Icon } from "../../icon/Icon";
 import { PageHeader } from "../../pageHeader/PageHeader";
@@ -242,14 +241,8 @@ function StoryEditPage({ onBack }: { onBack: () => void }) {
                 back={{ label: "Back to job ads", onClick: onBack }}
                 eyebrow="Job ad · Austria · German"
                 title="Frontend developer"
-                actions={
-                    <>
-                        <SaveState state={saved ? "saved" : "dirty"} />
-                        <Button startIcon={<Icon name="check" />} disabled={saved} onClick={() => setSaved(true)}>
-                            Save
-                        </Button>
-                    </>
-                }
+                actionStatus={<SaveState state={saved ? "saved" : "dirty"} />}
+                primaryAction={{ label: "Save", icon: <Icon name="check" />, disabled: saved, onClick: () => setSaved(true) }}
             />
             <Panel title="Job ad">
                 <p className={styles.placeholder}>The fields of the job ad</p>
@@ -263,7 +256,7 @@ function StoryEditFlow() {
     return editing ? (
         <StoryEditPage onBack={() => setEditing(false)} />
     ) : (
-        <PageHeader title="Job ads" actions={<Button onClick={() => setEditing(true)}>Edit “Frontend developer”</Button>} />
+        <PageHeader title="Job ads" primaryAction={{ label: "Edit “Frontend developer”", onClick: () => setEditing(true) }} />
     );
 }
 

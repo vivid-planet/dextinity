@@ -394,6 +394,9 @@ export const Field = forwardRef<HTMLDivElement, FieldProps>(function Field(
                 )}
                 {actionContent}
                 {hasMessage && <div {...messageProps}>{message}</div>}
+                <div className={styles.visuallyHidden} aria-live="polite">
+                    {controlError}
+                </div>
             </div>
         </FieldContext.Provider>
     );

@@ -120,6 +120,16 @@ describe("DateTimePicker", () => {
         expect(screen.getByRole("textbox", { name: "Publish at Time" })).toHaveProperty("value", "08:30");
     });
 
+    it("marks the time input as required in a required field", () => {
+        render(
+            <Field label="Publish at" required>
+                <DateTimePicker name="publishAt" value={null} onChange={vi.fn()} />
+            </Field>,
+        );
+
+        expect(screen.getByRole("textbox", { name: "Publish at Time" })).toBeRequired();
+    });
+
     it("blocks the form submission at the time input while the typed time has an error", async () => {
         render(
             <Field label="Publish at">

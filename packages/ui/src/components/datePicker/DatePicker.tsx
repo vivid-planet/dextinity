@@ -49,7 +49,8 @@ export interface DatePickerCalendarProps {
      */
     isDateDisabled?: (date: string) => boolean;
     /**
-     * The locale that formats and reads typed dates, and names months and weekdays, e.g. `de-AT`.
+     * The locale that formats and reads typed dates, and names months and weekdays, e.g. `de-AT`. Dates always use the Gregorian calendar
+     * and the digits 0–9.
      *
      * @defaultValue the browser's locale
      */

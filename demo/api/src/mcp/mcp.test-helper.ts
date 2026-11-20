@@ -1,11 +1,14 @@
 import {
     BlocksTransformerService,
+    BuildsModule,
+    BuildsService,
     type ContentScope,
     CorePermission,
     type CurrentUser,
     ExceptionFilter,
     FilesService,
     getRequestFromExecutionContext,
+    PAGE_TREE_CONFIG,
     PageTreeNodeDocumentEntityScopeService,
     PageTreeService,
     UserPermissionsModule,
@@ -16,6 +19,8 @@ import { type CanActivate, type ExecutionContext, type INestApplication, Injecta
 import { APP_GUARD } from "@nestjs/core";
 import { connectMcpClient } from "@nestjs/mcp/testing";
 import { Test } from "@nestjs/testing";
+import { PagesModule } from "@src/documents/pages/pages.module.js";
+import { PagesService } from "@src/documents/pages/pages.service.js";
 
 import { AiModeMcpModule } from "./mcp.module.js";
 
@@ -80,7 +85,16 @@ const permissionProviders: Provider[] = [
 ];
 
 // Nest resolves the services of all tools of the module, also of those a spec doesn't call.
-const serviceStubs: Provider[] = [BlocksTransformerService, PageTreeService, EntityManager, FilesService, MikroORM].map((token) => ({
+const serviceStubs: Provider[] = [
+    BlocksTransformerService,
+    PageTreeService,
+    EntityManager,
+    FilesService,
+    MikroORM,
+    BuildsService,
+    PagesService,
+    PAGE_TREE_CONFIG,
+].map((token) => ({
     provide: token,
     useValue: {},
 }));
@@ -112,6 +126,10 @@ export function createOrmProvider(rowsByEntity: Map<unknown, { id: string }[]>):
 @Module({})
 class AppServicesModule {}
 
+// Takes the place of the modules the MCP module imports, whose services come from `AppServicesModule` instead.
+@Module({})
+class ImportedServicesModule {}
+
 /** Builds the app with the services the spec provides for the tools it calls. */
 export async function createMcpTestApp(providers: Provider[] = []) {
     const providedTokens = new Set(providers.map(getToken));
@@ -120,7 +138,12 @@ export async function createMcpTestApp(providers: Provider[] = []) {
     const moduleRef = await Test.createTestingModule({
         imports: [{ module: AppServicesModule, global: true, providers: appProviders, exports: appProviders }, AiModeMcpModule.forRoot({ adminUrl })],
         providers: [{ provide: APP_GUARD, useClass: HeaderAuthGuard }, userPermissionsGuardProvider],
-    }).compile();
+    })
+        .overrideModule(BuildsModule)
+        .useModule(ImportedServicesModule)
+        .overrideModule(PagesModule)
+        .useModule(ImportedServicesModule)
+        .compile();
     const app: INestApplication = moduleRef.createNestApplication();
     // As main.ts sets them up. The global filter also catches the exceptions of tool calls that no filter of the tool catches.
     app.setGlobalPrefix("api");
@@ -130,6 +153,10 @@ export async function createMcpTestApp(providers: Provider[] = []) {
 
     return {
         endpoint: `${await app.getUrl()}/api/mcp`.replace("[::1]", "127.0.0.1"),
+        async listTools(user = "editor") {
+            clients[user] ??= await connectMcpClient(app, { headers: { "x-test-user": user } });
+            return (await clients[user].listTools()).tools;
+        },
         async callTool(name: string, args: Record<string, unknown>, user = "editor") {
             clients[user] ??= await connectMcpClient(app, { headers: { "x-test-user": user } });
             const result = await clients[user].callTool({ name, arguments: args });

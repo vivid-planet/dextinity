@@ -24,8 +24,6 @@
     // In narrow windows the header takes as little height as it can: the label line's eyebrow goes, since the top bar shows the
     // scope, and the actions stay next to the title
     @media (width < 768px) {
-        flex-wrap: nowrap;
-        align-items: center;
         --dextinity-page-header-gap: var(--dextinity-page-header-narrow-gap);
         --dextinity-page-header-subtitle-spacing: var(--dextinity-page-header-narrow-subtitle-spacing);
 
@@ -39,17 +37,8 @@
             display: none;
         }
 
-        .heading {
-            flex: 1;
-        }
-
         .subtitle {
             font-size: var(--dextinity-typography-small-size);
-        }
-
-        .actions {
-            flex: none;
-            flex-wrap: nowrap;
         }
 
         // Buttons with an icon show only the icon; the hidden label still names them
@@ -81,6 +70,47 @@
         grid-template-columns: auto minmax(0, 1fr);
         align-items: center;
         column-gap: var(--dextinity-page-header-back-gap);
+    }
+
+    // In narrow windows, the label line takes the whole width above the title, and the action status moves below the buttons, so
+    // that the title keeps as much room as it can next to the buttons
+    @media (width < 768px) {
+        display: grid;
+        grid-template-areas:
+            "label label"
+            "title buttons"
+            "subtitle actionStatus";
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 0 var(--dextinity-page-header-gap);
+
+        &[data-has-back] {
+            grid-template-areas:
+                "label label label"
+                "back title buttons"
+                ". subtitle actionStatus";
+            grid-template-columns: auto minmax(0, 1fr) auto;
+            column-gap: var(--dextinity-page-header-back-gap);
+        }
+
+        .heading,
+        &[data-has-back] .heading,
+        .actions {
+            display: contents;
+        }
+
+        .labelLine {
+            min-inline-size: 0;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .actionStatus {
+            grid-area: actionStatus;
+            justify-self: end;
+            margin-block-start: var(--dextinity-page-header-subtitle-spacing);
+            font-size: var(--dextinity-typography-small-size);
+        }
     }
 }
 
@@ -163,6 +193,13 @@
 .actions {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
+    gap: var(--dextinity-page-header-actions-gap);
+}
+
+.buttons {
+    display: flex;
+    grid-area: buttons;
     align-items: center;
     gap: var(--dextinity-page-header-actions-gap);
 }

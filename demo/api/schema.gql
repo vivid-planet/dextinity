@@ -14,10 +14,6 @@ type ActionLog {
   previousVersion: ActionLog
   scope: [JSONObject!]
   snapshot: JSONObject
-
-  """
-  Derived from snapshot and version: snapshot null → deleted, version 1 → created, otherwise → updated.
-  """
   type: ActionLogType!
   user: ActionLogsUser!
   version: Int!

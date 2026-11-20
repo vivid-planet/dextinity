@@ -20,7 +20,6 @@ import { ActionLogsService } from "./action-logs.service.js";
 import { actionLogFilterToWhere } from "./action-logs-filter.utils.js";
 import { ActionLogsUserLoaderService } from "./action-logs-user-loader.service.js";
 import { containsAllScopes } from "./contains-all-scopes.js";
-import { ActionLogType } from "./dto/action-log-type.enum.js";
 import { ActionLogsArgs } from "./dto/action-logs.args.js";
 import { ActionLogsUser } from "./dto/action-logs-user.js";
 import { MyActionLogsArgs } from "./dto/my-action-logs.args.js";
@@ -191,19 +190,6 @@ export class ActionLogsResolver {
         // Access to a row is checked against one of its own scopes. A previous version that lacks one of the
         // current row's scopes could hold content the user may not read, so it is not returned.
         return containsAllScopes(previous.scope, actionLog.scope) ? previous : null;
-    }
-
-    @ResolveField(() => ActionLogType, {
-        description: "Derived from snapshot and version: snapshot null → deleted, version 1 → created, otherwise → updated.",
-    })
-    type(@Parent() actionLog: ActionLog): ActionLogType {
-        if (actionLog.snapshot == null) {
-            return ActionLogType.deleted;
-        }
-        if (actionLog.version === 1) {
-            return ActionLogType.created;
-        }
-        return ActionLogType.updated;
     }
 
     @ResolveField(() => ActionLogsUser)

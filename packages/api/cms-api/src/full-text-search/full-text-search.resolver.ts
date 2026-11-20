@@ -10,7 +10,7 @@ import { CurrentUser } from "../user-permissions/dto/current-user";
 import { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
 import { PaginatedEntityInfo } from "./dto/paginated-entity-info";
 import { EntityInfoFullTextObject } from "./entities/entity-info-full-text.object";
-import { prefixFullTextCondition, searchToPrefixTsQuery } from "./prefix-full-text-query";
+import { prefixFullTextCondition } from "./prefix-full-text-query";
 
 @Resolver(() => EntityInfoObject)
 @RequiredPermission("fullTextSearch", { skipScopeCheck: true })
@@ -28,14 +28,12 @@ export class FullTextSearchResolver {
     ): Promise<PaginatedEntityInfo> {
         const allowedPermissions = user.permissions.map((p) => p.permission);
 
-        const tsQuery = searchToPrefixTsQuery(search);
-
-        if (allowedPermissions.length === 0 || !tsQuery) {
+        if (allowedPermissions.length === 0) {
             return new PaginatedEntityInfo([], 0);
         }
 
         const where: FilterQuery<EntityInfoFullTextObject> = {
-            ...prefixFullTextCondition(tsQuery),
+            ...prefixFullTextCondition(search),
             requiredPermission: { $overlap: allowedPermissions },
             ...(includeInvisiblePages?.length ? {} : { entityInfo: { visible: true } }),
         };

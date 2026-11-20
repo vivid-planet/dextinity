@@ -8,15 +8,21 @@ export interface DateInputErrorLabels {
     invalidDate: (example: string) => string;
     /** Shown for a typed day before `min` or after `max`, with the formatted limits that are set. */
     dateOutOfRange: (min: string | undefined, max: string | undefined) => string;
+    /** Shown for a typed day that `isDateDisabled` disables, with the formatted day. */
+    dateDisabled: (date: string) => string;
     /** Shown for typed text that isn't a time of day, with an example time in the expected format. */
     invalidTime: (example: string) => string;
+    /** Shown for a time that `isTimeDisabled` disables on the chosen day, with the formatted time. */
+    timeDisabled: (time: string) => string;
 }
 
 export const defaultDateInputErrorLabels: DateInputErrorLabels = {
     invalidDate: (example) => `Enter a date like ${example}.`,
     dateOutOfRange: (min, max) =>
         min != null && max != null ? `Choose a date from ${min} to ${max}.` : min != null ? `Choose ${min} or later.` : `Choose ${max} or earlier.`,
+    dateDisabled: (date) => `${date} can't be chosen.`,
     invalidTime: (example) => `Enter a time like ${example}.`,
+    timeDisabled: (time) => `${time} can't be chosen.`,
 };
 
 /**
@@ -25,11 +31,23 @@ export const defaultDateInputErrorLabels: DateInputErrorLabels = {
 export type TypedDay = { day: IsoDate | null; error?: undefined } | { day?: undefined; error: string };
 
 /**
- * Reads a day typed in the locale's format and checks it against `min` and `max`.
+ * Reads a day typed in the locale's format and checks it against `min`, `max`, and `isDateDisabled`.
  */
 export function readTypedDay(
     text: string,
-    { locale, min, max, labels }: { locale: string | undefined; min: IsoDate | undefined; max: IsoDate | undefined; labels: DateInputErrorLabels },
+    {
+        locale,
+        min,
+        max,
+        isDateDisabled,
+        labels,
+    }: {
+        locale: string | undefined;
+        min: IsoDate | undefined;
+        max: IsoDate | undefined;
+        isDateDisabled: ((date: IsoDate) => boolean) | undefined;
+        labels: DateInputErrorLabels;
+    },
 ): TypedDay {
     if (text.trim() === "") {
         return { day: null };
@@ -42,6 +60,9 @@ export function readTypedDay(
         return {
             error: labels.dateOutOfRange(min != null ? formatDate(min, locale) : undefined, max != null ? formatDate(max, locale) : undefined),
         };
+    }
+    if (isDateDisabled?.(day) === true) {
+        return { error: labels.dateDisabled(formatDate(day, locale)) };
     }
     return { day };
 }

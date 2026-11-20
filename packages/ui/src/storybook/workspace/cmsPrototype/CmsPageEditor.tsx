@@ -2,11 +2,9 @@ import { type ReactNode, useState } from "react";
 
 import { Block } from "../../../components/blockList/Block";
 import { BlockList } from "../../../components/blockList/BlockList";
-import { Button } from "../../../components/button/Button";
 import { EditLayout, type EditLayoutProps } from "../../../components/editLayout/EditLayout";
 import { Field } from "../../../components/field/Field";
 import { Icon } from "../../../components/icon/Icon";
-import { IconButton } from "../../../components/iconButton/IconButton";
 import { Input } from "../../../components/input/Input";
 import { PageHeader } from "../../../components/pageHeader/PageHeader";
 import { Panel } from "../../../components/panel/Panel";
@@ -193,30 +191,28 @@ export function CmsPageEditor({ page }: { page: SitePage }) {
                         back={{ label: "Back to the page tree", href: "#page-tree" }}
                         eyebrow={["Page", ...trail.map((ancestor) => ancestor.label)].join(" · ")}
                         title={page.label}
+                        status={<StatusIndicator status={page.status ?? "published"} />}
                         subtitle={
                             <span className={styles.metaLine}>
-                                <StatusIndicator status={page.status ?? "published"} />
                                 <span>{page.path}</span>
                                 <span>Last saved by {page.editor ?? "Anna Klein"}</span>
                             </span>
                         }
-                        actions={
-                            <>
-                                <SaveState state={saveState} />
-                                <IconButton variant="text" color="secondary" aria-label="More actions">
-                                    <Icon name="more-horizontal" />
-                                </IconButton>
-                                <Button
-                                    startIcon={<Icon name="check" />}
-                                    onClick={() => {
-                                        setSaveState("saving");
-                                        window.setTimeout(() => setSaveState("saved"), 800);
-                                    }}
-                                >
-                                    Save
-                                </Button>
-                            </>
-                        }
+                        actionStatus={<SaveState state={saveState} />}
+                        secondaryActions={[
+                            { label: "Preview on the website", icon: <Icon name="external-link" /> },
+                            { label: "Duplicate", icon: <Icon name="copy" /> },
+                            { label: "Move …", icon: <Icon name="folder" /> },
+                            { label: "Delete …", icon: <Icon name="trash" />, color: "error", separatorBefore: true },
+                        ]}
+                        primaryAction={{
+                            label: "Save",
+                            icon: <Icon name="check" />,
+                            onClick: () => {
+                                setSaveState("saving");
+                                window.setTimeout(() => setSaveState("saved"), 800);
+                            },
+                        }}
                     />
                 }
                 preview={

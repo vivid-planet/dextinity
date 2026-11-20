@@ -1,6 +1,7 @@
-import { type CSSProperties, Fragment, type ReactNode, useEffect, useState } from "react";
+import { type CSSProperties, type ReactNode, useEffect, useState } from "react";
 
 import { Avatar } from "../../../../components/avatar/Avatar";
+import { Breadcrumbs } from "../../../../components/breadcrumbs/Breadcrumbs";
 import { Button } from "../../../../components/button/Button";
 import { ConfirmDialog } from "../../../../components/confirmDialog/ConfirmDialog";
 import { EmptyState } from "../../../../components/emptyState/EmptyState";
@@ -10,13 +11,11 @@ import { Icon } from "../../../../components/icon/Icon";
 import { IconButton } from "../../../../components/iconButton/IconButton";
 import { Input } from "../../../../components/input/Input";
 import { KeyValueList } from "../../../../components/keyValueList/KeyValueList";
-import { Menu } from "../../../../components/menu/Menu";
-import { MenuItem } from "../../../../components/menu/MenuItem";
-import { MenuSeparator } from "../../../../components/menu/MenuSeparator";
-import { MenuSubmenu } from "../../../../components/menu/MenuSubmenu";
+import { PageHeader } from "../../../../components/pageHeader/PageHeader";
 import { Panel } from "../../../../components/panel/Panel";
 import { SaveState, type SaveStateValue } from "../../../../components/saveState/SaveState";
 import { SegmentedControl } from "../../../../components/segmentedControl/SegmentedControl";
+import { StatusIndicator } from "../../../../components/statusIndicator/StatusIndicator";
 import { Tabs } from "../../../../components/tabs/Tabs";
 import { Textarea } from "../../../../components/textarea/Textarea";
 import { Tooltip } from "../../../../components/tooltip/Tooltip";
@@ -401,6 +400,7 @@ export function AssetDetail({ assetId }: { assetId: string }) {
     // The path leads to that folder in the library; leaving with unsaved changes still asks first
     function openInLibrary(folderId: string | null) {
         setLocation((current) => ({ ...current, folderId, flat: false, smartFilter: null, search: "", page: 1 }));
+        prototype?.navigate("assets");
     }
     const prototype = usePrototypeNavigation();
     const asset = assets.find((candidate) => candidate.id === assetId);
@@ -408,8 +408,6 @@ export function AssetDetail({ assetId }: { assetId: string }) {
     const [draft, setDraft] = useState<Draft | undefined>(saved);
     const [saveState, setSaveState] = useState<SaveStateValue>("saved");
     const [tab, setTab] = useState("settings");
-    const [moreOpen, setMoreOpen] = useState(false);
-    const [moveOpen, setMoveOpen] = useState(false);
     const [leave, setLeave] = useState<(() => void) | null>(null);
     const dirty = draft != null && JSON.stringify(draft) !== JSON.stringify(saved);
 
@@ -486,92 +484,86 @@ export function AssetDetail({ assetId }: { assetId: string }) {
     return (
         <PageTypeShell currentId="assets">
             <div className={styles.page}>
-                <header className={styles.header}>
-                    <div className={styles.heading}>
-                        <nav aria-label="Location" className={styles.context}>
-                            <Icon name="arrow-left" size="small" />
-                            {[{ id: null, name: "Assets" }, ...getFolderTrail(folders, asset.folderId)].map((segment, index) => (
-                                <Fragment key={segment.id ?? "root"}>
-                                    {index > 0 && <span aria-hidden>/</span>}
-                                    <a href="#assets" className={styles.back} onClick={() => openInLibrary(segment.id)}>
-                                        {segment.name}
-                                    </a>
-                                </Fragment>
-                            ))}
-                            <span aria-hidden>·</span>
-                            <span>Global</span>
-                        </nav>
-                        <h1 className={styles.titleHeading}>
-                            <input
-                                className={styles.titleInput}
-                                aria-label="File name"
-                                value={draft.name}
-                                onChange={(event) => change({ name: event.target.value })}
-                            />
-                        </h1>
-                        <div className={styles.meta}>
-                            {meta.map((part) => (
-                                <span key={part}>{part}</span>
-                            ))}
-                            {draft.aiGenerated && <span className={styles.aiBadge}>AI-generated</span>}
-                            {asset.archived && <span className={styles.archivedBadge}>Archived</span>}
-                        </div>
-                    </div>
-                    <div className={styles.actions}>
-                        <SaveState state={dirty ? "dirty" : saveState} />
-                        <Tooltip content="Download">
-                            <IconButton variant="outlined" color="secondary" aria-label="Download" onClick={() => actions.download([item])}>
-                                <Icon name="download" />
-                            </IconButton>
-                        </Tooltip>
-                        <Menu
-                            open={moreOpen}
-                            onOpenChange={setMoreOpen}
-                            placement="bottom-end"
-                            trigger={
-                                <IconButton variant="outlined" color="secondary" aria-label="More actions">
-                                    <Icon name="more-horizontal" />
-                                </IconButton>
-                            }
-                        >
-                            <MenuItem label="Download" icon={<Icon name="download" />} onClick={() => actions.download([item])} />
-                            <MenuItem
-                                label="Replace file …"
-                                icon={<Icon name="swap" />}
-                                onClick={() => addToast({ message: "Replacing keeps the usages and the focal point", color: "info" })}
-                            />
-                            <MenuSubmenu label="Move …" icon={<Icon name="folder" />} open={moveOpen} onOpenChange={setMoveOpen}>
+                <PageHeader
+                    back={{ label: "Back to the folder", onClick: () => openInLibrary(asset.folderId) }}
+                    breadcrumbs={
+                        <Breadcrumbs
+                            variant="label"
+                            items={[
+                                ...[{ id: null, name: "Assets" }, ...getFolderTrail(folders, asset.folderId)].map((segment) => ({
+                                    label: segment.name,
+                                    href: "#assets",
+                                    onClick: () => openInLibrary(segment.id),
+                                })),
+                                { label: draft.name },
+                            ]}
+                        />
+                    }
+                    eyebrow="Global"
+                    title={draft.name}
+                    onTitleChange={(name) => change({ name })}
+                    labels={{ titleInput: "File name" }}
+                    status={
+                        (draft.aiGenerated || asset.archived) && (
+                            <>
+                                {asset.archived && <StatusIndicator status="archived" />}
+                                {draft.aiGenerated && <span className={styles.aiBadge}>AI-generated</span>}
+                            </>
+                        )
+                    }
+                    subtitle={meta.join(" · ")}
+                    actionStatus={<SaveState state={dirty ? "dirty" : saveState} />}
+                    secondaryActions={[
+                        { label: "Download", icon: <Icon name="download" />, onClick: () => actions.download([item]) },
+                        {
+                            label: "Replace file …",
+                            icon: <Icon name="swap" />,
+                            onClick: () => addToast({ message: "Replacing keeps the usages and the focal point", color: "info" }),
+                        },
+                        {
+                            label: "Move …",
+                            icon: <Icon name="folder" />,
+                            submenu: (
                                 <MoveToFolderMenu
                                     folders={folders}
                                     isDisabled={(folderId) => folderId == null || folderId === asset.folderId}
                                     onMove={(folderId, folderName) => actions.move([item], folderId, folderName)}
                                 />
-                            </MenuSubmenu>
-                            <MenuSeparator />
-                            {asset.archived ? (
-                                <MenuItem label="Restore" icon={<Icon name="restore" />} onClick={() => actions.setArchived([item], false)} />
-                            ) : (
-                                <MenuItem label="Archive" icon={<Icon name="archive" />} onClick={() => actions.setArchived([item], true)} />
-                            )}
-                            <MenuItem
-                                label="Delete …"
-                                icon={<Icon name="trash" />}
-                                color="error"
-                                onClick={() =>
-                                    actions.remove([item], () => {
-                                        prototype?.setLeaveGuard?.(null);
-                                        prototype?.navigate("assets");
-                                    })
-                                }
-                            />
-                        </Menu>
-                        <Tooltip content="Save, applies to all scopes" keyboardShortcut="mod+s">
-                            <Button startIcon={<Icon name="check" />} disabled={!dirty} onClick={save}>
-                                Save
-                            </Button>
-                        </Tooltip>
-                    </div>
-                </header>
+                            ),
+                        },
+                        asset.archived
+                            ? {
+                                  label: "Restore",
+                                  icon: <Icon name="restore" />,
+                                  separatorBefore: true,
+                                  onClick: () => actions.setArchived([item], false),
+                              }
+                            : {
+                                  label: "Archive",
+                                  icon: <Icon name="archive" />,
+                                  separatorBefore: true,
+                                  onClick: () => actions.setArchived([item], true),
+                              },
+                        {
+                            label: "Delete …",
+                            icon: <Icon name="trash" />,
+                            color: "error",
+                            onClick: () =>
+                                actions.remove([item], () => {
+                                    prototype?.setLeaveGuard?.(null);
+                                    prototype?.navigate("assets");
+                                }),
+                        },
+                    ]}
+                    primaryAction={{
+                        label: "Save",
+                        icon: <Icon name="check" />,
+                        disabled: !dirty,
+                        onClick: save,
+                        tooltip: "Save, applies to all scopes",
+                        keyboardShortcut: "mod+s",
+                    }}
+                />
                 <div className={styles.body}>
                     <div className={styles.mediaColumn}>
                         <Panel className={styles.mediaCard}>

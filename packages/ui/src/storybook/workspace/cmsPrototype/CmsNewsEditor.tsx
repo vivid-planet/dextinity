@@ -7,7 +7,6 @@ import { Dialog } from "../../../components/dialog/Dialog";
 import { EditLayout, type EditLayoutProps } from "../../../components/editLayout/EditLayout";
 import { Field } from "../../../components/field/Field";
 import { Icon } from "../../../components/icon/Icon";
-import { IconButton } from "../../../components/iconButton/IconButton";
 import { Input } from "../../../components/input/Input";
 import { KeyValueList } from "../../../components/keyValueList/KeyValueList";
 import { PageHeader } from "../../../components/pageHeader/PageHeader";
@@ -136,29 +135,25 @@ export function CmsNewsEditor({ article }: { article?: NewsArticle }) {
                         back={{ label: "Back to news", href: "#news" }}
                         eyebrow="News · Austria · German"
                         title={title || "New article"}
-                        subtitle={
-                            <span className={styles.metaLine}>
-                                <StatusIndicator status={status} />
-                                {article && <span>Last saved by {article.author}</span>}
-                            </span>
-                        }
-                        actions={
-                            <>
-                                <SaveState state={saveState} />
-                                <IconButton variant="text" color="secondary" aria-label="More actions">
-                                    <Icon name="more-horizontal" />
-                                </IconButton>
-                                <Button
-                                    startIcon={<Icon name="check" />}
-                                    onClick={() => {
-                                        setSaveState("saving");
-                                        window.setTimeout(() => setSaveState("saved"), 800);
-                                    }}
-                                >
-                                    Save
-                                </Button>
-                            </>
-                        }
+                        status={<StatusIndicator status={status} />}
+                        subtitle={article && <span>Last saved by {article.author}</span>}
+                        actionStatus={<SaveState state={saveState} />}
+                        secondaryActions={[
+                            { label: "Preview on the website", icon: <Icon name="external-link" /> },
+                            { label: "Duplicate", icon: <Icon name="copy" /> },
+                            published
+                                ? { label: "Unpublish", icon: <Icon name="eye-off" />, onClick: () => change(setPublished)(false) }
+                                : { label: "Publish", icon: <Icon name="eye" />, onClick: () => change(setPublished)(true) },
+                            { label: "Delete …", icon: <Icon name="trash" />, color: "error", separatorBefore: true },
+                        ]}
+                        primaryAction={{
+                            label: "Save",
+                            icon: <Icon name="check" />,
+                            onClick: () => {
+                                setSaveState("saving");
+                                window.setTimeout(() => setSaveState("saved"), 800);
+                            },
+                        }}
                     />
                 }
                 preview={

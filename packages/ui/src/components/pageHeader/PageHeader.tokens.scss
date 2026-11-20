@@ -19,6 +19,10 @@
     --dextinity-page-header-subtitle-spacing: var(--dextinity-space-3);
     // Gap between the action buttons
     --dextinity-page-header-actions-gap: var(--dextinity-space-2);
+    // Gap between the status and the subtitle
+    --dextinity-page-header-status-gap: var(--dextinity-space-4);
+    // Inner padding of the title field when the title is editable, pulled into the margin so that the text stays in place
+    --dextinity-page-header-title-input-padding: var(--dextinity-space-2);
 
     // Row and column gap of the compact variant, for editors
     --dextinity-page-header-compact-gap: var(--dextinity-space-3) 20px;
@@ -35,4 +39,6 @@
     --dextinity-page-header-narrow-title-font-size: 26px;
     // Space between the title and the subtitle in narrow windows
     --dextinity-page-header-narrow-subtitle-spacing: var(--dextinity-space-1);
+    // Width of an action button that shows only its icon in narrow windows
+    --dextinity-page-header-narrow-action-size: var(--dextinity-button-height);
 }

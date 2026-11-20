@@ -101,16 +101,8 @@ export function CmsNews() {
                         eyebrow="Structured data"
                         title="News"
                         subtitle={`${newsArticles.length} articles in Austria · German`}
-                        actions={
-                            <>
-                                <Button variant="outlined" color="secondary" startIcon={<Icon name="download" />}>
-                                    Export
-                                </Button>
-                                <Button startIcon={<Icon name="plus" />} href="#news/new">
-                                    New article
-                                </Button>
-                            </>
-                        }
+                        secondaryActions={[{ label: "Export", icon: <Icon name="download" /> }]}
+                        primaryAction={{ label: "New article", icon: <Icon name="plus" />, href: "#news/new" }}
                     />
                 }
                 toolbar={

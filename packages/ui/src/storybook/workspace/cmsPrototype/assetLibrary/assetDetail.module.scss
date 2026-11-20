@@ -23,132 +23,13 @@
     overflow-wrap: anywhere;
 }
 
-// Header, as the toolbar's detail page variant: context line, editable name, meta line, actions. Until the page header takes an
-// editable title, it is built here with the page header's metrics, so that the title stays in place between the library and the
-// detail page
-
-.header {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--dextinity-space-4);
-    align-items: center;
-    justify-content: space-between;
-}
-
-.heading {
-    display: flex;
-    flex: 1 1 420px;
-    flex-direction: column;
-    min-inline-size: 0;
-}
-
-.context {
-    display: flex;
-    flex-wrap: nowrap;
-    gap: var(--dextinity-space-2);
-    align-items: center;
-    min-block-size: var(--dextinity-page-header-label-line-height, 20px);
-    margin-block-end: var(--dextinity-page-header-label-spacing);
-    overflow: hidden;
-    color: var(--dextinity-color-text-subtle);
-    font-size: var(--dextinity-typography-body-size);
-    white-space: nowrap;
-}
-
-.back {
-    display: inline-flex;
-    gap: var(--dextinity-space-1);
-    align-items: center;
-    border-radius: var(--dextinity-radius-small);
-    color: inherit;
-    text-decoration: none;
-
-    &:hover {
-        color: var(--dextinity-color-text);
-        text-decoration: underline;
-    }
-
-    &:focus-visible {
-        outline: none;
-        box-shadow: var(--dextinity-focus-ring);
-    }
-}
-
-.titleHeading {
-    margin: 0;
-}
-
-.titleInput {
-    box-sizing: border-box;
-    display: block;
-    inline-size: 100%;
-    margin: 0;
-    margin-inline-start: calc(var(--dextinity-space-2) * -1);
-    padding: 0 var(--dextinity-space-2);
-    border: 0;
-    border-radius: var(--dextinity-radius-field);
-    background: transparent;
-    color: var(--dextinity-page-header-title-color);
-    font-family: var(--dextinity-font-family-display);
-    font-size: var(--dextinity-page-header-title-font-size);
-    font-weight: var(--dextinity-typography-display-font-weight);
-    line-height: var(--dextinity-typography-display-l-line-height);
-    letter-spacing: var(--dextinity-typography-display-letter-spacing);
-    text-overflow: ellipsis;
-    // A text field doesn't take its height from the line height, so it is set to the height of a page title's line
-    block-size: calc(var(--dextinity-typography-display-l-line-height) * 1em);
-
-    // The field's edge as a shadow, so that it doesn't add to the title's height
-    &:hover {
-        box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line);
-    }
-
-    &:focus-visible {
-        outline: none;
-        background: var(--dextinity-color-surface);
-        box-shadow:
-            inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-accent),
-            var(--dextinity-focus-ring);
-    }
-
-    @media (width < 768px) {
-        font-size: var(--dextinity-page-header-narrow-title-font-size, 26px);
-    }
-}
-
-.meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--dextinity-space-4);
-    align-items: center;
-    margin-block-start: var(--dextinity-page-header-subtitle-spacing);
-    color: var(--dextinity-color-text-subtle);
-    font-size: var(--dextinity-typography-body-size);
-}
-
-.aiBadge,
-.archivedBadge {
+.aiBadge {
     padding: 1px var(--dextinity-space-2);
     border-radius: var(--dextinity-radius-pill);
-    font-size: var(--dextinity-typography-small-size);
-    font-weight: 600;
-}
-
-.aiBadge {
     background: var(--dextinity-color-accent-secondary);
     color: var(--dextinity-color-accent-foreground);
-}
-
-.archivedBadge {
-    background: var(--dextinity-color-fill-subtle);
-    color: var(--dextinity-color-text-subtle);
-}
-
-.actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--dextinity-space-2);
-    align-items: center;
+    font-size: var(--dextinity-typography-small-size);
+    font-weight: 600;
 }
 
 // Body: media on the left, tabs on the right; stacked when narrow

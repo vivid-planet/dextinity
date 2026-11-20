@@ -109,7 +109,7 @@ export function CmsPageTree() {
                         eyebrow={`Austria · German · ${allSitePages.length} pages`}
                         title="Page tree"
                         subtitle={`${countFor("unpublished")} unpublished · ${countFor("archived")} archived`}
-                        actions={<Button startIcon={<Icon name="plus" />}>New page</Button>}
+                        primaryAction={{ label: "New page", icon: <Icon name="plus" /> }}
                     />
                 }
                 toolbar={

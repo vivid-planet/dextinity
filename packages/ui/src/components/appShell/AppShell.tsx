@@ -3,7 +3,7 @@ import { clsx } from "clsx";
 import {
     forwardRef,
     type HTMLAttributes,
-    type KeyboardEvent,
+    type KeyboardEvent as ReactKeyboardEvent,
     type PropsWithChildren,
     type ReactNode,
     useCallback,
@@ -175,7 +175,7 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
         if (!isMedium || !navOverlayOpen) {
             return;
         }
-        function handleKeyDown(event: globalThis.KeyboardEvent) {
+        function handleKeyDown(event: KeyboardEvent) {
             if (event.key === "Escape") {
                 // Collapsing replaces the entries, so the focus would fall back to the page if it was on one of them
                 restoreNavFocusRef.current = navRef.current?.contains(document.activeElement) ?? false;
@@ -216,7 +216,7 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
         // eslint-disable-next-line react-hooks/exhaustive-deps -- the focus target is looked up when the timeout fires
     }, [ownerState.assistantOpen, layout]);
 
-    const onAssistantKeyDown = (event: KeyboardEvent<HTMLElement>) => {
+    const onAssistantKeyDown = (event: ReactKeyboardEvent<HTMLElement>) => {
         // On narrow windows, the sheet closes on Escape itself
         if (event.key === "Escape" && !event.defaultPrevented && layout !== "narrow") {
             event.preventDefault();

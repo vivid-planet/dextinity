@@ -480,31 +480,8 @@ export function AssetLibrary() {
                     }
                     title="Assets"
                     subtitle={`${activeAssets.length} files in ${folders.length} folders, ${archivedCount} archived`}
-                    actions={
-                        isPhone ? (
-                            <>
-                                <Tooltip content="New folder">
-                                    <IconButton variant="outlined" color="secondary" aria-label="New folder" onClick={createFolder}>
-                                        <Icon name="folder-add" />
-                                    </IconButton>
-                                </Tooltip>
-                                <Tooltip content="Upload">
-                                    <IconButton aria-label="Upload" onClick={() => uploadInputRef.current?.click()}>
-                                        <Icon name="cloud-upload" />
-                                    </IconButton>
-                                </Tooltip>
-                            </>
-                        ) : (
-                            <>
-                                <Button variant="outlined" color="secondary" startIcon={<Icon name="folder-add" />} onClick={createFolder}>
-                                    New folder
-                                </Button>
-                                <Button startIcon={<Icon name="cloud-upload" />} onClick={() => uploadInputRef.current?.click()}>
-                                    Upload
-                                </Button>
-                            </>
-                        )
-                    }
+                    secondaryActions={[{ label: "New folder", icon: <Icon name="folder-add" />, onClick: createFolder }]}
+                    primaryAction={{ label: "Upload", icon: <Icon name="cloud-upload" />, onClick: () => uploadInputRef.current?.click() }}
                 />
                 <input
                     ref={uploadInputRef}

@@ -1,9 +1,16 @@
+import type { BaseUIEvent } from "@base-ui/react/types";
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type ReactElement, type ReactNode } from "react";
+import { type ChangeEvent, forwardRef, Fragment, type HTMLAttributes, type ReactElement, type ReactNode, useState } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
+import { Button } from "../button/Button";
 import { Icon } from "../icon/Icon";
 import { IconButton, type IconButtonProps } from "../iconButton/IconButton";
+import { Menu } from "../menu/Menu";
+import { MenuItem } from "../menu/MenuItem";
+import { MenuSeparator } from "../menu/MenuSeparator";
+import { MenuSubmenu } from "../menu/MenuSubmenu";
+import { Tooltip } from "../tooltip/Tooltip";
 import styles from "./PageHeader.module.scss";
 
 type PageHeaderVariant = "default" | "compact";
@@ -26,6 +33,29 @@ export interface PageHeaderBack {
     render?: ReactElement;
 }
 
+/** An action of the page, shown as a button or, when the page has more than one secondary action, as an item of a menu. */
+export interface PageHeaderAction {
+    /** The action as a verb, e.g. "Save" or "New job ad". */
+    label: string;
+    /** Shown before the label. In windows narrower than 768 px, a button with an icon shows only the icon. */
+    icon?: ReactNode;
+    /** Called when the action is chosen. */
+    onClick?: () => void;
+    /** Makes the action a link to this URL. Only buttons can be links; in the menu, use `onClick`. */
+    href?: string;
+    disabled?: boolean;
+    /** The keyboard shortcut, in the notation of `useKeyboardShortcut`, shown in the tooltip or the menu. It only shows the hint. */
+    keyboardShortcut?: string;
+    /** A tooltip for the button, e.g. what saving applies to. */
+    tooltip?: string;
+    /** `error` for a destructive action such as Delete, in the menu only. */
+    color?: "error";
+    /** Starts a new group in the menu with a separator. */
+    separatorBefore?: boolean;
+    /** Menu items that open from this action, e.g. the folders to move to. Makes the action a submenu in the menu. */
+    submenu?: ReactNode;
+}
+
 /**
  * The resolved configuration that influences the component's appearance or behavior.
  */
@@ -33,6 +63,7 @@ export type PageHeaderOwnerState = {
     variant: PageHeaderVariant;
     hasBack: boolean;
     hasActions: boolean;
+    titleEditable: boolean;
 };
 
 export interface PageHeaderSlotProps {
@@ -42,7 +73,9 @@ export interface PageHeaderSlotProps {
     labelLine?: SlotPropsValue<PageHeaderOwnerState, "div">;
     /** Props for the `title` slot. */
     title?: SlotPropsValue<PageHeaderOwnerState, "h1">;
-    /** Props for the `subtitle` slot. */
+    /** Props for the `titleInput` slot, the field inside the title when `onTitleChange` is set. */
+    titleInput?: SlotPropsValue<PageHeaderOwnerState, "input">;
+    /** Props for the `subtitle` slot, the line below the title with the status and the subtitle. */
     subtitle?: SlotPropsValue<PageHeaderOwnerState, "div">;
     /** Props for the `actions` slot. */
     actions?: SlotPropsValue<PageHeaderOwnerState, "div">;
@@ -50,9 +83,23 @@ export interface PageHeaderSlotProps {
     back?: Partial<Omit<IconButtonProps, "aria-label" | "render" | "nativeButton" | "role" | "children">>;
 }
 
+export interface PageHeaderLabels {
+    /** The accessible name of the title field when the title is editable. */
+    titleInput: string;
+    /** The button that opens the menu of the secondary actions. */
+    moreActions: string;
+}
+
+const defaultLabels: PageHeaderLabels = {
+    titleInput: "Title",
+    moreActions: "More",
+};
+
 export interface PageHeaderProps extends Omit<HTMLAttributes<HTMLElement>, "className" | "children" | "title"> {
     /** The display title. Exactly one per page. */
     title: string;
+    /** Makes the title editable in place, e.g. the name of a file. Called with the new title on every change. */
+    onTitleChange?: (title: string) => void;
     /**
      * `compact` for editors, where the content needs the room: a smaller title, a tighter label line, and the actions centered next to
      * the title.
@@ -62,17 +109,25 @@ export interface PageHeaderProps extends Omit<HTMLAttributes<HTMLElement>, "clas
     variant?: PageHeaderVariant;
     /** The label above the title, e.g. the scope or the area: "Austria · German · 23 pages". */
     eyebrow?: ReactNode;
-    /** Numbers or status below the title, e.g. "3 unpublished · 1 archived". */
+    /** The state of the page's item before the subtitle, e.g. `<StatusIndicator status="published" />` or a `Badge`. */
+    status?: ReactNode;
+    /** More information below the title, e.g. numbers: "3 unpublished · 1 archived". */
     subtitle?: ReactNode;
+    /** The page's main action, as a contained button, e.g. "Save" or "New job ad". */
+    primaryAction?: PageHeaderAction;
     /**
-     * Actions at the end, e.g. a `Button`, or the save state and Save on edit pages. At most one primary action. In windows narrower
-     * than 768 px they stay next to the title, so use `IconButton`s there when the labels don't fit.
+     * The page's other actions. One is an outlined button next to the primary action; more open from one button as a menu, so that the
+     * header never shows more than two buttons.
      */
-    actions?: ReactNode;
+    secondaryActions?: readonly PageHeaderAction[];
+    /** A state that belongs to the actions, before them, e.g. `<SaveState />` on edit pages. */
+    actionStatus?: ReactNode;
     /** A back action before the title, for edit pages, e.g. to the list the edited item belongs to. */
     back?: PageHeaderBack;
     /** Breadcrumbs in the label line, e.g. `<Breadcrumbs variant="label" />`, before the eyebrow. */
     breadcrumbs?: ReactNode;
+    /** The built-in texts. */
+    labels?: Partial<PageHeaderLabels>;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
@@ -81,16 +136,115 @@ export interface PageHeaderProps extends Omit<HTMLAttributes<HTMLElement>, "clas
 
 const labelSeparator = "·";
 
+function ActionButton({ action, primary }: { action: PageHeaderAction; primary?: boolean }) {
+    const button = (
+        <Button
+            variant={primary ? "contained" : "outlined"}
+            color={primary ? "primary" : "secondary"}
+            startIcon={action.icon}
+            href={action.href}
+            disabled={action.disabled}
+            onClick={action.onClick}
+            className={styles.action}
+            data-has-icon={action.icon != null ? "" : undefined}
+        >
+            <span className={styles.actionLabel}>{action.label}</span>
+        </Button>
+    );
+    if (action.tooltip == null && action.keyboardShortcut == null) {
+        return button;
+    }
+    return (
+        <Tooltip content={action.tooltip ?? action.label} keyboardShortcut={action.keyboardShortcut}>
+            {button}
+        </Tooltip>
+    );
+}
+
+function ActionsMenu({ actions, label }: { actions: readonly PageHeaderAction[]; label: string }) {
+    const [open, setOpen] = useState(false);
+    const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
+    return (
+        <Menu
+            open={open}
+            onOpenChange={(nextOpen) => {
+                setOpen(nextOpen);
+                if (!nextOpen) {
+                    setOpenSubmenu(null);
+                }
+            }}
+            placement="bottom-end"
+            trigger={
+                <Button
+                    variant="outlined"
+                    color="secondary"
+                    startIcon={<Icon name="more-horizontal" />}
+                    endIcon={<Icon name="chevron-down" />}
+                    className={clsx(styles.action, styles.moreButton)}
+                    data-has-icon=""
+                >
+                    <span className={styles.actionLabel}>{label}</span>
+                </Button>
+            }
+        >
+            {actions.map((action) => (
+                <Fragment key={action.label}>
+                    {action.separatorBefore && <MenuSeparator />}
+                    {action.submenu != null ? (
+                        <MenuSubmenu
+                            label={action.label}
+                            icon={action.icon}
+                            disabled={action.disabled}
+                            open={openSubmenu === action.label}
+                            onOpenChange={(submenuOpen) => setOpenSubmenu(submenuOpen ? action.label : null)}
+                        >
+                            {action.submenu}
+                        </MenuSubmenu>
+                    ) : (
+                        <MenuItem
+                            label={action.label}
+                            icon={action.icon}
+                            color={action.color}
+                            disabled={action.disabled}
+                            keyboardShortcut={action.keyboardShortcut}
+                            onClick={action.onClick}
+                        />
+                    )}
+                </Fragment>
+            ))}
+        </Menu>
+    );
+}
+
 /**
- * The head of every page: a mono label line for context, the display title, numbers or status, and the page's actions. In windows
- * narrower than 768 px it takes less height: a smaller title, no eyebrow (the top bar shows the scope), and the actions next to the
- * title.
+ * The head of every page: a mono label line for context, the display title, the status and more information, and the page's actions:
+ * at most one primary and one secondary button. More secondary actions open from the secondary button as a menu. In windows narrower
+ * than 768 px it takes less height: a smaller title, no eyebrow (the top bar shows the scope), and the actions next to the title, where
+ * buttons with an icon show only the icon.
  */
 export const PageHeader = forwardRef<HTMLElement, PageHeaderProps>(function PageHeader(
-    { title, variant = "default", eyebrow, subtitle, actions, back, breadcrumbs, className, slotProps, ...restProps },
+    {
+        title,
+        onTitleChange,
+        variant = "default",
+        eyebrow,
+        status,
+        subtitle,
+        primaryAction,
+        secondaryActions = [],
+        actionStatus,
+        back,
+        breadcrumbs,
+        labels: labelsProp,
+        className,
+        slotProps,
+        ...restProps
+    },
     ref,
 ) {
-    const ownerState: PageHeaderOwnerState = { variant, hasBack: back != null, hasActions: actions != null };
+    const labels = { ...defaultLabels, ...labelsProp };
+    const hasActions = primaryAction != null || secondaryActions.length > 0 || actionStatus != null;
+    const ownerState: PageHeaderOwnerState = { variant, hasBack: back != null, hasActions, titleEditable: onTitleChange != null };
 
     const headingProps = resolveSlotProps<PageHeaderOwnerState, "div", "div">({
         ownProps: { className: styles.heading },
@@ -105,6 +259,11 @@ export const PageHeader = forwardRef<HTMLElement, PageHeaderProps>(function Page
     const titleProps = resolveSlotProps<PageHeaderOwnerState, "h1", "h1">({
         ownProps: { className: styles.title },
         slotProps: slotProps?.title,
+        ownerState,
+    });
+    const titleInputProps = resolveSlotProps<PageHeaderOwnerState, "input", "input">({
+        ownProps: { className: styles.titleInput },
+        slotProps: slotProps?.titleInput,
         ownerState,
     });
     const subtitleProps = resolveSlotProps<PageHeaderOwnerState, "div", "div">({
@@ -127,6 +286,7 @@ export const PageHeader = forwardRef<HTMLElement, PageHeaderProps>(function Page
             data-variant={ownerState.variant}
             data-has-back={ownerState.hasBack ? "" : undefined}
             data-has-actions={ownerState.hasActions ? "" : undefined}
+            data-title-editable={ownerState.titleEditable ? "" : undefined}
             className={clsx(styles.root, className)}
         >
             <div {...headingProps}>
@@ -163,10 +323,36 @@ export const PageHeader = forwardRef<HTMLElement, PageHeaderProps>(function Page
                         <Icon name="arrow-left" />
                     </IconButton>
                 )}
-                <h1 {...titleProps}>{title}</h1>
-                {subtitle != null && <div {...subtitleProps}>{subtitle}</div>}
+                <h1 {...titleProps}>
+                    {onTitleChange != null ? (
+                        <input
+                            aria-label={labels.titleInput}
+                            {...titleInputProps}
+                            value={title}
+                            onChange={(event) => {
+                                titleInputProps.onChange?.(event as BaseUIEvent<ChangeEvent<HTMLInputElement>>);
+                                onTitleChange(event.target.value);
+                            }}
+                        />
+                    ) : (
+                        title
+                    )}
+                </h1>
+                {(status != null || subtitle != null) && (
+                    <div {...subtitleProps}>
+                        {status != null && <span className={styles.status}>{status}</span>}
+                        {subtitle}
+                    </div>
+                )}
             </div>
-            {actions != null && <div {...actionsProps}>{actions}</div>}
+            {hasActions && (
+                <div {...actionsProps}>
+                    {actionStatus}
+                    {secondaryActions.length === 1 && <ActionButton action={secondaryActions[0]} />}
+                    {secondaryActions.length > 1 && <ActionsMenu actions={secondaryActions} label={labels.moreActions} />}
+                    {primaryAction != null && <ActionButton action={primaryAction} primary />}
+                </div>
+            )}
         </header>
     );
 });

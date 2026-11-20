@@ -34,6 +34,11 @@ export type ActionLogsGridProps = {
      */
     entity: string;
     /**
+     * Scope of the entity. Defaults to the current content scope. Pass it when the entity's scope differs from the
+     * content scope, for instance when it has fewer dimensions.
+     */
+    scope?: ContentScope;
+    /**
      * Returns the name shown for an entry's entity, or `undefined` to show only its ID.
      * Receives the entry's snapshot, or the previous version's snapshot when the entity was deleted.
      *
@@ -54,6 +59,15 @@ function getDefaultDisplayName(snapshot: Record<string, unknown>): string | unde
     return undefined;
 }
 
+function getRowDisplayName(
+    row: GQLActionLogsGridFragment,
+    getDisplayName: (snapshot: Record<string, unknown>) => string | undefined,
+): string | undefined {
+    const snapshot = row.snapshot as Record<string, unknown> | null | undefined;
+    const previousSnapshot = row.previousVersion?.snapshot as Record<string, unknown> | null | undefined;
+    return (snapshot ? getDisplayName(snapshot) : undefined) || (previousSnapshot ? getDisplayName(previousSnapshot) : undefined) || undefined;
+}
+
 function ActionLogsGridToolbar() {
     return (
         <DataGridToolbar>
@@ -64,11 +78,12 @@ function ActionLogsGridToolbar() {
     );
 }
 
-export function ActionLogsGrid({ entity, getDisplayName = getDefaultDisplayName }: ActionLogsGridProps) {
+export function ActionLogsGrid({ entity, scope: entityScope, getDisplayName = getDefaultDisplayName }: ActionLogsGridProps) {
     const intl = useIntl();
-    const { scope } = useContentScope();
+    const { scope: contentScope } = useContentScope();
+    const scope = entityScope ?? contentScope;
     const [selectedRow, setSelectedRow] = useState<GQLActionLogsGridFragment | null>(null);
-    const [openEntityId, setOpenEntityId] = useState<string | null>(null);
+    const [openEntity, setOpenEntity] = useState<{ id: string; name?: string } | null>(null);
 
     const dataGridProps = {
         ...useDataGridRemote({ initialSort: [{ field: "createdAt", sort: "desc" }] }),
@@ -99,12 +114,7 @@ export function ActionLogsGrid({ entity, getDisplayName = getDefaultDisplayName 
                 sortable: false,
                 filterable: false,
                 renderCell: ({ row }) => {
-                    const snapshot = row.snapshot as Record<string, unknown> | null | undefined;
-                    const previousSnapshot = row.previousVersion?.snapshot as Record<string, unknown> | null | undefined;
-                    const displayName =
-                        (snapshot ? getDisplayName(snapshot) : undefined) ||
-                        (previousSnapshot ? getDisplayName(previousSnapshot) : undefined) ||
-                        undefined;
+                    const displayName = getRowDisplayName(row, getDisplayName);
                     return <GridCellContent primaryText={displayName ?? row.entityId} secondaryText={displayName ? row.entityId : undefined} />;
                 },
             },
@@ -148,7 +158,7 @@ export function ActionLogsGrid({ entity, getDisplayName = getDefaultDisplayName 
                             <IconButton
                                 onClick={(event) => {
                                     event.stopPropagation();
-                                    setOpenEntityId(row.entityId);
+                                    setOpenEntity({ id: row.entityId, name: getRowDisplayName(row, getDisplayName) });
                                 }}
                             >
                                 <Time />
@@ -195,7 +205,16 @@ export function ActionLogsGrid({ entity, getDisplayName = getDefaultDisplayName 
                 showToolbar
             />
             <ActionLogShowVersionDialog row={selectedRow} open={selectedRow !== null} onClose={() => setSelectedRow(null)} />
-            {openEntityId !== null && <ActionLogDialog entity={entity} entityId={openEntityId} open onClose={() => setOpenEntityId(null)} />}
+            {openEntity !== null && (
+                <ActionLogDialog
+                    entity={entity}
+                    entityId={openEntity.id}
+                    name={openEntity.name}
+                    scope={scope}
+                    open
+                    onClose={() => setOpenEntity(null)}
+                />
+            )}
         </MainContent>
     );
 }

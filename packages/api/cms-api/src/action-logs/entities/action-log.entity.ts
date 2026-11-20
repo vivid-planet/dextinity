@@ -8,7 +8,7 @@ import type { ContentScope } from "../../user-permissions/interfaces/content-sco
 
 @Entity()
 @ObjectType()
-@Index({ properties: ["entityName", "entityId"] })
+@Index({ properties: ["entityName", "entityId", "version"] })
 export class ActionLog extends BaseEntity {
     [PrimaryKeyProp]?: "id";
     [OptionalProps]?: "createdAt";

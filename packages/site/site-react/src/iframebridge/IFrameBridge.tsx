@@ -129,17 +129,7 @@ export const IFrameBridgeProvider = ({ children }: PropsWithChildren) => {
                 const isRenderedOutsideOfViewportWidth = positioning.left > childrenWrapperRight;
 
                 if (isRenderedOutsideOfViewportWidth) {
-                    // TODO: Simply return `null` here after updating to typescript 5+
-                    return {
-                        adminRoute: previewElement.adminRoute,
-                        label: previewElement.label,
-                        position: {
-                            top: positioning.top,
-                            left: positioning.left,
-                            width: 0,
-                            height: positioning.height,
-                        },
-                    };
+                    return null;
                 }
 
                 const spaceBetweenRightEdgeOfElementAndRightEdgeOfViewport = positioning.left + positioning.width - childrenWrapperRight;
@@ -157,7 +147,7 @@ export const IFrameBridgeProvider = ({ children }: PropsWithChildren) => {
                     },
                 };
             })
-            .filter((elementData) => elementData.position.width !== 0) // TODO: Filter out null after updating to typescript 5+ instead of filtering `width !== 0`
+            .filter((elementData) => elementData !== null)
             .sort((previousElementData, nextElementData) => {
                 const previousSize = previousElementData.position.width * previousElementData.position.height;
                 const nextSize = nextElementData.position.width * nextElementData.position.height;

@@ -13,6 +13,15 @@ export class ContentScopeWithLabel {
 }
 
 @ObjectType()
+export class UserAssignedContentScopes {
+    @Field(() => [GraphQLJSONObject])
+    byRule: ContentScope[];
+
+    @Field(() => [GraphQLJSONObject])
+    manual: ContentScope[];
+}
+
+@ObjectType()
 export class ContentScopeDimension {
     @Field()
     name: string;

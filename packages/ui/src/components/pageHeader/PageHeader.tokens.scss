@@ -11,8 +11,6 @@
     --dextinity-page-header-title-color: var(--dextinity-color-text);
     // Text size of the title
     --dextinity-page-header-title-font-size: var(--dextinity-typography-display-l-size);
-    // Space between the back action and the title
-    --dextinity-page-header-back-gap: var(--dextinity-space-2);
     // Text color of the subtitle
     --dextinity-page-header-subtitle-color: var(--dextinity-color-text-subtle);
     // Space between the title and the subtitle
@@ -23,6 +21,8 @@
     --dextinity-page-header-status-gap: var(--dextinity-space-4);
     // Inner padding of the title field when the title is editable, pulled into the margin so that the text stays in place
     --dextinity-page-header-title-input-padding: var(--dextinity-space-2);
+    // Room above and below the editable title's text, so that the field doesn't clip the descenders
+    --dextinity-page-header-title-input-padding-block: 0.15em;
 
     // Row and column gap of the compact variant, for editors
     --dextinity-page-header-compact-gap: var(--dextinity-space-3) 20px;

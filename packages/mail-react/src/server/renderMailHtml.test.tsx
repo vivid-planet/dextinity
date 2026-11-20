@@ -43,6 +43,20 @@ describe("server/renderMailHtml", () => {
         expect(html).toContain(textContent);
     });
 
+    it("adds an id to the <body> tag to target the body in clients that replace it with a <div>", async () => {
+        const { html } = await renderMailHtml(
+            <MjmlMailRoot>
+                <MjmlSection>
+                    <MjmlColumn>
+                        <MjmlText>Hello</MjmlText>
+                    </MjmlColumn>
+                </MjmlSection>
+            </MjmlMailRoot>,
+        );
+
+        expect(html).toMatch(/<body id="body"[\s>]/);
+    });
+
     it("includes registered styles in the rendered HTML", async () => {
         registerStyles(css`
             .myComponent {

@@ -2253,6 +2253,15 @@ npm install mjml@^5.4.1
 
 Then verify that the package still builds and lint passes.
 
+### Add `id="body"` to mails without `MjmlMailRoot`
+
+`renderMailHtml` no longer adds `id="body"` to the `<body>` of every mail. `MjmlMailRoot` sets it on its `MjmlBody` now. If a mail renders its own `MjmlBody` instead of using `MjmlMailRoot` and its CSS targets `#body`, set the id yourself:
+
+```diff
+- <MjmlBody>
++ <MjmlBody id="body">
+```
+
 ### Test the mails in every supported mail client
 
 MJML 5 changes the HTML it generates, so a mail can look different even though its code didn't change. See the [MJML 5 release notes](https://github.com/mjmlio/mjml/releases/tag/v5.0.0) for the full list. The changes most likely to affect your mails:

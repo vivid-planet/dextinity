@@ -25,4 +25,10 @@ describe("DateRangePicker", () => {
 
         await waitFor(() => expect(rendered.container.querySelector(`.${pickersInputBaseClasses.disabled}`)).not.toBeNull());
     });
+
+    test("Should apply the slot props of the open picker button", async () => {
+        const rendered = render(<DateRangePicker slotProps={{ root: { slotProps: { openPickerButton: { "aria-label": "Choose dates" } } } }} />);
+
+        await waitFor(() => expect(rendered.getByRole("button", { name: "Choose dates" })).toBeInTheDocument());
+    });
 });

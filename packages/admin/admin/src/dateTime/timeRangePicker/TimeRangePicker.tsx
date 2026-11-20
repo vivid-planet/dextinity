@@ -6,10 +6,10 @@ import { type ComponentType, lazy, type ReactNode, Suspense, useState } from "re
 import { useIntl } from "react-intl";
 
 import { ClearInputAdornment as BaseClearInputAdornment } from "../../common/ClearInputAdornment";
-import { OpenPickerAdornment } from "../../common/OpenPickerAdornment";
 import { ReadOnlyAdornment } from "../../common/ReadOnlyAdornment";
 import { createComponentSlot } from "../../helpers/createComponentSlot";
 import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
+import { OpenPickerAdornment } from "../OpenPickerAdornment";
 import { getDateFromTimeString, getTimeStringFromDate, isValidDate } from "../utils";
 
 /**
@@ -20,13 +20,12 @@ export type TimeRange = {
     end: string | null;
 };
 
-export type TimeRangePickerClassKey = "root" | "clearInputAdornment" | "readOnlyAdornment" | "openPickerAdornment";
+export type TimeRangePickerClassKey = "root" | "clearInputAdornment" | "readOnlyAdornment";
 
 export type TimeRangePickerProps = ThemedComponentBaseProps<{
     root: ComponentType<MuiTimeRangePickerProps>;
     clearInputAdornment: typeof BaseClearInputAdornment;
     readOnlyAdornment: typeof ReadOnlyAdornment;
-    openPickerAdornment: typeof OpenPickerAdornment;
 }> & {
     fullWidth?: boolean;
     /**
@@ -152,17 +151,13 @@ export const TimeRangePicker = (inProps: TimeRangePickerProps) => {
                                                 inputIsDisabled={disabled}
                                                 inputIsReadOnly={readOnly}
                                                 onClick={() => setOpen(true)}
-                                                {...slotProps?.openPickerAdornment}
-                                                slotProps={{
-                                                    ...slotProps?.openPickerAdornment?.slotProps,
-                                                    openPickerButton: {
-                                                        "aria-label": intl.formatMessage({
-                                                            id: "dextinity.timeRangePicker.openPicker",
-                                                            defaultMessage: "Open time range picker",
-                                                        }),
-                                                        ...slotProps?.openPickerAdornment?.slotProps?.openPickerButton,
-                                                    },
-                                                }}
+                                                aria-label={intl.formatMessage({
+                                                    id: "dextinity.timeRangePicker.openPicker",
+                                                    defaultMessage: "Open time range picker",
+                                                })}
+                                                {...(typeof slotProps?.root?.slotProps?.openPickerButton === "function"
+                                                    ? slotProps.root.slotProps.openPickerButton(ownerState)
+                                                    : slotProps?.root?.slotProps?.openPickerButton)}
                                             >
                                                 {openPickerIcon}
                                             </OpenPickerAdornment>

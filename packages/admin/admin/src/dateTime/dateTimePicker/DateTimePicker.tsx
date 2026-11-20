@@ -10,19 +10,18 @@ import { type ReactNode, useState } from "react";
 import { useIntl } from "react-intl";
 
 import { ClearInputAdornment as BaseClearInputAdornment } from "../../common/ClearInputAdornment";
-import { OpenPickerAdornment } from "../../common/OpenPickerAdornment";
 import { ReadOnlyAdornment } from "../../common/ReadOnlyAdornment";
 import { createComponentSlot } from "../../helpers/createComponentSlot";
 import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
+import { getOpenPickerButtonStyles, OpenPickerIcon } from "../openPickerButton";
 import { isValidDate } from "../utils";
 
-export type DateTimePickerClassKey = "root" | "clearInputAdornment" | "readOnlyAdornment" | "openPickerAdornment";
+export type DateTimePickerClassKey = "root" | "clearInputAdornment" | "readOnlyAdornment";
 
 export type DateTimePickerProps = ThemedComponentBaseProps<{
     root: typeof MuiDateTimePicker;
     clearInputAdornment: typeof BaseClearInputAdornment;
     readOnlyAdornment: typeof ReadOnlyAdornment;
-    openPickerAdornment: typeof OpenPickerAdornment;
 }> & {
     fullWidth?: boolean;
     /**
@@ -65,6 +64,7 @@ export const DateTimePicker = (inProps: DateTimePickerProps) => {
         fullWidth,
         required,
         slotProps,
+        slots,
         disabled,
         value = null,
         onChange,
@@ -99,8 +99,40 @@ export const DateTimePicker = (inProps: DateTimePickerProps) => {
             }}
             {...slotProps?.root}
             {...restProps}
+            slots={{ openPickerIcon: OpenPickerIcon, ...slotProps?.root?.slots, ...slots }}
             slotProps={{
                 ...slotProps?.root?.slotProps,
+                field: (ownerState) => {
+                    const externalFieldProps =
+                        typeof slotProps?.root?.slotProps?.field === "function"
+                            ? slotProps.root.slotProps.field(ownerState)
+                            : slotProps?.root?.slotProps?.field;
+                    return { openPickerButtonPosition: "start", ...externalFieldProps };
+                },
+                openPickerButton: (ownerState) => {
+                    const externalOpenPickerButtonProps =
+                        typeof slotProps?.root?.slotProps?.openPickerButton === "function"
+                            ? slotProps.root.slotProps.openPickerButton(ownerState)
+                            : slotProps?.root?.slotProps?.openPickerButton;
+                    return {
+                        tabIndex: -1,
+                        // MUI X prevents the default of the click, which keeps the focus out of the field, so it never blurs and isn\'t marked as touched
+                        onClick: () => setOpen(true),
+                        edge: false,
+                        "aria-label": intl.formatMessage({
+                            id: "dextinity.dateTimePicker.openPicker",
+                            defaultMessage: "Open date time picker",
+                        }),
+                        ...externalOpenPickerButtonProps,
+                    };
+                },
+                openPickerIcon: (ownerState) => {
+                    const externalOpenPickerIconProps =
+                        typeof slotProps?.root?.slotProps?.openPickerIcon === "function"
+                            ? slotProps.root.slotProps.openPickerIcon(ownerState)
+                            : slotProps?.root?.slotProps?.openPickerIcon;
+                    return { children: openPickerIcon, ...externalOpenPickerIconProps };
+                },
                 textField: (ownerState) => {
                     const externalTextFieldSlotProps = slotProps?.root?.slotProps?.textField;
                     const externalTextFieldProps =
@@ -120,26 +152,6 @@ export const DateTimePicker = (inProps: DateTimePickerProps) => {
                             ...externalTextFieldProps?.slotProps,
                             input: mergeSlotProps(
                                 {
-                                    startAdornment: (
-                                        <OpenPickerAdornment
-                                            inputIsDisabled={disabled}
-                                            inputIsReadOnly={readOnly}
-                                            onClick={() => setOpen(true)}
-                                            {...slotProps?.openPickerAdornment}
-                                            slotProps={{
-                                                ...slotProps?.openPickerAdornment?.slotProps,
-                                                openPickerButton: {
-                                                    "aria-label": intl.formatMessage({
-                                                        id: "dextinity.dateTimePicker.openPicker",
-                                                        defaultMessage: "Open date time picker",
-                                                    }),
-                                                    ...slotProps?.openPickerAdornment?.slotProps?.openPickerButton,
-                                                },
-                                            }}
-                                        >
-                                            {openPickerIcon}
-                                        </OpenPickerAdornment>
-                                    ),
                                     endAdornment: (
                                         <>
                                             <ReadOnlyAdornment inputIsReadOnly={Boolean(readOnly)} {...slotProps?.readOnlyAdornment} />
@@ -166,15 +178,19 @@ export const DateTimePicker = (inProps: DateTimePickerProps) => {
 const Root = createComponentSlot(MuiDateTimePicker)<DateTimePickerClassKey>({
     componentName: "DateTimePicker",
     slotName: "root",
-})(css`
-    .${inputLabelClasses.root} {
-        display: none;
+})(
+    ({ theme }) => css`
+        .${inputLabelClasses.root} {
+            display: none;
 
-        & + .${pickersInputBaseClasses.root} {
-            margin-top: 0;
+            & + .${pickersInputBaseClasses.root} {
+                margin-top: 0;
+            }
         }
-    }
-`);
+
+        ${getOpenPickerButtonStyles(theme)}
+    `,
+);
 
 const ClearInputAdornment = createComponentSlot(BaseClearInputAdornment)<DateTimePickerClassKey>({
     componentName: "DateTimePicker",

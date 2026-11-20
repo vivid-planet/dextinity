@@ -6,10 +6,10 @@ import { type ComponentType, lazy, type ReactNode, Suspense, useState } from "re
 import { useIntl } from "react-intl";
 
 import { ClearInputAdornment as BaseClearInputAdornment } from "../../common/ClearInputAdornment";
-import { OpenPickerAdornment } from "../../common/OpenPickerAdornment";
 import { ReadOnlyAdornment } from "../../common/ReadOnlyAdornment";
 import { createComponentSlot } from "../../helpers/createComponentSlot";
 import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
+import { OpenPickerAdornment } from "../OpenPickerAdornment";
 import { isValidDate } from "../utils";
 
 /**
@@ -20,13 +20,12 @@ export type DateTimeRange = {
     end: Date | null;
 };
 
-export type DateTimeRangePickerClassKey = "root" | "clearInputAdornment" | "readOnlyAdornment" | "openPickerAdornment";
+export type DateTimeRangePickerClassKey = "root" | "clearInputAdornment" | "readOnlyAdornment";
 
 export type DateTimeRangePickerProps = ThemedComponentBaseProps<{
     root: ComponentType<MuiDateTimeRangePickerProps>;
     clearInputAdornment: typeof BaseClearInputAdornment;
     readOnlyAdornment: typeof ReadOnlyAdornment;
-    openPickerAdornment: typeof OpenPickerAdornment;
 }> & {
     fullWidth?: boolean;
     /**
@@ -142,17 +141,13 @@ export const DateTimeRangePicker = (inProps: DateTimeRangePickerProps) => {
                                                 inputIsDisabled={disabled}
                                                 inputIsReadOnly={readOnly}
                                                 onClick={() => setOpen(true)}
-                                                {...slotProps?.openPickerAdornment}
-                                                slotProps={{
-                                                    ...slotProps?.openPickerAdornment?.slotProps,
-                                                    openPickerButton: {
-                                                        "aria-label": intl.formatMessage({
-                                                            id: "dextinity.dateTimeRangePicker.openPicker",
-                                                            defaultMessage: "Open date time range picker",
-                                                        }),
-                                                        ...slotProps?.openPickerAdornment?.slotProps?.openPickerButton,
-                                                    },
-                                                }}
+                                                aria-label={intl.formatMessage({
+                                                    id: "dextinity.dateTimeRangePicker.openPicker",
+                                                    defaultMessage: "Open date time range picker",
+                                                })}
+                                                {...(typeof slotProps?.root?.slotProps?.openPickerButton === "function"
+                                                    ? slotProps.root.slotProps.openPickerButton(ownerState)
+                                                    : slotProps?.root?.slotProps?.openPickerButton)}
                                             >
                                                 {openPickerIcon}
                                             </OpenPickerAdornment>

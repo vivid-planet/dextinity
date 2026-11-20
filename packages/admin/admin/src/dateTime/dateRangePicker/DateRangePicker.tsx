@@ -6,10 +6,10 @@ import { type ComponentType, lazy, type ReactNode, Suspense, useState } from "re
 import { useIntl } from "react-intl";
 
 import { ClearInputAdornment as BaseClearInputAdornment } from "../../common/ClearInputAdornment";
-import { OpenPickerAdornment } from "../../common/OpenPickerAdornment";
 import { ReadOnlyAdornment } from "../../common/ReadOnlyAdornment";
 import { createComponentSlot } from "../../helpers/createComponentSlot";
 import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
+import { getOpenPickerButtonStyles, OpenPickerIcon } from "../openPickerButton";
 import { getDateValue, getIsoDateString } from "../utils";
 
 /**
@@ -20,13 +20,12 @@ export type DateRange = {
     end: string | null;
 };
 
-export type DateRangePickerClassKey = "root" | "clearInputAdornment" | "readOnlyAdornment" | "openPickerAdornment";
+export type DateRangePickerClassKey = "root" | "clearInputAdornment" | "readOnlyAdornment";
 
 export type DateRangePickerProps = ThemedComponentBaseProps<{
     root: ComponentType<MuiDateRangePickerProps>;
     clearInputAdornment: typeof BaseClearInputAdornment;
     readOnlyAdornment: typeof ReadOnlyAdornment;
-    openPickerAdornment: typeof OpenPickerAdornment;
 }> & {
     fullWidth?: boolean;
     /**
@@ -73,6 +72,7 @@ export const DateRangePicker = (inProps: DateRangePickerProps) => {
         fullWidth,
         required,
         slotProps,
+        slots,
         disabled,
         value: stringDateRangeValue,
         onChange,
@@ -115,8 +115,40 @@ export const DateRangePicker = (inProps: DateRangePickerProps) => {
                 }}
                 {...slotProps?.root}
                 {...restProps}
+                slots={{ openPickerIcon: OpenPickerIcon, ...slotProps?.root?.slots, ...slots }}
                 slotProps={{
                     ...slotProps?.root?.slotProps,
+                    field: (ownerState) => {
+                        const externalFieldProps =
+                            typeof slotProps?.root?.slotProps?.field === "function"
+                                ? slotProps.root.slotProps.field(ownerState)
+                                : slotProps?.root?.slotProps?.field;
+                        return { openPickerButtonPosition: "start", ...externalFieldProps };
+                    },
+                    openPickerButton: (ownerState) => {
+                        const externalOpenPickerButtonProps =
+                            typeof slotProps?.root?.slotProps?.openPickerButton === "function"
+                                ? slotProps.root.slotProps.openPickerButton(ownerState)
+                                : slotProps?.root?.slotProps?.openPickerButton;
+                        return {
+                            tabIndex: -1,
+                            // MUI X prevents the default of the click, which keeps the focus out of the field, so it never blurs and isn\'t marked as touched
+                            onClick: () => setOpen(true),
+                            edge: false,
+                            "aria-label": intl.formatMessage({
+                                id: "dextinity.dateRangePicker.openPicker",
+                                defaultMessage: "Open date range picker",
+                            }),
+                            ...externalOpenPickerButtonProps,
+                        };
+                    },
+                    openPickerIcon: (ownerState) => {
+                        const externalOpenPickerIconProps =
+                            typeof slotProps?.root?.slotProps?.openPickerIcon === "function"
+                                ? slotProps.root.slotProps.openPickerIcon(ownerState)
+                                : slotProps?.root?.slotProps?.openPickerIcon;
+                        return { children: openPickerIcon, ...externalOpenPickerIconProps };
+                    },
                     textField: (ownerState) => {
                         const externalTextFieldSlotProps = slotProps?.root?.slotProps?.textField;
                         const externalTextFieldProps =
@@ -136,26 +168,6 @@ export const DateRangePicker = (inProps: DateRangePickerProps) => {
                                 ...externalTextFieldProps?.slotProps,
                                 input: mergeSlotProps(
                                     {
-                                        startAdornment: (
-                                            <OpenPickerAdornment
-                                                inputIsDisabled={disabled}
-                                                inputIsReadOnly={readOnly}
-                                                onClick={() => setOpen(true)}
-                                                {...slotProps?.openPickerAdornment}
-                                                slotProps={{
-                                                    ...slotProps?.openPickerAdornment?.slotProps,
-                                                    openPickerButton: {
-                                                        "aria-label": intl.formatMessage({
-                                                            id: "dextinity.dateRangePicker.openPicker",
-                                                            defaultMessage: "Open date range picker",
-                                                        }),
-                                                        ...slotProps?.openPickerAdornment?.slotProps?.openPickerButton,
-                                                    },
-                                                }}
-                                            >
-                                                {openPickerIcon}
-                                            </OpenPickerAdornment>
-                                        ),
                                         endAdornment: (
                                             <>
                                                 <ReadOnlyAdornment inputIsReadOnly={Boolean(readOnly)} {...slotProps?.readOnlyAdornment} />
@@ -186,15 +198,19 @@ const LazyRoot = lazy(async () => {
     const Root = createComponentSlot(module.DateRangePicker)<DateRangePickerClassKey>({
         componentName: "DateRangePicker",
         slotName: "root",
-    })(css`
-        .${inputLabelClasses.root} {
-            display: none;
+    })(
+        ({ theme }) => css`
+            .${inputLabelClasses.root} {
+                display: none;
 
-            & + .${module.pickersInputBaseClasses.root} {
-                margin-top: 0;
+                & + .${module.pickersInputBaseClasses.root} {
+                    margin-top: 0;
+                }
             }
-        }
-    `);
+
+            ${getOpenPickerButtonStyles(theme)}
+        `,
+    );
 
     return {
         default: (props: MuiDateRangePickerProps) => <Root {...props} />,

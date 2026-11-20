@@ -90,7 +90,7 @@
 }
 
 /* Below this width, the full label would cover the search button next to the scope, assistant switch, and user menu */
-@container dextinity-shell-bar (max-width: 360px) {
+@container dextinity-shell-bar (max-width: 340px) {
     .actions .environment {
         display: none;
     }

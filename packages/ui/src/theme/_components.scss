@@ -169,6 +169,7 @@
 }
 
 @include scope.dark-component-tokens {
+    @include segmentedControl.dark-tokens;
     @include sideNav.dark-tokens;
     @include toast.dark-tokens;
 }

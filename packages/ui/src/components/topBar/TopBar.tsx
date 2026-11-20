@@ -2,6 +2,7 @@ import { clsx } from "clsx";
 import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 
 import { useAppShellContext } from "../appShell/appShellContext";
+import { EnvironmentLabel } from "../environmentLabel/EnvironmentLabel";
 import { Icon } from "../icon/Icon";
 import { IconButton } from "../iconButton/IconButton";
 import { useAriaKeyShortcuts } from "../keyboardShortcut/useAriaKeyShortcuts";
@@ -59,7 +60,8 @@ export interface TopBarProps extends Omit<HTMLAttributes<HTMLElement>, "classNam
 
 /**
  * The glass bar above the content: search, the app's own actions, scope, AI assistant, and user menu. It looks the same on every page; a page's own
- * back and actions belong in its `PageHeader`. The app name never appears here, only in the navigation.
+ * back and actions belong in its `PageHeader`. The app name never appears here, only in the navigation. In an `AppShell` with an
+ * `environment`, it shows the instance's label on narrow windows, where the navigation is a drawer.
  */
 export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
     {
@@ -77,6 +79,8 @@ export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
     ref,
 ) {
     const shell = useAppShellContext();
+    // On narrow windows the navigation is a drawer, so the top bar takes over the instance's label
+    const environment = shell?.layout === "narrow" ? shell.environment : undefined;
     const labels = { ...defaultLabels, ...labelsProp };
     const onMenuClick = onMenuClickProp ?? shell?.onNavDrawerOpen;
     const searchKeyShortcuts = useAriaKeyShortcuts(searchKeyboardShortcut);
@@ -104,6 +108,7 @@ export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
                 </Tooltip>
             )}
             <div className={styles.actions}>
+                {environment != null && <EnvironmentLabel label={environment.label} color={environment.color} />}
                 {browseActions}
                 {scope}
                 {assistantSwitch}

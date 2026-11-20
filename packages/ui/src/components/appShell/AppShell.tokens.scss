@@ -3,6 +3,10 @@
     --dextinity-app-shell-background: var(--dextinity-color-canvas);
     // Space around the glass panels
     --dextinity-app-shell-gap: 18px;
+    // Height of the line along the top edge that marks an instance other than the live system, e.g. Staging
+    --dextinity-app-shell-environment-edge-height: 4px;
+    // Stacking order of that line, above the shell's sticky parts
+    --dextinity-app-shell-environment-edge-layer: var(--dextinity-layer-drawer);
     // Padding of the main area next to the navigation
     --dextinity-app-shell-content-padding: var(--dextinity-app-shell-gap) 26px var(--dextinity-app-shell-gap) 22px;
     // Space between the top bar and the page header

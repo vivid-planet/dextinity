@@ -1,5 +1,5 @@
 import { Chip, Stack } from "@mui/material";
-import type { ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
 
 import { useFullTextSearchTypeLabel } from "./useFullTextSearchTypeLabel";
@@ -66,7 +66,11 @@ function TypeChip({ selected, label, count, onClick }: TypeChipProps) {
             color={selected ? "primary" : "default"}
             aria-pressed={selected}
             label={
-                <FormattedMessage id="dextinity.fullTextSearch.typeCount" defaultMessage="{type} ({count, number})" values={{ type: label, count }} />
+                <FormattedMessage
+                    id="dextinity.fullTextSearch.typeCount"
+                    defaultMessage="{type} ({count, number})"
+                    values={{ type: <Fragment key="type">{label}</Fragment>, count }}
+                />
             }
             onClick={onClick}
         />

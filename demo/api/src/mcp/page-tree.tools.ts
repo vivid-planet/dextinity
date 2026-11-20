@@ -1,16 +1,22 @@
-import { BlocksTransformerService, type ContentScope, type PageTreeNodeInterface, type PageTreeReadApi, PageTreeService } from "@dextinity/cms-api";
+import {
+    AffectedEntity,
+    BlocksTransformerService,
+    type PageTreeNodeInterface,
+    type PageTreeReadApi,
+    PageTreeService,
+    RequiredPermission,
+} from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
+import { Injectable, NotFoundException, UseFilters, UseGuards } from "@nestjs/common";
 import { ContextIdFactory, ModuleRef } from "@nestjs/core";
 import { REQUEST_CONTEXT_ID } from "@nestjs/core/router/request/request-constants.js";
-import { Payload } from "@nestjs/microservices";
-import { McpController, McpRawRequest, Tool } from "@rekog/mcp-nest";
-import { AccessControlService } from "@src/auth/access-control.service.js";
+import { Tool } from "@nestjs/mcp";
 import { Page } from "@src/documents/pages/entities/page.entity.js";
-import type { PageTreeNode } from "@src/page-tree/entities/page-tree-node.entity.js";
+import { PageTreeNode } from "@src/page-tree/entities/page-tree-node.entity.js";
 import { PageTreeNodeCategory } from "@src/page-tree/page-tree-node-category.js";
 import { z } from "zod";
 
-import { errorResult, getSignedInUser, jsonResult, type McpRequest, notSignedInResult, pageTreeScopeSchema } from "./mcp-tool.utils.js";
+import { NotFoundFilter, pageTreeScopeSchema, RefusalReasonFilter, SignedInUserGuard } from "./mcp-tool.utils.js";
 
 const listPageTreeNodesParameters = z.object({
     scope: pageTreeScopeSchema,
@@ -33,18 +39,21 @@ const getPageParameters = z.object({
     id: z.uuid().describe('The page document ID, which a page tree node of document type "Page" names as "documentId"'),
 });
 
+const refusedScopeReason = "You may not read the page tree of this scope.";
+
 // As cms-admin's `includeInvisibleContentContext` sets them.
 const adminRequestHeaders = {
     "x-include-invisible-content": "Pages:Unpublished,Pages:Archived,Blocks:Invisible",
     "x-preview-dam-urls": "1",
 };
 
-@McpController()
+@Injectable()
+@RequiredPermission("pageTree")
+@UseGuards(SignedInUserGuard)
 export class PageTreeTools {
     constructor(
         private readonly entityManager: EntityManager,
         private readonly pageTreeService: PageTreeService,
-        private readonly accessControlService: AccessControlService,
         private readonly moduleRef: ModuleRef,
     ) {}
 
@@ -53,107 +62,83 @@ export class PageTreeTools {
         description: `List the page tree nodes of a scope.
 Returns per node its id, name, slug, path, visibility (Published, Unpublished or Archived), document type, parent id, category, and whether it is hidden in the menu, plus the total count.
 Use get_page_tree_node with a returned id for the node's children and attached document.`,
-        parameters: listPageTreeNodesParameters,
+        inputSchema: listPageTreeNodesParameters,
         annotations: { readOnlyHint: true },
     })
-    async listPageTreeNodes(
-        @Payload() { scope, category, documentType, limit, offset }: z.infer<typeof listPageTreeNodesParameters>,
-        @McpRawRequest() request: McpRequest,
-    ) {
-        const user = getSignedInUser(request);
-        if (!user) {
-            return notSignedInResult;
-        }
-        // As `@RequiredPermission("pageTree")` checks the scope argument of the `paginatedPageTreeNodes` query.
-        if (!this.accessControlService.isAllowed(user, "pageTree", scope)) {
-            return errorResult("You may not read the page tree of this scope.");
-        }
-
+    @UseFilters(new RefusalReasonFilter(refusedScopeReason))
+    async listPageTreeNodes({ scope, category, documentType, limit, offset }: z.infer<typeof listPageTreeNodesParameters>) {
         const readApi = this.createReadApi();
         await readApi.preloadNodes(scope);
         const nodes = await readApi.getNodes({ scope, category, documentType, offset, limit });
         const totalCount = await readApi.getNodesCount({ scope, category, documentType });
 
-        return jsonResult({ nodes: await Promise.all(nodes.map((node) => this.toNode(readApi, node))), totalCount });
+        return { nodes: await Promise.all(nodes.map((node) => this.toNode(readApi, node))), totalCount };
     }
 
     @Tool({
         name: "get_page_tree_node",
         description: `Get a page tree node by ID, with its path, its parent nodes, its child nodes, and the ID of its attached document ("documentId").
 For a node of document type "Page", pass the "documentId" to get_page for the page's content.`,
-        parameters: getPageTreeNodeParameters,
+        inputSchema: getPageTreeNodeParameters,
         annotations: { readOnlyHint: true },
     })
-    async getPageTreeNode(@Payload() { id }: z.infer<typeof getPageTreeNodeParameters>, @McpRawRequest() request: McpRequest) {
-        const user = getSignedInUser(request);
-        if (!user) {
-            return notSignedInResult;
-        }
+    @AffectedEntity(PageTreeNode)
+    @UseFilters(new NotFoundFilter("page tree node"))
+    async getPageTreeNode({ id }: z.infer<typeof getPageTreeNodeParameters>) {
         const readApi = this.createReadApi();
         const node = await readApi.getNode(id);
-        // As `@AffectedEntity(PageTreeNode)` checks the scope of the node, with the same answer for a node the user may
-        // not read as for one that doesn't exist.
-        if (!node?.scope || !this.accessControlService.isAllowed(user, "pageTree", node.scope as ContentScope)) {
-            return errorResult(`There is no page tree node ${id}.`);
+        if (!node) {
+            throw new NotFoundException(`There is no page tree node ${id}.`);
         }
 
-        return jsonResult(await this.toNodeWithRelations(readApi, node));
+        return this.toNodeWithRelations(readApi, node);
     }
 
     @Tool({
         name: "get_page_tree_node_by_path",
         description: `Get the page tree node at a URL path of a scope, with the same details as get_page_tree_node.`,
-        parameters: getPageTreeNodeByPathParameters,
+        inputSchema: getPageTreeNodeByPathParameters,
         annotations: { readOnlyHint: true },
     })
-    async getPageTreeNodeByPath(@Payload() { scope, path }: z.infer<typeof getPageTreeNodeByPathParameters>, @McpRawRequest() request: McpRequest) {
-        const user = getSignedInUser(request);
-        if (!user) {
-            return notSignedInResult;
-        }
-        if (!this.accessControlService.isAllowed(user, "pageTree", scope)) {
-            return errorResult("You may not read the page tree of this scope.");
-        }
-
+    @UseFilters(new RefusalReasonFilter(refusedScopeReason))
+    async getPageTreeNodeByPath({ scope, path }: z.infer<typeof getPageTreeNodeByPathParameters>) {
         const readApi = this.createReadApi();
         const node = await readApi.getNodeByPath(path, { scope });
         if (!node) {
-            return errorResult(`There is no page tree node at ${path} in this scope.`);
+            throw new NotFoundException(`There is no page tree node at ${path} in this scope.`);
         }
 
-        return jsonResult(await this.toNodeWithRelations(readApi, node));
+        return this.toNodeWithRelations(readApi, node);
     }
 
     @Tool({
         name: "get_page",
         description: `Get a page by its document ID, as it was last saved: the blocks of its content, stage, and SEO as JSON, and the page tree node it is attached to.
-The content is the "PageContent" block, the stage the "Stage" block, and the SEO the "Seo" block; get_block_schema describes them and the blocks they hold.`,
-        parameters: getPageParameters,
+The content is the "PageContent" block, the stage the "Stage" block, and the SEO the "Seo" block; get_block_schema describes them and the blocks they hold.
+To change a page, read it with get_page_input instead, which returns the blocks in the shape save_page takes.`,
+        inputSchema: getPageParameters,
         annotations: { readOnlyHint: true },
     })
-    async getPage(@Payload() { id }: z.infer<typeof getPageParameters>, @McpRawRequest() request: McpRequest) {
-        const user = getSignedInUser(request);
-        if (!user) {
-            return notSignedInResult;
-        }
+    @AffectedEntity(Page)
+    @UseFilters(new NotFoundFilter("page"))
+    async getPage({ id }: z.infer<typeof getPageParameters>) {
         const page = await this.entityManager.findOne(Page, id);
         const readApi = this.createReadApi();
         const node = page ? await readApi.getFirstNodeByAttachedPageId(page.id) : null;
-        // As `@AffectedEntity(Page)` checks the scope of the node the page is attached to.
-        if (!page || !node?.scope || !this.accessControlService.isAllowed(user, "pageTree", node.scope as ContentScope)) {
-            return errorResult(`There is no page ${id}.`);
+        if (!page || !node) {
+            throw new NotFoundException(`There is no page ${id}.`);
         }
 
         const blocksTransformer = await this.resolveBlocksTransformer();
 
-        return jsonResult({
+        return {
             id: page.id,
             pageTreeNode: { id: node.id, name: node.name, path: await readApi.nodePath(node), visibility: node.visibility },
             content: await blocksTransformer.transformToPlain(page.content),
             stage: await blocksTransformer.transformToPlain(page.stage),
             seo: await blocksTransformer.transformToPlain(page.seo),
             updatedAt: page.updatedAt,
-        });
+        };
     }
 
     // The agent works on the admin's page tree, which shows unpublished and archived nodes too.
@@ -192,11 +177,11 @@ The content is the "PageContent" block, the stage the "Stage" block, and the SEO
 
     /**
      * `BlocksTransformerService` and the services of the block transformers, such as the `PageTreeReadApiService` an
-     * internal link resolves its target with, read their context from the headers of the GraphQL request. Injected
-     * into this class, they would get the request of the RPC pipeline instead, which has no headers, and fail to
-     * construct. Each call gets its own instance, as each GraphQL request does, resolved with the headers of the
-     * admin's requests: the page as its editor sees it, with hidden blocks, unpublished and archived link targets,
-     * and DAM URLs that work before the page is published.
+     * internal link resolves its target with, are request-scoped and read their context from the headers of the
+     * GraphQL request. `@nestjs/mcp` only serves tools of singleton providers, so they can't be injected into this
+     * class. Each call gets its own instance, as each GraphQL request does, resolved with the headers of the admin's
+     * requests: the page as its editor sees it, with hidden blocks, unpublished and archived link targets, and DAM
+     * URLs that work before the page is published.
      */
     private async resolveBlocksTransformer(): Promise<BlocksTransformerService> {
         const contextId = ContextIdFactory.create();

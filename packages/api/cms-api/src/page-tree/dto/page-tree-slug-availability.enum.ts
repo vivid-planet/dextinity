@@ -1,9 +1,9 @@
 import { registerEnumType } from "@nestjs/graphql";
 
-export enum SlugAvailability {
+export enum PageTreeSlugAvailability {
     Available = "Available",
     Taken = "Taken",
     Reserved = "Reserved",
 }
 
-registerEnumType(SlugAvailability, { name: "SlugAvailability" });
+registerEnumType(PageTreeSlugAvailability, { name: "SlugAvailability" });

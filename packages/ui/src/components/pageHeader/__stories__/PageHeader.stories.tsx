@@ -120,6 +120,25 @@ export const Narrow: Story = {
 };
 
 /**
+ * In windows narrower than 768 px, e.g. on a phone, the header takes less height: a smaller title, no eyebrow, and the actions next
+ * to the title. Pass `IconButton`s there when the labels don't fit. Open it in the workspace with a phone viewport to see it.
+ */
+export const NarrowWindow: Story = {
+    args: {
+        actions: (
+            <>
+                <IconButton variant="outlined" color="secondary" aria-label="New folder">
+                    <Icon name="folder-add" />
+                </IconButton>
+                <IconButton aria-label="Upload">
+                    <Icon name="cloud-upload" />
+                </IconButton>
+            </>
+        ),
+    },
+};
+
+/**
  * `variant="compact"` for editors, where the preview and the fields need the room: a smaller title, with the actions next to it.
  */
 export const Compact: Story = {

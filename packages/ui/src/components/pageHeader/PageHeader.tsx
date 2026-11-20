@@ -64,7 +64,10 @@ export interface PageHeaderProps extends Omit<HTMLAttributes<HTMLElement>, "clas
     eyebrow?: ReactNode;
     /** Numbers or status below the title, e.g. "3 unpublished · 1 archived". */
     subtitle?: ReactNode;
-    /** Actions at the end, e.g. a `Button`, or the save state and Save on edit pages. At most one primary action. */
+    /**
+     * Actions at the end, e.g. a `Button`, or the save state and Save on edit pages. At most one primary action. In windows narrower
+     * than 768 px they stay next to the title, so use `IconButton`s there when the labels don't fit.
+     */
     actions?: ReactNode;
     /** A back action before the title, for edit pages, e.g. to the list the edited item belongs to. */
     back?: PageHeaderBack;
@@ -79,7 +82,9 @@ export interface PageHeaderProps extends Omit<HTMLAttributes<HTMLElement>, "clas
 const labelSeparator = "·";
 
 /**
- * The head of every page: a mono label line for context, the display title, numbers or status, and the page's actions.
+ * The head of every page: a mono label line for context, the display title, numbers or status, and the page's actions. In windows
+ * narrower than 768 px it takes less height: a smaller title, no eyebrow (the top bar shows the scope), and the actions next to the
+ * title.
  */
 export const PageHeader = forwardRef<HTMLElement, PageHeaderProps>(function PageHeader(
     { title, variant = "default", eyebrow, subtitle, actions, back, breadcrumbs, className, slotProps, ...restProps },
@@ -133,7 +138,7 @@ export const PageHeader = forwardRef<HTMLElement, PageHeaderProps>(function Page
                                 {labelSeparator}
                             </span>
                         )}
-                        {eyebrow != null && <span>{eyebrow}</span>}
+                        {eyebrow != null && <span className={styles.eyebrow}>{eyebrow}</span>}
                     </div>
                 )}
                 {back != null && (

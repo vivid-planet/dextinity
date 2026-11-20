@@ -27,6 +27,7 @@ function renderShell({
     assistantOpen = false,
     onAssistantOpenChange = vi.fn(),
     environment,
+    disableKeyboardShortcuts = false,
 }: {
     navCollapsed?: boolean;
     onNavCollapsedChange?: () => void;
@@ -35,6 +36,7 @@ function renderShell({
     assistantOpen?: boolean;
     onAssistantOpenChange?: (open: boolean) => void;
     environment?: AppShellEnvironment;
+    disableKeyboardShortcuts?: boolean;
 } = {}) {
     return render(
         <KeyboardShortcutProvider platform={platform}>
@@ -42,6 +44,7 @@ function renderShell({
                 nav={<SideNav title="App" groups={groups} currentId="jobs" expandedIds={[]} onExpandedIdsChange={vi.fn()} onNavigate={vi.fn()} />}
                 topBar={<TopBar assistantSwitch={withAssistant ? <AiAssistantSwitch /> : undefined} />}
                 navCollapsed={navCollapsed}
+                disableKeyboardShortcuts={disableKeyboardShortcuts}
                 onNavCollapsedChange={onNavCollapsedChange}
                 assistant={withAssistant ? <textarea aria-label="Message" /> : undefined}
                 assistantOpen={assistantOpen}
@@ -209,6 +212,16 @@ describe("AppShell", () => {
 
         rerender(renderShellElement(false));
         expect(document.activeElement).toBe(screen.getByRole("switch", { name: "AI assistant" }));
+    });
+
+    it("names the assistant's shortcut on the switch only while the shell listens to it", () => {
+        windowWidth = 1440;
+        const { unmount } = renderShell({ withAssistant: true });
+        expect(screen.getByRole("switch", { name: "AI assistant" }).getAttribute("aria-keyshortcuts")).toBe("Control+J");
+        unmount();
+
+        renderShell({ withAssistant: true, disableKeyboardShortcuts: true });
+        expect(screen.getByRole("switch", { name: "AI assistant" }).hasAttribute("aria-keyshortcuts")).toBe(false);
     });
 
     it("leaves out the assistant's shortcut without an assistant", () => {

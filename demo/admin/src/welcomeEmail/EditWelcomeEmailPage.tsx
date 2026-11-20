@@ -17,6 +17,7 @@ import {
 } from "@dextinity/admin";
 import { OpenNewTabAlternative, Send } from "@dextinity/admin-icons";
 import {
+    ActionLogButton,
     BlockAdminComponentRoot,
     BlockPreviewWithTabs,
     type BlockState,
@@ -190,6 +191,7 @@ export function EditWelcomeEmailPage(): JSX.Element | null {
                 </ToolbarTitleItem>
                 <FillSpace />
                 <ToolbarActions>
+                    {data?.welcomeEmail && <ActionLogButton entityId={data.welcomeEmail.id} entity="WelcomeEmail" />}
                     <Tooltip title={hasChanges ? lastSavedVersionHint : ""}>
                         <Button variant="outlined" startIcon={<OpenNewTabAlternative />} disabled={!hasSavedEmail} onClick={handleOpenInSite}>
                             <FormattedMessage id="welcomeEmail.edit.openInSite" defaultMessage="Open in site" />

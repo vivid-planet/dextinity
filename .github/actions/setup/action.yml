@@ -8,6 +8,9 @@ inputs:
     build-packages:
         description: Whether to run `pnpm run build:packages`.
         default: "false"
+    project:
+        description: Name of a workspace project to set up instead of the whole workspace. Only the project and its dependencies are installed, and `build-packages` builds only the `@dextinity/*` packages among them.
+        default: ""
 
 runs:
     using: composite
@@ -22,7 +25,9 @@ runs:
               cache: "pnpm" # https://github.com/actions/setup-node/blob/main/docs/advanced-usage.md#caching-packages-dependencies
 
         - shell: bash
-          run: pnpm install --frozen-lockfile
+          run: pnpm install --frozen-lockfile ${PROJECT:+--filter "$PROJECT..."}
+          env:
+              PROJECT: ${{ inputs.project }}
 
         - name: Setup project for CI run
           if: ${{ inputs.setup-ci == 'true' }}
@@ -32,4 +37,13 @@ runs:
         - name: Build packages
           if: ${{ inputs.build-packages == 'true' }}
           shell: bash
-          run: pnpm run build:packages
+          run: |
+              if [[ -z "$PROJECT" ]]; then
+                  pnpm run build:packages
+              elif [[ "$PROJECT" == @dextinity/* ]]; then
+                  pnpm --filter "$PROJECT..." run build
+              else
+                  pnpm --filter "$PROJECT^..." run build
+              fi
+          env:
+              PROJECT: ${{ inputs.project }}

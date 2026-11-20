@@ -4,7 +4,7 @@
     // Space around the glass panels
     --dextinity-app-shell-gap: 18px;
     // Padding of the main area next to the navigation
-    --dextinity-app-shell-content-padding: 18px 26px var(--dextinity-space-12) 22px;
+    --dextinity-app-shell-content-padding: var(--dextinity-app-shell-gap) 26px var(--dextinity-app-shell-gap) 22px;
     // Space between the top bar and the page header
     --dextinity-app-shell-content-offset: 52px;
     // Padding of the main area in narrow windows
@@ -27,6 +27,10 @@
     --dextinity-app-shell-backdrop: oklch(0 0 0 / 0.28);
     // Width of the navigation drawer in narrow windows
     --dextinity-app-shell-drawer-width: min(320px, 86vw);
+    // Width of the assistant column, without the gap before it
+    --dextinity-app-shell-assistant-width: 380px;
+    // Height of the assistant sheet on narrow windows
+    --dextinity-app-shell-assistant-sheet-height: 86dvh;
     // Shadow of the navigation panel inside the drawer
     --dextinity-app-shell-overlay-shadow: var(--dextinity-shadow-3);
 

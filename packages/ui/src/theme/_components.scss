@@ -1,5 +1,6 @@
 // Component tokens. Each component declares a `tokens` mixin in `src/components/<feature>/<ComponentName>.tokens.scss`.
 @use "scope";
+@use "../components/aiAssistantSwitch/AiAssistantSwitch.tokens" as aiAssistantSwitch;
 @use "../components/appShell/AppShell.tokens" as appShell;
 @use "../components/assetThumbnail/AssetThumbnail.tokens" as assetThumbnail;
 @use "../components/avatar/Avatar.tokens" as avatar;
@@ -83,6 +84,7 @@
 @use "../components/userMenu/UserMenu.tokens" as userMenu;
 
 @include scope.component-tokens {
+    @include aiAssistantSwitch.tokens;
     @include appShell.tokens;
     @include assetThumbnail.tokens;
     @include avatar.tokens;
@@ -171,6 +173,7 @@
 }
 
 @include scope.high-contrast-component-tokens {
+    @include aiAssistantSwitch.high-contrast-tokens;
     @include assetThumbnail.high-contrast-tokens;
     @include banner.high-contrast-tokens;
     @include blockList.high-contrast-tokens;

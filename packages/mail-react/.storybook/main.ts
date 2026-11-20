@@ -4,6 +4,7 @@ import { mergeConfig } from "vite";
 
 const config: StorybookConfig = {
     stories: ["../src/**/*.mdx", "../src/**/*.stories.tsx"],
+    staticDirs: ["./public"],
     addons: [
         {
             name: "@storybook/addon-docs",

@@ -83,8 +83,11 @@ export interface SideNavProps extends Omit<HTMLAttributes<HTMLElement>, "classNa
     logo?: ReactNode;
     /** The product's sign, shown instead of the logo while collapsed. */
     logoMark?: ReactNode;
-    /** The app name, shown large below the logo. The app name appears only here, never in the top bar. */
-    title: string;
+    /**
+     * The app name, shown large below the logo. Leave it out when the logo names the product. The app name appears only here, never in
+     * the top bar.
+     */
+    title?: string;
     /** Tenant and environment, shown small below the app name, e.g. "Example Ltd · Production". */
     subtitle?: string;
     /** The groups and their entries. */
@@ -381,7 +384,7 @@ export const SideNav = forwardRef<HTMLElement, SideNavProps>(function SideNav(
                 ) : (
                     <>
                         {logo != null && <span className={styles.logo}>{logo}</span>}
-                        <span className={styles.title}>{title}</span>
+                        {title != null && <span className={styles.title}>{title}</span>}
                         {subtitle != null && <span className={styles.subtitle}>{subtitle}</span>}
                     </>
                 )}

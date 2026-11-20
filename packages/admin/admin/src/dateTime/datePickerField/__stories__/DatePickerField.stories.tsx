@@ -173,6 +173,63 @@ export const Disabled: Story = {
 };
 
 /**
+ * A required DatePickerField shows a required marker and has no clear button. Submitting the form without a date shows a validation error.
+ */
+export const Required: Story = {
+    render: () => {
+        interface FormValues {
+            value: string;
+        }
+        return (
+            <FinalForm<FormValues>
+                mode="edit"
+                onSubmit={() => {
+                    // not handled
+                }}
+                subscription={{ values: true }}
+            >
+                {() => (
+                    <>
+                        <DatePickerField required name="value" label="Required Date Picker" fullWidth variant="horizontal" />
+
+                        <FinalFormDebug />
+                    </>
+                )}
+            </FinalForm>
+        );
+    },
+};
+
+/**
+ * A read-only DatePickerField shows the date and doesn't let users change it. Use it instead of `disabled` when the value should stay easy to read.
+ */
+export const ReadOnly: Story = {
+    render: () => {
+        interface FormValues {
+            value: string;
+        }
+        return (
+            <FinalForm<FormValues>
+                mode="edit"
+                onSubmit={() => {
+                    // not handled
+                }}
+                initialValues={{ value: "2026-01-15" }}
+                subscription={{ values: true }}
+            >
+                {() => (
+                    <>
+                        <DatePickerField readOnly name="value" label="Read-only Date Picker" fullWidth variant="horizontal" />
+
+                        <FinalFormDebug />
+                    </>
+                )}
+            </FinalForm>
+        );
+    },
+};
+
+/**
  * Before implementing custom validation, try to disable certain values using the props provided by MUI's DatePicker, such as `shouldDisableDate`, `disableFuture`, `disablePast`.
  *
  * Use this when:

@@ -8,6 +8,8 @@ export interface AppShellContextValue {
     navCollapsed: boolean;
     /** Collapses or expands the navigation; unset where it can't be toggled, e.g. in the drawer. */
     onNavCollapsedChange?: (collapsed: boolean) => void;
+    /** The shortcut that collapses and expands the navigation, for its tooltip; unset while the shell doesn't listen to it. */
+    navCollapseKeyboardShortcut?: string;
     /** Opens the navigation as a drawer; set only on narrow windows, where the navigation is hidden. */
     onNavDrawerOpen?: () => void;
     /** Called after a navigation entry was chosen, e.g. to close the drawer. */

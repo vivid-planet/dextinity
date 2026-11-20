@@ -73,15 +73,30 @@ describe("AppShell", () => {
         expect(screen.getByRole("navigation").hasAttribute("data-collapsed")).toBe(true);
     });
 
-    it("collapses the navigation on medium windows and toggles it with Ctrl+\\ only on wide ones", () => {
+    it("collapses the navigation on medium windows and expands it over the content, apart from the user setting", () => {
         windowWidth = 1000;
         const onNavCollapsedChange = vi.fn();
         const { container } = renderShell({ onNavCollapsedChange });
+        const root = container.querySelector<HTMLElement>(".dextinityAppShell");
 
-        expect(container.querySelector<HTMLElement>(".dextinityAppShell")?.dataset.layout).toBe("medium");
+        expect(root?.dataset.layout).toBe("medium");
         expect(screen.getByRole("navigation").hasAttribute("data-collapsed")).toBe(true);
         fireEvent.keyDown(document, { key: "\\", ctrlKey: true });
+        expect(screen.getByRole("navigation").hasAttribute("data-collapsed")).toBe(false);
+        expect(root?.hasAttribute("data-navoverlay")).toBe(true);
         expect(onNavCollapsedChange).not.toHaveBeenCalled();
+        fireEvent.keyDown(document, { key: "Escape" });
+        expect(screen.getByRole("navigation").hasAttribute("data-collapsed")).toBe(true);
+    });
+
+    it("moves the focus to the expand button when Escape collapses the navigation over the content", () => {
+        windowWidth = 1000;
+        renderShell();
+
+        fireEvent.keyDown(document, { key: "\\", ctrlKey: true });
+        screen.getByRole("link", { name: "Job ads" }).focus();
+        fireEvent.keyDown(document.activeElement ?? document, { key: "Escape" });
+        expect(document.activeElement).toBe(screen.getByRole("button", { name: "Expand" }));
     });
 
     it("toggles the navigation with Ctrl+\\ on wide windows", () => {

@@ -164,8 +164,8 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * Navigation, top bar, and content. From 1280px the navigation is open or collapsed; from 768px it shows icons; below, it is a drawer
- * behind the menu button. ⌘\ collapses the navigation, ⌘K opens the search.
+ * Navigation, top bar, and content. From 1280px the navigation is open or collapsed; from 768px it shows icons and expands over the
+ * content; below, it is a drawer behind the menu button. ⌘\ collapses or expands the navigation, ⌘K opens the search.
  *
  * **Rules**
  *

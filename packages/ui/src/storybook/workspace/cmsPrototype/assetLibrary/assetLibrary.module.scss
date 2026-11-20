@@ -32,7 +32,44 @@
 
 .cardFrame {
     display: flex;
-    min-block-size: 480px;
+
+    &[data-layout="fill"] {
+        min-block-size: 480px;
+    }
+
+    // Smaller windows scroll the page: the card grows with its content, and the toolbar and the footer stick to the window's edges
+    &[data-layout="flow"] {
+        .card {
+            overflow: visible;
+        }
+
+        .toolbar {
+            position: sticky;
+            inset-block-start: var(--dextinity-layout-sticky-offset);
+            z-index: 2;
+
+            // The top bar sits closer to the window's edge in narrow windows
+            @media (width < 768px) {
+                inset-block-start: 66px;
+            }
+            border-start-start-radius: var(--dextinity-panel-radius);
+            border-start-end-radius: var(--dextinity-panel-radius);
+            background: var(--dextinity-color-surface);
+        }
+
+        .content {
+            overflow: visible;
+        }
+
+        .footer {
+            position: sticky;
+            inset-block-end: 0;
+            z-index: 2;
+            border-end-start-radius: var(--dextinity-panel-radius);
+            border-end-end-radius: var(--dextinity-panel-radius);
+            background: var(--dextinity-color-surface);
+        }
+    }
 }
 
 // The card fills the window's height: the content scrolls between the toolbar and the footer, which stay in view
@@ -57,6 +94,74 @@
     flex-direction: column;
     gap: var(--dextinity-space-3);
     padding: var(--dextinity-space-4) var(--dextinity-space-4) var(--dextinity-space-3);
+}
+
+// Phones keep the search, the view, and the filter button in one row
+.phoneSearchRow {
+    flex-wrap: nowrap;
+}
+
+.phoneSearch {
+    flex: 1 1 auto;
+    min-inline-size: 0;
+}
+
+.phoneActions {
+    flex: none;
+}
+
+.filterButton {
+    position: relative;
+    display: inline-flex;
+}
+
+.filterCount {
+    position: absolute;
+    inset-block-start: -6px;
+    inset-inline-end: -6px;
+    display: grid;
+    place-items: center;
+    min-inline-size: 18px;
+    block-size: 18px;
+    padding-inline: 4px;
+    border-radius: var(--dextinity-radius-pill);
+    background: var(--dextinity-color-accent);
+    color: var(--dextinity-color-accent-foreground);
+    font-size: 11px;
+    font-weight: 600;
+    pointer-events: none;
+}
+
+.pageRange {
+    font-variant-numeric: tabular-nums;
+}
+
+// Phones show two tiles per row, or one, instead of the tile size of the slider
+.content[data-tile-size] .fileGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--dextinity-space-2);
+}
+
+.content[data-tile-size="large"] .fileGrid {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.filterDrawer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-space-6);
+}
+
+.filterSection {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-space-3);
+
+    h3 {
+        margin: 0;
+        font-size: var(--dextinity-typography-section-size);
+        font-weight: var(--dextinity-typography-section-font-weight);
+    }
 }
 
 .chips {

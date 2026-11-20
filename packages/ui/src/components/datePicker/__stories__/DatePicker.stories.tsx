@@ -68,6 +68,7 @@ const meta = {
         ...fieldArgTypes,
         locale: { control: "select", options: ["en-GB", "en-US", "de-AT", "fr-FR", "ja-JP"] },
         weekStartsOn: { control: "select", options: [0, 1, 2, 3, 4, 5, 6] },
+        isDateDisabled: { control: false },
         labels: { control: false },
         className: { control: false },
     },
@@ -85,7 +86,7 @@ type Story = StoryObj<typeof meta>;
  * - Always controlled: `value` + `onChange`. The value is a day as `YYYY-MM-DD`, without time and time zone, so it is the same day
  *   for everyone; use `DateTimePicker` for an instant.
  * - Typing is as valid as the calendar: show the expected format in `placeholder` or `description` where users may not know it.
- * - Limit the choice with `min` and `max` rather than validating after the fact.
+ * - Limit the choice with `min`, `max`, and `isDateDisabled` rather than validating after the fact.
  */
 export const Default: Story = {
     args: { locale: "en-GB" },
@@ -197,6 +198,38 @@ export const MinAndMax: Story = {
         await userEvent.type(input, "24/11/2026");
         await userEvent.tab();
         await expect(input).toHaveAccessibleDescription("Choose a date from 03/11/2026 to 20/11/2026.");
+        await expect(args.onChange).not.toHaveBeenCalled();
+    },
+};
+
+/**
+ * `isDateDisabled` disables more days, such as weekends or holidays. They are struck through in the calendar like the days outside `min`
+ * and `max`, and a typed one shows an error. Opening the calendar or choosing a month focuses the nearest day that can be chosen.
+ */
+export const DisabledDates: Story = {
+    args: {
+        locale: "en-GB",
+        isDateDisabled: (date: string) => [0, 6].includes(new Date(date).getUTCDay()),
+        description: "Weekdays only",
+    },
+    play: async ({ args, canvas }) => {
+        await userEvent.click(canvas.getByRole("button", { name: "Choose date" }));
+        const grid = await screen.findByRole("grid");
+        const saturday = within(grid).getByRole("button", { name: "Saturday, 7 November 2026" });
+        await expect(saturday).toHaveAttribute("aria-disabled", "true");
+        await userEvent.click(saturday);
+        await expect(args.onChange).not.toHaveBeenCalled();
+        await expect(within(grid).getByRole("button", { name: "Monday, 9 November 2026" })).not.toHaveAttribute("aria-disabled");
+        await userEvent.click(screen.getByRole("button", { name: "November" }));
+        await userEvent.click(screen.getByRole("button", { name: /^Sep/ }));
+        await waitFor(() => expect(screen.getByRole("button", { name: "Monday, 7 September 2026" })).toHaveFocus());
+        await userEvent.keyboard("{Escape}");
+
+        const input = canvas.getByRole("textbox", { name: "Published on" });
+        await userEvent.clear(input);
+        await userEvent.type(input, "14/11/2026");
+        await userEvent.tab();
+        await expect(input).toHaveAccessibleDescription("14/11/2026 can't be chosen.");
         await expect(args.onChange).not.toHaveBeenCalled();
     },
 };

@@ -169,6 +169,7 @@
 }
 
 @include scope.dark-component-tokens {
+    @include sideNav.dark-tokens;
     @include toast.dark-tokens;
 }
 
@@ -190,6 +191,7 @@
     @include progressBar.high-contrast-tokens;
     @include scopeSwitcher.high-contrast-tokens;
     @include segmentedControl.high-contrast-tokens;
+    @include sideNav.high-contrast-tokens;
     @include select.high-contrast-tokens;
     @include slider.high-contrast-tokens;
     @include statusIndicator.high-contrast-tokens;

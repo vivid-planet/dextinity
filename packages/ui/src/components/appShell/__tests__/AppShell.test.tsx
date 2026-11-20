@@ -26,6 +26,7 @@ function renderShell({
     withAssistant = false,
     assistantOpen = false,
     onAssistantOpenChange = vi.fn(),
+    disableKeyboardShortcuts = false,
 }: {
     navCollapsed?: boolean;
     onNavCollapsedChange?: () => void;
@@ -33,6 +34,7 @@ function renderShell({
     withAssistant?: boolean;
     assistantOpen?: boolean;
     onAssistantOpenChange?: (open: boolean) => void;
+    disableKeyboardShortcuts?: boolean;
 } = {}) {
     return render(
         <KeyboardShortcutProvider platform={platform}>
@@ -40,6 +42,7 @@ function renderShell({
                 nav={<SideNav title="App" groups={groups} currentId="jobs" expandedIds={[]} onExpandedIdsChange={vi.fn()} onNavigate={vi.fn()} />}
                 topBar={<TopBar assistantSwitch={withAssistant ? <AiAssistantSwitch /> : undefined} />}
                 navCollapsed={navCollapsed}
+                disableKeyboardShortcuts={disableKeyboardShortcuts}
                 onNavCollapsedChange={onNavCollapsedChange}
                 assistant={withAssistant ? <textarea aria-label="Message" /> : undefined}
                 assistantOpen={assistantOpen}
@@ -70,15 +73,30 @@ describe("AppShell", () => {
         expect(screen.getByRole("navigation").hasAttribute("data-collapsed")).toBe(true);
     });
 
-    it("collapses the navigation on medium windows and toggles it with Ctrl+\\ only on wide ones", () => {
+    it("collapses the navigation on medium windows and expands it over the content, apart from the user setting", () => {
         windowWidth = 1000;
         const onNavCollapsedChange = vi.fn();
         const { container } = renderShell({ onNavCollapsedChange });
+        const root = container.querySelector<HTMLElement>(".dextinityAppShell");
 
-        expect(container.querySelector<HTMLElement>(".dextinityAppShell")?.dataset.layout).toBe("medium");
+        expect(root?.dataset.layout).toBe("medium");
         expect(screen.getByRole("navigation").hasAttribute("data-collapsed")).toBe(true);
         fireEvent.keyDown(document, { key: "\\", ctrlKey: true });
+        expect(screen.getByRole("navigation").hasAttribute("data-collapsed")).toBe(false);
+        expect(root?.hasAttribute("data-navoverlay")).toBe(true);
         expect(onNavCollapsedChange).not.toHaveBeenCalled();
+        fireEvent.keyDown(document, { key: "Escape" });
+        expect(screen.getByRole("navigation").hasAttribute("data-collapsed")).toBe(true);
+    });
+
+    it("moves the focus to the expand button when Escape collapses the navigation over the content", () => {
+        windowWidth = 1000;
+        renderShell();
+
+        fireEvent.keyDown(document, { key: "\\", ctrlKey: true });
+        screen.getByRole("link", { name: "Job ads" }).focus();
+        fireEvent.keyDown(document.activeElement ?? document, { key: "Escape" });
+        expect(document.activeElement).toBe(screen.getByRole("button", { name: "Expand" }));
     });
 
     it("toggles the navigation with Ctrl+\\ on wide windows", () => {
@@ -191,6 +209,16 @@ describe("AppShell", () => {
 
         rerender(renderShellElement(false));
         expect(document.activeElement).toBe(screen.getByRole("switch", { name: "AI assistant" }));
+    });
+
+    it("names the assistant's shortcut on the switch only while the shell listens to it", () => {
+        windowWidth = 1440;
+        const { unmount } = renderShell({ withAssistant: true });
+        expect(screen.getByRole("switch", { name: "AI assistant" }).getAttribute("aria-keyshortcuts")).toBe("Control+J");
+        unmount();
+
+        renderShell({ withAssistant: true, disableKeyboardShortcuts: true });
+        expect(screen.getByRole("switch", { name: "AI assistant" }).hasAttribute("aria-keyshortcuts")).toBe(false);
     });
 
     it("leaves out the assistant's shortcut without an assistant", () => {

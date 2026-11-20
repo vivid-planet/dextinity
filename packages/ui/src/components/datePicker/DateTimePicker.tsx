@@ -7,10 +7,21 @@ import { Icon } from "../icon/Icon";
 import { CalendarPopover } from "./CalendarPopover";
 import { type DatePickerCalendarProps, type DatePickerLabels, defaultDatePickerLabels } from "./DatePicker";
 import styles from "./DateTimePicker.module.scss";
-import { formatDate, formatTime, type IsoDate, joinDateTime, localeWeekStart, parseTime, splitDateTime, type TimeOfDay } from "./dateValues";
+import {
+    formatDate,
+    formatTime,
+    type IsoDate,
+    joinDateTime,
+    localeWeekStart,
+    parseTime,
+    splitDateTime,
+    type TimeOfDay,
+    toIsoTime,
+} from "./dateValues";
 import { TimePopover } from "./TimePopover";
 import { invalidTimeMessage, readTypedDay } from "./typedDay";
-import { useTextDraft } from "./useTextDraft";
+import { useFormReset } from "./useFormReset";
+import { type TextReading, useRejectedTextReread, useTextDraft } from "./useTextDraft";
 
 /**
  * Texts of the date and time picker, for translation.
@@ -43,6 +54,14 @@ export interface DateTimePickerProps extends DatePickerCalendarProps, PureContro
     value: string | null;
     /** Called with the new instant as an ISO 8601 date-time in UTC, or `null` when the value is removed; set `value` from it. */
     onChange: (value: string | null) => void;
+    /**
+     * The locale that formats and reads typed dates and times, and names months and weekdays, e.g. `de-AT`. Dates always use the Gregorian
+     * calendar and the digits 0–9. Times use the digits 0–9, and the 24-hour clock where the locale writes AM and PM in a form that can't
+     * be typed.
+     *
+     * @defaultValue the browser's locale
+     */
+    locale?: string;
     /** Shown in the date input while there is no value, e.g. the expected format. */
     placeholder?: string;
     /** Shown in the time input while there is no value. */
@@ -53,14 +72,22 @@ export interface DateTimePickerProps extends DatePickerCalendarProps, PureContro
      * @defaultValue `15`
      */
     timeStep?: number;
+    /**
+     * Disables times of a day, e.g. outside office hours. Called with the time as `HH:mm` and the local day as `YYYY-MM-DD`, so each day
+     * can have its own times. A `value` it disables shows no error; validate the value in the form.
+     */
+    isTimeDisabled?: (time: string, date: string) => boolean;
     /** Texts of the inputs, the buttons, and the calendar, for translation. */
     labels?: Partial<DateTimePickerLabels>;
 }
 
 /**
  * A day and a time of day, typed in the locale's format or chosen in a calendar and a list of times. Choosing a day keeps the time; without
- * one, the time is midnight. Typed text is read on blur or Enter; text that can't be read, or a day outside `min` and `max`, stays in its
- * input with an error and leaves the value unchanged until it is corrected.
+ * one, the time is midnight. Typed text is read on blur or Enter; text that can't be read, or a day or time that can't be chosen, stays in
+ * its input with an error and leaves the value unchanged until it is corrected, or until the day or the rules change to allow it. A kept
+ * time that can't be chosen on the new day shows an error too, until the time is changed or `isTimeDisabled` allows it; without a time, a
+ * day on which midnight can't be chosen waits for a time without an error. Resetting the surrounding form discards typed text and a day
+ * or time that waits; to discard them from code, render the picker with a new `key`.
  */
 export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(function DateTimePicker(
     {
@@ -71,12 +98,14 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
         onChange,
         min,
         max,
+        isDateDisabled,
         locale,
         weekStartsOn,
         clearable = false,
         placeholder,
         timePlaceholder,
         timeStep = 15,
+        isTimeDisabled,
         labels: labelsProp,
         id,
         className,
@@ -90,7 +119,9 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
     const [open, setOpen] = useState(false);
     const [timeListOpen, setTimeListOpen] = useState(false);
     // A time typed before there is a day, used once a day is chosen
-    const [pendingTime, setPendingTime] = useState<TimeOfDay | null>(null);
+    const [pendingTime, setPendingTime] = useState<{ time: TimeOfDay; value: string | null } | null>(null);
+    // A day chosen while the kept time is disabled on it, used once an allowed time is set
+    const [pendingDay, setPendingDay] = useState<{ date: IsoDate; value: string | null } | null>(null);
     const inputRef = useRef<HTMLInputElement | null>(null);
     const timeInputRef = useRef<HTMLInputElement>(null);
     const setInputRef = useCallback(
@@ -106,44 +137,91 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
     );
 
     const current = splitDateTime(value);
-    const time = current?.time ?? pendingTime;
+    if (pendingTime != null && pendingTime.value !== value) {
+        setPendingTime(null);
+    }
+    const time = current?.time ?? pendingTime?.time ?? null;
+    if (pendingDay != null && pendingDay.value !== value) {
+        setPendingDay(null);
+    }
+    const pendingDate = pendingDay?.date ?? null;
+    const date = pendingDate ?? current?.date ?? null;
     const { disabled, readOnly } = useControlState(disabledProp, readOnlyProp);
     const editable = !disabled && !readOnly;
 
-    const change = (date: IsoDate | null, nextTime: TimeOfDay | null) => {
+    const isTimeDisabledOn = (day: IsoDate, timeOfDay: TimeOfDay) => isTimeDisabled?.(toIsoTime(timeOfDay), day) === true;
+
+    const change = (day: IsoDate | null, nextTime: TimeOfDay | null) => {
         setPendingTime(null);
-        onChange(date == null ? null : joinDateTime(date, nextTime ?? midnight));
+        setPendingDay(null);
+        onChange(day == null ? null : joinDateTime(day, nextTime ?? midnight));
     };
 
-    const dateDraft = useTextDraft(current == null ? "" : formatDate(current.date, locale), (text) => {
-        const typed = readTypedDay(text, { locale, min, max, labels });
-        if (typed.error != null) {
-            return typed.error;
-        }
-        change(typed.day, typed.day == null ? null : time);
-    });
-    const timeDraft = useTextDraft(time == null ? "" : formatTime(time, locale), (text) => {
-        if (text.trim() === "" && current == null) {
-            setPendingTime(null);
-            return;
+    const timeDraft = useTextDraft(time == null ? "" : formatTime(time, locale), (text): TextReading => {
+        if (text.trim() === "" && date == null) {
+            return { apply: () => setPendingTime(null) };
         }
         const parsed = text.trim() === "" ? midnight : parseTime(text);
         if (parsed == null) {
-            return invalidTimeMessage(locale, labels);
+            return { error: invalidTimeMessage(locale, labels) };
         }
-        if (current == null) {
-            setPendingTime(parsed);
-        } else {
-            change(current.date, parsed);
+        if (date == null) {
+            return { apply: () => setPendingTime({ time: parsed, value }) };
         }
+        if (isTimeDisabledOn(date, parsed)) {
+            return { error: labels.timeDisabled(formatTime(parsed, locale)) };
+        }
+        return { apply: () => change(date, parsed) };
     });
 
-    const draftError = dateDraft.error ?? timeDraft.error;
+    const rejectedTimeAllowedOn = (day: IsoDate) => {
+        const rejectedTime = timeDraft.error == null ? null : parseTime(timeDraft.text);
+        return rejectedTime != null && !isTimeDisabledOn(day, rejectedTime) ? rejectedTime : null;
+    };
+
+    const chooseDay = (day: IsoDate | null) => {
+        if (day == null) {
+            change(null, null);
+            return;
+        }
+        const rejectedTime = rejectedTimeAllowedOn(day);
+        if (rejectedTime != null) {
+            timeDraft.reset();
+            change(day, rejectedTime);
+        } else if (isTimeDisabledOn(day, time ?? midnight)) {
+            setPendingDay({ date: day, value });
+        } else {
+            change(day, time);
+        }
+    };
+
+    const dateDraft = useTextDraft(date == null ? "" : formatDate(date, locale), (text) => {
+        const typed = readTypedDay(text, { locale, min, max, isDateDisabled, labels });
+        return typed.error != null ? { error: typed.error } : { apply: () => chooseDay(typed.day) };
+    });
+
+    const isPendingDayAllowed = pendingDate != null && !isTimeDisabledOn(pendingDate, time ?? midnight);
+    useRejectedTextReread([dateDraft, timeDraft], () => {
+        if (isPendingDayAllowed) {
+            change(pendingDate, time);
+        }
+    });
+    useFormReset(inputRef, () => {
+        dateDraft.reset();
+        timeDraft.reset();
+        setPendingTime(null);
+        setPendingDay(null);
+    });
+
+    const keptTimeError =
+        pendingDate != null && time != null && isTimeDisabledOn(pendingDate, time) ? labels.timeDisabled(formatTime(time, locale)) : undefined;
+    const draftError = dateDraft.error ?? timeDraft.error ?? keptTimeError;
 
     const onKeyDown = (draft: typeof dateDraft, openPopup: (open: boolean) => void) => (event: KeyboardEvent<HTMLInputElement>) => {
         if (event.key === "Enter") {
             draft.commit();
-        } else if (event.key === "Escape") {
+        } else if (event.key === "Escape" && draft.hasDraft) {
+            event.stopPropagation();
             draft.reset();
         } else if (event.key === "ArrowDown" && event.altKey && editable) {
             event.preventDefault();
@@ -154,10 +232,10 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
 
     const chooseTime = (nextTime: TimeOfDay) => {
         timeDraft.reset();
-        if (current == null) {
-            setPendingTime(nextTime);
+        if (date == null) {
+            setPendingTime({ time: nextTime, value });
         } else {
-            change(current.date, nextTime);
+            change(date, nextTime);
         }
         setTimeListOpen(false);
     };
@@ -170,6 +248,7 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
             disabled={disabledProp}
             readOnly={readOnlyProp}
             error={draftError}
+            errorInput={dateDraft.error != null ? inputRef : timeInputRef}
             className={className}
             style={style}
         >
@@ -200,16 +279,17 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
                         disabled={!editable}
                         finalFocus={inputRef}
                         labelledBy={nameId}
-                        start={current?.date ?? null}
+                        start={date}
                         end={null}
                         range={false}
                         onSelect={(day) => {
                             dateDraft.reset();
-                            change(day, time);
+                            chooseDay(day);
                             setOpen(false);
                         }}
                         min={min}
                         max={max}
+                        isDateDisabled={isDateDisabled}
                         locale={locale}
                         weekStartsOn={weekStartsOn ?? localeWeekStart(locale)}
                         months={1}
@@ -232,6 +312,7 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
                         aria-labelledby={clsx(nameId, timeLabelId)}
                         aria-describedby={control["aria-describedby"]}
                         aria-invalid={control["aria-invalid"]}
+                        aria-required={control["aria-required"]}
                         onChange={timeDraft.onChange}
                         onBlur={timeDraft.commit}
                         onKeyDown={onKeyDown(timeDraft, setTimeListOpen)}
@@ -245,6 +326,7 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
                         }}
                         value={time}
                         onSelect={chooseTime}
+                        isTimeDisabled={(timeOfDay) => date != null && isTimeDisabledOn(date, timeOfDay)}
                         step={timeStep}
                         locale={locale}
                         triggerLabel={labels.openTimeList}

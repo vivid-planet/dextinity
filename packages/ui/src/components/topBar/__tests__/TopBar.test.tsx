@@ -28,7 +28,7 @@ describe("TopBar render contract", () => {
         ]);
     });
 
-    it("announces the search shortcut for the platform", () => {
+    it("announces the search shortcut for the platform without showing it as a key cap in the bar", () => {
         render(
             <KeyboardShortcutProvider platform="apple">
                 <TopBar onSearchClick={vi.fn()} />
@@ -37,7 +37,7 @@ describe("TopBar render contract", () => {
 
         const search = screen.getByRole("button", { name: "Search, jump, create …" });
         expect(search.getAttribute("aria-keyshortcuts")).toBe("Meta+K");
-        expect(search.textContent).toContain("⌘K");
+        expect(search.querySelector("kbd")).toBeNull();
     });
 
     it("opens the AppShell's navigation drawer from the menu button", () => {

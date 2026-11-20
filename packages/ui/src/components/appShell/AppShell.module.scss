@@ -104,6 +104,21 @@
     grid-column: 1;
     grid-row: 1;
     padding: var(--dextinity-app-shell-gap) 0 var(--dextinity-app-shell-gap) var(--dextinity-app-shell-gap);
+
+    // On medium windows, the column keeps the collapsed navigation's width, so the expanded navigation lies over the content
+    // instead of pushing it aside
+    .root[data-layout="medium"] & {
+        inline-size: calc(var(--dextinity-app-shell-gap) + var(--dextinity-side-nav-width-collapsed));
+
+        > * {
+            flex: none;
+            max-inline-size: none;
+        }
+    }
+
+    .root[data-navoverlay] & > * {
+        box-shadow: var(--dextinity-app-shell-overlay-shadow);
+    }
 }
 
 .main {

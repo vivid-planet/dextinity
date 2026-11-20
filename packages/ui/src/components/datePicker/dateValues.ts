@@ -133,6 +133,26 @@ export function clampDate(date: IsoDate, min: IsoDate | undefined, max: IsoDate 
 }
 
 /**
+ * The day from `first` to `last` that is closest to `date` and that `isSelectable` accepts, or `undefined` when there is none. Of two
+ * equally close days, it is the later one. `date` must lie from `first` to `last`.
+ */
+export function nearestSelectableDay(date: IsoDate, first: IsoDate, last: IsoDate, isSelectable: (day: IsoDate) => boolean): IsoDate | undefined {
+    for (let distance = 0; ; distance++) {
+        const later = addDays(date, distance);
+        const earlier = addDays(date, -distance);
+        if (later > last && earlier < first) {
+            return undefined;
+        }
+        if (later <= last && isSelectable(later)) {
+            return later;
+        }
+        if (earlier >= first && isSelectable(earlier)) {
+            return earlier;
+        }
+    }
+}
+
+/**
  * The number of whole months from the month of `from` to the month of `to`, negative when `to` is earlier.
  */
 export function monthsBetween(from: IsoDate, to: IsoDate): number {
@@ -195,20 +215,31 @@ export function localeWeekStart(locale: string | undefined): number {
 }
 
 /**
- * Formats a day in the locale, `2-digit` day and month with a numeric year unless other options are given.
+ * The Gregorian calendar with the digits 0–9 in every locale, as typed dates are read in them.
+ */
+export const gregorianWithLatinDigits = { calendar: "gregory", numberingSystem: "latn" } satisfies Intl.DateTimeFormatOptions;
+
+/**
+ * Formats a day in the locale, `2-digit` day and month with a numeric year unless other options are given, always in the Gregorian
+ * calendar with the digits 0–9.
  */
 export function formatDate(date: IsoDate, locale: string | undefined, options?: Intl.DateTimeFormatOptions): string {
     const parts = parseIsoDate(date);
     if (parts == null) {
         return "";
     }
-    return new Intl.DateTimeFormat(locale, { year: "numeric", month: "2-digit", day: "2-digit", ...options, timeZone: "UTC" }).format(
-        toUtcDate(parts),
-    );
+    return new Intl.DateTimeFormat(locale, {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        ...options,
+        ...gregorianWithLatinDigits,
+        timeZone: "UTC",
+    }).format(toUtcDate(parts));
 }
 
 function datePartOrder(locale: string | undefined): DatePartType[] {
-    return new Intl.DateTimeFormat(locale, { year: "numeric", month: "2-digit", day: "2-digit", timeZone: "UTC" })
+    return new Intl.DateTimeFormat(locale, { year: "numeric", month: "2-digit", day: "2-digit", ...gregorianWithLatinDigits, timeZone: "UTC" })
         .formatToParts(new Date(Date.UTC(2026, 10, 30)))
         .map((part) => part.type)
         .filter((type): type is DatePartType => type === "year" || type === "month" || type === "day");
@@ -275,13 +306,46 @@ export function parseDate(text: string, locale: string | undefined, referenceYea
     return isValidParts(parts) ? toIsoDate(parts) : null;
 }
 
+function createTimeFormat(locale: string | undefined, hourCycle: "h23" | undefined) {
+    return new Intl.DateTimeFormat(locale, { hour: "2-digit", minute: "2-digit", numberingSystem: "latn", hourCycle, timeZone: "UTC" });
+}
+
+function formatWith(format: Intl.DateTimeFormat, time: TimeOfDay) {
+    return format.format(new Date(Date.UTC(2000, 0, 1, time.hours, time.minutes)));
+}
+
+const readableTimeFormats = new Map<string | undefined, Intl.DateTimeFormat>();
+
+function readableTimeFormat(locale: string | undefined) {
+    let format = readableTimeFormats.get(locale);
+    if (format == null) {
+        const localeFormat = createTimeFormat(locale, undefined);
+        const isReadBack = [
+            { hours: 9, minutes: 30 },
+            { hours: 21, minutes: 30 },
+        ].every((time) => {
+            const readTime = parseTime(formatWith(localeFormat, time));
+            return readTime?.hours === time.hours && readTime.minutes === time.minutes;
+        });
+        format = isReadBack ? localeFormat : createTimeFormat(locale, "h23");
+        readableTimeFormats.set(locale, format);
+    }
+    return format;
+}
+
 /**
- * Formats a time of day in the locale, as hours and minutes with the locale's 12- or 24-hour clock.
+ * Formats a time of day in the locale, as hours and minutes with the digits 0–9. It uses the locale's 12- or 24-hour clock, but the
+ * 24-hour clock where `parseTime` can't read the locale's AM and PM.
  */
 export function formatTime(time: TimeOfDay, locale: string | undefined): string {
-    return new Intl.DateTimeFormat(locale, { hour: "2-digit", minute: "2-digit", timeZone: "UTC" }).format(
-        new Date(Date.UTC(2000, 0, 1, time.hours, time.minutes)),
-    );
+    return formatWith(readableTimeFormat(locale), time);
+}
+
+/**
+ * The time of day as `HH:mm` on the 24-hour clock.
+ */
+export function toIsoTime({ hours, minutes }: TimeOfDay): string {
+    return `${pad(hours)}:${pad(minutes)}`;
 }
 
 /**
@@ -326,8 +390,9 @@ export function splitDateTime(value: string | null | undefined): { date: IsoDate
  */
 export function joinDateTime(date: IsoDate, time: TimeOfDay): string {
     const { year, month, day } = partsOf(date);
-    const instant = new Date(2000, month - 1, day, time.hours, time.minutes);
-    instant.setFullYear(year);
+    const instant = new Date(0);
+    instant.setFullYear(year, month - 1, day);
+    instant.setHours(time.hours, time.minutes, 0, 0);
     return instant.toISOString();
 }
 

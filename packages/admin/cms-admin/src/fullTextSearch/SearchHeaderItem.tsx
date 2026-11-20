@@ -1,9 +1,10 @@
 import { gql, useApolloClient, useQuery } from "@apollo/client";
 import { Alert, Button } from "@dextinity/admin";
 import { Search } from "@dextinity/admin-icons";
-import { ClickAwayListener, InputBase, LinearProgress, List, Paper, Popper, Skeleton, Stack, Typography } from "@mui/material";
+import { ClickAwayListener, InputBase, LinearProgress, Paper, Popper, Skeleton, Stack, Typography } from "@mui/material";
 import { alpha, styled } from "@mui/material/styles";
-import { useRef, useState } from "react";
+import { unstable_useId as useId } from "@mui/material/utils";
+import { type FocusEvent, type KeyboardEvent, useEffect, useRef, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useHistory } from "react-router";
 import { useDebounce } from "use-debounce";
@@ -41,6 +42,17 @@ const pageSize = 10;
 const maximumLimit = 50;
 const skeletonRowCount = 4;
 
+interface ActiveResult {
+    key: string;
+    scrollIntoView: boolean;
+}
+
+type ArrowStep = 1 | -1;
+
+function getResultKey(result: GQLFullTextSearchResultItemFragment) {
+    return `${result.entityName}:${result.id}`;
+}
+
 export function SearchHeaderItem() {
     const intl = useIntl();
     const history = useHistory();
@@ -53,7 +65,12 @@ export function SearchHeaderItem() {
     const [open, setOpen] = useState(false);
     const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
     const [limit, setLimit] = useState(pageSize);
+    const [activeResult, setActiveResult] = useState<ActiveResult | null>(null);
+    // An arrow key pressed before the first results arrive activates a result once they're loaded
+    const [pendingArrowStep, setPendingArrowStep] = useState<ArrowStep | null>(null);
     const anchorRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
+    const listboxId = useId();
 
     const [debouncedSearch] = useDebounce(search.trim(), 250);
 
@@ -69,17 +86,37 @@ export function SearchHeaderItem() {
         fetchPolicy: "no-cache",
     });
 
+    const loadedResults = data?.fullTextSearch.nodes;
+    useEffect(() => {
+        if (pendingArrowStep === null || !loadedResults) {
+            return;
+        }
+        if (loadedResults.length > 0) {
+            const result = pendingArrowStep === 1 ? loadedResults[0] : loadedResults[loadedResults.length - 1];
+            setActiveResult({ key: getResultKey(result), scrollIntoView: true });
+        }
+        setPendingArrowStep(null);
+    }, [pendingArrowStep, loadedResults]);
+
     if (!isAllowed("fullTextSearch")) {
         return null;
     }
 
     const searchLabel = intl.formatMessage({ id: "dextinity.fullTextSearch.searchLabel", defaultMessage: "Search" });
+    const resultsLabel = intl.formatMessage({ id: "dextinity.fullTextSearch.resultsLabel", defaultMessage: "Search results" });
     const results = (data ?? previousData)?.fullTextSearch;
     const showResultsHeader = results && !error && (results.totalCount > 0 || selectedTypes.length > 0);
+
+    const closeResults = () => {
+        setOpen(false);
+        setActiveResult(null);
+        setPendingArrowStep(null);
+    };
 
     const changeSelectedTypes = (types: string[]) => {
         setSelectedTypes(types);
         setLimit(pageSize);
+        setActiveResult(null);
     };
 
     const navigateToResult = async (result: GQLFullTextSearchResultItemFragment) => {
@@ -90,7 +127,7 @@ export function SearchHeaderItem() {
 
         try {
             const path = await dependency.resolvePath({ apolloClient, id: result.id });
-            setOpen(false);
+            closeResults();
             history.push(contentScope.match.url + path);
         } catch (error) {
             console.error(`Failed to resolve the path of ${result.entityName} ${result.id}`, error);
@@ -134,31 +171,105 @@ export function SearchHeaderItem() {
     };
 
     const content = renderContent();
+    const popperOpen = open && search.trim().length >= minimumSearchLength;
+    const options = !content && results ? results.nodes : [];
+    const listboxOpen = popperOpen && options.length > 0;
+    const activeIndex = activeResult ? options.findIndex((result) => getResultKey(result) === activeResult.key) : -1;
+    const getOptionId = (index: number) => `${listboxId}-option-${index}`;
+
+    const moveActiveResult = (step: ArrowStep) => {
+        let nextIndex: number;
+        if (listboxOpen && activeIndex !== -1) {
+            nextIndex = (activeIndex + step + options.length) % options.length;
+        } else {
+            nextIndex = step === 1 ? 0 : options.length - 1;
+        }
+        setOpen(true);
+        setActiveResult({ key: getResultKey(options[nextIndex]), scrollIntoView: true });
+    };
+
+    const handleInputKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+            if (search.trim().length < minimumSearchLength) {
+                return;
+            }
+            event.preventDefault();
+            const step = event.key === "ArrowDown" ? 1 : -1;
+            if (options.length > 0) {
+                moveActiveResult(step);
+            } else if (!results && !error) {
+                setOpen(true);
+                setPendingArrowStep(step);
+            }
+        } else if (event.key === "Enter") {
+            if (!listboxOpen || activeIndex === -1) {
+                return;
+            }
+            event.preventDefault();
+            navigateToResult(options[activeIndex]);
+        }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+        if (event.key === "Escape" && popperOpen) {
+            // Focusing the input opens the results, so it must happen before closing them
+            inputRef.current?.focus();
+            closeResults();
+        }
+    };
+
+    const handleBlur = (event: FocusEvent<HTMLDivElement>) => {
+        // relatedTarget is null when clicking a non-focusable part of the results, which must keep them open
+        if (event.relatedTarget instanceof Node && !event.currentTarget.contains(event.relatedTarget)) {
+            closeResults();
+        }
+    };
 
     return (
-        <ClickAwayListener onClickAway={() => setOpen(false)}>
-            <div ref={anchorRef}>
+        <ClickAwayListener onClickAway={closeResults}>
+            <div ref={anchorRef} onKeyDown={handleKeyDown} onBlur={handleBlur}>
                 <HeaderSearchInput
                     value={search}
                     onChange={(event) => {
                         setSearch(event.target.value);
                         setLimit(pageSize);
+                        setActiveResult(null);
+                        setPendingArrowStep(null);
                         setOpen(true);
                     }}
                     onFocus={() => setOpen(true)}
-                    onKeyDown={(event) => {
-                        if (event.key === "Escape") {
-                            setOpen(false);
-                        }
-                    }}
+                    onClick={() => setOpen(true)}
+                    onKeyDown={handleInputKeyDown}
                     placeholder={searchLabel}
-                    inputProps={{ "aria-label": searchLabel, maxLength: maximumSearchLength }}
+                    inputRef={inputRef}
+                    autoComplete="off"
+                    inputProps={{
+                        "aria-label": searchLabel,
+                        maxLength: maximumSearchLength,
+                        role: "combobox",
+                        "aria-autocomplete": "list",
+                        "aria-expanded": listboxOpen,
+                        "aria-controls": listboxId,
+                        "aria-activedescendant": listboxOpen && activeIndex !== -1 ? getOptionId(activeIndex) : undefined,
+                    }}
                     startAdornment={<Search />}
                 />
+                <VisuallyHidden role="status">
+                    {popperOpen && results && !error && (
+                        <FormattedMessage
+                            id="dextinity.fullTextSearch.resultCount"
+                            defaultMessage="{count, plural, one {# result} other {# results}}"
+                            values={{ count: results.totalCount }}
+                        />
+                    )}
+                </VisuallyHidden>
                 <Popper
-                    open={open && search.trim().length >= minimumSearchLength}
+                    open={popperOpen}
                     anchorEl={anchorRef.current}
                     placement="bottom-end"
+                    // Rendered next to the input so that Tab moves from the input to the type chips
+                    disablePortal
+                    role="presentation"
                     sx={{ zIndex: "tooltip" }}
                 >
                     <ResultsPaper elevation={4} fixedHeight={!content}>
@@ -190,15 +301,32 @@ export function SearchHeaderItem() {
                         ) : (
                             results && (
                                 <>
-                                    <ResultsList disablePadding>
-                                        {results.nodes.map((result) => (
-                                            <FullTextSearchResultItem
-                                                key={`${result.entityName}:${result.id}`}
-                                                result={result}
-                                                linkable={entityDependencyMap[result.entityName] !== undefined}
-                                                onClick={() => navigateToResult(result)}
-                                            />
-                                        ))}
+                                    <ResultsList
+                                        id={listboxId}
+                                        role="listbox"
+                                        aria-label={resultsLabel}
+                                        // Chrome makes a scroll container without tabbable children a Tab stop, which would take the focus out of the input
+                                        tabIndex={-1}
+                                    >
+                                        {results.nodes.map((result, index) => {
+                                            const resultKey = getResultKey(result);
+                                            return (
+                                                <FullTextSearchResultItem
+                                                    key={resultKey}
+                                                    id={getOptionId(index)}
+                                                    result={result}
+                                                    linkable={entityDependencyMap[result.entityName] !== undefined}
+                                                    active={index === activeIndex}
+                                                    scrollIntoViewWhenActive={activeResult?.scrollIntoView}
+                                                    onClick={() => navigateToResult(result)}
+                                                    onHover={() => {
+                                                        if (activeResult?.key !== resultKey) {
+                                                            setActiveResult({ key: resultKey, scrollIntoView: false });
+                                                        }
+                                                    }}
+                                                />
+                                            );
+                                        })}
                                     </ResultsList>
                                     <ResultsFooter direction="row" spacing={1} alignItems="center" justifyContent="space-between">
                                         <Typography variant="caption" color="text.secondary">
@@ -212,7 +340,11 @@ export function SearchHeaderItem() {
                                             <Button
                                                 variant="textDark"
                                                 disabled={loading}
-                                                onClick={() => setLimit(Math.min(limit + pageSize, maximumLimit))}
+                                                onClick={() => {
+                                                    // Disabling the button while loading, or removing it after the last page, would drop the focus to the body
+                                                    inputRef.current?.focus();
+                                                    setLimit(Math.min(limit + pageSize, maximumLimit));
+                                                }}
                                             >
                                                 <FormattedMessage id="dextinity.fullTextSearch.showMore" defaultMessage="Show more" />
                                             </Button>
@@ -253,12 +385,6 @@ const ResultsPaper = styled(Paper, { shouldForwardProp: (prop) => prop !== "fixe
     }
 `;
 
-const ResultsHeader = styled(Stack)`
-    flex-shrink: 0;
-    padding: ${({ theme }) => theme.spacing(2)};
-    border-bottom: 1px solid ${({ theme }) => theme.palette.divider};
-`;
-
 const LoadingBar = styled(LinearProgress)`
     position: absolute;
     top: 0;
@@ -266,11 +392,6 @@ const LoadingBar = styled(LinearProgress)`
     right: 0;
     z-index: 1;
     height: 2px;
-`;
-
-const ResultsList = styled(List)`
-    flex-grow: 1;
-    overflow-y: auto;
 `;
 
 const SkeletonList = styled("div")`
@@ -283,10 +404,30 @@ const SkeletonRow = styled(Stack)`
     border-bottom: 1px solid ${({ theme }) => theme.palette.divider};
 `;
 
+const ResultsHeader = styled(Stack)`
+    flex-shrink: 0;
+    padding: ${({ theme }) => theme.spacing(2)};
+    border-bottom: 1px solid ${({ theme }) => theme.palette.divider};
+`;
+
+const ResultsList = styled("div")`
+    flex-grow: 1;
+    overflow-y: auto;
+`;
+
 const ResultsFooter = styled(Stack)`
     flex-shrink: 0;
     padding: ${({ theme }) => theme.spacing(1, 2)};
     border-top: 1px solid ${({ theme }) => theme.palette.divider};
+`;
+
+const VisuallyHidden = styled("div")`
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
 `;
 
 const StatusContainer = styled("div")`

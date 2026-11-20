@@ -5,7 +5,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--dextinity-space-6);
-    padding-block: var(--dextinity-space-4) var(--dextinity-space-8);
+    padding-block-end: var(--dextinity-space-8);
     container-type: inline-size;
 }
 
@@ -23,7 +23,9 @@
     overflow-wrap: anywhere;
 }
 
-// Header, as the toolbar's detail page variant: context line, editable name, meta line, actions
+// Header, as the toolbar's detail page variant: context line, editable name, meta line, actions. Until the page header takes an
+// editable title, it is built here with the page header's metrics, so that the title stays in place between the library and the
+// detail page
 
 .header {
     display: flex;
@@ -37,17 +39,20 @@
     display: flex;
     flex: 1 1 420px;
     flex-direction: column;
-    gap: var(--dextinity-space-1);
     min-inline-size: 0;
 }
 
 .context {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: var(--dextinity-space-2);
     align-items: center;
+    min-block-size: var(--dextinity-page-header-label-line-height, 20px);
+    margin-block-end: var(--dextinity-page-header-label-spacing);
+    overflow: hidden;
     color: var(--dextinity-color-text-subtle);
     font-size: var(--dextinity-typography-body-size);
+    white-space: nowrap;
 }
 
 .back {
@@ -75,29 +80,37 @@
 
 .titleInput {
     box-sizing: border-box;
+    display: block;
     inline-size: 100%;
+    margin: 0;
     margin-inline-start: calc(var(--dextinity-space-2) * -1);
     padding: 0 var(--dextinity-space-2);
-    border: var(--dextinity-line-width) solid transparent;
+    border: 0;
     border-radius: var(--dextinity-radius-field);
     background: transparent;
-    color: var(--dextinity-color-text);
+    color: var(--dextinity-page-header-title-color);
     font-family: var(--dextinity-font-family-display);
-    font-size: var(--dextinity-typography-display-l-size);
+    font-size: var(--dextinity-page-header-title-font-size);
     font-weight: var(--dextinity-typography-display-font-weight);
     line-height: var(--dextinity-typography-display-l-line-height);
     letter-spacing: var(--dextinity-typography-display-letter-spacing);
     text-overflow: ellipsis;
 
+    // The field's edge as a shadow, so that it doesn't add to the title's height
     &:hover {
-        border-color: var(--dextinity-color-line);
+        box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line);
     }
 
     &:focus-visible {
-        border-color: var(--dextinity-color-accent);
         outline: none;
         background: var(--dextinity-color-surface);
-        box-shadow: var(--dextinity-focus-ring);
+        box-shadow:
+            inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-accent),
+            var(--dextinity-focus-ring);
+    }
+
+    @media (width < 768px) {
+        font-size: var(--dextinity-page-header-narrow-title-font-size, 26px);
     }
 }
 
@@ -106,6 +119,7 @@
     flex-wrap: wrap;
     gap: var(--dextinity-space-4);
     align-items: center;
+    margin-block-start: var(--dextinity-page-header-subtitle-spacing);
     color: var(--dextinity-color-text-subtle);
     font-size: var(--dextinity-typography-body-size);
 }
@@ -177,7 +191,8 @@
 
 .stage {
     flex: none;
-    inline-size: min(100%, calc(var(--media-max-height) * var(--image-ratio)));
+    // Never wider than the window allows for its height, nor wider than the image itself, so that small images aren't blown up
+    inline-size: min(100%, calc(var(--media-max-height) * var(--image-ratio)), var(--image-width));
 
     // The checkerboard shows through transparent parts of the image
     background-color: var(--dextinity-color-surface);
@@ -287,8 +302,8 @@
 
 .video {
     display: block;
-    inline-size: 100%;
-    max-block-size: var(--media-max-height);
+    inline-size: min(100%, calc(var(--media-max-height) * var(--image-ratio)));
+    aspect-ratio: var(--image-ratio);
     margin-inline: auto;
     border-radius: var(--dextinity-radius-frame);
     background: black;

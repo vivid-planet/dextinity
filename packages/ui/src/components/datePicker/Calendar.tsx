@@ -13,10 +13,12 @@ import {
     endOfMonth,
     endOfWeek,
     formatDate,
+    gregorianWithLatinDigits,
     type IsoDate,
     isWithin,
     monthsBetween,
     monthWeeks,
+    nearestSelectableDay,
     startOfMonth,
     startOfWeek,
     today as getToday,
@@ -63,6 +65,8 @@ export interface CalendarProps {
     onSelect: (date: IsoDate) => void;
     min: IsoDate | undefined;
     max: IsoDate | undefined;
+    /** Disables days in addition to `min` and `max`. */
+    isDateDisabled: ((date: IsoDate) => boolean) | undefined;
     locale: string | undefined;
     weekStartsOn: number;
     /** How many months are shown side by side. */
@@ -82,10 +86,16 @@ function monthKey(date: IsoDate) {
  * The month grid inside the date pickers' popup, with a menu in the header that switches the year. Arrow keys move by day and week,
  * Home and End to the start and end of the week, Page Up and Page Down by month, and with Shift by year.
  */
-export function Calendar({ start, end, range, onSelect, min, max, locale, weekStartsOn, months, showToday, labels }: CalendarProps) {
+export function Calendar({ start, end, range, onSelect, min, max, isDateDisabled, locale, weekStartsOn, months, showToday, labels }: CalendarProps) {
     const today = getToday();
-    const [focused, setFocused] = useState(() => clampDate(start ?? today, min, max));
-    const [visibleMonth, setVisibleMonth] = useState(() => startOfMonth(focused));
+    const isDaySelectable = (day: IsoDate) => isWithin(day, min, max) && isDateDisabled?.(day) !== true;
+    const selectableDayNear = (day: IsoDate, firstVisibleMonth: IsoDate) =>
+        nearestSelectableDay(day, firstVisibleMonth, endOfMonth(addMonths(firstVisibleMonth, months - 1)), isDaySelectable) ?? day;
+    const [visibleMonth, setVisibleMonth] = useState(() => startOfMonth(clampDate(start ?? end ?? today, min, max)));
+    const [focused, setFocused] = useState(() => {
+        const initialDay = clampDate(start ?? end ?? today, min, max);
+        return start == null ? selectableDayNear(initialDay, visibleMonth) : initialDay;
+    });
     const [view, setView] = useState<CalendarView>("days");
     const [hovered, setHovered] = useState<IsoDate | null>(null);
     const rootRef = useRef<HTMLDivElement>(null);
@@ -106,6 +116,9 @@ export function Calendar({ start, end, range, onSelect, min, max, locale, weekSt
 
     const focusDate = (date: IsoDate) => {
         const next = clampDate(date, min, max);
+        if (next === focused) {
+            return;
+        }
         moveFocusRef.current = true;
         setFocused(next);
         if (next < visibleMonth) {
@@ -121,7 +134,7 @@ export function Calendar({ start, end, range, onSelect, min, max, locale, weekSt
         setFocused((current) => {
             const shifted = clampDate(addMonths(current, delta), min, max);
             const lastDay = endOfMonth(addMonths(nextVisible, months - 1));
-            return shifted < nextVisible || shifted > lastDay ? clampDate(nextVisible, min, max) : shifted;
+            return selectableDayNear(shifted < nextVisible || shifted > lastDay ? clampDate(nextVisible, min, max) : shifted, nextVisible);
         });
     };
 
@@ -160,7 +173,7 @@ export function Calendar({ start, end, range, onSelect, min, max, locale, weekSt
     const monthTitle = (month: IsoDate) => formatDate(month, locale, { year: "numeric", month: "long", day: undefined });
     const yearTitle = (date: IsoDate) => formatDate(date, locale, { year: "numeric", month: undefined, day: undefined });
     const visibleRange = (options: Intl.DateTimeFormatOptions) =>
-        new Intl.DateTimeFormat(locale, { ...options, timeZone: "UTC" }).formatRange(
+        new Intl.DateTimeFormat(locale, { ...options, ...gregorianWithLatinDigits, timeZone: "UTC" }).formatRange(
             new Date(`${visibleMonth}T00:00:00Z`),
             new Date(`${lastVisibleMonth}T00:00:00Z`),
         );
@@ -183,7 +196,7 @@ export function Calendar({ start, end, range, onSelect, min, max, locale, weekSt
     const canGoForward = max == null || (view === "months" ? visibleMonth.slice(0, 4) < max.slice(0, 4) : monthKey(lastVisibleMonth) < monthKey(max));
 
     const renderDay = (day: IsoDate) => {
-        const disabled = !isWithin(day, min, max);
+        const disabled = !isDaySelectable(day);
         const selected = day === start || day === end;
         const isRangeStart = range && rangeEnd != null && day === rangeLow;
         const isRangeEnd = range && rangeEnd != null && day === rangeHigh;
@@ -312,10 +325,12 @@ export function Calendar({ start, end, range, onSelect, min, max, locale, weekSt
                                 aria-current={monthKey(month) === monthKey(visibleMonth) ? "true" : undefined}
                                 data-focus-target={monthKey(month) === monthKey(visibleMonth) ? "" : undefined}
                                 onClick={() => {
-                                    const shifted = clampDate(`${monthKey(month)}-${focused.slice(8)}`, min, max);
+                                    const shifted = clampDate(addMonths(focused, monthsBetween(focused, month)), min, max);
                                     moveFocusRef.current = true;
                                     setVisibleMonth(month);
-                                    setFocused(monthKey(shifted) === monthKey(month) ? shifted : clampDate(month, min, max));
+                                    setFocused(
+                                        selectableDayNear(monthKey(shifted) === monthKey(month) ? shifted : clampDate(month, min, max), month),
+                                    );
                                     setView("days");
                                 }}
                             >
@@ -359,7 +374,7 @@ export function Calendar({ start, end, range, onSelect, min, max, locale, weekSt
             )}
             {showToday && view === "days" && (
                 <div className={styles.footer}>
-                    <button type="button" className={styles.todayButton} disabled={!isWithin(today, min, max)} onClick={() => onSelect(today)}>
+                    <button type="button" className={styles.todayButton} disabled={!isDaySelectable(today)} onClick={() => onSelect(today)}>
                         {labels.today}
                     </button>
                 </div>

@@ -2,47 +2,56 @@ import { messages } from "@dextinity/admin";
 import { FormControlLabel, MenuItem, Radio, RadioGroup, Select } from "@mui/material";
 import { FormattedMessage, type MessageDescriptor } from "react-intl";
 
-import type { TextImageBlockData, TextImageBlockInput } from "../blocks.generated";
+import type { TextImageBlockData as GeneratedTextImageBlockData, TextImageBlockInput as GeneratedTextImageBlockInput } from "../blocks.generated";
 import { useDamConfig } from "../dam/config/damConfig";
 import { BlockAdminComponentPaper } from "./common/BlockAdminComponentPaper";
 import { BlockAdminComponentSection } from "./common/BlockAdminComponentSection";
-import type { RichTextBlock, RichTextBlockState } from "./createRichTextBlock";
+import type { RichTextBlock } from "./createRichTextBlock";
 import { composeBlocks } from "./helpers/composeBlocks/composeBlocks";
 import { createBlockSkeleton } from "./helpers/createBlockSkeleton";
 import { decomposeUpdateStateAction } from "./helpers/decomposeUpdateStateAction";
 import { withAdditionalBlockAttributes } from "./helpers/withAdditionalBlockAttributes";
 import { type ImageBlockState, PixelImageBlock } from "./PixelImageBlock";
-import { BlockCategory, type BlockInterface } from "./types";
+import { BlockCategory, type BlockInputApi, type BlockInterface, type BlockOutputApi, type BlockState } from "./types";
 
-interface State {
-    text: RichTextBlockState;
+type TextImageBlockData<TextBlock extends BlockInterface> = Omit<GeneratedTextImageBlockData, "text"> & { text: BlockInputApi<TextBlock> };
+
+type TextImageBlockInput<TextBlock extends BlockInterface> = Omit<GeneratedTextImageBlockInput, "text"> & { text: BlockOutputApi<TextBlock> };
+
+interface TextImageBlockState<TextBlock extends BlockInterface> {
+    text: BlockState<TextBlock>;
     image: ImageBlockState;
     imagePosition: "left" | "right";
     imageAspectRatio: string;
 }
 
-export interface TextImageBlockFactoryOptions {
-    text: RichTextBlock;
+type TextImageBlockInterface<TextBlock extends BlockInterface> = BlockInterface<
+    TextImageBlockData<TextBlock>,
+    TextImageBlockState<TextBlock>,
+    TextImageBlockInput<TextBlock>
+>;
+
+export interface TextImageBlockFactoryOptions<TextBlock extends BlockInterface = RichTextBlock> {
+    text: TextBlock;
     image?: BlockInterface;
     tags?: Array<MessageDescriptor | string>;
 }
 
-const createTextImageBlock = (
-    { text, image = PixelImageBlock, tags }: TextImageBlockFactoryOptions,
-    override?: (
-        block: BlockInterface<TextImageBlockData, State, TextImageBlockInput>,
-    ) => BlockInterface<TextImageBlockData, State, TextImageBlockInput>,
-): BlockInterface<TextImageBlockData, State, TextImageBlockInput> => {
-    const composed = composeBlocks({ text, image });
+const createTextImageBlock = <TextBlock extends BlockInterface = RichTextBlock>(
+    { text, image = PixelImageBlock, tags }: TextImageBlockFactoryOptions<TextBlock>,
+    override?: (block: TextImageBlockInterface<TextBlock>) => TextImageBlockInterface<TextBlock>,
+): TextImageBlockInterface<TextBlock> => {
+    // composeBlocks' mapped types can't be resolved for a generic text block
+    const composed = composeBlocks({ text: text as BlockInterface, image });
 
     const { api: composedApi, block: composedBlock } = composed;
 
-    const block = withAdditionalBlockAttributes<Pick<TextImageBlockData, "imagePosition" | "imageAspectRatio">>({
+    const block = withAdditionalBlockAttributes<Pick<GeneratedTextImageBlockData, "imagePosition" | "imageAspectRatio">>({
         imagePosition: "left",
         imageAspectRatio: "4x3",
     })(composedBlock);
 
-    const TextImageBlock: BlockInterface<TextImageBlockData, State, TextImageBlockInput> = {
+    const TextImageBlock: TextImageBlockInterface<TextBlock> = {
         ...createBlockSkeleton(),
         ...block,
 
@@ -78,7 +87,7 @@ const createTextImageBlock = (
                             onChange={(event) => {
                                 updateState((prevState) => ({
                                     ...prevState,
-                                    imagePosition: event.target.value as TextImageBlockData["imagePosition"],
+                                    imagePosition: event.target.value as GeneratedTextImageBlockData["imagePosition"],
                                 }));
                             }}
                         >

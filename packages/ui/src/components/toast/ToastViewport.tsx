@@ -117,9 +117,9 @@ function ToastViewportItem({ toast, onDismiss, toastProps, leavingTop, onLeft, i
         >
             <Toast
                 {...toastProps}
-                role={toast.tone === "error" ? "alert" : undefined}
+                role={toast.color === "error" ? "alert" : undefined}
                 message={toast.message}
-                tone={toast.tone}
+                color={toast.color}
                 icon={toast.icon}
                 action={
                     toast.action == null

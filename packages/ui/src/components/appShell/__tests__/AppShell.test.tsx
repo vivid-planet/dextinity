@@ -25,7 +25,7 @@ function renderShell({
     return render(
         <KeyboardShortcutProvider platform={platform}>
             <AppShell
-                nav={<SideNav title="App" groups={groups} activeId="jobs" expanded={[]} onExpandedChange={vi.fn()} onNavigate={vi.fn()} />}
+                nav={<SideNav title="App" groups={groups} currentId="jobs" expandedIds={[]} onExpandedIdsChange={vi.fn()} onNavigate={vi.fn()} />}
                 topBar={<TopBar />}
                 navCollapsed={navCollapsed}
                 onNavCollapsedChange={onNavCollapsedChange}

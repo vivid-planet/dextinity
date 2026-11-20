@@ -6,9 +6,9 @@ import { Icon } from "../icon/Icon";
 import type { IconName } from "../icon/iconRegistry";
 import styles from "./Banner.module.scss";
 
-type BannerTone = "warning" | "error" | "info";
+type BannerColor = "warning" | "error" | "info";
 
-const toneIcons: Record<BannerTone, IconName> = {
+const colorIcons: Record<BannerColor, IconName> = {
     warning: "warning-triangle",
     error: "alert",
     info: "info",
@@ -18,7 +18,7 @@ const toneIcons: Record<BannerTone, IconName> = {
  * The resolved configuration that influences the component's appearance or behavior.
  */
 export type BannerOwnerState = {
-    tone: BannerTone;
+    color: BannerColor;
 };
 
 export interface BannerSlotProps {
@@ -30,15 +30,15 @@ export interface BannerSlotProps {
     action?: SlotPropsValue<BannerOwnerState, "span">;
 }
 
-export interface BannerProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children">, PropsWithChildren {
+export interface BannerProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "color">, PropsWithChildren {
     /**
      * `warning` for a passing problem the page can live with (announced politely), `error` for one that blocks work (announced
      * at once), `info` for a notice.
      *
      * @defaultValue `"warning"`
      */
-    tone?: BannerTone;
-    /** Replaces the tone's icon. */
+    color?: BannerColor;
+    /** Replaces the icon of the color. */
     icon?: ReactNode;
     /** The way out, usually a small `Button` such as "Try again". */
     action?: ReactNode;
@@ -55,10 +55,10 @@ export interface BannerProps extends Omit<HTMLAttributes<HTMLDivElement>, "class
  * `children`: What is wrong and what happens now, e.g. "No connection. Changes stay here until they are saved."
  */
 export const Banner = forwardRef<HTMLDivElement, BannerProps>(function Banner(
-    { children, tone = "warning", icon, action, className, slotProps, ...restProps },
+    { children, color = "warning", icon, action, className, slotProps, ...restProps },
     ref,
 ) {
-    const ownerState: BannerOwnerState = { tone };
+    const ownerState: BannerOwnerState = { color };
 
     const iconProps = resolveSlotProps<BannerOwnerState, "span", "span">({
         ownProps: { className: styles.icon, "aria-hidden": true },
@@ -78,13 +78,13 @@ export const Banner = forwardRef<HTMLDivElement, BannerProps>(function Banner(
 
     return (
         <div
-            role={ownerState.tone === "error" ? "alert" : "status"}
+            role={ownerState.color === "error" ? "alert" : "status"}
             {...restProps}
             ref={ref}
-            data-tone={ownerState.tone}
+            data-color={ownerState.color}
             className={clsx(styles.root, className)}
         >
-            <span {...iconProps}>{icon ?? <Icon name={toneIcons[ownerState.tone]} />}</span>
+            <span {...iconProps}>{icon ?? <Icon name={colorIcons[ownerState.color]} />}</span>
             <span {...messageProps}>{children}</span>
             {action != null && <span {...actionProps}>{action}</span>}
         </div>

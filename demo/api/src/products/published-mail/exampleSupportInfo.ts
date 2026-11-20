@@ -11,12 +11,13 @@ export const exampleSupportInfo: RichTextBlockData = {
                     { type: "text", text: "Call our " },
                     {
                         type: "text",
-                        marks: [{ type: "link", attrs: { data: { block: { type: "phone", props: { phone: "+431234567" } } } } }],
                         text: "support hotline",
+                        marks: [{ type: "link", attrs: { data: { block: { type: "phone", props: { phone: "+431234567" } } } } }],
                     },
                     { type: "text", text: " for help or check the " },
                     {
                         type: "text",
+                        text: "FAQ",
                         marks: [
                             {
                                 type: "link",
@@ -25,7 +26,6 @@ export const exampleSupportInfo: RichTextBlockData = {
                                 },
                             },
                         ],
-                        text: "FAQ",
                     },
                     { type: "text", text: "." },
                 ],

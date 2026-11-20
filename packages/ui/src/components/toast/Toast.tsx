@@ -7,7 +7,7 @@ import { Icon } from "../icon/Icon";
 import type { IconName } from "../icon/iconRegistry";
 import styles from "./Toast.module.scss";
 
-export type ToastTone = "success" | "error" | "warning" | "info";
+export type ToastColor = "success" | "error" | "warning" | "info";
 
 export interface ToastAction {
     /** The action, as a verb, e.g. "Undo". */
@@ -20,7 +20,7 @@ export interface ToastAction {
  * The resolved configuration that influences the component's appearance or behavior.
  */
 export type ToastOwnerState = {
-    tone: ToastTone;
+    color: ToastColor;
 };
 
 export interface ToastSlotProps {
@@ -32,7 +32,7 @@ export interface ToastSlotProps {
     action?: SlotPropsValue<ToastOwnerState, typeof BaseButton>;
 }
 
-export interface ToastProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children"> {
+export interface ToastProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "color"> {
     /** The result, not the process: "Saved – the change is live", not "Saving …". */
     message: string;
     /**
@@ -40,8 +40,8 @@ export interface ToastProps extends Omit<HTMLAttributes<HTMLDivElement>, "classN
      *
      * @defaultValue `"success"`
      */
-    tone?: ToastTone;
-    /** Replaces the tone's icon. */
+    color?: ToastColor;
+    /** Replaces the icon of the color. */
     icon?: ReactNode;
     /** One action, usually "Undo", offered instead of asking for confirmation up front. */
     action?: ToastAction;
@@ -51,7 +51,7 @@ export interface ToastProps extends Omit<HTMLAttributes<HTMLDivElement>, "classN
     slotProps?: ToastSlotProps;
 }
 
-const toneIcons: Record<ToastTone, IconName> = {
+const colorIcons: Record<ToastColor, IconName> = {
     success: "check",
     error: "alert",
     warning: "warning-triangle",
@@ -62,10 +62,10 @@ const toneIcons: Record<ToastTone, IconName> = {
  * Confirms an action briefly, and offers to undo it instead of asking first. Show toasts with `ToastViewport`.
  */
 export const Toast = forwardRef<HTMLDivElement, ToastProps>(function Toast(
-    { message, tone = "success", icon, action, className, slotProps, ...restProps },
+    { message, color = "success", icon, action, className, slotProps, ...restProps },
     ref,
 ) {
-    const ownerState: ToastOwnerState = { tone };
+    const ownerState: ToastOwnerState = { color };
 
     const iconProps = resolveSlotProps<ToastOwnerState, "span", "span">({
         ownProps: { className: styles.icon, "aria-hidden": true },
@@ -85,13 +85,13 @@ export const Toast = forwardRef<HTMLDivElement, ToastProps>(function Toast(
 
     return (
         <div
-            role={ownerState.tone === "error" ? "alert" : "status"}
+            role={ownerState.color === "error" ? "alert" : "status"}
             {...restProps}
             ref={ref}
-            data-tone={ownerState.tone}
+            data-color={ownerState.color}
             className={clsx(styles.root, className)}
         >
-            <span {...iconProps}>{icon ?? <Icon name={toneIcons[ownerState.tone]} />}</span>
+            <span {...iconProps}>{icon ?? <Icon name={colorIcons[ownerState.color]} />}</span>
             <span {...messageProps}>{message}</span>
             {action != null && <BaseButton {...actionProps}>{action.label}</BaseButton>}
         </div>

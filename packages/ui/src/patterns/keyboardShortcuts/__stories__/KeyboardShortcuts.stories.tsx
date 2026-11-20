@@ -6,42 +6,42 @@ import { Button } from "../../../components/button/Button";
 import { Dialog } from "../../../components/dialog/Dialog";
 import { KeyboardShortcut } from "../../../components/keyboardShortcut/KeyboardShortcut";
 import { useKeyboardShortcut } from "../../../components/keyboardShortcut/useKeyboardShortcut";
-import { ShortcutList, type ShortcutListItem } from "../../../components/shortcutList/ShortcutList";
-import { PatternPage, PatternRules, PatternSection, PatternShortcuts } from "../../../storybook/patterns/PatternPage";
+import { KeyboardShortcutList, type KeyboardShortcutListItem } from "../../../components/keyboardShortcutList/KeyboardShortcutList";
+import { PatternKeyboardShortcuts, PatternPage, PatternRules, PatternSection } from "../../../storybook/patterns/PatternPage";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import styles from "./KeyboardShortcuts.stories.module.scss";
 
-const everywhere: ShortcutListItem[] = [
-    { shortcut: "mod+k", description: "Command palette" },
-    { shortcut: "mod+\\", description: "Collapse or expand the navigation" },
-    { shortcut: "/", description: "Search the list" },
-    { shortcut: "?", description: "Show keyboard shortcuts" },
-    { shortcut: "Escape", description: "Close, clear the selection" },
+const everywhere: KeyboardShortcutListItem[] = [
+    { keyboardShortcut: "mod+k", description: "Command palette" },
+    { keyboardShortcut: "mod+\\", description: "Collapse or expand the navigation" },
+    { keyboardShortcut: "/", description: "Search the list" },
+    { keyboardShortcut: "?", description: "Show keyboard shortcuts" },
+    { keyboardShortcut: "Escape", description: "Close, clear the selection" },
 ];
 
-const editing: ShortcutListItem[] = [
-    { shortcut: "mod+s", description: "Save" },
-    { shortcut: "mod+p", description: "Preview" },
-    { shortcut: "mod+d", description: "Duplicate" },
+const editing: KeyboardShortcutListItem[] = [
+    { keyboardShortcut: "mod+s", description: "Save" },
+    { keyboardShortcut: "mod+p", description: "Preview" },
+    { keyboardShortcut: "mod+d", description: "Duplicate" },
 ];
 
-const pageTree: ShortcutListItem[] = [
-    { shortcut: ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"], description: "Move, expand and collapse" },
-    { shortcut: "Enter", description: "Edit" },
-    { shortcut: "Space", description: "Select" },
+const pageTree: KeyboardShortcutListItem[] = [
+    { keyboardShortcut: ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"], description: "Move, expand and collapse" },
+    { keyboardShortcut: "Enter", description: "Edit" },
+    { keyboardShortcut: "Space", description: "Select" },
 ];
 
-const finder: ShortcutListItem[] = [
-    { shortcut: ["mod+1", "mod+2", "mod+3", "mod+4"], description: "Icons, list, columns, gallery" },
-    { shortcut: ["mod+[", "mod+]"], description: "Back, forward" },
-    { shortcut: "mod+ArrowUp", description: "Parent folder" },
-    { shortcut: ["mod+ArrowDown", "mod+o"], description: "Open" },
-    { shortcut: "Enter", description: "Rename" },
-    { shortcut: "Space", description: "Quick look" },
-    { shortcut: "mod+a", description: "Select all" },
-    { shortcut: "mod+d", description: "Duplicate" },
-    { shortcut: "shift+mod+n", description: "New folder" },
-    { shortcut: "mod+Backspace", description: "Delete" },
+const finder: KeyboardShortcutListItem[] = [
+    { keyboardShortcut: ["mod+1", "mod+2", "mod+3", "mod+4"], description: "Icons, list, columns, gallery" },
+    { keyboardShortcut: ["mod+[", "mod+]"], description: "Back, forward" },
+    { keyboardShortcut: "mod+ArrowUp", description: "Parent folder" },
+    { keyboardShortcut: ["mod+ArrowDown", "mod+o"], description: "Open" },
+    { keyboardShortcut: "Enter", description: "Rename" },
+    { keyboardShortcut: "Space", description: "Quick look" },
+    { keyboardShortcut: "mod+a", description: "Select all" },
+    { keyboardShortcut: "mod+d", description: "Duplicate" },
+    { keyboardShortcut: "shift+mod+n", description: "New folder" },
+    { keyboardShortcut: "mod+Backspace", description: "Delete" },
 ];
 
 const rules = {
@@ -52,10 +52,10 @@ const rules = {
 function KeyboardShortcutsPage() {
     return (
         <PatternPage>
-            <PatternShortcuts title="Everywhere" shortcuts={everywhere} />
-            <PatternShortcuts title="Editing" shortcuts={editing} />
-            <PatternShortcuts title="Page tree" shortcuts={pageTree} />
-            <PatternShortcuts title="Finder" shortcuts={finder} />
+            <PatternKeyboardShortcuts title="Everywhere" keyboardShortcuts={everywhere} />
+            <PatternKeyboardShortcuts title="Editing" keyboardShortcuts={editing} />
+            <PatternKeyboardShortcuts title="Page tree" keyboardShortcuts={pageTree} />
+            <PatternKeyboardShortcuts title="Finder" keyboardShortcuts={finder} />
             <PatternRules {...rules} />
         </PatternPage>
     );
@@ -77,7 +77,7 @@ function ShortcutOverview() {
                 </div>
             </PatternSection>
             <Dialog open={open} onOpenChange={setOpen} title="Keyboard shortcuts" size="large">
-                <ShortcutList shortcuts={[...everywhere, ...editing]} />
+                <KeyboardShortcutList keyboardShortcuts={[...everywhere, ...editing]} />
             </Dialog>
         </PatternPage>
     );
@@ -90,7 +90,7 @@ const meta = {
         docs: {
             description: {
                 component:
-                    "All keyboard shortcuts in one place. Build them with `useKeyboardShortcut`, show them with `ShortcutList`, and name them in tooltips (`Tooltip`'s `shortcut`) and menus, all in the same notation, e.g. `mod+s`: `mod` is ⌘ on Apple platforms and Ctrl elsewhere.",
+                    "All keyboard shortcuts in one place. Build them with `useKeyboardShortcut`, show them with `KeyboardShortcutList`, and name them in tooltips (`Tooltip`'s `keyboardShortcut`) and menus, all in the same notation, e.g. `mod+s`: `mod` is ⌘ on Apple platforms and Ctrl elsewhere.",
             },
         },
     },

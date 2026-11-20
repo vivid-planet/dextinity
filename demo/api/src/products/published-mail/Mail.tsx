@@ -2,7 +2,7 @@ import { MjmlColumn, MjmlMailRoot, MjmlSection, MjmlSpacer, MjmlText } from "@de
 import type { RichTextBlockData } from "@src/blocks.generated.js";
 import { FormattedMessage } from "react-intl";
 
-import { MjmlTipTapRichTextBlock } from "./RichTextBlock.js";
+import { MjmlRichTextBlock } from "./RichTextBlock.js";
 import { theme } from "./theme.js";
 
 export type MailProps = {
@@ -44,7 +44,7 @@ export const Mail = ({ recipient, countProductPublished, supportInfo }: MailProp
             {supportInfo ? (
                 <MjmlSection indent>
                     <MjmlColumn>
-                        <MjmlTipTapRichTextBlock data={supportInfo} />
+                        <MjmlRichTextBlock data={supportInfo} />
                     </MjmlColumn>
                 </MjmlSection>
             ) : null}

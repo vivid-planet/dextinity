@@ -97,7 +97,7 @@ $danger-hue: var(--dextinity-brand-danger-hue);
         --dextinity-color-accent: oklch(0.52 #{$primary-chroma} #{$primary-hue});
         // Text and icons on an accent fill
         --dextinity-color-accent-foreground: oklch(1 0 0);
-        // Accent-colored text and icons on a surface, e.g. links and the active navigation entry
+        // Accent-colored text and icons on a surface, e.g. links and the current navigation entry
         --dextinity-color-accent-text: oklch(0.45 #{$primary-chroma} #{$primary-hue});
         // Soft accent tint, e.g. a selected item or a focus halo
         --dextinity-color-accent-soft: oklch(0.955 calc(#{$primary-chroma} * 0.2) #{$primary-hue});
@@ -156,9 +156,9 @@ $danger-hue: var(--dextinity-brand-danger-hue);
         // Strength of the noise grain over the light field
         --dextinity-material-grain: 0.05;
 
-        // Low elevation, e.g. an outlined button or a solid panel
+        // Low elevation, e.g. an outlined button or a block
         --dextinity-shadow-1: 0 1px 1px oklch(0.2 0.02 #{$neutral-hue} / 0.03), 0 2px 8px -3px oklch(0.2 0.02 #{$neutral-hue} / 0.07);
-        // Medium elevation, e.g. panels, cards, tooltips and the side nav
+        // Medium elevation, e.g. hovered controls, tooltips and the side nav
         --dextinity-shadow-2: 0 1px 2px oklch(0.2 0.02 #{$neutral-hue} / 0.04), 0 18px 40px -18px oklch(0.25 0.06 #{$primary-hue} / 0.25);
         // High elevation, e.g. dialogs, menus, popovers and toasts
         --dextinity-shadow-3: 0 2px 4px oklch(0.2 0.02 #{$neutral-hue} / 0.04), 0 30px 70px -30px oklch(0.25 0.08 #{$primary-hue} / 0.35);

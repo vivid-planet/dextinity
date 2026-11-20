@@ -1,0 +1,21 @@
+// The values match the message of `Field`, so a validation message below a custom control looks like the one below a field.
+@mixin tokens {
+    // Between the icon and the text
+    --dextinity-field-validation-message-gap-internal: var(--dextinity-space-1-5);
+    // Size of the icon
+    --dextinity-field-validation-message-icon-size: var(--dextinity-icon-size-small);
+
+    // Text size of the message
+    --dextinity-field-validation-message-font-size: var(--dextinity-typography-small-size);
+    // Line height of the message
+    --dextinity-field-validation-message-font-line-height: var(--dextinity-typography-small-line-height);
+    // Weight of the message
+    --dextinity-field-validation-message-font-weight: var(--dextinity-typography-body-font-weight);
+
+    // Text and icon color of an error message
+    --dextinity-field-validation-message-error-foreground: var(--dextinity-color-danger-text);
+    // Text and icon color of a warning message
+    --dextinity-field-validation-message-warning-foreground: var(--dextinity-color-warning-text);
+    // Text and icon color of a success message
+    --dextinity-field-validation-message-success-foreground: var(--dextinity-color-success-text);
+}

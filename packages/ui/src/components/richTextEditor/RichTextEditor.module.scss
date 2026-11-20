@@ -14,8 +14,8 @@
 
     --dextinity-toolbar-padding: var(--dextinity-rich-text-editor-toolbar-padding);
     --dextinity-toolbar-button-size: var(--dextinity-rich-text-editor-toolbar-button-size);
-    --dextinity-toolbar-button-background-pressed: var(--dextinity-rich-text-editor-toolbar-button-background-active);
-    --dextinity-toolbar-button-foreground-pressed: var(--dextinity-rich-text-editor-toolbar-button-foreground-active);
+    --dextinity-toolbar-button-background-selected: var(--dextinity-rich-text-editor-toolbar-button-background-active);
+    --dextinity-toolbar-button-foreground-selected: var(--dextinity-rich-text-editor-toolbar-button-foreground-active);
 
     @include forced-colors.separator;
 }

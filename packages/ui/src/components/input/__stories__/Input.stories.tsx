@@ -27,9 +27,9 @@ const meta = {
         "aria-label": { description: "Names the input when no `Field` label does." },
         placeholder: { description: "An example of the expected value, shown while the input is empty." },
         onChange: { description: "Called with the change event on every edit; set `value` from `event.target.value`." },
-        status: {
-            control: "radio",
-            options: ["error", "success", "warning"],
+        state: {
+            control: "select",
+            options: ["default", "success", "warning", "error"],
         },
         startAdornment: {
             control: "select",
@@ -59,19 +59,19 @@ export const Default: Story = {};
 
 export const Error: Story = {
     args: {
-        status: "error",
+        state: "error",
     },
 };
 
 export const Success: Story = {
     args: {
-        status: "success",
+        state: "success",
     },
 };
 
 export const Warning: Story = {
     args: {
-        status: "warning",
+        state: "warning",
     },
 };
 
@@ -113,15 +113,15 @@ export const Search: Story = {
 function TitleField() {
     const [title, setTitle] = useState("");
     return (
-        <Field label="Title" required helperText="Use gender-neutral wording." counter={`${title.length} / 60`}>
+        <Field label="Title" required description="Use gender-neutral wording." counter={`${title.length} / 60`}>
             <Input name="title" value={title} maxLength={60} onChange={(event) => setTitle(event.target.value)} />
         </Field>
     );
 }
 
 /**
- * In a `Field`, the input takes the field's label, help, and state, and the field draws the box: together they make a complete text
- * field. Set the label, help, validation, prefix, and suffix on the `Field`.
+ * In a `Field`, the input takes the field's label, description, and state, and the field draws the box: together they make a complete text
+ * field. Set the label, description, validation, prefix, and suffix on the `Field`.
  */
 export const InField: Story = {
     render: () => <TitleField />,

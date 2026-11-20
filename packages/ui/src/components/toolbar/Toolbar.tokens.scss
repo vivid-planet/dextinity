@@ -9,11 +9,11 @@
     // Size of the icon in a button
     --dextinity-toolbar-button-icon-size: var(--dextinity-icon-size-small);
     // Fill of a toggle that is on, e.g. bold at the cursor
-    --dextinity-toolbar-button-background-pressed: var(--dextinity-color-accent-soft);
+    --dextinity-toolbar-button-background-selected: var(--dextinity-color-accent-soft);
     // Icon color of a toggle that is on
-    --dextinity-toolbar-button-foreground-pressed: var(--dextinity-color-accent-text);
+    --dextinity-toolbar-button-foreground-selected: var(--dextinity-color-accent-text);
     // Outline of a toggle that is on; shown in high contrast
-    --dextinity-toolbar-button-shadow-pressed: 0 0 transparent;
+    --dextinity-toolbar-button-shadow-selected: 0 0 transparent;
     // Color of a separator
     --dextinity-toolbar-separator-color: var(--dextinity-color-line-strong);
     // Space between a separator and the controls next to it
@@ -29,5 +29,5 @@
 }
 
 @mixin high-contrast-tokens {
-    --dextinity-toolbar-button-shadow-pressed: inset 0 0 0 var(--dextinity-line-width) currentColor;
+    --dextinity-toolbar-button-shadow-selected: inset 0 0 0 var(--dextinity-line-width) currentColor;
 }

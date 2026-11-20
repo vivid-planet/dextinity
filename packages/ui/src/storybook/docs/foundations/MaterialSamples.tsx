@@ -4,8 +4,8 @@ import { DocsDemo } from "./DocsDemo";
 import styles from "./Foundations.module.scss";
 
 const shadows = [
-    { token: "--dextinity-shadow-1", usage: "Buttons, rows" },
-    { token: "--dextinity-shadow-2", usage: "Cards, panels" },
+    { token: "--dextinity-shadow-1", usage: "Buttons, blocks" },
+    { token: "--dextinity-shadow-2", usage: "Hovered controls, tooltips, side navigation" },
     { token: "--dextinity-shadow-3", usage: "Menus, dialogs" },
 ];
 

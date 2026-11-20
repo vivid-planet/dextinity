@@ -41,9 +41,12 @@ import type {
     GQLTargetGroupsListFragment,
 } from "./TargetGroupsGrid.generated";
 
-export type AdditionalContactAttributesType = Record<string, unknown>;
+type TargetGroupContactExportRow<AdditionalContactAttributes extends object> = GQLTargetGroupContactItemFragment & AdditionalContactAttributes;
 
-type ContactWithAdditionalAttributes = GQLTargetGroupContactItemFragment & AdditionalContactAttributesType;
+export interface ExportTargetGroupOptions<AdditionalContactAttributes extends object> {
+    additionalAttributesFragment: { name: string; fragment: DocumentNode };
+    exportFields: { renderValue: (row: TargetGroupContactExportRow<AdditionalContactAttributes>) => string; headerName: string }[];
+}
 
 const targetGroupsFragment = gql`
     fragment TargetGroupsList on BrevoTargetGroup {
@@ -96,15 +99,12 @@ const createTargetGroupMutation = gql`
     }
 `;
 
-export function TargetGroupsGrid({
+export function TargetGroupsGrid<AdditionalContactAttributes extends object>({
     scope,
     exportTargetGroupOptions,
 }: {
     scope: ContentScope;
-    exportTargetGroupOptions?: {
-        additionalAttributesFragment: { name: string; fragment: DocumentNode };
-        exportFields: { renderValue: (row: AdditionalContactAttributesType) => string; headerName: string }[];
-    };
+    exportTargetGroupOptions?: ExportTargetGroupOptions<AdditionalContactAttributes>;
 }): ReactElement {
     const client = useApolloClient();
     const intl = useIntl();
@@ -149,7 +149,7 @@ export function TargetGroupsGrid({
         ${exportTargetGroupOptions?.additionalAttributesFragment?.fragment ?? ""}
     `;
 
-    const convertToCsv = (data: ContactWithAdditionalAttributes[]) => {
+    const convertToCsv = (data: TargetGroupContactExportRow<AdditionalContactAttributes>[]) => {
         const header = [
             intl.formatMessage({ id: "dextinity.targetGroup.export.brevoId", defaultMessage: "Brevo ID" }),
             intl.formatMessage({ id: "dextinity.targetGroup.export.email", defaultMessage: "Email" }),
@@ -173,7 +173,7 @@ export function TargetGroupsGrid({
     async function downloadTargetGroupContactsExportFile({ id, title }: { id: string; title: string }) {
         let offset = 0;
         let shouldContinue = true;
-        let allContacts: ContactWithAdditionalAttributes[] = [];
+        let allContacts: TargetGroupContactExportRow<AdditionalContactAttributes>[] = [];
 
         while (shouldContinue) {
             const { data: newContactsData } = await client.query<GQLTargetGroupContactsQuery, GQLTargetGroupContactsQueryVariables>({
@@ -190,7 +190,7 @@ export function TargetGroupsGrid({
                 throw new Error("Failed to load target group contacts");
             }
 
-            allContacts = allContacts.concat(newContactsData.brevoContacts.nodes as ContactWithAdditionalAttributes[]);
+            allContacts = allContacts.concat(newContactsData.brevoContacts.nodes as TargetGroupContactExportRow<AdditionalContactAttributes>[]);
             shouldContinue = allContacts.length < newContactsData.brevoContacts.totalCount;
             offset += 100;
         }

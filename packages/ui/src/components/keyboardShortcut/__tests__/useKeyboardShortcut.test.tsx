@@ -1,94 +1,94 @@
 import { cleanup, fireEvent, render, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { ariaKeyShortcuts, describeShortcut, formatShortcut, formatShortcutText } from "../formatShortcut";
+import { ariaKeyShortcuts, describeKeyboardShortcut, formatKeyboardShortcut, formatKeyboardShortcutText } from "../formatKeyboardShortcut";
 import { KeyboardShortcutProvider } from "../keyboardShortcutPlatform";
-import { matchesShortcut, useKeyboardShortcut } from "../useKeyboardShortcut";
+import { matchesKeyboardShortcut, useKeyboardShortcut } from "../useKeyboardShortcut";
 
 afterEach(cleanup);
 
 const noModifiers = { metaKey: false, ctrlKey: false, shiftKey: false, altKey: false };
 
-describe("matchesShortcut", () => {
+describe("matchesKeyboardShortcut", () => {
     it("treats mod as ⌘ on Apple platforms and as Ctrl elsewhere", () => {
-        expect(matchesShortcut({ ...noModifiers, key: "s", metaKey: true }, "mod+s", true)).toBe(true);
-        expect(matchesShortcut({ ...noModifiers, key: "s", ctrlKey: true }, "mod+s", true)).toBe(false);
-        expect(matchesShortcut({ ...noModifiers, key: "s", ctrlKey: true }, "mod+s", false)).toBe(true);
+        expect(matchesKeyboardShortcut({ ...noModifiers, key: "s", metaKey: true }, "mod+s", true)).toBe(true);
+        expect(matchesKeyboardShortcut({ ...noModifiers, key: "s", ctrlKey: true }, "mod+s", true)).toBe(false);
+        expect(matchesKeyboardShortcut({ ...noModifiers, key: "s", ctrlKey: true }, "mod+s", false)).toBe(true);
     });
 
     it("requires exactly the given modifiers for letters", () => {
-        expect(matchesShortcut({ ...noModifiers, key: "N", metaKey: true, shiftKey: true }, "shift+mod+n", true)).toBe(true);
-        expect(matchesShortcut({ ...noModifiers, key: "n", metaKey: true }, "shift+mod+n", true)).toBe(false);
-        expect(matchesShortcut({ ...noModifiers, key: "s", metaKey: true, shiftKey: true }, "mod+s", true)).toBe(false);
+        expect(matchesKeyboardShortcut({ ...noModifiers, key: "N", metaKey: true, shiftKey: true }, "shift+mod+n", true)).toBe(true);
+        expect(matchesKeyboardShortcut({ ...noModifiers, key: "n", metaKey: true }, "shift+mod+n", true)).toBe(false);
+        expect(matchesKeyboardShortcut({ ...noModifiers, key: "s", metaKey: true, shiftKey: true }, "mod+s", true)).toBe(false);
     });
 
     it("ignores shift for symbols", () => {
-        expect(matchesShortcut({ ...noModifiers, key: "?", shiftKey: true }, "?", true)).toBe(true);
+        expect(matchesKeyboardShortcut({ ...noModifiers, key: "?", shiftKey: true }, "?", true)).toBe(true);
     });
 
     it("accepts symbols typed with AltGr on Windows and Linux, which reports Ctrl and Alt", () => {
         const altGrBackslash = { ...noModifiers, key: "\\", ctrlKey: true, altKey: true };
-        expect(matchesShortcut(altGrBackslash, "mod+\\", false)).toBe(true);
-        expect(matchesShortcut(altGrBackslash, "\\", false)).toBe(true);
-        expect(matchesShortcut({ ...noModifiers, key: "n", ctrlKey: true, altKey: true }, "mod+n", false)).toBe(false);
+        expect(matchesKeyboardShortcut(altGrBackslash, "mod+\\", false)).toBe(true);
+        expect(matchesKeyboardShortcut(altGrBackslash, "\\", false)).toBe(true);
+        expect(matchesKeyboardShortcut({ ...noModifiers, key: "n", ctrlKey: true, altKey: true }, "mod+n", false)).toBe(false);
     });
 
     it("accepts symbols typed with Option on Apple platforms", () => {
-        expect(matchesShortcut({ ...noModifiers, key: "\\", metaKey: true, altKey: true, shiftKey: true }, "mod+\\", true)).toBe(true);
-        expect(matchesShortcut({ ...noModifiers, key: "\\", ctrlKey: true, altKey: true }, "mod+\\", true)).toBe(false);
-        expect(matchesShortcut({ ...noModifiers, key: "/" }, "alt+/", true)).toBe(false);
+        expect(matchesKeyboardShortcut({ ...noModifiers, key: "\\", metaKey: true, altKey: true, shiftKey: true }, "mod+\\", true)).toBe(true);
+        expect(matchesKeyboardShortcut({ ...noModifiers, key: "\\", ctrlKey: true, altKey: true }, "mod+\\", true)).toBe(false);
+        expect(matchesKeyboardShortcut({ ...noModifiers, key: "/" }, "alt+/", true)).toBe(false);
     });
 
     it("matches the space and plus keys", () => {
-        expect(matchesShortcut({ ...noModifiers, key: " ", ctrlKey: true }, "mod+space", false)).toBe(true);
-        expect(matchesShortcut({ ...noModifiers, key: "+", ctrlKey: true, shiftKey: true }, "mod++", false)).toBe(true);
+        expect(matchesKeyboardShortcut({ ...noModifiers, key: " ", ctrlKey: true }, "mod+space", false)).toBe(true);
+        expect(matchesKeyboardShortcut({ ...noModifiers, key: "+", ctrlKey: true, shiftKey: true }, "mod++", false)).toBe(true);
     });
 });
 
-describe("formatShortcut", () => {
+describe("formatKeyboardShortcut", () => {
     it("returns the platform's key caps", () => {
-        expect(formatShortcut("shift+mod+n", true)).toEqual(["⇧", "⌘", "N"]);
-        expect(formatShortcut("mod+s", false)).toEqual(["Ctrl", "S"]);
-        expect(formatShortcut("Escape", true)).toEqual(["Esc"]);
+        expect(formatKeyboardShortcut("shift+mod+n", true)).toEqual(["⇧", "⌘", "N"]);
+        expect(formatKeyboardShortcut("mod+s", false)).toEqual(["Ctrl", "S"]);
+        expect(formatKeyboardShortcut("Escape", true)).toEqual(["Esc"]);
     });
 
     it("puts the modifiers in the platform's order", () => {
-        expect(formatShortcut("mod+shift+alt+n", true)).toEqual(["⌥", "⇧", "⌘", "N"]);
-        expect(formatShortcut("alt+shift+mod+n", false)).toEqual(["Ctrl", "Shift", "Alt", "N"]);
+        expect(formatKeyboardShortcut("mod+shift+alt+n", true)).toEqual(["⌥", "⇧", "⌘", "N"]);
+        expect(formatKeyboardShortcut("alt+shift+mod+n", false)).toEqual(["Ctrl", "Shift", "Alt", "N"]);
     });
 
     it("names keys in any case", () => {
-        expect(formatShortcut("mod+space", false)).toEqual(["Ctrl", "Space"]);
-        expect(formatShortcut("shift+ ", false)).toEqual(["Shift", "Space"]);
-        expect(formatShortcut("tab", false)).toEqual(["Tab"]);
-        expect(formatShortcut("mod++", true)).toEqual(["⌘", "+"]);
+        expect(formatKeyboardShortcut("mod+space", false)).toEqual(["Ctrl", "Space"]);
+        expect(formatKeyboardShortcut("shift+ ", false)).toEqual(["Shift", "Space"]);
+        expect(formatKeyboardShortcut("tab", false)).toEqual(["Tab"]);
+        expect(formatKeyboardShortcut("mod++", true)).toEqual(["⌘", "+"]);
     });
 
     it("joins the key caps as text", () => {
-        expect(formatShortcutText("shift+mod+n", true)).toBe("⇧⌘N");
-        expect(formatShortcutText("shift+mod+n", false)).toBe("Ctrl+Shift+N");
+        expect(formatKeyboardShortcutText("shift+mod+n", true)).toBe("⇧⌘N");
+        expect(formatKeyboardShortcutText("shift+mod+n", false)).toBe("Ctrl+Shift+N");
     });
 });
 
-describe("describeShortcut", () => {
+describe("describeKeyboardShortcut", () => {
     it("returns the spoken name for the platform", () => {
-        expect(describeShortcut("shift+mod+n", true)).toBe("Shift Command N");
-        expect(describeShortcut("alt+mod+n", false)).toBe("Control Alt N");
-        expect(describeShortcut("alt+ArrowUp", true)).toBe("Option Up Arrow");
-        expect(describeShortcut("Escape", false)).toBe("Escape");
-        expect(describeShortcut("?", false)).toBe("Question Mark");
+        expect(describeKeyboardShortcut("shift+mod+n", true)).toBe("Shift Command N");
+        expect(describeKeyboardShortcut("alt+mod+n", false)).toBe("Control Alt N");
+        expect(describeKeyboardShortcut("alt+ArrowUp", true)).toBe("Option Up Arrow");
+        expect(describeKeyboardShortcut("Escape", false)).toBe("Escape");
+        expect(describeKeyboardShortcut("?", false)).toBe("Question Mark");
     });
 
     it("names punctuation, which screen readers skip at their default punctuation level", () => {
-        expect(describeShortcut("mod+,", true)).toBe("Command Comma");
-        expect(describeShortcut("mod+.", true)).toBe("Command Period");
-        expect(describeShortcut("mod+/", false)).toBe("Control Slash");
-        expect(describeShortcut("mod+\\", false)).toBe("Control Backslash");
-        expect(describeShortcut("mod++", false)).toBe("Control Plus");
+        expect(describeKeyboardShortcut("mod+,", true)).toBe("Command Comma");
+        expect(describeKeyboardShortcut("mod+.", true)).toBe("Command Period");
+        expect(describeKeyboardShortcut("mod+/", false)).toBe("Control Slash");
+        expect(describeKeyboardShortcut("mod+\\", false)).toBe("Control Backslash");
+        expect(describeKeyboardShortcut("mod++", false)).toBe("Control Plus");
     });
 
     it("takes the key names from labels", () => {
-        expect(describeShortcut("mod+Enter", false, { control: "Strg", enter: "Eingabe" })).toBe("Strg Eingabe");
+        expect(describeKeyboardShortcut("mod+Enter", false, { control: "Strg", enter: "Eingabe" })).toBe("Strg Eingabe");
     });
 });
 

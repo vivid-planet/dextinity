@@ -6,7 +6,7 @@ import { AssetThumbnail } from "../../../components/assetThumbnail/AssetThumbnai
 import { Block } from "../../../components/blockList/Block";
 import { BlockList } from "../../../components/blockList/BlockList";
 import { Icon } from "../../../components/icon/Icon";
-import { formatShortcut } from "../../../components/keyboardShortcut/formatShortcut";
+import { formatKeyboardShortcut } from "../../../components/keyboardShortcut/formatKeyboardShortcut";
 import { useKeyboardShortcutPlatform } from "../../../components/keyboardShortcut/keyboardShortcutPlatform";
 import { ToastViewport } from "../../../components/toast/ToastViewport";
 import { useToasts } from "../../../components/toast/useToasts";
@@ -15,11 +15,11 @@ import { useUndoToast } from "../../../components/undoToast/useUndoToast";
 import { storyModKey } from "../../../storybook/keyboardPlatformDecorator";
 import {
     PatternExample,
+    PatternKeyboardShortcuts,
     PatternLegend,
     PatternPage,
     PatternRules,
     PatternSection,
-    PatternShortcuts,
     PatternSpec,
     PatternSpecs,
 } from "../../../storybook/patterns/PatternPage";
@@ -180,7 +180,7 @@ function DragAndDropPage() {
                         { title: "Page tree", description: "Move pages; a line shows where they land, a folder target stands out." },
                         {
                             title: "Finder",
-                            description: `Files and folders onto folders, also in the sidebar and path bar. Several with ${formatShortcut("mod+a", apple)[0]}/⇧.`,
+                            description: `Files and folders onto folders, also in the sidebar and path bar. Several with ${formatKeyboardShortcut("mod+a", apple)[0]}/⇧.`,
                         },
                         { title: "Blocks", description: "Order by the grip." },
                         { title: "Upload", description: "Files from the computer onto the list." },
@@ -200,12 +200,12 @@ function DragAndDropPage() {
                     </PatternSpec>
                 </PatternSpecs>
             </PatternSection>
-            <PatternShortcuts
+            <PatternKeyboardShortcuts
                 title="Keyboard alternative"
                 description="Everything that can be dragged also works through the “Move to …” menu and the keyboard."
-                shortcuts={[
-                    { shortcut: ["mod+x", "mod+v"], description: "Cut and paste (page tree)" },
-                    { shortcut: ["ArrowUp", "ArrowDown"], description: "Move a block (on its grip)" },
+                keyboardShortcuts={[
+                    { keyboardShortcut: ["mod+x", "mod+v"], description: "Cut and paste (page tree)" },
+                    { keyboardShortcut: ["ArrowUp", "ArrowDown"], description: "Move a block (on its grip)" },
                     { keys: ["Right-click"], description: "Move to … (finder)" },
                 ]}
             />

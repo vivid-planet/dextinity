@@ -58,9 +58,9 @@ const meta = {
         onConfirm: fn(),
     },
     argTypes: {
-        tone: {
+        color: {
             control: "radio",
-            options: ["default", "danger"],
+            options: ["default", "error"],
         },
         confirmIcon: {
             control: "select",
@@ -116,12 +116,12 @@ export const WithSecondaryAction: Story = {
 };
 
 /**
- * `tone="danger"` for deleting for good, only when Undo isn't possible.
+ * `color="error"` for deleting for good, only when Undo isn't possible.
  */
-export const Danger: Story = {
+export const Error: Story = {
     args: {
         open: true,
-        tone: "danger",
+        color: "error",
         title: "Delete “Careers” and 3 subpages?",
         description: "Redirects to these pages stop working.",
         confirmLabel: "Delete",
@@ -135,7 +135,7 @@ export const Danger: Story = {
 export const WithDetails: Story = {
     args: {
         open: true,
-        tone: "danger",
+        color: "error",
         title: "Delete 4 pages?",
         description: "Deleted pages can't be restored.",
         confirmLabel: "Delete",

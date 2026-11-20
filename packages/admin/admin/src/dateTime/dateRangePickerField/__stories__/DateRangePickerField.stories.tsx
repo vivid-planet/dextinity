@@ -169,6 +169,63 @@ export const Disabled: Story = {
 };
 
 /**
+ * A required DateRangePickerField shows a required marker and has no clear button. Submitting the form without a date range shows a validation error.
+ */
+export const Required: Story = {
+    render: () => {
+        interface FormValues {
+            value: { start: string | null; end: string | null };
+        }
+        return (
+            <FinalForm<FormValues>
+                mode="edit"
+                onSubmit={() => {
+                    // not handled
+                }}
+                subscription={{ values: true }}
+            >
+                {() => (
+                    <>
+                        <DateRangePickerField required name="value" label="Required Date Range Picker" fullWidth variant="horizontal" />
+
+                        <FinalFormDebug />
+                    </>
+                )}
+            </FinalForm>
+        );
+    },
+};
+
+/**
+ * A read-only DateRangePickerField shows the date range and doesn't let users change it. Use it instead of `disabled` when the value should stay easy to read.
+ */
+export const ReadOnly: Story = {
+    render: () => {
+        interface FormValues {
+            value: { start: string | null; end: string | null };
+        }
+        return (
+            <FinalForm<FormValues>
+                mode="edit"
+                onSubmit={() => {
+                    // not handled
+                }}
+                initialValues={{ value: { start: "2026-01-15", end: "2026-01-20" } }}
+                subscription={{ values: true }}
+            >
+                {() => (
+                    <>
+                        <DateRangePickerField readOnly name="value" label="Read-only Date Range Picker" fullWidth variant="horizontal" />
+
+                        <FinalFormDebug />
+                    </>
+                )}
+            </FinalForm>
+        );
+    },
+};
+
+/**
  * Before implementing custom validation, try to disable certain values using the props provided by MUI's DateRangePicker, such as `shouldDisableDate`, `disableFuture`, `disablePast`.
  *
  * Use this when:

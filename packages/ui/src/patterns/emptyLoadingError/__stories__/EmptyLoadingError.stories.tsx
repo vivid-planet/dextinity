@@ -146,7 +146,7 @@ function EmptyLoadingErrorPage() {
                         <TitleFieldExample />
                     </PatternSpec>
                     <PatternSpec label="Action" caption="Toast, with the reason">
-                        <Toast tone="error" message="“logo.svg” is still in use · nothing deleted" />
+                        <Toast color="error" message="“logo.svg” is still in use · nothing deleted" />
                     </PatternSpec>
                     <PatternSpec label="Connection" caption="Banner above the content">
                         <Banner

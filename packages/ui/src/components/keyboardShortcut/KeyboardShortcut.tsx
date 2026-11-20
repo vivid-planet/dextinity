@@ -2,7 +2,7 @@ import { clsx } from "clsx";
 import { forwardRef, Fragment, type HTMLAttributes, type PropsWithChildren } from "react";
 
 import { keysByContent } from "../../utils/keysByContent";
-import { describeShortcut, formatShortcut, type KeyboardShortcutLabels } from "./formatShortcut";
+import { describeKeyboardShortcut, formatKeyboardShortcut, type KeyboardShortcutLabels } from "./formatKeyboardShortcut";
 import styles from "./KeyboardShortcut.module.scss";
 import { type KeyboardShortcutPlatform, useKeyboardShortcutLabels, useKeyboardShortcutPlatform } from "./keyboardShortcutPlatform";
 
@@ -56,7 +56,7 @@ export const KeyboardShortcut = forwardRef<HTMLElement, KeyboardShortcutProps>(f
     }
 
     const apple = ownerState.platform === "apple";
-    const caps = formatShortcut(shortcut, apple);
+    const caps = formatKeyboardShortcut(shortcut, apple);
     const capKeys = keysByContent(caps);
 
     return (
@@ -69,7 +69,7 @@ export const KeyboardShortcut = forwardRef<HTMLElement, KeyboardShortcutProps>(f
                     </Fragment>
                 ))}
             </span>
-            <span className={styles.spoken}>{describeShortcut(shortcut, apple, labels)}</span>
+            <span className={styles.spoken}>{describeKeyboardShortcut(shortcut, apple, labels)}</span>
         </kbd>
     );
 });

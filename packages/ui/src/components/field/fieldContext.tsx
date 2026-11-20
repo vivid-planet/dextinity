@@ -6,7 +6,10 @@ import type { FieldControlProps, FieldOwnerState } from "./Field";
  * What a control inside a `Field` reports to the field to show.
  */
 export interface ControlReport {
-    /** An error the control found itself, e.g. typed text that is no valid date. Shown in place of the field's message, as an error. */
+    /**
+     * An error the control found itself, e.g. typed text that is no valid date. It shows as the field's validation message, in place
+     * of the `validationMessage` and the `description`, and sets the field's `state` to `error`.
+     */
     error?: string;
     /** Shown at the end of the label row, e.g. a character count. */
     counter?: string;

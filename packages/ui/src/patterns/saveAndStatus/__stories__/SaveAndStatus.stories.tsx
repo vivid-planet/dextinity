@@ -7,7 +7,7 @@ import { ConfirmDialog } from "../../../components/confirmDialog/ConfirmDialog";
 import { Field } from "../../../components/field/Field";
 import { Icon } from "../../../components/icon/Icon";
 import { Input } from "../../../components/input/Input";
-import { formatShortcutText } from "../../../components/keyboardShortcut/formatShortcut";
+import { formatKeyboardShortcutText } from "../../../components/keyboardShortcut/formatKeyboardShortcut";
 import { useKeyboardShortcutPlatform } from "../../../components/keyboardShortcut/keyboardShortcutPlatform";
 import { useKeyboardShortcut } from "../../../components/keyboardShortcut/useKeyboardShortcut";
 import { SaveState, type SaveStateValue } from "../../../components/saveState/SaveState";
@@ -19,10 +19,10 @@ import { Tooltip } from "../../../components/tooltip/Tooltip";
 import { storyModKey } from "../../../storybook/keyboardPlatformDecorator";
 import {
     PatternExample,
+    PatternKeyboardShortcuts,
     PatternPage,
     PatternRules,
     PatternSection,
-    PatternShortcuts,
     PatternSteps,
     PatternUses,
 } from "../../../storybook/patterns/PatternPage";
@@ -111,7 +111,7 @@ function EditPageExample() {
                             </Button>
                             <Tooltip
                                 content={status === "published" ? "The page is published: saving makes the change live" : "Saves without publishing"}
-                                shortcut="mod+s"
+                                keyboardShortcut="mod+s"
                             >
                                 <Button size="small" onClick={save}>
                                     Save
@@ -169,7 +169,7 @@ function SaveAndStatusPage() {
                 steps={[
                     { title: "Edit", description: "The header shows “Unsaved changes”." },
                     {
-                        title: `Save (${formatShortcutText("mod+s", apple)})`,
+                        title: `Save (${formatKeyboardShortcutText("mod+s", apple)})`,
                         description: "If the page is published, the change is live right away. The button's tooltip says so.",
                     },
                     { title: "Publish", description: "The “Published” switch – also in list, tree and detail." },
@@ -177,7 +177,7 @@ function SaveAndStatusPage() {
                     { title: "Archive", description: "Off the website, stays in the admin. Restoring sets it to Unpublished." },
                 ]}
             />
-            <PatternShortcuts shortcuts={[{ shortcut: "mod+s", description: "Save" }]} />
+            <PatternKeyboardShortcuts keyboardShortcuts={[{ keyboardShortcut: "mod+s", description: "Save" }]} />
             <PatternUses pages={["Buttons", "Selection & toggles", "Status, tags & badges", "Loading & save state", "Modals & overlays"]} />
             <PatternRules
                 dos={[

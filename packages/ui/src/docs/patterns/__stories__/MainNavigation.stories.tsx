@@ -39,7 +39,7 @@ export const MainNavigation: Story = {
                 </MenuSectionHeader>
                 <ul aria-labelledby="navigation-content" className={styles.list}>
                     <li>
-                        <MainNavigationItem href="#" icon={<Icon name="sitemap" />} active>
+                        <MainNavigationItem href="#" icon={<Icon name="sitemap" />} current>
                             Pages
                         </MainNavigationItem>
                     </li>

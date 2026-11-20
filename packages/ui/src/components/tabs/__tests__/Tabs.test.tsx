@@ -48,7 +48,7 @@ describe("Tabs", () => {
                 aria-label="Page"
                 items={[
                     { value: "blocks", label: "Blocks" },
-                    { value: "seo", label: "SEO", tone: "error" },
+                    { value: "seo", label: "SEO", color: "error" },
                 ]}
                 value="blocks"
                 onChange={vi.fn()}
@@ -57,7 +57,7 @@ describe("Tabs", () => {
         );
 
         const tab = screen.getByRole("tab", { name: "SEO Has errors" });
-        expect(tab.dataset.tone).toBe("error");
+        expect(tab.dataset.color).toBe("error");
         expect(tab.querySelector(".dextinityTabs__errorMarker")).toBeTruthy();
     });
 

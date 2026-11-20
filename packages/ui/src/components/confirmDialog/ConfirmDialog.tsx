@@ -5,7 +5,7 @@ import { Button, type ButtonProps } from "../button/Button";
 import { Dialog, type DialogProps } from "../dialog/Dialog";
 import styles from "./ConfirmDialog.module.scss";
 
-type ConfirmDialogTone = "default" | "danger";
+type ConfirmDialogColor = "default" | "error";
 
 const defaultLabels = {
     cancel: "Cancel",
@@ -15,7 +15,7 @@ const defaultLabels = {
  * The resolved configuration that influences the component's appearance or behavior.
  */
 export type ConfirmDialogOwnerState = {
-    tone: ConfirmDialogTone;
+    color: ConfirmDialogColor;
 };
 
 export interface ConfirmDialogSlotProps {
@@ -49,11 +49,11 @@ export interface ConfirmDialogProps extends PropsWithChildren {
     /** Called when the third option is clicked. */
     onSecondary?: () => void;
     /**
-     * `danger` marks the confirming action as destructive.
+     * `error` marks the confirming action as destructive.
      *
      * @defaultValue `"default"`
      */
-    tone?: ConfirmDialogTone;
+    color?: ConfirmDialogColor;
     /**
      * Shows a spinner in the confirming action while it runs; meanwhile, the other actions are disabled and the dialog can't be closed.
      *
@@ -86,7 +86,7 @@ export const ConfirmDialog = forwardRef<HTMLDivElement, ConfirmDialogProps>(func
         confirmIcon,
         secondaryLabel,
         onSecondary,
-        tone = "default",
+        color = "default",
         loading = false,
         labels: labelsProp,
         className,
@@ -94,9 +94,9 @@ export const ConfirmDialog = forwardRef<HTMLDivElement, ConfirmDialogProps>(func
     },
     ref,
 ) {
-    const ownerState: ConfirmDialogOwnerState = { tone };
+    const ownerState: ConfirmDialogOwnerState = { color };
     const labels = { ...defaultLabels, ...labelsProp };
-    const danger = ownerState.tone === "danger";
+    const isDestructive = ownerState.color === "error";
 
     return (
         <Dialog
@@ -110,7 +110,7 @@ export const ConfirmDialog = forwardRef<HTMLDivElement, ConfirmDialogProps>(func
             size="small"
             hideCloseButton
             dismissible={!loading}
-            data-tone={ownerState.tone}
+            data-color={ownerState.color}
             className={clsx(styles.root, className)}
             footer={
                 <>
@@ -123,8 +123,8 @@ export const ConfirmDialog = forwardRef<HTMLDivElement, ConfirmDialogProps>(func
                         </Button>
                     )}
                     <Button
-                        variant={danger ? "outlined" : "contained"}
-                        color={danger ? "error" : "primary"}
+                        variant={isDestructive ? "outlined" : "contained"}
+                        color={isDestructive ? "error" : "primary"}
                         startIcon={confirmIcon}
                         loading={loading}
                         {...slotProps?.confirmButton}

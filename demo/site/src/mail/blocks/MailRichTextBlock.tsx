@@ -1,7 +1,9 @@
+import "./smallListStyles";
+
 import { createTipTapRichTextBlock, MjmlColumn, MjmlSection, type PropsWithData, withPreview } from "@dextinity/mail-react";
 import type { MailRichTextBlockData, PhoneLinkBlockData } from "@src/blocks.generated";
 
-export const { MjmlTipTapRichTextBlock } = createTipTapRichTextBlock({
+export const { MjmlTipTapRichTextBlock: MjmlRichTextBlock } = createTipTapRichTextBlock({
     textBlockStyles: {
         title: { variant: "title" },
         header: { variant: "header" },
@@ -17,7 +19,7 @@ export const MailRichTextBlock = withPreview<PropsWithData<MailRichTextBlockData
         return (
             <MjmlSection indent className={className}>
                 <MjmlColumn>
-                    <MjmlTipTapRichTextBlock data={data} />
+                    <MjmlRichTextBlock data={data} />
                 </MjmlColumn>
             </MjmlSection>
         );

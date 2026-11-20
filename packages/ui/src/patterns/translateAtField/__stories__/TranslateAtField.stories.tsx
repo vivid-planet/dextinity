@@ -29,14 +29,14 @@ function FieldsExample() {
             <div className={styles.fields}>
                 <Field
                     label="Meta title"
-                    helperText="Recommended: up to 60 characters."
+                    description="Recommended: up to 60 characters."
                     actions={<FieldActions translate targetLocales={["de", "fr"]} onTranslate={translate("Meta title")} />}
                 >
                     <Input name="metaTitle" value={metaTitle} onChange={(event) => setMetaTitle(event.target.value)} />
                 </Field>
                 <Field
                     label="Alt text"
-                    helperText="Per language."
+                    description="Per language."
                     actions={<FieldActions translate targetLocales={["de", "fr"]} onTranslate={translate("Alt text")} />}
                 >
                     <Textarea name="altText" rows={2} value={altText} onChange={(event) => setAltText(event.target.value)} />

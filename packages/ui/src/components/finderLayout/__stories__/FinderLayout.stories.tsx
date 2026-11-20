@@ -3,7 +3,14 @@ import { useState } from "react";
 import { expect, userEvent, within } from "storybook/test";
 
 import { PageTypeShell, StructureFrame, StructureRegion } from "../../../storybook/pageTypes/PageTypeShell";
-import { PatternLegend, PatternPage, PatternRules, PatternSection, PatternShortcuts, PatternUses } from "../../../storybook/patterns/PatternPage";
+import {
+    PatternKeyboardShortcuts,
+    PatternLegend,
+    PatternPage,
+    PatternRules,
+    PatternSection,
+    PatternUses,
+} from "../../../storybook/patterns/PatternPage";
 import { documentImage, interiorImage, landscapeImage, portraitImage } from "../../../storybook/sampleImages";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { AssetThumbnail, type AssetThumbnailBadge, type AssetThumbnailType } from "../../assetThumbnail/AssetThumbnail";
@@ -96,7 +103,7 @@ function StoryFinder() {
             <ul className={styles.content}>
                 {subfolders.map((folder) => (
                     <li key={folder.id}>
-                        <AssetThumbnail type="folder" name={folder.name} />
+                        <AssetThumbnail type="folder" title={folder.name} />
                     </li>
                 ))}
                 {folderAssets.map((asset) => (
@@ -107,7 +114,7 @@ function StoryFinder() {
                             fileType={asset.fileType}
                             duration={asset.duration}
                             badges={asset.badges}
-                            name={asset.name}
+                            title={asset.name}
                             meta={asset.meta}
                         />
                     </li>
@@ -182,7 +189,7 @@ type Story = StoryObj<typeof meta>;
  */
 export const Default: Story = {
     render: () => (
-        <PageTypeShell activeId="assets">
+        <PageTypeShell currentId="assets">
             <AssetsPage />
         </PageTypeShell>
     ),
@@ -233,12 +240,12 @@ export const Structure: Story = {
                     />
                 </div>
             </PatternSection>
-            <PatternShortcuts
-                shortcuts={[
-                    { shortcut: "mod+a", description: "Select all" },
-                    { shortcut: "Space", description: "Quick look" },
-                    { shortcut: "mod+Backspace", description: "Move to the archive" },
-                    { shortcut: "mod+ArrowUp", description: "Enclosing folder" },
+            <PatternKeyboardShortcuts
+                keyboardShortcuts={[
+                    { keyboardShortcut: "mod+a", description: "Select all" },
+                    { keyboardShortcut: "Space", description: "Quick look" },
+                    { keyboardShortcut: "mod+Backspace", description: "Move to the archive" },
+                    { keyboardShortcut: "mod+ArrowUp", description: "Enclosing folder" },
                 ]}
             />
             <PatternUses pages={["Media & upload", "Menus & messages", "Modals & overlays"]} />

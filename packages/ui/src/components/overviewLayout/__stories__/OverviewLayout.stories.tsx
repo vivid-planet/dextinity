@@ -175,7 +175,7 @@ type Story = StoryObj<typeof meta>;
  */
 export const Default: Story = {
     render: (args) => (
-        <PageTypeShell activeId="dashboard">
+        <PageTypeShell currentId="dashboard">
             <OverviewLayout
                 {...args}
                 eyebrow={args.eyebrow ?? "Career portal · Overview"}
@@ -203,7 +203,7 @@ export const Default: Story = {
  */
 export const WithBack: Story = {
     render: (args) => (
-        <PageTypeShell activeId="dashboard">
+        <PageTypeShell currentId="dashboard">
             <OverviewLayout {...args} eyebrow="Overview" back={{ label: "All sites", href: "#sites" }}>
                 <OverviewCards />
             </OverviewLayout>

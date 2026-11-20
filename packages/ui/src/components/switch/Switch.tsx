@@ -41,7 +41,10 @@ export interface SwitchProps
         ControlAriaProps,
         Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "onChange" | keyof ControlAriaProps>,
         PropsWithChildren {
-    /** A second line under the label, e.g. what the setting does or why it is disabled. */
+    /**
+     * A second line under the label, e.g. what the setting does or why it is disabled. It stays when the `Field` around the switch shows
+     * a validation message, which replaces only the field's own `description`.
+     */
     description?: ReactNode;
     /** Whether the switch is on. */
     checked: boolean;

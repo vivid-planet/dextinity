@@ -11,6 +11,9 @@ export interface PrototypeNavigation {
     /** The navigation shows only icons; kept across pages, as in the app. */
     navCollapsed: boolean;
     onNavCollapsedChange: (collapsed: boolean) => void;
+    /** The AI assistant is open; kept across pages, as in the app. */
+    assistantOpen?: boolean;
+    onAssistantOpenChange?: (open: boolean) => void;
     /** The prototype's own navigation; without it, `PageTypeShell` shows the career portal's. */
     navGroups?: SideNavGroup[];
     /** Sets the guard asked before leaving the current page, `null` to leave freely. Ends with the page. */

@@ -40,6 +40,7 @@ function readPageId({ getPageLabel, startPageId }: WorkspacePrototype) {
 export function PrototypeApp({ prototype, navGroups, renderPage }: PrototypeAppProps) {
     const [pageId, setPageId] = useState(() => readPageId(prototype));
     const [navCollapsed, setNavCollapsed] = useState(false);
+    const [assistantOpen, setAssistantOpen] = useState(false);
     const pageIdRef = useRef(pageId);
     const leaveGuardRef = useRef<LeaveGuard | null>(null);
     pageIdRef.current = pageId;
@@ -79,6 +80,8 @@ export function PrototypeApp({ prototype, navGroups, renderPage }: PrototypeAppP
                 },
                 navCollapsed,
                 onNavCollapsedChange: setNavCollapsed,
+                assistantOpen,
+                onAssistantOpenChange: setAssistantOpen,
                 navGroups,
                 setLeaveGuard: (guard) => {
                     leaveGuardRef.current = guard;

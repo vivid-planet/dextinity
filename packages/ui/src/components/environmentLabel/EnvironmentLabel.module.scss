@@ -22,6 +22,8 @@
     letter-spacing: var(--dextinity-environment-label-letter-spacing);
     line-height: 1;
     text-transform: uppercase;
+    // The capitals sit above the middle of the line box; half of this padding moves them down to the middle
+    padding-block-start: 0.2em;
     white-space: nowrap;
 
     @include forced-colors.surface;
@@ -54,7 +56,8 @@
     &[data-variant="compact"] {
         inline-size: var(--dextinity-environment-label-compact-size);
         block-size: var(--dextinity-environment-label-compact-size);
-        padding: 0;
+        padding-inline: 0;
+        padding-block-start: 0.4em;
         font-size: var(--dextinity-environment-label-compact-font-size);
         letter-spacing: 0;
     }

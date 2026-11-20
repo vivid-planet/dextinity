@@ -1535,6 +1535,46 @@ The details passed to the callbacks of the Data Grid require `apiRef` now. Add i
 + onSortModelChange(sortModel, { api, apiRef: { current: api } });
 ```
 
+#### Customize the open picker button with the slot props of MUI X
+
+`DatePicker`, `DateTimePicker`, `TimePicker` and `DateRangePicker` render the open picker button of MUI X now. The `openPickerAdornment` slot and the `DextinityAdminOpenPickerAdornment` theme key are removed from these pickers and from `DateTimeRangePicker` and `TimeRangePicker`. Pass the props of the button with `slotProps.root.slotProps.openPickerButton` in all six pickers:
+
+```diff
+  <DatePicker
+      slotProps={{
+-         openPickerAdornment: {
+-             slotProps: { openPickerButton: { "aria-label": "Choose a date" } },
+-         },
++         root: {
++             slotProps: { openPickerButton: { "aria-label": "Choose a date" } },
++         },
+      }}
+  />
+```
+
+Move the customizations of the `DextinityAdminOpenPickerAdornment` theme key to the `defaultProps` of each picker:
+
+```diff
+  components: {
+-     DextinityAdminOpenPickerAdornment: {
+-         styleOverrides: {
+-             openPickerButton: { color: "red" },
+-         },
+-     },
++     DextinityAdminDatePicker: {
++         defaultProps: {
++             slotProps: { root: { slotProps: { openPickerButton: { sx: { color: "red" } } } } },
++         },
++     },
+  },
+```
+
+Find the usages with:
+
+```sh
+grep -rn "openPickerAdornment\|DextinityAdminOpenPickerAdornment" src
+```
+
 #### Regenerate the MUI X license key
 
 MUI X v9 requires a new license key for the Pro and Premium packages. Regenerate it in the [MUI Store](https://mui.com/store/) and replace the key wherever your project sets it, for example, in the environment variables of the admin.

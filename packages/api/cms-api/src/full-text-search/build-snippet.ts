@@ -1,7 +1,7 @@
 export const HIGHLIGHT_START_MARKER = "\u0002";
 export const HIGHLIGHT_END_MARKER = "\u0003";
 
-export interface HighlightRange {
+interface HighlightRange {
     start: number;
     end: number;
 }

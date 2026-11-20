@@ -259,6 +259,12 @@
     &[data-ending-style] {
         transform: translateY(102%);
     }
+
+    // The sheet stays mounted to keep the assistant's state; once closed, Base UI hides it with `hidden`, which `display` above
+    // would override
+    &[hidden] {
+        display: none;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {

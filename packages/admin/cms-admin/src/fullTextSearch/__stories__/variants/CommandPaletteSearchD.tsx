@@ -1,13 +1,13 @@
-import { Button, Dialog } from "@dextinity/admin";
+import { Button, Dialog, Tab, Tabs } from "@dextinity/admin";
 import { Add, Link, Reload, Search, Settings, Time, Upload } from "@dextinity/admin-icons";
-import { Chip, CircularProgress, IconButton, InputBase, Popover, Skeleton, Switch, Tab, Tabs, Typography } from "@mui/material";
+import { Chip, CircularProgress, IconButton, InputBase, Popover, Skeleton, Switch, Typography } from "@mui/material";
 import { alpha, styled, type Theme } from "@mui/material/styles";
 import { type PropsWithChildren, type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import { getEntityType, knownEntityNames } from "../shared/entityTypes";
 import { HighlightedText } from "../shared/HighlightedText";
-import { getResultDetail } from "../shared/resultDetails";
+import { getResultDetails } from "../shared/resultDetails";
 import { EmptyState, Kbd, optionId } from "../shared/SearchPanelParts";
 import type { SearchResult } from "../shared/types";
 import { scrollActiveOptionIntoView } from "../shared/useListKeyboardNavigation";
@@ -26,14 +26,14 @@ const quickActions: QuickAction[] = [
     { id: "startBuild", icon: Reload, label: <FormattedMessage id="fullTextSearchPrototype.action.startBuild" defaultMessage="Start build" /> },
 ];
 
-type PaletteColor = "primary" | "info" | "success" | "warning" | "secondary";
+type PaletteColor = "primary" | "success" | "warning" | "secondary";
 
-const entityColors: Record<string, PaletteColor> = {
+const entityColors: Record<string, PaletteColor | "default"> = {
     Page: "primary",
     News: "success",
     Product: "warning",
-    DamFile: "info",
-    Redirect: "secondary",
+    DamFile: "secondary",
+    Redirect: "default",
 };
 
 interface Props {
@@ -99,7 +99,6 @@ function Palette({ onSelectResult, onQuickAction, onClose }: Required<Props> & {
         onQuickAction,
         onClose,
         enabledEntityNames,
-        groupResultsByEntity: false,
     });
 
     useEffect(() => {
@@ -110,6 +109,17 @@ function Palette({ onSelectResult, onQuickAction, onClose }: Required<Props> & {
     const showsSkeleton = !palette.isSearchEmpty && palette.areResultsStale;
     const showsEmptyState = !palette.isSearchEmpty && !showsSkeleton && palette.visibleResults.length === 0;
     const countForEntity = (entityName: string) => palette.entityCounts.find((entry) => entry.entityName === entityName)?.count ?? 0;
+    const areTabsInactive = palette.isSearchEmpty || showsSkeleton;
+    const tabEntityNames = enabledEntityNames.filter((entityName) => areTabsInactive || countForEntity(entityName) > 0);
+    const tabKeys = [allEntitiesFilter, ...tabEntityNames];
+
+    const groupedResults =
+        palette.entityFilter === allEntitiesFilter
+            ? palette.entityCounts.map(({ entityName }) => ({
+                  entityName,
+                  items: palette.items.filter((item) => item.kind === "result" && item.result.entityName === entityName),
+              }))
+            : [{ entityName: undefined, items: palette.items }];
 
     const renderOption = (item: PaletteItem, content: ReactNode) => {
         const index = palette.items.indexOf(item);
@@ -127,6 +137,101 @@ function Palette({ onSelectResult, onQuickAction, onClose }: Required<Props> & {
             </Option>
         );
     };
+
+    const body = (
+        <Body ref={listRef} id="palette-d-listbox" role="listbox">
+            {palette.isSearchEmpty ? (
+                <>
+                    {palette.recentSearches.terms.length > 0 && (
+                        <Section
+                            title={<FormattedMessage id="fullTextSearchPrototype.recent.searches" defaultMessage="Recent searches" />}
+                            action={
+                                <Button variant="textDark" size="small" onClick={palette.recentSearches.clear}>
+                                    <FormattedMessage id="fullTextSearchPrototype.recent.clear" defaultMessage="Clear" />
+                                </Button>
+                            }
+                        >
+                            <ChipRow>
+                                {palette.recentSearches.terms.map((term) => (
+                                    <Chip
+                                        key={term}
+                                        variant="outlined"
+                                        icon={<Time fontSize="small" />}
+                                        label={term}
+                                        onClick={() => {
+                                            palette.setSearch(term);
+                                            inputRef.current?.focus();
+                                        }}
+                                    />
+                                ))}
+                            </ChipRow>
+                        </Section>
+                    )}
+                    {palette.recentSearches.results.length > 0 && (
+                        <Section title={<FormattedMessage id="fullTextSearchPrototype.recent.opened" defaultMessage="Recently opened" />}>
+                            {palette.items
+                                .filter((item) => item.kind === "recentResult")
+                                .map((item) => renderOption(item, <ResultContent result={item.result} search="" />))}
+                        </Section>
+                    )}
+                    <Section title={<FormattedMessage id="fullTextSearchPrototype.quickActions" defaultMessage="Quick actions" />}>
+                        {palette.items
+                            .filter((item) => item.kind === "quickAction")
+                            .map((item) => {
+                                const Icon = item.action.icon;
+                                return renderOption(
+                                    item,
+                                    <>
+                                        <RoundIcon className="color-default">
+                                            <Icon />
+                                        </RoundIcon>
+                                        <OptionText>
+                                            <Title variant="body2">{item.action.label}</Title>
+                                        </OptionText>
+                                        <EnterHint aria-hidden>{enterKeyLabel}</EnterHint>
+                                    </>,
+                                );
+                            })}
+                    </Section>
+                </>
+            ) : showsSkeleton ? (
+                <Section>
+                    {[62, 48, 70, 55, 40].map((width) => (
+                        <SkeletonRow key={width}>
+                            <Skeleton variant="circular" width={40} height={40} />
+                            <OptionText>
+                                <Skeleton variant="text" width={`${width}%`} />
+                                <Skeleton variant="text" width={`${width - 20}%`} height={14} />
+                            </OptionText>
+                            <Skeleton variant="rounded" width={64} height={24} />
+                        </SkeletonRow>
+                    ))}
+                </Section>
+            ) : showsEmptyState ? (
+                <EmptyState search={palette.debouncedSearch} />
+            ) : (
+                groupedResults.map(({ entityName, items }) => (
+                    <Section
+                        key={entityName}
+                        title={entityName ? getEntityType(entityName).pluralLabel : undefined}
+                        action={
+                            entityName ? (
+                                <Typography variant="caption" color="text.secondary">
+                                    {items.length}
+                                </Typography>
+                            ) : undefined
+                        }
+                    >
+                        {items.map((item) =>
+                            item.kind === "result"
+                                ? renderOption(item, <ResultContent result={item.result} search={palette.debouncedSearch} />)
+                                : null,
+                        )}
+                    </Section>
+                ))
+            )}
+        </Body>
+    );
 
     return (
         <PaletteDialog open onClose={onClose} maxWidth="sm" fullWidth disableRestoreFocus>
@@ -162,46 +267,41 @@ function Palette({ onSelectResult, onQuickAction, onClose }: Required<Props> & {
                 )}
             </InputRow>
 
-            <TabsRow>
-                <FilterTabs
-                    value={palette.entityFilter}
-                    onChange={(_, value: string) => {
-                        palette.setEntityFilter(value);
-                        inputRef.current?.focus();
+            <TabsArea>
+                <Tabs
+                    tabsState={{
+                        value: Math.max(0, tabKeys.indexOf(palette.entityFilter)),
+                        setValue: (index) => {
+                            palette.setEntityFilter(tabKeys[index]);
+                            inputRef.current?.focus();
+                        },
                     }}
-                    variant="scrollable"
-                    scrollButtons={false}
                 >
-                    <FilterTab
-                        value={allEntitiesFilter}
+                    <Tab
                         label={
                             <TabLabel
                                 label={<FormattedMessage id="fullTextSearchPrototype.filter.all" defaultMessage="All" />}
-                                count={palette.isSearchEmpty || showsSkeleton ? undefined : palette.visibleTotalCount}
+                                count={areTabsInactive ? undefined : palette.visibleTotalCount}
                             />
                         }
-                    />
-                    {enabledEntityNames
-                        .filter((entityName) => palette.isSearchEmpty || showsSkeleton || countForEntity(entityName) > 0)
-                        .map((entityName) => {
-                            const { icon: Icon, pluralLabel } = getEntityType(entityName);
-                            return (
-                                <FilterTab
-                                    key={entityName}
-                                    value={entityName}
-                                    disabled={palette.isSearchEmpty || showsSkeleton}
-                                    icon={<Icon />}
-                                    iconPosition="start"
-                                    label={
-                                        <TabLabel
-                                            label={pluralLabel}
-                                            count={palette.isSearchEmpty || showsSkeleton ? undefined : countForEntity(entityName)}
-                                        />
-                                    }
-                                />
-                            );
-                        })}
-                </FilterTabs>
+                    >
+                        {body}
+                    </Tab>
+                    {tabEntityNames.map((entityName) => {
+                        const { icon: Icon, pluralLabel } = getEntityType(entityName);
+                        return (
+                            <Tab
+                                key={entityName}
+                                disabled={areTabsInactive}
+                                icon={<Icon />}
+                                iconPosition="start"
+                                label={<TabLabel label={pluralLabel} count={areTabsInactive ? undefined : countForEntity(entityName)} />}
+                            >
+                                {body}
+                            </Tab>
+                        );
+                    })}
+                </Tabs>
                 <SettingsButton
                     aria-label={intl.formatMessage({ id: "fullTextSearchPrototype.configureTypes", defaultMessage: "Choose what to search" })}
                     onClick={(event) => setSettingsAnchor(event.currentTarget)}
@@ -209,7 +309,7 @@ function Palette({ onSelectResult, onQuickAction, onClose }: Required<Props> & {
                 >
                     <Settings />
                 </SettingsButton>
-            </TabsRow>
+            </TabsArea>
 
             <Popover
                 open={settingsAnchor !== null}
@@ -245,94 +345,6 @@ function Palette({ onSelectResult, onQuickAction, onClose }: Required<Props> & {
                 </SettingsList>
             </Popover>
 
-            <Body ref={listRef} id="palette-d-listbox" role="listbox">
-                {palette.isSearchEmpty ? (
-                    <>
-                        {palette.recentSearches.terms.length > 0 && (
-                            <Section
-                                title={<FormattedMessage id="fullTextSearchPrototype.recent.searches" defaultMessage="Recent searches" />}
-                                action={
-                                    <Button variant="textDark" size="small" onClick={palette.recentSearches.clear}>
-                                        <FormattedMessage id="fullTextSearchPrototype.recent.clear" defaultMessage="Clear" />
-                                    </Button>
-                                }
-                            >
-                                <ChipRow>
-                                    {palette.recentSearches.terms.map((term) => (
-                                        <Chip
-                                            key={term}
-                                            variant="outlined"
-                                            icon={<Time fontSize="small" />}
-                                            label={term}
-                                            onClick={() => {
-                                                palette.setSearch(term);
-                                                inputRef.current?.focus();
-                                            }}
-                                        />
-                                    ))}
-                                </ChipRow>
-                            </Section>
-                        )}
-                        {palette.recentSearches.results.length > 0 && (
-                            <Section title={<FormattedMessage id="fullTextSearchPrototype.recent.opened" defaultMessage="Recently opened" />}>
-                                {palette.items
-                                    .filter((item) => item.kind === "recentResult")
-                                    .map((item) => renderOption(item, <ResultContent result={item.result} search="" showTypeLabel />))}
-                            </Section>
-                        )}
-                        <Section title={<FormattedMessage id="fullTextSearchPrototype.quickActions" defaultMessage="Quick actions" />}>
-                            {palette.items
-                                .filter((item) => item.kind === "quickAction")
-                                .map((item) => {
-                                    const Icon = item.action.icon;
-                                    return renderOption(
-                                        item,
-                                        <>
-                                            <RoundIcon className="color-default">
-                                                <Icon />
-                                            </RoundIcon>
-                                            <OptionText>
-                                                <Title variant="body2">{item.action.label}</Title>
-                                            </OptionText>
-                                            <EnterHint aria-hidden>{enterKeyLabel}</EnterHint>
-                                        </>,
-                                    );
-                                })}
-                        </Section>
-                    </>
-                ) : showsSkeleton ? (
-                    <Section>
-                        {[62, 48, 70, 55, 40].map((width) => (
-                            <SkeletonRow key={width}>
-                                <Skeleton variant="circular" width={40} height={40} />
-                                <OptionText>
-                                    <Skeleton variant="text" width={`${width}%`} />
-                                    <Skeleton variant="text" width={`${width - 20}%`} height={14} />
-                                </OptionText>
-                                <Skeleton variant="rounded" width={64} height={24} />
-                            </SkeletonRow>
-                        ))}
-                    </Section>
-                ) : showsEmptyState ? (
-                    <EmptyState search={palette.debouncedSearch} />
-                ) : (
-                    <Section>
-                        {palette.items.map((item) =>
-                            item.kind === "result"
-                                ? renderOption(
-                                      item,
-                                      <ResultContent
-                                          result={item.result}
-                                          search={palette.debouncedSearch}
-                                          showTypeLabel={palette.entityFilter === allEntitiesFilter}
-                                      />,
-                                  )
-                                : null,
-                        )}
-                    </Section>
-                )}
-            </Body>
-
             <Footer>
                 <FooterHint keys={["↓", "↑"]}>
                     <FormattedMessage id="fullTextSearchPrototype.hint.move" defaultMessage="Move" />
@@ -361,7 +373,7 @@ function TabLabel({ label, count }: { label: ReactNode; count?: number }) {
     return (
         <TabLabelRoot>
             {label}
-            {count !== undefined && <Count>{count}</Count>}
+            {count !== undefined && <Chip size="small" label={count} />}
         </TabLabelRoot>
     );
 }
@@ -382,9 +394,8 @@ function Section({ title, action, children }: PropsWithChildren<{ title?: ReactN
     );
 }
 
-function ResultContent({ result, search, showTypeLabel }: { result: SearchResult; search: string; showTypeLabel?: boolean }) {
-    const { icon: Icon, label } = getEntityType(result.entityName);
-    const detail = getResultDetail(result.id);
+function ResultContent({ result, search }: { result: SearchResult; search: string }) {
+    const { icon: Icon } = getEntityType(result.entityName);
     return (
         <>
             <RoundIcon className={`color-${entityColors[result.entityName] ?? "default"}`}>
@@ -400,14 +411,11 @@ function ResultContent({ result, search, showTypeLabel }: { result: SearchResult
                     </SecondaryText>
                 )}
             </OptionText>
-            <MetaColumn>
-                {detail && <DetailChip size="small" label={detail} />}
-                {showTypeLabel && (
-                    <Typography variant="caption" color="text.secondary">
-                        {label}
-                    </Typography>
-                )}
-            </MetaColumn>
+            <DetailChips>
+                {getResultDetails(result.id).map((detail) => (
+                    <Chip key={detail.label} label={detail.label} color={detail.color} />
+                ))}
+            </DetailChips>
         </>
     );
 }
@@ -492,68 +500,43 @@ const ClearButton = styled(Button)`
     text-underline-offset: 3px;
 `;
 
-const TabsRow = styled("div")`
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    gap: ${({ theme }) => theme.spacing(2)};
-    padding: ${({ theme }) => theme.spacing(0, 4, 0, 5)};
-    border-bottom: 1px solid ${({ theme }) => theme.palette.divider};
-`;
-
-const FilterTabs = styled(Tabs)`
-    flex-grow: 1;
-    min-height: 0;
-
-    margin-bottom: 0;
-
-    &::after {
-        display: none;
-    }
-
-    & .MuiTabs-indicator {
-        height: 2px;
-        background-color: ${({ theme }) => theme.palette.text.primary};
-    }
-`;
-
-const FilterTab = styled(Tab)`
-    min-height: 52px;
-    padding: ${({ theme }) => theme.spacing(1, 2)};
-    text-transform: none;
-    color: ${({ theme }) => theme.palette.text.secondary};
-
-    &.Mui-selected {
-        color: ${({ theme }) => theme.palette.text.primary};
-        font-weight: 600;
-    }
-
-    &.Mui-disabled {
-        color: ${({ theme }) => theme.palette.text.secondary};
-        opacity: 0.7;
-    }
-`;
-
 const TabLabelRoot = styled("span")`
     display: inline-flex;
     align-items: center;
     gap: ${({ theme }) => theme.spacing(1.5)};
 `;
 
-const Count = styled("span")`
-    min-width: 22px;
-    padding: ${({ theme }) => theme.spacing(0, 1)};
-    border-radius: 6px;
-    background-color: ${({ theme }) => theme.palette.grey[100]};
-    color: ${({ theme }) => theme.palette.text.secondary};
-    font-size: 12px;
-    font-weight: 500;
-    line-height: 22px;
-    font-variant-numeric: tabular-nums;
+const TabsArea = styled("div")`
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    min-height: 0;
+
+    & .DextinityAdminTabs-root {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        min-height: 0;
+    }
+
+    & .DextinityAdminTabs-tabs {
+        flex-shrink: 0;
+        margin-bottom: 0;
+        padding: ${({ theme }) => theme.spacing(0, 14, 0, 5)};
+    }
+
+    & .DextinityAdminTabs-content {
+        flex-grow: 1;
+        min-height: 0;
+        overflow-y: auto;
+    }
 `;
 
 const SettingsButton = styled(IconButton)`
-    flex-shrink: 0;
+    position: absolute;
+    top: ${({ theme }) => theme.spacing(1)};
+    right: ${({ theme }) => theme.spacing(4)};
     border-radius: 10px;
     background-color: ${({ theme }) => theme.palette.grey[50]};
 
@@ -589,8 +572,6 @@ const SettingsItem = styled("label")`
 `;
 
 const Body = styled("div")`
-    flex-grow: 1;
-    overflow-y: auto;
     padding-bottom: ${({ theme }) => theme.spacing(2)};
 `;
 
@@ -659,7 +640,6 @@ const RoundIcon = styled("span")`
     box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04);
 
     ${({ theme }) => tintedIcon(theme, "primary")}
-    ${({ theme }) => tintedIcon(theme, "info")}
     ${({ theme }) => tintedIcon(theme, "success")}
     ${({ theme }) => tintedIcon(theme, "warning")}
     ${({ theme }) => tintedIcon(theme, "secondary")}
@@ -679,19 +659,10 @@ const SecondaryText = styled(Typography)`
     margin-top: 2px;
 `;
 
-const MetaColumn = styled("span")`
+const DetailChips = styled("span")`
     display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: ${({ theme }) => theme.spacing(0.5)};
     flex-shrink: 0;
-`;
-
-const DetailChip = styled(Chip)`
-    height: 24px;
-    border: 1px solid ${({ theme }) => theme.palette.divider};
-    background-color: ${({ theme }) => theme.palette.background.paper};
-    font-variant-numeric: tabular-nums;
+    gap: ${({ theme }) => theme.spacing(1)};
 `;
 
 const EnterHint = styled(Kbd)`

@@ -40,6 +40,7 @@ const defaultLabels: AppShellLabels = {
 
 // Moves focus into the assistant once its column has opened, so the focus doesn't jump while the column is still growing
 const assistantFocusDelay = 280;
+const assistantKeyboardShortcut = "mod+j";
 
 /**
  * The resolved configuration that influences the component's appearance or behavior.
@@ -148,7 +149,8 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
     }, [assistantOpen]);
 
     useKeyboardShortcut("mod+\\", () => onNavCollapsedChange(!navCollapsed), { enabled: !disableKeyboardShortcuts && layout === "wide" });
-    useKeyboardShortcut("mod+j", () => changeAssistantOpen(!assistantOpen), { enabled: !disableKeyboardShortcuts && hasAssistant });
+    const assistantShortcutEnabled = !disableKeyboardShortcuts && hasAssistant;
+    useKeyboardShortcut(assistantKeyboardShortcut, () => changeAssistantOpen(!assistantOpen), { enabled: assistantShortcutEnabled });
 
     useEffect(() => {
         if (!ownerState.assistantOpen || layout === "narrow") {
@@ -180,6 +182,7 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
         layout,
         assistantOpen: hasAssistant ? assistantOpen : undefined,
         onAssistantOpenChange: hasAssistant ? changeAssistantOpen : undefined,
+        assistantKeyboardShortcut: assistantShortcutEnabled ? assistantKeyboardShortcut : undefined,
         assistantSwitchRef,
     };
 

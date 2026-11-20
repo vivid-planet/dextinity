@@ -18,6 +18,8 @@ export interface AppShellContextValue {
     assistantOpen?: boolean;
     /** Shows or hides the assistant; unset when the shell has no assistant. */
     onAssistantOpenChange?: (open: boolean) => void;
+    /** The shortcut that shows or hides the assistant; unset when the shell doesn't listen to it. */
+    assistantKeyboardShortcut?: string;
     /** The switch that shows the assistant, so the shell can return focus to it when the assistant closes. */
     assistantSwitchRef?: RefObject<HTMLButtonElement | null>;
 }

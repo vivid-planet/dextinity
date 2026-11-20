@@ -90,7 +90,11 @@ const meta = {
                         setNavCollapsed(collapsed);
                         args.onNavCollapsedChange(collapsed);
                     }}
-                    assistant={args.assistant != null ? <StoryAssistant onClose={() => changeAssistantOpen(false)} /> : undefined}
+                    assistant={
+                        args.assistant != null ? (
+                            <StoryAssistant closeKeyboardShortcut="mod+j" onClose={() => changeAssistantOpen(false)} />
+                        ) : undefined
+                    }
                     assistantOpen={assistantOpen}
                     onAssistantOpenChange={changeAssistantOpen}
                 >
@@ -145,7 +149,7 @@ const meta = {
         assistant: {
             control: "select",
             options: ["Chat"],
-            mapping: { Chat: <StoryAssistant /> },
+            mapping: { Chat: <StoryAssistant closeKeyboardShortcut="mod+j" /> },
         },
         disableKeyboardShortcuts: { control: "boolean" },
         nav: { control: false },
@@ -200,7 +204,7 @@ export const NavCollapsed: Story = {
  */
 export const WithAssistant: Story = {
     args: {
-        assistant: <StoryAssistant />,
+        assistant: <StoryAssistant closeKeyboardShortcut="mod+j" />,
         assistantOpen: true,
     },
     play: async ({ args }) => {
@@ -225,7 +229,7 @@ export const WithAssistant: Story = {
 export const WithAssistantNavCollapsed: Story = {
     args: {
         navCollapsed: true,
-        assistant: <StoryAssistant />,
+        assistant: <StoryAssistant closeKeyboardShortcut="mod+j" />,
         assistantOpen: true,
     },
 };

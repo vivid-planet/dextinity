@@ -489,14 +489,11 @@ export function AssetDetail({ assetId }: { assetId: string }) {
                     breadcrumbs={
                         <Breadcrumbs
                             variant="label"
-                            items={[
-                                ...[{ id: null, name: "Assets" }, ...getFolderTrail(folders, asset.folderId)].map((segment) => ({
-                                    label: segment.name,
-                                    href: "#assets",
-                                    onClick: () => openInLibrary(segment.id),
-                                })),
-                                { label: draft.name },
-                            ]}
+                            items={[{ id: null, name: "Assets" }, ...getFolderTrail(folders, asset.folderId)].map((segment) => ({
+                                label: segment.name,
+                                href: "#assets",
+                                onClick: () => openInLibrary(segment.id),
+                            }))}
                         />
                     }
                     eyebrow="Global"

@@ -22,6 +22,7 @@ function DateTimePickerWithReset(props: DateTimePickerProps) {
                     }}
                 />
             </Field>
+            <Button onClick={() => setValue(new Date(2026, 10, 6, 13, 0).toISOString())}>Load record</Button>
             <Button onClick={() => setValue(null)}>Reset</Button>
         </div>
     );
@@ -34,6 +35,15 @@ function DateTimePickerWithLoadedTimes(props: DateTimePickerProps) {
             <DateTimePickerWithReset {...props} isTimeDisabled={isLoaded ? props.isTimeDisabled : () => true} />
             <Button onClick={() => setIsLoaded(true)}>Load times</Button>
         </>
+    );
+}
+
+function DateTimePickerInForm(props: DateTimePickerProps) {
+    return (
+        <form>
+            <DateTimePickerWithReset {...props} />
+            <Button type="reset">Reset form</Button>
+        </form>
     );
 }
 
@@ -62,6 +72,63 @@ export const ResetAfterTypingTheTimeFirst: Story = {
         await waitFor(() => expect(args.onChange).toHaveBeenCalledTimes(1));
         await userEvent.click(canvas.getByRole("button", { name: "Reset" }));
         await waitFor(() => expect(time).toHaveValue(""));
+    },
+};
+
+/**
+ * A time typed before the day is discarded once the value changes from outside, so it doesn't come back after a later reset.
+ */
+export const ResetAfterLoadingARecord: Story = {
+    play: async ({ canvas }) => {
+        const time = canvas.getByRole("textbox", { name: "Publish at Time" });
+        await userEvent.type(time, "10:00");
+        await userEvent.tab();
+        await userEvent.click(canvas.getByRole("button", { name: "Load record" }));
+        await waitFor(() => expect(time).toHaveValue("13:00"));
+        await userEvent.click(canvas.getByRole("button", { name: "Reset" }));
+        await waitFor(() => expect(time).toHaveValue(""));
+    },
+};
+
+/**
+ * Resetting the surrounding form discards typed text and a time typed before the day, also while the value stays the same.
+ */
+export const FormReset: Story = {
+    render: (args) => <DateTimePickerInForm {...args} />,
+    play: async ({ canvas }) => {
+        const date = canvas.getByRole("textbox", { name: "Publish at" });
+        const time = canvas.getByRole("textbox", { name: "Publish at Time" });
+        await userEvent.type(date, "next week");
+        await userEvent.type(time, "10:00");
+        await userEvent.tab();
+        await expect(date).toHaveAttribute("aria-invalid", "true");
+
+        await userEvent.click(canvas.getByRole("button", { name: "Reset form" }));
+        await waitFor(() => expect(date).not.toHaveAttribute("aria-invalid"));
+        await expect(date).toHaveValue("");
+        await expect(time).toHaveValue("");
+    },
+};
+
+/**
+ * A form reset that the app cancels keeps the typed text.
+ */
+export const FormResetCanceledByTheApp: Story = {
+    render: (args) => (
+        <form onReset={(event) => event.preventDefault()}>
+            <DateTimePickerWithReset {...args} />
+            <Button type="reset">Reset form</Button>
+        </form>
+    ),
+    play: async ({ canvas }) => {
+        const date = canvas.getByRole("textbox", { name: "Publish at" });
+        await userEvent.type(date, "next week");
+        await userEvent.tab();
+
+        await userEvent.click(canvas.getByRole("button", { name: "Reset form" }));
+        await new Promise((resolve) => setTimeout(resolve));
+        await expect(date).toHaveValue("next week");
+        await expect(date).toHaveAttribute("aria-invalid", "true");
     },
 };
 
@@ -163,5 +230,28 @@ export const KeptTimeAllowedOnceTheTimesLoad: Story = {
         await userEvent.click(canvas.getByRole("button", { name: "Load times" }));
         await waitFor(() => expect(args.onChange).toHaveBeenCalledWith(new Date(2026, 10, 7, 10, 30).toISOString()));
         await expect(time).not.toHaveAttribute("aria-invalid");
+    },
+};
+
+/**
+ * A typed time that the loaded times allow replaces the kept time of a day that waits for an allowed time.
+ */
+export const RejectedTimeUsedOnceTheTimesLoad: Story = {
+    args: { value: new Date(2026, 10, 6, 8, 30).toISOString() },
+    render: (args) => <DateTimePickerWithLoadedTimes {...args} />,
+    play: async ({ args, canvas }) => {
+        const time = canvas.getByRole("textbox", { name: "Publish at Time" });
+        await userEvent.click(canvas.getByRole("button", { name: "Choose date" }));
+        const grid = await screen.findByRole("grid", { name: "November 2026" });
+        await userEvent.click(within(grid).getByRole("button", { name: "Samstag, 7. November 2026" }));
+        await userEvent.clear(time);
+        await userEvent.type(time, "9:00");
+        await userEvent.tab();
+        await expect(time).toHaveAccessibleDescription("09:00 can't be chosen.");
+
+        await userEvent.click(canvas.getByRole("button", { name: "Load times" }));
+        await waitFor(() => expect(args.onChange).toHaveBeenCalledWith(new Date(2026, 10, 7, 9, 0).toISOString()));
+        await expect(args.onChange).toHaveBeenCalledTimes(1);
+        await expect(time).toHaveValue("09:00");
     },
 };

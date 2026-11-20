@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { forwardRef, type KeyboardEvent, useCallback, useEffect, useId, useRef, useState } from "react";
+import { forwardRef, type KeyboardEvent, useCallback, useId, useRef, useState } from "react";
 
 import { ControlFrame, type PureControlProps, useControlState } from "../field/ControlFrame";
 import type { FieldOwnerState } from "../field/Field";
@@ -20,7 +20,8 @@ import {
 } from "./dateValues";
 import { TimePopover } from "./TimePopover";
 import { invalidTimeMessage, readTypedDay } from "./typedDay";
-import { useTextDraft } from "./useTextDraft";
+import { useFormReset } from "./useFormReset";
+import { type TextReading, useRejectedTextReread, useTextDraft } from "./useTextDraft";
 
 /**
  * Texts of the date and time picker, for translation.
@@ -75,9 +76,10 @@ export interface DateTimePickerProps extends DatePickerCalendarProps, PureContro
 /**
  * A day and a time of day, typed in the locale's format or chosen in a calendar and a list of times. Choosing a day keeps the time; without
  * one, the time is midnight. Typed text is read on blur or Enter; text that can't be read, or a day or time that can't be chosen, stays in
- * its input with an error and leaves the value unchanged until it is corrected. A typed time that can't be chosen is checked again when
- * the day changes. A kept time that can't be chosen on the new day shows an error too, until the time is changed or `isTimeDisabled`
- * allows it; without a time, a day on which midnight can't be chosen waits for a time without an error.
+ * its input with an error and leaves the value unchanged until it is corrected, or until the day or the rules change to allow it. A kept
+ * time that can't be chosen on the new day shows an error too, until the time is changed or `isTimeDisabled` allows it; without a time, a
+ * day on which midnight can't be chosen waits for a time without an error. Resetting the surrounding form discards typed text and a day
+ * or time that waits; to discard them from code, render the picker with a new `key`.
  */
 export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(function DateTimePicker(
     {
@@ -109,7 +111,7 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
     const [open, setOpen] = useState(false);
     const [timeListOpen, setTimeListOpen] = useState(false);
     // A time typed before there is a day, used once a day is chosen
-    const [pendingTime, setPendingTime] = useState<TimeOfDay | null>(null);
+    const [pendingTime, setPendingTime] = useState<{ time: TimeOfDay; value: string | null } | null>(null);
     // A day chosen while the kept time is disabled on it, used once an allowed time is set
     const [pendingDay, setPendingDay] = useState<{ date: IsoDate; value: string | null } | null>(null);
     const inputRef = useRef<HTMLInputElement | null>(null);
@@ -127,7 +129,10 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
     );
 
     const current = splitDateTime(value);
-    const time = current?.time ?? pendingTime;
+    if (pendingTime != null && pendingTime.value !== value) {
+        setPendingTime(null);
+    }
+    const time = current?.time ?? pendingTime?.time ?? null;
     if (pendingDay != null && pendingDay.value !== value) {
         setPendingDay(null);
     }
@@ -144,22 +149,21 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
         onChange(day == null ? null : joinDateTime(day, nextTime ?? midnight));
     };
 
-    const timeDraft = useTextDraft(time == null ? "" : formatTime(time, locale), (text) => {
+    const timeDraft = useTextDraft(time == null ? "" : formatTime(time, locale), (text): TextReading => {
         if (text.trim() === "" && date == null) {
-            setPendingTime(null);
-            return;
+            return { apply: () => setPendingTime(null) };
         }
         const parsed = text.trim() === "" ? midnight : parseTime(text);
         if (parsed == null) {
-            return invalidTimeMessage(locale, labels);
+            return { error: invalidTimeMessage(locale, labels) };
         }
         if (date == null) {
-            setPendingTime(parsed);
-        } else if (isTimeDisabledOn(date, parsed)) {
-            return labels.timeDisabled(formatTime(parsed, locale));
-        } else {
-            change(date, parsed);
+            return { apply: () => setPendingTime({ time: parsed, value }) };
         }
+        if (isTimeDisabledOn(date, parsed)) {
+            return { error: labels.timeDisabled(formatTime(parsed, locale)) };
+        }
+        return { apply: () => change(date, parsed) };
     });
 
     const rejectedTimeAllowedOn = (day: IsoDate) => {
@@ -185,17 +189,20 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
 
     const dateDraft = useTextDraft(date == null ? "" : formatDate(date, locale), (text) => {
         const typed = readTypedDay(text, { locale, min, max, isDateDisabled, labels });
-        if (typed.error != null) {
-            return typed.error;
-        }
-        chooseDay(typed.day);
+        return typed.error != null ? { error: typed.error } : { apply: () => chooseDay(typed.day) };
     });
 
     const isPendingDayAllowed = pendingDate != null && !isTimeDisabledOn(pendingDate, time ?? midnight);
-    useEffect(() => {
+    useRejectedTextReread([dateDraft, timeDraft], () => {
         if (isPendingDayAllowed) {
             change(pendingDate, time);
         }
+    });
+    useFormReset(inputRef, () => {
+        dateDraft.reset();
+        timeDraft.reset();
+        setPendingTime(null);
+        setPendingDay(null);
     });
 
     const keptTimeError =
@@ -205,7 +212,8 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
     const onKeyDown = (draft: typeof dateDraft, openPopup: (open: boolean) => void) => (event: KeyboardEvent<HTMLInputElement>) => {
         if (event.key === "Enter") {
             draft.commit();
-        } else if (event.key === "Escape") {
+        } else if (event.key === "Escape" && draft.hasDraft) {
+            event.stopPropagation();
             draft.reset();
         } else if (event.key === "ArrowDown" && event.altKey && editable) {
             event.preventDefault();
@@ -217,7 +225,7 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
     const chooseTime = (nextTime: TimeOfDay) => {
         timeDraft.reset();
         if (date == null) {
-            setPendingTime(nextTime);
+            setPendingTime({ time: nextTime, value });
         } else {
             change(date, nextTime);
         }
@@ -232,6 +240,7 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
             disabled={disabledProp}
             readOnly={readOnlyProp}
             error={draftError}
+            errorInput={dateDraft.error != null ? inputRef : timeInputRef}
             className={className}
             style={style}
         >

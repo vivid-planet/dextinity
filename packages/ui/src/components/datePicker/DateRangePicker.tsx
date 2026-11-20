@@ -10,7 +10,8 @@ import { type DateRangePosition, disabledDayBetween, disabledRangeDay, disabledR
 import styles from "./DateRangePicker.module.scss";
 import { formatDate, isIsoDate, type IsoDate, isWithin, localeWeekStart } from "./dateValues";
 import { readTypedDay } from "./typedDay";
-import { useTextDraft } from "./useTextDraft";
+import { useFormReset } from "./useFormReset";
+import { type TextReading, useRejectedTextReread, useTextDraft } from "./useTextDraft";
 
 /**
  * A range of days as `YYYY-MM-DD`, both ends inclusive. An end is `null` while it isn't set.
@@ -93,7 +94,8 @@ function toRange(start: IsoDate | null, end: IsoDate | null): DateRange | null {
  * A range of days, typed in the locale's format or chosen in a calendar: the first click chooses the start, the second the end; with
  * only a start that can be chosen, the first click chooses the end. Typed text is read on blur or Enter; text that is no valid day, a
  * day that can't be chosen, or an end before the start stays in its input with an error and leaves the value unchanged until it is
- * corrected.
+ * corrected, or until the other end or the rules change to allow it. Resetting the surrounding form discards the typed text; to discard
+ * it from code, render the picker with a new `key`.
  */
 export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps>(function DateRangePicker(
     {
@@ -126,6 +128,7 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
     // The start chosen in the calendar, until the end is chosen too
     const [pendingStart, setPendingStart] = useState<IsoDate | null>(null);
     const inputRef = useRef<HTMLInputElement | null>(null);
+    const endInputRef = useRef<HTMLInputElement>(null);
     const setInputRef = useCallback(
         (element: HTMLInputElement | null) => {
             inputRef.current = element;
@@ -156,10 +159,14 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
         return day.position === "start" ? labels.dateDisabledAsStart(formattedDay) : labels.dateDisabledAsEnd(formattedDay);
     };
 
-    const readDay = (text: string, position: "start" | "end", otherDraft: { text: string; error: string | undefined; reset: () => void }) => {
+    const readDay = (
+        text: string,
+        position: "start" | "end",
+        otherDraft: { text: string; error: string | undefined; reset: () => void },
+    ): TextReading => {
         const typed = readTypedText(text);
         if (typed.error != null) {
-            return typed.error;
+            return { error: typed.error };
         }
         const otherTypedDay = otherDraft.error == null ? undefined : readTypedText(otherDraft.text).day;
         const otherDay = otherTypedDay === undefined ? (position === "start" ? end : start) : otherTypedDay;
@@ -170,18 +177,28 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
             isDateDisabled && ((date, dayPosition) => (dayPosition === "between" || typedDays.includes(date)) && isDateDisabled(date, dayPosition)),
         );
         if (disabledDay != null) {
-            return disabledDayMessage(disabledDay, position);
+            return { error: disabledDayMessage(disabledDay, position) };
         }
         if (nextRange.start != null && nextRange.end != null && nextRange.end < nextRange.start) {
-            return labels.endBeforeStart;
+            return { error: labels.endBeforeStart };
         }
-        if (otherTypedDay !== undefined) {
-            otherDraft.reset();
-        }
-        onChange(nextRange.start == null && nextRange.end == null ? null : nextRange);
+        return {
+            apply: () => {
+                if (otherTypedDay !== undefined) {
+                    otherDraft.reset();
+                }
+                onChange(nextRange.start == null && nextRange.end == null ? null : nextRange);
+            },
+        };
     };
     const startDraft = useTextDraft(start == null ? "" : formatDate(start, locale), (text) => readDay(text, "start", endDraft));
     const endDraft = useTextDraft(end == null ? "" : formatDate(end, locale), (text) => readDay(text, "end", startDraft));
+    useRejectedTextReread([startDraft, endDraft]);
+    useFormReset(inputRef, () => {
+        startDraft.reset();
+        endDraft.reset();
+        setPendingStart(null);
+    });
     const canBeChosenAsStart = (day: IsoDate) => isWithin(day, min, max) && disabledRangeEnd({ start: day, end: null }, isDateDisabled) == null;
     const startAwaitingEnd = pendingStart ?? (end == null && start != null && canBeChosenAsStart(start) ? start : null);
     const disabledDayBetweenStartAwaitingEndAnd =
@@ -195,7 +212,8 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
     const onKeyDown = (draft: typeof startDraft) => (event: KeyboardEvent<HTMLInputElement>) => {
         if (event.key === "Enter") {
             draft.commit();
-        } else if (event.key === "Escape") {
+        } else if (event.key === "Escape" && draft.hasDraft) {
+            event.stopPropagation();
             draft.reset();
         } else if (event.key === "ArrowDown" && event.altKey && editable) {
             event.preventDefault();
@@ -212,6 +230,7 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
             disabled={disabledProp}
             readOnly={readOnlyProp}
             error={draftError}
+            errorInput={startDraft.error != null ? inputRef : endInputRef}
             className={className}
             style={style}
         >
@@ -239,6 +258,7 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
                     />
                     <Icon name="arrow-right" className={styles.separator} />
                     <input
+                        ref={endInputRef}
                         type="text"
                         inputMode="numeric"
                         autoComplete="off"

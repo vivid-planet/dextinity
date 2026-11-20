@@ -14,8 +14,6 @@
         --dextinity-page-header-title-font-size: var(--dextinity-page-header-compact-title-font-size);
         --dextinity-page-header-subtitle-spacing: var(--dextinity-page-header-compact-subtitle-spacing);
 
-        align-items: center;
-
         .title {
             line-height: 1.15;
         }
@@ -33,7 +31,7 @@
 
         .eyebrow,
         .labelLine > [aria-hidden],
-        .labelLine:not(:has(> div)) {
+        .labelLine:not(:has(> div, > .back)) {
             display: none;
         }
 
@@ -61,17 +59,6 @@
         }
     }
 
-    &[data-has-back] .heading {
-        display: grid;
-        grid-template-areas:
-            ". label"
-            "back title"
-            ". subtitle";
-        grid-template-columns: auto minmax(0, 1fr);
-        align-items: center;
-        column-gap: var(--dextinity-page-header-back-gap);
-    }
-
     // In narrow windows, the label line takes the whole width above the title, and the action status moves below the buttons, so
     // that the title keeps as much room as it can next to the buttons
     @media (width < 768px) {
@@ -81,20 +68,10 @@
             "title buttons"
             "subtitle actionStatus";
         grid-template-columns: minmax(0, 1fr) auto;
-        align-items: center;
+        align-items: end;
         gap: 0 var(--dextinity-page-header-gap);
 
-        &[data-has-back] {
-            grid-template-areas:
-                "label label label"
-                "back title buttons"
-                ". subtitle actionStatus";
-            grid-template-columns: auto minmax(0, 1fr) auto;
-            column-gap: var(--dextinity-page-header-back-gap);
-        }
-
         .heading,
-        &[data-has-back] .heading,
         .actions {
             display: contents;
         }
@@ -131,7 +108,9 @@
 }
 
 .back {
-    grid-area: back;
+    // The back action takes no more height than the label line, and its icon lines up with the title
+    margin-block: calc((var(--dextinity-page-header-label-line-height) - var(--dextinity-icon-button-size-small)) / 2);
+    margin-inline-start: calc((var(--dextinity-icon-button-size-small) - var(--dextinity-icon-button-icon-size-small)) / -2);
 }
 
 .title {
@@ -150,9 +129,10 @@
     box-sizing: border-box;
     display: block;
     inline-size: calc(100% + 2 * var(--dextinity-page-header-title-input-padding));
-    // A text field doesn't take its height from the line height, so it gets the height of the title's line
-    block-size: calc(var(--dextinity-typography-display-l-line-height) * 1em);
-    margin: 0;
+    // The title's line is barely taller than its letters, and a text field clips what goes beyond it, e.g. the descenders. The field
+    // gets room above and below, which its margin takes back, so that the title stays in place.
+    block-size: calc(var(--dextinity-typography-display-l-line-height) * 1em + 2 * var(--dextinity-page-header-title-input-padding-block));
+    margin: calc(var(--dextinity-page-header-title-input-padding-block) * -1) 0;
     margin-inline-start: calc(var(--dextinity-page-header-title-input-padding) * -1);
     padding: 0 var(--dextinity-page-header-title-input-padding);
     border: 0;

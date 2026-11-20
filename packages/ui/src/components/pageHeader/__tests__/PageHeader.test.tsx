@@ -29,7 +29,7 @@ describe("PageHeader", () => {
         expect(heading.className).toContain("dextinityPageHeader__title");
         const back = screen.getByRole("link", { name: "Overview" });
         expect(back.getAttribute("href")).toBe("/");
-        expect(back.nextElementSibling).toBe(heading);
+        expect(back.parentElement?.className).toContain("dextinityPageHeader__labelLine");
         expect(screen.getByText("3 unpublished").className).toContain("dextinityPageHeader__subtitle");
         expect(container.querySelector(".dextinityPageHeader__labelLine")?.textContent).toBe("Austria · German");
     });
@@ -42,12 +42,12 @@ describe("PageHeader", () => {
         expect((container.firstElementChild as HTMLElement).hasAttribute("data-has-back")).toBe(false);
     });
 
-    it("shows a back button before the title that calls onClick", () => {
+    it("shows a back button in the label line that calls onClick", () => {
         const onClick = vi.fn();
         render(<PageHeader title="Frontend developer" back={{ label: "Back to job ads", onClick }} primaryAction={{ label: "Save" }} />);
 
         const back = screen.getByRole("button", { name: "Back to job ads" });
-        expect(back.nextElementSibling).toBe(screen.getByRole("heading", { level: 1, name: "Frontend developer" }));
+        expect(back.closest(".dextinityPageHeader__labelLine")).not.toBeNull();
         fireEvent.click(back);
         expect(onClick).toHaveBeenCalledTimes(1);
     });

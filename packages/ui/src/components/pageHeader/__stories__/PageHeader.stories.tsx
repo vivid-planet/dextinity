@@ -97,8 +97,8 @@ export const WithMoreActions: Story = {
 };
 
 /**
- * Edit pages lead back before the title, e.g. to the list the edited item belongs to, show the item's status, and keep the save state
- * and Save at the end. Back and the breadcrumbs lead to the same place.
+ * Edit pages and subpages lead back at the start of the label line, above the title, e.g. to the list the edited item belongs to.
+ * They show the item's status, and keep the save state and Save at the end. Back and the breadcrumbs lead to the same place.
  */
 export const WithBack: Story = {
     args: {
@@ -117,7 +117,9 @@ export const WithBack: Story = {
     },
     play: async ({ args, canvas }) => {
         const back = canvas.getByRole("link", { name: "Back to the page tree" });
-        await expect(back.nextElementSibling).toBe(canvas.getByRole("heading", { level: 1, name: "Open positions" }));
+        await expect(back.compareDocumentPosition(canvas.getByRole("heading", { level: 1, name: "Open positions" }))).toBe(
+            Node.DOCUMENT_POSITION_FOLLOWING,
+        );
         await userEvent.click(back);
         await waitFor(() => expect(args.back?.onClick).toHaveBeenCalled());
     },

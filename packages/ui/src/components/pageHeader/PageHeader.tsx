@@ -122,7 +122,7 @@ export interface PageHeaderProps extends Omit<HTMLAttributes<HTMLElement>, "clas
     secondaryActions?: readonly PageHeaderAction[];
     /** A state that belongs to the actions, before them, e.g. `<SaveState />` on edit pages. */
     actionStatus?: ReactNode;
-    /** A back action before the title, for edit pages, e.g. to the list the edited item belongs to. */
+    /** A back action at the start of the label line above the title, for edit pages and subpages, e.g. to the list the edited item belongs to. */
     back?: PageHeaderBack;
     /** Breadcrumbs in the label line, e.g. `<Breadcrumbs variant="label" />`, before the eyebrow. */
     breadcrumbs?: ReactNode;
@@ -290,8 +290,31 @@ export const PageHeader = forwardRef<HTMLElement, PageHeaderProps>(function Page
             className={clsx(styles.root, className)}
         >
             <div {...headingProps}>
-                {(breadcrumbs != null || eyebrow != null) && (
+                {(back != null || breadcrumbs != null || eyebrow != null) && (
                     <div {...labelLineProps}>
+                        {back != null && (
+                            <IconButton
+                                variant="text"
+                                color="secondary"
+                                size="small"
+                                {...slotProps?.back}
+                                className={clsx(styles.back, slotProps?.back?.className)}
+                                aria-label={back.label}
+                                nativeButton={!isBackLink}
+                                // Base UI gives every non-native button `role="button"`; unset, the back link keeps its link role
+                                role={undefined}
+                                render={back.render ?? (back.href != null ? <a href={back.href} /> : undefined)}
+                                onClick={(event) => {
+                                    slotProps?.back?.onClick?.(event);
+                                    if (back.onClick != null) {
+                                        event.preventDefault();
+                                        back.onClick();
+                                    }
+                                }}
+                            >
+                                <Icon name="arrow-left" />
+                            </IconButton>
+                        )}
                         {breadcrumbs != null && <div>{breadcrumbs}</div>}
                         {breadcrumbs != null && eyebrow != null && (
                             <span className={styles.separator} aria-hidden>
@@ -300,28 +323,6 @@ export const PageHeader = forwardRef<HTMLElement, PageHeaderProps>(function Page
                         )}
                         {eyebrow != null && <span className={styles.eyebrow}>{eyebrow}</span>}
                     </div>
-                )}
-                {back != null && (
-                    <IconButton
-                        variant="text"
-                        color="secondary"
-                        {...slotProps?.back}
-                        className={clsx(styles.back, slotProps?.back?.className)}
-                        aria-label={back.label}
-                        nativeButton={!isBackLink}
-                        // Base UI gives every non-native button `role="button"`; unset, the back link keeps its link role
-                        role={undefined}
-                        render={back.render ?? (back.href != null ? <a href={back.href} /> : undefined)}
-                        onClick={(event) => {
-                            slotProps?.back?.onClick?.(event);
-                            if (back.onClick != null) {
-                                event.preventDefault();
-                                back.onClick();
-                            }
-                        }}
-                    >
-                        <Icon name="arrow-left" />
-                    </IconButton>
                 )}
                 <h1 {...titleProps}>
                     {onTitleChange != null ? (

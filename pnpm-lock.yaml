@@ -2794,7 +2794,7 @@ importers:
         specifier: ^6.1.4
         version: 6.1.4
       rollup:
-        specifier: ^4.68.4
+        specifier: ^4.68.5
         version: 4.68.6
       rollup-plugin-preserve-directives:
         specifier: ^0.4.0
@@ -2876,7 +2876,7 @@ importers:
         specifier: ^6.1.4
         version: 6.1.4
       rollup:
-        specifier: ^4.68.4
+        specifier: ^4.68.5
         version: 4.68.6
       rollup-plugin-preserve-directives:
         specifier: ^0.4.0

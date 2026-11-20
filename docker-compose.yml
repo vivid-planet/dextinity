@@ -1,6 +1,6 @@
 services:
     postgres:
-        image: mirror.gcr.io/library/postgres:17
+        image: mirror.gcr.io/library/postgres:19
         pull_policy: weekly
         tty: true
         volumes:

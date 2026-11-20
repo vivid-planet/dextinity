@@ -108,7 +108,7 @@ export const Stacked: Story = {
     render: (args) => (
         <div className={styles.stack}>
             <Panel {...args} title="Panel" description="Glass over the light field. Groups one task." />
-            <Panel {...args} title="Card" description="On the overview: orb with an icon, title, and a link." />
+            <Panel {...args} title="Card" description="On the overview: title, a line, and actions such as a period or a menu." />
         </div>
     ),
 };

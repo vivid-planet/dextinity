@@ -10,6 +10,15 @@ The user's choice is stored in the browser.
 Until the user chooses, the closest supported browser language is used, or else the first supported language.
 
 Read the admin language with `useAdminLanguage` to load the matching translations.
+Declare the supported languages in `AdminLanguageOverrides` to type them:
+
+```ts
+declare module "@dextinity/cms-admin" {
+    interface AdminLanguageOverrides {
+        language: "en" | "de";
+    }
+}
+```
 
 **Example**
 

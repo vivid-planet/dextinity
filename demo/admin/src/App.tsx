@@ -63,6 +63,10 @@ declare module "@dextinity/cms-admin" {
     export interface PermissionOverrides {
         permission: GQLPermission;
     }
+
+    export interface AdminLanguageOverrides {
+        language: SupportedLanguage;
+    }
 }
 
 LicenseInfo.setLicenseKey(config.muiLicenseKey);
@@ -203,7 +207,7 @@ export function App() {
 }
 
 function AdminLanguageLocalizationProvider({ children }: PropsWithChildren) {
-    const { language } = useAdminLanguage<SupportedLanguage>();
+    const { language } = useAdminLanguage();
     const { messages, dateFnsLocale, muiLocale } = useMemo(() => getLanguageConfig(language), [language]);
     const theme = useMemo(() => createTheme(muiLocale), [muiLocale]);
 

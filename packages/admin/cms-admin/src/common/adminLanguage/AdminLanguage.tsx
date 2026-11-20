@@ -1,20 +1,28 @@
 import { useStoredState } from "@dextinity/admin";
 import { createContext, type PropsWithChildren, useContext, useEffect, useMemo } from "react";
 
+/**
+ * Applications augment this interface to type the admin languages, e.g. `interface AdminLanguageOverrides { language: "en" | "de" }`.
+ */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface AdminLanguageOverrides {}
+
+export type AdminLanguage = AdminLanguageOverrides extends { language: infer Language extends string } ? Language : string;
+
 export interface AdminLanguageConfig {
     /**
      * The languages the admin is translated to. The first one is used when none of the browser languages is supported.
      */
-    supportedLanguages: readonly string[];
+    supportedLanguages: readonly AdminLanguage[];
 }
 
-interface AdminLanguage<Language extends string = string> {
-    language: Language;
-    supportedLanguages: readonly Language[];
-    setLanguage: (language: Language) => void;
+interface AdminLanguageContextValue {
+    language: AdminLanguage;
+    supportedLanguages: readonly AdminLanguage[];
+    setLanguage: (language: AdminLanguage) => void;
 }
 
-const AdminLanguageContext = createContext<AdminLanguage | undefined>(undefined);
+const AdminLanguageContext = createContext<AdminLanguageContextValue | undefined>(undefined);
 
 export function AdminLanguageProvider({ config, children }: PropsWithChildren<{ config: AdminLanguageConfig | undefined }>) {
     const supportedLanguages = config?.supportedLanguages;
@@ -54,16 +62,16 @@ export function getClosestSupportedLanguageFromBrowserLanguages(supportedLanguag
     return language ?? fallbackLanguage;
 }
 
-export function useOptionalAdminLanguage(): AdminLanguage | undefined {
+export function useOptionalAdminLanguage(): AdminLanguageContextValue | undefined {
     return useContext(AdminLanguageContext);
 }
 
-export function useAdminLanguage<Language extends string = string>(): AdminLanguage<Language> {
+export function useAdminLanguage(): AdminLanguageContextValue {
     const adminLanguage = useOptionalAdminLanguage();
 
     if (!adminLanguage) {
         throw new Error("No admin languages are configured. Please pass `adminLanguage.supportedLanguages` to `DextinityConfigProvider`.");
     }
 
-    return adminLanguage as unknown as AdminLanguage<Language>;
+    return adminLanguage;
 }

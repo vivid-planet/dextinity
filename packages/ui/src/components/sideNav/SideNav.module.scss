@@ -301,6 +301,8 @@ $children-room-end: 12px;
             position: absolute;
             inset-block: calc(#{$children-room} + 2px) calc(#{$children-room-end} + 6px);
             inset-inline-start: calc(#{$children-room} + 19px);
+            // Above the sub-entries, so their hover and current fills don't hide it
+            z-index: 1;
             inline-size: var(--dextinity-line-width);
             background: var(--dextinity-side-nav-guide-color);
 

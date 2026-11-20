@@ -55,8 +55,8 @@
     --dextinity-side-nav-item-indent-level-2: 40px;
     // Start padding of a sub-entry on the third level
     --dextinity-side-nav-item-indent-level-3: 58px;
-    // Fill of a hovered entry
-    --dextinity-side-nav-item-background-hover: var(--dextinity-material-glass-strong);
+    // Fill of a hovered entry: a darker tint, like the rows in the cards
+    --dextinity-side-nav-item-background-hover: var(--dextinity-color-fill-hover);
     // Text of an entry above the current one
     --dextinity-side-nav-item-ancestor-foreground: var(--dextinity-color-text);
     // Fill of the current entry: a soft tint, so it doesn't compete with the page's primary action
@@ -85,6 +85,11 @@
 
     // Opacity of the corner marker on a collapsed entry that opens a flyout
     --dextinity-side-nav-flyout-marker-opacity: 0.45;
+}
+
+@mixin dark-tokens {
+    // On the dark glass, a lighter fill shows the hover better than a tint
+    --dextinity-side-nav-item-background-hover: var(--dextinity-material-glass-strong);
 }
 
 @mixin high-contrast-tokens {

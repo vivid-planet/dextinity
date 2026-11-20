@@ -13,7 +13,7 @@ const suggestions = ["Which job ads have no salary?", "What changed since yester
  * A stand-in for the assistant of an app: header with the context, messages, suggestions, and composer. The answers are mocked; the
  * app's backend provides them.
  */
-export function StoryAssistant({ onClose }: { onClose?: () => void }) {
+export function StoryAssistant({ onClose, closeKeyboardShortcut }: { onClose?: () => void; closeKeyboardShortcut?: string }) {
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState<Array<{ id: number; text: string }>>([]);
     const send = (text: string) => {
@@ -35,7 +35,7 @@ export function StoryAssistant({ onClose }: { onClose?: () => void }) {
                     <IconButton variant="text" color="secondary" aria-label="New chat" onClick={() => setMessages([])}>
                         <Icon name="chat-add" />
                     </IconButton>
-                    <IconButton variant="text" color="secondary" aria-label="Close" keyboardShortcut="mod+j" onClick={onClose}>
+                    <IconButton variant="text" color="secondary" aria-label="Close" keyboardShortcut={closeKeyboardShortcut} onClick={onClose}>
                         <Icon name="close" />
                     </IconButton>
                 </>

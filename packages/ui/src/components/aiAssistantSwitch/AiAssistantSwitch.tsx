@@ -54,9 +54,9 @@ export interface AiAssistantSwitchProps extends Omit<
     icon?: ReactNode;
     /**
      * The keyboard shortcut shown in the tooltip, in the notation of `useKeyboardShortcut`. It only shows the hint; `AppShell`
-     * listens to the shortcut.
+     * listens to the shortcut. Inside `AppShell`, leave it unset: the switch names the shortcut only while the shell listens to it.
      *
-     * @defaultValue `"mod+j"`
+     * @defaultValue `"mod+j"` outside `AppShell`
      */
     keyboardShortcut?: string;
     /** The built-in texts. */
@@ -78,7 +78,7 @@ export const AiAssistantSwitch = forwardRef<HTMLButtonElement, AiAssistantSwitch
         onChange: onChangeProp,
         iconOnly: iconOnlyProp,
         icon = <Icon name="spark" />,
-        keyboardShortcut = "mod+j",
+        keyboardShortcut: keyboardShortcutProp,
         labels: labelsProp,
         className,
         slotProps,
@@ -92,6 +92,7 @@ export const AiAssistantSwitch = forwardRef<HTMLButtonElement, AiAssistantSwitch
     const checked = checkedProp ?? shell?.assistantOpen ?? false;
     const onChange = onChangeProp ?? shell?.onAssistantOpenChange;
     const iconOnly = iconOnlyProp ?? shell?.layout === "narrow";
+    const keyboardShortcut = keyboardShortcutProp ?? (shell == null ? "mod+j" : shell.assistantKeyboardShortcut);
     const ownerState: AiAssistantSwitchOwnerState = { checked, iconOnly };
     const ariaKeyShortcuts = useAriaKeyShortcuts(keyboardShortcut);
     const shellSwitchRef = shell?.assistantSwitchRef;

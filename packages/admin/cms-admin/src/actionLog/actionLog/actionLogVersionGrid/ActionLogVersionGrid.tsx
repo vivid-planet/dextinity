@@ -167,6 +167,7 @@ export function ActionLogVersionGrid<Row extends GQLActionLogVersionGridFragment
                 }}
                 {...dataGridProps}
                 checkboxSelection
+                disableColumnFilter
                 showToolbar
                 columns={columns}
                 isRowSelectable={(params) => {

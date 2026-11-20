@@ -347,10 +347,14 @@ export const PageHeader = forwardRef<HTMLElement, PageHeaderProps>(function Page
             </div>
             {hasActions && (
                 <div {...actionsProps}>
-                    {actionStatus}
-                    {secondaryActions.length === 1 && <ActionButton action={secondaryActions[0]} />}
-                    {secondaryActions.length > 1 && <ActionsMenu actions={secondaryActions} label={labels.moreActions} />}
-                    {primaryAction != null && <ActionButton action={primaryAction} primary />}
+                    {actionStatus != null && <div className={styles.actionStatus}>{actionStatus}</div>}
+                    {(primaryAction != null || secondaryActions.length > 0) && (
+                        <div className={styles.buttons}>
+                            {secondaryActions.length === 1 && <ActionButton action={secondaryActions[0]} />}
+                            {secondaryActions.length > 1 && <ActionsMenu actions={secondaryActions} label={labels.moreActions} />}
+                            {primaryAction != null && <ActionButton action={primaryAction} primary />}
+                        </div>
+                    )}
                 </div>
             )}
         </header>

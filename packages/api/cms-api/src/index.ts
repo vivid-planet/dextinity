@@ -259,10 +259,12 @@ export {
     PageTreeNodeBaseUpdateInput,
     PageTreeNodeUpdateVisibilityInput,
 } from "./page-tree/dto/page-tree-node.input.js";
+export { PageTreeSlugAvailability } from "./page-tree/dto/page-tree-slug-availability.enum.js";
 export { PaginatedPageTreeNodesFactory } from "./page-tree/dto/paginated-page-tree-nodes.factory.js";
 export { AttachedDocument } from "./page-tree/entities/attached-document.entity.js";
 export { PageTreeNodeBase } from "./page-tree/entities/page-tree-node-base.entity.js";
-export { PageTreeModule } from "./page-tree/page-tree.module.js";
+export { PAGE_TREE_CONFIG } from "./page-tree/page-tree.constants.js";
+export { type PageTreeConfig, PageTreeModule } from "./page-tree/page-tree.module.js";
 export { type PageTreeReadApi, PageTreeService } from "./page-tree/page-tree.service.js";
 export { PageTreeNodeDocumentEntityScopeService } from "./page-tree/page-tree-node-document-entity-scope.service.js";
 export { PageTreeReadApiService } from "./page-tree/page-tree-read-api.service.js";

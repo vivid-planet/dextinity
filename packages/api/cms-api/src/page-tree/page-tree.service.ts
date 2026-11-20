@@ -7,6 +7,7 @@ import { RedirectsService } from "../redirects/redirects.service.js";
 import { contentScopesAreEqual } from "../user-permissions/content-scopes-are-equal.js";
 import type { AttachedDocumentStrictInput } from "./dto/attached-document.input.js";
 import type { MovePageTreeNodesByPosInput, PageTreeNodeBaseCreateInput } from "./dto/page-tree-node.input.js";
+import { PageTreeSlugAvailability } from "./dto/page-tree-slug-availability.enum.js";
 import { AttachedDocument } from "./entities/attached-document.entity.js";
 import { resolvePageTreeNodeEntity } from "./entities/resolve-page-tree-node-entity.js";
 import { PAGE_TREE_CONFIG } from "./page-tree.constants.js";
@@ -423,6 +424,32 @@ export class PageTreeService {
         }
 
         return `${parentPath}/${slug}`;
+    }
+
+    async getSlugAvailability({
+        scope,
+        parentId,
+        slug,
+    }: {
+        scope?: ScopeInterface;
+        parentId: string | null;
+        slug: string;
+    }): Promise<PageTreeSlugAvailability> {
+        const requestedPath = await this.pathForParentAndSlug(parentId, slug);
+
+        if (this.config.reservedPaths.includes(requestedPath)) {
+            return PageTreeSlugAvailability.Reserved;
+        }
+
+        if (slug == "home" && requestedPath !== "/home") {
+            return PageTreeSlugAvailability.Reserved;
+        }
+
+        if (await this.nodeWithSamePath(requestedPath, scope)) {
+            return PageTreeSlugAvailability.Taken;
+        }
+
+        return PageTreeSlugAvailability.Available;
     }
 
     public async nodeWithSamePath(path: string, scope?: ScopeInterface): Promise<PageTreeNodeInterface | null> {

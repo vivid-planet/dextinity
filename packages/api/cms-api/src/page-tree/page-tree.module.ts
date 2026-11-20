@@ -132,6 +132,7 @@ export class PageTreeModule {
             ],
             exports: [
                 PageTreeService,
+                pageTreeConfigProvider,
                 PageTreeReadApiService,
                 AttachedDocumentLoaderService,
                 PageTreeNodeDocumentEntityScopeService,

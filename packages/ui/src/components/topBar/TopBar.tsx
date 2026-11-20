@@ -61,7 +61,8 @@ export interface TopBarProps extends Omit<HTMLAttributes<HTMLElement>, "classNam
 /**
  * The glass bar above the content: search, the app's own actions, scope, AI assistant, and user menu. It looks the same on every page; a page's own
  * back and actions belong in its `PageHeader`. The app name never appears here, only in the navigation. In an `AppShell` with an
- * `environment`, it shows the instance's label on narrow windows, where the navigation is a drawer.
+ * `environment`, it shows the instance's label on narrow windows, where the navigation is a drawer, and only its first letter where the bar
+ * is too narrow for the whole label.
  */
 export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
     {
@@ -108,7 +109,17 @@ export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
                 </Tooltip>
             )}
             <div className={styles.actions}>
-                {environment != null && <EnvironmentLabel label={environment.label} color={environment.color} />}
+                {environment != null && (
+                    <>
+                        <EnvironmentLabel label={environment.label} color={environment.color} className={styles.environment} />
+                        <EnvironmentLabel
+                            label={environment.label}
+                            color={environment.color}
+                            variant="compact"
+                            className={styles.environmentCompact}
+                        />
+                    </>
+                )}
                 {browseActions}
                 {scope}
                 {assistantSwitch}

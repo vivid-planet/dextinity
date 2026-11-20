@@ -26,8 +26,8 @@ function renderShell({
     withAssistant = false,
     assistantOpen = false,
     onAssistantOpenChange = vi.fn(),
-    disableKeyboardShortcuts = false,
     environment,
+    disableKeyboardShortcuts = false,
 }: {
     navCollapsed?: boolean;
     onNavCollapsedChange?: () => void;
@@ -35,8 +35,8 @@ function renderShell({
     withAssistant?: boolean;
     assistantOpen?: boolean;
     onAssistantOpenChange?: (open: boolean) => void;
-    disableKeyboardShortcuts?: boolean;
     environment?: AppShellEnvironment;
+    disableKeyboardShortcuts?: boolean;
 } = {}) {
     return render(
         <KeyboardShortcutProvider platform={platform}>
@@ -240,7 +240,7 @@ describe("AppShell", () => {
 
         const shell = container.querySelector<HTMLElement>(".dextinityAppShell");
         const edge = container.querySelector<HTMLElement>(".dextinityAppShell__environmentEdge");
-        expect([shell?.hasAttribute("data-environment"), edge?.dataset.color, edge?.getAttribute("aria-hidden")]).toStrictEqual([
+        expect([shell?.hasAttribute("data-hasenvironment"), edge?.dataset.color, edge?.getAttribute("aria-hidden")]).toStrictEqual([
             true,
             "error",
             "true",
@@ -251,9 +251,14 @@ describe("AppShell", () => {
 
     it("moves the instance's label into the top bar on narrow windows, where the navigation is a drawer", () => {
         windowWidth = 600;
-        renderShell({ environment: { label: "Test", color: "success" } });
+        const { container } = renderShell({ environment: { label: "Test", color: "success" } });
 
-        expect(screen.getByRole("banner").textContent).toContain("Test");
+        // The top bar switches to the compact label where the bar is too narrow for the whole one
+        const labels = [...container.querySelectorAll<HTMLElement>(".dextinityTopBar .dextinityEnvironmentLabel")];
+        expect(labels.map((label) => [label.textContent, label.dataset.variant])).toStrictEqual([
+            ["Test", "default"],
+            ["TTest", "compact"],
+        ]);
     });
 
     it("marks nothing on the live system", () => {

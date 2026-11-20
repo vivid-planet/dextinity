@@ -54,7 +54,7 @@ export type AppShellOwnerState = {
     /** Whether the assistant is shown. */
     assistantOpen: boolean;
     /** Whether the app runs on another instance than the live system, which the shell marks. */
-    environment: boolean;
+    hasEnvironment: boolean;
 };
 
 /**
@@ -148,7 +148,12 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
     const medium = useMediaQuery(mediumQuery);
     const layout: AppShellLayout = narrow ? "narrow" : medium ? "medium" : "wide";
     const hasAssistant = assistant != null;
-    const ownerState: AppShellOwnerState = { layout, navCollapsed, assistantOpen: hasAssistant && assistantOpen, environment: environment != null };
+    const ownerState: AppShellOwnerState = {
+        layout,
+        navCollapsed,
+        assistantOpen: hasAssistant && assistantOpen,
+        hasEnvironment: environment != null,
+    };
     const [navDrawerOpen, setNavDrawerOpen] = useState(false);
     const [navOverlayOpen, setNavOverlayOpen] = useState(false);
     const [overlayLayout, setOverlayLayout] = useState(layout);
@@ -282,7 +287,7 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
             data-navcollapsed={ownerState.navCollapsed ? "" : undefined}
             data-navoverlay={isMedium && navOverlayOpen ? "" : undefined}
             data-assistantopen={ownerState.assistantOpen ? "" : undefined}
-            data-environment={ownerState.environment ? "" : undefined}
+            data-hasenvironment={ownerState.hasEnvironment ? "" : undefined}
             className={clsx(styles.root, className)}
         >
             <span ref={anchorRef} hidden />

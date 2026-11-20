@@ -16,7 +16,7 @@
     }
 
     // The line of the instance pushes the shell down, so that it covers nothing
-    &[data-environment] {
+    &[data-hasenvironment] {
         --_environment-edge-height: var(--dextinity-app-shell-environment-edge-height);
 
         padding-block-start: var(--_environment-edge-height);

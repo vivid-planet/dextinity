@@ -61,6 +61,7 @@ export {
 export { type CalendarLabels } from "./components/datePicker/Calendar";
 export { DatePicker, type DatePickerCalendarProps, type DatePickerLabels, type DatePickerOwnerState } from "./components/datePicker/DatePicker";
 export { type DatePickerProps } from "./components/datePicker/DatePicker";
+export { type DateRangePosition } from "./components/datePicker/dateRange";
 export { type DateRange, DateRangePicker, type DateRangePickerLabels } from "./components/datePicker/DateRangePicker";
 export { type DateRangePickerOwnerState, type DateRangePickerProps } from "./components/datePicker/DateRangePicker";
 export { DateTimePicker, type DateTimePickerLabels, type DateTimePickerOwnerState } from "./components/datePicker/DateTimePicker";

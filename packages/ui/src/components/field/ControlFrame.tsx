@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { type AriaAttributes, type CSSProperties, type ReactNode, useEffect, useId, useRef } from "react";
+import { type AriaAttributes, type CSSProperties, type ReactNode, type RefObject, useEffect, useId, useLayoutEffect, useRef } from "react";
 
 import { Field, type FieldControlProps, type FieldLayout, type FieldOwnerState } from "./Field";
 import { useFieldContext } from "./fieldContext";
@@ -147,6 +147,17 @@ function useControlName({
     return { control, nameId, hiddenLabel };
 }
 
+function useSubmissionBlockedByError(errorInput: RefObject<HTMLInputElement | null> | undefined, error: string | undefined) {
+    useLayoutEffect(() => {
+        const input = errorInput?.current;
+        if (error == null || input == null) {
+            return;
+        }
+        input.setCustomValidity(error);
+        return () => input.setCustomValidity("");
+    }, [errorInput, error]);
+}
+
 interface ControlFrameProps extends ControlAriaProps {
     /** The control's component name, for the warning about a field with the wrong layout. */
     controlName: string;
@@ -158,6 +169,8 @@ interface ControlFrameProps extends ControlAriaProps {
     layout?: "inline" | "stacked";
     /** An error the control found itself. It shows as the field's validation message and sets the field's `state` to `error`. */
     error?: string;
+    /** The input that holds `error`. The error is set as its custom validity, which keeps the surrounding form from being submitted. */
+    errorInput?: RefObject<HTMLInputElement | null>;
     /** A count shown at the end of the label row. */
     counter?: string;
     /** Shows the field as loading. */
@@ -171,11 +184,12 @@ interface ControlFrameProps extends ControlAriaProps {
 
 function ControlFrameContent({
     error,
+    errorInput,
     counter,
     pending,
     children,
     ...ariaProps
-}: Pick<ControlFrameProps, "error" | "counter" | "pending" | "children"> & ControlAriaProps) {
+}: Pick<ControlFrameProps, "error" | "errorInput" | "counter" | "pending" | "children"> & ControlAriaProps) {
     const field = useFieldContext();
     if (field == null) {
         throw new Error("ControlFrameContent must be rendered inside a Field.");
@@ -201,6 +215,8 @@ function ControlFrameContent({
         [setControlReport],
     );
 
+    useSubmissionBlockedByError(errorInput, error);
+
     const { control, nameId, hiddenLabel } = useControlName({ field, ...ariaProps });
     return (
         <>
@@ -221,6 +237,7 @@ export function ControlFrame({
     readOnly = false,
     layout = "inline",
     error,
+    errorInput,
     counter,
     pending,
     className,
@@ -231,7 +248,7 @@ export function ControlFrame({
     const field = useFieldContext();
     useFieldLayoutWarning(controlName, layout === "stacked" ? ["stacked"] : ["inline", "stacked"]);
     const content = (
-        <ControlFrameContent error={error} counter={counter} pending={pending} {...ariaProps}>
+        <ControlFrameContent error={error} errorInput={errorInput} counter={counter} pending={pending} {...ariaProps}>
             {children}
         </ControlFrameContent>
     );

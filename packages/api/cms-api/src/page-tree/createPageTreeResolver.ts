@@ -15,8 +15,8 @@ import {
     MovePageTreeNodesByPosInput,
     PageTreeNodeUpdateVisibilityInput,
 } from "./dto/page-tree-node.input.js";
+import { PageTreeSlugAvailability } from "./dto/page-tree-slug-availability.enum.js";
 import { PaginatedPageTreeNodesArgsFactory } from "./dto/paginated-page-tree-nodes-args.factory.js";
-import { SlugAvailability } from "./dto/slug-availability.enum.js";
 import { PAGE_TREE_CONFIG } from "./page-tree.constants.js";
 import type { PageTreeConfig } from "./page-tree.module.js";
 import { PageTreeService } from "./page-tree.service.js";
@@ -108,29 +108,13 @@ export function createPageTreeResolver({
             return new PaginatedPageTreeNodes(nodes, count);
         }
 
-        @Query(() => SlugAvailability)
+        @Query(() => PageTreeSlugAvailability)
         async pageTreeNodeSlugAvailable(
             @Args("scope", { type: () => Scope }) scope: ScopeInterface,
             @Args("parentId", { type: () => ID, nullable: true }) parentId: string,
             @Args("slug") slug: string,
-        ): Promise<SlugAvailability> {
-            const requestedPath = await this.pageTreeService.pathForParentAndSlug(parentId || null, slug);
-
-            if (this.config.reservedPaths.includes(requestedPath)) {
-                return SlugAvailability.Reserved;
-            }
-
-            if (slug == "home" && requestedPath !== "/home") {
-                return SlugAvailability.Reserved;
-            }
-
-            const nodeWithSamePath = await this.pageTreeService.nodeWithSamePath(requestedPath, nonEmptyScopeOrNothing(scope));
-
-            if (nodeWithSamePath) {
-                return SlugAvailability.Taken;
-            }
-
-            return SlugAvailability.Available;
+        ): Promise<PageTreeSlugAvailability> {
+            return this.pageTreeService.getSlugAvailability({ scope: nonEmptyScopeOrNothing(scope), parentId: parentId || null, slug });
         }
 
         @ResolveField(() => [PageTreeNode])

@@ -5,6 +5,7 @@ import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { useAppShellContext } from "../appShell/appShellContext";
 import { Badge } from "../badge/Badge";
 import { Icon } from "../icon/Icon";
+import { useAriaKeyShortcuts } from "../keyboardShortcut/useAriaKeyShortcuts";
 import { Menu } from "../menu/Menu";
 import { MenuGroup } from "../menu/MenuGroup";
 import { MenuItem } from "../menu/MenuItem";
@@ -337,6 +338,7 @@ export const SideNav = forwardRef<HTMLElement, SideNavProps>(function SideNav(
     ref,
 ) {
     const shell = useAppShellContext();
+    const collapseKeyShortcuts = useAriaKeyShortcuts(shell?.navCollapseKeyboardShortcut);
     const labels = { ...defaultLabels, ...labelsProp };
     const ownerState: SideNavOwnerState = { collapsed: collapsedProp ?? shell?.navCollapsed ?? false };
     const onCollapsedChange = onCollapsedChangeProp ?? shell?.onNavCollapsedChange;
@@ -413,12 +415,19 @@ export const SideNav = forwardRef<HTMLElement, SideNavProps>(function SideNav(
             </div>
             {onCollapsedChange != null && (
                 <div {...footerProps}>
-                    <Tooltip content={labels.expand} placement="right" disabled={!ownerState.collapsed}>
+                    <Tooltip
+                        content={ownerState.collapsed ? labels.expand : labels.collapse}
+                        keyboardShortcut={shell?.navCollapseKeyboardShortcut}
+                        placement="right"
+                        // Expanded, the button shows its label, so a tooltip only adds something when there's a shortcut to name
+                        disabled={!ownerState.collapsed && shell?.navCollapseKeyboardShortcut == null}
+                    >
                         <button
                             type="button"
                             className={styles.collapseButton}
                             aria-label={ownerState.collapsed ? labels.expand : undefined}
                             aria-expanded={!ownerState.collapsed}
+                            aria-keyshortcuts={collapseKeyShortcuts}
                             onClick={() => onCollapsedChange(!ownerState.collapsed)}
                         >
                             <Icon name={ownerState.collapsed ? "pin-right" : "pin-left"} />

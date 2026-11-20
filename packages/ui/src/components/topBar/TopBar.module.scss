@@ -82,8 +82,7 @@
 }
 
 @container dextinity-shell-bar (max-width: 860px) {
-    .searchText,
-    .searchKeyboardShortcut {
+    .searchText {
         display: none;
     }
 

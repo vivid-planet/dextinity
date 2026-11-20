@@ -4,11 +4,13 @@ import { expect, userEvent, waitFor } from "storybook/test";
 
 import { storyModKey } from "../../../storybook/keyboardPlatformDecorator";
 import { themeDecorator } from "../../../storybook/themeDecorator";
+import { Button } from "../../button/Button";
 import { Field } from "../../field/Field";
 import { Icon } from "../../icon/Icon";
 import { Input } from "../../input/Input";
 import { SaveState, type SaveStateValue } from "../../saveState/SaveState";
-import { KeyboardShortcut } from "../KeyboardShortcut";
+import { Tooltip } from "../../tooltip/Tooltip";
+import { useAriaKeyShortcuts } from "../useAriaKeyShortcuts";
 import { useKeyboardShortcut } from "../useKeyboardShortcut";
 import styles from "./useKeyboardShortcut.stories.module.scss";
 
@@ -16,6 +18,7 @@ function SaveShortcutDemo() {
     const [title, setTitle] = useState("Careers");
     const [saveState, setSaveState] = useState<SaveStateValue>("saved");
     useKeyboardShortcut("mod+s", () => setSaveState("saved"));
+    const saveKeyShortcuts = useAriaKeyShortcuts("mod+s");
 
     return (
         <div className={styles.demo}>
@@ -31,7 +34,11 @@ function SaveShortcutDemo() {
             </Field>
             <div className={styles.row}>
                 <SaveState state={saveState} />
-                <KeyboardShortcut shortcut="mod+s" />
+                <Tooltip content="Save" keyboardShortcut="mod+s">
+                    <Button size="small" aria-keyshortcuts={saveKeyShortcuts} onClick={() => setSaveState("saved")}>
+                        Save
+                    </Button>
+                </Tooltip>
             </div>
         </div>
     );
@@ -44,8 +51,15 @@ function SearchShortcutDemo() {
 
     return (
         <div className={styles.demo}>
-            <Field label="Search" prefix={<Icon name="search" />} suffix={<KeyboardShortcut shortcut="/" />}>
-                <Input ref={searchRef} name="search" type="search" value={query} onChange={(event) => setQuery(event.target.value)} />
+            <Field label="Search" prefix={<Icon name="search" />}>
+                <Input
+                    ref={searchRef}
+                    name="search"
+                    type="search"
+                    aria-keyshortcuts="/"
+                    value={query}
+                    onChange={(event) => setQuery(event.target.value)}
+                />
             </Field>
         </div>
     );
@@ -62,7 +76,8 @@ type Story = StoryObj<typeof meta>;
 
 /**
  * `useKeyboardShortcut("mod+s", save)` saves from anywhere, also while typing in a field; `mod` is ⌘ on Apple platforms and Ctrl
- * elsewhere, and `KeyboardShortcut` with the same `shortcut` shows the matching key caps.
+ * elsewhere. The Save button's tooltip names the shortcut in the same notation; shortcuts show only in overlays, never as key caps on
+ * the page.
  *
  * **Rules**
  *
@@ -81,7 +96,7 @@ export const Default: Story = {
 
 /**
  * A shortcut without a modifier, such as `/` to jump into the list's search, never fires while typing in a field, so the
- * character is typed instead.
+ * character is typed instead. The field shows no key cap; `aria-keyshortcuts` tells screen readers.
  */
 export const SingleKey: Story = {
     render: () => <SearchShortcutDemo />,

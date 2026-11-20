@@ -126,25 +126,11 @@ export const IFrameBridgeProvider = ({ children }: PropsWithChildren) => {
                         : getRecursiveChildrenOfPreviewElement(previewElement.element);
                 const positioning = getCombinedPositioningOfElements(measuredElements);
 
-                const isRenderedOutsideOfViewportWidth = positioning.left > childrenWrapperRight;
+                const widthInsideOfViewport = Math.min(positioning.width, childrenWrapperRight - positioning.left);
 
-                if (isRenderedOutsideOfViewportWidth) {
-                    // TODO: Simply return `null` here after updating to typescript 5+
-                    return {
-                        adminRoute: previewElement.adminRoute,
-                        label: previewElement.label,
-                        position: {
-                            top: positioning.top,
-                            left: positioning.left,
-                            width: 0,
-                            height: positioning.height,
-                        },
-                    };
+                if (widthInsideOfViewport <= 0) {
+                    return null;
                 }
-
-                const spaceBetweenRightEdgeOfElementAndRightEdgeOfViewport = positioning.left + positioning.width - childrenWrapperRight;
-                const tooWideForPreviewViewportByPixels =
-                    spaceBetweenRightEdgeOfElementAndRightEdgeOfViewport > 0 ? spaceBetweenRightEdgeOfElementAndRightEdgeOfViewport : 0;
 
                 return {
                     adminRoute: previewElement.adminRoute,
@@ -152,12 +138,12 @@ export const IFrameBridgeProvider = ({ children }: PropsWithChildren) => {
                     position: {
                         top: positioning.top,
                         left: positioning.left,
-                        width: positioning.width - tooWideForPreviewViewportByPixels,
+                        width: widthInsideOfViewport,
                         height: positioning.height,
                     },
                 };
             })
-            .filter((elementData) => elementData.position.width !== 0) // TODO: Filter out null after updating to typescript 5+ instead of filtering `width !== 0`
+            .filter((elementData) => elementData !== null)
             .sort((previousElementData, nextElementData) => {
                 const previousSize = previousElementData.position.width * previousElementData.position.height;
                 const nextSize = nextElementData.position.width * nextElementData.position.height;

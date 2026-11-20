@@ -82,12 +82,6 @@ CI=false pnpm run copy-project-files
 pnpm run install-agent-features
 
 
-# --- lang clones (only when not existing) ---
-[ -d ./demo/admin/lang ] || sh ./demo/admin/intl-update.sh
-[ -d ./demo/api/lang ]   || sh ./demo/api/intl-update.sh
-[ -d ./demo/site/lang ]  || sh ./demo/site/intl-update.sh
-
-
 # --- create .env.site-configs ---
 pnpm run create-site-configs-env
 

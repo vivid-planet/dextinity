@@ -1,11 +1,13 @@
-import { createRichTextBlock, MjmlColumn, MjmlSection, type PropsWithData, withPreview } from "@dextinity/mail-react";
+import "./smallListStyles";
+
+import { createTipTapRichTextBlock, MjmlColumn, MjmlSection, type PropsWithData, withPreview } from "@dextinity/mail-react";
 import type { MailRichTextBlockData, PhoneLinkBlockData } from "@src/blocks.generated";
 
-export const { MjmlRichTextBlock } = createRichTextBlock({
-    blockTypes: {
+export const { MjmlTipTapRichTextBlock: MjmlRichTextBlock } = createTipTapRichTextBlock({
+    textBlockStyles: {
         title: { variant: "title" },
         header: { variant: "header" },
-        copy: { variant: "copy" },
+        small: { variant: "copySmall" },
     },
     linkTypes: {
         phone: (props: PhoneLinkBlockData) => (props.phone ? `tel:${props.phone}` : undefined),

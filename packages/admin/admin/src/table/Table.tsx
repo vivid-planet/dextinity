@@ -40,7 +40,7 @@ export interface ITableHeadColumnsProps<TRow extends IRow> {
  * @deprecated Use MUI X Data Grid in combination with `useDataGridRemote` instead.
  */
 export function TableHeadColumns<TRow extends IRow>({ columns, sortApi }: ITableHeadColumnsProps<TRow>) {
-    const handleSortClick = (name: string, ev: MouseEvent) => {
+    const handleSortClick = (name: string) => {
         if (sortApi) {
             sortApi.changeSort(name);
         }
@@ -59,7 +59,7 @@ export function TableHeadColumns<TRow extends IRow>({ columns, sortApi }: ITable
                             <TableSortLabel
                                 active={sortApi && sortApi.current.columnName === name}
                                 direction={sortApi && sortApi.current.direction === SortDirection.DESC ? "desc" : "asc"}
-                                onClick={handleSortClick.bind(null, name)}
+                                onClick={() => handleSortClick(name)}
                             >
                                 {header}
                             </TableSortLabel>
@@ -225,7 +225,7 @@ export class Table<TRow extends IRow> extends Component<ITableProps<TRow>> {
                             key: row.id,
                             rowProps: {
                                 hover: this.props.selectable,
-                                onClick: this.handleClick.bind(this, row.id),
+                                onClick: () => this.handleClick(row.id),
                                 role: "checkbox",
                                 tabIndex: -1,
                                 selected: isSelected,
@@ -247,9 +247,9 @@ export class Table<TRow extends IRow> extends Component<ITableProps<TRow>> {
         );
     }
 
-    private handleClick = (id: string, event: MouseEvent) => {
+    private handleClick = (id: string | number) => {
         if (this.props.selectable && this.props.selectionApi) {
-            this.props.selectionApi.handleSelectId(id);
+            this.props.selectionApi.handleSelectId(String(id));
         }
     };
 

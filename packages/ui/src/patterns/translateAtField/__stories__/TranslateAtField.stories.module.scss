@@ -1,0 +1,7 @@
+.fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: var(--dextinity-density-form-gap);
+    align-items: start;
+    align-self: stretch;
+}

@@ -17,8 +17,8 @@ import { Time } from "@dextinity/admin-icons";
 import { ActionLogsGrid, ContentScopeIndicator, useContentScopeConfig } from "@dextinity/cms-admin";
 import { FormattedMessage, useIntl } from "react-intl";
 
-import { NewsForm } from "./generated/NewsForm";
-import { NewsGrid } from "./generated/NewsGrid";
+import { NewsForm } from "./NewsForm";
+import { NewsGrid } from "./NewsGrid";
 
 const FormToolbar = () => (
     <StackToolbar scopeIndicator={<ContentScopeIndicator />}>

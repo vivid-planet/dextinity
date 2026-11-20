@@ -781,9 +781,6 @@ export const TipTapEditor = ({
 type TipTapRichTextBlockInterface = BlockInterface<TipTapRichTextBlockData, TipTapRichTextBlockState, TipTapRichTextBlockInput> &
     ReadOnlyBlockRenderInterface<TipTapRichTextBlockState>;
 
-/**
- * @experimental
- */
 export const createTipTapRichTextBlock = (options: TipTapRichTextBlockFactoryOptions = {}): TipTapRichTextBlockInterface => {
     const resolvedOptions = resolveTipTapOptions(options);
     const inlineStyles = options.inlineStyles ?? [];

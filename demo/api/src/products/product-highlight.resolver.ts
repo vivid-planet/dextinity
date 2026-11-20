@@ -1,0 +1,79 @@
+import { AffectedEntity, RequiredPermission } from "@dextinity/cms-api";
+import { EntityManager, type FindOptions, type ObjectQuery, Reference } from "@mikro-orm/postgresql";
+import { Args, ID, Mutation, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
+
+import { ProductHighlightInput, ProductHighlightUpdateInput } from "./dto/product-highlight.input.js";
+import { Product } from "./entities/product.entity.js";
+import { ProductHighlight } from "./entities/product-highlight.entity.js";
+
+@Resolver(() => ProductHighlight)
+@RequiredPermission(["products"], { skipScopeCheck: true })
+export class ProductHighlightResolver {
+    constructor(protected readonly entityManager: EntityManager) {}
+    @Query(() => ProductHighlight)
+    @AffectedEntity(ProductHighlight)
+    async productHighlight(
+        @Args("id", { type: () => ID })
+        id: string,
+    ): Promise<ProductHighlight> {
+        const productHighlight = await this.entityManager.findOneOrFail(ProductHighlight, id);
+        return productHighlight;
+    }
+    @Query(() => [ProductHighlight])
+    async productHighlights(): Promise<ProductHighlight[]> {
+        const where: ObjectQuery<ProductHighlight> = {};
+        const options: FindOptions<ProductHighlight> = {};
+        const entities = await this.entityManager.find(ProductHighlight, where, options);
+        return entities;
+    }
+    @Mutation(() => ProductHighlight)
+    async createProductHighlight(
+        @Args("input", { type: () => ProductHighlightInput })
+        input: ProductHighlightInput,
+    ): Promise<ProductHighlight> {
+        const { product: productInput, ...assignInput } = input;
+        const productHighlight = this.entityManager.create(ProductHighlight, {
+            ...assignInput,
+            product: Reference.create(await this.entityManager.findOneOrFail(Product, productInput)),
+        });
+        await this.entityManager.flush();
+        return productHighlight;
+    }
+    @Mutation(() => ProductHighlight)
+    @AffectedEntity(ProductHighlight)
+    async updateProductHighlight(
+        @Args("id", { type: () => ID })
+        id: string,
+        @Args("input", { type: () => ProductHighlightUpdateInput })
+        input: ProductHighlightUpdateInput,
+    ): Promise<ProductHighlight> {
+        const productHighlight = await this.entityManager.findOneOrFail(ProductHighlight, id);
+        const { product: productInput, ...assignInput } = input;
+        productHighlight.assign({
+            ...assignInput,
+        });
+        if (productInput !== undefined) {
+            productHighlight.product = Reference.create(await this.entityManager.findOneOrFail(Product, productInput));
+        }
+        await this.entityManager.flush();
+        return productHighlight;
+    }
+    @Mutation(() => Boolean)
+    @AffectedEntity(ProductHighlight)
+    async deleteProductHighlight(
+        @Args("id", { type: () => ID })
+        id: string,
+    ): Promise<boolean> {
+        const productHighlight = await this.entityManager.findOneOrFail(ProductHighlight, id);
+        this.entityManager.remove(productHighlight);
+        await this.entityManager.flush();
+        return true;
+    }
+    @ResolveField(() => Product)
+    async product(
+        @Parent()
+        productHighlight: ProductHighlight,
+    ): Promise<Product> {
+        return productHighlight.product.loadOrFail();
+    }
+}

@@ -1,0 +1,11 @@
+// The values match the description of `Field`, so a description below a custom control looks like the one below a field.
+@mixin tokens {
+    // Text size of the description
+    --dextinity-field-description-font-size: var(--dextinity-typography-small-size);
+    // Line height of the description
+    --dextinity-field-description-font-line-height: var(--dextinity-typography-small-line-height);
+    // Weight of the description
+    --dextinity-field-description-font-weight: var(--dextinity-typography-body-font-weight);
+    // Text color of the description
+    --dextinity-field-description-foreground: var(--dextinity-color-text-subtle);
+}

@@ -1,8 +1,8 @@
 import { MjmlColumn, MjmlSection, MjmlText, type PropsWithData, withPreview } from "@dextinity/mail-react";
-import type { RichTextBlockData } from "@src/blocks.generated";
+import type { EmailCampaignSalutationBlockData } from "@src/blocks.generated";
 import { FormattedMessage } from "react-intl";
 
-export const EmailCampaignSalutationBlock = withPreview<PropsWithData<RichTextBlockData>>(
+export const EmailCampaignSalutationBlock = withPreview<PropsWithData<EmailCampaignSalutationBlockData>>(
     ({ className }) => {
         return (
             <MjmlSection indent className={className}>

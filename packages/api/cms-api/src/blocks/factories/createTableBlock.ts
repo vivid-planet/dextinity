@@ -1,5 +1,5 @@
 import { plainToInstance, Type } from "class-transformer";
-import { IsArray, IsBoolean, IsEnum, IsString } from "class-validator";
+import { IsArray, IsBoolean, IsEnum, IsString, ValidateNested } from "class-validator";
 
 import { type Block, BlockData, type BlockDataInterface, BlockInput, type BlockInputInterface, blockInputToData, createBlock } from "../block.js";
 import { ChildBlock } from "../decorators/child-block.js";
@@ -92,6 +92,7 @@ export function createTableBlock({ richText: RichTextBlock }: CreateTableBlockOp
         highlighted: boolean;
 
         @BlockField(TableBlockRowColumnValueInput)
+        @ValidateNested({ each: true })
         @Type(() => TableBlockRowColumnValueInput)
         cellValues: TableBlockRowColumnValueInput[] = [];
 
@@ -116,11 +117,13 @@ export function createTableBlock({ richText: RichTextBlock }: CreateTableBlockOp
     class TableBlockInput extends BlockInput {
         @BlockField(TableBlockColumnInput)
         @IsArray()
+        @ValidateNested({ each: true })
         @Type(() => TableBlockColumnInput)
         columns: TableBlockColumnInput[] = [];
 
         @BlockField(TableBlockRowInput)
         @IsArray()
+        @ValidateNested({ each: true })
         @Type(() => TableBlockRowInput)
         rows: TableBlockRowInput[] = [];
 

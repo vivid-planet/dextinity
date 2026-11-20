@@ -7,7 +7,6 @@ dextinity-lang/
 lang/
 /.npm
 .pnp.*
-junit.xml
 junit-unit.xml
 junit-storybook.xml
 .env.local

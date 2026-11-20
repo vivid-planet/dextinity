@@ -1,0 +1,38 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { DensityTable } from "../../storybook/docs/foundations/DensityTable";
+import { MaterialSamples } from "../../storybook/docs/foundations/MaterialSamples";
+import { RadiusScale } from "../../storybook/docs/foundations/RadiusScale";
+import { SpacingScale } from "../../storybook/docs/foundations/SpacingScale";
+
+<Meta title="Foundations/Spacing, radii & material" />
+
+# Spacing, radii & material
+
+Spacing scale, radii, shadows, glass, and density. Radii scale with the brand's radius factor `r`.
+
+## Spacing
+
+A grid in steps of 4, plus 18 for the gap between glass panels.
+
+<SpacingScale />
+
+## Radii
+
+Every radius is multiplied by the brand's radius factor `r` (`--dextinity-brand-radius-factor`). Controls take their radius from the brand directly (`--dextinity-brand-radius-control`), so a brand can make them pills.
+
+<RadiusScale />
+
+## Shadows & material
+
+Shadows and glass are token layers of their own. High contrast turns both off and draws lines instead.
+
+<MaterialSamples />
+
+## Density
+
+A user setting. Fixed values per level; the font size stays the same and click targets never go below 24px. Highlighted: the density picked in the toolbar.
+
+<DensityTable />
+
+Durations and easing are on the [Motion](?path=/docs/foundations-motion--docs) page.

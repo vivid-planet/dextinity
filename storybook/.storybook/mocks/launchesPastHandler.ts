@@ -19,7 +19,7 @@ type LaunchesPastFilter = {
     and?: LaunchesPastFilter[];
 };
 
-export type Launch = {
+type Launch = {
     id: string;
     mission_name: string;
     launch_date_local: Date;
@@ -32,7 +32,7 @@ export type LaunchesPastResult = {
     };
 };
 
-export type LaunchesPastPagePagingResult = {
+type LaunchesPastPagePagingResult = {
     nodes: Launch[];
     totalCount: number;
     nextPage?: number;

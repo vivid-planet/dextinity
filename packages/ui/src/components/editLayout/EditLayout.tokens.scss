@@ -1,0 +1,30 @@
+@mixin tokens {
+    // Space between the edit header and the panes
+    --dextinity-edit-layout-header-spacing: 22px;
+    // Gap between the panes; follows the density
+    --dextinity-edit-layout-gap: var(--dextinity-layout-gap);
+    // Width of the editor panel next to the preview of a page
+    --dextinity-edit-layout-panel-width: minmax(330px, 404px);
+    // Width of the side column of a form, e.g. status and danger zone
+    --dextinity-edit-layout-aside-width: 320px;
+    // Distance of the sticky preview and side column from the top of the viewport, below the top bar; below the sticky header, if any
+    --dextinity-edit-layout-sticky-offset: var(--dextinity-layout-sticky-offset);
+    // Distance of the sticky header from the top of the viewport, below the top bar
+    --dextinity-edit-layout-header-sticky-offset: var(--dextinity-layout-sticky-offset);
+    // Background of the sticky header while it is held in place, so the content scrolls behind it unseen
+    --dextinity-edit-layout-header-sticky-background: var(--dextinity-material-glass-strong);
+    // Blur of the content behind the held sticky header
+    --dextinity-edit-layout-header-sticky-blur: var(--dextinity-material-blur);
+    // Edge and shadow of the held sticky header
+    --dextinity-edit-layout-header-sticky-shadow: var(--dextinity-material-edge-shadow), var(--dextinity-shadow-1);
+    // Corner radius of the held sticky header's background
+    --dextinity-edit-layout-header-sticky-radius: var(--dextinity-radius-panel);
+    // How far the held sticky header's background reaches beyond the header, without moving it
+    --dextinity-edit-layout-header-sticky-outset: 12px;
+    // Stacking order of the sticky header, above the panes and below the app shell's top bar
+    --dextinity-edit-layout-header-sticky-layer: 5;
+    // Space kept below the sticky preview
+    --dextinity-edit-layout-preview-spacing: 18px;
+    // Smallest height of the preview on short viewports
+    --dextinity-edit-layout-preview-min-height: 420px;
+}

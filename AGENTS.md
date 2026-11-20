@@ -22,6 +22,7 @@ When running in the cloud/web environment and repo is cloned from scratch, if re
 
 1. Install dependencies (**only** run if not yet done by eg. pipeline setup, check if `node_modules` exists)
     - `NODE_USE_ENV_PROXY=1 ./install.sh`
+    - The demo translations (`demo/*/lang/`) are cloned by `intl:compile` when they're missing, which `build`, `lint` and starting the demo run. To pull the latest translations, run `pnpm --dir demo/<admin|api|site> run intl:update`.
 2. Run build for packages you are working on (**only** run if build file doesn't exist yet, check if `lib` exists in package)
     - `pnpm --recursive --filter '<package-name>' run build`
 
@@ -88,7 +89,7 @@ pnpm run lint
 
 ## Demo application
 
-This repository includes a demo application which is showcasing the libraries.
+The demo application in this repository shows how to use the libraries. It is used mainly by developers who work on Dextinity, so its code and fixtures show the current best practice, not a state migrated from an earlier version. When you change block data or other database content, update the fixtures instead of adding a migration. Local data may break, and the fixtures regenerate it. Add a migration only to demonstrate the migration feature itself, for example a block migration or `migrateFromDraftJs`.
 
 **Api:**
 Demo backend API (NestJS, PostgreSQL)
@@ -139,27 +140,27 @@ Every process loads `.env.local` itself: the demo packages and `dev:*` scripts r
 
 ## Packages
 
+Packages extend `tsconfig.core.json`, directly or through `packages/{admin,api,site}/tsconfig.base.json`, and inherit TypeScript strict mode from it. Don't set `strict` or its individual flags in a package's tsconfig; only opt out of a single flag when needed (e.g. `strictPropertyInitialization: false` in the API packages).
+
 ### Admin (`packages/admin/`)
 
-| Package                         | Description                                                                                   |
-| ------------------------------- | --------------------------------------------------------------------------------------------- |
-| `@dextinity/admin`              | Core admin components and framework (React, MUI, Apollo, Final Form)                          |
-| `@dextinity/admin-babel-preset` | Shared Babel preset for transpiling admin packages                                            |
-| `@dextinity/admin-color-picker` | Color picker form field component                                                             |
-| `@dextinity/admin-date-time`    | Date/time picker form field components                                                        |
-| `@dextinity/admin-icons`        | SVG icon library as React components                                                          |
-| `@dextinity/admin-rte`          | Rich text editor component (Draft.js-based)                                                   |
-| `@dextinity/admin-generator`    | CLI tool that generates admin CRUD UIs from GraphQL schemas (`dextinity-admin-generator` bin) |
-| `@dextinity/cms-admin`          | Admin UI for CMS features (pages, blocks, content management)                                 |
-| `@dextinity/brevo-admin`        | Admin UI for Brevo email/marketing integration                                                |
+| Package                         | Description                                                          |
+| ------------------------------- | -------------------------------------------------------------------- |
+| `@dextinity/admin`              | Core admin components and framework (React, MUI, Apollo, Final Form) |
+| `@dextinity/admin-babel-preset` | Shared Babel preset for transpiling admin packages                   |
+| `@dextinity/admin-color-picker` | Color picker form field component                                    |
+| `@dextinity/admin-date-time`    | Date/time picker form field components                               |
+| `@dextinity/admin-icons`        | SVG icon library as React components                                 |
+| `@dextinity/admin-rte`          | Rich text editor component (Draft.js-based)                          |
+| `@dextinity/cms-admin`          | Admin UI for CMS features (pages, blocks, content management)        |
+| `@dextinity/brevo-admin`        | Admin UI for Brevo email/marketing integration                       |
 
 ### API (`packages/api/`)
 
-| Package                    | Description                                                                                   |
-| -------------------------- | --------------------------------------------------------------------------------------------- |
-| `@dextinity/cms-api`       | NestJS/GraphQL API for CMS features (file uploads, translations, blocks, S3/Azure storage)    |
-| `@dextinity/brevo-api`     | NestJS integration for the Brevo email/marketing service                                      |
-| `@dextinity/api-generator` | CLI tool that generates TypeScript types from GraphQL schemas (`dextinity-api-generator` bin) |
+| Package                | Description                                                                                |
+| ---------------------- | ------------------------------------------------------------------------------------------ |
+| `@dextinity/cms-api`   | NestJS/GraphQL API for CMS features (file uploads, translations, blocks, S3/Azure storage) |
+| `@dextinity/brevo-api` | NestJS integration for the Brevo email/marketing service                                   |
 
 ### Site (`packages/site/`)
 
@@ -190,6 +191,7 @@ Every process loads `.env.local` itself: the demo packages and `dev:*` scripts r
 
 - We use Changesets for tracking changes. Create a non-empty changeset file when making relevant user-facing/package changes (not for docs-only, demo-only or internal-only updates).
 - Important: See @CONTRIBUTING.md#changeset for detailed guidelines on when and how to add changesets.
+- Don't create changesets for `@dextinity/ui` (`packages/ui/`). The package is experimental, see its README.
 - `CHANGELOG.md` is autogenerated; do not edit it manually.
 
 ### Quick changeset creation
@@ -242,16 +244,3 @@ Fix description here
 - When watching or driving a pull request, reply on GitHub only to comments and reviews from bots (e.g. Greptile, Claude Code Review, lint bots). Bot accounts end in `[bot]` or are review/CI tools.
 - Never reply to comments or reviews from humans on GitHub. Report what you did, your proposals, and your questions to the user in the session instead of on the pull request.
 - Only act on a human's feedback when it is a small, concrete change (e.g. a nit, a rename, a missing test). For conceptual feedback (design questions, alternative approaches, questions about why something was done), don't change any code: summarize it for the user and wait for their decision.
-
-## Generated demo files
-
-- `demo/api` and `demo/admin` contain `generated/` folders. Do not edit files inside `generated/` directly; rerun `api-generator` or `admin-generator` to update them.
-- After any changes to `api-generator` or `admin-generator` execute the generator in demo to update the generated files. Before running, build the package.
-
-### admin-generator
-
-The source for generated files are \*.dextinityGen.tsx config files. Modify those and re-run `admin-generator` for changes.
-
-### api-generator
-
-The source for generated files are entities, mainly the mikro-orm decorators but also custom `@Crud*` generators.

@@ -172,7 +172,7 @@ export function ManufacturersGrid() {
 }
 
 const manufacturersFragment = gql`
-    fragment ManufacturersListManual on Manufacturer {
+    fragment ManufacturersList on Manufacturer {
         name
         address {
             street
@@ -206,7 +206,7 @@ const manufacturersQuery = gql`
         manufacturers(offset: $offset, limit: $limit, sort: $sort, filter: $filter, search: $search) {
             nodes {
                 id
-                ...ManufacturersListManual
+                ...ManufacturersList
             }
             totalCount
         }

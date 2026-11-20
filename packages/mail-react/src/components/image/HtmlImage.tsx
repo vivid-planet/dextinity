@@ -5,6 +5,7 @@ import { registerStyles } from "../../styles/registerStyles.js";
 import { css } from "../../utils/css.js";
 import { hideFromOutlookEndComment, hideFromOutlookStartComment, showOnlyInOutlook } from "../../utils/outlookConditionalComment.js";
 import { generateOutlookImageVml } from "./outlookVml.js";
+import { useRewrittenImageSrc } from "./useRewrittenImageSrc.js";
 
 export type HtmlImageProps = ComponentProps<"img"> & {
     /** Corner radius of the image. */
@@ -20,7 +21,8 @@ export type HtmlImageProps = ComponentProps<"img"> & {
  * Inside `MjmlRaw` in an `MjmlColumn`, place `HtmlImage` in a `<tr>` and `<td>` of its own.
  * For MJML context, use `MjmlImage`.
  */
-export function HtmlImage({ className, borderRadius, style, src, width, height, alt, ...restProps }: HtmlImageProps): ReactNode {
+export function HtmlImage({ className, borderRadius, style, src: passedSrc, width, height, alt, ...restProps }: HtmlImageProps): ReactNode {
+    const src = useRewrittenImageSrc({ src: passedSrc, width, height });
     const imageStyle: CSSProperties = { borderRadius, ...style };
 
     const imageNode = (

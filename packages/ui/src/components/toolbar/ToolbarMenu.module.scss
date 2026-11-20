@@ -1,0 +1,64 @@
+@use "../../theme/forcedColors" as forced-colors;
+
+.root {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: var(--dextinity-space-1);
+    box-sizing: border-box;
+    block-size: var(--dextinity-toolbar-button-size);
+    padding-inline: var(--dextinity-toolbar-menu-padding);
+    border: 0;
+    border-radius: var(--dextinity-icon-button-radius);
+    background: transparent;
+    color: var(--dextinity-toolbar-menu-foreground);
+    font: inherit;
+    font-size: var(--dextinity-toolbar-menu-font-size);
+    font-weight: var(--dextinity-font-weight-medium);
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+        background var(--dextinity-motion-duration-short),
+        color var(--dextinity-motion-duration-short);
+
+    &:hover:not([data-disabled]),
+    &[aria-expanded="true"] {
+        background: var(--dextinity-icon-button-background-hover);
+        color: var(--dextinity-icon-button-foreground-hover);
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
+    }
+
+    &[data-disabled] {
+        opacity: var(--dextinity-icon-button-disabled-opacity);
+        cursor: not-allowed;
+    }
+
+    @include forced-colors.edge(1px, ButtonText);
+}
+
+.icon {
+    display: inline-flex;
+
+    --dextinity-icon-size: var(--dextinity-icon-button-icon-size);
+}
+
+.label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.chevron {
+    color: var(--dextinity-color-text-subtle);
+    transition: transform var(--dextinity-motion-duration-short) var(--dextinity-motion-easing);
+
+    --dextinity-icon-size: var(--dextinity-icon-size-xsmall);
+
+    .root[aria-expanded="true"] & {
+        transform: rotate(180deg);
+    }
+}

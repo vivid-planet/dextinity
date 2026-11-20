@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="icon" viewBox="0 0 24 24" fill="none">
+    <g transform="translate(3 2) scale(0.08)">
+        <path d="M145 125C145 100.147 124.853 80 100 80H80V170H100C124.853 170 145 149.853 145 125ZM170 125C170 163.66 138.66 195 100 195H55V80H25V225H100C155.228 225 200 180.228 200 125C200 69.7715 155.228 25 100 25H80V55H100C138.66 55 170 86.3401 170 125ZM225 125C225 194.036 169.036 250 100 250H0V55H55V0H100C169.036 0 225 55.9644 225 125Z" fill="url(#gradient)"/>
+        <rect x="55" y="80" width="25" height="25" fill="url(#shadow)" opacity="0.4"/>
+        <rect width="25" height="25" transform="matrix(1 0 0 -1 55 55)" fill="url(#shadow)" opacity="0.4"/>
+        <defs>
+            <linearGradient id="gradient" x1="0" y1="250" x2="203.75" y2="46.25" gradientUnits="userSpaceOnUse">
+                <stop offset="0.3" stop-color="#403AF2"/>
+                <stop offset="1" stop-color="#0FD1C7"/>
+            </linearGradient>
+            <linearGradient id="shadow" x1="0" y1="0" x2="0" y2="1">
+                <stop/>
+                <stop offset="1" stop-opacity="0"/>
+            </linearGradient>
+        </defs>
+    </g>
+</svg>

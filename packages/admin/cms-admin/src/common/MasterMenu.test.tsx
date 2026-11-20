@@ -1,12 +1,13 @@
 import { RouterMemoryRouter } from "@dextinity/admin";
 import { Route, Routes } from "react-router";
 import { cleanup, fireEvent, render, screen } from "test-utils";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { Permission } from "../userPermissions/hooks/currentUser";
 import { MasterMenu, type MasterMenuData } from "./MasterMenu";
 
 vi.mock("../userPermissions/hooks/currentUser", () => ({
-    useUserPermissionCheck: () => () => true,
+    useUserPermissionCheck: () => (permission: string) => permission === "allowed",
 }));
 
 const menu: MasterMenuData = [
@@ -20,9 +21,29 @@ const menu: MasterMenuData = [
     },
 ];
 
+function renderMasterMenu(menu: MasterMenuData) {
+    return render(
+        <RouterMemoryRouter>
+            <MasterMenu menu={menu} />
+        </RouterMemoryRouter>,
+    );
+}
+
 describe("MasterMenu", () => {
+    beforeEach(() => {
+        vi.stubGlobal(
+            "ResizeObserver",
+            class {
+                observe() {}
+                unobserve() {}
+                disconnect() {}
+            },
+        );
+    });
+
     afterEach(() => {
         cleanup();
+        vi.unstubAllGlobals();
     });
 
     it("should link to the routes relative to the current route", async () => {
@@ -47,5 +68,36 @@ describe("MasterMenu", () => {
         );
 
         expect((await screen.findByText("Dashboard")).closest("a")?.getAttribute("href")).toBe("/dashboard");
+    });
+
+    it("renders the navigation when all visible items are inside a single group", () => {
+        renderMasterMenu([
+            {
+                type: "group",
+                title: "Group",
+                items: [
+                    { type: "route", primary: "First", icon: undefined, to: "/first" },
+                    { type: "route", primary: "Second", icon: undefined, to: "/second" },
+                ],
+            },
+        ]);
+
+        expect(screen.getByText("First")).toBeTruthy();
+        expect(screen.getByText("Second")).toBeTruthy();
+    });
+
+    it("hides the navigation when only a single item is visible", () => {
+        renderMasterMenu([
+            {
+                type: "group",
+                title: "Group",
+                items: [
+                    { type: "route", primary: "Allowed", icon: undefined, to: "/allowed", requiredPermission: "allowed" as Permission },
+                    { type: "route", primary: "Disallowed", icon: undefined, to: "/disallowed", requiredPermission: "disallowed" as Permission },
+                ],
+            },
+        ]);
+
+        expect(screen.queryByText("Allowed")).toBeNull();
     });
 });

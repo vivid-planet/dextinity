@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .root {
     display: flex;
     align-items: center;
@@ -10,7 +12,7 @@
     background: transparent;
     color: inherit;
     font: inherit;
-    font-family: var(--dextinity-brand-font-family-sans);
+    font-family: var(--dextinity-font-family-text);
     text-align: start;
     text-decoration: none;
     cursor: pointer;
@@ -19,8 +21,8 @@
         outline: none;
 
         .content {
-            outline: var(--dextinity-focus-ring-width) solid var(--dextinity-color-border-focus);
-            outline-offset: calc(var(--dextinity-focus-ring-width) * -1);
+            outline: var(--dextinity-focus-outline);
+            outline-offset: calc(-1 * var(--dextinity-focus-ring-width));
         }
     }
 
@@ -36,19 +38,21 @@
         }
     }
 
-    &[data-active] {
-        .activeIndicator {
-            background: var(--dextinity-main-navigation-item-active-indicator);
+    &[data-current] {
+        .currentIndicator {
+            background: var(--dextinity-main-navigation-item-current-indicator);
+
+            @include forced-colors.fill(Highlight);
         }
 
         .content {
-            background: var(--dextinity-main-navigation-item-active-background);
-            color: var(--dextinity-main-navigation-item-active-foreground);
+            background: var(--dextinity-main-navigation-item-current-background);
+            color: var(--dextinity-main-navigation-item-current-foreground);
         }
 
         .icon,
         .expandIcon {
-            color: var(--dextinity-main-navigation-item-active-icon);
+            color: var(--dextinity-main-navigation-item-current-icon);
         }
     }
 
@@ -61,10 +65,10 @@
     }
 }
 
-.activeIndicator {
+.currentIndicator {
     flex-shrink: 0;
-    inline-size: var(--dextinity-main-navigation-item-active-indicator-width);
-    block-size: var(--dextinity-main-navigation-item-active-indicator-height);
+    inline-size: var(--dextinity-main-navigation-item-current-indicator-width);
+    block-size: var(--dextinity-main-navigation-item-current-indicator-height);
 }
 
 .content {
@@ -82,7 +86,6 @@
     font-size: var(--dextinity-main-navigation-item-font-size);
     font-weight: var(--dextinity-main-navigation-item-font-weight);
     line-height: var(--dextinity-main-navigation-item-font-line-height);
-    letter-spacing: var(--dextinity-font-letter-spacing-tight);
     overflow: clip;
 }
 

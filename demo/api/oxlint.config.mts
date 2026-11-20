@@ -9,7 +9,6 @@ export default defineConfig({
         "src/db/migrations/**",
         "dist/**",
         "src/**/*.generated.ts",
-        "src/**/generated/**",
         "lang/**",
         "lang-compiled/**",
         "lang-extracted/**",

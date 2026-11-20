@@ -1,0 +1,11 @@
+.frame {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-inline-size: 420px;
+}
+
+.toolbar {
+    display: flex;
+    justify-content: flex-end;
+}

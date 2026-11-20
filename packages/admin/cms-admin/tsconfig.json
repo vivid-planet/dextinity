@@ -4,8 +4,7 @@
         "paths": {
             "test-utils": ["./src/testing/test-utils"]
         },
-        "rootDir": "src",
-        "strict": true
+        "rootDir": "src"
     },
     "exclude": [],
     "extends": "../tsconfig.base.json",

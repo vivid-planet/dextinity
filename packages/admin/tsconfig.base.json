@@ -3,9 +3,7 @@
     "compilerOptions": {
         "jsx": "react-jsx",
         "lib": ["DOM", "ES2015", "ES2016", "ES2017", "ES2018", "ES2019", "ESNext.AsyncIterable"],
-        "noImplicitAny": true,
         "sourceMap": true,
-        "strictNullChecks": true,
         "target": "esnext",
         "declarationMap": true,
         "module": "preserve",

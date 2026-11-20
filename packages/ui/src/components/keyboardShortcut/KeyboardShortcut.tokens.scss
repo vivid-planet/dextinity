@@ -1,0 +1,16 @@
+@mixin tokens {
+    // Height of a key
+    --dextinity-keyboard-shortcut-height: 20px;
+    // Horizontal padding inside a key
+    --dextinity-keyboard-shortcut-padding: var(--dextinity-space-1-5);
+    // Corner radius of a key
+    --dextinity-keyboard-shortcut-radius: calc(var(--dextinity-radius-item) * 0.625);
+    // Text size of the key label
+    --dextinity-keyboard-shortcut-font-size: var(--dextinity-typography-label-size);
+    // Fill of a key
+    --dextinity-keyboard-shortcut-background: var(--dextinity-color-surface);
+    // Text color of the key label
+    --dextinity-keyboard-shortcut-foreground: var(--dextinity-color-text-subtle);
+    // Outline of a key
+    --dextinity-keyboard-shortcut-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line-strong);
+}

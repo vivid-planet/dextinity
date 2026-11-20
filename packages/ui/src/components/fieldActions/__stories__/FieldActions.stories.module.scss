@@ -1,0 +1,6 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-density-form-gap);
+    max-inline-size: 560px;
+}

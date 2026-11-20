@@ -2,7 +2,6 @@
 "@dextinity/admin": major
 "@dextinity/admin-color-picker": major
 "@dextinity/admin-date-time": major
-"@dextinity/admin-generator": major
 "@dextinity/admin-rte": major
 "@dextinity/brevo-admin": major
 "@dextinity/cms-admin": major

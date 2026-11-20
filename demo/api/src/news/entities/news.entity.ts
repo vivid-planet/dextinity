@@ -1,8 +1,6 @@
 import {
     ActionLogs,
     type BlockDataInterface,
-    CrudField,
-    CrudGenerator,
     DamImageBlock,
     EntityInfo,
     entityToMikroOrmFullText,
@@ -62,7 +60,6 @@ export class NewsContentScope {
 @ObjectType()
 @Entity()
 @ActionLogs()
-@CrudGenerator({ requiredPermission: ["news"] })
 export class News extends BaseEntity {
     [OptionalProps]?: "createdAt" | "updatedAt" | "status";
 
@@ -105,9 +102,6 @@ export class News extends BaseEntity {
     content: BlockDataInterface;
 
     @OneToMany(() => NewsComment, (newsComment) => newsComment.news)
-    @CrudField({
-        input: false,
-    })
     comments = new Collection<NewsComment>(this);
 
     @Property({

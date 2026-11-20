@@ -53,7 +53,7 @@ import { createProductMutation, productFormFragment, productQuery, updateProduct
 import type {
     GQLCreateProductMutation,
     GQLCreateProductMutationVariables,
-    GQLProductFormManualFragment,
+    GQLProductFormFragment,
     GQLProductQuery,
     GQLProductQueryVariables,
     GQLUpdateProductMutation,
@@ -71,13 +71,13 @@ const rootBlocks = {
 };
 
 // Set types for FinalFormFileUpload manually, as they cannot be generated from the fragment in `@dextinity/cms-admin`
-type ProductFormManualFragment = Omit<GQLProductFormManualFragment, "priceList" | "datasheets" | "relatedImages"> & {
+type ProductFormFragment = Omit<GQLProductFormFragment, "priceList" | "datasheets" | "relatedImages"> & {
     priceList: GQLFinalFormFileUploadFragment | null;
     datasheets: Array<GQLFinalFormFileUploadFragment>;
     relatedImages: Array<GQLDamFileFieldFileFragment>;
 };
 
-type FormValues = Omit<ProductFormManualFragment, "image" | "lastCheckedAt"> & {
+type FormValues = Omit<ProductFormFragment, "image" | "lastCheckedAt"> & {
     image: BlockState<typeof rootBlocks.image>;
     manufacturerCountry?: { id: string; label: string };
     lastCheckedAt?: Date | null;
@@ -100,7 +100,7 @@ const submissionErrorMessages: { [K in GQLProductMutationErrorCode]: ReactNode }
 export function ProductForm({ id, width, onCreate }: FormProps) {
     const client = useApolloClient();
     const mode = id ? "edit" : "add";
-    const formApiRef = useFormApiRef<FormValues>();
+    const formApiRef = useFormApiRef<FormValues, InitialFormValues>();
 
     const { data, error, loading, refetch } = useQuery<GQLProductQuery, GQLProductQueryVariables>(
         productQuery,
@@ -108,7 +108,7 @@ export function ProductForm({ id, width, onCreate }: FormProps) {
     );
 
     const initialValues = useMemo<InitialFormValues>(() => {
-        const filteredData = data ? filterByFragment<ProductFormManualFragment>(productFormFragment, data.product) : undefined;
+        const filteredData = data ? filterByFragment<ProductFormFragment>(productFormFragment, data.product) : undefined;
         if (!filteredData) {
             return {
                 image: rootBlocks.image.defaultValues(),
@@ -143,7 +143,11 @@ export function ProductForm({ id, width, onCreate }: FormProps) {
         },
     });
 
-    const handleSubmit = async ({ manufacturerCountry, ...formValues }: FormValues, form: FormApi<FormValues>, event: FinalFormSubmitEvent) => {
+    const handleSubmit = async (
+        { manufacturerCountry, ...formValues }: FormValues,
+        form: FormApi<FormValues, InitialFormValues>,
+        event: FinalFormSubmitEvent,
+    ) => {
         if (await saveConflict.checkForConflicts()) {
             throw new Error("Conflicts detected");
         }

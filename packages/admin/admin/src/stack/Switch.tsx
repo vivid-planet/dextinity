@@ -109,7 +109,7 @@ interface IHookProps {
 
 const StackSwitchInner: ForwardRefRenderFunction<IStackSwitchApi, IProps & IHookProps> = (props, ref) => {
     const { id } = props;
-    const [pageBreadcrumbTitle, setPageBreadcrumbTitle] = useState<Record<string, string | undefined>>({});
+    const [pageBreadcrumbTitle, setPageBreadcrumbTitle] = useState<Record<string, ReactNode>>({});
     const navigate = useStableNavigate();
     const routeMatch = useCurrentRouteMatch();
     const subRoutePrefix = useSubRoutePrefix();
@@ -162,7 +162,7 @@ const StackSwitchInner: ForwardRefRenderFunction<IStackSwitchApi, IProps & IHook
     );
 
     const api: IStackSwitchApi = useMemo(() => {
-        const updatePageBreadcrumbTitle = (t?: string) => {
+        const updatePageBreadcrumbTitle = (t?: ReactNode) => {
             if (activePage) {
                 const title = { ...pageBreadcrumbTitle };
                 title[activePage] = t;

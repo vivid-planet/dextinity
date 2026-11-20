@@ -1,4 +1,3 @@
-import { CrudField, CrudGenerator } from "@dextinity/cms-api";
 import { Entity, ManyToOne, OneToMany, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
 import { BaseEntity, Collection, OptionalProps, type Ref } from "@mikro-orm/postgresql";
 import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
@@ -10,7 +9,6 @@ import { ProductCategoryType } from "./product-category-type.entity.js";
 
 @ObjectType()
 @Entity()
-@CrudGenerator({ requiredPermission: ["products"] })
 export class ProductCategory extends BaseEntity {
     [OptionalProps]?: "createdAt" | "updatedAt";
 
@@ -31,13 +29,6 @@ export class ProductCategory extends BaseEntity {
     @Min(1)
     position: number;
 
-    @CrudField({
-        resolveField: true, //default is true
-        //search: true, //not implemented
-        //filter: true, //not implemented
-        //sort: true, //not implemented
-        input: true, //default is true
-    })
     @OneToMany(() => Product, (products) => products.category)
     products = new Collection<Product>(this);
 

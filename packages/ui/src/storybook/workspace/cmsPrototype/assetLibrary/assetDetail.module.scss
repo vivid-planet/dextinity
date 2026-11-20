@@ -23,6 +23,18 @@
     overflow-wrap: anywhere;
 }
 
+.eyebrow {
+    display: inline-flex;
+    gap: var(--dextinity-space-1-5);
+    align-items: center;
+    border-radius: var(--dextinity-radius-small);
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
+    }
+}
+
 .aiBadge {
     padding: 1px var(--dextinity-space-2);
     border-radius: var(--dextinity-radius-pill);

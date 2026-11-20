@@ -1344,6 +1344,23 @@ export const TeaserVideoBlock = createDamVideoBlock({ previewImage: false }, "Te
 Then regenerate `block-meta.json` and the block types in the Admin and the Site.
 The factory carries the migrations of `DamVideoBlock`, so existing content keeps loading.
 
+### Remove `disableTypography` from `FormSection`
+
+The deprecated `disableTypography` prop of `FormSection` is removed. The title is always rendered with `SectionHeadline` now.
+
+Find the usages:
+
+```sh
+grep -rn "<FormSection" src | grep "disableTypography"
+```
+
+Remove the prop and customize the title with `slotProps.title` instead, for example to set a custom `variant` on the underlying `Typography` or to hide the divider:
+
+```diff
+- <FormSection title="General" disableTypography>
++ <FormSection title="General" slotProps={{ title: { divider: false, slotProps: { headline: { variant: "h5" } } } }}>
+```
+
 ### Update MUI to v9
 
 The admin packages now require MUI v9 and MUI X v9. See the [Material UI](https://mui.com/material-ui/migration/upgrade-to-v9/), [Data Grid](https://mui.com/x/migration/migration-data-grid-v8/) and [Date and Time Pickers](https://mui.com/x/migration/migration-pickers-v8/) migration guides for the complete list of changes.

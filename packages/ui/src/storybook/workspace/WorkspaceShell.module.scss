@@ -1,0 +1,408 @@
+.themeRoot {
+    display: contents;
+}
+
+.root {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    // The canvas scrolls a frame larger than the window, so the column mustn't grow with it and push the toolbar out of view
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    background: var(--dextinity-color-canvas);
+    color: var(--dextinity-color-text);
+    font-family: var(--dextinity-font-family-text);
+    font-size: var(--dextinity-typography-body-size);
+
+    // While a frame is resized, the iframe would swallow the pointer events once the pointer moves over it
+    &[data-resizing] {
+        cursor: nwse-resize;
+        user-select: none;
+
+        &[data-resizing="panel"] {
+            cursor: ew-resize;
+        }
+
+        .iframe {
+            pointer-events: none;
+        }
+    }
+}
+
+.header {
+    --workspace-bar-height: 48px;
+
+    min-inline-size: 0;
+    border-block-end: var(--dextinity-line-width) solid var(--dextinity-color-line);
+    background: var(--dextinity-color-surface);
+}
+
+// The global row: the panel and the logo, the tabs, and the settings for the canvas. On a phone, the tabs get a row of their own.
+.toolbar {
+    display: grid;
+    grid-template-areas:
+        "brand settings"
+        "tabs tabs";
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 12px;
+    align-items: center;
+    min-inline-size: 0;
+    padding-inline: 8px;
+    border-block-end: var(--dextinity-line-width) solid var(--dextinity-color-line);
+
+    @media (width >= 760px) {
+        grid-template-areas: "brand tabs settings";
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+        padding-inline: 16px;
+    }
+}
+
+.brand {
+    grid-area: brand;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    min-block-size: var(--workspace-bar-height);
+}
+
+.settings {
+    grid-area: settings;
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.divider {
+    flex: none;
+    inline-size: var(--dextinity-line-width);
+    block-size: 20px;
+    margin-inline: 4px;
+    background: var(--dextinity-color-line);
+}
+
+// The tabs sit on the row's bottom line, which takes the place of their own
+.modeTabs {
+    grid-area: tabs;
+    align-self: end;
+    justify-self: center;
+    min-inline-size: 0;
+
+    [role="tablist"] {
+        box-shadow: none;
+    }
+}
+
+// The row for what the canvas shows: where it is, and the tools for the frame
+.contextBar {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: space-between;
+    min-inline-size: 0;
+    min-block-size: var(--workspace-bar-height);
+    padding-inline: 16px 8px;
+    background: var(--dextinity-color-surface-raised);
+
+    @media (width >= 760px) {
+        padding-inline-end: 16px;
+    }
+}
+
+.location {
+    display: flex;
+    gap: 6px;
+    align-items: baseline;
+    min-inline-size: 0;
+    margin: 0;
+    white-space: nowrap;
+}
+
+// Only the current story fits on a phone; the path before it joins on wider screens
+.locationTrail {
+    display: none;
+    overflow: hidden;
+    color: var(--dextinity-color-text-subtle);
+    text-overflow: ellipsis;
+
+    &::after {
+        content: " /";
+    }
+
+    @media (width >= 640px) {
+        display: inline;
+    }
+}
+
+.locationCurrent {
+    overflow: hidden;
+    font-weight: 600;
+    text-overflow: ellipsis;
+}
+
+.toolbarGroup {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    min-inline-size: 0;
+}
+
+.logo {
+    display: block;
+    flex: none;
+    // Only the sign, the left square of the logo, until the full logo fits
+    inline-size: 24px;
+    block-size: 24px;
+    object-fit: cover;
+    object-position: left;
+
+    @media (width >= 900px) {
+        inline-size: auto;
+    }
+}
+
+.body {
+    position: relative;
+    display: flex;
+    min-inline-size: 0;
+    min-block-size: 0;
+}
+
+// Storybook's own UI, with its sidebar, toolbar, and docs, in place of the workspace's story list and canvas
+.storybookFrame {
+    display: block;
+    flex: 1;
+    min-inline-size: 0;
+    border: 0;
+}
+
+.panel {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    min-block-size: 0;
+    background: var(--dextinity-color-surface);
+
+    &[data-overlay] {
+        position: absolute;
+        z-index: 2;
+        inset-block: 0;
+        inset-inline-start: 0;
+        inline-size: min(320px, calc(100% - 48px));
+        box-shadow: 0 8px 32px color-mix(in oklch, var(--dextinity-color-text) 18%, transparent);
+    }
+}
+
+.panelBackdrop {
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+    background: color-mix(in oklch, var(--dextinity-color-text) 20%, transparent);
+}
+
+.panelHandle {
+    position: relative;
+    touch-action: none;
+    z-index: 1;
+    flex: 0 0 var(--dextinity-line-width);
+    background: var(--dextinity-color-line);
+    cursor: ew-resize;
+
+    // A wider hit area than the visible line
+    &::before {
+        content: "";
+        position: absolute;
+        inset-block: 0;
+        inset-inline: -4px;
+    }
+
+    &:hover,
+    &:focus-visible {
+        background: var(--dextinity-color-accent);
+        outline: none;
+        box-shadow: 0 0 0 1px var(--dextinity-color-accent);
+    }
+}
+
+.panelList {
+    flex: 1;
+    min-block-size: 0;
+    overflow: auto;
+    padding: 0 6px 12px;
+}
+
+.canvas {
+    position: relative;
+    display: grid;
+    flex: 1;
+    min-inline-size: 0;
+    overflow: auto;
+    place-items: center;
+    padding: 44px 16px 16px;
+
+    @media (width >= 760px) {
+        padding: 48px;
+    }
+
+    // The page takes all the room, like the app in the browser, so there's no sheet on a canvas around it
+    &[data-responsive] {
+        padding: 0;
+        background: var(--dextinity-color-surface);
+    }
+    background-color: var(--dextinity-color-surface-sunken);
+    background-image: radial-gradient(color-mix(in oklch, var(--dextinity-color-text) 14%, transparent) 1px, transparent 1px);
+    background-size: 16px 16px;
+}
+
+.stage {
+    position: relative;
+
+    [data-responsive] > & {
+        inline-size: 100%;
+        block-size: 100%;
+    }
+}
+
+.frameLabel {
+    position: absolute;
+    inset-block-end: 100%;
+    inset-inline: 0;
+    display: flex;
+    gap: 12px;
+    justify-content: space-between;
+    padding-block-end: 6px;
+    color: var(--dextinity-color-text-subtle);
+    font-family: var(--dextinity-font-family-mono);
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.frameStory {
+    overflow: hidden;
+    color: var(--dextinity-color-text);
+    text-overflow: ellipsis;
+}
+
+.frame {
+    overflow: hidden;
+    border-radius: 4px;
+    background: var(--dextinity-color-surface);
+    box-shadow:
+        0 0 0 1px color-mix(in oklch, var(--dextinity-color-text) 12%, transparent),
+        0 8px 32px color-mix(in oklch, var(--dextinity-color-text) 14%, transparent);
+    transform-origin: 0 0;
+
+    [data-responsive] & {
+        inline-size: 100%;
+        block-size: 100%;
+        border-radius: 0;
+        box-shadow: none;
+    }
+}
+
+.inspectLayer {
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.inspectBox {
+    position: absolute;
+    box-sizing: border-box;
+    border: 2px solid var(--dextinity-color-accent);
+    border-radius: 2px;
+    background: color-mix(in oklch, var(--dextinity-color-accent) 8%, transparent);
+    pointer-events: none;
+}
+
+.inspectLabel {
+    position: absolute;
+    inset-block-end: 100%;
+    inset-inline-start: -2px;
+    padding: 1px 6px;
+    border-radius: 3px 3px 0 0;
+    background: var(--dextinity-color-accent);
+    color: var(--dextinity-color-accent-foreground);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 16px;
+    white-space: nowrap;
+
+    [data-label-inside] > & {
+        inset-block: 0 auto;
+        inset-inline-start: 0;
+        border-radius: 0 0 3px;
+    }
+}
+
+.iframe {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    border: 0;
+}
+
+%handle {
+    position: absolute;
+    touch-action: none;
+    z-index: 1;
+
+    &::after {
+        content: "";
+        position: absolute;
+        border-radius: 2px;
+        background: var(--dextinity-color-accent);
+        opacity: 0;
+        transition: opacity 120ms;
+    }
+
+    &:hover::after {
+        opacity: 1;
+    }
+}
+
+.handleInline {
+    @extend %handle;
+
+    inset-block: 0;
+    inset-inline-start: 100%;
+    inline-size: 12px;
+    cursor: ew-resize;
+
+    &::after {
+        inset-block: calc(50% - 20px);
+        inset-inline-start: 4px;
+        inline-size: 4px;
+    }
+}
+
+.handleBlock {
+    @extend %handle;
+
+    inset-block-start: 100%;
+    inset-inline: 0;
+    block-size: 12px;
+    cursor: ns-resize;
+
+    &::after {
+        inset-block-start: 4px;
+        inset-inline: calc(50% - 20px);
+        block-size: 4px;
+    }
+}
+
+.handleCorner {
+    @extend %handle;
+
+    inset-block-start: 100%;
+    inset-inline-start: 100%;
+    inline-size: 14px;
+    block-size: 14px;
+    cursor: nwse-resize;
+
+    &::after {
+        inset: 3px;
+    }
+}

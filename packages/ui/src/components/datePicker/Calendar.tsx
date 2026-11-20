@@ -90,14 +90,11 @@ export function Calendar({ start, end, range, onSelect, min, max, isDateDisabled
     const isDaySelectable = (day: IsoDate) => isWithin(day, min, max) && isDateDisabled?.(day) !== true;
     const selectableDayNear = (day: IsoDate, firstVisibleMonth: IsoDate) =>
         nearestSelectableDay(day, firstVisibleMonth, endOfMonth(addMonths(firstVisibleMonth, months - 1)), isDaySelectable) ?? day;
+    const [visibleMonth, setVisibleMonth] = useState(() => startOfMonth(clampDate(start ?? end ?? today, min, max)));
     const [focused, setFocused] = useState(() => {
-        if (start != null) {
-            return clampDate(start, min, max);
-        }
-        const clampedToday = clampDate(today, min, max);
-        return selectableDayNear(clampedToday, startOfMonth(clampedToday));
+        const initialDay = clampDate(start ?? end ?? today, min, max);
+        return start == null ? selectableDayNear(initialDay, visibleMonth) : initialDay;
     });
-    const [visibleMonth, setVisibleMonth] = useState(() => startOfMonth(focused));
     const [view, setView] = useState<CalendarView>("days");
     const [hovered, setHovered] = useState<IsoDate | null>(null);
     const rootRef = useRef<HTMLDivElement>(null);
@@ -118,6 +115,9 @@ export function Calendar({ start, end, range, onSelect, min, max, isDateDisabled
 
     const focusDate = (date: IsoDate) => {
         const next = clampDate(date, min, max);
+        if (next === focused) {
+            return;
+        }
         moveFocusRef.current = true;
         setFocused(next);
         if (next < visibleMonth) {

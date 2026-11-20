@@ -8,7 +8,7 @@ import { CalendarPopover } from "./CalendarPopover";
 import { type DatePickerCalendarProps, type DatePickerLabels, defaultDatePickerLabels } from "./DatePicker";
 import { type DateRangePosition, disabledDayBetween, disabledRangeDay, disabledRangeEnd } from "./dateRange";
 import styles from "./DateRangePicker.module.scss";
-import { formatDate, isIsoDate, type IsoDate, localeWeekStart } from "./dateValues";
+import { formatDate, isIsoDate, type IsoDate, isWithin, localeWeekStart } from "./dateValues";
 import { readTypedDay } from "./typedDay";
 import { useTextDraft } from "./useTextDraft";
 
@@ -90,9 +90,10 @@ function toRange(start: IsoDate | null, end: IsoDate | null): DateRange | null {
 }
 
 /**
- * A range of days, typed in the locale's format or chosen in a calendar: the first click chooses the start, the second the end. Typed
- * text is read on blur or Enter; text that is no valid day, a day that can't be chosen, or an end before the start stays in its input
- * with an error and leaves the value unchanged until it is corrected.
+ * A range of days, typed in the locale's format or chosen in a calendar: the first click chooses the start, the second the end; with
+ * only a start that can be chosen, the first click chooses the end. Typed text is read on blur or Enter; text that is no valid day, a
+ * day that can't be chosen, or an end before the start stays in its input with an error and leaves the value unchanged until it is
+ * corrected.
  */
 export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps>(function DateRangePicker(
     {
@@ -181,11 +182,13 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
     };
     const startDraft = useTextDraft(start == null ? "" : formatDate(start, locale), (text) => readDay(text, "start", endDraft));
     const endDraft = useTextDraft(end == null ? "" : formatDate(end, locale), (text) => readDay(text, "end", startDraft));
-    const disabledDayBetweenPendingStartAnd =
-        pendingStart == null || isDateDisabled == null ? undefined : disabledDayBetween(pendingStart, isDateDisabled);
+    const canBeChosenAsStart = (day: IsoDate) => isWithin(day, min, max) && disabledRangeEnd({ start: day, end: null }, isDateDisabled) == null;
+    const startAwaitingEnd = pendingStart ?? (end == null && start != null && canBeChosenAsStart(start) ? start : null);
+    const disabledDayBetweenStartAwaitingEndAnd =
+        startAwaitingEnd == null || isDateDisabled == null ? undefined : disabledDayBetween(startAwaitingEnd, isDateDisabled);
     const isCalendarDayDisabled = (day: IsoDate) =>
-        disabledRangeEnd(pendingStart == null ? { start: day, end: null } : toRange(pendingStart, day), isDateDisabled) != null ||
-        disabledDayBetweenPendingStartAnd?.(day) !== undefined;
+        disabledRangeEnd(startAwaitingEnd == null ? { start: day, end: null } : toRange(startAwaitingEnd, day), isDateDisabled) != null ||
+        disabledDayBetweenStartAwaitingEndAnd?.(day) !== undefined;
 
     const draftError = startDraft.error ?? endDraft.error;
 
@@ -286,14 +289,14 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
                         end={pendingStart == null ? end : null}
                         range
                         onSelect={(day) => {
-                            if (pendingStart == null) {
+                            if (startAwaitingEnd == null) {
                                 setPendingStart(day);
                                 return;
                             }
                             startDraft.reset();
                             endDraft.reset();
                             setPendingStart(null);
-                            onChange(toRange(pendingStart, day));
+                            onChange(toRange(startAwaitingEnd, day));
                             setOpen(false);
                         }}
                         min={min}

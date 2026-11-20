@@ -21,6 +21,38 @@
         }
     }
 
+    // In narrow windows the header takes as little height as it can: the label line's eyebrow goes, since the top bar shows the
+    // scope, and the actions stay next to the title
+    @media (width < 768px) {
+        flex-wrap: nowrap;
+        align-items: center;
+        --dextinity-page-header-gap: var(--dextinity-page-header-narrow-gap);
+        --dextinity-page-header-subtitle-spacing: var(--dextinity-page-header-narrow-subtitle-spacing);
+
+        &[data-variant="default"] {
+            --dextinity-page-header-title-font-size: var(--dextinity-page-header-narrow-title-font-size);
+        }
+
+        .eyebrow,
+        .labelLine > [aria-hidden],
+        .labelLine:not(:has(> div)) {
+            display: none;
+        }
+
+        .heading {
+            flex: 1;
+        }
+
+        .subtitle {
+            font-size: var(--dextinity-typography-small-size);
+        }
+
+        .actions {
+            flex: none;
+            flex-wrap: nowrap;
+        }
+    }
+
     &[data-has-back] .heading {
         display: grid;
         grid-template-areas:

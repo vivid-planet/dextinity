@@ -11,6 +11,7 @@ import {
     useState,
 } from "react";
 
+import { useMediaQuery } from "../../../../components/appShell/useMediaQuery";
 import { Breadcrumbs, type BreadcrumbsItem } from "../../../../components/breadcrumbs/Breadcrumbs";
 import { BulkActionBar } from "../../../../components/bulkActionBar/BulkActionBar";
 import { Button } from "../../../../components/button/Button";
@@ -38,22 +39,13 @@ import styles from "./assetLibrary.module.scss";
 import { type LibraryLocation, type LibrarySortKey, type LibraryView, type SmartFilter, useAssetLibrary } from "./AssetLibraryContext";
 import { type AssetKind, getFolder, getFolderTrail, type LibraryAsset, today } from "./assetLibraryData";
 import { AssetTable } from "./AssetTable";
+import { countActiveFilters, kindFilters, LibraryFilterDrawer, pageSizes, sortLabels } from "./LibraryFilterDrawer";
 import { AssetTile, FolderCard, LibraryItemContext, type LibraryItemHandlers } from "./LibraryItems";
 import { countFolderItems, getLibraryContent, getRelativePath, kindFilterLabels, type LibraryItem } from "./libraryView";
 import { MoveToFolderMenu } from "./MoveToFolderMenu";
 import { useLibraryActions } from "./useLibraryActions";
 
 const dragType = "application/x-dextinity-assets";
-
-const kindFilters: { value: AssetKind | null; label: string }[] = [
-    { value: null, label: "All" },
-    { value: "image", label: "Images" },
-    { value: "video", label: "Videos" },
-    { value: "audio", label: "Audio" },
-    { value: "document", label: "Documents" },
-];
-
-const sortLabels: Record<LibrarySortKey, string> = { name: "Name", modified: "Date modified", size: "Size", kind: "Type" };
 
 interface Upload {
     id: string;
@@ -77,11 +69,15 @@ const cardBottomGap = 24;
 
 /**
  * The height that lets the element end at the bottom of the window, so that the card's footer always stays in view while its
- * content scrolls. Never less than a usable minimum, e.g. in a short window.
+ * content scrolls. Never less than a usable minimum, e.g. in a short window. Off in smaller windows, where the page scrolls.
  */
-function useFillViewportHeight(ref: RefObject<HTMLElement | null>) {
+function useFillViewportHeight(ref: RefObject<HTMLElement | null>, enabled: boolean) {
     const [height, setHeight] = useState<number>();
     useLayoutEffect(() => {
+        if (!enabled) {
+            setHeight(undefined);
+            return;
+        }
         const measure = () => {
             const element = ref.current;
             if (element == null) {
@@ -100,7 +96,7 @@ function useFillViewportHeight(ref: RefObject<HTMLElement | null>) {
             window.removeEventListener("resize", measure);
             observer.disconnect();
         };
-    }, [ref]);
+    }, [ref, enabled]);
     return height;
 }
 
@@ -121,7 +117,13 @@ export function AssetLibrary() {
     const [bulkMoveOpen, setBulkMoveOpen] = useState(false);
     const uploadInputRef = useRef<HTMLInputElement>(null);
     const cardRef = useRef<HTMLDivElement>(null);
-    const cardHeight = useFillViewportHeight(cardRef);
+    // Wide windows keep the card at the window's height and scroll inside it; smaller ones scroll the page, with the toolbar and the
+    // footer sticking to the edges, so that the files get all the room
+    const fillsWindow = useMediaQuery("(width >= 1024px)");
+    const isPhone = useMediaQuery("(width < 768px)");
+    const cardHeight = useFillViewportHeight(cardRef, fillsWindow);
+    const [filterOpen, setFilterOpen] = useState(false);
+    const activeFilterCount = countActiveFilters(location);
 
     const content = getLibraryContent(location, folders, assets);
     const { mode } = content;
@@ -479,14 +481,29 @@ export function AssetLibrary() {
                     title="Assets"
                     subtitle={`${activeAssets.length} files in ${folders.length} folders, ${archivedCount} archived`}
                     actions={
-                        <>
-                            <Button variant="outlined" color="secondary" startIcon={<Icon name="folder-add" />} onClick={createFolder}>
-                                New folder
-                            </Button>
-                            <Button startIcon={<Icon name="cloud-upload" />} onClick={() => uploadInputRef.current?.click()}>
-                                Upload
-                            </Button>
-                        </>
+                        isPhone ? (
+                            <>
+                                <Tooltip content="New folder">
+                                    <IconButton variant="outlined" color="secondary" aria-label="New folder" onClick={createFolder}>
+                                        <Icon name="folder-add" />
+                                    </IconButton>
+                                </Tooltip>
+                                <Tooltip content="Upload">
+                                    <IconButton aria-label="Upload" onClick={() => uploadInputRef.current?.click()}>
+                                        <Icon name="cloud-upload" />
+                                    </IconButton>
+                                </Tooltip>
+                            </>
+                        ) : (
+                            <>
+                                <Button variant="outlined" color="secondary" startIcon={<Icon name="folder-add" />} onClick={createFolder}>
+                                    New folder
+                                </Button>
+                                <Button startIcon={<Icon name="cloud-upload" />} onClick={() => uploadInputRef.current?.click()}>
+                                    Upload
+                                </Button>
+                            </>
+                        )
                     }
                 />
                 <input
@@ -499,7 +516,7 @@ export function AssetLibrary() {
                         event.target.value = "";
                     }}
                 />
-                <div ref={cardRef} className={styles.cardFrame} style={{ blockSize: cardHeight }}>
+                <div ref={cardRef} className={styles.cardFrame} data-layout={fillsWindow ? "fill" : "flow"} style={{ blockSize: cardHeight }}>
                     <Panel
                         className={styles.card}
                         padding="none"
@@ -530,7 +547,12 @@ export function AssetLibrary() {
                         <LibraryItemContext.Provider value={handlers}>
                             <div className={styles.toolbar}>
                                 <FilterBar
-                                    className={styles.searchRow}
+                                    className={isPhone ? styles.phoneSearchRow : undefined}
+                                    slotProps={
+                                        isPhone
+                                            ? { search: { className: styles.phoneSearch }, actions: { className: styles.phoneActions } }
+                                            : undefined
+                                    }
                                     searchValue={location.search}
                                     onSearchChange={(search) => go({ search, flat: search.trim() === "" ? location.flat : false })}
                                     labels={{ search: "Search all assets", searchPlaceholder: "Search all assets" }}
@@ -546,95 +568,147 @@ export function AssetLibrary() {
                                                     { value: "list", icon: <Icon name="list" />, "aria-label": "List" },
                                                 ]}
                                             />
-                                            <Menu
-                                                open={sortOpen}
-                                                onOpenChange={setSortOpen}
-                                                placement="bottom-end"
-                                                trigger={
-                                                    <Button
+                                            {isPhone ? (
+                                                <span className={styles.filterButton}>
+                                                    <IconButton
                                                         variant="outlined"
                                                         color="secondary"
-                                                        startIcon={<Icon name="sort" />}
-                                                        endIcon={<Icon name="chevron-down" />}
-                                                        aria-label={`Sort by ${sortLabels[location.sort.key]}, ${location.sort.direction}`}
+                                                        onClick={() => setFilterOpen(true)}
+                                                        aria-label={`Filter and sort${activeFilterCount > 0 ? `, ${activeFilterCount} active` : ""}`}
                                                     >
-                                                        {sortLabels[location.sort.key]}
-                                                    </Button>
-                                                }
-                                            >
-                                                <MenuGroup label="Sort by">
-                                                    <MenuRadioGroup
-                                                        value={location.sort.key}
-                                                        onChange={(key) =>
-                                                            setLocation((current) => ({
-                                                                ...current,
-                                                                sort: { ...current.sort, key: key as LibrarySortKey },
-                                                            }))
-                                                        }
-                                                    >
-                                                        {(Object.keys(sortLabels) as LibrarySortKey[]).map((key) => (
-                                                            <MenuRadioItem key={key} value={key} label={sortLabels[key]} />
-                                                        ))}
-                                                    </MenuRadioGroup>
-                                                </MenuGroup>
-                                                <MenuSeparator />
-                                                <MenuGroup label="Order">
-                                                    <MenuRadioGroup
-                                                        value={location.sort.direction}
-                                                        onChange={(direction) =>
-                                                            setLocation((current) => ({
-                                                                ...current,
-                                                                sort: {
-                                                                    ...current.sort,
-                                                                    direction: direction as LibraryLocation["sort"]["direction"],
-                                                                },
-                                                            }))
-                                                        }
-                                                    >
-                                                        <MenuRadioItem value="ascending" label="Ascending" icon={<Icon name="arrow-up" />} />
-                                                        <MenuRadioItem value="descending" label="Descending" icon={<Icon name="arrow-down" />} />
-                                                    </MenuRadioGroup>
-                                                </MenuGroup>
-                                            </Menu>
+                                                        <Icon name="filter" />
+                                                    </IconButton>
+                                                    {activeFilterCount > 0 && (
+                                                        <span className={styles.filterCount} aria-hidden>
+                                                            {activeFilterCount}
+                                                        </span>
+                                                    )}
+                                                </span>
+                                            ) : (
+                                                <Menu
+                                                    open={sortOpen}
+                                                    onOpenChange={setSortOpen}
+                                                    placement="bottom-end"
+                                                    trigger={
+                                                        <Button
+                                                            variant="outlined"
+                                                            color="secondary"
+                                                            startIcon={<Icon name="sort" />}
+                                                            endIcon={<Icon name="chevron-down" />}
+                                                            aria-label={`Sort by ${sortLabels[location.sort.key]}, ${location.sort.direction}`}
+                                                        >
+                                                            {sortLabels[location.sort.key]}
+                                                        </Button>
+                                                    }
+                                                >
+                                                    <MenuGroup label="Sort by">
+                                                        <MenuRadioGroup
+                                                            value={location.sort.key}
+                                                            onChange={(key) =>
+                                                                setLocation((current) => ({
+                                                                    ...current,
+                                                                    sort: { ...current.sort, key: key as LibrarySortKey },
+                                                                }))
+                                                            }
+                                                        >
+                                                            {(Object.keys(sortLabels) as LibrarySortKey[]).map((key) => (
+                                                                <MenuRadioItem key={key} value={key} label={sortLabels[key]} />
+                                                            ))}
+                                                        </MenuRadioGroup>
+                                                    </MenuGroup>
+                                                    <MenuSeparator />
+                                                    <MenuGroup label="Order">
+                                                        <MenuRadioGroup
+                                                            value={location.sort.direction}
+                                                            onChange={(direction) =>
+                                                                setLocation((current) => ({
+                                                                    ...current,
+                                                                    sort: {
+                                                                        ...current.sort,
+                                                                        direction: direction as LibraryLocation["sort"]["direction"],
+                                                                    },
+                                                                }))
+                                                            }
+                                                        >
+                                                            <MenuRadioItem value="ascending" label="Ascending" icon={<Icon name="arrow-up" />} />
+                                                            <MenuRadioItem value="descending" label="Descending" icon={<Icon name="arrow-down" />} />
+                                                        </MenuRadioGroup>
+                                                    </MenuGroup>
+                                                </Menu>
+                                            )}
                                         </>
                                     }
                                 />
-                                <div className={styles.chips} role="group" aria-label="Filters">
-                                    {kindFilters.map((filter) => (
+                                {isPhone ? (
+                                    activeFilterCount > 0 && (
+                                        <div className={styles.chips} role="group" aria-label="Active filters">
+                                            {location.kind != null && (
+                                                <FilterChip
+                                                    selected
+                                                    onClick={() => go({ kind: null })}
+                                                    endAdornment={<Icon name="close" size="small" />}
+                                                >
+                                                    {kindFilters.find((filter) => filter.value === location.kind)?.label}
+                                                </FilterChip>
+                                            )}
+                                            {location.flat && (
+                                                <FilterChip
+                                                    selected
+                                                    onClick={() => go({ flat: false })}
+                                                    endAdornment={<Icon name="close" size="small" />}
+                                                >
+                                                    Include subfolders
+                                                </FilterChip>
+                                            )}
+                                            {location.smartFilter != null && (
+                                                <FilterChip
+                                                    selected
+                                                    onClick={() => toggleSmartFilter(location.smartFilter ?? "unused")}
+                                                    endAdornment={<Icon name="close" size="small" />}
+                                                >
+                                                    {location.smartFilter === "unused" ? "Unused" : "Archived"}
+                                                </FilterChip>
+                                            )}
+                                        </div>
+                                    )
+                                ) : (
+                                    <div className={styles.chips} role="group" aria-label="Filters">
+                                        {kindFilters.map((filter) => (
+                                            <FilterChip
+                                                key={filter.label}
+                                                selected={location.kind === filter.value}
+                                                onClick={() => go({ kind: filter.value })}
+                                            >
+                                                {filter.label}
+                                            </FilterChip>
+                                        ))}
+                                        <Tooltip content="Show the files of all subfolders in one view">
+                                            <FilterChip
+                                                selected={location.flat}
+                                                disabled={mode === "search" || mode === "smartFilter"}
+                                                onClick={() => go({ flat: !location.flat })}
+                                                startAdornment={<Icon name="layers" size="small" />}
+                                            >
+                                                Include subfolders
+                                            </FilterChip>
+                                        </Tooltip>
+                                        <span className={styles.chipDivider} aria-hidden />
                                         <FilterChip
-                                            key={filter.label}
-                                            selected={location.kind === filter.value}
-                                            onClick={() => go({ kind: filter.value })}
+                                            selected={location.smartFilter === "unused"}
+                                            onClick={() => toggleSmartFilter("unused")}
+                                            startAdornment={<Icon name="eye-off" size="small" />}
                                         >
-                                            {filter.label}
+                                            Unused
                                         </FilterChip>
-                                    ))}
-                                    <Tooltip content="Show the files of all subfolders in one view">
                                         <FilterChip
-                                            selected={location.flat}
-                                            disabled={mode === "search" || mode === "smartFilter"}
-                                            onClick={() => go({ flat: !location.flat })}
-                                            startAdornment={<Icon name="layers" size="small" />}
+                                            selected={location.smartFilter === "archived"}
+                                            onClick={() => toggleSmartFilter("archived")}
+                                            startAdornment={<Icon name="archive" size="small" />}
                                         >
-                                            Include subfolders
+                                            Archived
                                         </FilterChip>
-                                    </Tooltip>
-                                    <span className={styles.chipDivider} aria-hidden />
-                                    <FilterChip
-                                        selected={location.smartFilter === "unused"}
-                                        onClick={() => toggleSmartFilter("unused")}
-                                        startAdornment={<Icon name="eye-off" size="small" />}
-                                    >
-                                        Unused
-                                    </FilterChip>
-                                    <FilterChip
-                                        selected={location.smartFilter === "archived"}
-                                        onClick={() => toggleSmartFilter("archived")}
-                                        startAdornment={<Icon name="archive" size="small" />}
-                                    >
-                                        Archived
-                                    </FilterChip>
-                                </div>
+                                    </div>
+                                )}
                             </div>
                             <div className={styles.pathBar}>
                                 {location.folderId != null && (mode === "folder" || mode === "flat") && (
@@ -664,6 +738,7 @@ export function AssetLibrary() {
                             {/* The list's keys: ⌘A selects all on this page, Escape clears the selection */}
                             <div
                                 className={styles.content}
+                                data-tile-size={isPhone ? (location.tileSize > 168 ? "large" : "small") : undefined}
                                 data-selecting={selectedIds.length > 0 ? "" : undefined}
                                 style={{ "--tile-size": `${location.tileSize}px` } as CSSProperties}
                                 onKeyDown={selection.onKeyDown}
@@ -693,36 +768,68 @@ export function AssetLibrary() {
                                     </div>
                                 )}
                             </div>
-                            <div className={styles.footer}>
-                                {content.items.length > 0 ? (
-                                    <Pagination
-                                        page={location.page}
-                                        pageSize={location.pageSize}
-                                        total={content.items.length}
-                                        pageSizeOptions={[25, 50, 100, 200]}
-                                        onPageChange={(page) => {
-                                            setLocation((current) => ({ ...current, page }));
-                                            setSelectedIds([]);
-                                        }}
-                                        onPageSizeChange={(pageSize) => go({ pageSize })}
-                                    />
-                                ) : (
-                                    <span className={styles.muted}>0 items</span>
-                                )}
-                                {location.view === "tiles" && (
-                                    <Slider
-                                        className={styles.sizeSlider}
-                                        aria-label="Tile size"
-                                        min={96}
-                                        max={300}
-                                        step={1}
-                                        value={location.tileSize}
-                                        onChange={(tileSize) => setLocation((current) => ({ ...current, tileSize }))}
-                                        startIcon={<Icon name="image" size="small" />}
-                                        endIcon={<Icon name="image" />}
-                                    />
-                                )}
-                            </div>
+                            {isPhone ? (
+                                // Only paging: per page and the tile size are in the filter drawer. With one page there's nothing to page, and
+                                // with a selection the bulk action bar takes the bottom edge
+                                content.items.length > location.pageSize &&
+                                selectedIds.length === 0 && (
+                                    <div className={styles.footer}>
+                                        <IconButton
+                                            variant="text"
+                                            color="secondary"
+                                            aria-label="Previous page"
+                                            disabled={location.page === 1}
+                                            onClick={() => setLocation((current) => ({ ...current, page: current.page - 1 }))}
+                                        >
+                                            <Icon name="chevron-left" />
+                                        </IconButton>
+                                        <span className={styles.pageRange} aria-live="polite">
+                                            {(location.page - 1) * location.pageSize + 1}–
+                                            {Math.min(location.page * location.pageSize, content.items.length)} of {content.items.length}
+                                        </span>
+                                        <IconButton
+                                            variant="text"
+                                            color="secondary"
+                                            aria-label="Next page"
+                                            disabled={location.page * location.pageSize >= content.items.length}
+                                            onClick={() => setLocation((current) => ({ ...current, page: current.page + 1 }))}
+                                        >
+                                            <Icon name="chevron-right" />
+                                        </IconButton>
+                                    </div>
+                                )
+                            ) : (
+                                <div className={styles.footer}>
+                                    {content.items.length > 0 ? (
+                                        <Pagination
+                                            page={location.page}
+                                            pageSize={location.pageSize}
+                                            total={content.items.length}
+                                            pageSizeOptions={pageSizes}
+                                            onPageChange={(page) => {
+                                                setLocation((current) => ({ ...current, page }));
+                                                setSelectedIds([]);
+                                            }}
+                                            onPageSizeChange={(pageSize) => go({ pageSize })}
+                                        />
+                                    ) : (
+                                        <span className={styles.muted}>0 items</span>
+                                    )}
+                                    {location.view === "tiles" && (
+                                        <Slider
+                                            className={styles.sizeSlider}
+                                            aria-label="Tile size"
+                                            min={96}
+                                            max={300}
+                                            step={1}
+                                            value={location.tileSize}
+                                            onChange={(tileSize) => setLocation((current) => ({ ...current, tileSize }))}
+                                            startIcon={<Icon name="image" size="small" />}
+                                            endIcon={<Icon name="image" />}
+                                        />
+                                    )}
+                                </div>
+                            )}
                             {selectedIds.length > 0 && (
                                 <BulkActionBar
                                     className={styles.bulkActionBar}
@@ -767,6 +874,22 @@ export function AssetLibrary() {
                     </Panel>
                 </div>
             </div>
+            <LibraryFilterDrawer
+                open={filterOpen}
+                onOpenChange={setFilterOpen}
+                location={location}
+                onChange={go}
+                onSmartFilterChange={toggleSmartFilter}
+                canIncludeSubfolders={mode !== "search" && mode !== "smartFilter"}
+                onReset={() =>
+                    go({
+                        kind: null,
+                        flat: false,
+                        smartFilter: null,
+                        folderId: location.smartFilter != null ? location.folderBeforeSmartFilter : location.folderId,
+                    })
+                }
+            />
             {uploads.length > 0 && (
                 <div className={styles.uploadTray} role="status" aria-label="Uploads">
                     <strong>Uploading to “{currentFolderName}”</strong>

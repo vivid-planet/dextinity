@@ -2,7 +2,6 @@ import { type PropsWithChildren, useState } from "react";
 
 import { AppShell } from "../../../components/appShell/AppShell";
 import { useAppShellContext } from "../../../components/appShell/appShellContext";
-import { Button } from "../../../components/button/Button";
 import { Card } from "../../../components/card/Card";
 import { Icon } from "../../../components/icon/Icon";
 import { PageHeader } from "../../../components/pageHeader/PageHeader";
@@ -159,7 +158,7 @@ export function EnvironmentIndicatorProposal({ variant }: { variant: Environment
                 eyebrow="Content · Careers"
                 title="Job ads"
                 subtitle="47 job ads in Austria · German"
-                actions={<Button startIcon={<Icon name="plus" />}>New job ad</Button>}
+                primaryAction={{ label: "New job ad", icon: <Icon name="plus" /> }}
             />
             <div className={styles.content}>
                 <Card title={text.title}>

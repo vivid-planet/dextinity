@@ -11,7 +11,7 @@ The workspace is a story of the `@dextinity/ui` Storybook: `Workspace/Shell` (`s
 
 | What                                           | Where                                                                                                                                       |
 | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| A page or component in progress, to look at it | A story in `src/storybook/workspace/__stories__/WorkspaceCanvas.stories.tsx`; the workspace lists `Workspace/Canvas` first                  |
+| A page or component in progress, to look at it | A story in `src/storybook/workspace/__stories__/WorkspaceCanvas.stories.tsx`; the Storybook lists `Workspace` first                         |
 | A clickable prototype of an app                | A story in `src/storybook/workspace/__stories__/WorkspacePrototypes.stories.tsx`, plus its entry in `src/storybook/workspace/prototypes.ts` |
 | A change to a component the designer asked for | The component itself, in its own pull request, as any other change of the package                                                           |
 
@@ -44,7 +44,7 @@ The link shows one branch, usually `ui-design-workspace`: `next` with every bran
 
     Run it from `packages/ui` with the workspace branch checked out. It prints the files that changed as a JSON map. Publish `launcher.html` with the Artifact tool to the user's link, with `root` set to the build directory and `files` set to that map. A first publish has to send every file; the Artifact tool takes at most 255 files per publish, so send them over several publishes to the same link.
 
-The build keeps the file names stable and bundles the stories into a few files, so an update sends only what changed. Use a build directory in the scratchpad, and reuse it between updates: `rebuild.sh` compares against the build that is there.
+The build moves Storybook's own UI to `storybook.html`, where the workspace's Storybook tab embeds it, since the launcher is the link's start page. It keeps the file names stable and bundles the stories into a few files, so an update sends only what changed. Use a build directory in the scratchpad, and reuse it between updates: `rebuild.sh` compares against the build that is there.
 
 ### When `next` moved
 

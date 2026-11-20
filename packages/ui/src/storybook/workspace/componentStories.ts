@@ -1,4 +1,9 @@
-import type { IndexedStory } from "./storyTree";
+/** A story from Storybook's story index. */
+export interface IndexedStory {
+    id: string;
+    title: string;
+    name: string;
+}
 
 const componentClassPattern = /^dextinity([A-Z][A-Za-z0-9]*)$/;
 // `Theme` wraps every story, and an `Icon` sits inside the button or item it belongs to, which is what's meant when pointing at it

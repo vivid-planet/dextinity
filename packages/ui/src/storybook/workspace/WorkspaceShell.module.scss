@@ -224,34 +224,6 @@
     }
 }
 
-.panelSearch {
-    padding: 10px 10px 4px;
-}
-
-.panelActions {
-    display: flex;
-    gap: 2px;
-    align-items: center;
-    justify-content: flex-end;
-    padding: 0 6px 4px;
-}
-
-.panelEmpty {
-    margin: 0;
-    padding: 8px 10px;
-    color: var(--dextinity-color-text-subtle);
-}
-
-.visuallyHidden {
-    position: absolute;
-    overflow: hidden;
-    inline-size: 1px;
-    block-size: 1px;
-    margin: -1px;
-    clip-path: inset(50%);
-    white-space: nowrap;
-}
-
 .panelList {
     flex: 1;
     min-block-size: 0;

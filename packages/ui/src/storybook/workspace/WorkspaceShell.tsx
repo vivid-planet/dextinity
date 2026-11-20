@@ -12,18 +12,15 @@ import {
 import { useMediaQuery } from "../../components/appShell/useMediaQuery";
 import { Icon } from "../../components/icon/Icon";
 import { IconButton } from "../../components/iconButton/IconButton";
-import { Input } from "../../components/input/Input";
 import { Tabs } from "../../components/tabs/Tabs";
 import { Theme } from "../../components/theme/Theme";
-import { getExpandableTreeNodeIds, type TreeNode, TreeView } from "../../components/treeView/TreeView";
-import { TreeViewExpandButtons } from "../../components/treeViewExpandButtons/TreeViewExpandButtons";
+import { type TreeNode, TreeView } from "../../components/treeView/TreeView";
 import type { ThemeColorScheme } from "../../theme/types";
 import { brandSetting } from "../brand";
 import { colorSchemeSetting, getAppliedColorScheme } from "../colorScheme";
 import { densitySetting } from "../density";
-import { getComponentStoryIds } from "./componentStories";
+import { getComponentStoryIds, type IndexedStory } from "./componentStories";
 import { workspacePrototypes } from "./prototypes";
-import { buildStoryTree, getStoryFolderIds, type IndexedStory } from "./storyTree";
 import { type InspectedComponent, useCanvasInspector } from "./useCanvasInspector";
 import { useFramePage } from "./useFramePage";
 import { workspaceLogo } from "./workspaceLogo";
@@ -126,12 +123,6 @@ function getStoryLabel(story: IndexedStory) {
     return `${story.title.split("/").at(-1)} · ${story.name}`;
 }
 
-/** The stories whose title or name contains the query, and the folders around them. */
-function getSearchMatches(stories: IndexedStory[], query: string) {
-    const matches = query === "" ? [] : stories.filter((story) => `${story.title} ${story.name}`.toLowerCase().includes(query));
-    return { storyIds: new Set(matches.map((story) => story.id)), folderIds: new Set(matches.flatMap(getStoryFolderIds)) };
-}
-
 function clampPanelWidth(width: number) {
     return Math.min(maxPanelWidth, Math.max(minPanelWidth, Math.round(width)));
 }
@@ -159,13 +150,12 @@ function trackPointerDrag(event: ReactPointerEvent, { onMove, onEnd }: { onMove:
 }
 
 /**
- * A design workspace: the stories of the Storybook in a frame that behaves like a browser window, with the theme, color scheme,
- * density, and viewport size switchable around it. The shell itself always keeps the same look.
+ * A design workspace: clickable prototypes in a frame that behaves like a browser window, with the theme, color scheme, density,
+ * and viewport size switchable around it, next to Storybook's own UI. The shell itself always keeps the same look.
  */
 export function WorkspaceShell() {
     const [state, updateState] = useWorkspaceState();
     const [stories, setStories] = useState<IndexedStory[]>([]);
-    const [search, setSearch] = useState("");
     const [colorScheme, setColorScheme] = useState(getAppliedColorScheme);
     const [brand, setBrand] = useState(brandSetting.get);
     const [density, setDensity] = useState(densitySetting.get);
@@ -181,11 +171,10 @@ export function WorkspaceShell() {
     const frameRef = useRef<HTMLIFrameElement>(null);
     const storybookFrameRef = useRef<HTMLIFrameElement>(null);
     const storybookPage = useStorybookPage();
-    const treeRef = useRef<HTMLUListElement>(null);
     const framePage = useFramePage(frameRef, frameLoadCount);
     const canvasSize = useElementSize(canvasElement);
     const narrow = useMediaQuery(narrowQuery);
-    // On a narrow screen, the stories cover the canvas, so they start closed and close again once a story is picked
+    // On a narrow screen, the prototypes cover the canvas, so they start closed and close again once a page is picked
     const [overlayPanelOpen, setOverlayPanelOpen] = useState(false);
     const panelVisible = narrow ? overlayPanelOpen : state.panelOpen;
 
@@ -218,10 +207,7 @@ export function WorkspaceShell() {
     const storedPrototypeId = isLoading || prototypes.some((story) => story.id === state.prototypeId) ? state.prototypeId : null;
     const prototypeId = storedPrototypeId ?? prototypes[0]?.id ?? null;
     const currentPrototype = prototypes.find((story) => story.id === prototypeId);
-    const frameStoryId = isPrototypeMode ? prototypeId : storyId;
-    const frameStory = isPrototypeMode ? currentPrototype : currentStory;
 
-    const storyTree = useMemo(() => buildStoryTree(componentStories), [componentStories]);
     const prototypeNodes = useMemo<TreeNode[]>(
         () =>
             prototypes.map((story) => {
@@ -244,43 +230,23 @@ export function WorkspaceShell() {
     const visiblePrototypeExpandedIds = prototypeExpandedIds ?? prototypes.map((story) => story.id);
     const currentPrototypePageId = framePage.hash || workspacePrototypes.get(prototypeId ?? "")?.startPageId;
     const storiesById = useMemo(() => new Map(componentStories.map((story) => [story.id, story])), [componentStories]);
-    const expandedIds = state.expandedIds ?? (currentStory ? getStoryFolderIds(currentStory) : []);
-    const searchQuery = search.trim().toLowerCase();
-    const isSearching = searchQuery !== "";
-    const searchMatches = useMemo(() => getSearchMatches(componentStories, searchQuery), [componentStories, searchQuery]);
-    // While searching, the tree has its own expanded folders, so the search doesn't change the ones kept for later
-    const [searchExpandedIds, setSearchExpandedIds] = useState<string[]>([]);
-    const visibleExpandedIds = isSearching ? searchExpandedIds : expandedIds;
 
-    function setVisibleExpandedIds(ids: string[]) {
-        if (isSearching) {
-            setSearchExpandedIds(ids);
-        } else {
-            updateState({ expandedIds: ids });
-        }
-    }
-
-    function changeSearch(value: string) {
-        setSearch(value);
-        setSearchExpandedIds([...getSearchMatches(componentStories, value.trim().toLowerCase()).folderIds]);
-    }
-
-    function rememberFrameStory() {
-        if (frameStoryId) {
-            const entry: HistoryEntry = { mode: state.mode, storyId: frameStoryId, page: isPrototypeMode ? framePage.hash : undefined };
+    function rememberCurrentStory() {
+        const currentStoryId = isPrototypeMode ? prototypeId : storyId;
+        if (currentStoryId) {
+            const entry: HistoryEntry = { mode: state.mode, storyId: currentStoryId, page: isPrototypeMode ? framePage.hash : undefined };
             setStoryHistory((history) => [...history, entry]);
         }
     }
 
     function openStory(nodeId: string) {
-        const story = storiesById.get(nodeId);
-        if (!story || (nodeId === storyId && !isPrototypeMode)) {
+        if (!storiesById.has(nodeId) || (nodeId === storyId && !isPrototypeMode)) {
             return;
         }
-        rememberFrameStory();
+        rememberCurrentStory();
         setInspecting(false);
         setOverlayPanelOpen(false);
-        updateState({ mode: "components", storyId: nodeId, expandedIds: [...new Set([...expandedIds, ...getStoryFolderIds(story)])] });
+        updateState({ mode: "components", storyId: nodeId });
         openInStorybook(nodeId);
     }
 
@@ -344,9 +310,7 @@ export function WorkspaceShell() {
             storybookFrameRef.current?.contentWindow?.location.reload();
             return;
         }
-        if (isPrototypeMode) {
-            setPrototypeStartPage(framePage.hash);
-        }
+        setPrototypeStartPage(framePage.hash);
         setReloadKey((key) => key + 1);
     }
 
@@ -365,29 +329,6 @@ export function WorkspaceShell() {
     const previousEntry = storyHistory.at(-1);
     const previousStory = previousEntry && stories.find((story) => story.id === previousEntry.storyId);
 
-    function selectTreeNode(nodeId: string) {
-        if (storiesById.has(nodeId)) {
-            openStory(nodeId);
-            return;
-        }
-        setVisibleExpandedIds(
-            visibleExpandedIds.includes(nodeId) ? visibleExpandedIds.filter((id) => id !== nodeId) : [...visibleExpandedIds, nodeId],
-        );
-    }
-
-    function collapseAll() {
-        setVisibleExpandedIds([]);
-        // The button stays where it is, but moving on to the tree is what's next after collapsing it
-        treeRef.current?.querySelector<HTMLElement>('[role="treeitem"][tabindex="0"]')?.focus();
-    }
-
-    function focusCurrentStory() {
-        if (currentStory) {
-            setSearch("");
-            updateState({ expandedIds: getStoryFolderIds(currentStory) });
-        }
-    }
-
     function applyDensityToFrame() {
         // Before the story has loaded, the frame's document has no root element yet
         const frameRoot = frameRef.current?.contentDocument?.documentElement;
@@ -402,9 +343,8 @@ export function WorkspaceShell() {
     const canvasInset = narrow ? { inline: 16, block: 16 * 2 + 28 } : { inline: 48, block: 48 * 2 };
     const fitScale = Math.min(1, (canvasSize.width - canvasInset.inline * 2) / state.width, (canvasSize.height - canvasInset.block) / state.height);
     const scale = state.responsive ? 1 : state.zoom === "fit" ? Math.max(fitScale, 0.1) : Number(state.zoom);
-    const storyUrl = frameStoryId ? `iframe.html?id=${encodeURIComponent(frameStoryId)}&viewMode=story` : null;
-    const frameSrc = storyUrl && isPrototypeMode && prototypeStartPage ? `${storyUrl}#${prototypeStartPage}` : storyUrl;
-    // A prototype titles the document after its page, e.g. "Job ads · Career portal"
+    const storyUrl = prototypeId ? `iframe.html?id=${encodeURIComponent(prototypeId)}&viewMode=story` : null;
+    const frameSrc = storyUrl && prototypeStartPage ? `${storyUrl}#${prototypeStartPage}` : storyUrl;
     // Storybook's own UI keeps its place in its address; the workspace only sets it when it opens a story, e.g. a picked component
     const storybookUrl = storybookPage == null ? null : storyId ? `${storybookPage}?path=/story/${encodeURIComponent(storyId)}` : storybookPage;
     const [storybookSrc, setStorybookSrc] = useState<string | null>(null);
@@ -418,7 +358,7 @@ export function WorkspaceShell() {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps -- only the story Storybook shows changes the stored one here
     }, [storybookStoryId]);
-    const panelLabel = isPrototypeMode ? "Prototypes" : "Stories";
+    // A prototype titles the document after its page, e.g. "Job ads · Career portal"
     const prototypePageLabel = isPrototypeMode ? framePage.title.split(" · ")[0] : "";
 
     function startFrameResize(edge: ResizeEdge, event: ReactPointerEvent) {
@@ -466,7 +406,7 @@ export function WorkspaceShell() {
                                 <IconButton
                                     variant="text"
                                     color="secondary"
-                                    aria-label={panelVisible ? `Hide ${panelLabel.toLowerCase()}` : `Show ${panelLabel.toLowerCase()}`}
+                                    aria-label={panelVisible ? "Hide prototypes" : "Show prototypes"}
                                     aria-expanded={panelVisible}
                                     onClick={togglePanel}
                                 >
@@ -596,89 +536,32 @@ export function WorkspaceShell() {
                         {panelVisible && (
                             <nav
                                 className={styles.panel}
-                                aria-label={panelLabel}
+                                aria-label="Prototypes"
                                 data-overlay={narrow || undefined}
                                 style={{ inlineSize: narrow ? undefined : state.panelWidth }}
                                 onKeyDown={(event) => narrow && event.key === "Escape" && setOverlayPanelOpen(false)}
                             >
-                                {isPrototypeMode ? (
-                                    <div className={styles.panelList} data-prototypes>
-                                        <TreeView
-                                            aria-label="Prototypes"
-                                            nodes={prototypeNodes}
-                                            expandedIds={visiblePrototypeExpandedIds}
-                                            onExpandedChange={setPrototypeExpandedIds}
-                                            selectedId={
-                                                prototypeId && currentPrototypePageId
-                                                    ? getPrototypePageNodeId(prototypeId, currentPrototypePageId)
-                                                    : undefined
-                                            }
-                                            onSelect={selectPrototypeNode}
-                                        />
-                                    </div>
-                                ) : (
-                                    <>
-                                        <div className={styles.panelSearch}>
-                                            <Input
-                                                aria-label="Search stories"
-                                                placeholder="Search stories"
-                                                startAdornment={<Icon name="search" />}
-                                                value={search}
-                                                onChange={(event) => changeSearch(event.target.value)}
-                                            />
-                                        </div>
-                                        <div className={styles.panelActions}>
-                                            <IconButton
-                                                variant="text"
-                                                color="secondary"
-                                                size="small"
-                                                aria-label="Show only the current story"
-                                                disabled={!currentStory}
-                                                onClick={focusCurrentStory}
-                                            >
-                                                <Icon name="locate" />
-                                            </IconButton>
-                                            <TreeViewExpandButtons
-                                                onExpandAll={() =>
-                                                    setVisibleExpandedIds(
-                                                        isSearching ? [...searchMatches.folderIds] : getExpandableTreeNodeIds(storyTree),
-                                                    )
-                                                }
-                                                onCollapseAll={collapseAll}
-                                            />
-                                        </div>
-                                        <p role="status" className={styles.visuallyHidden}>
-                                            {isSearching ? `${searchMatches.storyIds.size} stories found` : ""}
-                                        </p>
-                                        <div className={styles.panelList}>
-                                            {isSearching && searchMatches.storyIds.size === 0 ? (
-                                                <p className={styles.panelEmpty}>No stories match “{search.trim()}”</p>
-                                            ) : (
-                                                <TreeView
-                                                    ref={treeRef}
-                                                    aria-label="Stories"
-                                                    nodes={storyTree}
-                                                    expandedIds={visibleExpandedIds}
-                                                    onExpandedChange={setVisibleExpandedIds}
-                                                    selectedId={storyId ?? undefined}
-                                                    onSelect={selectTreeNode}
-                                                    filter={
-                                                        isSearching
-                                                            ? (node) => searchMatches.storyIds.has(node.id) || searchMatches.folderIds.has(node.id)
-                                                            : undefined
-                                                    }
-                                                />
-                                            )}
-                                        </div>
-                                    </>
-                                )}
+                                <div className={styles.panelList} data-prototypes>
+                                    <TreeView
+                                        aria-label="Prototypes"
+                                        nodes={prototypeNodes}
+                                        expandedIds={visiblePrototypeExpandedIds}
+                                        onExpandedChange={setPrototypeExpandedIds}
+                                        selectedId={
+                                            prototypeId && currentPrototypePageId
+                                                ? getPrototypePageNodeId(prototypeId, currentPrototypePageId)
+                                                : undefined
+                                        }
+                                        onSelect={selectPrototypeNode}
+                                    />
+                                </div>
                             </nav>
                         )}
                         {panelVisible && !narrow && (
                             <div
                                 role="separator"
                                 aria-orientation="vertical"
-                                aria-label={`Resize ${panelLabel.toLowerCase()} panel`}
+                                aria-label="Resize prototypes panel"
                                 aria-valuemin={minPanelWidth}
                                 aria-valuemax={maxPanelWidth}
                                 aria-valuenow={state.panelWidth}
@@ -697,7 +580,7 @@ export function WorkspaceShell() {
                             >
                                 {!state.responsive && (
                                     <div className={styles.frameLabel}>
-                                        <span className={styles.frameStory}>{frameStory ? getStoryLabel(frameStory) : ""}</span>
+                                        <span className={styles.frameStory}>{currentPrototype ? getStoryLabel(currentPrototype) : ""}</span>
                                         <span>
                                             {state.width} × {state.height} · {Math.round(scale * 100)} %
                                         </span>
@@ -713,7 +596,7 @@ export function WorkspaceShell() {
                                             ref={frameRef}
                                             className={styles.iframe}
                                             src={frameSrc ?? undefined}
-                                            title={frameStory ? `${frameStory.title} · ${frameStory.name}` : "Story"}
+                                            title={currentPrototype ? `${currentPrototype.title} · ${currentPrototype.name}` : "Prototype"}
                                             onLoad={() => {
                                                 applyDensityToFrame();
                                                 setFrameLoadCount((count) => count + 1);

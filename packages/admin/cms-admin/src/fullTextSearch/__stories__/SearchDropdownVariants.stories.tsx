@@ -5,6 +5,7 @@ import { fn } from "storybook/test";
 
 import { Header } from "../../common/header/Header";
 import { CommandPaletteSearch } from "./variants/CommandPaletteSearch";
+import { CommandPaletteSearchV2 } from "./variants/CommandPaletteSearchV2";
 import { CompactSearchDropdown } from "./variants/CompactSearchDropdown";
 import { GroupedSearchDropdown } from "./variants/GroupedSearchDropdown";
 
@@ -61,6 +62,16 @@ export const C_CommandPalette: Story = {
     render: ({ onSelectResult }) => (
         <Header>
             <CommandPaletteSearch onSelectResult={onSelectResult} />
+        </Header>
+    ),
+};
+
+/** Iteration of C: type tabs with counts, skeleton loading, recent search chips and quick actions. */
+export const C2_CommandPalette: Story = {
+    name: "C2 · Command palette, iteration 2",
+    render: ({ onSelectResult }) => (
+        <Header>
+            <CommandPaletteSearchV2 onSelectResult={onSelectResult} />
         </Header>
     ),
 };

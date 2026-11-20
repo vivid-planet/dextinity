@@ -43,6 +43,7 @@ export function useFullTextSearch({ search, initialLimit }: { search: string; in
         totalCount: debouncedSearch.length > 0 ? (currentData?.myFullTextSearch.totalCount ?? 0) : 0,
         loading: loading || isTyping,
         hasResultsData: currentData !== undefined && debouncedSearch.length > 0,
+        areResultsStale: isTyping || (loading && data === undefined),
         debouncedSearch,
         showAll: () => setLimit(50),
         isShowingAll: limit > initialLimit,

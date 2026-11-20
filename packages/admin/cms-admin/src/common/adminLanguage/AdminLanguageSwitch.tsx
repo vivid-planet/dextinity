@@ -4,25 +4,22 @@ import { css, styled } from "@mui/material/styles";
 import { useId } from "react";
 import { FormattedMessage } from "react-intl";
 
-interface AdminLanguageSwitchProps<Language extends string> {
-    languages: readonly Language[];
-    value: Language;
-    onChange: (language: Language) => void;
-}
+import { useAdminLanguage } from "./AdminLanguage";
 
-export function AdminLanguageSwitch<Language extends string>({ languages, value, onChange }: AdminLanguageSwitchProps<Language>) {
+export function AdminLanguageSwitch() {
+    const { language: selectedLanguage, supportedLanguages, setLanguage } = useAdminLanguage();
     const labelId = useId();
 
     return (
         <>
             <Label id={labelId} variant="caption">
-                <FormattedMessage id="adminLanguageSwitch.label" defaultMessage="Admin language" />
+                <FormattedMessage id="dextinity.adminLanguageSwitch.label" defaultMessage="Admin language" />
             </Label>
             <LanguageList role="group" aria-labelledby={labelId} dense disablePadding>
-                {languages.map((language) => {
-                    const isSelected = language === value;
+                {supportedLanguages.map((language) => {
+                    const isSelected = language === selectedLanguage;
                     return (
-                        <LanguageListItemButton key={language} aria-pressed={isSelected} selected={isSelected} onClick={() => onChange(language)}>
+                        <LanguageListItemButton key={language} aria-pressed={isSelected} selected={isSelected} onClick={() => setLanguage(language)}>
                             <ListItemText primary={getNativeLanguageName(language)} lang={language} />
                             {isSelected && <Check color="primary" />}
                         </LanguageListItemButton>

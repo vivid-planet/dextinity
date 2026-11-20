@@ -7,6 +7,8 @@ import { FormattedMessage } from "react-intl";
 
 import { version } from "../..";
 import { useCurrentUser } from "../../userPermissions/hooks/currentUser";
+import { useOptionalAdminLanguage } from "../adminLanguage/AdminLanguage";
+import { AdminLanguageSwitch } from "../adminLanguage/AdminLanguageSwitch";
 import { SignOutButton } from "../signOutButton/SignOutButton";
 import { AboutModal } from "./about/AboutModal";
 import { ImpersonationInlay } from "./ImpersonationInlay";
@@ -21,6 +23,7 @@ export function UserHeaderItem(props: PropsWithChildren<UserHeaderItemProps>) {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("md"));
     const user = useCurrentUser();
+    const adminLanguage = useOptionalAdminLanguage();
 
     const [showAboutModal, setShowAboutModal] = useState(false);
 
@@ -64,6 +67,14 @@ export function UserHeaderItem(props: PropsWithChildren<UserHeaderItemProps>) {
                 {user.impersonated && (
                     <>
                         <ImpersonationInlay />
+                        <Divider />
+                    </>
+                )}
+                {adminLanguage && adminLanguage.supportedLanguages.length > 1 && (
+                    <>
+                        <Box padding={4}>
+                            <AdminLanguageSwitch />
+                        </Box>
                         <Divider />
                     </>
                 )}

@@ -13,19 +13,6 @@ import dextinity_messages_en from "../lang-compiled/dextinity-lang/en.json";
 export const supportedLanguages = ["en", "de"] as const;
 export type SupportedLanguage = (typeof supportedLanguages)[number];
 
-const fallbackLanguage: SupportedLanguage = "en";
-export function isSupportedLanguage(language: string | null): language is SupportedLanguage {
-    return supportedLanguages.includes(language as SupportedLanguage);
-}
-
-export function getClosestSupportedLanguageFromBrowserLanguages(): SupportedLanguage {
-    const browserLanguages = typeof navigator !== "undefined" ? (navigator.languages ?? [navigator.language]) : [];
-
-    const language = browserLanguages.map((browserLanguage) => browserLanguage.split("-")[0].toLowerCase()).find(isSupportedLanguage);
-
-    return language ?? fallbackLanguage;
-}
-
 const dextinityMessages = {
     en: dextinity_messages_en,
     de: dextinity_messages_de,

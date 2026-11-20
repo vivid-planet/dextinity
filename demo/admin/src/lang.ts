@@ -13,8 +13,6 @@ import dextinity_messages_en from "../lang-compiled/dextinity-lang/en.json";
 export const supportedLanguages = ["en", "de"] as const;
 export type SupportedLanguage = (typeof supportedLanguages)[number];
 
-export const fallbackLanguage: SupportedLanguage = "en";
-
 const dextinityMessages = {
     en: dextinity_messages_en,
     de: dextinity_messages_de,

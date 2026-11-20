@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { getClosestSupportedLanguageFromBrowserLanguages } from "./AdminLanguageProvider";
+import { getClosestSupportedLanguageFromBrowserLanguages } from "./AdminLanguage";
 
 describe("getClosestSupportedLanguageFromBrowserLanguages", () => {
     afterEach(() => {

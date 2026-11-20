@@ -7,7 +7,7 @@ import { FormattedMessage } from "react-intl";
 
 import { version } from "../..";
 import { useCurrentUser } from "../../userPermissions/hooks/currentUser";
-import { useAdminLanguage } from "../adminLanguage/AdminLanguageProvider";
+import { useOptionalAdminLanguage } from "../adminLanguage/AdminLanguage";
 import { AdminLanguageSwitch } from "../adminLanguage/AdminLanguageSwitch";
 import { SignOutButton } from "../signOutButton/SignOutButton";
 import { AboutModal } from "./about/AboutModal";
@@ -23,7 +23,7 @@ export function UserHeaderItem(props: PropsWithChildren<UserHeaderItemProps>) {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("md"));
     const user = useCurrentUser();
-    const adminLanguage = useAdminLanguage();
+    const adminLanguage = useOptionalAdminLanguage();
 
     const [showAboutModal, setShowAboutModal] = useState(false);
 
@@ -73,7 +73,7 @@ export function UserHeaderItem(props: PropsWithChildren<UserHeaderItemProps>) {
                 {adminLanguage && adminLanguage.supportedLanguages.length > 1 && (
                     <>
                         <Box padding={4}>
-                            <AdminLanguageSwitch {...adminLanguage} />
+                            <AdminLanguageSwitch />
                         </Box>
                         <Divider />
                     </>

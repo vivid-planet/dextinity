@@ -4,11 +4,10 @@ import { css, styled } from "@mui/material/styles";
 import { useId } from "react";
 import { FormattedMessage } from "react-intl";
 
-import type { AdminLanguageContextValue } from "./AdminLanguageProvider";
+import { useAdminLanguage } from "./AdminLanguage";
 
-type AdminLanguageSwitchProps = AdminLanguageContextValue;
-
-export function AdminLanguageSwitch({ language: selectedLanguage, supportedLanguages, setLanguage }: AdminLanguageSwitchProps) {
+export function AdminLanguageSwitch() {
+    const { language: selectedLanguage, supportedLanguages, setLanguage } = useAdminLanguage();
     const labelId = useId();
 
     return (

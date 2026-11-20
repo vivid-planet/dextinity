@@ -4,7 +4,6 @@ import { ApolloProvider } from "@apollo/client";
 import { ErrorDialogHandler, MasterLayout, MuiThemeProvider, RouterBrowserRouter, SnackbarProvider } from "@dextinity/admin";
 import { BrevoConfigProvider } from "@dextinity/brevo-admin";
 import {
-    AdminLanguageProvider,
     AzureAiTranslatorProvider,
     type ContentScope,
     ContentScopeProvider,
@@ -12,7 +11,7 @@ import {
     CurrentUserProvider,
     DextinityConfigProvider,
     SitePreview,
-    useAdminLanguageState,
+    useAdminLanguage,
 } from "@dextinity/cms-admin";
 import { css, Global } from "@emotion/react";
 import { DataGridPro } from "@mui/x-data-grid-pro";
@@ -25,7 +24,7 @@ import { PageTreeNodeDependency } from "@src/pageTree/PageTreeNodeDependency";
 import type { ContentScope as BaseContentScope } from "@src/site-configs";
 import { createTheme } from "@src/theme";
 import { HTML5toTouch } from "rdndmb-html5-to-touch";
-import { useMemo } from "react";
+import { type PropsWithChildren, useMemo } from "react";
 import { DndProvider } from "react-dnd-multi-backend";
 import { FormattedMessage, IntlProvider } from "react-intl";
 import { Route, Switch } from "react-router";
@@ -37,7 +36,7 @@ import { ImportFromPicsum } from "./dam/ImportFromPicsum";
 import { Link } from "./documents/links/Link";
 import { Page } from "./documents/pages/Page";
 import type { GQLPermission } from "./graphql.generated";
-import { fallbackLanguage, getLanguageConfig, supportedLanguages } from "./lang";
+import { getLanguageConfig, type SupportedLanguage, supportedLanguages } from "./lang";
 import { NewsDetailBlock } from "./news/blocks/NewsDetailBlock";
 import { NewsLinkBlock } from "./news/blocks/NewsLinkBlock";
 import { NewsListBlock } from "./news/blocks/NewsListBlock";
@@ -69,11 +68,6 @@ declare module "@dextinity/cms-admin" {
 LicenseInfo.setLicenseKey(config.muiLicenseKey);
 
 export function App() {
-    const adminLanguage = useAdminLanguageState({ supportedLanguages, fallbackLanguage });
-    const { language } = adminLanguage;
-    const { messages, dateFnsLocale, muiLocale } = useMemo(() => getLanguageConfig(language), [language]);
-    const theme = useMemo(() => createTheme(muiLocale), [muiLocale]);
-
     return (
         <DextinityConfigProvider
             {...config}
@@ -138,6 +132,7 @@ export function App() {
             }}
             buildInformation={{ date: config.buildDate, number: config.buildNumber, commitHash: config.commitSha }}
             contentLanguage={{ resolveContentLanguageForScope: (scope: ContentScope) => scope.language }}
+            adminLanguage={{ supportedLanguages }}
             blocks={{
                 isBlockSupported: (block, scope) => {
                     if (scope.domain === "main") {
@@ -163,55 +158,62 @@ export function App() {
                 }}
             >
                 <ApolloProvider client={apolloClient}>
-                    <AdminLanguageProvider value={adminLanguage}>
-                        <IntlProvider locale={language} messages={messages}>
-                            <MuiThemeProvider theme={theme}>
-                                <LocalizationProvider adapterLocale={dateFnsLocale} dateAdapter={AdapterDateFns}>
-                                    <DndProvider options={HTML5toTouch}>
-                                        <SnackbarProvider>
-                                            <ErrorDialogHandler />
-                                            <CurrentUserProvider>
-                                                <RouterBrowserRouter>
-                                                    <GlobalStyle />
-                                                    <ContentScopeProvider>
-                                                        {({ match }) => (
-                                                            <AzureAiTranslatorProvider enabled showApplyTranslationDialog>
-                                                                <Switch>
-                                                                    <Route
-                                                                        path={`${match.path}/preview`}
-                                                                        render={(props) => (
-                                                                            <SitePreview
-                                                                                resolvePath={(path: string, scope) => {
-                                                                                    return `/${scope.language}${path}`;
-                                                                                }}
-                                                                                {...props}
-                                                                            />
-                                                                        )}
-                                                                    />
-                                                                    <Route
-                                                                        render={() => (
-                                                                            <MasterLayout
-                                                                                headerComponent={MasterHeader}
-                                                                                menuComponent={AppMasterMenu}
-                                                                            >
-                                                                                <AppMasterMenuRoutes />
-                                                                            </MasterLayout>
-                                                                        )}
-                                                                    />
-                                                                </Switch>
-                                                            </AzureAiTranslatorProvider>
-                                                        )}
-                                                    </ContentScopeProvider>
-                                                </RouterBrowserRouter>
-                                            </CurrentUserProvider>
-                                        </SnackbarProvider>
-                                    </DndProvider>
-                                </LocalizationProvider>
-                            </MuiThemeProvider>
-                        </IntlProvider>
-                    </AdminLanguageProvider>
+                    <AdminLanguageLocalizationProvider>
+                        <DndProvider options={HTML5toTouch}>
+                            <SnackbarProvider>
+                                <ErrorDialogHandler />
+                                <CurrentUserProvider>
+                                    <RouterBrowserRouter>
+                                        <GlobalStyle />
+                                        <ContentScopeProvider>
+                                            {({ match }) => (
+                                                <AzureAiTranslatorProvider enabled showApplyTranslationDialog>
+                                                    <Switch>
+                                                        <Route
+                                                            path={`${match.path}/preview`}
+                                                            render={(props) => (
+                                                                <SitePreview
+                                                                    resolvePath={(path: string, scope) => {
+                                                                        return `/${scope.language}${path}`;
+                                                                    }}
+                                                                    {...props}
+                                                                />
+                                                            )}
+                                                        />
+                                                        <Route
+                                                            render={() => (
+                                                                <MasterLayout headerComponent={MasterHeader} menuComponent={AppMasterMenu}>
+                                                                    <AppMasterMenuRoutes />
+                                                                </MasterLayout>
+                                                            )}
+                                                        />
+                                                    </Switch>
+                                                </AzureAiTranslatorProvider>
+                                            )}
+                                        </ContentScopeProvider>
+                                    </RouterBrowserRouter>
+                                </CurrentUserProvider>
+                            </SnackbarProvider>
+                        </DndProvider>
+                    </AdminLanguageLocalizationProvider>
                 </ApolloProvider>
             </BrevoConfigProvider>
         </DextinityConfigProvider>
+    );
+}
+
+function AdminLanguageLocalizationProvider({ children }: PropsWithChildren) {
+    const { language } = useAdminLanguage<SupportedLanguage>();
+    const { messages, dateFnsLocale, muiLocale } = useMemo(() => getLanguageConfig(language), [language]);
+    const theme = useMemo(() => createTheme(muiLocale), [muiLocale]);
+
+    return (
+        <IntlProvider locale={language} messages={messages}>
+            <MuiThemeProvider theme={theme}>
+                <LocalizationProvider adapterLocale={dateFnsLocale} dateAdapter={AdapterDateFns}>
+                    {children}
+                </LocalizationProvider>
+            </MuiThemeProvider>
+        </IntlProvider>
     );
 }

@@ -4,19 +4,27 @@
 
 Let users choose the admin language in the user menu
 
-Add `useAdminLanguageState` and `AdminLanguageProvider`.
-`useAdminLanguageState` returns the admin language: the user's choice, which is stored in the browser, or else the closest supported browser language.
-When an `AdminLanguageProvider` with more than one supported language is present, `UserHeaderItem` lists the supported languages, each named in itself.
+Pass the languages the admin is translated to as `adminLanguage.supportedLanguages` to `DextinityConfigProvider`.
+`UserHeaderItem` then lists them, each named in itself.
+The user's choice is stored in the browser.
+Until the user chooses, the closest supported browser language is used, or else the first supported language.
+
+Read the admin language with `useAdminLanguage` to load the matching translations.
 
 **Example**
 
 ```tsx
-const adminLanguage = useAdminLanguageState({ supportedLanguages: ["en", "de"], fallbackLanguage: "en" });
-const { messages } = getLanguageConfig(adminLanguage.language);
+<DextinityConfigProvider {...config} adminLanguage={{ supportedLanguages: ["en", "de"] }}>
+    <AdminLanguageIntlProvider>{/* ... */}</AdminLanguageIntlProvider>
+</DextinityConfigProvider>;
 
-<AdminLanguageProvider value={adminLanguage}>
-    <IntlProvider locale={adminLanguage.language} messages={messages}>
-        {/* ... */}
-    </IntlProvider>
-</AdminLanguageProvider>;
+function AdminLanguageIntlProvider({ children }: PropsWithChildren) {
+    const { language } = useAdminLanguage();
+
+    return (
+        <IntlProvider locale={language} messages={getMessages(language)}>
+            {children}
+        </IntlProvider>
+    );
+}
 ```

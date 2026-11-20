@@ -2,7 +2,7 @@ import { Box, Typography } from "@mui/material";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, within } from "storybook/test";
 
-import { useAdminLanguageState } from "../AdminLanguageProvider";
+import { useAdminLanguage } from "../AdminLanguage";
 import { AdminLanguageSwitch } from "../AdminLanguageSwitch";
 
 type Story = StoryObj<typeof AdminLanguageSwitch>;
@@ -10,6 +10,9 @@ type Story = StoryObj<typeof AdminLanguageSwitch>;
 const config: Meta<typeof AdminLanguageSwitch> = {
     component: AdminLanguageSwitch,
     title: "common/adminLanguage/AdminLanguageSwitch",
+    parameters: {
+        adminLanguage: { supportedLanguages: ["en", "de", "fr"] },
+    },
     beforeEach: () => {
         window.localStorage.removeItem("adminLanguage");
         return () => window.localStorage.removeItem("adminLanguage");
@@ -18,25 +21,24 @@ const config: Meta<typeof AdminLanguageSwitch> = {
 
 export default config;
 
-function AdminLanguageSwitchStory({ supportedLanguages }: { supportedLanguages: readonly string[] }) {
-    const adminLanguage = useAdminLanguageState({ supportedLanguages, fallbackLanguage: supportedLanguages[0] });
-
-    return (
-        <>
-            <Box width={300} padding={4}>
-                <AdminLanguageSwitch {...adminLanguage} />
-            </Box>
-            <Typography>Current admin language: {adminLanguage.language}</Typography>
-        </>
-    );
+function CurrentAdminLanguage() {
+    const { language } = useAdminLanguage();
+    return <Typography>Current admin language: {language}</Typography>;
 }
 
 /**
- * `UserHeaderItem` renders this switch when the application wraps it in an `AdminLanguageProvider` with more than one
- * supported language. Each language is named in itself. The choice is stored in the browser.
+ * `UserHeaderItem` renders this switch when more than one language is passed to `adminLanguage.supportedLanguages`
+ * of `DextinityConfigProvider`. Each language is named in itself. The choice is stored in the browser.
  */
 export const Default: Story = {
-    render: () => <AdminLanguageSwitchStory supportedLanguages={["en", "de", "fr"]} />,
+    render: () => (
+        <>
+            <Box width={300} padding={4}>
+                <AdminLanguageSwitch />
+            </Box>
+            <CurrentAdminLanguage />
+        </>
+    ),
     play: async ({ canvasElement, userEvent }) => {
         const canvas = within(canvasElement);
 

@@ -168,6 +168,14 @@
     min-block-size: 0;
 }
 
+// Storybook's own UI, with its sidebar, toolbar, and docs, in place of the workspace's story list and canvas
+.storybookFrame {
+    display: block;
+    flex: 1;
+    min-inline-size: 0;
+    border: 0;
+}
+
 .panel {
     display: flex;
     flex: 0 0 auto;

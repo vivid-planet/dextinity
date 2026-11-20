@@ -42,7 +42,7 @@ export const Default: Story = {
     play: async ({ canvasElement, userEvent }) => {
         const canvas = within(canvasElement);
 
-        await userEvent.click(canvas.getByRole("button", { name: "Deutsch" }));
+        await userEvent.click(await canvas.findByRole("button", { name: "Deutsch" }));
 
         await expect(canvas.getByText("Current admin language: de")).toBeInTheDocument();
         await expect(canvas.getByRole("button", { name: "Deutsch" })).toHaveAttribute("aria-pressed", "true");

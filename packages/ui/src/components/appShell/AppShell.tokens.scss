@@ -31,7 +31,7 @@
     --dextinity-app-shell-assistant-width: 380px;
     // Height of the assistant sheet on narrow windows
     --dextinity-app-shell-assistant-sheet-height: 86dvh;
-    // Shadow of the navigation panel inside the drawer
+    // Shadow of the navigation when it lies over the page: in the drawer, and expanded on medium windows
     --dextinity-app-shell-overlay-shadow: var(--dextinity-shadow-3);
 
     // Stacking order of the sticky top bar, below the navigation

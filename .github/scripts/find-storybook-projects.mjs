@@ -2,11 +2,9 @@
 
 import { execFileSync } from "node:child_process";
 import { appendFileSync, existsSync, readFileSync } from "node:fs";
-import { createRequire } from "node:module";
 import path from "node:path";
 
-const require = createRequire(import.meta.url);
-const { files: copiedProjectFiles } = require("../../copy-project-files.js");
+import { files as copiedProjectFiles } from "../../copy-project-files.mjs";
 
 const filesAffectingAllProjects = [
     /^package\.json$/,
@@ -14,7 +12,7 @@ const filesAffectingAllProjects = [
     /^pnpm-workspace\.yaml$/,
     /^\.nvmrc$/,
     /^tsconfig\.core\.json$/,
-    /^copy-project-files\.js$/,
+    /^copy-project-files\.mjs$/,
     /^\.github\/actions\/setup\//,
     /^\.github\/scripts\/find-storybook-projects\.mjs$/,
     /^\.github\/workflows\/test\.yml$/,

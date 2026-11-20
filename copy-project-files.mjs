@@ -1,7 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 
-const files = [
+export const files = [
     ...(process.env.CI === "true"
         ? []
         : [
@@ -52,9 +53,7 @@ const files = [
     },
 ];
 
-module.exports = { files };
-
-if (require.main === module) {
+if (import.meta.url === pathToFileURL(process.argv[1]).href) {
     for (const { file, targetDir } of files) {
         for (const dir of targetDir) {
             const targetFile = `${dir}/${path.basename(file)}`;

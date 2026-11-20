@@ -7,7 +7,6 @@ import { useControlledArg } from "../../../storybook/storyArgs";
 import { StoryAssistant } from "../../../storybook/StoryAssistant";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { AiAssistantSwitch } from "../../aiAssistantSwitch/AiAssistantSwitch";
-import { Button } from "../../button/Button";
 import { CommandPalette } from "../../commandPalette/CommandPalette";
 import { Icon } from "../../icon/Icon";
 import { PageHeader } from "../../pageHeader/PageHeader";

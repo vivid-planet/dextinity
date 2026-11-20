@@ -3,7 +3,7 @@
 The AI Mode puts the chat of the Dextinity AI Hub next to the admin. A switch in the header (`AiModeHeaderItem`) opens the chat as a flyout (`AiModeFlyout`), which loads the AI Hub's web component and registers two sets of tools with it:
 
 - the **MCP server** of the API (`demo/api/src/mcp`, at `/api/mcp`), which reads from the API: the page tree, pages as they were last saved, DAM files, and the block schemas,
-- the **host tools** of the admin, which act on what is open in the admin. The pages that are open offer them through AI Mode toolsets (see below): the page tree offers `open_page_tree_node`, the page editor `get_page_state` and `edit_blocks` (`hostTools.ts`).
+- the **host tools** of the admin, which act on what is open in the admin. The pages that are open offer them through AI Mode toolsets (see below): the admin as a whole offers `open_admin_page` and `open_page_tree_node`, and the page editor `get_page_state` and `edit_blocks` (`hostTools.ts`).
 
 The AI Mode is ported from vivid-websites. This README explains the decisions the code doesn't show. It is written for developers who maintain the AI Mode in Demo or port it to a project.
 
@@ -16,7 +16,7 @@ The AI Mode needs three settings: the script of the web component (`AI_HUB_WEB_C
 
 The user also needs the `aiHub` permission, for the switch as much as for the proxy. It is a permission of its own rather than the page tree's because the AI Hub will serve more than the editing of pages. In Demo, every user has it, as every permission other than `userPermissions`.
 
-The AI Mode is available wherever a page registers an AI Mode toolset, which for now only the page tree does. Everywhere else, the switch is disabled and its tooltip says the AI Mode isn't available there yet. The flyout closes there and opens again on returning to a page with a toolset, because whether it is open is stored separately from whether it is available.
+The AI Mode is available wherever an AI Mode toolset is mounted. In Demo, that is every page, because the admin as a whole has a toolset. Without one, the switch is disabled and its tooltip says the AI Mode isn't available on this page. The flyout closes there and opens again on returning to a page with a toolset, because whether it is open is stored separately from whether it is available.
 
 ## The chat goes through the API
 
@@ -95,13 +95,14 @@ The agent gets the text only, not where it is in the block. To change it, it rew
 
 The host tools are tools of the admin rather than of the MCP server, because they act on what only the admin knows: which page is open, and its unsaved state.
 
-- `open_page_tree_node` opens a page tree node's document in the editor. It takes the node's category as well as its ID, because the category is part of the URL. Unsaved changes of the page that is open aren't lost silently: the admin asks the user, as on any navigation. Because the user may stay on the page, `open_page_tree_node` reports only that it asked to open the page, and tells the agent to check with `get_page_state` (`pageTreeNodeId`) which page is open before referring to it. vivid-websites also has tools to list and navigate to any admin page; they are left out because the AI Mode is limited to the page tree.
+- `open_admin_page` opens a page of the main navigation, e.g. the assets or the redirects. The pages and their labels are in the description of its `path`, built from the master menu data with the permission checks of the menu (`adminPages.ts`), so the agent needs no call to list them, unlike in vivid-websites, and can't open a page the menu hides from the user. A route with a parameter in its path, such as the page tree's `/pages/pagetree/:category`, is left out unless its menu entry links to it with `to`. The admin scope also pushes the menu page that is open, as `openPage`, so the agent knows where the user is, also on a page below it such as an edit page.
+- `open_page_tree_node` opens a page tree node's document in the editor. It takes the node's category as well as its ID, because the category is part of the URL. The admin's toolset offers it on every page, to users who may edit the page tree, so that the agent opens a page's editor from anywhere in one step rather than opening the page tree first. Unsaved changes of the page that is open aren't lost silently: the admin asks the user, as on any navigation. Because the user may stay on the page, `open_page_tree_node` reports only that it asked to open the page, and tells the agent to check with `get_page_state` (`pageTreeNodeId`) which page is open before referring to it.
 - `get_page_state` returns the page's metadata and the summary described above.
 - `edit_blocks` changes the content blocks, see below.
 
 ### AI Mode toolsets
 
-A page offers its context and tools by registering an AI Mode toolset (`AiModeToolsets.tsx`): an ID, a description of what the user is looking at, a small context to push, and its tools. The page tree registers its toolset with the `AiModeToolset` component (`PageTreeAiModeToolset`), because the page editor is opened inside it and registers its own toolset with `useAiModeToolset`. A toolset rendered inside another is listed after it, so the agent reads the toolsets from the outside in. React runs the effects of children first, so the order of the registrations alone would put the page editor before the page tree.
+A page offers its context and tools by registering an AI Mode toolset (`AiModeToolsets.tsx`): an ID, a description of what the user is looking at, a small context to push, and its tools. The admin (`AdminAiModeToolset`, around the routes of the master menu) and the page tree (`PageTreeAiModeToolset`) register their toolsets with the `AiModeToolset` component, because other toolsets are rendered inside them. The page editor registers its own with `useAiModeToolset`. A toolset rendered inside another is listed after it, so the agent reads the toolsets from the outside in. React runs the effects of children first, so the order of the registrations alone would put the page editor before the page tree.
 
 The chat gets the tools of the toolsets that are mounted, so the agent sees only the tools of the page that is open. Each `registerHostTools` call of the bridge replaces the tools the chat had, so the flyout passes the tools of all mounted toolsets whenever a toolset mounts, unmounts, or changes a tool's definition. It registers them right away rather than debounced, so that the agent doesn't call a tool of a page that is gone. A page registers its toolset again on every render, so that the store always has the handlers of the latest render, but only a change the agent sees notifies the flyout: the handlers are looked up when a tool is called. The toolsets are kept in a store the flyout subscribes to, not in React context state, so that block edits don't re-render the flyout.
 
@@ -122,7 +123,7 @@ The descriptions are where the agent learns how to use the tools, so they say mo
 
 The user approves every edit. The chat runs a host tool without asking only if its `readOnlyHint` is `true`, and shows the call with an approve and a reject button otherwise; `edit_blocks` sets `readOnlyHint: false`. The description tells the agent about the approval, so that it calls the tool instead of first asking for permission in the chat, which would ask the user twice.
 
-A tool that only navigates or changes what a page shows, such as `open_page_tree_node`, sets `readOnlyHint: true` although it changes the admin: it changes no data, and an approval for every step would slow the agent down without protecting anything. Unsaved changes aren't lost by it either, because the admin asks the user before it leaves a page with unsaved changes.
+A tool that only navigates or changes what a page shows, such as `open_page_tree_node` and `open_admin_page`, sets `readOnlyHint: true` although it changes the admin: it changes no data, and an approval for every step would slow the agent down without protecting anything. Unsaved changes aren't lost by it either, because the admin asks the user before it leaves a page with unsaved changes.
 
 ## Editing blocks
 

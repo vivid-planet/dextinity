@@ -40,8 +40,6 @@ describe("AiModeHeaderItem", () => {
         expect(toggle).toBeDisabled();
 
         fireEvent.mouseOver(toggle.parentElement as HTMLElement);
-        expect(await screen.findByRole("tooltip")).toHaveTextContent(
-            "The AI Companion isn't available here yet. For now, it works in the page tree only.",
-        );
+        expect(await screen.findByRole("tooltip")).toHaveTextContent("The AI Companion isn't available on this page.");
     });
 });

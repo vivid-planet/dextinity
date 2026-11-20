@@ -496,7 +496,15 @@ export function AssetDetail({ assetId }: { assetId: string }) {
                             }))}
                         />
                     }
-                    eyebrow="Global"
+                    eyebrow={
+                        <Tooltip content="Applies to all scopes">
+                            {/* Focusable, so that the tooltip also opens from the keyboard */}
+                            <span className={styles.eyebrow} tabIndex={0}>
+                                <Icon name="globe" size="small" />
+                                Global
+                            </span>
+                        </Tooltip>
+                    }
                     title={draft.name}
                     onTitleChange={(name) => change({ name })}
                     labels={{ titleInput: "File name" }}

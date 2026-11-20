@@ -8,6 +8,12 @@
     display: inline-flex;
     gap: var(--dextinity-space-1-5);
     align-items: center;
+    border-radius: var(--dextinity-radius-small);
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
+    }
 }
 
 .muted {

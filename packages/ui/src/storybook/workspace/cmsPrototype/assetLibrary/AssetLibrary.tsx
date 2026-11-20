@@ -473,10 +473,13 @@ export function AssetLibrary() {
             <div className={styles.page}>
                 <PageHeader
                     eyebrow={
-                        <span className={styles.eyebrow}>
-                            <Icon name="globe" size="small" />
-                            Global, applies to all scopes
-                        </span>
+                        <Tooltip content="Applies to all scopes">
+                            {/* Focusable, so that the tooltip also opens from the keyboard */}
+                            <span className={styles.eyebrow} tabIndex={0}>
+                                <Icon name="globe" size="small" />
+                                Global
+                            </span>
+                        </Tooltip>
                     }
                     title="Assets"
                     subtitle={`${activeAssets.length} files in ${folders.length} folders, ${archivedCount} archived`}

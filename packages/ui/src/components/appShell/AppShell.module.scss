@@ -14,6 +14,39 @@
     &[data-layout="narrow"] {
         grid-template-columns: minmax(0, 1fr);
     }
+
+    // The line of the instance pushes the shell down, so that it covers nothing
+    &[data-environment] {
+        --_environment-edge-height: var(--dextinity-app-shell-environment-edge-height);
+
+        padding-block-start: var(--_environment-edge-height);
+    }
+}
+
+.environmentEdge {
+    --_edge: var(--dextinity-environment-label-warning-edge);
+
+    position: fixed;
+    inset-block-start: 0;
+    inset-inline: 0;
+    z-index: var(--dextinity-app-shell-environment-edge-layer);
+    block-size: var(--dextinity-app-shell-environment-edge-height);
+    background: var(--_edge);
+    pointer-events: none;
+
+    &[data-color="info"] {
+        --_edge: var(--dextinity-environment-label-info-edge);
+    }
+
+    &[data-color="success"] {
+        --_edge: var(--dextinity-environment-label-success-edge);
+    }
+
+    &[data-color="error"] {
+        --_edge: var(--dextinity-environment-label-error-edge);
+    }
+
+    @include forced-colors.fill;
 }
 
 .lightField {
@@ -94,12 +127,12 @@
 
 .nav {
     position: sticky;
-    inset-block-start: 0;
+    inset-block-start: var(--_environment-edge-height, 0px);
     z-index: var(--dextinity-app-shell-nav-layer);
     box-sizing: border-box;
     display: flex;
     align-self: start;
-    block-size: 100dvh;
+    block-size: calc(100dvh - var(--_environment-edge-height, 0px));
     min-inline-size: 0;
     grid-column: 1;
     grid-row: 1;
@@ -136,11 +169,11 @@
 
 .topBar {
     position: sticky;
-    inset-block-start: var(--dextinity-app-shell-gap);
+    inset-block-start: calc(var(--dextinity-app-shell-gap) + var(--_environment-edge-height, 0px));
     z-index: var(--dextinity-app-shell-top-bar-layer);
 
     .root[data-layout="narrow"] & {
-        inset-block-start: 12px;
+        inset-block-start: calc(12px + var(--_environment-edge-height, 0px));
     }
 }
 
@@ -205,12 +238,12 @@
 
 .assistant {
     position: sticky;
-    inset-block-start: 0;
+    inset-block-start: var(--_environment-edge-height, 0px);
     z-index: var(--dextinity-app-shell-nav-layer);
     align-self: start;
     grid-column: 3;
     grid-row: 1;
-    block-size: 100dvh;
+    block-size: calc(100dvh - var(--_environment-edge-height, 0px));
     inline-size: 0;
     overflow: hidden;
     transition: inline-size var(--dextinity-motion-duration-long) var(--dextinity-motion-easing);

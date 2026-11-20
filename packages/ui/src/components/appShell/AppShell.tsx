@@ -16,6 +16,7 @@ import { createPortal } from "react-dom";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
+import type { EnvironmentLabelColor } from "../environmentLabel/EnvironmentLabel";
 import { useKeyboardShortcut } from "../keyboardShortcut/useKeyboardShortcut";
 import styles from "./AppShell.module.scss";
 import { AppShellContext, type AppShellContextValue } from "./appShellContext";
@@ -51,7 +52,24 @@ export type AppShellOwnerState = {
     navCollapsed: boolean;
     /** Whether the assistant is shown. */
     assistantOpen: boolean;
+    /** Whether the app runs on another instance than the live system, which the shell marks. */
+    environment: boolean;
 };
+
+/**
+ * The instance an app runs on, e.g. Staging.
+ */
+export interface AppShellEnvironment {
+    /** The name of the instance, e.g. "Staging". */
+    label: string;
+    /**
+     * The instance's color, the warmer the closer it is to the live system: e.g. `info` for development, `success` for test,
+     * `warning` for staging, and `error` for pre-live.
+     *
+     * @defaultValue `"warning"`
+     */
+    color?: EnvironmentLabelColor;
+}
 
 export interface AppShellSlotProps {
     /** Props for the `main` slot, the content column with the top bar. */
@@ -82,6 +100,12 @@ export interface AppShellProps extends Omit<HTMLAttributes<HTMLDivElement>, "cla
     assistantOpen?: boolean;
     /** Called to show or hide the assistant: with the switch, ⌘J / Ctrl+J, or Escape inside the assistant. */
     onAssistantOpenChange?: (open: boolean) => void;
+    /**
+     * The instance the app runs on, e.g. Staging, so that nobody mistakes it for the live system. The shell draws a line in its color
+     * along the top edge, and the `SideNav` and, on narrow windows, the `TopBar` show its `EnvironmentLabel`. Leave it out on the live
+     * system.
+     */
+    environment?: AppShellEnvironment;
     /** Leaves out the shortcuts ⌘\ / Ctrl+\ and ⌘J / Ctrl+J, e.g. when the app handles them itself. */
     disableKeyboardShortcuts?: boolean;
     /** The built-in texts. */
@@ -109,6 +133,7 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
         assistant,
         assistantOpen = false,
         onAssistantOpenChange,
+        environment,
         disableKeyboardShortcuts = false,
         labels: labelsProp,
         className,
@@ -122,7 +147,7 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
     const medium = useMediaQuery(mediumQuery);
     const layout: AppShellLayout = narrow ? "narrow" : medium ? "medium" : "wide";
     const hasAssistant = assistant != null;
-    const ownerState: AppShellOwnerState = { layout, navCollapsed, assistantOpen: hasAssistant && assistantOpen };
+    const ownerState: AppShellOwnerState = { layout, navCollapsed, assistantOpen: hasAssistant && assistantOpen, environment: environment != null };
     const [navDrawerOpen, setNavDrawerOpen] = useState(false);
     const [navOverlayOpen, setNavOverlayOpen] = useState(false);
     const [overlayLayout, setOverlayLayout] = useState(layout);
@@ -227,8 +252,9 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
         onNavCollapsedChange: layout === "narrow" ? undefined : changeColumnNavCollapsed,
         onNavigate: isMedium ? () => setNavOverlayOpen(false) : undefined,
         navCollapseKeyboardShortcut: navCollapseShortcutEnabled ? navCollapseKeyboardShortcut : undefined,
+        environment,
     };
-    const drawerContext: AppShellContextValue = { navCollapsed: false, onNavigate: () => setNavDrawerOpen(false) };
+    const drawerContext: AppShellContextValue = { navCollapsed: false, onNavigate: () => setNavDrawerOpen(false), environment };
     const mainContext: AppShellContextValue = {
         navCollapsed: navCollapsed || isMedium,
         onNavDrawerOpen: layout === "narrow" ? () => setNavDrawerOpen(true) : undefined,
@@ -236,6 +262,7 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
         assistantOpen: hasAssistant ? assistantOpen : undefined,
         onAssistantOpenChange: hasAssistant ? changeAssistantOpen : undefined,
         assistantSwitchRef,
+        environment,
     };
 
     const mainProps = resolveSlotProps<AppShellOwnerState, "main", "main">({
@@ -252,9 +279,11 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
             data-navcollapsed={ownerState.navCollapsed ? "" : undefined}
             data-navoverlay={isMedium && navOverlayOpen ? "" : undefined}
             data-assistantopen={ownerState.assistantOpen ? "" : undefined}
+            data-environment={ownerState.environment ? "" : undefined}
             className={clsx(styles.root, className)}
         >
             <span ref={anchorRef} hidden />
+            {environment != null && <div className={styles.environmentEdge} data-color={environment.color ?? "warning"} aria-hidden />}
             <div className={styles.lightField} aria-hidden>
                 <span />
             </div>

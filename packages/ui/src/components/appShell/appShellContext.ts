@@ -1,5 +1,7 @@
 import { createContext, type RefObject, useContext } from "react";
 
+import type { AppShellEnvironment } from "./AppShell";
+
 /**
  * What the `AppShell` tells the shell parts placed in it, so they follow the window width and the shell's state without extra props.
  */
@@ -22,6 +24,8 @@ export interface AppShellContextValue {
     onAssistantOpenChange?: (open: boolean) => void;
     /** The switch that shows the assistant, so the shell can return focus to it when the assistant closes. */
     assistantSwitchRef?: RefObject<HTMLButtonElement | null>;
+    /** The instance the app runs on, for the shell parts to show its label; unset on the live system. */
+    environment?: AppShellEnvironment;
 }
 
 export const AppShellContext = createContext<AppShellContextValue | null>(null);

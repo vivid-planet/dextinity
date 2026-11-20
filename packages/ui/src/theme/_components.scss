@@ -25,6 +25,7 @@
 @use "../components/dropzone/Dropzone.tokens" as dropzone;
 @use "../components/editLayout/EditLayout.tokens" as editLayout;
 @use "../components/emptyState/EmptyState.tokens" as emptyState;
+@use "../components/environmentLabel/EnvironmentLabel.tokens" as environmentLabel;
 @use "../components/field/Field.tokens" as field;
 @use "../components/fieldActions/FieldActions.tokens" as fieldActions;
 @use "../components/fieldDescription/FieldDescription.tokens" as fieldDescription;
@@ -109,6 +110,7 @@
     @include dropzone.tokens;
     @include editLayout.tokens;
     @include emptyState.tokens;
+    @include environmentLabel.tokens;
     @include field.tokens;
     @include fieldActions.tokens;
     @include fieldDescription.tokens;

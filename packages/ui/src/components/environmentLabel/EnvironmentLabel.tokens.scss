@@ -1,0 +1,46 @@
+@mixin tokens {
+    // Height of the label, and width and height of the compact label
+    --dextinity-environment-label-height: 20px;
+    // Size of the compact label, which shows only the first letter
+    --dextinity-environment-label-compact-size: 16px;
+    // Horizontal padding of the label
+    --dextinity-environment-label-padding: var(--dextinity-space-2);
+    // Corner radius of the label
+    --dextinity-environment-label-radius: var(--dextinity-radius-pill);
+    // Text size of the label
+    --dextinity-environment-label-font-size: var(--dextinity-typography-label-size);
+    // Text size of the compact label
+    --dextinity-environment-label-compact-font-size: 9px;
+    // Text weight of the label
+    --dextinity-environment-label-font-weight: var(--dextinity-font-weight-semibold);
+    // Tracking of the label's uppercase text
+    --dextinity-environment-label-letter-spacing: 0.06em;
+
+    // Fill of the label of an `info` instance, e.g. development
+    --dextinity-environment-label-info-background: var(--dextinity-color-info-soft);
+    // Text color of the label of an `info` instance
+    --dextinity-environment-label-info-foreground: var(--dextinity-color-info-text);
+    // Edge of the label, and line along the app's top edge, of an `info` instance
+    --dextinity-environment-label-info-edge: var(--dextinity-color-info);
+
+    // Fill of the label of a `success` instance, e.g. test
+    --dextinity-environment-label-success-background: var(--dextinity-color-success-soft);
+    // Text color of the label of a `success` instance
+    --dextinity-environment-label-success-foreground: var(--dextinity-color-success-text);
+    // Edge of the label, and line along the app's top edge, of a `success` instance
+    --dextinity-environment-label-success-edge: var(--dextinity-color-success);
+
+    // Fill of the label of a `warning` instance, e.g. staging
+    --dextinity-environment-label-warning-background: var(--dextinity-color-warning-soft);
+    // Text color of the label of a `warning` instance
+    --dextinity-environment-label-warning-foreground: var(--dextinity-color-warning-text);
+    // Edge of the label, and line along the app's top edge, of a `warning` instance
+    --dextinity-environment-label-warning-edge: var(--dextinity-color-warning);
+
+    // Fill of the label of an `error` instance, e.g. pre-live
+    --dextinity-environment-label-error-background: var(--dextinity-color-danger-soft);
+    // Text color of the label of an `error` instance
+    --dextinity-environment-label-error-foreground: var(--dextinity-color-danger-text);
+    // Edge of the label, and line along the app's top edge, of an `error` instance
+    --dextinity-environment-label-error-edge: var(--dextinity-color-danger);
+}

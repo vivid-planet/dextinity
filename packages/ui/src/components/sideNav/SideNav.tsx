@@ -4,6 +4,7 @@ import { type ElementType, forwardRef, type HTMLAttributes, type MouseEvent, typ
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { useAppShellContext } from "../appShell/appShellContext";
 import { Badge } from "../badge/Badge";
+import { EnvironmentLabel } from "../environmentLabel/EnvironmentLabel";
 import { Icon } from "../icon/Icon";
 import { useAriaKeyShortcuts } from "../keyboardShortcut/useAriaKeyShortcuts";
 import { Menu } from "../menu/Menu";
@@ -314,7 +315,8 @@ function CollapsedEntry({
 
 /**
  * The main navigation: app header with logo, app name, and tenant, then groups with entries up to three levels deep. Collapses to an
- * icon rail whose sub-entries open as a menu.
+ * icon rail whose sub-entries open as a menu. In an `AppShell` with an `environment`, the header shows the instance's label next to the
+ * logo, or its first letter on the collapsed sign.
  */
 export const SideNav = forwardRef<HTMLElement, SideNavProps>(function SideNav(
     {
@@ -338,6 +340,7 @@ export const SideNav = forwardRef<HTMLElement, SideNavProps>(function SideNav(
     ref,
 ) {
     const shell = useAppShellContext();
+    const environment = shell?.environment;
     const collapseKeyShortcuts = useAriaKeyShortcuts(shell?.navCollapseKeyboardShortcut);
     const labels = { ...defaultLabels, ...labelsProp };
     const ownerState: SideNavOwnerState = { collapsed: collapsedProp ?? shell?.navCollapsed ?? false };
@@ -380,10 +383,29 @@ export const SideNav = forwardRef<HTMLElement, SideNavProps>(function SideNav(
         >
             <div {...headerProps}>
                 {ownerState.collapsed ? (
-                    logoMark != null && <span className={styles.logoMark}>{logoMark}</span>
+                    (logoMark != null || environment != null) && (
+                        <span className={styles.logoMark}>
+                            {logoMark}
+                            {environment != null && (
+                                <EnvironmentLabel
+                                    label={environment.label}
+                                    color={environment.color}
+                                    variant="compact"
+                                    className={styles.environment}
+                                />
+                            )}
+                        </span>
+                    )
                 ) : (
                     <>
-                        {logo != null && <span className={styles.logo}>{logo}</span>}
+                        {environment != null ? (
+                            <span className={styles.brand}>
+                                {logo != null && <span className={styles.logo}>{logo}</span>}
+                                <EnvironmentLabel label={environment.label} color={environment.color} className={styles.environment} />
+                            </span>
+                        ) : (
+                            logo != null && <span className={styles.logo}>{logo}</span>
+                        )}
                         {title != null && <span className={styles.title}>{title}</span>}
                         {subtitle != null && <span className={styles.subtitle}>{subtitle}</span>}
                     </>

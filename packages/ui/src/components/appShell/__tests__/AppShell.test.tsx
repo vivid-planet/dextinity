@@ -6,7 +6,7 @@ import { AiAssistantSwitch } from "../../aiAssistantSwitch/AiAssistantSwitch";
 import { type KeyboardShortcutPlatform, KeyboardShortcutProvider } from "../../keyboardShortcut/keyboardShortcutPlatform";
 import { SideNav, type SideNavGroup } from "../../sideNav/SideNav";
 import { TopBar } from "../../topBar/TopBar";
-import { AppShell } from "../AppShell";
+import { AppShell, type AppShellEnvironment } from "../AppShell";
 
 const groups: SideNavGroup[] = [{ label: "Content", items: [{ id: "jobs", label: "Job ads", icon: <span />, href: "#jobs" }] }];
 
@@ -26,6 +26,7 @@ function renderShell({
     withAssistant = false,
     assistantOpen = false,
     onAssistantOpenChange = vi.fn(),
+    environment,
 }: {
     navCollapsed?: boolean;
     onNavCollapsedChange?: () => void;
@@ -33,6 +34,7 @@ function renderShell({
     withAssistant?: boolean;
     assistantOpen?: boolean;
     onAssistantOpenChange?: (open: boolean) => void;
+    environment?: AppShellEnvironment;
 } = {}) {
     return render(
         <KeyboardShortcutProvider platform={platform}>
@@ -44,6 +46,7 @@ function renderShell({
                 assistant={withAssistant ? <textarea aria-label="Message" /> : undefined}
                 assistantOpen={assistantOpen}
                 onAssistantOpenChange={onAssistantOpenChange}
+                environment={environment}
             >
                 Content
             </AppShell>
@@ -216,6 +219,37 @@ describe("AppShell", () => {
         fireEvent.keyDown(document, { key: "j", ctrlKey: true });
         expect(onAssistantOpenChange).not.toHaveBeenCalled();
         expect(screen.queryByRole("switch")).toBeNull();
+    });
+
+    it("marks another instance than the live system with a line along the top edge and its label in the navigation", () => {
+        windowWidth = 1440;
+        const { container } = renderShell({ environment: { label: "Staging", color: "error" } });
+
+        const shell = container.querySelector<HTMLElement>(".dextinityAppShell");
+        const edge = container.querySelector<HTMLElement>(".dextinityAppShell__environmentEdge");
+        expect([shell?.hasAttribute("data-environment"), edge?.dataset.color, edge?.getAttribute("aria-hidden")]).toStrictEqual([
+            true,
+            "error",
+            "true",
+        ]);
+        expect(screen.getByRole("navigation", { name: "Main navigation" }).textContent).toContain("Staging");
+        expect(screen.getByRole("banner").textContent).not.toContain("Staging");
+    });
+
+    it("moves the instance's label into the top bar on narrow windows, where the navigation is a drawer", () => {
+        windowWidth = 600;
+        renderShell({ environment: { label: "Test", color: "success" } });
+
+        expect(screen.getByRole("banner").textContent).toContain("Test");
+    });
+
+    it("marks nothing on the live system", () => {
+        windowWidth = 1440;
+        const { container } = renderShell();
+
+        expect([container.querySelector(".dextinityAppShell__environmentEdge"), container.querySelector(".dextinityEnvironmentLabel")]).toStrictEqual(
+            [null, null],
+        );
     });
 
     it("opens the assistant as a sheet and shows only the switch's icon on narrow windows", () => {

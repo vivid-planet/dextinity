@@ -95,6 +95,8 @@
     line-height: var(--dextinity-typography-display-l-line-height);
     letter-spacing: var(--dextinity-typography-display-letter-spacing);
     text-overflow: ellipsis;
+    // A text field doesn't take its height from the line height, so it is set to the height of a page title's line
+    block-size: calc(var(--dextinity-typography-display-l-line-height) * 1em);
 
     // The field's edge as a shadow, so that it doesn't add to the title's height
     &:hover {

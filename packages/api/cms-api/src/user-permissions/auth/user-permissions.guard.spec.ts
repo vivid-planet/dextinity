@@ -96,6 +96,22 @@ describe("UserPermissionsGuard", () => {
             }),
         });
     };
+    const mockMcpContext = (options: { userPermissions?: CurrentUser["permissions"]; input?: unknown }) => {
+        const request = {
+            user: options.userPermissions
+                ? ({ id: "1", name: "Admin", email: "demo@dextinity.com", permissions: options.userPermissions } satisfies CurrentUser)
+                : undefined,
+        };
+        const args = [options.input, { kind: "tool", name: "test", request }];
+        return createMock<ExecutionContext>({
+            getType: () => "mcp",
+            getArgs: () => args,
+            getArgByIndex: <T>(index: number) => args[index] as T,
+            switchToHttp: () => {
+                throw new Error("An MCP call has no HTTP context");
+            },
+        });
+    };
     const mockAffectedEntityValues = (values: { id: number | string; [key: string]: unknown }[]) => {
         orm.em.findOneOrFail = vi.fn().mockImplementation((_entityName: unknown, id: number | string) => values.find((v) => v.id === id));
     };
@@ -1005,5 +1021,73 @@ describe("UserPermissionsGuard", () => {
                 }),
             ),
         ).toBe(false);
+    });
+    describe("MCP calls", () => {
+        it("allows user with permission for the scope of the tool input", async () => {
+            mockAnnotations({ requiredPermission: { requiredPermission: [permissions.p1], options: { skipScopeCheck: false } } });
+            expect(
+                await guard.canActivate(
+                    mockMcpContext({
+                        userPermissions: [{ permission: permissions.p1, contentScopes: [{ a: "a" }] }],
+                        input: { scope: { a: "a" } },
+                    }),
+                ),
+            ).toBe(true);
+        });
+
+        it("denies user without permission for the scope of the tool input", async () => {
+            mockAnnotations({ requiredPermission: { requiredPermission: [permissions.p1], options: { skipScopeCheck: false } } });
+            expect(
+                await guard.canActivate(
+                    mockMcpContext({
+                        userPermissions: [{ permission: permissions.p1, contentScopes: [{ a: "a" }] }],
+                        input: { scope: { a: "b" } },
+                    }),
+                ),
+            ).toBe(false);
+        });
+
+        it("allows user by affected entity of the tool input", async () => {
+            mockAnnotations({
+                requiredPermission: { requiredPermission: [permissions.p1], options: { skipScopeCheck: false } },
+                affectedEntities: [{ entity: TestEntity, options: { idArg: "id" } }],
+            });
+            mockAffectedEntityValues([
+                { id: 1, scope: { a: "a" } },
+                { id: 2, scope: { a: "b" } },
+            ]);
+            expect(
+                await guard.canActivate(
+                    mockMcpContext({
+                        userPermissions: [{ permission: permissions.p1, contentScopes: [{ a: "a" }] }],
+                        input: { id: 1 },
+                    }),
+                ),
+            ).toBe(true);
+        });
+
+        it("denies user by affected entity of the tool input in another scope", async () => {
+            mockAnnotations({
+                requiredPermission: { requiredPermission: [permissions.p1], options: { skipScopeCheck: false } },
+                affectedEntities: [{ entity: TestEntity, options: { idArg: "id" } }],
+            });
+            mockAffectedEntityValues([
+                { id: 1, scope: { a: "a" } },
+                { id: 2, scope: { a: "b" } },
+            ]);
+            expect(
+                await guard.canActivate(
+                    mockMcpContext({
+                        userPermissions: [{ permission: permissions.p1, contentScopes: [{ a: "a" }] }],
+                        input: { id: 2 },
+                    }),
+                ),
+            ).toBe(false);
+        });
+
+        it("denies if no user is provided", async () => {
+            mockAnnotations({ requiredPermission: { requiredPermission: [permissions.p1], options: { skipScopeCheck: true } } });
+            expect(await guard.canActivate(mockMcpContext({}))).toBe(false);
+        });
     });
 });

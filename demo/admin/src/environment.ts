@@ -7,4 +7,6 @@ export const environment = [
     "COMMIT_SHA",
     "MUI_LICENSE_KEY",
     "BREVO_ALLOW_ADDING_CONTACTS_WITHOUT_DOI",
+    "AI_HUB_WEB_COMPONENT_SCRIPT_SRC",
+    "AI_HUB_WIDGET_ID",
 ];

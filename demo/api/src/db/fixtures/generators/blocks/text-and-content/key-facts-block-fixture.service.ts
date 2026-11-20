@@ -5,13 +5,13 @@ import type { KeyFactsBlock } from "@src/documents/pages/blocks/key-facts.block.
 import type { KeyFactsItemBlock } from "@src/documents/pages/blocks/key-facts-item.block.js";
 
 import { SvgImageBlockFixtureService } from "../media/svg-image-block-fixture.service.js";
-import { RichTextBlockFixtureService } from "./rich-text-block-fixture.service.js";
+import { InlineRichTextBlockFixtureService } from "./inline-rich-text-block-fixture.service.js";
 
 @Injectable()
 export class KeyFactsBlockFixtureService {
     constructor(
         private readonly svgImageBlockFixtureService: SvgImageBlockFixtureService,
-        private readonly richTextBlockFixtureService: RichTextBlockFixtureService,
+        private readonly inlineRichTextBlockFixtureService: InlineRichTextBlockFixtureService,
     ) {}
 
     async generateKeyFactsItemBlock(): Promise<ExtractBlockInputFactoryProps<typeof KeyFactsItemBlock>> {
@@ -19,7 +19,7 @@ export class KeyFactsBlockFixtureService {
             icon: await this.svgImageBlockFixtureService.generateBlockInput(),
             fact: faker.lorem.sentence(),
             label: faker.lorem.sentence(),
-            description: await this.richTextBlockFixtureService.generateBlockInput(),
+            description: await this.inlineRichTextBlockFixtureService.generateBlockInput(),
         };
     }
 

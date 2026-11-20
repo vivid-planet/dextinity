@@ -703,8 +703,7 @@
                                 "richtext": "StandaloneRichText",
                                 "space": "Space",
                                 "teaser": "Teaser",
-                                "table": "Table",
-                                "tipTapTable": "TipTapTable"
+                                "table": "Table"
                             },
                             "nullable": false
                         }
@@ -749,8 +748,7 @@
                                 "richtext": "StandaloneRichText",
                                 "space": "Space",
                                 "teaser": "Teaser",
-                                "table": "Table",
-                                "tipTapTable": "TipTapTable"
+                                "table": "Table"
                             },
                             "nullable": false
                         }
@@ -1446,13 +1444,13 @@
             {
                 "name": "eyebrow",
                 "kind": "Block",
-                "block": "RichText",
+                "block": "InlineRichText",
                 "nullable": false
             },
             {
                 "name": "headline",
                 "kind": "Block",
-                "block": "RichText",
+                "block": "HeadlineRichText",
                 "nullable": false
             },
             {
@@ -1473,13 +1471,13 @@
             {
                 "name": "eyebrow",
                 "kind": "Block",
-                "block": "RichText",
+                "block": "InlineRichText",
                 "nullable": false
             },
             {
                 "name": "headline",
                 "kind": "Block",
-                "block": "RichText",
+                "block": "HeadlineRichText",
                 "nullable": false
             },
             {
@@ -1494,6 +1492,236 @@
                     "h6"
                 ],
                 "nullable": false
+            }
+        ]
+    },
+    {
+        "name": "HeadlineRichText",
+        "description": "Formatted text, edited in the TipTap based rich text editor. `tipTapContent` is a TipTap JSON document. Build it from the field's `tipTap` entry, not from TipTap's defaults, otherwise the content is rejected: use only the node and mark types in `nodes` and `marks`. Store every paragraph and heading as a `textBlock` node whose `textBlock` attribute names one of `textBlocks`, and whose optional `textBlockStyle` attribute names one of that text block's `styles`. Without a `textBlock` attribute, a node becomes the `defaultTextBlock`. Use an ordered (`orderedList`) or unordered (`bulletList`) list only if `orderedList` or `unorderedList` isn't `null`. A list item holds text blocks with the tag `p`, which may also use the list's `styles`. An `inlineStyle` mark's `type` names one of `inlineStyles`, and is only allowed in the text blocks and lists of its `appliesTo`. A `placeholder` node's `name` names one of `placeholders`. A `link` mark is only allowed if `link` isn't `null`, and its `data` attribute holds that block's input (its `inputFields` in the block meta). A `cmsBlock` or `cmsInlineBlock` node's `blockType` attribute is one of the field's `childBlocks` keys, and its `data` attribute holds that block's input (its `inputFields` in the block meta). Stay within `maxTextBlocks` top-level nodes and `listLevelMax` list levels, if set.",
+        "fields": [
+            {
+                "name": "tipTapContent",
+                "kind": "TipTapRichTextBlock",
+                "nullable": false,
+                "childBlocks": {},
+                "tipTap": {
+                    "nodes": [
+                        "textBlock",
+                        "doc",
+                        "hardBreak",
+                        "text",
+                        "nonBreakingSpace",
+                        "softHyphen"
+                    ],
+                    "marks": [
+                        "bold",
+                        "italic",
+                        "superscript",
+                        "subscript"
+                    ],
+                    "textBlocks": [
+                        {
+                            "name": "headline600",
+                            "tag": "h1",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "headline550",
+                            "tag": "h2",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "headline500",
+                            "tag": "h3",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "headline450",
+                            "tag": "h4",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "headline400",
+                            "tag": "h5",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "headline350",
+                            "tag": "h6",
+                            "styles": [],
+                            "defaultStyle": null
+                        }
+                    ],
+                    "defaultTextBlock": "headline600",
+                    "orderedList": null,
+                    "unorderedList": null,
+                    "inlineStyles": [],
+                    "placeholders": [],
+                    "link": null,
+                    "maxTextBlocks": 1,
+                    "listLevelMax": null
+                }
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "tipTapContent",
+                "kind": "TipTapRichTextBlock",
+                "nullable": false,
+                "childBlocks": {},
+                "tipTap": {
+                    "nodes": [
+                        "textBlock",
+                        "doc",
+                        "hardBreak",
+                        "text",
+                        "nonBreakingSpace",
+                        "softHyphen"
+                    ],
+                    "marks": [
+                        "bold",
+                        "italic",
+                        "superscript",
+                        "subscript"
+                    ],
+                    "textBlocks": [
+                        {
+                            "name": "headline600",
+                            "tag": "h1",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "headline550",
+                            "tag": "h2",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "headline500",
+                            "tag": "h3",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "headline450",
+                            "tag": "h4",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "headline400",
+                            "tag": "h5",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "headline350",
+                            "tag": "h6",
+                            "styles": [],
+                            "defaultStyle": null
+                        }
+                    ],
+                    "defaultTextBlock": "headline600",
+                    "orderedList": null,
+                    "unorderedList": null,
+                    "inlineStyles": [],
+                    "placeholders": [],
+                    "link": null,
+                    "maxTextBlocks": 1,
+                    "listLevelMax": null
+                }
+            }
+        ]
+    },
+    {
+        "name": "InlineRichText",
+        "description": "Formatted text, edited in the TipTap based rich text editor. `tipTapContent` is a TipTap JSON document. Build it from the field's `tipTap` entry, not from TipTap's defaults, otherwise the content is rejected: use only the node and mark types in `nodes` and `marks`. Store every paragraph and heading as a `textBlock` node whose `textBlock` attribute names one of `textBlocks`, and whose optional `textBlockStyle` attribute names one of that text block's `styles`. Without a `textBlock` attribute, a node becomes the `defaultTextBlock`. Use an ordered (`orderedList`) or unordered (`bulletList`) list only if `orderedList` or `unorderedList` isn't `null`. A list item holds text blocks with the tag `p`, which may also use the list's `styles`. An `inlineStyle` mark's `type` names one of `inlineStyles`, and is only allowed in the text blocks and lists of its `appliesTo`. A `placeholder` node's `name` names one of `placeholders`. A `link` mark is only allowed if `link` isn't `null`, and its `data` attribute holds that block's input (its `inputFields` in the block meta). A `cmsBlock` or `cmsInlineBlock` node's `blockType` attribute is one of the field's `childBlocks` keys, and its `data` attribute holds that block's input (its `inputFields` in the block meta). Stay within `maxTextBlocks` top-level nodes and `listLevelMax` list levels, if set.",
+        "fields": [
+            {
+                "name": "tipTapContent",
+                "kind": "TipTapRichTextBlock",
+                "nullable": false,
+                "childBlocks": {},
+                "tipTap": {
+                    "nodes": [
+                        "textBlock",
+                        "doc",
+                        "hardBreak",
+                        "text",
+                        "listItem",
+                        "nonBreakingSpace",
+                        "softHyphen"
+                    ],
+                    "marks": [
+                        "bold",
+                        "italic",
+                        "superscript",
+                        "subscript"
+                    ],
+                    "textBlocks": [
+                        {
+                            "name": "paragraph",
+                            "tag": "p",
+                            "styles": [],
+                            "defaultStyle": null
+                        }
+                    ],
+                    "defaultTextBlock": "paragraph",
+                    "orderedList": null,
+                    "unorderedList": null,
+                    "inlineStyles": [],
+                    "placeholders": [],
+                    "link": null,
+                    "maxTextBlocks": 1,
+                    "listLevelMax": null
+                }
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "tipTapContent",
+                "kind": "TipTapRichTextBlock",
+                "nullable": false,
+                "childBlocks": {},
+                "tipTap": {
+                    "nodes": [
+                        "textBlock",
+                        "doc",
+                        "hardBreak",
+                        "text",
+                        "listItem",
+                        "nonBreakingSpace",
+                        "softHyphen"
+                    ],
+                    "marks": [
+                        "bold",
+                        "italic",
+                        "superscript",
+                        "subscript"
+                    ],
+                    "textBlocks": [
+                        {
+                            "name": "paragraph",
+                            "tag": "p",
+                            "styles": [],
+                            "defaultStyle": null
+                        }
+                    ],
+                    "defaultTextBlock": "paragraph",
+                    "orderedList": null,
+                    "unorderedList": null,
+                    "inlineStyles": [],
+                    "placeholders": [],
+                    "link": null,
+                    "maxTextBlocks": 1,
+                    "listLevelMax": null
+                }
             }
         ]
     },
@@ -1633,7 +1861,7 @@
             {
                 "name": "description",
                 "kind": "Block",
-                "block": "RichText",
+                "block": "InlineRichText",
                 "nullable": false
             }
         ],
@@ -1657,7 +1885,7 @@
             {
                 "name": "description",
                 "kind": "Block",
-                "block": "RichText",
+                "block": "InlineRichText",
                 "nullable": false
             }
         ]
@@ -3065,8 +3293,6 @@
                                 "textImage": "TextImage",
                                 "fullWidthImage": "FullWidthImage",
                                 "table": "Table",
-                                "tipTapTable": "TipTapTable",
-                                "tipTapRichText": "TipTapRichText",
                                 "pageTreeIndex": "PageTreeIndex",
                                 "contactForm": "ContactForm"
                             },
@@ -3133,8 +3359,6 @@
                                 "textImage": "TextImage",
                                 "fullWidthImage": "FullWidthImage",
                                 "table": "Table",
-                                "tipTapTable": "TipTapTable",
-                                "tipTapRichText": "TipTapRichText",
                                 "pageTreeIndex": "PageTreeIndex",
                                 "contactForm": "ContactForm"
                             },
@@ -3583,21 +3807,241 @@
     },
     {
         "name": "RichText",
-        "description": "Formatted text, edited in the Draft.js based rich text editor.",
+        "description": "Formatted text, edited in the TipTap based rich text editor. `tipTapContent` is a TipTap JSON document. Build it from the field's `tipTap` entry, not from TipTap's defaults, otherwise the content is rejected: use only the node and mark types in `nodes` and `marks`. Store every paragraph and heading as a `textBlock` node whose `textBlock` attribute names one of `textBlocks`, and whose optional `textBlockStyle` attribute names one of that text block's `styles`. Without a `textBlock` attribute, a node becomes the `defaultTextBlock`. Use an ordered (`orderedList`) or unordered (`bulletList`) list only if `orderedList` or `unorderedList` isn't `null`. A list item holds text blocks with the tag `p`, which may also use the list's `styles`. An `inlineStyle` mark's `type` names one of `inlineStyles`, and is only allowed in the text blocks and lists of its `appliesTo`. A `placeholder` node's `name` names one of `placeholders`. A `link` mark is only allowed if `link` isn't `null`, and its `data` attribute holds that block's input (its `inputFields` in the block meta). A `cmsBlock` or `cmsInlineBlock` node's `blockType` attribute is one of the field's `childBlocks` keys, and its `data` attribute holds that block's input (its `inputFields` in the block meta). Stay within `maxTextBlocks` top-level nodes and `listLevelMax` list levels, if set.",
         "fields": [
             {
-                "name": "draftContent",
-                "kind": "RichTextBlock",
+                "name": "tipTapContent",
+                "kind": "TipTapRichTextBlock",
                 "nullable": false,
-                "linkBlock": "Link"
+                "childBlocks": {
+                    "productPrice": "ProductPrice",
+                    "productTeaser": "ProductTeaser"
+                },
+                "linkBlock": "Link",
+                "tipTap": {
+                    "nodes": [
+                        "textBlock",
+                        "bulletList",
+                        "doc",
+                        "hardBreak",
+                        "orderedList",
+                        "text",
+                        "listItem",
+                        "nonBreakingSpace",
+                        "softHyphen",
+                        "cmsBlock",
+                        "cmsInlineBlock"
+                    ],
+                    "marks": [
+                        "bold",
+                        "italic",
+                        "strike",
+                        "inlineStyle",
+                        "superscript",
+                        "subscript",
+                        "link"
+                    ],
+                    "textBlocks": [
+                        {
+                            "name": "paragraph",
+                            "tag": "p",
+                            "styles": [
+                                "paragraph300",
+                                "paragraph200",
+                                "eyebrow600",
+                                "eyebrow550",
+                                "eyebrow500",
+                                "eyebrow450"
+                            ],
+                            "defaultStyle": "paragraph300"
+                        },
+                        {
+                            "name": "display",
+                            "tag": "h1",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "heading-1",
+                            "tag": "h1",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "heading-2",
+                            "tag": "h2",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "heading-3",
+                            "tag": "h3",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "heading-4",
+                            "tag": "h4",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "heading-5",
+                            "tag": "h5",
+                            "styles": [],
+                            "defaultStyle": null
+                        }
+                    ],
+                    "defaultTextBlock": "paragraph",
+                    "orderedList": {
+                        "styles": [
+                            "list300",
+                            "list200"
+                        ],
+                        "defaultStyle": "list300"
+                    },
+                    "unorderedList": {
+                        "styles": [
+                            "list300",
+                            "list200"
+                        ],
+                        "defaultStyle": "list300"
+                    },
+                    "inlineStyles": [
+                        {
+                            "name": "highlight",
+                            "appliesTo": null
+                        },
+                        {
+                            "name": "tag",
+                            "appliesTo": [
+                                "paragraph"
+                            ]
+                        }
+                    ],
+                    "placeholders": [],
+                    "link": "Link",
+                    "maxTextBlocks": null,
+                    "listLevelMax": null
+                }
             }
         ],
         "inputFields": [
             {
-                "name": "draftContent",
-                "kind": "RichTextBlock",
+                "name": "tipTapContent",
+                "kind": "TipTapRichTextBlock",
                 "nullable": false,
-                "linkBlock": "Link"
+                "childBlocks": {
+                    "productPrice": "ProductPrice",
+                    "productTeaser": "ProductTeaser"
+                },
+                "linkBlock": "Link",
+                "tipTap": {
+                    "nodes": [
+                        "textBlock",
+                        "bulletList",
+                        "doc",
+                        "hardBreak",
+                        "orderedList",
+                        "text",
+                        "listItem",
+                        "nonBreakingSpace",
+                        "softHyphen",
+                        "cmsBlock",
+                        "cmsInlineBlock"
+                    ],
+                    "marks": [
+                        "bold",
+                        "italic",
+                        "strike",
+                        "inlineStyle",
+                        "superscript",
+                        "subscript",
+                        "link"
+                    ],
+                    "textBlocks": [
+                        {
+                            "name": "paragraph",
+                            "tag": "p",
+                            "styles": [
+                                "paragraph300",
+                                "paragraph200",
+                                "eyebrow600",
+                                "eyebrow550",
+                                "eyebrow500",
+                                "eyebrow450"
+                            ],
+                            "defaultStyle": "paragraph300"
+                        },
+                        {
+                            "name": "display",
+                            "tag": "h1",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "heading-1",
+                            "tag": "h1",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "heading-2",
+                            "tag": "h2",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "heading-3",
+                            "tag": "h3",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "heading-4",
+                            "tag": "h4",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "heading-5",
+                            "tag": "h5",
+                            "styles": [],
+                            "defaultStyle": null
+                        }
+                    ],
+                    "defaultTextBlock": "paragraph",
+                    "orderedList": {
+                        "styles": [
+                            "list300",
+                            "list200"
+                        ],
+                        "defaultStyle": "list300"
+                    },
+                    "unorderedList": {
+                        "styles": [
+                            "list300",
+                            "list200"
+                        ],
+                        "defaultStyle": "list300"
+                    },
+                    "inlineStyles": [
+                        {
+                            "name": "highlight",
+                            "appliesTo": null
+                        },
+                        {
+                            "name": "tag",
+                            "appliesTo": [
+                                "paragraph"
+                            ]
+                        }
+                    ],
+                    "placeholders": [],
+                    "link": "Link",
+                    "maxTextBlocks": null,
+                    "listLevelMax": null
+                }
             }
         ]
     },
@@ -4487,7 +4931,7 @@
             {
                 "name": "description",
                 "kind": "Block",
-                "block": "RichText",
+                "block": "InlineRichText",
                 "nullable": false
             },
             {
@@ -4525,7 +4969,7 @@
             {
                 "name": "description",
                 "kind": "Block",
-                "block": "RichText",
+                "block": "InlineRichText",
                 "nullable": false
             },
             {
@@ -4633,434 +5077,6 @@
                 "name": "link",
                 "kind": "Block",
                 "block": "Link",
-                "nullable": false
-            }
-        ]
-    },
-    {
-        "name": "TipTapRichText",
-        "description": "Formatted text, edited in the TipTap based rich text editor. `tipTapContent` is a TipTap JSON document. Build it from the field's `tipTap` entry, not from TipTap's defaults, otherwise the content is rejected: use only the node and mark types in `nodes` and `marks`. Store every paragraph and heading as a `textBlock` node whose `textBlock` attribute names one of `textBlocks`, and whose optional `textBlockStyle` attribute names one of that text block's `styles`. Without a `textBlock` attribute, a node becomes the `defaultTextBlock`. Use an ordered (`orderedList`) or unordered (`bulletList`) list only if `orderedList` or `unorderedList` isn't `null`. A list item holds text blocks with the tag `p`, which may also use the list's `styles`. An `inlineStyle` mark's `type` names one of `inlineStyles`, and is only allowed in the text blocks and lists of its `appliesTo`. A `placeholder` node's `name` names one of `placeholders`. A `link` mark is only allowed if `link` isn't `null`, and its `data` attribute holds that block's input (its `inputFields` in the block meta). A `cmsBlock` or `cmsInlineBlock` node's `blockType` attribute is one of the field's `childBlocks` keys, and its `data` attribute holds that block's input (its `inputFields` in the block meta). Stay within `maxTextBlocks` top-level nodes and `listLevelMax` list levels, if set.",
-        "fields": [
-            {
-                "name": "tipTapContent",
-                "kind": "TipTapRichTextBlock",
-                "nullable": false,
-                "childBlocks": {
-                    "productPrice": "ProductPrice",
-                    "productTeaser": "ProductTeaser"
-                },
-                "linkBlock": "Link",
-                "tipTap": {
-                    "nodes": [
-                        "textBlock",
-                        "bulletList",
-                        "doc",
-                        "hardBreak",
-                        "orderedList",
-                        "text",
-                        "listItem",
-                        "nonBreakingSpace",
-                        "softHyphen",
-                        "cmsBlock",
-                        "cmsInlineBlock"
-                    ],
-                    "marks": [
-                        "bold",
-                        "italic",
-                        "strike",
-                        "inlineStyle",
-                        "superscript",
-                        "subscript",
-                        "link"
-                    ],
-                    "textBlocks": [
-                        {
-                            "name": "paragraph",
-                            "tag": "p",
-                            "styles": [
-                                "paragraph300",
-                                "paragraph200",
-                                "eyebrow600",
-                                "eyebrow550",
-                                "eyebrow500",
-                                "eyebrow450"
-                            ],
-                            "defaultStyle": "paragraph300"
-                        },
-                        {
-                            "name": "display",
-                            "tag": "h1",
-                            "styles": [],
-                            "defaultStyle": null
-                        },
-                        {
-                            "name": "heading-1",
-                            "tag": "h1",
-                            "styles": [],
-                            "defaultStyle": null
-                        },
-                        {
-                            "name": "heading-2",
-                            "tag": "h2",
-                            "styles": [],
-                            "defaultStyle": null
-                        },
-                        {
-                            "name": "heading-3",
-                            "tag": "h3",
-                            "styles": [],
-                            "defaultStyle": null
-                        },
-                        {
-                            "name": "heading-4",
-                            "tag": "h4",
-                            "styles": [],
-                            "defaultStyle": null
-                        },
-                        {
-                            "name": "heading-5",
-                            "tag": "h5",
-                            "styles": [],
-                            "defaultStyle": null
-                        }
-                    ],
-                    "defaultTextBlock": "paragraph",
-                    "orderedList": {
-                        "styles": [
-                            "list300",
-                            "list200"
-                        ],
-                        "defaultStyle": "list300"
-                    },
-                    "unorderedList": {
-                        "styles": [
-                            "list300",
-                            "list200"
-                        ],
-                        "defaultStyle": "list300"
-                    },
-                    "inlineStyles": [
-                        {
-                            "name": "highlight",
-                            "appliesTo": null
-                        },
-                        {
-                            "name": "tag",
-                            "appliesTo": [
-                                "paragraph"
-                            ]
-                        }
-                    ],
-                    "placeholders": [],
-                    "link": "Link",
-                    "maxTextBlocks": null,
-                    "listLevelMax": null
-                }
-            }
-        ],
-        "inputFields": [
-            {
-                "name": "tipTapContent",
-                "kind": "TipTapRichTextBlock",
-                "nullable": false,
-                "childBlocks": {
-                    "productPrice": "ProductPrice",
-                    "productTeaser": "ProductTeaser"
-                },
-                "linkBlock": "Link",
-                "tipTap": {
-                    "nodes": [
-                        "textBlock",
-                        "bulletList",
-                        "doc",
-                        "hardBreak",
-                        "orderedList",
-                        "text",
-                        "listItem",
-                        "nonBreakingSpace",
-                        "softHyphen",
-                        "cmsBlock",
-                        "cmsInlineBlock"
-                    ],
-                    "marks": [
-                        "bold",
-                        "italic",
-                        "strike",
-                        "inlineStyle",
-                        "superscript",
-                        "subscript",
-                        "link"
-                    ],
-                    "textBlocks": [
-                        {
-                            "name": "paragraph",
-                            "tag": "p",
-                            "styles": [
-                                "paragraph300",
-                                "paragraph200",
-                                "eyebrow600",
-                                "eyebrow550",
-                                "eyebrow500",
-                                "eyebrow450"
-                            ],
-                            "defaultStyle": "paragraph300"
-                        },
-                        {
-                            "name": "display",
-                            "tag": "h1",
-                            "styles": [],
-                            "defaultStyle": null
-                        },
-                        {
-                            "name": "heading-1",
-                            "tag": "h1",
-                            "styles": [],
-                            "defaultStyle": null
-                        },
-                        {
-                            "name": "heading-2",
-                            "tag": "h2",
-                            "styles": [],
-                            "defaultStyle": null
-                        },
-                        {
-                            "name": "heading-3",
-                            "tag": "h3",
-                            "styles": [],
-                            "defaultStyle": null
-                        },
-                        {
-                            "name": "heading-4",
-                            "tag": "h4",
-                            "styles": [],
-                            "defaultStyle": null
-                        },
-                        {
-                            "name": "heading-5",
-                            "tag": "h5",
-                            "styles": [],
-                            "defaultStyle": null
-                        }
-                    ],
-                    "defaultTextBlock": "paragraph",
-                    "orderedList": {
-                        "styles": [
-                            "list300",
-                            "list200"
-                        ],
-                        "defaultStyle": "list300"
-                    },
-                    "unorderedList": {
-                        "styles": [
-                            "list300",
-                            "list200"
-                        ],
-                        "defaultStyle": "list300"
-                    },
-                    "inlineStyles": [
-                        {
-                            "name": "highlight",
-                            "appliesTo": null
-                        },
-                        {
-                            "name": "tag",
-                            "appliesTo": [
-                                "paragraph"
-                            ]
-                        }
-                    ],
-                    "placeholders": [],
-                    "link": "Link",
-                    "maxTextBlocks": null,
-                    "listLevelMax": null
-                }
-            }
-        ]
-    },
-    {
-        "name": "TipTapTable",
-        "fields": [
-            {
-                "name": "table",
-                "kind": "Block",
-                "block": "TipTapTableContent",
-                "nullable": false
-            },
-            {
-                "name": "responsiveBehavior",
-                "kind": "Enum",
-                "enum": [
-                    "scrollSideways",
-                    "none",
-                    "listByRow",
-                    "listByColumn"
-                ],
-                "nullable": false
-            }
-        ],
-        "inputFields": [
-            {
-                "name": "table",
-                "kind": "Block",
-                "block": "TipTapTableContent",
-                "nullable": false
-            },
-            {
-                "name": "responsiveBehavior",
-                "kind": "Enum",
-                "enum": [
-                    "scrollSideways",
-                    "none",
-                    "listByRow",
-                    "listByColumn"
-                ],
-                "nullable": false
-            }
-        ]
-    },
-    {
-        "name": "TipTapTableContent",
-        "fields": [
-            {
-                "name": "columns",
-                "kind": "NestedObjectList",
-                "object": {
-                    "fields": [
-                        {
-                            "name": "id",
-                            "kind": "String",
-                            "nullable": false
-                        },
-                        {
-                            "name": "size",
-                            "kind": "Enum",
-                            "enum": [
-                                "extraSmall",
-                                "small",
-                                "standard",
-                                "large",
-                                "extraLarge"
-                            ],
-                            "nullable": false
-                        },
-                        {
-                            "name": "highlighted",
-                            "kind": "Boolean",
-                            "nullable": false
-                        }
-                    ]
-                },
-                "nullable": false
-            },
-            {
-                "name": "rows",
-                "kind": "NestedObjectList",
-                "object": {
-                    "fields": [
-                        {
-                            "name": "id",
-                            "kind": "String",
-                            "nullable": false
-                        },
-                        {
-                            "name": "highlighted",
-                            "kind": "Boolean",
-                            "nullable": false
-                        },
-                        {
-                            "name": "cellValues",
-                            "kind": "NestedObjectList",
-                            "object": {
-                                "fields": [
-                                    {
-                                        "name": "columnId",
-                                        "kind": "String",
-                                        "nullable": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "kind": "Block",
-                                        "block": "TipTapRichText",
-                                        "nullable": false
-                                    }
-                                ]
-                            },
-                            "nullable": false
-                        }
-                    ]
-                },
-                "nullable": false
-            }
-        ],
-        "inputFields": [
-            {
-                "name": "columns",
-                "kind": "NestedObjectList",
-                "object": {
-                    "fields": [
-                        {
-                            "name": "id",
-                            "kind": "String",
-                            "nullable": false
-                        },
-                        {
-                            "name": "size",
-                            "kind": "Enum",
-                            "enum": [
-                                "extraSmall",
-                                "small",
-                                "standard",
-                                "large",
-                                "extraLarge"
-                            ],
-                            "nullable": false
-                        },
-                        {
-                            "name": "highlighted",
-                            "kind": "Boolean",
-                            "nullable": false
-                        }
-                    ]
-                },
-                "nullable": false
-            },
-            {
-                "name": "rows",
-                "kind": "NestedObjectList",
-                "object": {
-                    "fields": [
-                        {
-                            "name": "id",
-                            "kind": "String",
-                            "nullable": false
-                        },
-                        {
-                            "name": "highlighted",
-                            "kind": "Boolean",
-                            "nullable": false
-                        },
-                        {
-                            "name": "cellValues",
-                            "kind": "NestedObjectList",
-                            "object": {
-                                "fields": [
-                                    {
-                                        "name": "columnId",
-                                        "kind": "String",
-                                        "nullable": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "kind": "Block",
-                                        "block": "TipTapRichText",
-                                        "nullable": false
-                                    }
-                                ]
-                            },
-                            "nullable": false
-                        }
-                    ]
-                },
                 "nullable": false
             }
         ]

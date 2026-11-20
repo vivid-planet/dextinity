@@ -11,8 +11,6 @@ import { StandaloneMediaBlock } from "@src/common/blocks/StandaloneMediaBlock";
 import { StandaloneRichTextBlock } from "@src/common/blocks/StandaloneRichTextBlock";
 import { TableBlock } from "@src/common/blocks/TableBlock";
 import { TextImageBlock } from "@src/common/blocks/TextImageBlock";
-import { TipTapRichTextBlock } from "@src/common/blocks/TipTapRichTextBlock";
-import { TipTapTableBlock } from "@src/common/blocks/TipTapTableBlock";
 import { NewsDetailBlock } from "@src/news/blocks/NewsDetailBlock";
 import { NewsListBlock } from "@src/news/blocks/NewsListBlock";
 import { userGroupAdditionalItemFields } from "@src/userGroups/userGroupAdditionalItemFields";
@@ -27,39 +25,41 @@ import { KeyFactsBlock } from "./KeyFactsBlock";
 import { SliderBlock } from "./SliderBlock";
 import { TeaserBlock } from "./TeaserBlock";
 
+export const pageContentBlocks = {
+    accordion: AccordionBlock,
+    anchor: AnchorBlock,
+    billboardTeaser: BillboardTeaserBlock,
+    space: SpaceBlock,
+    teaser: TeaserBlock,
+    richtext: StandaloneRichTextBlock,
+    heading: StandaloneHeadingBlock,
+    columns: ColumnsBlock,
+    callToActionList: StandaloneCallToActionListBlock,
+    keyFacts: KeyFactsBlock,
+    media: StandaloneMediaBlock,
+    contentGroup: ContentGroupBlock,
+    mediaGallery: MediaGalleryBlock,
+    slider: SliderBlock,
+
+    image: DamImageBlock,
+    newsDetail: NewsDetailBlock,
+    newsList: NewsListBlock,
+    layout: LayoutBlock,
+    textImage: TextImageBlock,
+    fullWidthImage: FullWidthImageBlock,
+    table: TableBlock,
+    pageTreeIndex: PageTreeIndexBlock,
+    contactForm: ContactFormBlock,
+};
+
+export const pageContentAdditionalItemFields = {
+    ...userGroupAdditionalItemFields,
+};
+
 export const PageContentBlock = createBlocksBlock({
     name: "PageContent",
-    supportedBlocks: {
-        accordion: AccordionBlock,
-        anchor: AnchorBlock,
-        billboardTeaser: BillboardTeaserBlock,
-        space: SpaceBlock,
-        teaser: TeaserBlock,
-        richtext: StandaloneRichTextBlock,
-        heading: StandaloneHeadingBlock,
-        columns: ColumnsBlock,
-        callToActionList: StandaloneCallToActionListBlock,
-        keyFacts: KeyFactsBlock,
-        media: StandaloneMediaBlock,
-        contentGroup: ContentGroupBlock,
-        mediaGallery: MediaGalleryBlock,
-        slider: SliderBlock,
-
-        image: DamImageBlock,
-        newsDetail: NewsDetailBlock,
-        newsList: NewsListBlock,
-        layout: LayoutBlock,
-        textImage: TextImageBlock,
-        fullWidthImage: FullWidthImageBlock,
-        table: TableBlock,
-        tipTapTable: TipTapTableBlock,
-        tipTapRichText: TipTapRichTextBlock,
-        pageTreeIndex: PageTreeIndexBlock,
-        contactForm: ContactFormBlock,
-    },
-    additionalItemFields: {
-        ...userGroupAdditionalItemFields,
-    },
+    supportedBlocks: pageContentBlocks,
+    additionalItemFields: pageContentAdditionalItemFields,
     AdditionalItemContextMenuItems: ({ item, onChange, onMenuClose }) => {
         return <UserGroupContextMenuItem item={item} onChange={onChange} onMenuClose={onMenuClose} />;
     },

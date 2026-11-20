@@ -1411,6 +1411,7 @@ type PaginatedWarnings {
 }
 
 enum Permission {
+  aiHub
   blockPreview
   brevoNewsletter
   brevoNewsletterConfig

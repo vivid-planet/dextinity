@@ -1,14 +1,9 @@
-import { hasRichTextBlockContent, type PropsWithData, SvgImageBlock, withPreview } from "@dextinity/site-nextjs";
+import { hasTipTapRichTextContent, type PropsWithData, SvgImageBlock, withPreview } from "@dextinity/site-nextjs";
 import type { KeyFactsItemBlockData } from "@src/blocks.generated";
-import { defaultRichTextInlineStyleMap, RichTextBlock } from "@src/common/blocks/RichTextBlock";
+import { InlineRichTextBlock } from "@src/common/blocks/InlineRichTextBlock";
 import { Typography } from "@src/common/components/Typography";
-import type { Renderers } from "redraft";
 
 import styles from "./KeyFactItemBlock.module.scss";
-
-const descriptionRenderers: Renderers = {
-    inline: defaultRichTextInlineStyleMap,
-};
 
 export const KeyFactItemBlock = withPreview(
     ({ data: { icon, fact, label, description } }: PropsWithData<KeyFactsItemBlockData>) => (
@@ -18,9 +13,9 @@ export const KeyFactItemBlock = withPreview(
                 {fact}
             </Typography>
             <Typography variant="headline350">{label}</Typography>
-            {hasRichTextBlockContent(description) && (
+            {hasTipTapRichTextContent(description.tipTapContent) && (
                 <Typography variant="paragraph200" className={styles.description}>
-                    <RichTextBlock data={description} renderers={descriptionRenderers} />
+                    <InlineRichTextBlock data={description} />
                 </Typography>
             )}
         </div>

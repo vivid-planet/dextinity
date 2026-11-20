@@ -1,18 +1,13 @@
 import { type PropsWithData, withPreview } from "@dextinity/site-nextjs";
 import type { TeaserItemBlockData } from "@src/blocks.generated";
+import { InlineRichTextBlock } from "@src/common/blocks/InlineRichTextBlock";
 import { LinkBlock } from "@src/common/blocks/LinkBlock";
 import { MediaBlock } from "@src/common/blocks/MediaBlock";
-import { defaultRichTextInlineStyleMap, RichTextBlock } from "@src/common/blocks/RichTextBlock";
 import { Typography } from "@src/common/components/Typography";
 import { isValidLink } from "@src/common/helpers/isValidLink";
 import { SvgUse } from "@src/common/helpers/SvgUse";
-import type { Renderers } from "redraft";
 
 import styles from "./TeaserItemBlock.module.scss";
-
-const descriptionRenderers: Renderers = {
-    inline: defaultRichTextInlineStyleMap,
-};
 
 export const TeaserItemBlock = withPreview(
     ({ data: { media, title, description, link, titleHtmlTag } }: PropsWithData<TeaserItemBlockData>) => (
@@ -28,7 +23,7 @@ export const TeaserItemBlock = withPreview(
                     {title}
                 </Typography>
                 <Typography variant="paragraph200">
-                    <RichTextBlock data={description} renderers={descriptionRenderers} />
+                    <InlineRichTextBlock data={description} />
                 </Typography>
                 {link.text && isValidLink(link.link) && (
                     <div className={styles.textLinkContainer}>

@@ -1,6 +1,6 @@
-import type { TipTapRichTextBlockData } from "@src/blocks.generated.js";
+import type { RichTextBlockData } from "@src/blocks.generated.js";
 
-export const exampleSupportInfo: TipTapRichTextBlockData = {
+export const exampleSupportInfo: RichTextBlockData = {
     tipTapContent: {
         type: "doc",
         content: [

@@ -106,6 +106,13 @@ export function createConfig(processEnv: NodeJS.ProcessEnv) {
                       environment: envVars.SENTRY_ENVIRONMENT,
                   }
                 : undefined,
+        aiHub:
+            envVars.AI_HUB_API_URL && envVars.AI_HUB_API_KEY
+                ? {
+                      apiUrl: envVars.AI_HUB_API_URL,
+                      apiKey: envVars.AI_HUB_API_KEY,
+                  }
+                : undefined,
         fileUploads: {
             ...dextinityConfig.fileUploads,
             download: {

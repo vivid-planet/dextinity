@@ -69,7 +69,7 @@ export function LibraryFilterDrawer({
             <div className={styles.filterDrawer}>
                 <section className={styles.filterSection}>
                     <h3>Sort by</h3>
-                    <Field label="Field" layout="stacked">
+                    <Field label="Field">
                         <Select
                             name="sort"
                             value={location.sort.key}
@@ -121,7 +121,7 @@ export function LibraryFilterDrawer({
                 <section className={styles.filterSection}>
                     <h3>Display</h3>
                     {location.view === "tiles" && (
-                        <Field label="Tiles" layout="stacked">
+                        <Field label="Tiles" layout="group">
                             <SegmentedControl
                                 aria-label="Tiles"
                                 value={location.tileSize > 168 ? "large" : "small"}
@@ -133,7 +133,7 @@ export function LibraryFilterDrawer({
                             />
                         </Field>
                     )}
-                    <Field label="Items per page" layout="stacked">
+                    <Field label="Items per page">
                         <Select
                             name="pageSize"
                             value={String(location.pageSize)}

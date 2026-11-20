@@ -1,4 +1,4 @@
-import { type CSSProperties, type ReactNode, useEffect, useState } from "react";
+import { type CSSProperties, Fragment, type ReactNode, useEffect, useState } from "react";
 
 import { Avatar } from "../../../../components/avatar/Avatar";
 import { Button } from "../../../../components/button/Button";
@@ -31,7 +31,6 @@ import {
     formatDuration,
     formatModified,
     getExtension,
-    getFolder,
     getFolderTrail,
     kindLabels,
     type LibraryAsset,
@@ -119,6 +118,24 @@ function DocumentMedia({ asset }: { asset: LibraryAsset }) {
     );
 }
 
+const previewRatios = ["16:9", "4:3", "1:1", "9:16"];
+
+/** How the image is cropped in the common formats, centered on the focal point; follows the point live. */
+function CropPreviews({ asset, draft }: { asset: LibraryAsset; draft: Draft }) {
+    return (
+        <Panel title="How it gets cropped" className={styles.cropCard}>
+            <div className={styles.cropPreviews}>
+                {previewRatios.map((ratio) => (
+                    <figure key={ratio} className={styles.cropPreview} style={{ "--ratio": ratio.replace(":", " / ") } as CSSProperties}>
+                        <img src={asset.src} alt="" style={{ objectPosition: `${draft.focalPoint.x * 100}% ${draft.focalPoint.y * 100}%` }} />
+                        <figcaption>{ratio}</figcaption>
+                    </figure>
+                ))}
+            </div>
+        </Panel>
+    );
+}
+
 function Media({
     asset,
     draft,
@@ -156,7 +173,7 @@ function Media({
     }
     const frame = getCropFrame(asset, draft);
     return (
-        <div className={styles.checkerboard}>
+        <div className={styles.imageMedia}>
             <FocalPointPicker
                 className={styles.focalPointPicker}
                 src={asset.src}
@@ -164,19 +181,20 @@ function Media({
                 value={draft.focalPoint}
                 onChange={onFocalPointChange}
                 auto={draft.focalPointAuto}
+                ratios={[]}
                 slotProps={{
                     stage: {
                         className: frame ? `${styles.stage} ${styles.croppedStage}` : styles.stage,
-                        style: frame
-                            ? ({
-                                  "--crop-x": `${frame.x * 100}%`,
-                                  "--crop-y": `${frame.y * 100}%`,
-                                  "--crop-width": `${frame.width * 100}%`,
-                                  "--crop-height": `${frame.height * 100}%`,
-                              } as CSSProperties)
-                            : undefined,
+                        style: {
+                            "--image-ratio": `${(asset.width ?? 1) / (asset.height ?? 1)}`,
+                            ...(frame && {
+                                "--crop-x": `${frame.x * 100}%`,
+                                "--crop-y": `${frame.y * 100}%`,
+                                "--crop-width": `${frame.width * 100}%`,
+                                "--crop-height": `${frame.height * 100}%`,
+                            }),
+                        } as CSSProperties,
                     },
-                    previews: { className: styles.previews, "aria-label": "How it gets cropped" },
                 }}
             />
         </div>
@@ -201,7 +219,6 @@ function SettingsTab({
             {isImage && (
                 <Field
                     label="Alt text"
-                    layout="stacked"
                     state={altMissing ? "warning" : undefined}
                     description={
                         altMissing
@@ -226,7 +243,7 @@ function SettingsTab({
             {isImage && (
                 <Field
                     label="Focal point"
-                    layout="stacked"
+                    layout="group"
                     description={
                         draft.focalPointAuto
                             ? "Detects the subject. Click into the image to choose yourself."
@@ -246,7 +263,7 @@ function SettingsTab({
                 </Field>
             )}
             {isImage && (
-                <Field label="Crop" layout="stacked" description="Applies when the image is used without a fixed format.">
+                <Field label="Crop" layout="group" description="Applies when the image is used without a fixed format.">
                     <SegmentedControl<AssetCrop>
                         value={draft.crop}
                         onChange={(crop) => change({ crop })}
@@ -259,7 +276,7 @@ function SettingsTab({
                     />
                 </Field>
             )}
-            <Field label="AI-generated" layout="stacked" description="Labeled under the EU AI Act, Art. 50. Shown on the website.">
+            <Field label="AI-generated" layout="group" description="Labeled under the EU AI Act, Art. 50. Shown on the website.">
                 <SegmentedControl
                     value={draft.aiGenerated ? "yes" : "no"}
                     onChange={(value) => change({ aiGenerated: value === "yes" })}
@@ -372,8 +389,13 @@ function DuplicatesTab({ duplicates }: { duplicates: LibraryAsset[] }) {
  * apply to all scopes once saved; leaving with unsaved changes asks first.
  */
 export function AssetDetail({ assetId }: { assetId: string }) {
-    const { assets, folders, updateAsset, addToast, undoToast } = useAssetLibrary();
+    const { assets, folders, updateAsset, addToast, undoToast, setLocation } = useAssetLibrary();
     const actions = useLibraryActions();
+
+    // The path leads to that folder in the library; leaving with unsaved changes still asks first
+    function openInLibrary(folderId: string | null) {
+        setLocation((current) => ({ ...current, folderId, flat: false, smartFilter: null, search: "", page: 1 }));
+    }
     const prototype = usePrototypeNavigation();
     const asset = assets.find((candidate) => candidate.id === assetId);
     const [saved, setSaved] = useState<Draft | undefined>(asset && toDraft(asset));
@@ -428,7 +450,6 @@ export function AssetDetail({ assetId }: { assetId: string }) {
         );
     }
 
-    const folder = getFolder(folders, asset.folderId);
     const item = { type: "file" as const, id: fileItemId(asset.id), asset };
     const duplicates = assets.filter((candidate) => candidate.contentHash === asset.contentHash && candidate.id !== asset.id);
     const change = (changes: Partial<Draft>) => {
@@ -462,13 +483,16 @@ export function AssetDetail({ assetId }: { assetId: string }) {
                 <header className={styles.header}>
                     <div className={styles.heading}>
                         <nav aria-label="Location" className={styles.context}>
-                            <a href="#assets" className={styles.back}>
-                                <Icon name="arrow-left" size="small" />
-                                Assets
-                            </a>
-                            <span aria-hidden>/</span>
-                            <span>{folder?.name}</span>
-                            <span aria-hidden>/</span>
+                            <Icon name="arrow-left" size="small" />
+                            {[{ id: null, name: "Assets" }, ...getFolderTrail(folders, asset.folderId)].map((segment, index) => (
+                                <Fragment key={segment.id ?? "root"}>
+                                    {index > 0 && <span aria-hidden>/</span>}
+                                    <a href="#assets" className={styles.back} onClick={() => openInLibrary(segment.id)}>
+                                        {segment.name}
+                                    </a>
+                                </Fragment>
+                            ))}
+                            <span aria-hidden>·</span>
                             <span>Global</span>
                         </nav>
                         <h1 className={styles.titleHeading}>
@@ -543,9 +567,12 @@ export function AssetDetail({ assetId }: { assetId: string }) {
                     </div>
                 </header>
                 <div className={styles.body}>
-                    <Panel className={styles.mediaCard}>
-                        <Media asset={asset} draft={draft} onFocalPointChange={(focalPoint) => change({ focalPoint, focalPointAuto: false })} />
-                    </Panel>
+                    <div className={styles.mediaColumn}>
+                        <Panel className={styles.mediaCard}>
+                            <Media asset={asset} draft={draft} onFocalPointChange={(focalPoint) => change({ focalPoint, focalPointAuto: false })} />
+                        </Panel>
+                        {asset.kind === "image" && <CropPreviews asset={asset} draft={draft} />}
+                    </div>
                     <Panel className={styles.sideCard}>
                         <Tabs
                             aria-label="Asset"

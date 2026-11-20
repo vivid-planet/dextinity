@@ -5,6 +5,8 @@
     --dextinity-page-header-label-color: var(--dextinity-color-text-subtle);
     // Space between the label line and the title
     --dextinity-page-header-label-spacing: 14px;
+    // Height of the label line, the same with or without an icon or breadcrumbs, so that the title doesn't move between pages
+    --dextinity-page-header-label-line-height: 20px;
     // Text color of the title
     --dextinity-page-header-title-color: var(--dextinity-color-text);
     // Text size of the title

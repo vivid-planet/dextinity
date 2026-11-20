@@ -4,7 +4,9 @@ import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
 import { ProductLogo, ProductSign } from "../../../storybook/ProductLogo";
 import { useControlledArg } from "../../../storybook/storyArgs";
+import { StoryAssistant } from "../../../storybook/StoryAssistant";
 import { themeDecorator } from "../../../storybook/themeDecorator";
+import { AiAssistantSwitch } from "../../aiAssistantSwitch/AiAssistantSwitch";
 import { Button } from "../../button/Button";
 import { CommandPalette } from "../../commandPalette/CommandPalette";
 import { Icon } from "../../icon/Icon";
@@ -61,19 +63,34 @@ const meta = {
     parameters: { tokens: appShellTokens, layout: "fullscreen" },
     render: (args, context) => {
         const [navCollapsed, setNavCollapsed] = useControlledArg(args, "navCollapsed", context);
+        const [assistantOpen, setAssistantOpen] = useControlledArg(args, "assistantOpen", context);
         const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+        const changeAssistantOpen = (open: boolean) => {
+            setAssistantOpen(open);
+            args.onAssistantOpenChange?.(open);
+        };
         const [query, setQuery] = useState("");
         return (
             <>
                 <AppShell
                     {...args}
                     nav={<StoryNav />}
-                    topBar={<TopBar onSearchClick={() => setCommandPaletteOpen(true)} scope={<StoryScopeSwitcher />} userMenu={<StoryUserMenu />} />}
+                    topBar={
+                        <TopBar
+                            onSearchClick={() => setCommandPaletteOpen(true)}
+                            scope={<StoryScopeSwitcher />}
+                            assistantSwitch={args.assistant != null ? <AiAssistantSwitch /> : undefined}
+                            userMenu={<StoryUserMenu />}
+                        />
+                    }
                     navCollapsed={navCollapsed}
                     onNavCollapsedChange={(collapsed) => {
                         setNavCollapsed(collapsed);
                         args.onNavCollapsedChange(collapsed);
                     }}
+                    assistant={args.assistant != null ? <StoryAssistant onClose={() => changeAssistantOpen(false)} /> : undefined}
+                    assistantOpen={assistantOpen}
+                    onAssistantOpenChange={changeAssistantOpen}
                 >
                     {args.children ?? <StoryPage />}
                 </AppShell>
@@ -93,6 +110,17 @@ const meta = {
                                     keyboardShortcut: "mod+\\",
                                     onSelect: () => setNavCollapsed(!navCollapsed),
                                 },
+                                ...(args.assistant != null
+                                    ? [
+                                          {
+                                              id: "assistant",
+                                              label: "Open AI assistant",
+                                              icon: <Icon name="spark" />,
+                                              keyboardShortcut: "mod+j",
+                                              onSelect: () => changeAssistantOpen(true),
+                                          },
+                                      ]
+                                    : []),
                             ],
                         },
                     ]}
@@ -106,9 +134,17 @@ const meta = {
         children: null,
         navCollapsed: false,
         onNavCollapsedChange: fn(),
+        assistantOpen: false,
+        onAssistantOpenChange: fn(),
     },
     argTypes: {
         navCollapsed: { control: "boolean" },
+        assistantOpen: { control: "boolean" },
+        assistant: {
+            control: "select",
+            options: ["Chat"],
+            mapping: { Chat: <StoryAssistant /> },
+        },
         disableKeyboardShortcuts: { control: "boolean" },
         nav: { control: false },
         topBar: { control: false },
@@ -146,6 +182,49 @@ export const Default: Story = {
 export const NavCollapsed: Story = {
     args: {
         navCollapsed: true,
+    },
+};
+
+/**
+ * `assistant` adds the AI assistant as a third column: the page gets narrower, nothing is covered. The `AiAssistantSwitch` in the top
+ * bar and ⌘J / Ctrl+J show and hide it; focus moves into its composer, and Escape returns it to the switch. The assistant stays
+ * mounted while hidden, so the conversation is kept. On narrow windows it opens as a bottom sheet.
+ *
+ * **Rules**
+ *
+ * - Leave out `assistant` and the switch for users without the right to use the assistant.
+ * - Keep the open state when the user navigates between pages.
+ * - The assistant's header names what it works on: the page and the scope.
+ */
+export const WithAssistant: Story = {
+    args: {
+        assistant: <StoryAssistant />,
+        assistantOpen: true,
+    },
+    play: async ({ args }) => {
+        const assistantSwitch = screen.getByRole("switch", { name: "AI assistant" });
+        await expect(assistantSwitch).toHaveAttribute("aria-checked", "true");
+        const composer = screen.getByRole("textbox", { name: "Message to the AI assistant" });
+        await waitFor(() => expect(composer).toHaveFocus());
+
+        await userEvent.keyboard("{Escape}");
+        await waitFor(() => expect(args.onAssistantOpenChange).toHaveBeenLastCalledWith(false));
+        await waitFor(() => expect(assistantSwitch).toHaveFocus());
+        await expect(assistantSwitch).toHaveAttribute("aria-checked", "false");
+
+        await userEvent.click(assistantSwitch);
+        await waitFor(() => expect(composer).toHaveFocus());
+        await userEvent.click(screen.getByRole("button", { name: "Close" }));
+        await waitFor(() => expect(assistantSwitch).toHaveFocus());
+        await expect(assistantSwitch).toHaveAttribute("aria-checked", "false");
+    },
+};
+
+export const WithAssistantNavCollapsed: Story = {
+    args: {
+        navCollapsed: true,
+        assistant: <StoryAssistant />,
+        assistantOpen: true,
     },
 };
 

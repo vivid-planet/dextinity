@@ -1,3 +1,5 @@
+export { AiAssistantSwitch, type AiAssistantSwitchLabels, type AiAssistantSwitchOwnerState } from "./components/aiAssistantSwitch/AiAssistantSwitch";
+export { type AiAssistantSwitchProps, type AiAssistantSwitchSlotProps } from "./components/aiAssistantSwitch/AiAssistantSwitch";
 export { AppShell, type AppShellLabels, type AppShellOwnerState, type AppShellProps } from "./components/appShell/AppShell";
 export { type AppShellSlotProps } from "./components/appShell/AppShell";
 export type { AssetThumbnailBadge, AssetThumbnailLabels, AssetThumbnailRatio } from "./components/assetThumbnail/AssetThumbnail";

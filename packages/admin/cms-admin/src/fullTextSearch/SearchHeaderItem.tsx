@@ -1,7 +1,7 @@
 import { gql, useApolloClient, useQuery } from "@apollo/client";
-import { Alert, Button, Loading } from "@dextinity/admin";
+import { Alert, Button } from "@dextinity/admin";
 import { Search } from "@dextinity/admin-icons";
-import { ClickAwayListener, InputBase, LinearProgress, List, Paper, Popper, Stack, Typography } from "@mui/material";
+import { ClickAwayListener, InputBase, LinearProgress, List, Paper, Popper, Skeleton, Stack, Typography } from "@mui/material";
 import { alpha, styled } from "@mui/material/styles";
 import { useRef, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -39,6 +39,7 @@ const minimumSearchLength = 2;
 const maximumSearchLength = 200;
 const pageSize = 10;
 const maximumLimit = 50;
+const skeletonRowCount = 4;
 
 export function SearchHeaderItem() {
     const intl = useIntl();
@@ -105,11 +106,7 @@ export function SearchHeaderItem() {
             );
         }
 
-        if (!results) {
-            return <Loading behavior="fillParent" />;
-        }
-
-        if (results.nodes.length === 0) {
+        if (results?.nodes.length === 0) {
             if (selectedTypes.length > 0) {
                 return (
                     <Stack spacing={1} alignItems="flex-start">
@@ -164,7 +161,8 @@ export function SearchHeaderItem() {
                     placement="bottom-end"
                     sx={{ zIndex: "tooltip" }}
                 >
-                    <ResultsPaper elevation={4}>
+                    <ResultsPaper elevation={4} fixedHeight={!content}>
+                        {loading && <LoadingBar />}
                         {showResultsHeader && (
                             <ResultsHeader spacing={1}>
                                 <FullTextSearchTypeChips typeCounts={results.types} selectedTypes={selectedTypes} onChange={changeSelectedTypes} />
@@ -177,9 +175,18 @@ export function SearchHeaderItem() {
                                 </Typography>
                             </ResultsHeader>
                         )}
-                        {loading && results && <LinearProgress />}
                         {content ? (
                             <StatusContainer>{content}</StatusContainer>
+                        ) : !results ? (
+                            <SkeletonList aria-hidden>
+                                {Array.from({ length: skeletonRowCount }, (_, index) => (
+                                    <SkeletonRow key={index} spacing={0.5}>
+                                        <Skeleton variant="text" width="30%" />
+                                        <Skeleton variant="text" width="60%" />
+                                        <Skeleton variant="text" width="90%" />
+                                    </SkeletonRow>
+                                ))}
+                            </SkeletonList>
                         ) : (
                             results && (
                                 <>
@@ -230,12 +237,16 @@ const HeaderSearchInput = styled(InputBase)`
     background-color: ${({ theme }) => alpha(theme.palette.common.white, 0.15)};
 `;
 
-const ResultsPaper = styled(Paper)`
+// A fixed height keeps the results from jumping while they load or when a type is selected
+const ResultsPaper = styled(Paper, { shouldForwardProp: (prop) => prop !== "fixedHeight" })<{ fixedHeight: boolean }>`
+    position: relative;
     display: flex;
     flex-direction: column;
     width: min(480px, calc(100vw - ${({ theme }) => theme.spacing(4)}));
+    height: ${({ fixedHeight }) => (fixedHeight ? "min(560px, calc(100vh - 80px))" : "auto")};
     max-height: calc(100vh - 80px);
     margin-top: ${({ theme }) => theme.spacing(1)};
+    overflow: hidden;
 
     ${({ theme }) => theme.breakpoints.down("md")} {
         width: 100vw;
@@ -248,8 +259,28 @@ const ResultsHeader = styled(Stack)`
     border-bottom: 1px solid ${({ theme }) => theme.palette.divider};
 `;
 
+const LoadingBar = styled(LinearProgress)`
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    height: 2px;
+`;
+
 const ResultsList = styled(List)`
+    flex-grow: 1;
     overflow-y: auto;
+`;
+
+const SkeletonList = styled("div")`
+    flex-grow: 1;
+    overflow: hidden;
+`;
+
+const SkeletonRow = styled(Stack)`
+    padding: ${({ theme }) => theme.spacing(1.5, 2)};
+    border-bottom: 1px solid ${({ theme }) => theme.palette.divider};
 `;
 
 const ResultsFooter = styled(Stack)`

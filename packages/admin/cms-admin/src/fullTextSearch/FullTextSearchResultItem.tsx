@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 import { Tooltip } from "@dextinity/admin";
-import { Chip, ListItemButton, Stack, Typography } from "@mui/material";
+import { ListItemButton, Stack, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { FormattedMessage } from "react-intl";
 
@@ -16,7 +16,6 @@ export const fullTextSearchResultItemFragment = gql`
         type
         name
         secondaryInformation
-        titleMatch
         title {
             text
             highlights {
@@ -47,19 +46,19 @@ export function FullTextSearchResultItem({ result, linkable, onClick }: FullText
     const { title, snippet } = result;
 
     const item = (
-        <ListItemButton alignItems="flex-start" aria-disabled={!linkable} onClick={linkable ? onClick : undefined}>
+        <ResultOption alignItems="flex-start" aria-disabled={!linkable} onClick={linkable ? onClick : undefined}>
             <Stack spacing={0.5} sx={{ minWidth: 0, flexGrow: 1 }}>
-                <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="flex-start">
-                    <Title variant="body1" titleMatch={result.titleMatch}>
-                        <MarkedMatches text={title.text} matches={toTextMatches(title.highlights)} />
-                    </Title>
-                    <Chip size="small" variant="outlined" label={getTypeLabel(result)} />
+                <Stack direction="row" spacing={1} alignItems="center" sx={{ minWidth: 0 }}>
+                    <TypeLabel variant="overline">{getTypeLabel(result)}</TypeLabel>
+                    {result.secondaryInformation && (
+                        <SecondaryInformation variant="caption" color="text.secondary" noWrap>
+                            {result.secondaryInformation}
+                        </SecondaryInformation>
+                    )}
                 </Stack>
-                {result.secondaryInformation && (
-                    <Typography variant="caption" color="text.secondary">
-                        {result.secondaryInformation}
-                    </Typography>
-                )}
+                <Title variant="body1">
+                    <MarkedMatches text={title.text} matches={toTextMatches(title.highlights)} />
+                </Title>
                 {snippet && (
                     <SnippetText variant="body2" color="text.secondary">
                         {snippet.truncatedStart && "… "}
@@ -68,7 +67,7 @@ export function FullTextSearchResultItem({ result, linkable, onClick }: FullText
                     </SnippetText>
                 )}
             </Stack>
-        </ListItemButton>
+        </ResultOption>
     );
 
     if (linkable) {
@@ -82,8 +81,28 @@ export function FullTextSearchResultItem({ result, linkable, onClick }: FullText
     );
 }
 
-const Title = styled(Typography, { shouldForwardProp: (prop) => prop !== "titleMatch" })<{ titleMatch: boolean }>`
-    font-weight: ${({ titleMatch, theme }) => (titleMatch ? theme.typography.fontWeightBold : undefined)};
+const ResultOption = styled(ListItemButton)`
+    padding: ${({ theme }) => theme.spacing(1.5, 2)};
+    border-bottom: 1px solid ${({ theme }) => theme.palette.divider};
+
+    &:last-of-type {
+        border-bottom: none;
+    }
+`;
+
+const TypeLabel = styled(Typography)`
+    flex-shrink: 0;
+    line-height: 1.5;
+    color: ${({ theme }) => theme.palette.primary.dark};
+    font-weight: ${({ theme }) => theme.typography.fontWeightBold};
+`;
+
+const SecondaryInformation = styled(Typography)`
+    min-width: 0;
+`;
+
+const Title = styled(Typography)`
+    font-weight: ${({ theme }) => theme.typography.fontWeightMedium};
     overflow-wrap: anywhere;
 `;
 

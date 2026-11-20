@@ -244,6 +244,8 @@ export const PageHeader = forwardRef<HTMLElement, PageHeaderProps>(function Page
 ) {
     const labels = { ...defaultLabels, ...labelsProp };
     const hasActions = primaryAction != null || secondaryActions.length > 0 || actionStatus != null;
+    // `false` and empty text render nothing, e.g. from `status={archived && <StatusIndicator … />}`, so they don't count as a status
+    const hasStatus = status != null && status !== false && status !== "";
     const ownerState: PageHeaderOwnerState = { variant, hasBack: back != null, hasActions, titleEditable: onTitleChange != null };
 
     const headingProps = resolveSlotProps<PageHeaderOwnerState, "div", "div">({
@@ -339,9 +341,9 @@ export const PageHeader = forwardRef<HTMLElement, PageHeaderProps>(function Page
                         title
                     )}
                 </h1>
-                {(status != null || subtitle != null) && (
+                {(hasStatus || subtitle != null) && (
                     <div {...subtitleProps}>
-                        {status != null && <span className={styles.status}>{status}</span>}
+                        {hasStatus && <span className={styles.status}>{status}</span>}
                         {subtitle}
                     </div>
                 )}

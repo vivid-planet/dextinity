@@ -38,7 +38,23 @@ export const cmsPrototype: WorkspacePrototype = {
     storyId: "workspace-prototypes--cms",
     appName: "Website CMS",
     startPageId: "dashboard",
-    designedPageIds: ["dashboard", "page-tree", "page-tree/home", "news", "news/article-1", "assets", "assets/a-joyful-woman-standing-near-building"],
+    designedPageIds: [
+        "dashboard",
+        "page-tree",
+        "page-tree/home",
+        "news",
+        "news/article-1",
+        "assets",
+        // The asset detail page in every format: landscape, portrait, tall, square, panorama, and the other kinds of files
+        "assets/a-joyful-woman-standing-near-building",
+        "assets/ceo-portrait",
+        "assets/rock-formation-by-the-sea",
+        "assets/trees-in-autumn-forest",
+        "assets/autumn-banner",
+        "assets/press-release-spring",
+        "assets/product-tour",
+        "assets/jingle-short",
+    ],
     getPageLabel: getCmsPageLabel,
 };
 

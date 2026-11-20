@@ -52,7 +52,10 @@ export interface PageHeaderAction {
     color?: "error";
     /** Starts a new group in the menu with a separator. */
     separatorBefore?: boolean;
-    /** Menu items that open from this action, e.g. the folders to move to. Makes the action a submenu in the menu. */
+    /**
+     * Menu items that open from this action, e.g. the folders to move to: a submenu in the menu, or, as the only secondary action, a
+     * menu of its button.
+     */
     submenu?: ReactNode;
 }
 
@@ -158,6 +161,34 @@ function ActionButton({ action, primary }: { action: PageHeaderAction; primary?:
         <Tooltip content={action.tooltip ?? action.label} keyboardShortcut={action.keyboardShortcut}>
             {button}
         </Tooltip>
+    );
+}
+
+/** A secondary action with a submenu, on its own: its button opens the submenu's items as a menu. */
+function SubmenuButton({ action }: { action: PageHeaderAction }) {
+    const [open, setOpen] = useState(false);
+    return (
+        <Menu
+            open={open}
+            onOpenChange={setOpen}
+            placement="bottom-end"
+            disabled={action.disabled}
+            trigger={
+                <Button
+                    variant="outlined"
+                    color="secondary"
+                    startIcon={action.icon}
+                    endIcon={<Icon name="chevron-down" />}
+                    disabled={action.disabled}
+                    className={clsx(styles.action, styles.submenuButton)}
+                    data-has-icon={action.icon != null ? "" : undefined}
+                >
+                    <span className={styles.actionLabel}>{action.label}</span>
+                </Button>
+            }
+        >
+            {action.submenu}
+        </Menu>
     );
 }
 
@@ -353,7 +384,12 @@ export const PageHeader = forwardRef<HTMLElement, PageHeaderProps>(function Page
                     {actionStatus != null && <div className={styles.actionStatus}>{actionStatus}</div>}
                     {(primaryAction != null || secondaryActions.length > 0) && (
                         <div className={styles.buttons}>
-                            {secondaryActions.length === 1 && <ActionButton action={secondaryActions[0]} />}
+                            {secondaryActions.length === 1 &&
+                                (secondaryActions[0].submenu != null ? (
+                                    <SubmenuButton action={secondaryActions[0]} />
+                                ) : (
+                                    <ActionButton action={secondaryActions[0]} />
+                                ))}
                             {secondaryActions.length > 1 && <ActionsMenu actions={secondaryActions} label={labels.moreActions} />}
                             {primaryAction != null && <ActionButton action={primaryAction} primary />}
                         </div>

@@ -1,5 +1,7 @@
 import {
     BlocksTransformerService,
+    BuildsModule,
+    BuildsService,
     type ContentScope,
     CorePermission,
     type CurrentUser,
@@ -7,6 +9,7 @@ import {
     FilesService,
     getRequestContextHeadersFromRequest,
     getRequestFromExecutionContext,
+    PAGE_TREE_CONFIG,
     PageTreeNodeDocumentEntityScopeService,
     PageTreeNodeVisibility,
     PageTreeService,
@@ -32,6 +35,8 @@ import { connectMcpClient } from "@nestjs/mcp/testing";
 import { Test } from "@nestjs/testing";
 import { DamFile } from "@src/dam/entities/dam-file.entity.js";
 import { Page } from "@src/documents/pages/entities/page.entity.js";
+import { PagesModule } from "@src/documents/pages/pages.module.js";
+import { PagesService } from "@src/documents/pages/pages.service.js";
 import { PageTreeNode } from "@src/page-tree/entities/page-tree-node.entity.js";
 import type { Request } from "express";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
@@ -197,6 +202,17 @@ const appProviders: Provider[] = [
 @Module({ providers: appProviders, exports: appProviders })
 class AppServicesModule {}
 
+// For the tools that change content, which page-tree-editing.tools.spec.ts covers.
+@Module({
+    providers: [
+        { provide: BuildsService, useValue: {} },
+        { provide: PagesService, useValue: {} },
+        { provide: PAGE_TREE_CONFIG, useValue: {} },
+    ],
+    exports: [BuildsService, PagesService, PAGE_TREE_CONFIG],
+})
+class EditingServicesModule {}
+
 const adminUrl = "https://admin.example.com";
 
 let app: INestApplication;
@@ -214,7 +230,12 @@ beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
         imports: [AppServicesModule, AiModeMcpModule.forRoot({ adminUrl })],
         providers: [{ provide: APP_GUARD, useClass: HeaderAuthGuard }, userPermissionsGuardProvider],
-    }).compile();
+    })
+        .overrideModule(BuildsModule)
+        .useModule(EditingServicesModule)
+        .overrideModule(PagesModule)
+        .useModule(EditingServicesModule)
+        .compile();
 
     app = moduleRef.createNestApplication();
     // As main.ts sets them up. The global filter also catches the exceptions of tool calls that no filter of the tool catches.

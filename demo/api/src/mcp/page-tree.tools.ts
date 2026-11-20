@@ -114,7 +114,8 @@ For a node of document type "Page", pass the "documentId" to get_page for the pa
     @Tool({
         name: "get_page",
         description: `Get a page by its document ID, as it was last saved: the blocks of its content, stage, and SEO as JSON, and the page tree node it is attached to.
-The content is the "PageContent" block, the stage the "Stage" block, and the SEO the "Seo" block; get_block_schema describes them and the blocks they hold.`,
+The content is the "PageContent" block, the stage the "Stage" block, and the SEO the "Seo" block; get_block_schema describes them and the blocks they hold.
+To change a page, read it with get_page_input instead, which returns the blocks in the shape save_page takes.`,
         inputSchema: getPageParameters,
         annotations: { readOnlyHint: true },
     })

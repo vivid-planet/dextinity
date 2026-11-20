@@ -1,7 +1,8 @@
-import type { CurrentUser } from "@dextinity/cms-api";
+import { type CurrentUser, formatValidationErrors } from "@dextinity/cms-api";
 import { NotFoundError } from "@mikro-orm/postgresql";
 import {
     type ArgumentsHost,
+    BadRequestException,
     type CanActivate,
     Catch,
     type ExceptionFilter,
@@ -9,9 +10,12 @@ import {
     ForbiddenException,
     Injectable,
     NotFoundException,
+    type Type,
     UnauthorizedException,
 } from "@nestjs/common";
 import { McpExecutionContext } from "@nestjs/mcp";
+import { plainToInstance } from "class-transformer";
+import { validate } from "class-validator";
 import type { Request } from "express";
 import { z } from "zod";
 
@@ -49,14 +53,18 @@ export class RefusalReasonFilter implements ExceptionFilter {
 /**
  * Answers a call for an item of a scope the user may not read as if the item didn't exist. `@AffectedEntity` refuses
  * the one with a `ForbiddenException` and fails to find the other with a `NotFoundError`, which would otherwise reach
- * the agent as "Forbidden resource" and "Internal server error". The item's ID is the tool's `id` argument.
+ * the agent as "Forbidden resource" and "Internal server error". The item's ID is the tool's `idArg` argument, as for
+ * `@AffectedEntity`.
  */
 @Catch(ForbiddenException, NotFoundError)
 export class NotFoundFilter implements ExceptionFilter {
-    constructor(private readonly itemName: string) {}
+    constructor(
+        private readonly itemName: string,
+        private readonly idArg = "id",
+    ) {}
 
     catch(_exception: unknown, host: ArgumentsHost): never {
-        const { id } = McpExecutionContext.create(host).getInput<{ id: string }>();
+        const id = McpExecutionContext.create(host).getInput<Record<string, string>>()[this.idArg];
         throw new NotFoundException(`There is no ${this.itemName} ${id}.`);
     }
 }
@@ -71,3 +79,17 @@ export const pageTreeScopeSchema = z
     .describe("Content scope of the page tree");
 
 export const damScopeSchema = z.strictObject({ domain: domainSchema }).describe("Scope of the DAM");
+
+/**
+ * Validates and transforms the input of a tool as the app's global `ValidationPipe` does the input of a GraphQL
+ * mutation. The paths of the invalid values are part of the message, the only part of an error the agent gets, as the
+ * GraphQL API reports them as `validationErrors`.
+ */
+export async function validateInput<T extends object>(input: unknown, metatype: Type<T>): Promise<T> {
+    const value = plainToInstance(metatype, input);
+    const validationErrors = await validate(value, { whitelist: true, forbidNonWhitelisted: true });
+    if (validationErrors.length > 0) {
+        throw new BadRequestException(`Validation failed:\n${JSON.stringify(formatValidationErrors(validationErrors), null, 2)}`);
+    }
+    return value;
+}

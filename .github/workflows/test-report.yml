@@ -35,3 +35,5 @@ jobs:
                   name: Tests
                   path: "**/junit-*.xml"
                   reporter: jest-junit
+                  # Changes that affect no Storybook project don't run any Storybook tests.
+                  fail-on-empty: false

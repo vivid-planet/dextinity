@@ -120,6 +120,8 @@ export { VimeoVideoBlock } from "./blocks/VimeoVideoBlock";
 export { YouTubeVideoBlock } from "./blocks/YouTubeVideoBlock";
 export { BuildEntry } from "./builds/BuildEntry";
 export { PublisherPage } from "./builds/PublisherPage";
+export type { AdminLanguageContextValue } from "./common/adminLanguage/AdminLanguageProvider";
+export { AdminLanguageProvider, useAdminLanguageState } from "./common/adminLanguage/AdminLanguageProvider";
 export { includeInvisibleContentContext } from "./common/apollo/links/includeInvisibleContentContext";
 export { DropdownMenuItem } from "./common/DropdownMenuItem";
 export { useBuildInformation } from "./common/header/about/build-information/useBuildInformation";

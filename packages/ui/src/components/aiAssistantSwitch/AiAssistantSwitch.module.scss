@@ -1,0 +1,107 @@
+@use "../../theme/forcedColors" as forced-colors;
+
+.root {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: var(--dextinity-ai-assistant-switch-gap);
+    box-sizing: border-box;
+    block-size: var(--dextinity-ai-assistant-switch-height);
+    padding: 0 var(--dextinity-ai-assistant-switch-padding-inline);
+    border: 0;
+    border-radius: var(--dextinity-ai-assistant-switch-radius);
+    background: var(--dextinity-ai-assistant-switch-background);
+    box-shadow: var(--dextinity-ai-assistant-switch-shadow);
+    color: var(--dextinity-ai-assistant-switch-foreground);
+    font: inherit;
+    font-size: var(--dextinity-ai-assistant-switch-font-size);
+    font-weight: var(--dextinity-ai-assistant-switch-font-weight);
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background var(--dextinity-motion-duration-short);
+
+    &:hover {
+        background: var(--dextinity-ai-assistant-switch-background-hover);
+    }
+
+    &[aria-checked="true"] {
+        background: var(--dextinity-ai-assistant-switch-background-checked);
+
+        &:hover {
+            background: var(--dextinity-ai-assistant-switch-background-checked-hover);
+        }
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
+    }
+
+    @include forced-colors.edge;
+}
+
+.icon {
+    display: inline-flex;
+    color: var(--dextinity-ai-assistant-switch-icon-color);
+
+    --dextinity-icon-size: var(--dextinity-icon-size-small);
+}
+
+.label {
+    .root[data-icononly] & {
+        display: none;
+    }
+
+    // Hides the label where the scope picker hides its text too, e.g. while the assistant column narrows the page
+    @container dextinity-shell-bar (max-width: 600px) {
+        display: none;
+    }
+}
+
+.track {
+    position: relative;
+    flex: none;
+    inline-size: var(--dextinity-ai-assistant-switch-track-width);
+    block-size: var(--dextinity-ai-assistant-switch-track-height);
+    border-radius: var(--dextinity-radius-pill);
+    background: var(--dextinity-ai-assistant-switch-track-background);
+    box-shadow: var(--dextinity-ai-assistant-switch-track-line);
+    transition: background-color var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
+
+    .root[aria-checked="true"] & {
+        background: var(--dextinity-ai-assistant-switch-track-background-checked);
+    }
+
+    @include forced-colors.edge;
+
+    .root[aria-checked="true"] & {
+        @include forced-colors.fill(Highlight);
+    }
+}
+
+.thumb {
+    position: absolute;
+    inset-block-start: var(--dextinity-ai-assistant-switch-thumb-inset);
+    inset-inline-start: var(--dextinity-ai-assistant-switch-thumb-inset);
+    inline-size: calc(var(--dextinity-ai-assistant-switch-track-height) - 2 * var(--dextinity-ai-assistant-switch-thumb-inset));
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--dextinity-ai-assistant-switch-thumb-background);
+    box-shadow: var(--dextinity-ai-assistant-switch-thumb-shadow);
+    transition: transform var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
+
+    .root[aria-checked="true"] & {
+        transform: translateX(calc(var(--dextinity-ai-assistant-switch-track-width) - var(--dextinity-ai-assistant-switch-track-height)));
+    }
+
+    .root[aria-checked="true"]:dir(rtl) & {
+        transform: translateX(calc(var(--dextinity-ai-assistant-switch-track-height) - var(--dextinity-ai-assistant-switch-track-width)));
+    }
+
+    @include forced-colors.fill;
+
+    .root[aria-checked="true"] & {
+        @include forced-colors.fill(HighlightText);
+    }
+}

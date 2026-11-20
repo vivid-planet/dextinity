@@ -169,6 +169,63 @@ export const Disabled: Story = {
 };
 
 /**
+ * A required TimePickerField shows a required marker and has no clear button. Submitting the form without a time shows a validation error.
+ */
+export const Required: Story = {
+    render: () => {
+        interface FormValues {
+            value: string;
+        }
+        return (
+            <FinalForm<FormValues>
+                mode="edit"
+                onSubmit={() => {
+                    // not handled
+                }}
+                subscription={{ values: true }}
+            >
+                {() => (
+                    <>
+                        <TimePickerField required name="value" label="Required Time Picker" fullWidth variant="horizontal" />
+
+                        <FinalFormDebug />
+                    </>
+                )}
+            </FinalForm>
+        );
+    },
+};
+
+/**
+ * A read-only TimePickerField shows the time and doesn't let users change it. Use it instead of `disabled` when the value should stay easy to read.
+ */
+export const ReadOnly: Story = {
+    render: () => {
+        interface FormValues {
+            value: string;
+        }
+        return (
+            <FinalForm<FormValues>
+                mode="edit"
+                onSubmit={() => {
+                    // not handled
+                }}
+                initialValues={{ value: "14:30" }}
+                subscription={{ values: true }}
+            >
+                {() => (
+                    <>
+                        <TimePickerField readOnly name="value" label="Read-only Time Picker" fullWidth variant="horizontal" />
+
+                        <FinalFormDebug />
+                    </>
+                )}
+            </FinalForm>
+        );
+    },
+};
+
+/**
  * Before implementing custom validation, try to disable certain values using the props provided by MUI's TimePicker, such as `shouldDisableTime`, `minTime`, `maxTime`.
  *
  * Use this when:

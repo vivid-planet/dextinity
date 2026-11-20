@@ -169,6 +169,63 @@ export const Disabled: Story = {
 };
 
 /**
+ * A required DateTimePickerField shows a required marker and has no clear button. Submitting the form without a date and time shows a validation error.
+ */
+export const Required: Story = {
+    render: () => {
+        interface FormValues {
+            value: Date;
+        }
+        return (
+            <FinalForm<FormValues>
+                mode="edit"
+                onSubmit={() => {
+                    // not handled
+                }}
+                subscription={{ values: true }}
+            >
+                {() => (
+                    <>
+                        <DateTimePickerField required name="value" label="Required Date Time Picker" fullWidth variant="horizontal" />
+
+                        <FinalFormDebug />
+                    </>
+                )}
+            </FinalForm>
+        );
+    },
+};
+
+/**
+ * A read-only DateTimePickerField shows the date and time and doesn't let users change it. Use it instead of `disabled` when the value should stay easy to read.
+ */
+export const ReadOnly: Story = {
+    render: () => {
+        interface FormValues {
+            value: Date;
+        }
+        return (
+            <FinalForm<FormValues>
+                mode="edit"
+                onSubmit={() => {
+                    // not handled
+                }}
+                initialValues={{ value: new Date(2026, 0, 15, 14, 30) }}
+                subscription={{ values: true }}
+            >
+                {() => (
+                    <>
+                        <DateTimePickerField readOnly name="value" label="Read-only Date Time Picker" fullWidth variant="horizontal" />
+
+                        <FinalFormDebug />
+                    </>
+                )}
+            </FinalForm>
+        );
+    },
+};
+
+/**
  * Before implementing custom validation, try to disable certain values using the props provided by MUI's DateTimePicker, such as `shouldDisableDate`, `shouldDisableTime`, `disableFuture`, `disablePast`.
  *
  * Use this when:

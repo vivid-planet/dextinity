@@ -16,6 +16,20 @@ The app shell is the frame of every page of an application: the app bar at the t
 
 Until `@dextinity/ui` has a component for the app bar, build it with your own elements, as in the full example.
 
+## AI assistant
+
+The AI assistant is the shell's third column, after the page. Build it with `AppShell`'s `assistant` and the [`AiAssistantSwitch`](?path=/docs/shell-top-bar-scope-aiassistantswitch--docs) in the [`TopBar`](?path=/docs/shell-top-bar-scope-topbar--docs)'s `assistantSwitch`.
+
+- Put the switch after the scope selector and before the user menu.
+- Give the assistant its own column. The page gets narrower; never cover the page with the assistant.
+- Show and hide it with the switch and ⌘J / Ctrl+J. Move the focus into its composer when it opens, and back to the switch when it closes.
+- Keep the conversation when the assistant is hidden and when the user navigates between pages.
+- Name what the assistant works on in its header: the current page and the scope.
+- On narrow windows, show only the switch's icon, and open the assistant as a bottom sheet.
+- Leave out the switch and the assistant for users without the right to use the assistant.
+
+See the [example with the assistant](?path=/story/shell-app-frame-appshell--with-assistant).
+
 ## Full example
 
 <Canvas of={AppShellStories.AppShell} />

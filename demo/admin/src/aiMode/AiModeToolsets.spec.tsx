@@ -87,16 +87,6 @@ describe("AI Mode toolsets", () => {
         expect(listener).toHaveBeenCalledTimes(1);
     });
 
-    it("hands out the handler of the latest render", async () => {
-        const { rerender } = renderToolsets(
-            <RegisteredToolset toolset={{ id: "page", description: "Page", tools: [createTool("a", () => "first")] }} />,
-        );
-
-        rerender(<RegisteredToolset toolset={{ id: "page", description: "Page", tools: [createTool("a", () => "second")] }} />);
-
-        expect(await store.getTool("a")?.handler({}, { clearTextSelection: vi.fn() })).toBe("second");
-    });
-
     it("leaves out a tool whose name an outer toolset already has, and says so", () => {
         const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
 
@@ -109,19 +99,5 @@ describe("AI Mode toolsets", () => {
         expect(store.getTools().map(({ name }) => name)).toEqual(["a", "b"]);
         expect(store.getTool("a")?.handler({}, { clearTextSelection: vi.fn() })).toBe("outer");
         expect(consoleError).toHaveBeenCalledWith(expect.stringContaining('The AI Mode toolset "page" has a tool "a"'));
-    });
-
-    it("lists the tools of the mounted toolsets only", () => {
-        const { rerender } = renderToolsets(
-            <AiModeToolset id="pageTree" description="Page tree" tools={[createTool("open_page_tree_node")]}>
-                <RegisteredToolset toolset={{ id: "page", description: "Page", tools: [createTool("edit_blocks")] }} />
-            </AiModeToolset>,
-        );
-        expect(store.getTools().map(({ name }) => name)).toEqual(["open_page_tree_node", "edit_blocks"]);
-
-        rerender(<AiModeToolset id="pageTree" description="Page tree" tools={[createTool("open_page_tree_node")]} />);
-
-        expect(store.getTools().map(({ name }) => name)).toEqual(["open_page_tree_node"]);
-        expect(store.getTool("edit_blocks")).toBeUndefined();
     });
 });

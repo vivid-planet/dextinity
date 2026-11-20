@@ -50,7 +50,7 @@
 
             // The top bar sits closer to the window's edge in narrow windows
             @media (width < 768px) {
-                inset-block-start: 66px;
+                inset-block-start: 58px;
             }
             border-start-start-radius: var(--dextinity-panel-radius);
             border-start-end-radius: var(--dextinity-panel-radius);

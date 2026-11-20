@@ -203,7 +203,8 @@
 .overviewHeader {
     display: flex;
     align-items: center;
-    inline-size: 260px;
+    // As wide as the navigation, so that the label sits next to the logo as it does there
+    inline-size: var(--dextinity-side-nav-width);
     block-size: 72px;
     padding: var(--dextinity-space-4);
 }

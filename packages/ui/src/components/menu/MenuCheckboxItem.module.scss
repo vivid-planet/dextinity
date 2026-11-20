@@ -1,0 +1,26 @@
+@use "menuPopup";
+
+.root {
+    @include menuPopup.item;
+}
+
+.icon {
+    @include menuPopup.itemIcon;
+}
+
+.label {
+    @include menuPopup.itemLabel;
+}
+
+// Kept mounted so the label doesn't shift when the item is switched
+.indicator {
+    display: inline-flex;
+    flex: none;
+    margin-inline-start: auto;
+    padding-inline-start: var(--dextinity-space-4);
+    color: var(--dextinity-menu-item-indicator-color);
+
+    &[data-unchecked] {
+        visibility: hidden;
+    }
+}

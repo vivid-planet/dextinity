@@ -1,0 +1,73 @@
+@use "../../theme/forcedColors" as forced-colors;
+
+.root {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-skeleton-gap);
+    max-inline-size: 100%;
+
+    &[data-variant="tile"] .shape {
+        block-size: var(--dextinity-skeleton-tile-height);
+        border-radius: var(--dextinity-skeleton-tile-radius);
+    }
+
+    &[data-variant="block"] .shape {
+        block-size: var(--dextinity-skeleton-block-height);
+        border-radius: var(--dextinity-skeleton-block-radius);
+    }
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    gap: var(--dextinity-space-3);
+}
+
+.shape {
+    display: block;
+    flex: 1;
+    block-size: var(--dextinity-skeleton-text-height);
+    border-radius: var(--dextinity-skeleton-text-radius);
+    background: linear-gradient(
+            90deg,
+            var(--dextinity-skeleton-color) 30%,
+            var(--dextinity-skeleton-highlight-color) 50%,
+            var(--dextinity-skeleton-color) 70%
+        )
+        0 0 / 300% 100%;
+    animation: shimmer var(--dextinity-skeleton-shimmer-duration) linear infinite;
+
+    @media (prefers-reduced-motion: reduce) {
+        background: var(--dextinity-skeleton-color);
+        animation: none;
+    }
+
+    @include forced-colors.fill(GrayText);
+}
+
+.lastLine {
+    flex: 0 1 60%;
+}
+
+.rowLeading {
+    flex: none;
+    inline-size: var(--dextinity-checkbox-size);
+    block-size: var(--dextinity-checkbox-size);
+    border-radius: var(--dextinity-skeleton-row-leading-radius);
+}
+
+.rowText {
+    flex: 0 1 var(--dextinity-skeleton-row-text-width);
+}
+
+.rowTrailing {
+    flex: none;
+    inline-size: 70px;
+    margin-inline-start: auto;
+}
+
+@keyframes shimmer {
+    to {
+        background-position: -300% 0;
+    }
+}

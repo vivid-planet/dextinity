@@ -14,7 +14,8 @@ const classNamePrefix = "DextinityAdmin";
 type Options<ClassKey extends string, OwnerState extends object | undefined> = {
     componentName: string;
     slotName: ClassKey;
-    classesResolver?: (ownerState: OwnerState) => (ClassKey | false | undefined)[];
+    // Method syntax keeps the parameter bivariant, allowing slot options with a specific owner state to be passed to `withClassNameOwnerStateAndRef`
+    classesResolver?(ownerState: OwnerState): (ClassKey | false | undefined)[];
 };
 
 type OwnerStateObjectIfDefined<OwnerState extends object | undefined> = OwnerState extends object

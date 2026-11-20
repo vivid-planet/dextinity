@@ -6,21 +6,26 @@ import { useIntl } from "react-intl";
 
 import { useBrevoConfig } from "../common/BrevoConfigProvider";
 import { ConfigVerification } from "../configVerification/ConfigVerification";
-import { type EditTargetGroupFinalFormValues, TargetGroupForm } from "./TargetGroupForm";
-import { type AdditionalContactAttributesType, TargetGroupsGrid } from "./TargetGroupsGrid";
+import { type EditTargetGroupFinalFormValues, TargetGroupForm, type TargetGroupFormInput } from "./TargetGroupForm";
+import { type ExportTargetGroupOptions, TargetGroupsGrid } from "./TargetGroupsGrid";
 
-interface CreateContactsPageOptions {
+interface CreateTargetGroupsPageOptions<AdditionalTargetGroupFields extends object, AdditionalContactAttributes extends object> {
     additionalFormFields?: ReactNode;
-    exportTargetGroupOptions?: {
-        additionalAttributesFragment: { name: string; fragment: DocumentNode };
-        exportFields: { renderValue: (row: AdditionalContactAttributesType) => string; headerName: string }[];
-    };
+    exportTargetGroupOptions?: ExportTargetGroupOptions<AdditionalContactAttributes>;
     nodeFragment?: { name: string; fragment: DocumentNode };
-    input2State?: (values?: EditTargetGroupFinalFormValues) => EditTargetGroupFinalFormValues;
+    input2State?: (values?: TargetGroupFormInput<AdditionalTargetGroupFields>) => EditTargetGroupFinalFormValues;
     valuesToOutput?: (values: EditTargetGroupFinalFormValues) => EditTargetGroupFinalFormValues;
 }
 
-export function createTargetGroupsPage({ additionalFormFields, nodeFragment, input2State, exportTargetGroupOptions }: CreateContactsPageOptions) {
+export function createTargetGroupsPage<
+    AdditionalTargetGroupFields extends object = Record<string, unknown>,
+    AdditionalContactAttributes extends object = Record<string, unknown>,
+>({
+    additionalFormFields,
+    nodeFragment,
+    input2State,
+    exportTargetGroupOptions,
+}: CreateTargetGroupsPageOptions<AdditionalTargetGroupFields, AdditionalContactAttributes>) {
     function TargetGroupsPage(): JSX.Element {
         const { scopeParts } = useBrevoConfig();
         const { scope: completeScope } = useContentScope();

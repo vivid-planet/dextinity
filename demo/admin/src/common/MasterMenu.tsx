@@ -37,18 +37,11 @@ import type { GQLPageTreeNodeCategory } from "@src/graphql.generated";
 import MainMenu from "@src/mainMenu/MainMenu";
 import { NewsPage } from "@src/news/NewsPage";
 import { categoryToUrlParam, pageTreeCategories, urlParamToCategory } from "@src/pageTree/pageTreeCategories";
-import { CreateCapProductPage } from "@src/products/generator/CreateCapProductPage";
-import { ManufacturersPage } from "@src/products/generator/ManufacturersPage";
-import { ProductCategoriesPage } from "@src/products/generator/ProductCategoriesPage";
-import { ProductHighlightsPage } from "@src/products/generator/ProductHighlightsPage";
-import { ProductsPage } from "@src/products/generator/ProductsPage";
-import { ProductsWithLowPricePage } from "@src/products/generator/ProductsWithLowPricePage";
-import { ProductTagsPage } from "@src/products/generator/ProductTagsPage";
-import { ProductHighlightsPage as ProductHighlightsHandmadePage } from "@src/products/highlights/ProductHighlightsPage";
-import { ManufacturersPage as ManufacturersHandmadePage } from "@src/products/ManufacturersPage";
-import { ProductCategoriesPage as ProductCategoriesHandmadePage } from "@src/products/ProductCategoriesPage";
-import ProductsHandmadePage from "@src/products/ProductsPage";
-import { ProductTagsPage as ProductTagsHandmadePage } from "@src/products/tags/ProductTagsPage";
+import { ProductHighlightsPage } from "@src/products/highlights/ProductHighlightsPage";
+import { ManufacturersPage } from "@src/products/ManufacturersPage";
+import { ProductCategoriesPage } from "@src/products/ProductCategoriesPage";
+import ProductsPage from "@src/products/ProductsPage";
+import { ProductTagsPage } from "@src/products/tags/ProductTagsPage";
 import { RedirectsPage } from "@src/redirects/RedirectsPage";
 import type { ContentScope } from "@src/site-configs";
 import { EditWelcomeEmailPage } from "@src/welcomeEmail/EditWelcomeEmailPage";
@@ -58,8 +51,7 @@ import { Navigate, useParams } from "react-router";
 
 import { EditPageNode } from "./EditPageNode";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const pageTreeDocumentTypes: Record<string, DocumentInterface<any, any>> = {
+export const pageTreeDocumentTypes: Record<string, DocumentInterface> = {
     Page,
     Link,
     PredefinedPage,
@@ -325,118 +317,49 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
             requiredPermission: ["userPermissions", "impersonation"],
         },
         {
-            type: "group",
-            title: <FormattedMessage id="menu.products" defaultMessage="Products" />,
+            type: "collapsible",
+            primary: <FormattedMessage id="menu.products" defaultMessage="Products" />,
+            icon: <Snips />,
             items: [
                 {
-                    type: "collapsible",
-                    primary: <FormattedMessage id="menu.generator" defaultMessage="Generator" />,
-                    icon: <Snips />,
-                    items: [
-                        {
-                            type: "route",
-                            primary: <FormattedMessage id="menu.products" defaultMessage="Products" />,
-                            route: {
-                                path: "/products",
-                                element: <ProductsPage />,
-                            },
-                        },
-                        {
-                            type: "route",
-                            primary: <FormattedMessage id="menu.createCapProduct" defaultMessage="Create Cap Product" />,
-                            route: {
-                                path: "/create-cap-product",
-                                element: <CreateCapProductPage />,
-                            },
-                        },
-                        {
-                            type: "route",
-                            primary: <FormattedMessage id="menu.manufacturers" defaultMessage="Manufacturers" />,
-                            route: {
-                                path: "/manufacturers",
-                                element: <ManufacturersPage />,
-                            },
-                        },
-                        {
-                            type: "route",
-                            primary: <FormattedMessage id="menu.productsWithLowPrice" defaultMessage="Products with low price" />,
-                            route: {
-                                path: "/products-with-low-price",
-                                element: <ProductsWithLowPricePage />,
-                            },
-                        },
-                        {
-                            type: "route",
-                            primary: <FormattedMessage id="menu.productCategories" defaultMessage="Product Categories" />,
-                            route: {
-                                path: "/product-categories",
-                                element: <ProductCategoriesPage />,
-                            },
-                        },
-                        {
-                            type: "route",
-                            primary: <FormattedMessage id="menu.productTags" defaultMessage="Product Tags" />,
-                            route: {
-                                path: "/product-tags",
-                                element: <ProductTagsPage />,
-                            },
-                        },
-                        {
-                            type: "route",
-                            primary: <FormattedMessage id="menu.productHighlights" defaultMessage="Product Highlights" />,
-                            route: {
-                                path: "/product-highlights",
-                                element: <ProductHighlightsPage />,
-                            },
-                        },
-                    ],
+                    type: "route",
+                    primary: <FormattedMessage id="menu.products" defaultMessage="Products" />,
+                    route: {
+                        path: "/products",
+                        element: <ProductsPage />,
+                    },
                 },
                 {
-                    type: "collapsible",
-                    primary: <FormattedMessage id="menu.handmade" defaultMessage="Handmade" />,
-                    icon: <Snips />,
-                    items: [
-                        {
-                            type: "route",
-                            primary: <FormattedMessage id="menu.productsHandmade" defaultMessage="Products Handmade" />,
-                            route: {
-                                path: "/products-handmade",
-                                element: <ProductsHandmadePage />,
-                            },
-                        },
-                        {
-                            type: "route",
-                            primary: <FormattedMessage id="menu.manufacturersHandmade" defaultMessage="Manufacturers Handmade" />,
-                            route: {
-                                path: "/manufacturers-handmade",
-                                element: <ManufacturersHandmadePage />,
-                            },
-                        },
-                        {
-                            type: "route",
-                            primary: <FormattedMessage id="menu.productCategoriesHandmade" defaultMessage="Product Categories Handmade" />,
-                            route: {
-                                path: "/product-categories-handmade",
-                                element: <ProductCategoriesHandmadePage />,
-                            },
-                        },
-                        {
-                            type: "route",
-                            primary: <FormattedMessage id="menu.productTagsHandmade" defaultMessage="Product Tags Handmade" />,
-                            route: {
-                                path: "/product-tags-handmade",
-                                element: <ProductTagsHandmadePage />,
-                            },
-                        },
-                        {
-                            type: "route",
-                            primary: <FormattedMessage id="menu.productHighlightsHandmade" defaultMessage="Product Highlights Handmade" />,
-                            route: {
-                                path: "/product-highlights-handmade",
-                                element: <ProductHighlightsHandmadePage />,
-                            },
-                        },
-                    ],
+                    type: "route",
+                    primary: <FormattedMessage id="menu.manufacturers" defaultMessage="Manufacturers" />,
+                    route: {
+                        path: "/manufacturers",
+                        element: <ManufacturersPage />,
+                    },
+                },
+                {
+                    type: "route",
+                    primary: <FormattedMessage id="menu.productCategories" defaultMessage="Product Categories" />,
+                    route: {
+                        path: "/product-categories",
+                        element: <ProductCategoriesPage />,
+                    },
+                },
+                {
+                    type: "route",
+                    primary: <FormattedMessage id="menu.productTags" defaultMessage="Product Tags" />,
+                    route: {
+                        path: "/product-tags",
+                        element: <ProductTagsPage />,
+                    },
+                },
+                {
+                    type: "route",
+                    primary: <FormattedMessage id="menu.productHighlights" defaultMessage="Product Highlights" />,
+                    route: {
+                        path: "/product-highlights",
+                        element: <ProductHighlightsPage />,
+                    },
                 },
             ],
             requiredPermission: "products",

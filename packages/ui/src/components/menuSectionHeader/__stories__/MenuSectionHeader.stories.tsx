@@ -4,19 +4,21 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { IconButton } from "../../iconButton/IconButton";
 import { MenuSectionHeader } from "../MenuSectionHeader";
+import menuSectionHeaderTokens from "../MenuSectionHeader.tokens.scss?raw";
 import styles from "./menuSectionHeader.module.scss";
 
 const actionOptions = {
     Add: (
         <IconButton variant="text" color="secondary" size="small" aria-label="Add page">
-            <Icon name="add" />
+            <Icon name="plus-circle" />
         </IconButton>
     ),
 };
 
 const meta = {
     component: MenuSectionHeader,
-    title: "Components/MenuSectionHeader",
+    title: "Shell/Navigation/MenuSectionHeader",
+    parameters: { tokens: menuSectionHeaderTokens },
     decorators: [themeDecorator],
     args: {
         children: "Section",

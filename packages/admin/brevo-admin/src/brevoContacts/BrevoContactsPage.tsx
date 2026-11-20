@@ -7,21 +7,21 @@ import { useIntl } from "react-intl";
 import { useBrevoConfig } from "../common/BrevoConfigProvider";
 import { ConfigVerification } from "../configVerification/ConfigVerification";
 import { BrevoContactsGrid } from "./BrevoContactsGrid";
-import { BrevoContactForm, type EditBrevoContactFormValues } from "./form/BrevoContactForm";
+import { BrevoContactForm, type BrevoContactFormInput, type EditBrevoContactFormValues } from "./form/BrevoContactForm";
 
-interface CreateContactsPageOptions {
+interface CreateContactsPageOptions<AdditionalAttributes extends object> {
     additionalAttributesFragment?: { name: string; fragment: DocumentNode };
     additionalGridFields?: GridColDef[];
     additionalFormFields?: ReactNode;
-    input2State?: (values?: EditBrevoContactFormValues) => EditBrevoContactFormValues;
+    input2State?: (values?: BrevoContactFormInput<AdditionalAttributes>) => EditBrevoContactFormValues;
 }
 
-function createBrevoContactsPage({
+function createBrevoContactsPage<AdditionalAttributes extends object = Record<string, unknown>>({
     additionalAttributesFragment,
     additionalFormFields,
     additionalGridFields,
     input2State,
-}: CreateContactsPageOptions) {
+}: CreateContactsPageOptions<AdditionalAttributes>) {
     function BrevoContactsPage(): JSX.Element {
         const intl = useIntl();
         const { scopeParts } = useBrevoConfig();

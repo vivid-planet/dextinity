@@ -1,0 +1,13 @@
+@use "../../theme/forcedColors" as forced-colors;
+
+.root {
+    &[data-selected] {
+        background: var(--dextinity-toolbar-button-background-selected);
+        color: var(--dextinity-toolbar-button-foreground-selected);
+        @include forced-colors.selected;
+    }
+
+    &[data-selected]:not(:focus-visible) {
+        box-shadow: var(--dextinity-toolbar-button-shadow-selected);
+    }
+}

@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
 
 export const productHighlightFormFragment = gql`
-    fragment ProductHighlightFormHandmadeDetails on ProductHighlight {
+    fragment ProductHighlightFormDetails on ProductHighlight {
         description
         product {
             id
@@ -18,7 +18,7 @@ export const productHighlightQuery = gql`
         productHighlight(id: $id) {
             id
             updatedAt
-            ...ProductHighlightFormHandmadeDetails
+            ...ProductHighlightFormDetails
         }
     }
     ${productHighlightFormFragment}
@@ -28,7 +28,7 @@ export const createProductHighlightMutation = gql`
         createProductHighlight(input: $input) {
             id
             updatedAt
-            ...ProductHighlightFormHandmadeDetails
+            ...ProductHighlightFormDetails
         }
     }
     ${productHighlightFormFragment}
@@ -38,7 +38,7 @@ export const updateProductHighlightMutation = gql`
         updateProductHighlight(id: $id, input: $input) {
             id
             updatedAt
-            ...ProductHighlightFormHandmadeDetails
+            ...ProductHighlightFormDetails
         }
     }
     ${productHighlightFormFragment}

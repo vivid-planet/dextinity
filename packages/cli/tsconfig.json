@@ -5,7 +5,6 @@
         "moduleResolution": "nodenext",
         "outDir": "lib",
         "rootDir": "src",
-        "strict": true,
         "target": "ES2023",
         "verbatimModuleSyntax": true
     },

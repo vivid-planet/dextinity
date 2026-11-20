@@ -1,8 +1,6 @@
 import {
     ActionLogs,
     type BlockDataInterface,
-    CrudField,
-    CrudGenerator,
     DamImageBlock,
     EntityInfo,
     FileUpload,
@@ -21,7 +19,6 @@ import { IsNumber } from "class-validator";
 import { randomUUID } from "crypto";
 import { GraphQLLocalDate } from "graphql-scalars";
 
-import { ProductService } from "../product.service.js";
 import { ProductCategory } from "./product-category.entity.js";
 import { ProductColor } from "./product-color.entity.js";
 import { ProductStatistics } from "./product-statistics.entity.js";
@@ -87,7 +84,6 @@ export class ProductPriceRange {
 @ObjectType()
 @Entity()
 @RootBlockEntity<Product>({ isVisible: (product) => product.status === ProductStatus.Published })
-@CrudGenerator({ requiredPermission: ["products"], hooksService: ProductService })
 @ActionLogs()
 export class Product extends BaseEntity implements ImportTargetInterface {
     [OptionalProps]?: "createdAt" | "updatedAt" | "status";
@@ -98,12 +94,6 @@ export class Product extends BaseEntity implements ImportTargetInterface {
 
     @Property()
     @Field()
-    @CrudField({
-        search: true, //default is true
-        filter: true, //default is true
-        sort: true, //default is true
-        input: true, //default is true
-    })
     title: string;
 
     @Enum({ items: () => ProductStatus })
@@ -140,9 +130,6 @@ export class Product extends BaseEntity implements ImportTargetInterface {
 
     @Property({ type: types.integer, nullable: true })
     @Field(() => Int, { nullable: true })
-    @CrudField({
-        input: false,
-    })
     soldCount?: number;
 
     @Property({ type: types.date, nullable: true })
@@ -174,43 +161,15 @@ export class Product extends BaseEntity implements ImportTargetInterface {
     statistics?: Ref<ProductStatistics> = undefined;
 
     @OneToMany(() => ProductColor, (variant) => variant.product, { orphanRemoval: true })
-    @CrudField({
-        resolveField: true, //default is true
-        //search: true, //not yet implemented
-        //filter: true, //not yet implemented
-        //sort: true, //not yet implemented
-        input: true, //default is true
-    })
     colors = new Collection<ProductColor>(this);
 
     @OneToMany(() => ProductVariant, (variant) => variant.product, { orphanRemoval: true })
-    @CrudField({
-        resolveField: true, //default is true
-        //search: true, //not yet implemented
-        //filter: true, //not yet implemented
-        //sort: true, //not yet implemented
-        input: false, //default is true, disabled here because it is edited using it's own crud api
-    })
     variants = new Collection<ProductVariant>(this);
 
     @ManyToOne(() => ProductCategory, { nullable: true, ref: true })
-    @CrudField({
-        resolveField: true, //default is true
-        search: true, //default is true
-        filter: true, //default is true
-        sort: true, //default is true
-        input: true, //default is true
-    })
     category?: Ref<ProductCategory> = undefined;
 
     @ManyToMany(() => ProductTag, "products", { owner: true })
-    @CrudField({
-        resolveField: true, //default is true
-        //search: true, //not yet implemented
-        //filter: true, //not yet implemented
-        //sort: true, //not yet implemented
-        input: true, //default is true
-    })
     tags = new Collection<ProductTag>(this);
 
     @OneToMany(() => ProductToTag, (productToTag) => productToTag.product, { orphanRemoval: true })

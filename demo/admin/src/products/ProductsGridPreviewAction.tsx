@@ -2,13 +2,12 @@ import { Dialog, Tooltip } from "@dextinity/admin";
 import { View } from "@dextinity/admin-icons";
 import { DialogContent, IconButton, Typography } from "@mui/material";
 import type { GridCellParams } from "@mui/x-data-grid-pro";
-import type { GQLProductsGridFutureFragment } from "@src/products/generator/generated/ProductsGrid.generated";
 import { useState } from "react";
 import { FormattedMessage } from "react-intl";
 
-import type { GQLProductsListManualFragment } from "./ProductsGrid.generated";
+import type { GQLProductsListFragment } from "./ProductsGrid.generated";
 
-type Props = GridCellParams<GQLProductsListManualFragment | GQLProductsGridFutureFragment>;
+type Props = GridCellParams<GQLProductsListFragment>;
 
 export const ProductsGridPreviewAction = ({ row }: Props) => {
     const [showDetails, setShowDetails] = useState(false);

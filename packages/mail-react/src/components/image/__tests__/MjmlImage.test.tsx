@@ -1,6 +1,6 @@
 import { MjmlColumn } from "@faire/mjml-react";
 import type { ComponentProps } from "react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { MjmlMailRoot } from "../../../components/mailRoot/MjmlMailRoot.js";
 import { MjmlSection } from "../../../components/section/MjmlSection.js";
@@ -8,6 +8,38 @@ import { renderMailHtml } from "../../../server/renderMailHtml.js";
 import { MjmlImage } from "../MjmlImage.js";
 
 describe("MjmlImage", () => {
+    it("renders the src that config.rewriteImageSrc returns, in the image and in the Outlook VML", async () => {
+        const { html } = await renderMailHtml(
+            <MjmlMailRoot config={{ rewriteImageSrc: ({ src }) => `cid:${src}` }}>
+                <MjmlSection>
+                    <MjmlColumn>
+                        <MjmlImage src="image.jpg" alt="A photo" width={100} height={100} borderRadius={10} />
+                    </MjmlColumn>
+                </MjmlSection>
+            </MjmlMailRoot>,
+        );
+
+        expect(findImageTag(html)).toContain('src="cid:image.jpg"');
+        expect(html).toContain('<v:fill type="frame" src="cid:image.jpg"');
+        expect(html).not.toContain('"image.jpg"');
+    });
+
+    it("passes the image's src, width and height to config.rewriteImageSrc", async () => {
+        const rewriteImageSrc = vi.fn(({ src }: { src: string }) => src);
+
+        await renderMailHtml(
+            <MjmlMailRoot config={{ rewriteImageSrc }}>
+                <MjmlSection>
+                    <MjmlColumn>
+                        <MjmlImage src="image.jpg" alt="" width={100} height={50} />
+                    </MjmlColumn>
+                </MjmlSection>
+            </MjmlMailRoot>,
+        );
+
+        expect(rewriteImageSrc).toHaveBeenCalledWith({ src: "image.jpg", width: 100, height: 50 });
+    });
+
     it("writes borderRadius into the style attribute of the compiled <img>", async () => {
         const { html } = await renderMailHtml(
             <MjmlMailRoot>

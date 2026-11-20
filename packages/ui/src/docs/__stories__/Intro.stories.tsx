@@ -3,8 +3,7 @@ import { useState } from "react";
 
 import { Button } from "../../components/button/Button";
 import { Chip } from "../../components/chip/Chip";
-import { FormHelperText } from "../../components/formHelperText/FormHelperText";
-import { FormLabel } from "../../components/formLabel/FormLabel";
+import { Field } from "../../components/field/Field";
 import { Icon } from "../../components/icon/Icon";
 import { IconButton } from "../../components/iconButton/IconButton";
 import { Input } from "../../components/input/Input";
@@ -27,44 +26,40 @@ type Story = StoryObj<typeof meta>;
 export const Showcase: Story = {
     render: function Render() {
         const contentPages = [
-            { name: "Pages", icon: <Icon name="page-tree" /> },
-            { name: "Assets", icon: <Icon name="assets" /> },
-            { name: "Target groups", icon: <Icon name="target-groups" /> },
+            { name: "Pages", icon: <Icon name="sitemap" /> },
+            { name: "Assets", icon: <Icon name="images" /> },
+            { name: "Target groups", icon: <Icon name="target-group" /> },
         ];
-        const [activePage, setActivePage] = useState("Pages");
+        const [currentPage, setCurrentPage] = useState("Pages");
 
         return (
             <div className={styles.showcase}>
                 <div className={styles.column}>
                     <section className={styles.taskCard}>
-                        <Typography variant="labelS" className={styles.taskDate}>
+                        <Typography variant="label" className={styles.taskDate}>
                             <Icon name="calendar-today" /> Due on Friday
                         </Typography>
-                        <Typography variant="h3" className={styles.taskTitle}>
+                        <Typography variant="title" className={styles.taskTitle}>
                             Publish the spring campaign
                         </Typography>
-                        <Typography variant="bodyS" className={styles.taskMeta}>
+                        <Typography variant="small" className={styles.taskMeta}>
                             3 of 5 pages ready
                         </Typography>
                     </section>
 
                     <section className={styles.card}>
-                        <div className={styles.field}>
-                            <FormLabel htmlFor="showcase-title" required>
-                                Page title
-                            </FormLabel>
-                            <Input id="showcase-title" required defaultValue="Spring campaign" aria-describedby="showcase-title-hint" />
-                            <FormHelperText id="showcase-title-hint">Shown in the browser tab and in search results.</FormHelperText>
-                        </div>
+                        <Field label="Page title" required description="Shown in the browser tab and in search results.">
+                            <Input defaultValue="Spring campaign" />
+                        </Field>
                         <div className={styles.actions}>
                             <Button variant="outlined">Cancel</Button>
                             <Button>Save</Button>
                         </div>
                     </section>
                     <section className={styles.card}>
-                        <Typography variant="display">Aa</Typography>
-                        <Typography variant="h4">Type scale</Typography>
-                        <Typography variant="bodyS" className={styles.muted}>
+                        <Typography variant="displayL">Aa</Typography>
+                        <Typography variant="section">Type scale</Typography>
+                        <Typography variant="small" className={styles.muted}>
                             Headings, body text, labels, and data in one font.
                         </Typography>
                     </section>
@@ -77,8 +72,8 @@ export const Showcase: Story = {
                                 <li key={name}>
                                     <MainNavigationItem
                                         icon={icon}
-                                        active={name === activePage}
-                                        render={<button type="button" onClick={() => setActivePage(name)} />}
+                                        current={name === currentPage}
+                                        render={<button type="button" onClick={() => setCurrentPage(name)} />}
                                     >
                                         {name}
                                     </MainNavigationItem>
@@ -88,7 +83,7 @@ export const Showcase: Story = {
                     </nav>
 
                     <section className={styles.card}>
-                        <Typography variant="labelS">Status</Typography>
+                        <Typography variant="label">Status</Typography>
                         <div className={styles.chips}>
                             <Chip color="secondary">Draft</Chip>
                             <Chip color="info">In review</Chip>
@@ -100,8 +95,8 @@ export const Showcase: Story = {
                     <section className={styles.card}>
                         <div className={styles.recordRow}>
                             <div>
-                                <Typography variant="labelM">Product page</Typography>
-                                <Typography variant="bodyXs" className={styles.muted}>
+                                <Typography variant="body">Product page</Typography>
+                                <Typography variant="small" className={styles.muted}>
                                     Edited 2 hours ago
                                 </Typography>
                             </div>
@@ -113,7 +108,7 @@ export const Showcase: Story = {
                                     <Icon name="copy" />
                                 </IconButton>
                                 <IconButton variant="text" color="error" aria-label="Delete">
-                                    <Icon name="delete" />
+                                    <Icon name="trash" />
                                 </IconButton>
                             </div>
                         </div>

@@ -29,9 +29,8 @@ services:
     # Built from the repository root, because the demo depends on the packages in this repository rather than on released versions.
     # CI=true makes copy-project-files copy instead of symlink and skip the local .env files.
     - build_command: |-
-          CI=true node copy-project-files.js &&
+          CI=true node copy-project-files.mjs &&
           pnpm --filter "dextinity-demo-api^..." run build &&
-          ./demo/api/intl-update.sh &&
           pnpm --filter dextinity-demo-api run build
       environment_slug: node-js
       run_command: cd demo/api && node dist/console.js migrate && node dist/console.js createBlockIndexViews && node --import ./dist/tracing.js dist/main.js
@@ -270,9 +269,8 @@ services:
       instance_size_slug: apps-s-1vcpu-0.5gb
       name: oauth2-proxy
     - build_command: |-
-          CI=true node copy-project-files.js &&
+          CI=true node copy-project-files.mjs &&
           pnpm --filter "dextinity-demo-admin^..." run build &&
-          ./demo/admin/intl-update.sh &&
           mkdir -p -m 700 /tmp/swc-native-cache &&
           SWC_NATIVE_BINDING_CACHE=/tmp/swc-native-cache pnpm --filter dextinity-demo-admin run build
       environment_slug: node-js

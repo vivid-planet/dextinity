@@ -9,8 +9,6 @@
         "removeComments": true,
         "rootDir": "./src",
         "sourceMap": true,
-        "strict": true,
-        "strictNullChecks": true,
         "strictPropertyInitialization": false,
         "target": "ES2023",
         "tsBuildInfoFile": "./lib/tsconfig.tsbuildinfo"

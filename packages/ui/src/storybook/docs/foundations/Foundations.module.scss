@@ -1,0 +1,564 @@
+@mixin hairline($color: var(--dextinity-color-line-strong)) {
+    box-shadow: inset 0 0 0 var(--dextinity-line-width) $color;
+}
+
+@mixin light-field {
+    background:
+        radial-gradient(90% 140% at 15% 0%, var(--dextinity-material-field-1), transparent 70%),
+        radial-gradient(80% 120% at 100% 100%, var(--dextinity-material-field-2), transparent 70%), var(--dextinity-color-canvas);
+}
+
+.demo {
+    margin-block: 16px 24px;
+    padding: 20px;
+    border-radius: var(--dextinity-radius-row);
+    background: var(--dextinity-color-canvas);
+    color: var(--dextinity-color-text);
+    font-family: var(--dextinity-font-family-text);
+    font-size: var(--dextinity-typography-body-size);
+    line-height: var(--dextinity-typography-body-line-height);
+
+    @include hairline(var(--dextinity-color-line));
+
+    code {
+        font-family: var(--dextinity-font-family-mono);
+        background: none;
+        border: 0;
+        padding: 0;
+    }
+}
+
+.lightField {
+    @include light-field;
+}
+
+.mono {
+    font-family: var(--dextinity-font-family-mono);
+    font-size: var(--dextinity-typography-mono-size);
+}
+
+// Swatches
+
+.swatchGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+}
+
+.swatch {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: var(--dextinity-radius-field);
+    background: var(--dextinity-color-surface);
+
+    // Drawn above the sample, so the outline stays visible over it
+    &::after {
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        content: "";
+        pointer-events: none;
+
+        @include hairline;
+    }
+}
+
+.swatchSample {
+    display: grid;
+    place-items: center;
+    block-size: 84px;
+    background: var(--swatch-color);
+    font-size: 30px;
+    font-weight: 600;
+    box-shadow: inset 0 calc(var(--dextinity-line-width) * -1) 0 var(--dextinity-color-line);
+
+    &[data-kind="text"] {
+        background: var(--swatch-background);
+        color: var(--swatch-color);
+    }
+
+    &[data-kind="gradient"] {
+        background: var(--swatch-color);
+    }
+}
+
+.onLightField {
+    background:
+        linear-gradient(var(--swatch-color), var(--swatch-color)),
+        radial-gradient(90% 140% at 15% 0%, var(--dextinity-material-field-1), transparent 70%),
+        radial-gradient(80% 120% at 100% 100%, var(--dextinity-material-field-2), transparent 70%), var(--dextinity-color-canvas);
+}
+
+.swatchMeta {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 12px 14px;
+    color: var(--dextinity-color-text-subtle);
+    font-size: 12px;
+
+    b {
+        color: var(--dextinity-color-text);
+        font-size: 13px;
+        font-weight: var(--dextinity-font-weight-semibold);
+    }
+
+    code {
+        color: var(--dextinity-color-text-subtle);
+        font-size: 11.5px;
+        word-break: break-all;
+    }
+}
+
+.swatchValue {
+    font-size: 10.5px;
+}
+
+.contrast {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-block-start: 3px;
+    padding: 4px 8px;
+    border-radius: var(--dextinity-radius-item);
+    font-size: 11.5px;
+
+    i {
+        color: var(--dextinity-color-text-subtle);
+        font-style: normal;
+    }
+
+    em {
+        font-family: var(--dextinity-font-family-mono);
+        font-size: 11px;
+        font-style: normal;
+        font-weight: 600;
+    }
+
+    &[data-grade="AAA"],
+    &[data-grade="AA"] {
+        background: var(--dextinity-color-success-soft);
+
+        em {
+            color: var(--dextinity-color-success-text);
+        }
+    }
+
+    &[data-grade="AA large"] {
+        background: var(--dextinity-color-warning-soft);
+
+        em {
+            color: var(--dextinity-color-warning-text);
+        }
+    }
+
+    &[data-grade="fail"] {
+        background: var(--dextinity-color-danger-soft);
+
+        em {
+            color: var(--dextinity-color-danger-text);
+        }
+    }
+
+    // Soft fills are off in high contrast; a line keeps the badge readable
+    @include hairline(var(--dextinity-color-line));
+}
+
+// Rules
+
+.doDont {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
+
+    > div {
+        padding: 14px 16px;
+        border-radius: var(--dextinity-radius-field);
+    }
+
+    b {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        font-weight: 600;
+    }
+
+    ul {
+        margin: 8px 0 0;
+        padding-inline-start: 18px;
+        color: var(--dextinity-color-text-subtle);
+        font-size: 13.5px;
+        line-height: 1.5;
+    }
+}
+
+.do {
+    background: var(--dextinity-color-success-soft);
+    box-shadow:
+        inset 3px 0 0 var(--dextinity-color-success),
+        inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line);
+
+    b {
+        color: var(--dextinity-color-success-text);
+    }
+}
+
+.dont {
+    background: var(--dextinity-color-danger-soft);
+    box-shadow:
+        inset 3px 0 0 var(--dextinity-color-danger),
+        inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line);
+
+    b {
+        color: var(--dextinity-color-danger-text);
+    }
+}
+
+// Numbered list
+
+.numberedList {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        padding: 11px 4px;
+        box-shadow: inset 0 var(--dextinity-line-width) 0 var(--dextinity-color-line);
+
+        &:first-child {
+            box-shadow: none;
+        }
+
+        > div {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        span:not(.number) {
+            color: var(--dextinity-color-text-subtle);
+            font-size: 13px;
+        }
+    }
+}
+
+.number {
+    display: grid;
+    flex: none;
+    place-items: center;
+    inline-size: 24px;
+    block-size: 24px;
+    border-radius: 50%;
+    background: var(--dextinity-color-accent-soft);
+    color: var(--dextinity-color-accent-text);
+    font: 600 11.5px var(--dextinity-font-family-mono);
+
+    @include hairline(var(--dextinity-color-line));
+}
+
+.note {
+    margin: 12px 0 0;
+    color: var(--dextinity-color-text-subtle);
+    font-size: 12.5px;
+}
+
+// Spacing
+
+.spacingScale {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.spacingRow {
+    display: grid;
+    grid-template-columns: 40px auto minmax(0, 1fr) auto;
+    gap: 14px;
+    align-items: center;
+    color: var(--dextinity-color-text-subtle);
+    font-size: 13px;
+
+    i {
+        display: block;
+        inline-size: calc(var(--space) * 4);
+        block-size: 14px;
+        border-radius: 4px;
+        background: var(--dextinity-color-accent);
+        opacity: 0.8;
+    }
+}
+
+.spacingToken {
+    color: var(--dextinity-color-text-subtle);
+    font-size: 11.5px;
+}
+
+// Specs
+
+.specGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 12px;
+}
+
+.spec {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 14px;
+    border-radius: var(--dextinity-radius-field);
+    background: var(--dextinity-color-surface-raised);
+    color: var(--dextinity-color-text-subtle);
+    font-size: 12px;
+
+    @include hairline(var(--dextinity-color-line));
+
+    b {
+        color: var(--dextinity-color-text);
+        font-size: 13px;
+        font-weight: var(--dextinity-font-weight-semibold);
+    }
+
+    code {
+        color: var(--dextinity-color-text-subtle);
+        font-size: 11px;
+        word-break: break-all;
+    }
+}
+
+.specSample {
+    display: grid;
+    place-items: center;
+    min-block-size: 84px;
+    margin-block-end: 10px;
+}
+
+.radiusSample {
+    display: block;
+    inline-size: 72px;
+    block-size: 52px;
+    border-radius: var(--radius);
+    background: var(--dextinity-color-accent-soft);
+    box-shadow: inset 0 0 0 1.5px var(--dextinity-color-accent);
+}
+
+.shadowSample {
+    display: block;
+    inline-size: 84px;
+    block-size: 56px;
+    border-radius: 12px;
+    background: var(--dextinity-color-surface);
+    box-shadow:
+        inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line),
+        var(--shadow);
+}
+
+.glassSample {
+    display: flex;
+    gap: 6px;
+    inline-size: 100%;
+    max-inline-size: 160px;
+    block-size: 74px;
+    padding: 8px;
+    border-radius: 14px;
+
+    @include light-field;
+
+    > div {
+        display: grid;
+        flex: 1;
+        place-items: center;
+        border-radius: 10px;
+        color: var(--dextinity-color-text-subtle);
+        font: 10.5px var(--dextinity-font-family-mono);
+        text-align: center;
+        backdrop-filter: blur(var(--dextinity-material-blur));
+        box-shadow:
+            inset 0 0 0 var(--dextinity-line-width) var(--dextinity-material-edge),
+            inset 0 1px 0 var(--dextinity-material-highlight);
+    }
+
+    [data-material="glass"] {
+        background: var(--dextinity-material-glass);
+    }
+
+    [data-material="glass-strong"] {
+        background: var(--dextinity-material-glass-strong);
+    }
+}
+
+// Tables
+
+.table {
+    inline-size: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+
+    th,
+    td {
+        padding: 12px 10px;
+        box-shadow: inset 0 calc(var(--dextinity-line-width) * -1) 0 var(--dextinity-color-line);
+        text-align: start;
+        vertical-align: top;
+    }
+
+    th {
+        color: var(--dextinity-color-text-subtle);
+        font-size: 12px;
+        font-weight: 500;
+        box-shadow: inset 0 calc(var(--dextinity-line-width) * -1) 0 var(--dextinity-color-line-strong);
+    }
+
+    code {
+        color: var(--dextinity-color-text-subtle);
+        font-size: 11.5px;
+    }
+}
+
+.numeric {
+    font-variant-numeric: tabular-nums;
+}
+
+.current {
+    background: var(--dextinity-color-accent-soft);
+    color: var(--dextinity-color-text);
+    font-weight: 600;
+
+    // Soft fills are off in high contrast
+    outline: var(--dextinity-line-width) solid var(--dextinity-color-line);
+    outline-offset: calc(var(--dextinity-line-width) * -1);
+}
+
+// Primitive scales
+
+.scales {
+    display: grid;
+    grid-template-columns: 80px repeat(11, minmax(0, 1fr));
+    gap: 4px;
+    font-size: 11px;
+}
+
+.scaleStep {
+    color: var(--dextinity-color-text-subtle);
+    font-family: var(--dextinity-font-family-mono);
+    text-align: center;
+}
+
+.scaleRow {
+    display: contents;
+
+    code {
+        align-self: center;
+        color: var(--dextinity-color-text-subtle);
+    }
+
+    i {
+        block-size: 32px;
+        border-radius: var(--dextinity-radius-item);
+        background: var(--scale-color);
+    }
+}
+
+// Motion
+
+.motionControls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    margin-block-end: 12px;
+
+    > :last-child {
+        margin-inline-start: 10px;
+    }
+}
+
+.motionStage {
+    --motion-distance: var(--dextinity-motion-distance);
+    --exit-x: 0px;
+    --exit-y: 0px;
+    --enter-x: 0px;
+    --enter-y: 0px;
+
+    position: relative;
+    overflow: hidden;
+    block-size: 190px;
+    border-radius: var(--dextinity-radius-row);
+    background: var(--dextinity-color-surface-sunken);
+
+    @include hairline(var(--dextinity-color-line));
+
+    &[data-reduced-motion] {
+        --motion-distance: 0px;
+    }
+
+    &[data-kind="forward"] {
+        --enter-y: calc(var(--motion-distance) * 1.75);
+    }
+
+    &[data-kind="back"] {
+        --enter-y: calc(var(--motion-distance) * -1.25);
+    }
+
+    &[data-kind="lateral"] {
+        --enter-x: calc(var(--motion-distance) * 2.5);
+    }
+
+    &[data-kind="panelForward"] {
+        --exit-x: calc(var(--motion-distance) * -2);
+        --enter-x: calc(var(--motion-distance) * 3);
+    }
+
+    &[data-kind="panelBack"] {
+        --exit-x: calc(var(--motion-distance) * 2);
+        --enter-x: calc(var(--motion-distance) * -3);
+    }
+}
+
+.motionView {
+    position: absolute;
+    inset: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    padding: 0 24px;
+    border-radius: var(--dextinity-radius-field);
+    background: var(--dextinity-material-glass-strong);
+    box-shadow:
+        inset 0 0 0 var(--dextinity-line-width) var(--dextinity-material-edge),
+        var(--dextinity-shadow-1);
+
+    > span:last-child {
+        color: var(--dextinity-color-text-subtle);
+    }
+
+    &[data-phase="exit"] {
+        animation: motion-exit var(--dextinity-motion-duration-short) var(--dextinity-motion-easing) both;
+    }
+
+    &[data-phase="enter"] {
+        animation: motion-enter var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing) both;
+    }
+}
+
+@keyframes motion-exit {
+    to {
+        opacity: 0;
+        transform: translate(var(--exit-x), var(--exit-y));
+    }
+}
+
+@keyframes motion-enter {
+    from {
+        opacity: 0;
+        transform: translate(var(--enter-x), var(--enter-y));
+    }
+}

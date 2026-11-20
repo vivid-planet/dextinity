@@ -1,12 +1,22 @@
 .root {
     display: inline-block;
     flex-shrink: 0;
-    color: var(--dextinity-color-action-primary-default);
-    animation: spin 1s linear infinite;
+    color: var(--dextinity-spinner-color);
+    animation: spin var(--dextinity-spinner-duration) linear infinite;
 
-    &[data-size="md"] {
-        inline-size: 16px;
-        block-size: 16px;
+    &[data-size="small"] {
+        inline-size: var(--dextinity-spinner-size-small);
+        block-size: var(--dextinity-spinner-size-small);
+
+        .arc {
+            r: 5.25px;
+            stroke-width: 1.5px;
+        }
+    }
+
+    &[data-size="default"] {
+        inline-size: var(--dextinity-spinner-size-default);
+        block-size: var(--dextinity-spinner-size-default);
 
         .arc {
             r: 6px;
@@ -14,9 +24,9 @@
         }
     }
 
-    &[data-size="lg"] {
-        inline-size: 32px;
-        block-size: 32px;
+    &[data-size="large"] {
+        inline-size: var(--dextinity-spinner-size-large);
+        block-size: var(--dextinity-spinner-size-large);
 
         .arc {
             r: 13.5px;
@@ -24,9 +34,9 @@
         }
     }
 
-    &[data-size="xl"] {
-        inline-size: 64px;
-        block-size: 64px;
+    &[data-size="xlarge"] {
+        inline-size: var(--dextinity-spinner-size-xlarge);
+        block-size: var(--dextinity-spinner-size-xlarge);
 
         .arc {
             r: 30.5px;

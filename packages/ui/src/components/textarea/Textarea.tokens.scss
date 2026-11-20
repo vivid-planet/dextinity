@@ -1,0 +1,11 @@
+// The frame (label, box, message) comes from the Field tokens.
+@mixin tokens {
+    // Line height of the text
+    --dextinity-textarea-line-height: 1.5;
+    // Space above the first and below the last line of text
+    --dextinity-textarea-padding-block: var(--dextinity-space-2-5);
+    // Color of the placeholder text
+    --dextinity-textarea-placeholder-color: var(--dextinity-field-placeholder);
+    // Color of the text cursor
+    --dextinity-textarea-caret-color: var(--dextinity-color-accent);
+}

@@ -1,0 +1,9 @@
+.container {
+    max-inline-size: 420px;
+}
+
+.stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-space-4);
+}

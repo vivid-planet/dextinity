@@ -1,0 +1,120 @@
+@use "../field/controlMessage";
+@use "../../theme/forcedColors" as forced-colors;
+
+.root {
+    display: inline-flex;
+    flex-direction: column;
+    font-family: var(--dextinity-font-family-text);
+
+    --_track-width: var(--dextinity-switch-track-width);
+    --_track-height: var(--dextinity-switch-track-height);
+    --_thumb-inset: var(--dextinity-switch-thumb-inset);
+
+    &[data-size="small"] {
+        --_track-width: var(--dextinity-switch-track-width-small);
+        --_track-height: var(--dextinity-switch-track-height-small);
+        --_thumb-inset: var(--dextinity-switch-thumb-inset-small);
+
+        .label {
+            font-size: var(--dextinity-switch-label-font-size-small);
+        }
+    }
+
+    &[data-disabled] {
+        .row {
+            cursor: not-allowed;
+        }
+
+        .control,
+        .text {
+            opacity: var(--dextinity-switch-disabled-opacity);
+        }
+    }
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--dextinity-switch-gap);
+    cursor: pointer;
+}
+
+.text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-space-0-5);
+    min-inline-size: 0;
+}
+
+.label {
+    color: var(--dextinity-switch-label-color);
+    font-size: var(--dextinity-switch-label-font-size);
+    font-weight: var(--dextinity-switch-label-font-weight);
+    line-height: var(--dextinity-typography-body-line-height);
+}
+
+.description {
+    color: var(--dextinity-switch-description-color);
+    font-size: var(--dextinity-switch-description-font-size);
+    line-height: var(--dextinity-typography-small-line-height);
+}
+
+.control {
+    position: relative;
+    flex: none;
+    box-sizing: border-box;
+    inline-size: var(--_track-width);
+    block-size: var(--_track-height);
+    border-radius: var(--dextinity-radius-pill);
+    background: var(--dextinity-switch-track-background);
+    box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-switch-track-line);
+    transition: background var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
+
+    &[data-checked] {
+        background: var(--dextinity-switch-track-background-checked);
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
+    }
+
+    @include forced-colors.edge;
+
+    &[data-checked] {
+        @include forced-colors.fill(Highlight);
+    }
+}
+
+.thumb {
+    position: absolute;
+    inset-block-start: var(--_thumb-inset);
+    inset-inline-start: var(--_thumb-inset);
+    inline-size: calc(var(--_track-height) - 2 * var(--_thumb-inset));
+    block-size: calc(var(--_track-height) - 2 * var(--_thumb-inset));
+    border-radius: 50%;
+    background: var(--dextinity-switch-thumb-background);
+    box-shadow: var(--dextinity-switch-thumb-shadow);
+    transition: transform var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
+
+    &[data-checked] {
+        transform: translateX(calc(var(--_track-width) - var(--_track-height)));
+        background: var(--dextinity-switch-thumb-background-checked);
+    }
+
+    &:dir(rtl)[data-checked] {
+        transform: translateX(calc(var(--_track-height) - var(--_track-width)));
+    }
+
+    @include forced-colors.fill;
+
+    &[data-checked] {
+        @include forced-colors.fill(HighlightText);
+    }
+}
+
+.required {
+    @include controlMessage.required(switch);
+}

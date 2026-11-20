@@ -4,7 +4,7 @@ import { forwardRef, type HTMLAttributes } from "react";
 
 import styles from "./Spinner.module.scss";
 
-type SpinnerSize = "md" | "lg" | "xl";
+type SpinnerSize = "small" | "default" | "large" | "xlarge";
 
 /**
  * The resolved configuration that influences the component's appearance or behavior.
@@ -14,7 +14,11 @@ export type SpinnerOwnerState = {
 };
 
 export interface SpinnerProps extends Omit<HTMLAttributes<HTMLElement>, "className" | "children"> {
-    /** @defaultValue `"md"` */
+    /**
+     * `small` (14 px) and `default` (16 px) for spinners in place, e.g. in a button or a field.
+     *
+     * @defaultValue `"default"`
+     */
     size?: SpinnerSize;
     /** Names what is loading. Without a name, the spinner is hidden from assistive technology. */
     "aria-label"?: string;
@@ -23,9 +27,9 @@ export interface SpinnerProps extends Omit<HTMLAttributes<HTMLElement>, "classNa
 }
 
 /**
- * Shows that content is loading or an action is in progress.
+ * Shows that an action is in progress, in place: in the button or field that started it.
  */
-export const Spinner = forwardRef<HTMLElement, SpinnerProps>(function Spinner({ size = "md", className, ...restProps }, ref) {
+export const Spinner = forwardRef<HTMLElement, SpinnerProps>(function Spinner({ size = "default", className, ...restProps }, ref) {
     const ownerState: SpinnerOwnerState = { size };
     const hasAccessibleName = restProps["aria-label"] != null || restProps["aria-labelledby"] != null;
 

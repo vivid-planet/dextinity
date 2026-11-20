@@ -13,7 +13,7 @@ import {
     textFieldClasses,
     toolbarClasses,
 } from "@mui/material";
-import { COMFORTABLE_DENSITY_FACTOR, COMPACT_DENSITY_FACTOR, getDataGridUtilityClass, gridClasses } from "@mui/x-data-grid";
+import { COMFORTABLE_DENSITY_FACTOR, COMPACT_DENSITY_FACTOR, getDataGridUtilityClass, gridClasses, type GridDensity } from "@mui/x-data-grid";
 
 import { DataGridColumnsManagement } from "../../dataGrid/columnsManagement/DataGridColumnsManagement";
 import { DataGridPanel } from "../../dataGrid/DataGridPanel";
@@ -21,7 +21,7 @@ import { DataGridPagination } from "../../dataGrid/pagination/DataGridPagination
 import { mergeOverrideStyles } from "../utils/mergeOverrideStyles";
 import type { GetMuiComponentTheme } from "./getComponentsTheme";
 
-const getDensityHeightValue = (density: string) => {
+const getDensityHeightValue = (density?: GridDensity) => {
     switch (density) {
         case "compact":
             return 40;

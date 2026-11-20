@@ -1,0 +1,99 @@
+import { AffectedEntity, gqlArgsToMikroOrmQuery, gqlSortToMikroOrmOrderBy, RequiredPermission } from "@dextinity/cms-api";
+import { EntityManager, type FindOptions, Reference } from "@mikro-orm/postgresql";
+import { Args, ID, Mutation, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
+
+import { PaginatedProductCategoryTypes } from "./dto/paginated-product-category-types.js";
+import { ProductCategoryTypeInput, ProductCategoryTypeUpdateInput } from "./dto/product-category-type.input.js";
+import { ProductCategoryTypesArgs } from "./dto/product-category-types.args.js";
+import { ProductCategory } from "./entities/product-category.entity.js";
+import { ProductCategoryType } from "./entities/product-category-type.entity.js";
+
+@Resolver(() => ProductCategoryType)
+@RequiredPermission(["products"], { skipScopeCheck: true })
+export class ProductCategoryTypeResolver {
+    constructor(protected readonly entityManager: EntityManager) {}
+    @Query(() => ProductCategoryType)
+    @AffectedEntity(ProductCategoryType)
+    async productCategoryType(
+        @Args("id", { type: () => ID })
+        id: string,
+    ): Promise<ProductCategoryType> {
+        const productCategoryType = await this.entityManager.findOneOrFail(ProductCategoryType, id);
+        return productCategoryType;
+    }
+    @Query(() => PaginatedProductCategoryTypes)
+    async productCategoryTypes(
+        @Args()
+        { search, filter, sort, offset, limit }: ProductCategoryTypesArgs,
+    ): Promise<PaginatedProductCategoryTypes> {
+        const where = gqlArgsToMikroOrmQuery({ search, filter }, this.entityManager.getMetadata(ProductCategoryType));
+        const options: FindOptions<ProductCategoryType> = { offset, limit };
+        if (sort) {
+            options.orderBy = gqlSortToMikroOrmOrderBy(sort);
+        }
+        const [entities, totalCount] = await this.entityManager.findAndCount(ProductCategoryType, where, options);
+        return new PaginatedProductCategoryTypes(entities, totalCount);
+    }
+    @Mutation(() => ProductCategoryType)
+    async createProductCategoryType(
+        @Args("input", { type: () => ProductCategoryTypeInput })
+        input: ProductCategoryTypeInput,
+    ): Promise<ProductCategoryType> {
+        const { categories: categoriesInput, ...assignInput } = input;
+        const productCategoryType = this.entityManager.create(ProductCategoryType, {
+            ...assignInput,
+        });
+        if (categoriesInput) {
+            const categories = await this.entityManager.find(ProductCategory, { id: categoriesInput });
+            if (categories.length != categoriesInput.length) {
+                throw new Error("Couldn't find all categories that were passed as input");
+            }
+            await productCategoryType.categories.loadItems();
+            productCategoryType.categories.set(categories.map((category) => Reference.create(category)));
+        }
+        await this.entityManager.flush();
+        return productCategoryType;
+    }
+    @Mutation(() => ProductCategoryType)
+    @AffectedEntity(ProductCategoryType)
+    async updateProductCategoryType(
+        @Args("id", { type: () => ID })
+        id: string,
+        @Args("input", { type: () => ProductCategoryTypeUpdateInput })
+        input: ProductCategoryTypeUpdateInput,
+    ): Promise<ProductCategoryType> {
+        const productCategoryType = await this.entityManager.findOneOrFail(ProductCategoryType, id);
+        const { categories: categoriesInput, ...assignInput } = input;
+        productCategoryType.assign({
+            ...assignInput,
+        });
+        if (categoriesInput) {
+            const categories = await this.entityManager.find(ProductCategory, { id: categoriesInput });
+            if (categories.length != categoriesInput.length) {
+                throw new Error("Couldn't find all categories that were passed as input");
+            }
+            await productCategoryType.categories.loadItems();
+            productCategoryType.categories.set(categories.map((category) => Reference.create(category)));
+        }
+        await this.entityManager.flush();
+        return productCategoryType;
+    }
+    @Mutation(() => Boolean)
+    @AffectedEntity(ProductCategoryType)
+    async deleteProductCategoryType(
+        @Args("id", { type: () => ID })
+        id: string,
+    ): Promise<boolean> {
+        const productCategoryType = await this.entityManager.findOneOrFail(ProductCategoryType, id);
+        this.entityManager.remove(productCategoryType);
+        await this.entityManager.flush();
+        return true;
+    }
+    @ResolveField(() => [ProductCategory])
+    async categories(
+        @Parent()
+        productCategoryType: ProductCategoryType,
+    ): Promise<ProductCategory[]> {
+        return productCategoryType.categories.loadItems();
+    }
+}

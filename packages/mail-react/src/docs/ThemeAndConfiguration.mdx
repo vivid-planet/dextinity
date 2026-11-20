@@ -1,0 +1,306 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta
+    title="Docs/Theme and Configuration"
+    summary="createTheme and its augmentation: text/button/divider variants, breakpoints and belowMediaQuery, responsive values, colors, list tokens, ThemeProvider scopes, and Config."
+/>
+
+# Theme and Configuration
+
+This page covers the theme, its module augmentation, scoped theming and `Config`.
+
+## Creating a Theme
+
+Create a theme with `createTheme()` and pass it to `MjmlMailRoot`:
+
+```tsx
+import { createBreakpoint, createTheme, MjmlMailRoot } from "@dextinity/mail-react";
+
+const theme = createTheme({
+    sizes: {
+        bodyWidth: 700,
+        contentIndentation: { default: 40, mobile: 20 },
+    },
+    breakpoints: {
+        mobile: createBreakpoint(480),
+    },
+    text: {
+        fontFamily: "Georgia, serif",
+        fontSize: "18px",
+    },
+    colors: {
+        background: { body: "#EAEAEA", content: "#FAFAFA" },
+    },
+});
+
+function MyEmail() {
+    return <MjmlMailRoot theme={theme}>{/* email content */}</MjmlMailRoot>;
+}
+```
+
+`createTheme(overrides?)` merges partial overrides into the default theme. Every token is optional, and the `Theme` type lists them. Defaults live in `createTheme`.
+
+One behavior isn't visible from the types: **the default breakpoint derives from `sizes.bodyWidth`** unless `breakpoints.default` is overridden. They describe the same boundary, so setting them apart silently desyncs the layout.
+
+`@dextinity/mail-react` uses TypeScript module augmentation to make custom theme tokens type-safe. The interfaces in [Variants](#variants), [ThemeBreakpoints](#themebreakpoints) and [Colors](#colors) are empty by default, designed for consumers to extend via `declare module`. Always augment them when you extend the theme. TypeScript then reports typos and unknown keys. Place augmentations in your theme file alongside `createTheme()`, generally below the `createTheme` call.
+
+## Variants
+
+### TextVariants
+
+Controls the `variant` prop on `MjmlText` and `HtmlText`:
+
+```ts
+const theme = createTheme({
+    text: {
+        defaultVariant: "body",
+        variants: {
+            heading: { fontSize: "32px", fontWeight: 700, lineHeight: "40px" },
+            body: { fontSize: "16px", lineHeight: "24px" },
+            caption: { fontSize: "12px", lineHeight: "16px", color: "#666666" },
+        },
+    },
+});
+
+declare module "@dextinity/mail-react" {
+    interface TextVariants {
+        heading: true;
+        body: true;
+        caption: true;
+    }
+}
+```
+
+Variant properties accept responsive values:
+
+```ts
+heading: {
+    fontSize: { default: "32px", mobile: "24px" },
+    lineHeight: { default: "40px", mobile: "30px" },
+    bottomSpacing: { default: "24px", mobile: "16px" },
+    fontWeight: 700,
+},
+```
+
+### ButtonVariants
+
+Controls the `variant` prop on `MjmlButton` and `HtmlButton`:
+
+```ts
+const theme = createTheme({
+    button: {
+        defaultVariant: "primary",
+        variants: {
+            primary: { backgroundColor: "#5B4FC7", color: "#FFFFFF" },
+            gradient: {
+                backgroundColor: "#5B4FC7",
+                backgroundImage: "linear-gradient(90deg, #5B4FC7, #9C5BC7)",
+            },
+        },
+    },
+});
+
+declare module "@dextinity/mail-react" {
+    interface ButtonVariants {
+        primary: true;
+        gradient: true;
+    }
+}
+```
+
+Variant properties (`color`, `backgroundColor`, `backgroundImage`, `border`, `borderRadius`, `fontFamily`, `fontSize`, `fontWeight`, `lineHeight`, `padding`) accept responsive values.
+
+### DividerVariants
+
+Controls the `variant` prop on `MjmlDivider` and `HtmlDivider`:
+
+```ts
+const theme = createTheme({
+    divider: {
+        defaultVariant: "thin",
+        variants: {
+            thin: { height: 1, backgroundColor: "#999999" },
+            thick: { height: { default: 12, mobile: 8 }, backgroundColor: "#222222" },
+        },
+    },
+});
+
+declare module "@dextinity/mail-react" {
+    interface DividerVariants {
+        thin: true;
+        thick: true;
+    }
+}
+```
+
+Variant properties (`height`, `backgroundColor`, `backgroundImage`) accept responsive values.
+
+## Breakpoints
+
+Create breakpoint values with `createBreakpoint(pixelWidth)`:
+
+```ts
+createBreakpoint(420);
+// → { value: 420, belowMediaQuery: "@media (max-width: 419px)" }
+```
+
+The `belowMediaQuery` string is ready to use in `registerStyles` calls.
+
+### ThemeBreakpoints
+
+The built-in keys are `default` and `mobile`. Add custom breakpoints:
+
+```ts
+import { createBreakpoint, createTheme, type ThemeBreakpoint } from "@dextinity/mail-react";
+
+const theme = createTheme({
+    breakpoints: { tablet: createBreakpoint(540) },
+    sizes: {
+        contentIndentation: { default: 40, tablet: 30, mobile: 20 },
+    },
+});
+
+declare module "@dextinity/mail-react" {
+    interface ThemeBreakpoints {
+        tablet: ThemeBreakpoint;
+    }
+}
+```
+
+New breakpoint keys automatically become available in all responsive theme values.
+
+## Responsive Values
+
+Many theme properties accept responsive values. These are objects keyed by breakpoint name:
+
+```ts
+const theme = createTheme({
+    sizes: {
+        contentIndentation: { default: 40, tablet: 30, mobile: 20 },
+    },
+    list: {
+        indent: { default: 24, tablet: 16, mobile: 8 },
+    },
+});
+```
+
+The `default` key provides the base value (rendered inline). Other keys generate media query overrides automatically. For the `list` tokens, see [Lists](#lists).
+
+## Colors
+
+### ThemeBackgroundColors and ThemeColors
+
+Add project-specific color tokens:
+
+```ts
+const theme = createTheme({
+    colors: {
+        background: { highlight: "#FFF3CD", footer: "#1A1A2E" },
+        brand: { primary: "#0066CC", secondary: "#004499" },
+    },
+});
+
+declare module "@dextinity/mail-react" {
+    interface ThemeBackgroundColors {
+        highlight: string;
+        footer: string;
+    }
+    interface ThemeColors {
+        brand: { primary: string; secondary: string };
+    }
+}
+```
+
+## Lists
+
+List spacing comes from the theme's `list.indent` (before the marker), `list.markerGap` (between the marker and the text) and `list.itemSpacing` (between items, and above a nested level's first item), all responsive and all applying to every list the RichText block renders. To change the spacing for one variant only, see [Spacing per Variant](?path=/docs/docs-blocks--docs#spacing-per-variant).
+
+### List Markers
+
+`list.unorderedMarker` and `list.orderedMarker` set the markers of the lists the RichText block renders. Each is a fixed node (`unorderedMarker: "▪"`), or a function that receives the zero-based `index` of the item and the `depth` of its list. Use plain HTML and React elements, not MJML components:
+
+```tsx
+const theme = createTheme({
+    list: {
+        unorderedMarker: ({ depth }) => ["▪", "–", "·"][depth % 3],
+        // 97 is the code of "a", so nested items are lettered a., b., c.
+        orderedMarker: ({ index, depth }) => (depth === 0 ? `${index + 1}.` : `${String.fromCharCode(97 + index)}.`),
+    },
+});
+```
+
+A marker wider than the others widens the marker column and moves the text edge with it.
+
+## Scoped Theming
+
+`ThemeProvider` applies a different theme to a subtree. A common use is a section with a dark background.
+
+**Prefer `MjmlWrapper` when only the background color changes.** Use `ThemeProvider` when the text color, the variants, or other theme values must also change. A cloned theme is too much for a background-only change. See [Grouping Sections with a Shared Background](?path=/docs/docs-layout-patterns--docs#grouping-sections-with-a-shared-background).
+
+```tsx
+import { ThemeProvider } from "@dextinity/mail-react";
+import { theme } from "./theme";
+
+const darkSectionTheme = {
+    ...theme,
+    colors: {
+        ...theme.colors,
+        background: {
+            ...theme.colors.background,
+            content: "#1A1A2E",
+        },
+    },
+    text: {
+        ...theme.text,
+        color: "#FFFFFF",
+    },
+};
+
+function EmailWithDarkFooter() {
+    return (
+        <>
+            <MjmlSection indent>
+                <MjmlColumn>
+                    <MjmlText>Regular content</MjmlText>
+                </MjmlColumn>
+            </MjmlSection>
+
+            <ThemeProvider theme={darkSectionTheme}>
+                <MjmlSection indent>
+                    <MjmlColumn>
+                        <MjmlText>Dark footer with white text</MjmlText>
+                    </MjmlColumn>
+                </MjmlSection>
+            </ThemeProvider>
+        </>
+    );
+}
+```
+
+`ThemeProvider` **replaces** the theme. It does not merge with the parent. Spread the root theme and override only what must change, to keep settings such as the font family, the variants and the breakpoints.
+
+Theme-aware `registerStyles` entries always resolve against the **root theme** from `MjmlMailRoot`, not against nested `ThemeProvider` scopes.
+
+## Configuration
+
+`Config` gives environment-specific values, such as asset base URLs, to every component in the tree. For `config.pixelImageBlock`, see [Configuration](?path=/docs/docs-blocks--docs#configuration) in Blocks. For `config.rewriteImageSrc`, see [Rewriting Image Sources](?path=/docs/docs-rendering-and-preview--docs#rewriting-image-sources) in Rendering and Preview.
+
+Add your own keys with module augmentation:
+
+```ts
+declare module "@dextinity/mail-react" {
+    interface Config {
+        assetBaseUrl?: string;
+    }
+}
+```
+
+Set the config on the root and read it in any descendant:
+
+```tsx
+import { MjmlMailRoot, useConfig, type Config } from "@dextinity/mail-react";
+
+const config: Config = { assetBaseUrl: process.env.ASSET_BASE_URL };
+
+<MjmlMailRoot config={config}>{/* descendants can call useConfig() */}</MjmlMailRoot>;
+```

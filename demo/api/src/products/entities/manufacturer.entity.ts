@@ -1,4 +1,4 @@
-import { ActionLogs, CrudGenerator, EntityInfo, IsNullable, IsUndefinable, RequiredPermission } from "@dextinity/cms-api";
+import { ActionLogs, EntityInfo, IsNullable, IsUndefinable, RequiredPermission } from "@dextinity/cms-api";
 import { Embeddable, Embedded, Entity, Enum, Index, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
 import { BaseEntity, FullTextType, type IType, OptionalProps } from "@mikro-orm/postgresql";
 import { Field, ID, InputType, ObjectType } from "@nestjs/graphql";
@@ -87,7 +87,6 @@ export class AddressAsEmbeddable extends AlternativeAddressAsEmbeddable {
 @RequiredPermission("manufacturers", { skipScopeCheck: true })
 @Entity()
 @ObjectType()
-@CrudGenerator({ requiredPermission: ["manufacturers"] })
 @ActionLogs()
 export class Manufacturer extends BaseEntity {
     [OptionalProps]?: "updatedAt";

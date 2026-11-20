@@ -1,0 +1,17 @@
+.states {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--dextinity-space-6);
+}
+
+.settings {
+    display: flex;
+    flex-direction: column;
+    max-inline-size: 520px;
+
+    > * + * {
+        padding-block-start: var(--dextinity-space-3);
+        margin-block-start: var(--dextinity-space-3);
+        box-shadow: inset 0 var(--dextinity-line-width) 0 var(--dextinity-color-line);
+    }
+}

@@ -1,6 +1,14 @@
 import { useRender } from "@base-ui/react/use-render";
 import { clsx } from "clsx";
-import { type AnchorHTMLAttributes, type ElementType, type ForwardedRef, forwardRef, type ReactNode, type RefAttributes } from "react";
+import {
+    type AnchorHTMLAttributes,
+    type ElementType,
+    type ForwardedRef,
+    forwardRef,
+    type PropsWithChildren,
+    type ReactNode,
+    type RefAttributes,
+} from "react";
 
 import { hasRenderableContent } from "../../utils/hasRenderableContent";
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
@@ -14,25 +22,25 @@ type MainNavigationItemLevel = 1 | 2 | 3;
  */
 export type MainNavigationItemOwnerState = {
     level: MainNavigationItemLevel;
-    active: boolean;
+    current: boolean;
     expandable: boolean;
 };
 
 type ExpandIconElementType = ElementType<{ name: "chevron-down"; className?: string }>;
 
 interface MainNavigationItemSlots<
-    ActiveIndicator extends ElementType,
+    CurrentIndicator extends ElementType,
     Content extends ElementType,
     IconSlot extends ElementType,
     Label extends ElementType,
     ExpandIcon extends ExpandIconElementType,
 > {
     /**
-     * Element for the `activeIndicator` slot.
+     * Element for the `currentIndicator` slot.
      *
      * @defaultValue `span`
      */
-    activeIndicator?: ActiveIndicator;
+    currentIndicator?: CurrentIndicator;
     /**
      * Element for the `content` slot.
      *
@@ -60,14 +68,14 @@ interface MainNavigationItemSlots<
 }
 
 interface MainNavigationItemSlotProps<
-    ActiveIndicator extends ElementType,
+    CurrentIndicator extends ElementType,
     Content extends ElementType,
     IconSlot extends ElementType,
     Label extends ElementType,
     ExpandIcon extends ExpandIconElementType,
 > {
-    /** Props for the `activeIndicator` slot. */
-    activeIndicator?: SlotPropsValue<MainNavigationItemOwnerState, ActiveIndicator>;
+    /** Props for the `currentIndicator` slot. */
+    currentIndicator?: SlotPropsValue<MainNavigationItemOwnerState, CurrentIndicator>;
     /** Props for the `content` slot. */
     content?: SlotPropsValue<MainNavigationItemOwnerState, Content>;
     /** Props for the `icon` slot. */
@@ -79,12 +87,13 @@ interface MainNavigationItemSlotProps<
 }
 
 export interface MainNavigationItemProps<
-    ActiveIndicator extends ElementType = "span",
+    CurrentIndicator extends ElementType = "span",
     Content extends ElementType = "span",
     IconSlot extends ElementType = "span",
     Label extends ElementType = "span",
     ExpandIcon extends ExpandIconElementType = typeof Icon,
-> extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "className"> {
+>
+    extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "className">, PropsWithChildren {
     /** The icon to render before the label. */
     icon?: ReactNode;
     /**
@@ -98,7 +107,7 @@ export interface MainNavigationItemProps<
      *
      * @defaultValue `false`
      */
-    active?: boolean;
+    current?: boolean;
     /**
      * Shows an expand icon for an item that has nested items.
      *
@@ -108,9 +117,9 @@ export interface MainNavigationItemProps<
     /** Added alongside the component's own classes. */
     className?: string;
     /** Sets which element a named inner part renders as. */
-    slots?: MainNavigationItemSlots<ActiveIndicator, Content, IconSlot, Label, ExpandIcon>;
+    slots?: MainNavigationItemSlots<CurrentIndicator, Content, IconSlot, Label, ExpandIcon>;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
-    slotProps?: MainNavigationItemSlotProps<ActiveIndicator, Content, IconSlot, Label, ExpandIcon>;
+    slotProps?: MainNavigationItemSlotProps<CurrentIndicator, Content, IconSlot, Label, ExpandIcon>;
     /**
      * Render a custom root element, such as a router link, or a `<button>` for an item that expands.
      *
@@ -124,17 +133,19 @@ export interface MainNavigationItemProps<
 
 /**
  * An entry in the main navigation of an application.
+ *
+ * `children`: The item's label.
  */
 export const MainNavigationItem: <
-    ActiveIndicator extends ElementType = "span",
+    CurrentIndicator extends ElementType = "span",
     Content extends ElementType = "span",
     IconSlot extends ElementType = "span",
     Label extends ElementType = "span",
     ExpandIcon extends ExpandIconElementType = typeof Icon,
 >(
-    props: MainNavigationItemProps<ActiveIndicator, Content, IconSlot, Label, ExpandIcon> & RefAttributes<HTMLElement>,
+    props: MainNavigationItemProps<CurrentIndicator, Content, IconSlot, Label, ExpandIcon> & RefAttributes<HTMLElement>,
 ) => ReactNode = forwardRef(function MainNavigationItem<
-    ActiveIndicator extends ElementType = "span",
+    CurrentIndicator extends ElementType = "span",
     Content extends ElementType = "span",
     IconSlot extends ElementType = "span",
     Label extends ElementType = "span",
@@ -143,7 +154,7 @@ export const MainNavigationItem: <
     {
         icon,
         level = 1,
-        active,
+        current,
         expandable,
         className,
         slots,
@@ -151,20 +162,20 @@ export const MainNavigationItem: <
         children,
         render,
         ...restProps
-    }: MainNavigationItemProps<ActiveIndicator, Content, IconSlot, Label, ExpandIcon>,
+    }: MainNavigationItemProps<CurrentIndicator, Content, IconSlot, Label, ExpandIcon>,
     ref: ForwardedRef<HTMLElement>,
 ) {
-    const ownerState: MainNavigationItemOwnerState = { level, active: active === true, expandable: expandable === true };
+    const ownerState: MainNavigationItemOwnerState = { level, current: current === true, expandable: expandable === true };
 
-    const ActiveIndicatorSlot: ElementType = slots?.activeIndicator ?? "span";
+    const CurrentIndicatorSlot: ElementType = slots?.currentIndicator ?? "span";
     const ContentSlot: ElementType = slots?.content ?? "span";
     const IconSlotElement: ElementType = slots?.icon ?? "span";
     const LabelSlot: ElementType = slots?.label ?? "span";
     const ExpandIconSlot: ElementType = slots?.expandIcon ?? Icon;
 
-    const activeIndicatorProps = resolveSlotProps<MainNavigationItemOwnerState, ActiveIndicator, "span">({
-        ownProps: { className: styles.activeIndicator },
-        slotProps: slotProps?.activeIndicator,
+    const currentIndicatorProps = resolveSlotProps<MainNavigationItemOwnerState, CurrentIndicator, "span">({
+        ownProps: { className: styles.currentIndicator },
+        slotProps: slotProps?.currentIndicator,
         ownerState,
     });
     const contentProps = resolveSlotProps<MainNavigationItemOwnerState, Content, "span">({
@@ -194,12 +205,12 @@ export const MainNavigationItem: <
         state: ownerState,
         defaultTagName: "a",
         props: {
-            "aria-current": ownerState.active ? "page" : undefined,
+            "aria-current": ownerState.current ? "page" : undefined,
             ...restProps,
             className: clsx(styles.root, className),
             children: (
                 <>
-                    <ActiveIndicatorSlot {...activeIndicatorProps} />
+                    <CurrentIndicatorSlot {...currentIndicatorProps} />
                     <ContentSlot {...contentProps}>
                         {hasRenderableContent(icon) && <IconSlotElement {...iconProps}>{icon}</IconSlotElement>}
                         <LabelSlot {...labelProps}>{children}</LabelSlot>

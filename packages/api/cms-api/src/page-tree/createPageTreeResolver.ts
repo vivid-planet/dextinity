@@ -1,3 +1,4 @@
+import { EntityManager } from "@mikro-orm/postgresql";
 import { Inject, type Type } from "@nestjs/common";
 import { Args, ArgsType, createUnionType, ID, Info, Int, Mutation, Parent, Query, ResolveField, Resolver, type Union } from "@nestjs/graphql";
 import { GraphQLError, type GraphQLResolveInfo } from "graphql";
@@ -73,6 +74,7 @@ export function createPageTreeResolver({
             protected readonly pageTreeReadApi: PageTreeReadApiService,
             @Inject(PAGE_TREE_CONFIG) private readonly config: PageTreeConfig,
             private readonly attachedDocumentLoaderService: AttachedDocumentLoaderService,
+            private readonly entityManager: EntityManager,
         ) {}
 
         @Query(() => PageTreeNode, { nullable: true })
@@ -270,6 +272,7 @@ export function createPageTreeResolver({
             @Args("input", { type: () => PageTreeNodeUpdateVisibilityInput }) input: PageTreeNodeUpdateVisibilityInput,
         ): Promise<PageTreeNodeInterface> {
             await this.pageTreeService.updateNodeVisibility(id, input.visibility);
+            await this.entityManager.flush();
 
             const pageTreeReadApi = this.pageTreeService.createReadApi({ visibility: "all" });
             return pageTreeReadApi.getNodeOrFail(id);

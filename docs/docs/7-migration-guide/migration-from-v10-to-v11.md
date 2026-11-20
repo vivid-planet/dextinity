@@ -989,6 +989,17 @@ The `ExceptionFilter` returns `validationErrors` of a `DextinityValidationExcept
 
 Read `path` and `message` instead of walking `property`, `constraints` and `children`. The path contains the whole way to the invalid value, for instance `content.blocks[3].props.height`.
 
+### Flush after `PageTreeService#updateNodeVisibility`
+
+`updateNodeVisibility` doesn't flush the entity manager anymore. Flush it yourself where you call the method directly, for instance in a custom resolver or a fixture:
+
+```diff
+  await this.pageTreeService.updateNodeVisibility(node.id, PageTreeNodeVisibility.Published);
++ await this.entityManager.flush();
+```
+
+You can skip the flush if the code flushes the entity manager right afterwards anyway.
+
 ### Verify the API still starts
 
 Type checks don't catch a broken NestJS module graph or entity metadata that fails discovery. Verify the AppModule still resolves and the generated artifacts are up to date:

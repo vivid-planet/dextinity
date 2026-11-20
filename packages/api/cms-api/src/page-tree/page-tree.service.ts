@@ -185,9 +185,6 @@ export class PageTreeService {
         }
 
         node.assign({ visibility: newVisibility, slug: changedSlug ?? node.slug });
-
-        // TODO flush shouldn't happen here, remove in a major version
-        await this.entityManager.flush();
     }
 
     async updateNodePosition(id: string, input: MovePageTreeNodesByPosInput): Promise<PageTreeNodeInterface> {

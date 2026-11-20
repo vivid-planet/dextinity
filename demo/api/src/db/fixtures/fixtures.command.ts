@@ -198,6 +198,7 @@ export class FixturesCommand extends CommandRunner {
                             PageTreeNodeVisibility.Archived,
                         ]),
                     );
+                    await this.entityManager.flush();
                 }
 
                 pages.push(pagesForLevel);

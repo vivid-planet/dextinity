@@ -1,7 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 
-const files = [
+export const files = [
     ...(process.env.CI === "true"
         ? []
         : [
@@ -52,16 +53,18 @@ const files = [
     },
 ];
 
-for (const { file, targetDir } of files) {
-    for (const dir of targetDir) {
-        const targetFile = `${dir}/${path.basename(file)}`;
-        if (process.env.CI === "true") {
-            fs.copyFileSync(file, targetFile);
-        } else {
-            try {
-                fs.unlinkSync(targetFile);
-            } catch (e) {}
-            fs.symlinkSync(path.relative(dir, file), targetFile);
+if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+    for (const { file, targetDir } of files) {
+        for (const dir of targetDir) {
+            const targetFile = `${dir}/${path.basename(file)}`;
+            if (process.env.CI === "true") {
+                fs.copyFileSync(file, targetFile);
+            } else {
+                try {
+                    fs.unlinkSync(targetFile);
+                } catch (e) {}
+                fs.symlinkSync(path.relative(dir, file), targetFile);
+            }
         }
     }
 }

@@ -17,7 +17,7 @@ export interface IconProps extends Omit<ComponentPropsWithoutRef<"span">, "child
     /** The name of the icon, one of the keys of `IconRegistry`. A deprecated earlier name of a default icon shows the icon it points to. */
     name: IconName;
     /**
-     * `small` (18px) in buttons, fields, and tables, `default` (20px) in navigation, `large` (24px) in empty states and card headers.
+     * `small` (18px) in buttons, fields, and tables, `default` (20px) in navigation, `large` (24px) in empty states.
      * Without a size, the icon follows the surrounding component's `--dextinity-icon-size`, and is 18px outside of one.
      */
     size?: IconSize;

@@ -16,7 +16,7 @@ import {
 } from "@dextinity/admin";
 import { Time, View } from "@dextinity/admin-icons";
 import { IconButton } from "@mui/material";
-import { useMemo, useState } from "react";
+import { type ReactNode, useMemo, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import { type ContentScope, useContentScope } from "../../../contentScope/Provider";
@@ -45,6 +45,13 @@ export type ActionLogsGridProps = {
      * Defaults to the first non-empty of the fields `name`, `title`, `label`, `slug` and `description`.
      */
     getDisplayName?: (snapshot: Record<string, unknown>) => string | undefined;
+    /**
+     * Renders the second line of an entry's entity, for instance to name a related entity that the snapshot only holds
+     * the ID of. Receives the entry's snapshot, or the previous version's snapshot when the entity was deleted.
+     *
+     * Defaults to the entity's ID when a display name is shown.
+     */
+    renderEntitySecondaryText?: (snapshot: Record<string, unknown>, entityId: string) => ReactNode;
 };
 
 const displayNameFields = ["name", "title", "label", "slug", "description"] as const;
@@ -57,6 +64,10 @@ function getDefaultDisplayName(snapshot: Record<string, unknown>): string | unde
         }
     }
     return undefined;
+}
+
+function getRowSnapshot(row: GQLActionLogsGridFragment): Record<string, unknown> | undefined {
+    return (row.snapshot ?? row.previousVersion?.snapshot ?? undefined) as Record<string, unknown> | undefined;
 }
 
 function getRowDisplayName(
@@ -78,7 +89,12 @@ function ActionLogsGridToolbar() {
     );
 }
 
-export function ActionLogsGrid({ entity, scope: entityScope, getDisplayName = getDefaultDisplayName }: ActionLogsGridProps) {
+export function ActionLogsGrid({
+    entity,
+    scope: entityScope,
+    getDisplayName = getDefaultDisplayName,
+    renderEntitySecondaryText,
+}: ActionLogsGridProps) {
     const intl = useIntl();
     const { scope: contentScope } = useContentScope();
     const scope = entityScope ?? contentScope;
@@ -115,7 +131,14 @@ export function ActionLogsGrid({ entity, scope: entityScope, getDisplayName = ge
                 filterable: false,
                 renderCell: ({ row }) => {
                     const displayName = getRowDisplayName(row, getDisplayName);
-                    return <GridCellContent primaryText={displayName ?? row.entityId} secondaryText={displayName ? row.entityId : undefined} />;
+                    const snapshot = getRowSnapshot(row);
+                    const secondaryText =
+                        renderEntitySecondaryText && snapshot
+                            ? renderEntitySecondaryText(snapshot, row.entityId)
+                            : displayName
+                              ? row.entityId
+                              : undefined;
+                    return <GridCellContent primaryText={displayName ?? row.entityId} secondaryText={secondaryText} />;
                 },
             },
             {
@@ -168,7 +191,7 @@ export function ActionLogsGrid({ entity, scope: entityScope, getDisplayName = ge
                 ),
             },
         ],
-        [intl, getDisplayName],
+        [intl, getDisplayName, renderEntitySecondaryText],
     );
 
     const { filter: gqlFilter } = muiGridFilterToGql(columns, dataGridProps.filterModel);

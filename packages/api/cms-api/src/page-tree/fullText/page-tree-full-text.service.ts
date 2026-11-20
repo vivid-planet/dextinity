@@ -50,11 +50,18 @@ export class PageTreeFullTextService {
 
         console.time("creating PageTreeNodeFullText view");
         await this.entityManager.getConnection().execute(
+            // LEFT JOINs keep nodes without an indexed document (e.g. links) searchable by name.
+            // Nodes created before the fullText column was filled on create fall back to their name and slug.
             `CREATE VIEW "PageTreeNodeFullText" AS
-                SELECT "ptn"."id" "pageTreeNodeId", "ft"."fullText" || COALESCE("ptn"."fullText", ''::tsvector) AS "fullText"
+                SELECT "ptn"."id" "pageTreeNodeId",
+                    COALESCE("ft"."fullText", ''::tsvector)
+                    || COALESCE(
+                        "ptn"."fullText",
+                        setweight(to_tsvector('simple', coalesce("ptn"."name", '')), 'A') || setweight(to_tsvector('simple', coalesce("ptn"."slug", '')), 'D')
+                    ) AS "fullText"
                 FROM "PageTreeNode" "ptn"
-                INNER JOIN "PageTreeNodeDocument" "ad" ON "ad"."pageTreeNodeId" = "ptn"."id" AND "ad"."type" = "ptn"."documentType"
-                INNER JOIN "PageTreeDocumentFullText" "ft" ON "ad"."documentId" = "ft"."documentId" AND "ft"."type" = "ptn"."documentType"    
+                LEFT JOIN "PageTreeNodeDocument" "ad" ON "ad"."pageTreeNodeId" = "ptn"."id" AND "ad"."type" = "ptn"."documentType"
+                LEFT JOIN "PageTreeDocumentFullText" "ft" ON "ad"."documentId" = "ft"."documentId" AND "ft"."type" = "ptn"."documentType"
             `,
         );
         console.timeEnd("creating PageTreeNodeFullText view");

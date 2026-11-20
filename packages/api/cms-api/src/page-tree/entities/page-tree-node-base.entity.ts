@@ -6,6 +6,10 @@ import { EntityInfo } from "../../entity-info/entity-info.decorator";
 import { PAGE_TREE_ENTITY } from "../page-tree.constants";
 import { PageTreeNodeCategory, PageTreeNodeInterface, PageTreeNodeVisibility } from "../types";
 
+function pageTreeNodeFullText(node: PageTreeNodeBase) {
+    return { A: node.name, D: node.slug };
+}
+
 @EntityInfo({
     sql: `SELECT "name", "secondaryInformation", "visible", "id", 'PageTreeNode' AS "entityName" FROM "PageTreeNodeEntityInfo"`,
 })
@@ -60,12 +64,8 @@ export abstract class PageTreeNodeBase extends BaseEntity {
     @Property<PageTreeNodeBase>({
         nullable: true,
         type: new FullTextType(),
-        onUpdate: (page) => {
-            return {
-                A: page.name,
-                D: page.slug,
-            };
-        },
+        onCreate: pageTreeNodeFullText,
+        onUpdate: pageTreeNodeFullText,
     })
     fullText?: string;
 

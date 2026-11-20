@@ -35,7 +35,7 @@ import { useAiModeToolset } from "@src/aiMode/AiModeToolsets";
 import type { BlocksBlockChild } from "@src/aiMode/blockProps";
 import { summarizeBlockState, summarizeSeoBlockState } from "@src/aiMode/blockStateSummary";
 import { type EditBlocks, planBlockEdits } from "@src/aiMode/editBlocks";
-import { type AiModePageState, createPageTools } from "@src/aiMode/hostTools";
+import { type AiModePageState, createPageTools } from "@src/aiMode/pageTools";
 import { useEffect, useRef } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { matchPath, useLocation } from "react-router";

@@ -3,7 +3,7 @@ import type { PropsWithChildren } from "react";
 import { useNavigate } from "react-router";
 
 import { AiModeToolset } from "./AiModeToolsets";
-import { createPageTreeTools } from "./hostTools";
+import { createPageTreeTools } from "./pageTreeTools";
 
 export function PageTreeAiModeToolset({ category, children }: PropsWithChildren<{ category: string }>) {
     const navigate = useNavigate();

@@ -1,10 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
-import type { AiModeTool } from "./AiModeToolsets";
 import type { EditBlocks } from "./editBlocks";
-import { type AiModePageState, createPageTools, createPageTreeTools } from "./hostTools";
-
-const scopeUrl = "/main/en";
+import { type AiModePageState, createPageTools } from "./pageTools";
 
 const pageState: AiModePageState = {
     pageTreeNodeId: "1",
@@ -15,23 +12,14 @@ const pageState: AiModePageState = {
     hasChanges: true,
 };
 
-function findTool(tools: AiModeTool[], name: string) {
-    const tool = tools.find((candidate) => candidate.name === name);
-    if (!tool) {
-        throw new Error(`No host tool "${name}"`);
-    }
-    return tool;
-}
-
-function getPageTreeTool(name: string) {
-    const navigate = vi.fn();
-    const tool = findTool(createPageTreeTools({ navigate, scopeUrl }), name);
-    return { call: (args: Record<string, unknown>) => tool.handler(args, { clearTextSelection: vi.fn() }), navigate };
-}
-
 function getPageTool(name: string, { editBlocks = vi.fn<EditBlocks>() }: { editBlocks?: EditBlocks } = {}) {
     const clearTextSelection = vi.fn();
-    const tool = findTool(createPageTools({ pageState, getDocumentSummary: () => ({ content: { blocks: [] } }), editBlocks }), name);
+    const tool = createPageTools({ pageState, getDocumentSummary: () => ({ content: { blocks: [] } }), editBlocks }).find(
+        (candidate) => candidate.name === name,
+    );
+    if (!tool) {
+        throw new Error(`No page tool "${name}"`);
+    }
     return {
         tool,
         call: (args: Record<string, unknown>) => tool.handler(args, { clearTextSelection }),
@@ -40,49 +28,9 @@ function getPageTool(name: string, { editBlocks = vi.fn<EditBlocks>() }: { editB
 }
 
 it("keeps every description within 4096 characters, the limit for a tool description", () => {
-    const tools = [
-        ...createPageTreeTools({ navigate: vi.fn(), scopeUrl }),
-        ...createPageTools({ pageState, getDocumentSummary: () => ({}), editBlocks: vi.fn() }),
-    ];
-
-    for (const tool of tools) {
+    for (const tool of createPageTools({ pageState, getDocumentSummary: () => ({}), editBlocks: vi.fn() })) {
         expect(tool.description.length, tool.name).toBeLessThanOrEqual(4096);
     }
-});
-
-describe("open_page_tree_node", () => {
-    const nodeId = "0199b3c4-7d2e-7a10-9a4b-3f2c1d0e9f8a";
-
-    it("opens the editor of a page tree node of the current scope, in the node's category", () => {
-        const { call, navigate } = getPageTreeTool("open_page_tree_node");
-
-        call({ id: nodeId, category: "topMenu" });
-
-        expect(navigate).toHaveBeenCalledWith(`${scopeUrl}/pages/pagetree/top-menu/${nodeId}/edit`);
-    });
-
-    it("runs without the user's approval, because it only navigates", () => {
-        expect(findTool(createPageTreeTools({ navigate: vi.fn(), scopeUrl }), "open_page_tree_node").readOnlyHint).toBe(true);
-    });
-
-    it("doesn't claim the page is open, as the user may decide to stay on a page with unsaved changes", () => {
-        const { call } = getPageTreeTool("open_page_tree_node");
-
-        expect(call({ id: nodeId, category: "topMenu" })).toContain("check with get_page_state");
-    });
-
-    it("refuses an ID that is no UUID, so it cannot reach another path", () => {
-        const { call, navigate } = getPageTreeTool("open_page_tree_node");
-
-        expect(() => call({ id: "../../dashboard", category: "mainNavigation" })).toThrow("UUID");
-        expect(navigate).not.toHaveBeenCalled();
-    });
-
-    it("refuses a category the page tree does not have", () => {
-        const { call } = getPageTreeTool("open_page_tree_node");
-
-        expect(() => call({ id: nodeId, category: "footer" })).toThrow("mainNavigation, topMenu");
-    });
 });
 
 describe("get_page_state", () => {

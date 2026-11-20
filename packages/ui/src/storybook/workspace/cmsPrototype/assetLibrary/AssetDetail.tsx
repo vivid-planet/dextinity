@@ -150,7 +150,12 @@ function Media({
     }
     if (asset.kind === "video") {
         return (
-            <video className={styles.video} controls poster={asset.src} style={{ aspectRatio: `${asset.width} / ${asset.height}` }}>
+            <video
+                className={styles.video}
+                controls
+                poster={asset.src}
+                style={{ "--image-ratio": `${(asset.width ?? 16) / (asset.height ?? 9)}` } as CSSProperties}
+            >
                 <track kind="captions" />
             </video>
         );
@@ -187,6 +192,7 @@ function Media({
                         className: frame ? `${styles.stage} ${styles.croppedStage}` : styles.stage,
                         style: {
                             "--image-ratio": `${(asset.width ?? 1) / (asset.height ?? 1)}`,
+                            "--image-width": `${asset.width ?? 2000}px`,
                             ...(frame && {
                                 "--crop-x": `${frame.x * 100}%`,
                                 "--crop-y": `${frame.y * 100}%`,

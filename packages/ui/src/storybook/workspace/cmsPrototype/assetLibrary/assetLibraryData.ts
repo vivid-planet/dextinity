@@ -54,7 +54,8 @@ function svgDataUri(svg: string) {
 }
 
 /** A landscape photo stand-in in the image's own aspect ratio: sky, sun, and two ranges of hills. */
-function photo(hue: number, width: number, height: number, variant = 0) {
+/** With `transparent`, only the hills are drawn, so that the checkerboard behind a transparent image shows. */
+function photo(hue: number, width: number, height: number, variant = 0, transparent = false) {
     const w = 600;
     const h = Math.round((600 * height) / width);
     const sunX = [0.25, 0.7, 0.5, 0.82][variant % 4] * w;
@@ -67,7 +68,7 @@ function photo(hue: number, width: number, height: number, variant = 0) {
         return `0,${h} ${points.join(" ")} ${w},${h}`;
     };
     return svgDataUri(
-        `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="hsl(${hue} 70% 62%)"/><stop offset="1" stop-color="hsl(${hue + 30} 80% 84%)"/></linearGradient></defs><rect width="${w}" height="${h}" fill="url(#s)"/><circle cx="${sunX}" cy="${h * 0.3}" r="${Math.min(w, h) * 0.09}" fill="hsl(${hue + 160} 90% 92%)"/><polygon points="${ridge(0.62, 0.14, variant)}" fill="hsl(${hue + 120} 30% 42%)"/><polygon points="${ridge(0.8, 0.08, variant + 2)}" fill="hsl(${hue + 140} 35% 26%)"/></svg>`,
+        `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="hsl(${hue} 70% 62%)"/><stop offset="1" stop-color="hsl(${hue + 30} 80% 84%)"/></linearGradient></defs>${transparent ? "" : `<rect width="${w}" height="${h}" fill="url(#s)"/><circle cx="${sunX}" cy="${h * 0.3}" r="${Math.min(w, h) * 0.09}" fill="hsl(${hue + 160} 90% 92%)"/>`}<polygon points="${ridge(0.62, 0.14, variant)}" fill="hsl(${hue + 120} 30% 42%)"/><polygon points="${ridge(0.8, 0.08, variant + 2)}" fill="hsl(${hue + 140} 35% 26%)"/></svg>`,
     );
 }
 
@@ -110,6 +111,7 @@ export const libraryFolders: LibraryFolder[] = [
     { id: "podcast", name: "Podcast & jingles", parentId: "audio", modified: "2026-09-01" },
     { id: "video", name: "Video", parentId: null, modified: "2026-11-18" },
     { id: "documents", name: "Documents", parentId: null, modified: "2026-10-20" },
+    { id: "demo", name: "Demo", parentId: null, modified: "2026-11-20" },
     { id: "price-lists", name: "Price lists", parentId: "documents", modified: "2026-10-20" },
     { id: "legal", name: "Legal", parentId: "documents", modified: "2026-05-04" },
 ];
@@ -170,26 +172,27 @@ function base(input: AssetInput, index: number) {
     };
 }
 
-function image(input: AssetInput & { width: number; height: number; variant?: number }, index: number): LibraryAsset {
+function image(input: AssetInput & { width: number; height: number; variant?: number; transparent?: boolean }, index: number): LibraryAsset {
     nextHue = (nextHue + 47) % 360;
     return {
         ...base(input, index),
         kind: "image",
-        src: photo(nextHue, input.width, input.height, input.variant ?? index),
+        src: photo(nextHue, input.width, input.height, input.variant ?? index, input.transparent),
         width: input.width,
         height: input.height,
         bytes: Math.round(((input.width * input.height) / 6.5) * (0.35 + ((index * 37) % 100) / 80) + 140_000),
     };
 }
 
-function video(input: AssetInput & { duration: number }, index: number): LibraryAsset {
+function video(input: AssetInput & { duration: number; width?: number; height?: number }, index: number): LibraryAsset {
     nextHue = (nextHue + 47) % 360;
+    const { width = 1920, height = 1080 } = input;
     return {
         ...base(input, index),
         kind: "video",
-        src: photo(nextHue, 1920, 1080, index),
-        width: 1920,
-        height: 1080,
+        src: photo(nextHue, width, height, index),
+        width,
+        height,
         duration: input.duration,
         bytes: input.duration * 1_450_000,
     };
@@ -365,6 +368,48 @@ const inputs: ((index: number) => LibraryAsset)[] = [
     (index) => documentAsset({ name: "terms-and-conditions.pdf", folderId: "legal", pages: 6, usages: uses(["contact", "Teaser"]) }, index),
     (index) => documentAsset({ name: "privacy-policy.pdf", folderId: "legal", pages: 5 }, index),
     (index) => documentAsset({ name: "brand-guidelines.pdf", folderId: "documents", pages: 24, landscape: true }, index),
+    // The demo folder: one file per format, named after it, to test the detail page's preview with
+    ...(
+        [
+            ["landscape-3x2-6000x4000.jpg", 6000, 4000],
+            ["landscape-4x3-4000x3000.jpg", 4000, 3000],
+            ["landscape-16x9-1920x1080.jpg", 1920, 1080],
+            ["ultrawide-21x9-5040x2160.jpg", 5040, 2160],
+            ["panorama-10x3-4000x1200.jpg", 4000, 1200],
+            ["square-1x1-3000x3000.jpg", 3000, 3000],
+            ["portrait-3x4-3000x4000.jpg", 3000, 4000],
+            ["portrait-2x3-4000x6000.jpg", 4000, 6000],
+            ["portrait-9x16-1080x1920.jpg", 1080, 1920],
+            ["small-icon-128x128.png", 128, 128],
+        ] as const
+    ).map(
+        ([name, width, height]) =>
+            (index: number) =>
+                image({ name, folderId: "demo", width, height, alt: `Test image, ${width} × ${height}`, modified: "2026-11-20" }, index),
+    ),
+    (index) =>
+        image(
+            {
+                name: "transparent-png-2400x1200.png",
+                folderId: "demo",
+                width: 2400,
+                height: 1200,
+                transparent: true,
+                alt: "Test image with transparency",
+                modified: "2026-11-20",
+            },
+            index,
+        ),
+    (index) => documentAsset({ name: "document-portrait-a4-3-pages.pdf", folderId: "demo", pages: 3, modified: "2026-11-20" }, index),
+    (index) =>
+        documentAsset(
+            { name: "document-landscape-slides-12-pages.pdf", folderId: "demo", pages: 12, landscape: true, modified: "2026-11-20" },
+            index,
+        ),
+    (index) => video({ name: "video-landscape-16x9-0-42.mp4", folderId: "demo", duration: 42, modified: "2026-11-20" }, index),
+    (index) =>
+        video({ name: "video-portrait-9x16-0-15.mp4", folderId: "demo", duration: 15, width: 1080, height: 1920, modified: "2026-11-20" }, index),
+    (index) => audio({ name: "audio-0-34.wav", folderId: "demo", duration: 34, modified: "2026-11-20" }, index),
 ];
 
 export const libraryAssets: LibraryAsset[] = inputs.map((create, index) => create(index));

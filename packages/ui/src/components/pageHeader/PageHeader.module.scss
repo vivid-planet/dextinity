@@ -74,6 +74,7 @@
     flex-wrap: wrap;
     align-items: center;
     gap: var(--dextinity-space-2);
+    min-block-size: var(--dextinity-page-header-label-line-height);
     margin-block-end: var(--dextinity-page-header-label-spacing);
     color: var(--dextinity-page-header-label-color);
     grid-area: label;

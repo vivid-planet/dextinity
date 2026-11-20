@@ -53,7 +53,7 @@ export interface IconButtonSlotProps<Icon extends ElementType, LoadingSpinner ex
     /** Props for the `loadingSpinner` slot. */
     loadingSpinner?: SlotPropsValue<IconButtonOwnerState, LoadingSpinner>;
     /** Props for the tooltip, e.g. its `placement`. */
-    tooltip?: Partial<Omit<TooltipProps, "content" | "children" | "shortcut">>;
+    tooltip?: Partial<Omit<TooltipProps, "content" | "children" | "keyboardShortcut">>;
 }
 
 export interface IconButtonProps<Icon extends ElementType = "span", LoadingSpinner extends ElementType = typeof Spinner>
@@ -61,7 +61,7 @@ export interface IconButtonProps<Icon extends ElementType = "span", LoadingSpinn
     /** Names the action, since the button shows no text. It is also shown as the button's tooltip, e.g. "More actions". */
     "aria-label": string;
     /** A keyboard shortcut for the action, shown in the tooltip, in the notation of `useKeyboardShortcut`, e.g. `"mod+s"`. */
-    shortcut?: string;
+    keyboardShortcut?: string;
     /**
      * Visual emphasis: `contained` for the main action, `outlined` where the button stands alone on a surface, and `text` for toolbars
      * and rows.
@@ -127,7 +127,7 @@ export const IconButton: <Icon extends ElementType = "span", LoadingSpinner exte
         variant = "contained",
         color = "primary",
         size = "default",
-        shortcut,
+        keyboardShortcut,
         className,
         slots,
         slotProps,
@@ -138,7 +138,7 @@ export const IconButton: <Icon extends ElementType = "span", LoadingSpinner exte
     }: IconButtonProps<Icon, LoadingSpinner>,
     ref: ForwardedRef<HTMLButtonElement>,
 ) {
-    const ariaKeyShortcutsValue = useAriaKeyShortcuts(shortcut);
+    const ariaKeyShortcutsValue = useAriaKeyShortcuts(keyboardShortcut);
     const ownerState: IconButtonOwnerState = { variant, color, size, disabled: disabled === true, loading: loading === true };
 
     const IconSlot: ElementType = slots?.icon ?? "span";
@@ -156,7 +156,7 @@ export const IconButton: <Icon extends ElementType = "span", LoadingSpinner exte
     });
 
     return (
-        <Tooltip {...slotProps?.tooltip} content={ariaLabel} shortcut={shortcut}>
+        <Tooltip {...slotProps?.tooltip} content={ariaLabel} keyboardShortcut={keyboardShortcut}>
             <BaseButton
                 {...restProps}
                 ref={ref}

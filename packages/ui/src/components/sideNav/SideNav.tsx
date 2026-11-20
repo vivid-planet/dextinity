@@ -15,7 +15,7 @@ import styles from "./SideNav.module.scss";
  * An entry of the navigation, up to three levels deep.
  */
 export interface SideNavItem {
-    /** Stable id, used for `activeId` and `expanded`. */
+    /** Stable id, used for `currentId` and `expandedIds`. */
     id: string;
     /** May be long; it wraps. */
     label: string;
@@ -88,12 +88,12 @@ export interface SideNavProps extends Omit<HTMLAttributes<HTMLElement>, "classNa
     subtitle?: string;
     /** The groups and their entries. */
     groups: SideNavGroup[];
-    /** The id of the current page's entry. Only one entry is active; its ancestors are highlighted. */
-    activeId: string;
-    /** Ids of the entries whose sub-entries are open. Start with `getSideNavAncestorIds` of the active entry. */
-    expanded: string[];
+    /** The id of the current page's entry. Its ancestors are highlighted. */
+    currentId: string;
+    /** Ids of the entries whose sub-entries are open. Start with `getSideNavAncestorIds` of the current entry. */
+    expandedIds: string[];
     /** Called with the new list of open entries when an entry with sub-entries is toggled. */
-    onExpandedChange: (expanded: string[]) => void;
+    onExpandedIdsChange: (expandedIds: string[]) => void;
     /**
      * Called when an entry without sub-entries is chosen, with the click event: call `event.preventDefault()` to navigate with a
      * client-side router instead of following the `href`.
@@ -118,7 +118,7 @@ export interface SideNavProps extends Omit<HTMLAttributes<HTMLElement>, "classNa
 }
 
 /**
- * Returns the ids of the entries above the one with `id`, outermost first: the entries to open so the active entry is visible.
+ * Returns the ids of the entries above the one with `id`, outermost first: the entries to open so the current entry is visible.
  */
 export function getSideNavAncestorIds(groups: SideNavGroup[], id: string): string[] {
     function find(items: SideNavItem[], path: string[]): string[] | undefined {
@@ -145,9 +145,9 @@ export function getSideNavAncestorIds(groups: SideNavGroup[], id: string): strin
 }
 
 interface EntryContext {
-    activeId: string;
+    currentId: string;
     ancestorIds: string[];
-    expanded: string[];
+    expandedIds: string[];
     onToggle: (id: string) => void;
     onNavigate: SideNavProps["onNavigate"];
     LinkSlot: ElementType;
@@ -156,8 +156,8 @@ interface EntryContext {
 function SideNavEntry({ item, level, context }: { item: SideNavItem; level: number; context: EntryContext }) {
     const childrenId = useId();
     const hasChildren = item.children != null && item.children.length > 0;
-    const open = hasChildren && context.expanded.includes(item.id);
-    const active = item.id === context.activeId;
+    const open = hasChildren && context.expandedIds.includes(item.id);
+    const current = item.id === context.currentId;
     const ancestor = context.ancestorIds.includes(item.id);
 
     const content = (
@@ -171,7 +171,7 @@ function SideNavEntry({ item, level, context }: { item: SideNavItem; level: numb
     const itemProps = {
         className: styles.item,
         "data-level": level,
-        "data-active": active ? "" : undefined,
+        "data-current": current ? "" : undefined,
         "data-ancestor": ancestor ? "" : undefined,
     };
 
@@ -185,13 +185,13 @@ function SideNavEntry({ item, level, context }: { item: SideNavItem; level: numb
                 <context.LinkSlot
                     {...itemProps}
                     href={item.href}
-                    aria-current={active ? "page" : undefined}
+                    aria-current={current ? "page" : undefined}
                     onClick={(event: MouseEvent<HTMLElement>) => context.onNavigate(item, event)}
                 >
                     {content}
                 </context.LinkSlot>
             ) : (
-                <button {...itemProps} type="button" aria-current={active ? "page" : undefined} onClick={(event) => context.onNavigate(item, event)}>
+                <button {...itemProps} type="button" aria-current={current ? "page" : undefined} onClick={(event) => context.onNavigate(item, event)}>
                     {content}
                 </button>
             )}
@@ -218,7 +218,7 @@ function FlyoutItems({ items, level, context }: { items: SideNavItem[]; level: n
             <MenuItem
                 key={child.id}
                 label={child.label}
-                aria-current={child.id === context.activeId ? "page" : undefined}
+                aria-current={child.id === context.currentId ? "page" : undefined}
                 data-level={level}
                 className={styles.flyoutItem}
                 onClick={(event) => context.onNavigate(child, event)}
@@ -239,11 +239,11 @@ function CollapsedEntry({
     onFlyoutOpenChange: (open: boolean) => void;
 }) {
     const hasChildren = item.children != null && item.children.length > 0;
-    const active = item.id === context.activeId || context.ancestorIds.includes(item.id);
+    const current = item.id === context.currentId || context.ancestorIds.includes(item.id);
     const itemProps = {
         className: styles.item,
         "data-level": 1,
-        "data-active": active ? "" : undefined,
+        "data-current": current ? "" : undefined,
         "data-flyout": hasChildren ? "" : undefined,
     };
     const content = (
@@ -287,7 +287,7 @@ function CollapsedEntry({
                         {...itemProps}
                         href={item.href}
                         aria-label={item.label}
-                        aria-current={item.id === context.activeId ? "page" : undefined}
+                        aria-current={item.id === context.currentId ? "page" : undefined}
                         onClick={(event: MouseEvent<HTMLElement>) => context.onNavigate(item, event)}
                     >
                         {content}
@@ -297,7 +297,7 @@ function CollapsedEntry({
                         {...itemProps}
                         type="button"
                         aria-label={item.label}
-                        aria-current={item.id === context.activeId ? "page" : undefined}
+                        aria-current={item.id === context.currentId ? "page" : undefined}
                         onClick={(event) => context.onNavigate(item, event)}
                     >
                         {content}
@@ -319,9 +319,9 @@ export const SideNav = forwardRef<HTMLElement, SideNavProps>(function SideNav(
         title,
         subtitle,
         groups,
-        activeId,
-        expanded,
-        onExpandedChange,
+        currentId,
+        expandedIds,
+        onExpandedIdsChange,
         onNavigate,
         collapsed: collapsedProp,
         onCollapsedChange: onCollapsedChangeProp,
@@ -341,10 +341,11 @@ export const SideNav = forwardRef<HTMLElement, SideNavProps>(function SideNav(
     const [flyoutId, setFlyoutId] = useState<string | null>(null);
 
     const context: EntryContext = {
-        activeId,
-        ancestorIds: getSideNavAncestorIds(groups, activeId),
-        expanded,
-        onToggle: (id) => onExpandedChange(expanded.includes(id) ? expanded.filter((expandedId) => expandedId !== id) : [...expanded, id]),
+        currentId,
+        ancestorIds: getSideNavAncestorIds(groups, currentId),
+        expandedIds,
+        onToggle: (id) =>
+            onExpandedIdsChange(expandedIds.includes(id) ? expandedIds.filter((expandedId) => expandedId !== id) : [...expandedIds, id]),
         onNavigate: (item, event) => {
             setFlyoutId(null);
             onNavigate(item, event);

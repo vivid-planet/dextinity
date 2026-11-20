@@ -138,7 +138,7 @@ function JobAdFields() {
                     <p>These details appear in the list and on job boards.</p>
                 </div>
                 <div className={styles.fields}>
-                    <Field className={styles.full} label="Title" required helperText="Use gender-inclusive wording.">
+                    <Field className={styles.full} label="Title" required description="Use gender-inclusive wording.">
                         <Input name="title" value={title} onChange={(event) => setTitle(event.target.value)} />
                     </Field>
                     <Field label="Location">
@@ -153,7 +153,7 @@ function JobAdFields() {
                             ]}
                         />
                     </Field>
-                    <Field label="Salary from" suffix="€ gross / year" helperText="Required in Austria.">
+                    <Field label="Salary from" suffix="€ gross / year" description="Required in Austria.">
                         <Input name="salary" value={salary} onChange={(event) => setSalary(event.target.value)} />
                     </Field>
                 </div>
@@ -339,7 +339,7 @@ function EditPage({
     if (!inShell) {
         return layout;
     }
-    return <PageTypeShell activeId={kind === "page" ? "page-tree" : "job-ads"}>{layout}</PageTypeShell>;
+    return <PageTypeShell currentId={kind === "page" ? "page-tree" : "job-ads"}>{layout}</PageTypeShell>;
 }
 
 function Wireframe({ label, variant, regions }: { label: string; variant: Variant; regions: [string, string, string][] }) {

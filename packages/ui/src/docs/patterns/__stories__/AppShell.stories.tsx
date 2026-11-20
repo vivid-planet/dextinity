@@ -34,7 +34,7 @@ export const AppShell: Story = {
                     <MenuSectionHeader slotProps={{ label: { id: "app-shell-main" } }}>Main</MenuSectionHeader>
                     <ul aria-labelledby="app-shell-main" className={styles.list}>
                         <li>
-                            <MainNavigationItem href="#" icon={<Icon name="dashboard" />} active>
+                            <MainNavigationItem href="#" icon={<Icon name="dashboard" />} current>
                                 Dashboard
                             </MainNavigationItem>
                         </li>

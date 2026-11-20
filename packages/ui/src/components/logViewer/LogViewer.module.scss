@@ -91,27 +91,27 @@
         display: flex;
     }
 
-    &[data-tone="error"] {
+    &[data-color="error"] {
         color: var(--dextinity-log-viewer-line-error-foreground);
 
         --dextinity-log-viewer-line-background: var(--dextinity-log-viewer-line-error-background);
     }
 
-    &[data-tone="warning"] {
+    &[data-color="warning"] {
         color: var(--dextinity-log-viewer-line-warning-foreground);
 
         --dextinity-log-viewer-line-background: var(--dextinity-log-viewer-line-warning-background);
     }
 
-    &[data-tone="info"] {
+    &[data-color="info"] {
         color: var(--dextinity-log-viewer-line-info-foreground);
     }
 
-    &[data-tone="success"] {
+    &[data-color="success"] {
         color: var(--dextinity-log-viewer-line-success-foreground);
     }
 
-    &:hover:not([data-tone="error"], [data-tone="warning"]) {
+    &:hover:not([data-color="error"], [data-color="warning"]) {
         --dextinity-log-viewer-line-background: var(--dextinity-log-viewer-line-background-hover);
     }
 }

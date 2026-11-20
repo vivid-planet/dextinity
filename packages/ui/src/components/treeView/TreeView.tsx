@@ -19,7 +19,7 @@ import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Checkbox } from "../checkbox/Checkbox";
 import { Icon } from "../icon/Icon";
 import { useKeyboardShortcutPlatform } from "../keyboardShortcut/keyboardShortcutPlatform";
-import { matchesShortcut } from "../keyboardShortcut/useKeyboardShortcut";
+import { matchesKeyboardShortcut } from "../keyboardShortcut/useKeyboardShortcut";
 import { StatusIndicator, type StatusIndicatorStatus } from "../statusIndicator/StatusIndicator";
 import { readTooltipDelay, Tooltip } from "../tooltip/Tooltip";
 import styles from "./TreeView.module.scss";
@@ -442,13 +442,13 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
         };
 
         if (draggable) {
-            if (matchesShortcut(event, "mod+x", apple)) {
+            if (matchesKeyboardShortcut(event, "mod+x", apple)) {
                 event.preventDefault();
                 setCutId(id);
                 return;
             }
-            const pastesAfter = matchesShortcut(event, "shift+mod+v", apple);
-            if (cutId != null && (pastesAfter || matchesShortcut(event, "mod+v", apple))) {
+            const pastesAfter = matchesKeyboardShortcut(event, "shift+mod+v", apple);
+            if (cutId != null && (pastesAfter || matchesKeyboardShortcut(event, "mod+v", apple))) {
                 event.preventDefault();
                 const move: TreeViewMove = { id: cutId, targetId: id, position: pastesAfter ? "after" : "inside" };
                 if (isDropAllowed(move)) {

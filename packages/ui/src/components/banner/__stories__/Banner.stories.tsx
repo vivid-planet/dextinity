@@ -23,7 +23,7 @@ const meta = {
         ),
     },
     argTypes: {
-        tone: { control: "radio", options: ["warning", "error", "info"] },
+        color: { control: "radio", options: ["warning", "error", "info"] },
         icon: { control: "select", options: ["Info", "Globe"], mapping: { Info: <Icon name="info" />, Globe: <Icon name="globe" /> } },
         action: { control: false },
         className: { control: false },
@@ -53,12 +53,12 @@ export const Default: Story = {
  * A problem that blocks work is announced at once.
  */
 export const Error: Story = {
-    args: { tone: "error", children: "Saving failed. Your changes are still here." },
+    args: { color: "error", children: "Saving failed. Your changes are still here." },
 };
 
 /**
  * A notice about the page.
  */
 export const Info: Story = {
-    args: { tone: "info", children: "This page is shown in 3 scopes.", action: undefined },
+    args: { color: "info", children: "This page is shown in 3 scopes.", action: undefined },
 };

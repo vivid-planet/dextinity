@@ -10,12 +10,12 @@ describe("Spinner owner state", () => {
         render(
             <>
                 <Spinner aria-label="Loading pages" />
-                <Spinner aria-label="Loading files" size="xl" />
+                <Spinner aria-label="Loading files" size="xlarge" />
             </>,
         );
 
-        expect(screen.getByRole("progressbar", { name: "Loading pages" }).dataset.size).toBe("md");
-        expect(screen.getByRole("progressbar", { name: "Loading files" }).dataset.size).toBe("xl");
+        expect(screen.getByRole("progressbar", { name: "Loading pages" }).dataset.size).toBe("default");
+        expect(screen.getByRole("progressbar", { name: "Loading files" }).dataset.size).toBe("xlarge");
     });
 });
 

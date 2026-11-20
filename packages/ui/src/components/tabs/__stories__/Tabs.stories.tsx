@@ -105,18 +105,18 @@ export const Keyboard: Story = {
 };
 
 /**
- * `tone="error"` marks the sections with invalid fields, e.g. after a failed save.
+ * `color="error"` marks the sections with invalid fields, e.g. after a failed save.
  */
 export const WithErrors: Story = {
     args: {
         items: [
             { value: "blocks", label: "Blocks" },
-            { value: "seo", label: "SEO", tone: "error" },
-            { value: "settings", label: "Settings", tone: "error", count: 2 },
+            { value: "seo", label: "SEO", color: "error" },
+            { value: "settings", label: "Settings", color: "error", count: 2 },
         ],
     },
     play: async ({ canvas }) => {
-        await expect(canvas.getByRole("tab", { name: "SEO Contains errors" })).toHaveAttribute("data-tone", "error");
+        await expect(canvas.getByRole("tab", { name: "SEO Contains errors" })).toHaveAttribute("data-color", "error");
     },
 };
 

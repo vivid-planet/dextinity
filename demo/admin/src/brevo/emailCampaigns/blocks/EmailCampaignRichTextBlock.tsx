@@ -9,7 +9,7 @@ export const EmailCampaignRichTextBlock = {
         placeholders: [
             {
                 name: "SALUTATION",
-                label: <FormattedMessage id="emailCampaign.richText.placeholder.salutation" defaultMessage="Salutation" />,
+                label: <FormattedMessage id="emailCampaign.richText.placeholder.salutation" defaultMessage="Salutation (Dear Mr./Ms. LASTNAME)" />,
             },
         ],
     }),

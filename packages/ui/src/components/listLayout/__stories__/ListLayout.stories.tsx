@@ -239,7 +239,7 @@ type Story = StoryObj<typeof meta>;
  */
 export const Default: Story = {
     render: () => (
-        <PageTypeShell activeId="job-ads">
+        <PageTypeShell currentId="job-ads">
             <JobAdsPage />
         </PageTypeShell>
     ),
@@ -250,7 +250,7 @@ export const Default: Story = {
  */
 export const FilterAndSelect: Story = {
     render: () => (
-        <PageTypeShell activeId="job-ads">
+        <PageTypeShell currentId="job-ads">
             <JobAdsPage />
         </PageTypeShell>
     ),

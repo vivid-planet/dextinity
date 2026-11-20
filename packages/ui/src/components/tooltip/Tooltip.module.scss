@@ -43,12 +43,12 @@
     @include forced-colors.edge;
 }
 
-.shortcut {
+.keyboardShortcut {
     --dextinity-keyboard-shortcut-background: transparent;
     --dextinity-keyboard-shortcut-foreground: currentcolor;
     --dextinity-keyboard-shortcut-shadow: none;
     --dextinity-keyboard-shortcut-padding: 0;
     --dextinity-keyboard-shortcut-height: auto;
 
-    opacity: var(--dextinity-tooltip-shortcut-opacity);
+    opacity: var(--dextinity-tooltip-keyboard-shortcut-opacity);
 }

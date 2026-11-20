@@ -15,8 +15,8 @@ RUN --mount=type=cache,id=dextinity-demo-deploy-preview-pnpm-store,target=/pnpm-
     pnpm install --frozen-lockfile --store-dir /pnpm-store --filter='dextinity-demo-site...'
 
 COPY --chown=node:node . .
-# CI=true makes copy-project-files.js copy instead of symlink.
-RUN node copy-project-files.js
+# CI=true makes copy-project-files.mjs copy instead of symlink.
+RUN node copy-project-files.mjs
 RUN pnpm --recursive --filter='dextinity-demo-site^...' run build
 
 WORKDIR /app/demo/site

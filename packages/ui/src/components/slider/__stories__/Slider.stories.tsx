@@ -13,7 +13,7 @@ const iconOptions = {
     Gallery: <Icon name="images" />,
 };
 
-type SliderStoryArgs = SliderProps & Pick<FieldStoryArgs, "label" | "helperText" | "validationMessage" | "state">;
+type SliderStoryArgs = SliderProps & Pick<FieldStoryArgs, "label" | "description" | "validationMessage" | "state">;
 
 /**
  * Binds the value to its story arg, so the Controls panel drives it and a change on the canvas updates the arg. With a field arg, it
@@ -53,7 +53,7 @@ const meta = {
     },
     argTypes: {
         label: fieldArgTypes.label,
-        helperText: fieldArgTypes.helperText,
+        description: fieldArgTypes.description,
         validationMessage: fieldArgTypes.validationMessage,
         state: fieldArgTypes.state,
         startIcon: { control: "select", options: Object.keys(iconOptions), mapping: iconOptions },

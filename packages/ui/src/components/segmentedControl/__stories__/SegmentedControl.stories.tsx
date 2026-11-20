@@ -28,7 +28,7 @@ const views: SegmentedControlOption[] = [
     { value: "gallery", label: "Gallery", icon: <Icon name="images" />, disabled: true },
 ];
 
-type SegmentedControlStoryArgs = SegmentedControlProps & Pick<FieldStoryArgs, "label" | "helperText" | "validationMessage" | "state">;
+type SegmentedControlStoryArgs = SegmentedControlProps & Pick<FieldStoryArgs, "label" | "description" | "validationMessage" | "state">;
 
 /**
  * Binds the value to its story arg, so the Controls panel drives it and a change on the canvas updates the arg. With a field arg, it
@@ -70,7 +70,7 @@ const meta = {
     argTypes: {
         size: { control: "radio", options: ["default", "small"] },
         label: fieldArgTypes.label,
-        helperText: fieldArgTypes.helperText,
+        description: fieldArgTypes.description,
         validationMessage: fieldArgTypes.validationMessage,
         state: fieldArgTypes.state,
         options: { control: false },

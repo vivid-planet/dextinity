@@ -65,11 +65,11 @@ export const Default: Story = {
 };
 
 /**
- * `shortcut` shows the keyboard shortcut after the text.
+ * `keyboardShortcut` shows the keyboard shortcut after the text.
  */
-export const WithShortcut: Story = {
+export const WithKeyboardShortcut: Story = {
     args: {
-        shortcut: "mod+.",
+        keyboardShortcut: "mod+.",
         open: true,
     },
 };

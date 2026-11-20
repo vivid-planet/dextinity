@@ -1,6 +1,6 @@
 import { createContext, type PropsWithChildren, useContext, useMemo, useSyncExternalStore } from "react";
 
-import type { KeyboardShortcutLabels } from "./formatShortcut";
+import type { KeyboardShortcutLabels } from "./formatKeyboardShortcut";
 
 /**
  * Which keys a shortcut's `mod` and `alt` stand for: ⌘ and ⌥ on `apple` platforms, Ctrl and Alt on `other` platforms.
@@ -34,7 +34,7 @@ export interface KeyboardShortcutProviderProps extends PropsWithChildren {
 
 /**
  * Sets the platform and the spoken key names for the keyboard shortcuts inside: the key caps of `KeyboardShortcut` and of every
- * component's `shortcut`, and the keys `useKeyboardShortcut` listens to.
+ * component's `keyboardShortcut`, and the keys `useKeyboardShortcut` listens to.
  */
 export function KeyboardShortcutProvider({ platform, labels, children }: KeyboardShortcutProviderProps) {
     const parent = useContext(KeyboardShortcutContext);

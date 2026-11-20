@@ -6,11 +6,11 @@ import { MainNavigationItem } from "../MainNavigationItem";
 afterEach(cleanup);
 
 describe("MainNavigationItem", () => {
-    it("marks the active item as the current page and emits its level", () => {
+    it("marks the current item as the current page and emits its level", () => {
         render(
             <>
                 <MainNavigationItem href="/dashboard">Dashboard</MainNavigationItem>
-                <MainNavigationItem href="/users" level={2} active>
+                <MainNavigationItem href="/users" level={2} current>
                     Users
                 </MainNavigationItem>
             </>,
@@ -19,7 +19,7 @@ describe("MainNavigationItem", () => {
         const dashboard = screen.getByRole("link", { name: "Dashboard" });
         expect([dashboard.getAttribute("aria-current"), dashboard.dataset.level]).toStrictEqual([null, "1"]);
         const users = screen.getByRole("link", { name: "Users" });
-        expect([users.getAttribute("aria-current"), users.dataset.level, users.dataset.active]).toStrictEqual(["page", "2", ""]);
+        expect([users.getAttribute("aria-current"), users.dataset.level, users.dataset.current]).toStrictEqual(["page", "2", ""]);
     });
 });
 

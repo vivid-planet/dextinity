@@ -73,7 +73,7 @@ describe("CommandPalette global shortcut", () => {
     });
 
     it("names an entry by its label and announces its shortcut", () => {
-        const items = [{ id: "new", label: "New page", shortcut: "mod+n", onSelect: vi.fn() }];
+        const items = [{ id: "new", label: "New page", keyboardShortcut: "mod+n", onSelect: vi.fn() }];
         render(
             <KeyboardShortcutProvider platform="apple">
                 <CommandPalette open onOpenChange={vi.fn()} query="" onQueryChange={vi.fn()} groups={[{ label: "Create", items }]} />

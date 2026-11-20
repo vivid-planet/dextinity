@@ -20,7 +20,7 @@ import { IconButton } from "../iconButton/IconButton";
 import { Spinner } from "../spinner/Spinner";
 import styles from "./LogViewer.module.scss";
 
-export type LogViewerLineTone = "error" | "warning" | "info" | "success";
+export type LogViewerLineColor = "error" | "warning" | "info" | "success";
 
 /**
  * Texts of the log viewer, for translation.
@@ -97,7 +97,7 @@ export interface LogViewerProps extends Omit<HTMLAttributes<HTMLDivElement>, "cl
      */
     loading?: boolean;
     /** Highlights a line, e.g. `error` for lines that contain "ERROR". */
-    getLineTone?: (line: string, index: number) => LogViewerLineTone | undefined;
+    getLineColor?: (line: string, index: number) => LogViewerLineColor | undefined;
     /** Called after the log was copied to the clipboard. */
     onCopy?: (content: string) => void;
     /** The built-in texts. */
@@ -136,7 +136,7 @@ export const LogViewer = forwardRef<HTMLDivElement, LogViewerProps>(function Log
         wrap = false,
         follow = false,
         loading = false,
-        getLineTone,
+        getLineColor,
         onCopy,
         labels: labelsProp,
         className,
@@ -262,7 +262,7 @@ export const LogViewer = forwardRef<HTMLDivElement, LogViewerProps>(function Log
                 ) : (
                     <ol {...linesProps}>
                         {lines.map((line, index) => (
-                            <li key={lineKeys[index]} className={styles.line} data-tone={getLineTone?.(line, index)}>
+                            <li key={lineKeys[index]} className={styles.line} data-color={getLineColor?.(line, index)}>
                                 {lineNumbers && (
                                     <span className={styles.number} aria-hidden="true">
                                         {index + 1}

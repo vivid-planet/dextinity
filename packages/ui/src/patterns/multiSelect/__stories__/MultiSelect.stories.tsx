@@ -5,7 +5,7 @@ import { expect, userEvent, waitFor, within } from "storybook/test";
 import { BulkActionBar } from "../../../components/bulkActionBar/BulkActionBar";
 import { Checkbox } from "../../../components/checkbox/Checkbox";
 import { Icon } from "../../../components/icon/Icon";
-import { formatShortcut, formatShortcutText } from "../../../components/keyboardShortcut/formatShortcut";
+import { formatKeyboardShortcut, formatKeyboardShortcutText } from "../../../components/keyboardShortcut/formatKeyboardShortcut";
 import { useKeyboardShortcutPlatform } from "../../../components/keyboardShortcut/keyboardShortcutPlatform";
 import { useSelection } from "../../../components/selection/useSelection";
 import { StatusIndicator } from "../../../components/statusIndicator/StatusIndicator";
@@ -15,12 +15,12 @@ import { storyModKey } from "../../../storybook/keyboardPlatformDecorator";
 import { type JobAd, jobAds as initialJobAds } from "../../../storybook/patterns/jobAds";
 import {
     PatternExample,
+    PatternKeyboardShortcuts,
     PatternLinks,
     patternListClassNames,
     PatternPage,
     PatternRules,
     PatternSection,
-    PatternShortcuts,
     PatternSteps,
     PatternUses,
 } from "../../../storybook/patterns/PatternPage";
@@ -75,8 +75,8 @@ function MultiSelectExample() {
 
 function MultiSelectPage() {
     const apple = useKeyboardShortcutPlatform() === "apple";
-    const selectAllKeys = formatShortcutText("mod+a", apple);
-    const mod = formatShortcut("mod+a", apple)[0];
+    const selectAllKeys = formatKeyboardShortcutText("mod+a", apple);
+    const mod = formatKeyboardShortcut("mod+a", apple)[0];
     return (
         <PatternPage>
             <PatternSection title="Example" description="Live: the checkbox selects, the action bar shows the count.">
@@ -101,11 +101,11 @@ function MultiSelectPage() {
                     { label: `Assets (${mod}/⇧ as in the Finder)`, docsId: "page-types-finder--docs" },
                 ]}
             />
-            <PatternShortcuts
-                shortcuts={[
+            <PatternKeyboardShortcuts
+                keyboardShortcuts={[
                     { keys: ["⇧", "Click"], description: "Select a range" },
-                    { shortcut: "mod+a", description: "Select all visible items" },
-                    { shortcut: "Escape", description: "Clear the selection" },
+                    { keyboardShortcut: "mod+a", description: "Select all visible items" },
+                    { keyboardShortcut: "Escape", description: "Clear the selection" },
                 ]}
             />
             <PatternUses pages={["Selection & toggles", "Tables & paging", "Tree", "Menus & messages"]} />

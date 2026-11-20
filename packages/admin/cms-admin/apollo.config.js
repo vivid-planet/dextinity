@@ -1,5 +1,4 @@
-// eslint-disable-next-line no-undef
-module.exports = {
+export default {
     client: {
         service: {
             name: "dextinity-cms-api",

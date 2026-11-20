@@ -30,7 +30,7 @@ const meta = {
         onSearchChange: fn(),
     },
     argTypes: {
-        searchShortcut: { control: "text" },
+        searchKeyboardShortcut: { control: "text" },
         start: { control: false },
         children: { control: false },
         actions: { control: false },

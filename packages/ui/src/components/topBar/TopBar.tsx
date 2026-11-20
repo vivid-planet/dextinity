@@ -34,7 +34,7 @@ export interface TopBarProps extends Omit<HTMLAttributes<HTMLElement>, "classNam
      *
      * @defaultValue `"mod+k"`
      */
-    searchShortcut?: string;
+    searchKeyboardShortcut?: string;
     /** The scope picker, usually a `ScopeSwitcher`. The scope is global, so it lives only here. */
     scope?: ReactNode;
     /**
@@ -59,7 +59,7 @@ export interface TopBarProps extends Omit<HTMLAttributes<HTMLElement>, "classNam
 export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
     {
         onSearchClick,
-        searchShortcut = "mod+k",
+        searchKeyboardShortcut = "mod+k",
         scope,
         browseActions,
         userMenu,
@@ -73,7 +73,7 @@ export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
     const shell = useAppShellContext();
     const labels = { ...defaultLabels, ...labelsProp };
     const onMenuClick = onMenuClickProp ?? shell?.onNavDrawerOpen;
-    const searchKeyShortcuts = useAriaKeyShortcuts(searchShortcut);
+    const searchKeyShortcuts = useAriaKeyShortcuts(searchKeyboardShortcut);
 
     return (
         <header {...restProps} ref={ref} className={clsx(styles.root, className)}>
@@ -93,7 +93,7 @@ export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
                 >
                     <Icon name="search" />
                     <span className={styles.searchText}>{labels.search}</span>
-                    <KeyboardShortcut className={styles.searchShortcut} shortcut={searchShortcut} />
+                    <KeyboardShortcut className={styles.searchKeyboardShortcut} shortcut={searchKeyboardShortcut} />
                 </button>
             )}
             <div className={styles.actions}>

@@ -1,4 +1,4 @@
-import { ariaKeyShortcuts } from "./formatShortcut";
+import { ariaKeyShortcuts } from "./formatKeyboardShortcut";
 import { type KeyboardShortcutPlatform, useKeyboardShortcutPlatform } from "./keyboardShortcutPlatform";
 
 /**

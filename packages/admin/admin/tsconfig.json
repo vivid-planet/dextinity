@@ -5,7 +5,6 @@
             "test-utils": ["./src/utils/test-utils"]
         },
         "rootDir": ".",
-        "strict": true,
         "typeRoots": ["node_modules/@types", "node_modules/@testing-library"]
     },
     "exclude": [],

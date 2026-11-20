@@ -4,7 +4,7 @@
     // Space around the glass panels
     --dextinity-app-shell-gap: 18px;
     // Padding of the main area next to the navigation
-    --dextinity-app-shell-content-padding: 18px 26px var(--dextinity-space-12) 22px;
+    --dextinity-app-shell-content-padding: var(--dextinity-app-shell-gap) 26px var(--dextinity-app-shell-gap) 22px;
     // Space between the top bar and the page header
     --dextinity-app-shell-content-offset: 52px;
     // Padding of the main area in narrow windows

@@ -16,10 +16,10 @@ import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Icon } from "../icon/Icon";
 import styles from "./Tabs.module.scss";
 
-type TabsItemTone = "default" | "error";
+type TabsItemColor = "default" | "error";
 
 export interface TabsLabels {
-    /** Added to the accessible name of a tab with `tone="error"`. */
+    /** Added to the accessible name of a tab with `color="error"`. */
     error: string;
 }
 
@@ -42,7 +42,7 @@ export interface TabsItem<Value extends string = string> {
      *
      * @defaultValue `"default"`
      */
-    tone?: TabsItemTone;
+    color?: TabsItemColor;
     /**
      * Makes the tab a link to this address, so it can be opened in a new tab and the section has its own URL. Choosing it still calls
      * `onChange`; render it as the router's link with `slots.tab`.
@@ -74,7 +74,7 @@ export interface TabsSlotProps {
     list?: SlotPropsValue<TabsOwnerState, typeof BaseTabs.List>;
     /** Props for the `tab` slot, each tab's button, or its link with an `href`. */
     tab?: SlotPropsValue<TabsOwnerState, "button">;
-    /** Props for the `errorMarker` slot, the icon on a tab with `tone="error"`. */
+    /** Props for the `errorMarker` slot, the icon on a tab with `color="error"`. */
     errorMarker?: SlotPropsValue<TabsOwnerState, "span">;
     /** Props for the `count` slot. */
     count?: SlotPropsValue<TabsOwnerState, "span">;
@@ -164,7 +164,7 @@ export const Tabs = forwardRef(function Tabs<Value extends string = string>(
                         {...tabProps}
                         value={item.value}
                         disabled={item.disabled}
-                        data-tone={item.tone ?? "default"}
+                        data-color={item.color ?? "default"}
                         {...(item.href != null && {
                             nativeButton: false,
                             render: <TabSlot href={item.href} />,
@@ -180,7 +180,7 @@ export const Tabs = forwardRef(function Tabs<Value extends string = string>(
                         })}
                     >
                         {item.label}
-                        {item.tone === "error" && (
+                        {item.color === "error" && (
                             <>
                                 {" "}
                                 <span {...errorMarkerProps}>

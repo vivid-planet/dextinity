@@ -22,7 +22,7 @@ const meta = {
     args: {
         onFiles: fn(),
         onReject: fn(),
-        hint: "Images, PDF, video up to 200 MB",
+        description: "Images, PDF, video up to 200 MB",
     },
     argTypes: {
         multiple: { control: "boolean" },
@@ -106,7 +106,7 @@ function createFile(name: string, type: string, size = 1024) {
  * **Rules**
  *
  * - Dragging must always work; never offer uploading only through a dialog.
- * - Say what can be uploaded in `hint`.
+ * - Say what can be uploaded in `description`.
  */
 export const Default: Story = {
     play: async ({ args, canvas, canvasElement }) => {
@@ -175,7 +175,7 @@ export const ErrorMessage: Story = {
 };
 
 export const SingleFile: Story = {
-    args: { multiple: false, hint: "One image, up to 10 MB" },
+    args: { multiple: false, description: "One image, up to 10 MB" },
 };
 
 export const Disabled: Story = {

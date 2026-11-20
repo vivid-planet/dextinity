@@ -107,7 +107,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * Put it in a `Field` with `layout="stacked"` for the label, help, and validation message:
+ * Put it in a `Field` with `layout="stacked"` for the label, description, and validation message:
  * `<Field label="Rich text" layout="stacked"><RichTextEditor … /></Field>`. The value is an HTML string. The toolbar shows which formatting applies at the cursor; the usual shortcuts work too, e.g. ⌘B,
  * ⌘I, ⌘K, ⌘Z, and Tab in a list.
  *

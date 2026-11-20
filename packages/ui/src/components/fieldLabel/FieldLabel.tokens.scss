@@ -1,0 +1,22 @@
+// The values match the label of `Field`, so a `FieldLabel` above a custom control looks like the label of a field. Its size, weight,
+// and color are the `--dextinity-field-label-…` tokens of `Field`.
+@mixin tokens {
+    // Gap between the label and its required marker or info button
+    --dextinity-field-label-gap: var(--dextinity-space-1);
+    // Line height of the label
+    --dextinity-field-label-font-line-height: calc(var(--dextinity-field-label-font-size) * 1.3);
+
+    // Color of the label when the field has an error
+    --dextinity-field-label-error-foreground: var(--dextinity-field-message-color-error);
+    // Color of the required marker
+    --dextinity-field-label-required-color: var(--dextinity-field-required-color);
+
+    // Size of the info button after the label that shows the `info`; also used by `Field`
+    --dextinity-field-label-info-button-size: var(--dextinity-density-icon-button-size-xsmall);
+    // Color of the info icon after the label
+    --dextinity-field-label-info-icon-color: var(--dextinity-color-text-subtle);
+    // Color of the info icon while hovered or while its `info` is shown
+    --dextinity-field-label-info-icon-color-hover: var(--dextinity-color-text);
+    // Size of the info icon after the label
+    --dextinity-field-label-info-icon-size: var(--dextinity-icon-size-xsmall);
+}

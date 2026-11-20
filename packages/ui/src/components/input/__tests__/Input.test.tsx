@@ -32,7 +32,7 @@ afterEach(cleanup);
 
 describe("Input", () => {
     it("passes native input props to the input and keeps the contract on the field around it", () => {
-        render(<Input aria-label="Title" className="consumer-class" defaultValue="Hello" status="error" readOnly />);
+        render(<Input aria-label="Title" className="consumer-class" defaultValue="Hello" state="error" readOnly />);
 
         const input = screen.getByRole("textbox", { name: "Title" });
         expect([input.getAttribute("value"), input.hasAttribute("readonly"), input.getAttribute("aria-invalid")]).toStrictEqual([
@@ -42,10 +42,10 @@ describe("Input", () => {
         ]);
         const field = input.parentElement;
         expect(field?.className).toContain("consumer-class");
-        expect([field?.dataset.status, field?.dataset.readonly]).toStrictEqual(["error", ""]);
+        expect([field?.dataset.state, field?.dataset.readonly]).toStrictEqual(["error", ""]);
     });
 
-    it("keeps an aria-invalid that the caller sets without a status", () => {
+    it("keeps an aria-invalid that the caller sets without a state", () => {
         render(<Input aria-label="Title" aria-invalid />);
 
         expect(screen.getByRole("textbox", { name: "Title" }).getAttribute("aria-invalid")).toBe("true");
@@ -79,7 +79,7 @@ describe("Input", () => {
 
     it("takes its label, description, and state from a surrounding Field", () => {
         render(
-            <Field label="Title" helperText="Use gender-neutral wording." required disabled state="error">
+            <Field label="Title" description="Use gender-neutral wording." required disabled state="error">
                 <Input name="title" value="" onChange={() => {}} />
             </Field>,
         );

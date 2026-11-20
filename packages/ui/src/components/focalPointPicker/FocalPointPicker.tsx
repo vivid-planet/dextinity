@@ -101,7 +101,7 @@ function toPercent(value: number) {
 
 /**
  * Sets the point an image is cropped around, by clicking or dragging in the image or with the arrow keys, and previews the crops. For a
- * label, help, or a validation message, put it in a `Field` with `layout="group"`, whose label names the picker's group.
+ * label, description, or a validation message, put it in a `Field` with `layout="group"`, whose label names the picker's group.
  */
 export const FocalPointPicker = forwardRef<HTMLDivElement, FocalPointPickerProps>(function FocalPointPicker(
     {

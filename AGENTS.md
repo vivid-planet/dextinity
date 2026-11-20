@@ -89,7 +89,7 @@ pnpm run lint
 
 ## Demo application
 
-This repository includes a demo application which is showcasing the libraries.
+The demo application in this repository shows how to use the libraries. It is used mainly by developers who work on Dextinity, so its code and fixtures show the current best practice, not a state migrated from an earlier version. When you change block data or other database content, update the fixtures instead of adding a migration. Local data may break, and the fixtures regenerate it. Add a migration only to demonstrate the migration feature itself, for example a block migration or `migrateFromDraftJs`.
 
 **Api:**
 Demo backend API (NestJS, PostgreSQL)
@@ -143,6 +143,8 @@ To run several checkouts at once without host port collisions, run `pnpm run ass
 Every process loads `.env.local` itself: the demo packages and `dev:*` scripts run through `dotenv -e .env.local -e .env`, and the `demo-docker` script sources `.env` and `.env.local` before `docker compose up`. Docker needs this because dev-pm doesn't pass the env files to its scripts, and Compose prefers real env vars over its `.env` file.
 
 ## Packages
+
+Packages extend `tsconfig.core.json`, directly or through `packages/{admin,api,site}/tsconfig.base.json`, and inherit TypeScript strict mode from it. Don't set `strict` or its individual flags in a package's tsconfig; only opt out of a single flag when needed (e.g. `strictPropertyInitialization: false` in the API packages).
 
 ### Admin (`packages/admin/`)
 

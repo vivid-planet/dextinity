@@ -15,8 +15,6 @@ function ShellNav({ initialCurrentId }: { initialCurrentId: string }) {
         <SideNav
             logo={<ProductLogo />}
             logoMark={<ProductSign />}
-            title="Career portal"
-            subtitle="Example Ltd · Production"
             groups={sideNavGroups}
             currentId={currentId}
             expandedIds={expandedIds}

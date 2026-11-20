@@ -1,11 +1,7 @@
-import { createRichTextBlock } from "@dextinity/mail-react";
+import { createTipTapRichTextBlock } from "@dextinity/mail-react";
 import type { PhoneLinkBlockData } from "@src/blocks.generated.js";
 
-export const { MjmlRichTextBlock } = createRichTextBlock({
-    blockTypes: {
-        "header-one": { variant: "heading" },
-        "paragraph-standard": { variant: "body" },
-    },
+export const { MjmlTipTapRichTextBlock: MjmlRichTextBlock } = createTipTapRichTextBlock({
     linkTypes: {
         phone: (props: PhoneLinkBlockData) => (props.phone ? `tel:${props.phone}` : undefined),
     },

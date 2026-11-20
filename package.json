@@ -70,7 +70,7 @@
         "dotenv-cli": "^11.1.0",
         "husky": "^9.1.7",
         "knip": "^6.45.1",
-        "lint-staged": "^17.6.0",
+        "lint-staged": "^17.6.1",
         "npm-run-all2": "^9.0.4",
         "open-cli": "^9.0.0",
         "prettier": "^3.10.1",

@@ -1,7 +1,8 @@
 import { ArrowRight } from "@dextinity/admin-icons";
-import { Box, Typography } from "@mui/material";
+import { Box, Snackbar, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { useState } from "react";
 import { expect, within } from "storybook/test";
 
 import { Button } from "../../common/buttons/Button";
@@ -158,4 +159,28 @@ export const WithCustomContent: Story = {
             </Box>
         ),
     },
+};
+
+export const AlertInSnackbar: Story = {
+    render: () => {
+        const [showSnackbar, setShowSnackbar] = useState(false);
+        return (
+            <>
+                <Button
+                    onClick={() => {
+                        setShowSnackbar(true);
+                    }}
+                    variant="textDark"
+                >
+                    Show snackbar
+                </Button>
+                <Snackbar open={showSnackbar} onClose={() => setShowSnackbar(false)} autoHideDuration={2000}>
+                    <Alert severity="success" onClose={() => setShowSnackbar(false)}>
+                        Notification Text
+                    </Alert>
+                </Snackbar>
+            </>
+        );
+    },
+    name: "Alert in Snackbar",
 };

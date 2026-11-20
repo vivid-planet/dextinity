@@ -1,6 +1,7 @@
 import {
     type KeyboardEvent as ReactKeyboardEvent,
     type PointerEvent as ReactPointerEvent,
+    type RefObject,
     useEffect,
     useLayoutEffect,
     useMemo,
@@ -80,6 +81,39 @@ function useElementSize(element: HTMLElement | null) {
 
 type ResizeEdge = "inline" | "block" | "both";
 
+/**
+ * The page of Storybook's own UI: the development server serves it as the start page, a static build for the designer's link as
+ * `storybook.html`, since there the start page is the link's own launcher.
+ */
+function useStorybookPage() {
+    const [page, setPage] = useState<string | null>(null);
+    useEffect(() => {
+        void fetch(new URL("storybook.html", document.baseURI), { method: "HEAD" })
+            .then((response) => setPage(response.ok ? "storybook.html" : "./"))
+            .catch(() => setPage("./"));
+    }, []);
+    return page;
+}
+
+/** The id of the story Storybook's UI shows, from its `path` parameter, e.g. `/story/building-blocks-button--default`. */
+function readStorybookStoryId(frame: HTMLIFrameElement | null) {
+    const path = frame?.contentWindow?.location.search ? new URLSearchParams(frame.contentWindow.location.search).get("path") : null;
+    return path?.match(/^\/(?:story|docs)\/(.+)$/)?.[1] ?? null;
+}
+
+/** Follows the story Storybook's UI shows; Storybook changes its address without an event the workspace can listen to. */
+function useStorybookStoryId(frameRef: RefObject<HTMLIFrameElement | null>, active: boolean) {
+    const [storyId, setStoryId] = useState<string | null>(null);
+    useEffect(() => {
+        if (!active) {
+            return;
+        }
+        const interval = window.setInterval(() => setStoryId(readStorybookStoryId(frameRef.current)), 500);
+        return () => window.clearInterval(interval);
+    }, [frameRef, active]);
+    return storyId;
+}
+
 function isPrototype(story: IndexedStory) {
     return story.title === prototypesTitle || story.title.startsWith(`${prototypesTitle}/`);
 }
@@ -145,6 +179,8 @@ export function WorkspaceShell() {
     // The prototype's page to open the frame on; the prototype keeps the page it navigates to in the frame's hash
     const [prototypeStartPage, setPrototypeStartPage] = useState("");
     const frameRef = useRef<HTMLIFrameElement>(null);
+    const storybookFrameRef = useRef<HTMLIFrameElement>(null);
+    const storybookPage = useStorybookPage();
     const treeRef = useRef<HTMLUListElement>(null);
     const framePage = useFramePage(frameRef, frameLoadCount);
     const canvasSize = useElementSize(canvasElement);
@@ -245,6 +281,7 @@ export function WorkspaceShell() {
         setInspecting(false);
         setOverlayPanelOpen(false);
         updateState({ mode: "components", storyId: nodeId, expandedIds: [...new Set([...expandedIds, ...getStoryFolderIds(story)])] });
+        openInStorybook(nodeId);
     }
 
     function selectPrototypeNode(nodeId: string) {
@@ -286,7 +323,14 @@ export function WorkspaceShell() {
                 updateState({ mode: "prototypes", prototypeId: previous.storyId });
             } else {
                 updateState({ mode: "components", storyId: previous.storyId });
+                openInStorybook(previous.storyId);
             }
+        }
+    }
+
+    function openInStorybook(nextStoryId: string) {
+        if (storybookPage != null) {
+            setStorybookSrc(`${storybookPage}?path=/story/${encodeURIComponent(nextStoryId)}`);
         }
     }
 
@@ -296,6 +340,10 @@ export function WorkspaceShell() {
     }
 
     function reloadFrame() {
+        if (!isPrototypeMode) {
+            storybookFrameRef.current?.contentWindow?.location.reload();
+            return;
+        }
         if (isPrototypeMode) {
             setPrototypeStartPage(framePage.hash);
         }
@@ -357,6 +405,19 @@ export function WorkspaceShell() {
     const storyUrl = frameStoryId ? `iframe.html?id=${encodeURIComponent(frameStoryId)}&viewMode=story` : null;
     const frameSrc = storyUrl && isPrototypeMode && prototypeStartPage ? `${storyUrl}#${prototypeStartPage}` : storyUrl;
     // A prototype titles the document after its page, e.g. "Job ads · Career portal"
+    // Storybook's own UI keeps its place in its address; the workspace only sets it when it opens a story, e.g. a picked component
+    const storybookUrl = storybookPage == null ? null : storyId ? `${storybookPage}?path=/story/${encodeURIComponent(storyId)}` : storybookPage;
+    const [storybookSrc, setStorybookSrc] = useState<string | null>(null);
+    if (storybookUrl != null && storybookSrc == null) {
+        setStorybookSrc(storybookUrl);
+    }
+    const storybookStoryId = useStorybookStoryId(storybookFrameRef, !isPrototypeMode);
+    useEffect(() => {
+        if (storybookStoryId && storybookStoryId !== state.storyId) {
+            updateState({ storyId: storybookStoryId });
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- only the story Storybook shows changes the stored one here
+    }, [storybookStoryId]);
     const panelLabel = isPrototypeMode ? "Prototypes" : "Stories";
     const prototypePageLabel = isPrototypeMode ? framePage.title.split(" · ")[0] : "";
 
@@ -401,30 +462,34 @@ export function WorkspaceShell() {
                 <header className={styles.header}>
                     <div className={styles.toolbar}>
                         <div className={styles.brand}>
-                            <IconButton
-                                variant="text"
-                                color="secondary"
-                                aria-label={panelVisible ? `Hide ${panelLabel.toLowerCase()}` : `Show ${panelLabel.toLowerCase()}`}
-                                aria-expanded={panelVisible}
-                                onClick={togglePanel}
-                            >
-                                <Icon name={panelVisible ? "sidebar-close" : "sidebar-open"} />
-                            </IconButton>
+                            {isPrototypeMode && (
+                                <IconButton
+                                    variant="text"
+                                    color="secondary"
+                                    aria-label={panelVisible ? `Hide ${panelLabel.toLowerCase()}` : `Show ${panelLabel.toLowerCase()}`}
+                                    aria-expanded={panelVisible}
+                                    onClick={togglePanel}
+                                >
+                                    <Icon name={panelVisible ? "sidebar-close" : "sidebar-open"} />
+                                </IconButton>
+                            )}
                             <img className={styles.logo} src={workspaceLogo} alt="Next UI Workspace" />
                         </div>
 
                         <Tabs className={styles.modeTabs} aria-label="Workspace" items={modeTabs} value={state.mode} onChange={changeMode} />
 
                         <div className={styles.settings}>
-                            <ViewportControl
-                                responsive={state.responsive}
-                                onResponsiveChange={() => updateState({ responsive: true })}
-                                width={state.width}
-                                height={state.height}
-                                zoom={state.zoom}
-                                onSizeChange={(size) => updateState({ ...size, responsive: false })}
-                                onZoomChange={(zoom) => updateState({ zoom })}
-                            />
+                            {isPrototypeMode && (
+                                <ViewportControl
+                                    responsive={state.responsive}
+                                    onResponsiveChange={() => updateState({ responsive: true })}
+                                    width={state.width}
+                                    height={state.height}
+                                    zoom={state.zoom}
+                                    onSizeChange={(size) => updateState({ ...size, responsive: false })}
+                                    onZoomChange={(zoom) => updateState({ zoom })}
+                                />
+                            )}
                             <SettingMenu label="Color scheme" options={colorSchemeOptions} value={colorScheme} onChange={changeColorScheme} />
                             <SettingMenu
                                 label="Theme"
@@ -453,10 +518,14 @@ export function WorkspaceShell() {
                                 variant="text"
                                 color="secondary"
                                 aria-label="Open story in a new tab"
-                                disabled={!storyUrl}
-                                onClick={() =>
-                                    storyUrl && window.open(isPrototypeMode && framePage.hash ? `${storyUrl}#${framePage.hash}` : storyUrl, "_blank")
-                                }
+                                disabled={isPrototypeMode ? !storyUrl : storybookSrc == null}
+                                onClick={() => {
+                                    if (!isPrototypeMode) {
+                                        window.open(storybookFrameRef.current?.contentWindow?.location.href ?? storybookSrc ?? undefined, "_blank");
+                                    } else if (storyUrl) {
+                                        window.open(framePage.hash ? `${storyUrl}#${framePage.hash}` : storyUrl, "_blank");
+                                    }
+                                }}
                             >
                                 <Icon name="external-link" />
                             </IconButton>
@@ -494,176 +563,192 @@ export function WorkspaceShell() {
                             >
                                 <Icon name="back" />
                             </IconButton>
-                            <IconButton
-                                variant={inspecting ? "contained" : "text"}
-                                color={inspecting ? "primary" : "secondary"}
-                                aria-label="Pick a component in the canvas"
-                                aria-pressed={inspecting}
-                                onClick={() => setInspecting(!inspecting)}
-                            >
-                                <Icon name="select" />
-                            </IconButton>
+                            {isPrototypeMode && (
+                                <IconButton
+                                    variant={inspecting ? "contained" : "text"}
+                                    color={inspecting ? "primary" : "secondary"}
+                                    aria-label="Pick a component in the canvas"
+                                    aria-pressed={inspecting}
+                                    onClick={() => setInspecting(!inspecting)}
+                                >
+                                    <Icon name="select" />
+                                </IconButton>
+                            )}
                         </div>
                     </div>
                 </header>
 
-                <div className={styles.body}>
-                    {panelVisible && narrow && <div className={styles.panelBackdrop} onClick={() => setOverlayPanelOpen(false)} />}
-                    {panelVisible && (
-                        <nav
-                            className={styles.panel}
-                            aria-label={panelLabel}
-                            data-overlay={narrow || undefined}
-                            style={{ inlineSize: narrow ? undefined : state.panelWidth }}
-                            onKeyDown={(event) => narrow && event.key === "Escape" && setOverlayPanelOpen(false)}
-                        >
-                            {isPrototypeMode ? (
-                                <div className={styles.panelList} data-prototypes>
-                                    <TreeView
-                                        aria-label="Prototypes"
-                                        nodes={prototypeNodes}
-                                        expandedIds={visiblePrototypeExpandedIds}
-                                        onExpandedChange={setPrototypeExpandedIds}
-                                        selectedId={
-                                            prototypeId && currentPrototypePageId
-                                                ? getPrototypePageNodeId(prototypeId, currentPrototypePageId)
-                                                : undefined
-                                        }
-                                        onSelect={selectPrototypeNode}
-                                    />
-                                </div>
-                            ) : (
-                                <>
-                                    <div className={styles.panelSearch}>
-                                        <Input
-                                            aria-label="Search stories"
-                                            placeholder="Search stories"
-                                            startAdornment={<Icon name="search" />}
-                                            value={search}
-                                            onChange={(event) => changeSearch(event.target.value)}
-                                        />
-                                    </div>
-                                    <div className={styles.panelActions}>
-                                        <IconButton
-                                            variant="text"
-                                            color="secondary"
-                                            size="small"
-                                            aria-label="Show only the current story"
-                                            disabled={!currentStory}
-                                            onClick={focusCurrentStory}
-                                        >
-                                            <Icon name="locate" />
-                                        </IconButton>
-                                        <TreeViewExpandButtons
-                                            onExpandAll={() =>
-                                                setVisibleExpandedIds(
-                                                    isSearching ? [...searchMatches.folderIds] : getExpandableTreeNodeIds(storyTree),
-                                                )
-                                            }
-                                            onCollapseAll={collapseAll}
-                                        />
-                                    </div>
-                                    <p role="status" className={styles.visuallyHidden}>
-                                        {isSearching ? `${searchMatches.storyIds.size} stories found` : ""}
-                                    </p>
-                                    <div className={styles.panelList}>
-                                        {isSearching && searchMatches.storyIds.size === 0 ? (
-                                            <p className={styles.panelEmpty}>No stories match “{search.trim()}”</p>
-                                        ) : (
-                                            <TreeView
-                                                ref={treeRef}
-                                                aria-label="Stories"
-                                                nodes={storyTree}
-                                                expandedIds={visibleExpandedIds}
-                                                onExpandedChange={setVisibleExpandedIds}
-                                                selectedId={storyId ?? undefined}
-                                                onSelect={selectTreeNode}
-                                                filter={
-                                                    isSearching
-                                                        ? (node) => searchMatches.storyIds.has(node.id) || searchMatches.folderIds.has(node.id)
-                                                        : undefined
-                                                }
-                                            />
-                                        )}
-                                    </div>
-                                </>
-                            )}
-                        </nav>
-                    )}
-                    {panelVisible && !narrow && (
-                        <div
-                            role="separator"
-                            aria-orientation="vertical"
-                            aria-label={`Resize ${panelLabel.toLowerCase()} panel`}
-                            aria-valuemin={minPanelWidth}
-                            aria-valuemax={maxPanelWidth}
-                            aria-valuenow={state.panelWidth}
-                            tabIndex={0}
-                            className={styles.panelHandle}
-                            onPointerDown={startPanelResize}
-                            onKeyDown={resizePanelWithKeyboard}
-                            onDoubleClick={() => updateState({ panelWidth: defaultWorkspaceState.panelWidth })}
-                        />
-                    )}
-
-                    <div ref={setCanvasElement} className={styles.canvas} data-responsive={state.responsive || undefined}>
-                        <div
-                            className={styles.stage}
-                            style={state.responsive ? undefined : { width: state.width * scale, height: state.height * scale }}
-                        >
-                            {!state.responsive && (
-                                <div className={styles.frameLabel}>
-                                    <span className={styles.frameStory}>{frameStory ? getStoryLabel(frameStory) : ""}</span>
-                                    <span>
-                                        {state.width} × {state.height} · {Math.round(scale * 100)} %
-                                    </span>
-                                </div>
-                            )}
-                            <div
-                                className={styles.frame}
-                                style={state.responsive ? undefined : { width: state.width, height: state.height, transform: `scale(${scale})` }}
+                {!isPrototypeMode ? (
+                    <div className={styles.body}>
+                        {storybookSrc != null && (
+                            <iframe
+                                key={`storybook-${reloadKey}`}
+                                ref={storybookFrameRef}
+                                className={styles.storybookFrame}
+                                src={storybookSrc}
+                                title="Storybook"
+                            />
+                        )}
+                    </div>
+                ) : (
+                    <div className={styles.body}>
+                        {panelVisible && narrow && <div className={styles.panelBackdrop} onClick={() => setOverlayPanelOpen(false)} />}
+                        {panelVisible && (
+                            <nav
+                                className={styles.panel}
+                                aria-label={panelLabel}
+                                data-overlay={narrow || undefined}
+                                style={{ inlineSize: narrow ? undefined : state.panelWidth }}
+                                onKeyDown={(event) => narrow && event.key === "Escape" && setOverlayPanelOpen(false)}
                             >
-                                {storyUrl && (
-                                    <iframe
-                                        key={`${storyUrl}-${reloadKey}`}
-                                        ref={frameRef}
-                                        className={styles.iframe}
-                                        src={frameSrc ?? undefined}
-                                        title={frameStory ? `${frameStory.title} · ${frameStory.name}` : "Story"}
-                                        onLoad={() => {
-                                            applyDensityToFrame();
-                                            setFrameLoadCount((count) => count + 1);
-                                        }}
-                                    />
+                                {isPrototypeMode ? (
+                                    <div className={styles.panelList} data-prototypes>
+                                        <TreeView
+                                            aria-label="Prototypes"
+                                            nodes={prototypeNodes}
+                                            expandedIds={visiblePrototypeExpandedIds}
+                                            onExpandedChange={setPrototypeExpandedIds}
+                                            selectedId={
+                                                prototypeId && currentPrototypePageId
+                                                    ? getPrototypePageNodeId(prototypeId, currentPrototypePageId)
+                                                    : undefined
+                                            }
+                                            onSelect={selectPrototypeNode}
+                                        />
+                                    </div>
+                                ) : (
+                                    <>
+                                        <div className={styles.panelSearch}>
+                                            <Input
+                                                aria-label="Search stories"
+                                                placeholder="Search stories"
+                                                startAdornment={<Icon name="search" />}
+                                                value={search}
+                                                onChange={(event) => changeSearch(event.target.value)}
+                                            />
+                                        </div>
+                                        <div className={styles.panelActions}>
+                                            <IconButton
+                                                variant="text"
+                                                color="secondary"
+                                                size="small"
+                                                aria-label="Show only the current story"
+                                                disabled={!currentStory}
+                                                onClick={focusCurrentStory}
+                                            >
+                                                <Icon name="locate" />
+                                            </IconButton>
+                                            <TreeViewExpandButtons
+                                                onExpandAll={() =>
+                                                    setVisibleExpandedIds(
+                                                        isSearching ? [...searchMatches.folderIds] : getExpandableTreeNodeIds(storyTree),
+                                                    )
+                                                }
+                                                onCollapseAll={collapseAll}
+                                            />
+                                        </div>
+                                        <p role="status" className={styles.visuallyHidden}>
+                                            {isSearching ? `${searchMatches.storyIds.size} stories found` : ""}
+                                        </p>
+                                        <div className={styles.panelList}>
+                                            {isSearching && searchMatches.storyIds.size === 0 ? (
+                                                <p className={styles.panelEmpty}>No stories match “{search.trim()}”</p>
+                                            ) : (
+                                                <TreeView
+                                                    ref={treeRef}
+                                                    aria-label="Stories"
+                                                    nodes={storyTree}
+                                                    expandedIds={visibleExpandedIds}
+                                                    onExpandedChange={setVisibleExpandedIds}
+                                                    selectedId={storyId ?? undefined}
+                                                    onSelect={selectTreeNode}
+                                                    filter={
+                                                        isSearching
+                                                            ? (node) => searchMatches.storyIds.has(node.id) || searchMatches.folderIds.has(node.id)
+                                                            : undefined
+                                                    }
+                                                />
+                                            )}
+                                        </div>
+                                    </>
+                                )}
+                            </nav>
+                        )}
+                        {panelVisible && !narrow && (
+                            <div
+                                role="separator"
+                                aria-orientation="vertical"
+                                aria-label={`Resize ${panelLabel.toLowerCase()} panel`}
+                                aria-valuemin={minPanelWidth}
+                                aria-valuemax={maxPanelWidth}
+                                aria-valuenow={state.panelWidth}
+                                tabIndex={0}
+                                className={styles.panelHandle}
+                                onPointerDown={startPanelResize}
+                                onKeyDown={resizePanelWithKeyboard}
+                                onDoubleClick={() => updateState({ panelWidth: defaultWorkspaceState.panelWidth })}
+                            />
+                        )}
+
+                        <div ref={setCanvasElement} className={styles.canvas} data-responsive={state.responsive || undefined}>
+                            <div
+                                className={styles.stage}
+                                style={state.responsive ? undefined : { width: state.width * scale, height: state.height * scale }}
+                            >
+                                {!state.responsive && (
+                                    <div className={styles.frameLabel}>
+                                        <span className={styles.frameStory}>{frameStory ? getStoryLabel(frameStory) : ""}</span>
+                                        <span>
+                                            {state.width} × {state.height} · {Math.round(scale * 100)} %
+                                        </span>
+                                    </div>
+                                )}
+                                <div
+                                    className={styles.frame}
+                                    style={state.responsive ? undefined : { width: state.width, height: state.height, transform: `scale(${scale})` }}
+                                >
+                                    {storyUrl && (
+                                        <iframe
+                                            key={`${storyUrl}-${reloadKey}`}
+                                            ref={frameRef}
+                                            className={styles.iframe}
+                                            src={frameSrc ?? undefined}
+                                            title={frameStory ? `${frameStory.title} · ${frameStory.name}` : "Story"}
+                                            onLoad={() => {
+                                                applyDensityToFrame();
+                                                setFrameLoadCount((count) => count + 1);
+                                            }}
+                                        />
+                                    )}
+                                </div>
+                                {inspected && (
+                                    <div className={styles.inspectLayer}>
+                                        <div
+                                            className={styles.inspectBox}
+                                            // At the frame's top edge, the label goes inside the box, where the frame doesn't cut it off
+                                            data-label-inside={inspected.rect.top * scale < inspectLabelHeight || undefined}
+                                            style={{
+                                                top: inspected.rect.top * scale,
+                                                left: inspected.rect.left * scale,
+                                                width: inspected.rect.width * scale,
+                                                height: inspected.rect.height * scale,
+                                            }}
+                                        >
+                                            <span className={styles.inspectLabel}>{inspected.componentName}</span>
+                                        </div>
+                                    </div>
+                                )}
+                                {!state.responsive && (
+                                    <>
+                                        <div className={styles.handleInline} onPointerDown={(event) => startFrameResize("inline", event)} />
+                                        <div className={styles.handleBlock} onPointerDown={(event) => startFrameResize("block", event)} />
+                                        <div className={styles.handleCorner} onPointerDown={(event) => startFrameResize("both", event)} />
+                                    </>
                                 )}
                             </div>
-                            {inspected && (
-                                <div className={styles.inspectLayer}>
-                                    <div
-                                        className={styles.inspectBox}
-                                        // At the frame's top edge, the label goes inside the box, where the frame doesn't cut it off
-                                        data-label-inside={inspected.rect.top * scale < inspectLabelHeight || undefined}
-                                        style={{
-                                            top: inspected.rect.top * scale,
-                                            left: inspected.rect.left * scale,
-                                            width: inspected.rect.width * scale,
-                                            height: inspected.rect.height * scale,
-                                        }}
-                                    >
-                                        <span className={styles.inspectLabel}>{inspected.componentName}</span>
-                                    </div>
-                                </div>
-                            )}
-                            {!state.responsive && (
-                                <>
-                                    <div className={styles.handleInline} onPointerDown={(event) => startFrameResize("inline", event)} />
-                                    <div className={styles.handleBlock} onPointerDown={(event) => startFrameResize("block", event)} />
-                                    <div className={styles.handleCorner} onPointerDown={(event) => startFrameResize("both", event)} />
-                                </>
-                            )}
                         </div>
                     </div>
-                </div>
+                )}
             </div>
         </Theme>
     );

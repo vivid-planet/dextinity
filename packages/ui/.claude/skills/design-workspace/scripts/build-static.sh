@@ -26,8 +26,8 @@ replace_once(
 open(path, "w").write(source)
 PY
 pnpm exec storybook build -c .storybook-static-build -o "$OUT" --quiet
-# The launcher page takes the place of Storybook's manager UI
-rm -f "$OUT/index.html"
+# The launcher page is the link's start page, so Storybook's own UI moves aside; the workspace embeds it from there
+mv "$OUT/index.html" "$OUT/storybook.html"
 # The artifact upload refuses U+FFFD; in the JS strings, the escape stands for the same character
 python3 - "$OUT" <<'PY'
 import glob, sys

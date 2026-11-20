@@ -16,6 +16,7 @@ export default defineConfig([
     {
         // These files interpolate JS expressions into `gql` templates, which `@graphql-eslint/eslint-plugin` cannot parse.
         files: [
+            "src/actionLog/actionLog/actionLogDialog/ActionLogDialog.gql.ts",
             "src/dependencies/createDependencyMethods.ts",
             "src/dependencies/createDocumentDependencyMethods.ts",
             "src/form/queryUpdatedAt.tsx",

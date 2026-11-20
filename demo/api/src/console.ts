@@ -1,4 +1,6 @@
+import { UserPermissionsStorageService } from "@dextinity/cms-api";
 import { AppModule } from "@src/app.module.js";
+import { SYSTEM_USER_NAME } from "@src/auth/constants.js";
 import { useContainer } from "class-validator";
 import { CommandFactory } from "nest-commander";
 
@@ -24,10 +26,12 @@ async function bootstrap() {
         //     https://github.com/typestack/class-validator#using-service-container.
         useContainer(app.select(appModule), { fallbackOnErrors: true });
 
-        await CommandFactory.runApplication(app);
+        await app.get(UserPermissionsStorageService).runWith({ user: SYSTEM_USER_NAME }, async () => {
+            await CommandFactory.runApplication(app);
 
-        await app.close();
-        process.exit(0);
+            await app.close();
+            process.exit(0);
+        });
     } catch (e) {
         console.error(e);
 

@@ -1,4 +1,5 @@
 import {
+    ActionLogs,
     type BlockDataInterface,
     DamImageBlock,
     EntityInfo,
@@ -83,6 +84,7 @@ export class ProductPriceRange {
 @ObjectType()
 @Entity()
 @RootBlockEntity<Product>({ isVisible: (product) => product.status === ProductStatus.Published })
+@ActionLogs()
 export class Product extends BaseEntity implements ImportTargetInterface {
     [OptionalProps]?: "createdAt" | "updatedAt" | "status";
 

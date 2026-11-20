@@ -1,13 +1,12 @@
 import { Field, InputType } from "@nestjs/graphql";
 import { Type } from "class-transformer";
 import { IsOptional, ValidateNested } from "class-validator";
-import { GraphQLJSONObject } from "graphql-scalars";
 
 import { BooleanFilter } from "../../common/filter/boolean.filter.js";
 import { DateTimeFilter } from "../../common/filter/date-time.filter.js";
 import { createEnumFilter } from "../../common/filter/enum.filter.factory.js";
+import { ScopeFilter } from "../../common/filter/scope.filter.js";
 import { StringFilter } from "../../common/filter/string.filter.js";
-import type { ContentScope } from "../../user-permissions/interfaces/content-scope.interface.js";
 import { WarningSeverity } from "../entities/warning-severity.enum.js";
 import { WarningStatus } from "../entities/warning-status.enum.js";
 
@@ -15,21 +14,6 @@ import { WarningStatus } from "../entities/warning-status.enum.js";
 class WarningSeverityEnumFilter extends createEnumFilter(WarningSeverity) {}
 @InputType()
 class WarningStatusEnumFilter extends createEnumFilter(WarningStatus) {}
-
-@InputType({ isAbstract: true })
-class ScopeFilter {
-    @Field(() => [GraphQLJSONObject], { nullable: true })
-    @IsOptional()
-    isAnyOf?: ContentScope[];
-
-    @Field(() => GraphQLJSONObject, { nullable: true })
-    @IsOptional()
-    equal?: ContentScope;
-
-    @Field(() => GraphQLJSONObject, { nullable: true })
-    @IsOptional()
-    notEqual?: ContentScope;
-}
 
 @InputType()
 export class WarningFilter {

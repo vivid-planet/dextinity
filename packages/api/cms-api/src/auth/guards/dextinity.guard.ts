@@ -81,7 +81,6 @@ export class DextinityAuthGuard implements CanActivate {
             }
             request["user"] = await this.service.createCurrentUser(user, request);
         }
-
         return true;
     }
 

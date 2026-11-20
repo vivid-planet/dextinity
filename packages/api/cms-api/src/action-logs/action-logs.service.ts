@@ -1,0 +1,94 @@
+import { type AnyEntity, EntityManager, type EntityMetadata, type EntityName } from "@mikro-orm/postgresql";
+import { Injectable, Logger, type OnModuleInit, type Type } from "@nestjs/common";
+import { ModuleRef } from "@nestjs/core";
+
+import { DiscoverService } from "../dependencies/discover.service.js";
+import { REQUIRED_PERMISSION_METADATA_KEY, type RequiredPermissionMetadata } from "../user-permissions/decorators/required-permission.decorator.js";
+import { SCOPED_ENTITY_METADATA_KEY, type ScopedEntityMeta } from "../user-permissions/decorators/scoped-entity.decorator.js";
+import { getScopesForScopedEntity } from "../user-permissions/get-scopes-for-scoped-entity.js";
+import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface.js";
+import { ACTION_LOGS_METADATA_KEY } from "./action-logs.decorator.js";
+import { entityChecksScope } from "./entity-checks-scope.js";
+
+@Injectable()
+export class ActionLogsService implements OnModuleInit {
+    private readonly logger = new Logger(ActionLogsService.name);
+    private loggedEntities: Array<Type<AnyEntity>> = [];
+
+    constructor(
+        private readonly moduleRef: ModuleRef,
+        private readonly entityManager: EntityManager,
+        private readonly discoverService: DiscoverService,
+    ) {}
+
+    onModuleInit(): void {
+        const loggedTargetEntities = this.discoverService
+            .discoverTargetEntities()
+            .filter(({ entity }) => Reflect.hasOwnMetadata(ACTION_LOGS_METADATA_KEY, entity.prototype));
+        this.loggedEntities = loggedTargetEntities.map(({ entity }) => entity as Type<AnyEntity>);
+
+        for (const { entity, metadata } of loggedTargetEntities) {
+            const permissionMetadata = Reflect.getMetadata(REQUIRED_PERMISSION_METADATA_KEY, entity) as RequiredPermissionMetadata | undefined;
+            if (!permissionMetadata) {
+                throw new Error(
+                    `${entity.name} is decorated with @ActionLogs() but is missing a @RequiredPermission decorator. The actionLogs query decides access from the entity's permission.`,
+                );
+            }
+
+            if (entityChecksScope(entity) && !hasScope(entity, metadata)) {
+                throw new Error(
+                    `${entity.name} is decorated with @ActionLogs() and its @RequiredPermission checks the scope, but ${entity.name} has no scope. Add a scope property or @ScopedEntity, or set skipScopeCheck in @RequiredPermission.`,
+                );
+            }
+        }
+    }
+
+    getLoggedEntities(): ReadonlyArray<Type<AnyEntity>> {
+        return this.loggedEntities;
+    }
+
+    async getScopeFromEntity<T extends AnyEntity>(entity: T): Promise<ContentScope[] | undefined> {
+        if ("scope" in entity) {
+            return toScopes(entity.scope);
+        }
+        const scoped = Reflect.getMetadata(SCOPED_ENTITY_METADATA_KEY, entity.constructor) as ScopedEntityMeta | undefined;
+        if (scoped) {
+            try {
+                const scopedEntityScope = await getScopesForScopedEntity({
+                    scoped,
+                    entity: entity.constructor as EntityName<AnyEntity>,
+                    row: entity,
+                    entityManager: this.entityManager,
+                    moduleRef: this.moduleRef,
+                });
+                return toScopes(scopedEntityScope);
+            } catch (error) {
+                // The lookup runs while the entity is flushed, so an error would fail saving or deleting it.
+                this.logger.error(
+                    `Could not determine the scope of ${entity.constructor.name} for the action log, its entry is stored without a scope: ${
+                        error instanceof Error ? error.message : String(error)
+                    }`,
+                    error instanceof Error ? error.stack : undefined,
+                );
+                return undefined;
+            }
+        }
+        return undefined;
+    }
+}
+
+// A missing scope is stored as no scope, never as an array holding null or a scope with only empty dimensions:
+// `isAllowed` passes for both. A scope without any dimension stays, because applications without scope dimensions use it.
+function toScopes(scope: ContentScope | Array<ContentScope | null | undefined> | null | undefined): ContentScope[] | undefined {
+    const scopes = (Array.isArray(scope) ? scope : [scope]).filter((item): item is ContentScope => item != null && !hasOnlyEmptyDimensions(item));
+    return scopes.length > 0 ? scopes : undefined;
+}
+
+function hasOnlyEmptyDimensions(scope: ContentScope): boolean {
+    const dimensions = Object.values(scope);
+    return dimensions.length > 0 && dimensions.every((dimension) => dimension == null);
+}
+
+function hasScope(entity: object, metadata: EntityMetadata): boolean {
+    return "scope" in metadata.properties || Reflect.hasMetadata(SCOPED_ENTITY_METADATA_KEY, entity);
+}

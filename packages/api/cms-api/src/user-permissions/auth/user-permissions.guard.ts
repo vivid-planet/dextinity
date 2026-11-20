@@ -15,6 +15,7 @@ import type { CurrentUser } from "../dto/current-user.js";
 import type { ContentScope } from "../interfaces/content-scope.interface.js";
 import { ACCESS_CONTROL_SERVICE, USER_PERMISSIONS_OPTIONS } from "../user-permissions.constants.js";
 import type { AccessControlServiceInterface, Permission, SystemUser, UserPermissionsOptions } from "../user-permissions.types.js";
+import { UserPermissionsStorageService } from "../user-permissions-storage.service.js";
 
 @Injectable()
 export class UserPermissionsGuard implements CanActivate {
@@ -25,6 +26,7 @@ export class UserPermissionsGuard implements CanActivate {
         private readonly contentScopeService: ContentScopeService,
         @Inject(ACCESS_CONTROL_SERVICE) private readonly accessControlService: AccessControlServiceInterface,
         @Inject(USER_PERMISSIONS_OPTIONS) private readonly options: UserPermissionsOptions,
+        private readonly userPermissionsStorageService: UserPermissionsStorageService,
     ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -53,6 +55,8 @@ export class UserPermissionsGuard implements CanActivate {
             this.logger.debug("Could not get authenticated user. Maybe DextinityAuthGuard is missing?");
             return false;
         }
+
+        this.userPermissionsStorageService.set("user", user);
 
         // System user authenticated via basic auth
         if (typeof user === "string" && this.options.systemUsers?.includes(user)) {

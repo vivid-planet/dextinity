@@ -1,0 +1,111 @@
+import { EntityManager, type ObjectQuery, raw } from "@mikro-orm/postgresql";
+import { ForbiddenException, Inject, Injectable } from "@nestjs/common";
+
+import {
+    DisablePermissionCheck,
+    REQUIRED_PERMISSION_METADATA_KEY,
+    type RequiredPermissionMetadata,
+} from "../user-permissions/decorators/required-permission.decorator.js";
+import type { CurrentUser } from "../user-permissions/dto/current-user.js";
+import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface.js";
+import { ACCESS_CONTROL_SERVICE } from "../user-permissions/user-permissions.constants.js";
+import { UserPermissionsService } from "../user-permissions/user-permissions.service.js";
+import type { AccessControlServiceInterface, Permission, SystemUser } from "../user-permissions/user-permissions.types.js";
+import { ActionLogsService } from "./action-logs.service.js";
+import { ActionLog } from "./entities/action-log.entity.js";
+import { entityChecksScope } from "./entity-checks-scope.js";
+
+@Injectable()
+export class ActionLogsAclService {
+    constructor(
+        private readonly entityManager: EntityManager,
+        private readonly actionLogsService: ActionLogsService,
+        private readonly userPermissionsService: UserPermissionsService,
+        @Inject(ACCESS_CONTROL_SERVICE) private readonly accessControlService: AccessControlServiceInterface,
+    ) {}
+
+    /**
+     * Restricts the action log of all entities to the rows the user could also read through the log of each entity.
+     * That log asks `isAllowed` for one requested scope and returns the rows of exactly that scope. `isAllowed` cannot
+     * be translated into SQL, so it is asked here for each scope that occurs in the rows of a scoped entity. Every row
+     * of an entity that checks the scope has a scope (`ActionLogsService` enforces this), so only the rows of entities
+     * that skip the scope check are unscoped.
+     *
+     * @returns `null` when the user can read no row.
+     */
+    async getReadableActionLogsFilter(user: CurrentUser | SystemUser): Promise<ObjectQuery<ActionLog> | null> {
+        if (typeof user === "string") {
+            if (this.userPermissionsService.isSystemUser(user)) {
+                return {};
+            }
+            throw new ForbiddenException();
+        }
+
+        const entityFilters: ObjectQuery<ActionLog>[] = [];
+        const scopedEntityPermissions = new Map<string, Permission[]>();
+
+        for (const entityClass of this.actionLogsService.getLoggedEntities()) {
+            const { requiredPermission } = Reflect.getMetadata(REQUIRED_PERMISSION_METADATA_KEY, entityClass) as RequiredPermissionMetadata;
+
+            // The application checks the access to such an entity itself, so the log of the single entity is denied too.
+            if (requiredPermission.includes(DisablePermissionCheck)) {
+                continue;
+            }
+
+            const permissions = requiredPermission.filter((permission): permission is Permission => permission !== DisablePermissionCheck);
+
+            if (!entityChecksScope(entityClass)) {
+                if (permissions.some((permission) => this.accessControlService.isAllowed(user, permission))) {
+                    entityFilters.push({ entityName: entityClass.name });
+                }
+                continue;
+            }
+
+            scopedEntityPermissions.set(entityClass.name, permissions);
+        }
+
+        const rowScopesByEntity = await this.getRowScopes([...scopedEntityPermissions.keys()]);
+
+        for (const [entityName, permissions] of scopedEntityPermissions) {
+            const allowedRowScopes = (rowScopesByEntity.get(entityName) ?? []).filter((contentScope) =>
+                permissions.some((permission) => this.accessControlService.isAllowed(user, permission, contentScope)),
+            );
+
+            if (allowedRowScopes.length > 0) {
+                entityFilters.push({ entityName, ...rowScopeEqualToAnyOf(allowedRowScopes) });
+            }
+        }
+
+        return entityFilters.length > 0 ? { $or: entityFilters } : null;
+    }
+
+    private async getRowScopes(entityNames: string[]): Promise<Map<string, ContentScope[]>> {
+        const rowScopes = new Map<string, ContentScope[]>();
+        if (entityNames.length === 0) {
+            return rowScopes;
+        }
+
+        const { tableName } = this.entityManager.getMetadata(ActionLog);
+        const rows = await this.entityManager
+            .getConnection()
+            .execute<Array<{ entityName: string; rowScope: ContentScope }>>(
+                `select distinct "entityName", "rowScope" from "${tableName}", jsonb_array_elements("scope") as "rowScope" where "entityName" in (?)`,
+                [entityNames],
+            );
+
+        for (const { entityName, rowScope } of rows) {
+            rowScopes.set(entityName, [...(rowScopes.get(entityName) ?? []), rowScope]);
+        }
+        return rowScopes;
+    }
+}
+
+function rowScopeEqualToAnyOf(contentScopes: ContentScope[]): ObjectQuery<ActionLog> {
+    return {
+        [raw(
+            (alias) =>
+                `exists (select 1 from jsonb_array_elements(${alias}."scope") as "rowScope" where "rowScope" in (select jsonb_array_elements(?::jsonb)))`,
+            [JSON.stringify(contentScopes)],
+        )]: true,
+    };
+}

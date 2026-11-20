@@ -116,4 +116,10 @@ describe("PageHeader", () => {
 
         expect(screen.getByText("Published").closest(".dextinityPageHeader__subtitle")?.textContent).toBe("Published/careers");
     });
+
+    it("leaves out a status that renders nothing", () => {
+        const { container } = render(<PageHeader title="Photo" status={false} subtitle="2.4 MB" />);
+
+        expect(container.querySelector(".dextinityPageHeader__subtitle")?.children).toHaveLength(0);
+    });
 });

@@ -76,10 +76,16 @@
             display: contents;
         }
 
+        // Only the breadcrumbs get cut off, so that the back action's focus ring stays whole
         .labelLine {
+            flex-wrap: nowrap;
             min-inline-size: 0;
-            overflow: hidden;
             white-space: nowrap;
+
+            > div {
+                min-inline-size: 0;
+                overflow: hidden;
+            }
         }
 
         .actionStatus {

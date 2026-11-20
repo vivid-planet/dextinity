@@ -59,12 +59,12 @@
     --dextinity-side-nav-item-background-hover: var(--dextinity-material-glass-strong);
     // Text of an entry above the current one
     --dextinity-side-nav-item-ancestor-foreground: var(--dextinity-color-text);
-    // Fill of the current entry
-    --dextinity-side-nav-item-current-background: var(--dextinity-gradient-brand);
+    // Fill of the current entry: a soft tint, so it doesn't compete with the page's primary action
+    --dextinity-side-nav-item-current-background: var(--dextinity-color-accent-soft);
     // Text and icon color of the current entry
-    --dextinity-side-nav-item-current-foreground: var(--dextinity-color-accent-foreground);
-    // Glow and top highlight of the current entry
-    --dextinity-side-nav-item-current-shadow: 0 10px 24px -12px var(--dextinity-color-accent-glow), inset 0 1px 0 oklch(1 0 0 / 0.2);
+    --dextinity-side-nav-item-current-foreground: var(--dextinity-color-accent-text);
+    // Shadow of the current entry
+    --dextinity-side-nav-item-current-shadow: none;
     // Vertical line that leads the sub-entries
     --dextinity-side-nav-guide-color: var(--dextinity-color-line-strong);
     // Color of the chevron that expands an entry's sub-entries
@@ -85,4 +85,9 @@
 
     // Opacity of the corner marker on a collapsed entry that opens a flyout
     --dextinity-side-nav-flyout-marker-opacity: 0.45;
+}
+
+@mixin high-contrast-tokens {
+    // The soft tint is barely visible in high contrast, so a line marks the current entry
+    --dextinity-side-nav-item-current-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-accent-text);
 }

@@ -59,7 +59,7 @@ When a custom component replaces a re-export, describe the change against the pr
 
 The MDX pages in [src/docs/](src/docs/) are the guide to _using_ this package: what it is for, how to build emails with it, the patterns to reach for, and the email-client pitfalls — markup that's fine in a browser can render wrong in clients like Outlook. People read them in the Storybook, and AI agents through its MCP server. The component pages and their props come from the stories and the TSDoc, so the guide doesn't restate type signatures, prop lists, or defaults.
 
-Put every code example in a fenced code block or a `<Source code="…">` string, not in `<Canvas of>` or an import.
+Put every code example in a fenced code block or a `<Source code="…">` string. Show a story with `<Canvas of>` only when the MCP server serves it, so agents can open its code: don't tag it `!manifest`. Write such a story without helpers from the rest of its file: agents get only the story's own code.
 
 When a change affects how the package is used — components added/removed/renamed, changed behavior, new usage patterns, or styling conventions — update the pages in the same PR.
 

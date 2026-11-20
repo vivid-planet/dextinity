@@ -126,15 +126,11 @@ export const IFrameBridgeProvider = ({ children }: PropsWithChildren) => {
                         : getRecursiveChildrenOfPreviewElement(previewElement.element);
                 const positioning = getCombinedPositioningOfElements(measuredElements);
 
-                const isRenderedOutsideOfViewportWidth = positioning.left > childrenWrapperRight;
+                const widthInsideOfViewport = Math.min(positioning.width, childrenWrapperRight - positioning.left);
 
-                if (isRenderedOutsideOfViewportWidth) {
+                if (widthInsideOfViewport <= 0) {
                     return null;
                 }
-
-                const spaceBetweenRightEdgeOfElementAndRightEdgeOfViewport = positioning.left + positioning.width - childrenWrapperRight;
-                const tooWideForPreviewViewportByPixels =
-                    spaceBetweenRightEdgeOfElementAndRightEdgeOfViewport > 0 ? spaceBetweenRightEdgeOfElementAndRightEdgeOfViewport : 0;
 
                 return {
                     adminRoute: previewElement.adminRoute,
@@ -142,7 +138,7 @@ export const IFrameBridgeProvider = ({ children }: PropsWithChildren) => {
                     position: {
                         top: positioning.top,
                         left: positioning.left,
-                        width: positioning.width - tooWideForPreviewViewportByPixels,
+                        width: widthInsideOfViewport,
                         height: positioning.height,
                     },
                 };

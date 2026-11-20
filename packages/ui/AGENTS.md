@@ -5,7 +5,6 @@ Read [README.md](README.md) before working in this package. It defines the packa
 - Writing or changing a component: [Component conventions](README.md#component-conventions), [Testing](README.md#testing), and the [accessibility guidelines](../../docs/docs/9-coding-guidelines/14-accessibility.md).
 - Changing the theme tokens: [Theme](README.md#theme).
 - Adding an icon: [Adding an icon](README.md#adding-an-icon).
-- Showing work in the design workspace, adding a prototype, or updating a designer's link to it: the `design-workspace` skill in [`.claude/skills/design-workspace/`](.claude/skills/design-workspace/SKILL.md).
 
 Read a feature's TSDoc before working on it or anything that touches it.
 

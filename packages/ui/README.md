@@ -262,7 +262,7 @@ The `@dextinity-ui` group starts `dextinity-ui`. Start `storybook-dextinity-ui` 
 - The toolbar has one button with a menu each for the viewport, color scheme, brand, and density, and buttons to reload and to open in a new tab. Drag the frame's edges to resize it.
 - The pick button turns the prototype into a picker: a click on a component in it opens that component's story in the Storybook tab, and the back button returns to the prototype page it was picked on.
 
-Work in progress goes into `Workspace/Canvas` ([`src/storybook/workspace/__stories__/WorkspaceCanvas.stories.tsx`](src/storybook/workspace/__stories__/WorkspaceCanvas.stories.tsx)). The `design-workspace` skill in [`.claude/skills/design-workspace/`](.claude/skills/design-workspace/SKILL.md) covers adding prototypes and keeping a shareable link to the workspace up to date.
+Work in progress goes into `Workspace/Canvas` ([`src/storybook/workspace/__stories__/WorkspaceCanvas.stories.tsx`](src/storybook/workspace/__stories__/WorkspaceCanvas.stories.tsx)). The `design-workspace` skill in [`skills/design-workspace/`](../../skills/design-workspace/SKILL.md) covers adding prototypes and keeping a shareable link to the workspace up to date.
 
 ## Testing
 

@@ -122,4 +122,10 @@ describe("PageHeader", () => {
 
         expect(container.querySelector(".dextinityPageHeader__subtitle")?.children).toHaveLength(0);
     });
+
+    it("opens the submenu of a lone secondary action from its button", () => {
+        render(<PageHeader title="Photo" secondaryActions={[{ label: "Move to", submenu: <span>Photos</span> }]} />);
+
+        expect(screen.getByRole("button", { name: "Move to" }).getAttribute("aria-haspopup")).toBe("menu");
+    });
 });

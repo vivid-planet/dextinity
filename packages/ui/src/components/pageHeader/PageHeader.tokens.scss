@@ -39,6 +39,8 @@
     --dextinity-page-header-narrow-title-font-size: 26px;
     // Space between the title and the subtitle in narrow windows
     --dextinity-page-header-narrow-subtitle-spacing: var(--dextinity-space-1);
+    // Most of the width the buttons take in narrow windows; text-only buttons wrap below each other beyond it
+    --dextinity-page-header-narrow-actions-max-width: 60%;
     // Width of an action button that shows only its icon in narrow windows
     --dextinity-page-header-narrow-action-size: var(--dextinity-button-height);
 }

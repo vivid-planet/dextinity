@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
+import { AiAssistantSwitch } from "../../aiAssistantSwitch/AiAssistantSwitch";
 import { Icon } from "../../icon/Icon";
 import { IconButton } from "../../iconButton/IconButton";
 import { Tooltip } from "../../tooltip/Tooltip";
@@ -31,6 +32,7 @@ const meta = {
         scope: { control: false },
         userMenu: { control: false },
         browseActions: { control: false },
+        assistantSwitch: { control: false },
         labels: { control: false },
         className: { control: false },
     },
@@ -54,6 +56,21 @@ export const Default: Story = {
     play: async ({ args, canvas }) => {
         await userEvent.click(canvas.getByRole("button", { name: "Search, jump, create …" }));
         await waitFor(() => expect(args.onSearchClick).toHaveBeenCalled());
+    },
+};
+
+/**
+ * `assistantSwitch` holds the switch that shows the AI assistant, after the scope. Inside `AppShell`, the switch follows the shell's
+ * assistant; leave it out for users without the right to use the assistant.
+ */
+export const WithAssistantSwitch: Story = {
+    args: {
+        assistantSwitch: <AiAssistantSwitch checked={false} onChange={fn()} />,
+    },
+    play: async ({ canvas }) => {
+        const assistantSwitch = canvas.getByRole("switch", { name: "AI assistant" });
+        const scope = canvas.getByRole("banner").querySelector(".dextinityScopeSwitcher");
+        await expect(scope != null && scope.compareDocumentPosition(assistantSwitch) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     },
 };
 

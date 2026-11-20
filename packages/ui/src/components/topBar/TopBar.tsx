@@ -4,8 +4,8 @@ import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 import { useAppShellContext } from "../appShell/appShellContext";
 import { Icon } from "../icon/Icon";
 import { IconButton } from "../iconButton/IconButton";
-import { KeyboardShortcut } from "../keyboardShortcut/KeyboardShortcut";
 import { useAriaKeyShortcuts } from "../keyboardShortcut/useAriaKeyShortcuts";
+import { Tooltip } from "../tooltip/Tooltip";
 import styles from "./TopBar.module.scss";
 
 export interface TopBarLabels {
@@ -29,8 +29,8 @@ export interface TopBarProps extends Omit<HTMLAttributes<HTMLElement>, "classNam
     /** Opens the command palette; shows the search trigger at the start of the bar. */
     onSearchClick?: () => void;
     /**
-     * The keyboard shortcut shown in the search trigger, in the notation of `useKeyboardShortcut`. It only shows the hint; the
-     * `CommandPalette` listens to the shortcut.
+     * The keyboard shortcut shown in the search trigger's tooltip, in the notation of `useKeyboardShortcut`. Shortcuts show only in
+     * overlays, never as key caps in the bar. It only shows the hint; the `CommandPalette` listens to the shortcut.
      *
      * @defaultValue `"mod+k"`
      */
@@ -42,6 +42,11 @@ export interface TopBarProps extends Omit<HTMLAttributes<HTMLElement>, "classNam
      * and compact, e.g. icon buttons.
      */
     browseActions?: ReactNode;
+    /**
+     * The switch that shows the AI assistant, usually an `AiAssistantSwitch`, after the scope. Leave it out for users without the
+     * right to use the assistant.
+     */
+    assistantSwitch?: ReactNode;
     /** The user menu, usually a `UserMenu`. */
     userMenu?: ReactNode;
     /** Shows the menu button on narrow windows. Inside `AppShell`, leave it unset: the button opens the navigation drawer. */
@@ -53,7 +58,7 @@ export interface TopBarProps extends Omit<HTMLAttributes<HTMLElement>, "classNam
 }
 
 /**
- * The glass bar above the content: search, the app's own actions, scope, and user menu. It looks the same on every page; a page's own
+ * The glass bar above the content: search, the app's own actions, scope, AI assistant, and user menu. It looks the same on every page; a page's own
  * back and actions belong in its `PageHeader`. The app name never appears here, only in the navigation.
  */
 export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
@@ -62,6 +67,7 @@ export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
         searchKeyboardShortcut = "mod+k",
         scope,
         browseActions,
+        assistantSwitch,
         userMenu,
         onMenuClick: onMenuClickProp,
         labels: labelsProp,
@@ -83,22 +89,24 @@ export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
                 </IconButton>
             )}
             {onSearchClick != null && (
-                <button
-                    type="button"
-                    aria-label={labels.search}
-                    aria-keyshortcuts={searchKeyShortcuts}
-                    aria-haspopup="dialog"
-                    onClick={onSearchClick}
-                    className={styles.search}
-                >
-                    <Icon name="search" />
-                    <span className={styles.searchText}>{labels.search}</span>
-                    <KeyboardShortcut className={styles.searchKeyboardShortcut} shortcut={searchKeyboardShortcut} />
-                </button>
+                <Tooltip content={labels.search} keyboardShortcut={searchKeyboardShortcut}>
+                    <button
+                        type="button"
+                        aria-label={labels.search}
+                        aria-keyshortcuts={searchKeyShortcuts}
+                        aria-haspopup="dialog"
+                        onClick={onSearchClick}
+                        className={styles.search}
+                    >
+                        <Icon name="search" />
+                        <span className={styles.searchText}>{labels.search}</span>
+                    </button>
+                </Tooltip>
             )}
             <div className={styles.actions}>
                 {browseActions}
                 {scope}
+                {assistantSwitch}
                 {userMenu}
             </div>
         </header>

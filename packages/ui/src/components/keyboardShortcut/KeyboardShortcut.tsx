@@ -28,8 +28,9 @@ export interface KeyboardShortcutProps extends Omit<HTMLAttributes<HTMLElement>,
 }
 
 /**
- * A keyboard shortcut shown as a key cap, e.g. `⌘K`, `Esc` or `K`, rendered as a `<kbd>` element. Used in tooltips, menus, the
- * command palette and search fields; a shortcut pressed as a sequence of keys gets one `KeyboardShortcut` per key.
+ * A keyboard shortcut shown as a key cap, e.g. `⌘K`, `Esc` or `K`, rendered as a `<kbd>` element. Used only in overlays: tooltips,
+ * menus, and the command palette, never on the page itself, e.g. in the top bar or a search field. A shortcut pressed as a sequence of
+ * keys gets one `KeyboardShortcut` per key.
  *
  * With `shortcut`, `mod` shows as ⌘ on Apple platforms and as Ctrl elsewhere. The platform is detected after hydration, so server
  * rendering shows Ctrl first; a `KeyboardShortcutProvider` or `platform` sets it explicitly.

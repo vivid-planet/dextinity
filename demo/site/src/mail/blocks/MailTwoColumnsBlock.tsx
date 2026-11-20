@@ -15,11 +15,13 @@ import {
 } from "@dextinity/mail-react";
 import type {
     MailButtonBlockData,
+    MailHeadingBlockData,
+    MailRichTextBlockData,
     MailSpacerBlockData,
     MailTwoColumnsBlockData,
     PixelImageBlockData,
-    RichTextBlockData,
 } from "@src/blocks.generated";
+import { MjmlHeadingBlock } from "@src/mail/blocks/MailHeadingBlock";
 import { MjmlRichTextBlock } from "@src/mail/blocks/MailRichTextBlock";
 import { spacingToHeight } from "@src/mail/blocks/MailSpacerBlock";
 
@@ -50,7 +52,12 @@ registerStyles(
     `,
 );
 
-const ColumnRichTextBlock = withPreview<PropsWithData<RichTextBlockData>>(
+const ColumnHeadingBlock = withPreview<PropsWithData<MailHeadingBlockData>>(
+    ({ data, className }) => <MjmlHeadingBlock data={data} textClassName={className} />,
+    { label: "Heading" },
+);
+
+const ColumnRichTextBlock = withPreview<PropsWithData<MailRichTextBlockData>>(
     ({ data, className }) => <MjmlRichTextBlock data={data} textClassName={className} />,
     { label: "Text" },
 );
@@ -89,6 +96,7 @@ const ColumnSpacerBlock = withPreview<PropsWithData<MailSpacerBlockData>>(
 );
 
 const supportedBlocks: SupportedBlocks = {
+    heading: (data) => <ColumnHeadingBlock data={data} />,
     text: (data) => <ColumnRichTextBlock data={data} />,
     image: (data) => <ColumnImageBlock data={data} />,
     button: (data) => <ColumnButtonBlock data={data} />,

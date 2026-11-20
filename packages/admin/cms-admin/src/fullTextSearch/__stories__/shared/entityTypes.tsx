@@ -37,6 +37,8 @@ const entityTypes: Record<string, EntityType> = {
     },
 };
 
+export const knownEntityNames = Object.keys(entityTypes);
+
 export function getEntityType(entityName: string): EntityType {
     return entityTypes[entityName] ?? { icon: File, label: entityName, pluralLabel: entityName };
 }

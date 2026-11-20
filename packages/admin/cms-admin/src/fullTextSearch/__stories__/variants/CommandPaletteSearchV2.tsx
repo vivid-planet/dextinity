@@ -40,16 +40,22 @@ export function CommandPaletteSearchV2({ onSelectResult, onQuickAction = () => u
 
     return (
         <>
-            <Trigger onClick={openPalette}>
-                <Search fontSize="small" />
-                <TriggerLabel variant="body2">
-                    <FormattedMessage id="fullTextSearchPrototype.placeholder" defaultMessage="Search…" />
-                </TriggerLabel>
-                <TriggerKbd>{isMacPlatform() ? "⌘" : "Ctrl"}</TriggerKbd>
-                <TriggerKbd>{shortcutLetter}</TriggerKbd>
-            </Trigger>
+            <PaletteTrigger onClick={openPalette} />
             {open && <Palette onSelectResult={onSelectResult} onQuickAction={onQuickAction} onClose={() => setOpen(false)} />}
         </>
+    );
+}
+
+export function PaletteTrigger({ onClick }: { onClick: () => void }) {
+    return (
+        <Trigger onClick={onClick}>
+            <Search fontSize="small" />
+            <TriggerLabel variant="body2">
+                <FormattedMessage id="fullTextSearchPrototype.placeholder" defaultMessage="Search…" />
+            </TriggerLabel>
+            <TriggerKbd>{isMacPlatform() ? "⌘" : "Ctrl"}</TriggerKbd>
+            <TriggerKbd>{shortcutLetter}</TriggerKbd>
+        </Trigger>
     );
 }
 

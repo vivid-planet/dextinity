@@ -24,9 +24,18 @@ interface Options {
     onSelectResult: (result: SearchResult) => void;
     onQuickAction: (action: QuickAction) => void;
     onClose: () => void;
+    enabledEntityNames?: string[];
+    groupResultsByEntity?: boolean;
 }
 
-export function useCommandPalette({ quickActions, onSelectResult, onQuickAction, onClose }: Options) {
+export function useCommandPalette({
+    quickActions,
+    onSelectResult,
+    onQuickAction,
+    onClose,
+    enabledEntityNames,
+    groupResultsByEntity = true,
+}: Options) {
     const [search, setSearch] = useState("");
     const [entityFilter, setEntityFilter] = useState(allEntitiesFilter);
     const recentSearches = useRecentSearches();
@@ -35,13 +44,20 @@ export function useCommandPalette({ quickActions, onSelectResult, onQuickAction,
 
     const isSearchEmpty = search.trim().length === 0;
 
+    const visibleResults = useMemo(
+        () =>
+            enabledEntityNames ? fullTextSearch.results.filter((result) => enabledEntityNames.includes(result.entityName)) : fullTextSearch.results,
+        [fullTextSearch.results, enabledEntityNames],
+    );
+    const visibleTotalCount = enabledEntityNames ? visibleResults.length : fullTextSearch.totalCount;
+
     const entityCounts = useMemo(() => {
         const counts = new Map<string, number>();
-        for (const result of fullTextSearch.results) {
+        for (const result of visibleResults) {
             counts.set(result.entityName, (counts.get(result.entityName) ?? 0) + 1);
         }
         return [...counts.entries()].map(([entityName, count]) => ({ entityName, count }));
-    }, [fullTextSearch.results]);
+    }, [visibleResults]);
 
     const activeEntityFilter = entityCounts.some(({ entityName }) => entityName === entityFilter) ? entityFilter : allEntitiesFilter;
 
@@ -60,18 +76,19 @@ export function useCommandPalette({ quickActions, onSelectResult, onQuickAction,
             return [];
         }
         const groupOrder = entityCounts.map(({ entityName }) => entityName);
-        return fullTextSearch.results
+        return visibleResults
             .filter((result) => activeEntityFilter === allEntitiesFilter || result.entityName === activeEntityFilter)
-            .sort((a, b) => groupOrder.indexOf(a.entityName) - groupOrder.indexOf(b.entityName))
+            .sort((a, b) => (groupResultsByEntity ? groupOrder.indexOf(a.entityName) - groupOrder.indexOf(b.entityName) : 0))
             .map((result): PaletteItem => ({ kind: "result", key: `result:${result.entityName}:${result.id}`, result }));
     }, [
         isSearchEmpty,
         recentSearches.results,
         quickActions,
         fullTextSearch.areResultsStale,
-        fullTextSearch.results,
+        visibleResults,
         activeEntityFilter,
         entityCounts,
+        groupResultsByEntity,
     ]);
 
     const selectItem = (item: PaletteItem) => {
@@ -121,6 +138,8 @@ export function useCommandPalette({ quickActions, onSelectResult, onQuickAction,
         entityFilter: activeEntityFilter,
         setEntityFilter,
         ...fullTextSearch,
+        visibleResults,
+        visibleTotalCount,
         ...keyboardNavigation,
         handleKeyDown,
     };

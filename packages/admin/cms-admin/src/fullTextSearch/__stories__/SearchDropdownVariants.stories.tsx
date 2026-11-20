@@ -5,6 +5,7 @@ import { fn } from "storybook/test";
 
 import { Header } from "../../common/header/Header";
 import { CommandPaletteSearch } from "./variants/CommandPaletteSearch";
+import { CommandPaletteSearchD } from "./variants/CommandPaletteSearchD";
 import { CommandPaletteSearchV2 } from "./variants/CommandPaletteSearchV2";
 import { CompactSearchDropdown } from "./variants/CompactSearchDropdown";
 import { GroupedSearchDropdown } from "./variants/GroupedSearchDropdown";
@@ -72,6 +73,16 @@ export const C2_CommandPalette: Story = {
     render: ({ onSelectResult }) => (
         <Header>
             <CommandPaletteSearchV2 onSelectResult={onSelectResult} />
+        </Header>
+    ),
+};
+
+/** Configurable type tabs (gear menu) and result rows with round icons, bold titles and a detail chip. */
+export const D_ConfigurablePalette: Story = {
+    name: "D · Configurable tabs",
+    render: ({ onSelectResult }) => (
+        <Header>
+            <CommandPaletteSearchD onSelectResult={onSelectResult} />
         </Header>
     ),
 };

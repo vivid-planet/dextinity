@@ -1,5 +1,4 @@
 import { gql, useQuery } from "@apollo/client";
-import { useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
 
 import type { SearchResult } from "./types";
@@ -22,13 +21,8 @@ interface QueryData {
     myFullTextSearch: { nodes: SearchResult[]; totalCount: number };
 }
 
-export function useFullTextSearch({ search, initialLimit }: { search: string; initialLimit: number }) {
+export function useFullTextSearch({ search, limit }: { search: string; limit: number }) {
     const [debouncedSearch] = useDebounce(search.trim(), 250);
-    const [limit, setLimit] = useState(initialLimit);
-
-    useEffect(() => {
-        setLimit(initialLimit);
-    }, [debouncedSearch, initialLimit]);
 
     const { data, previousData, loading } = useQuery<QueryData>(fullTextSearchQuery, {
         variables: { search: debouncedSearch, limit },
@@ -42,10 +36,7 @@ export function useFullTextSearch({ search, initialLimit }: { search: string; in
         results: debouncedSearch.length > 0 ? (currentData?.myFullTextSearch.nodes ?? []) : [],
         totalCount: debouncedSearch.length > 0 ? (currentData?.myFullTextSearch.totalCount ?? 0) : 0,
         loading: loading || isTyping,
-        hasResultsData: currentData !== undefined && debouncedSearch.length > 0,
         areResultsStale: isTyping || (loading && data === undefined),
         debouncedSearch,
-        showAll: () => setLimit(50),
-        isShowingAll: limit > initialLimit,
     };
 }

@@ -5,14 +5,14 @@ import { alpha, styled, type Theme } from "@mui/material/styles";
 import { type PropsWithChildren, type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
-import { getEntityType, knownEntityNames } from "../shared/entityTypes";
-import { HighlightedText } from "../shared/HighlightedText";
-import { getResultDetails } from "../shared/resultDetails";
-import { EmptyState, Kbd, optionId } from "../shared/SearchPanelParts";
-import type { SearchResult } from "../shared/types";
-import { scrollActiveOptionIntoView } from "../shared/useListKeyboardNavigation";
-import { useSearchShortcut } from "../shared/useSearchShortcut";
-import { PaletteTrigger } from "./CommandPaletteSearchV2";
+import { PaletteTrigger } from "./PaletteTrigger";
+import { getEntityType, knownEntityNames } from "./shared/entityTypes";
+import { HighlightedText } from "./shared/HighlightedText";
+import { getResultDetails } from "./shared/resultDetails";
+import { EmptyState, Kbd, optionId } from "./shared/SearchPanelParts";
+import type { SearchResult } from "./shared/types";
+import { scrollActiveOptionIntoView } from "./shared/useListKeyboardNavigation";
+import { useSearchShortcut } from "./shared/useSearchShortcut";
 import { allEntitiesFilter, type PaletteItem, type QuickAction, useCommandPalette } from "./useCommandPalette";
 
 const enterKeyLabel = "↵";
@@ -43,9 +43,9 @@ interface Props {
 
 /**
  * Command palette with configurable type tabs (gear menu) and result rows with a round type icon, a bold title, context
- * below and a chip with additional information on the right.
+ * below and up to two chips with additional information on the right.
  */
-export function CommandPaletteSearchD({ onSelectResult, onQuickAction = () => undefined }: Props) {
+export function CommandPaletteSearch({ onSelectResult, onQuickAction = () => undefined }: Props) {
     const [open, setOpen] = useState(false);
     const openPalette = useCallback(() => setOpen(true), []);
     useSearchShortcut(openPalette);
@@ -139,7 +139,7 @@ function Palette({ onSelectResult, onQuickAction, onClose }: Required<Props> & {
     };
 
     const body = (
-        <Body ref={listRef} id="palette-d-listbox" role="listbox">
+        <Body ref={listRef} id="palette-listbox" role="listbox">
             {palette.isSearchEmpty ? (
                 <>
                     {palette.recentSearches.terms.length > 0 && (
@@ -248,7 +248,7 @@ function Palette({ onSelectResult, onQuickAction, onClose }: Required<Props> & {
                     inputProps={{
                         role: "combobox",
                         "aria-expanded": true,
-                        "aria-controls": "palette-d-listbox",
+                        "aria-controls": "palette-listbox",
                         "aria-activedescendant": activeItem ? optionId(activeItem.key) : undefined,
                     }}
                 />
@@ -403,17 +403,17 @@ function ResultContent({ result, search }: { result: SearchResult; search: strin
             </RoundIcon>
             <OptionText>
                 <Title variant="body2" noWrap>
-                    <HighlightedText text={result.name} search={search} variant="background" />
+                    <HighlightedText text={result.name} search={search} />
                 </Title>
                 {result.secondaryInformation && (
                     <SecondaryText variant="caption" color="text.secondary" noWrap>
-                        <HighlightedText text={result.secondaryInformation} search={search} variant="background" />
+                        <HighlightedText text={result.secondaryInformation} search={search} />
                     </SecondaryText>
                 )}
             </OptionText>
             <DetailChips>
                 {getResultDetails(result.id).map((detail) => (
-                    <Chip key={detail.label} label={detail.label} color={detail.color} />
+                    <Chip key={detail.label} size="small" label={detail.label} color={detail.color} />
                 ))}
             </DetailChips>
         </>
@@ -579,8 +579,7 @@ const SectionRoot = styled("div")`
     padding: ${({ theme }) => theme.spacing(2, 3, 0)};
 
     & + & {
-        margin-top: ${({ theme }) => theme.spacing(1)};
-        border-top: 1px solid ${({ theme }) => theme.palette.divider};
+        margin-top: ${({ theme }) => theme.spacing(3)};
     }
 `;
 

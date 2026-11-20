@@ -1,10 +1,10 @@
 import type { SvgIconProps } from "@mui/material";
 import { type ComponentType, type KeyboardEvent, type ReactNode, useMemo, useState } from "react";
 
-import type { SearchResult } from "../shared/types";
-import { useFullTextSearch } from "../shared/useFullTextSearch";
-import { useListKeyboardNavigation } from "../shared/useListKeyboardNavigation";
-import { useRecentSearches } from "../shared/useRecentSearches";
+import type { SearchResult } from "./shared/types";
+import { useFullTextSearch } from "./shared/useFullTextSearch";
+import { useListKeyboardNavigation } from "./shared/useListKeyboardNavigation";
+import { useRecentSearches } from "./shared/useRecentSearches";
 
 export interface QuickAction {
     id: string;
@@ -25,22 +25,14 @@ interface Options {
     onQuickAction: (action: QuickAction) => void;
     onClose: () => void;
     enabledEntityNames?: string[];
-    groupResultsByEntity?: boolean;
 }
 
-export function useCommandPalette({
-    quickActions,
-    onSelectResult,
-    onQuickAction,
-    onClose,
-    enabledEntityNames,
-    groupResultsByEntity = true,
-}: Options) {
+export function useCommandPalette({ quickActions, onSelectResult, onQuickAction, onClose, enabledEntityNames }: Options) {
     const [search, setSearch] = useState("");
     const [entityFilter, setEntityFilter] = useState(allEntitiesFilter);
     const recentSearches = useRecentSearches();
     // A large limit so the type tabs can show counts. With the real API, the counts per type should come from the server.
-    const fullTextSearch = useFullTextSearch({ search, initialLimit: 50 });
+    const fullTextSearch = useFullTextSearch({ search, limit: 50 });
 
     const isSearchEmpty = search.trim().length === 0;
 
@@ -78,18 +70,9 @@ export function useCommandPalette({
         const groupOrder = entityCounts.map(({ entityName }) => entityName);
         return visibleResults
             .filter((result) => activeEntityFilter === allEntitiesFilter || result.entityName === activeEntityFilter)
-            .sort((a, b) => (groupResultsByEntity ? groupOrder.indexOf(a.entityName) - groupOrder.indexOf(b.entityName) : 0))
+            .sort((a, b) => groupOrder.indexOf(a.entityName) - groupOrder.indexOf(b.entityName))
             .map((result): PaletteItem => ({ kind: "result", key: `result:${result.entityName}:${result.id}`, result }));
-    }, [
-        isSearchEmpty,
-        recentSearches.results,
-        quickActions,
-        fullTextSearch.areResultsStale,
-        visibleResults,
-        activeEntityFilter,
-        entityCounts,
-        groupResultsByEntity,
-    ]);
+    }, [isSearchEmpty, recentSearches.results, quickActions, fullTextSearch.areResultsStale, visibleResults, activeEntityFilter, entityCounts]);
 
     const selectItem = (item: PaletteItem) => {
         if (item.kind === "quickAction") {

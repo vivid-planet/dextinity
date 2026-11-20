@@ -4,7 +4,3 @@ export interface SearchResult {
     name: string;
     secondaryInformation?: string | null;
 }
-
-export interface SearchDropdownVariantProps {
-    onSelectResult: (result: SearchResult) => void;
-}

@@ -38,7 +38,8 @@ export class FullTextSearchService {
 
                     indexSelects.push(`SELECT "PageTreeNodeEntityInfo"."id", 'PageTreeNode' AS "entityName", "PageTreeNodeFullText"."fullText",
                         ${requiredPermissionSql} AS "requiredPermission",
-                        ${scopesSql} AS "scopes"
+                        ${scopesSql} AS "scopes",
+                        "PageTreeNode"."documentType" AS "type"
                         FROM "PageTreeNodeEntityInfo"
                         INNER JOIN "PageTreeNodeFullText" ON "PageTreeNodeFullText"."pageTreeNodeId" = "PageTreeNodeEntityInfo"."id"::uuid
                         INNER JOIN "PageTreeNode" ON "PageTreeNode"."id" = "PageTreeNodeEntityInfo"."id"::uuid`);
@@ -66,14 +67,15 @@ export class FullTextSearchService {
                             '${entityName}' "entityName",
                             ${fullTextSql} AS "fullText",
                             ${requiredPermissionSql} AS "requiredPermission",
-                            ${scopesSql} AS "scopes"
+                            ${scopesSql} AS "scopes",
+                            '${entityName}' AS "type"
                         FROM "${metadata.tableName}"`);
         }
 
         if (indexSelects.length === 0) {
             // Empty placeholder so the view always exists with the expected columns
             indexSelects.push(
-                `SELECT NULL::text AS "id", NULL::text AS "entityName", NULL::tsvector AS "fullText", ARRAY[]::text[] AS "requiredPermission", NULL::jsonb AS "scopes" WHERE false`,
+                `SELECT NULL::text AS "id", NULL::text AS "entityName", NULL::tsvector AS "fullText", ARRAY[]::text[] AS "requiredPermission", NULL::jsonb AS "scopes", NULL::text AS "type" WHERE false`,
             );
         }
 

@@ -5,7 +5,7 @@ import type { GQLpageTreeNodeDependencyQuery, GQLpageTreeNodeDependencyQueryVari
 import { FormattedMessage } from "react-intl";
 
 export const PageTreeNodeDependency: DependencyInterface = {
-    displayName: <FormattedMessage id="pageTreeNode.displayName" defaultMessage="PageTreeNode" />,
+    displayName: <FormattedMessage id="pageTreeNode.displayName" defaultMessage="Page tree node" />,
     resolvePath: async ({ apolloClient, id }) => {
         const { data, error } = await apolloClient.query<GQLpageTreeNodeDependencyQuery, GQLpageTreeNodeDependencyQueryVariables>({
             query: gql`

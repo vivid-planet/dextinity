@@ -1,8 +1,8 @@
-import { EntityManager, FilterQuery } from "@mikro-orm/postgresql";
+import { EntityManager, FilterQuery, raw } from "@mikro-orm/postgresql";
 import { Type } from "@nestjs/common";
 import { Args, Int, Query, Resolver } from "@nestjs/graphql";
 
-import { prefixFullTextCondition } from "../../full-text-search/prefix-full-text-query";
+import { prefixFullTextCondition, rankSql, titleScoreSql } from "../../full-text-search/full-text-query";
 import { RequiredPermission } from "../../user-permissions/decorators/required-permission.decorator";
 import { EmptyPageTreeNodeScope } from "../dto/empty-page-tree-node-scope";
 import { PageTreeService } from "../page-tree.service";
@@ -54,12 +54,23 @@ export function createFullTextResolver({
                 where.pageTreeNode = { scope: scopeValue };
             }
 
+            const nameSql = (alias: string) => `(SELECT "name" FROM "PageTreeNode" WHERE "PageTreeNode"."id" = ${alias}."pageTreeNodeId")`;
             const [results, totalCount] = await this.entityManager.findAndCount(PageTreeNodeFullText, where, {
                 offset,
                 limit,
+                orderBy: [
+                    { [raw((alias) => titleScoreSql(nameSql(alias)).sql, Array(titleScoreSql("").bindingCount).fill(search))]: "desc" },
+                    { [raw((alias) => rankSql(`${alias}."fullText"`), [search])]: "desc" },
+                    { [raw((alias) => `length(${nameSql(alias)})`)]: "asc" },
+                    { pageTreeNodeId: "asc" },
+                ],
             });
 
-            const nodes = await this.pageTreeReadApi.getNodesByIds(results.map((r) => r.pageTreeNodeId));
+            const rankedIds = results.map((r) => r.pageTreeNodeId);
+            const positionById = new Map(rankedIds.map((id, index) => [id, index]));
+            const nodes = (await this.pageTreeReadApi.getNodesByIds(rankedIds)).sort(
+                (a, b) => (positionById.get(a.id) ?? 0) - (positionById.get(b.id) ?? 0),
+            );
 
             return new PaginatedPageTreeNodes(nodes, totalCount);
         }

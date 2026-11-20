@@ -192,7 +192,9 @@ export { OverviewLayout, type OverviewLayoutOwnerState, type OverviewLayoutProps
 export { type OverviewLayoutBack, type OverviewLayoutSlotProps } from "./components/overviewLayout/OverviewLayout";
 export {
     PageHeader,
+    type PageHeaderAction,
     type PageHeaderBack,
+    type PageHeaderLabels,
     type PageHeaderOwnerState,
     type PageHeaderProps,
     type PageHeaderSlotProps,

@@ -1,0 +1,16 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta
+    title="Docs/Client Issues/Outlook on the Web and Apps"
+    summary="Outlook on the web and the Outlook iOS and Android apps: `}}` in head CSS, and `word-break` on column content."
+/>
+
+# Outlook on the Web and Apps
+
+## Keep `}}` Out of the Head CSS
+
+Outlook on the web (Outlook.com) and the Outlook iOS and Android apps drop everything after the first `}}` in a `<style>` tag. Minified `@media` blocks end in `}}`. mail-react separates the braces in the registered styles, but not in CSS that you add through the `head` slot of `MjmlMailRoot`; write `} }` there. See [email-bugs#92](https://github.com/hteumeuleu/email-bugs/issues/92).
+
+## MJML Sets `word-break: break-word` on Column Content
+
+MJML writes `word-break: break-word` on the `<td>` around each child of a column, except `MjmlRaw`, and nested cells inherit it. In Outlook on the web, this breaks short content onto several lines when its cell sits next to a `width="100%"` cell, such as the marker cell of a list item. Set `word-break: normal` inline on the cell of the short content, together with `white-space: nowrap`. `white-space: nowrap` alone does not help: Outlook on the web removes it from inline styles, and it also removes the `nowrap` attribute. Resetting `overflow-wrap` does not help either.

@@ -3,7 +3,7 @@ import { Canvas, Meta } from "@storybook/addon-docs/blocks";
 import * as DarkModeStories from "./__stories__/DarkMode.stories";
 
 <Meta
-    title="Docs/Dark Mode"
+    title="Docs/Client Issues/Dark Mode"
     summary="What mail clients change in dark mode, and the techniques tested against them for backgrounds, logos, lines and all colors."
 />
 
@@ -20,7 +20,7 @@ In dark mode, Gmail iOS, Yahoo Mail on the web, classic Outlook, Outlook on the 
 | Gmail iOS                 | Background and text colors; leaves background images                                                                  |
 | Outlook on the web        | Background and text colors; dark backgrounds get lighter; leaves background images                                    |
 | Outlook iOS               | Background and text colors; dark backgrounds get lighter; leaves background images                                    |
-| Outlook Mac               | Background and text colors; leaves borders of table cells and background images                                       |
+| Outlook Mac               | Light background colors and text colors; leaves dark background colors, borders of table cells and background images  |
 | Yahoo Mail on the web     | Light background colors; leaves background images                                                                     |
 | Gmail Android             | Light background colors on some phones; inverts images with few colors that phones show about `55px` or less per side |
 | Classic Outlook (Windows) | Inverts background and text colors, dark backgrounds included; ignores CSS background images; leaves VML fills        |
@@ -37,9 +37,25 @@ Set the color twice: as `background-color`, and as a `background-image` of a sol
 - Use this technique behind images only, not behind text. Outlook iOS turns dark text on a light background light, and Gmail iOS and Outlook on the web turn light text on a dark background dark. In both cases the text disappears.
 - Name the PNG after its color, such as `001e50-100x100.png` for `#001e50`. When the theme color changes, replace the image too.
 
+### Example: Dark Background Behind an Image
+
+An image on a dark blue section background.
+
+#### Problem
+
+The color is set only as `background-color`. In dark mode, Gmail iOS, Outlook on the web and Outlook iOS make it lighter.
+
+<Canvas of={DarkModeStories.BackgroundColorProblem} />
+
+#### Fix
+
+The color is also set as a `background-image` of a solid `100×100` px PNG, `001e50-100x100.png`. These clients leave background images, so the color stays. Classic Outlook ignores CSS background images, so there the color still changes.
+
+<Canvas of={DarkModeStories.BackgroundColorFix} />
+
 ## Keep All Colors
 
-`<meta name="color-scheme" content="light only">` stops Gmail iOS and Apple Mail (iOS and macOS) from changing the colors of the mail in dark mode. Gmail Android ignores it. React 19 removes a `<meta>` element that is rendered in the head, so add it as raw HTML, with an `MjmlRaw` in the `head` of `MjmlMailRoot` (see [Contributing to `<MjmlHead>` and `<MjmlAttributes>`](?path=/docs/docs-components--docs#contributing-to-mjmlhead-and-mjmlattributes)).
+`<meta name="color-scheme" content="light only">` stops Gmail iOS and Apple Mail (iOS and macOS) from changing the colors of the mail in dark mode. Gmail Android ignores it. React 19 removes a `<meta>` element that is rendered in the head, so add it as raw HTML, with an `MjmlRaw` in the `head` of `MjmlMailRoot` (see [Contributing to `<MjmlHead>` and `<MjmlAttributes>`](?path=/docs/docs-building-mails-components--docs#contributing-to-mjmlhead-and-mjmlattributes)).
 
 ## Keep a Logo Readable
 
@@ -97,12 +113,36 @@ In dark mode, several clients make a light content background dark, but leave a 
     }
     ```
 
+### Example: Line Under a Text
+
+A dark line under a dark text, on a white background.
+
+#### Problem
+
+The line is drawn as a background color with `MjmlDivider`. In dark mode, Gmail on Android makes the white background dark, but leaves the line dark. The line is difficult to see.
+
+<Canvas of={DarkModeStories.LineProblem} />
+
+| Gmail on Android 16 (Pixel 10), dark mode                                                              |
+| ------------------------------------------------------------------------------------------------------ |
+| <img width="381" src="/dark-mode/gmail-android-line-problem.png" alt="The line is difficult to see" /> |
+
+#### Fix
+
+The line is a `border-top` on an empty cell with `height: 0`. The cell has a light `background-color`, so Gmail Android makes the border light enough to see. The table has `border-collapse: separate`, because with `collapse`, Gmail Android ignores the background.
+
+<Canvas of={DarkModeStories.LineFix} />
+
+| Gmail on Android 16 (Pixel 10), dark mode                                               |
+| --------------------------------------------------------------------------------------- |
+| <img width="381" src="/dark-mode/gmail-android-line-fix.png" alt="The line is light" /> |
+
 ## Classic Outlook
 
 Classic Outlook for Windows ignores CSS background images, so the background-image techniques above fail there. The `background-url` attribute of an MJML section draws a VML background, but that VML moves the content of the section. Draw the background behind the logo as a VML shape:
 
 1. Draw the shape with `fillcolor`. Use a `v:roundrect` for rounded corners.
-2. Declare the shape `1px` smaller in width and height than the size it must have (see "No CSS `border-radius` in Outlook" in [Email Client Pitfalls](?path=/docs/docs-email-client-pitfalls--docs#no-css-border-radius-in-outlook)).
+2. Declare the shape `1px` smaller in width and height than the size it must have (see [No CSS `border-radius` in Outlook](?path=/docs/docs-client-issues-classic-outlook--docs#no-css-border-radius-in-outlook)).
 3. Put the image in a `v:textbox`. Do not set `line-height: 0` on the element that holds the image in the `v:textbox`: classic Outlook then cuts off the top of the image.
 4. Wrap the shape in one `<!--[if mso]>…<![endif]-->` comment.
 5. Hide the HTML version with `<!--[if !mso]><!-->…<!--<![endif]-->`.

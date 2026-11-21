@@ -1,0 +1,49 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+
+import * as AutoLinkedTextStories from "./__stories__/AutoLinkedText.stories";
+
+<Meta
+    title="Docs/Client Issues/Auto-Linked Text"
+    summary="The links that mail clients create from plain-text addresses, URLs and phone numbers, and how to style them."
+/>
+
+# Auto-Linked Text
+
+## Style the Links That Mail Clients Create
+
+Clients turn plain-text mail addresses, URLs and phone numbers into links of their own, without the mail's inline styles:
+
+- Gmail (iOS and web), Outlook iOS, Apple Mail iOS: a CSS rule in the mail head for links inside text components restores the text style: `.mjmlText a, .htmlText a { color: inherit !important; font-family: inherit !important; font-size: inherit !important; line-height: inherit !important; font-weight: inherit !important; text-decoration: underline !important; }`. The rule also changes links you write yourself, because `inherit !important` wins over their inline styles. To keep a custom color, font or `text-decoration` on such a link, set it with `!important` (see [Custom Color](?path=/docs/docs-building-mails-components--docs#custom-color) of `HtmlInlineLink`).
+- Classic Outlook: colors these links blue, and accepts only one color for them in the whole mail. Set the color in the mail head, inside `<!--[if mso]><style>…</style><![endif]-->`, and choose a color with enough contrast on every background of the mail (`#767677` is an example):
+
+    ```css
+    a:link,
+    span.MsoHyperlink {
+        mso-style-priority: 99;
+        color: #767677;
+        text-decoration: underline;
+    }
+    a:visited,
+    span.MsoHyperlinkFollowed {
+        mso-style-priority: 99;
+        color: #767677;
+        text-decoration: underline;
+    }
+    ```
+
+### Example: Auto-Linked Contact Details
+
+A gray text with a plain-text mail address, URL and phone number.
+
+#### Problem
+
+- Gmail (iOS and web), Outlook iOS and Apple Mail iOS turn the mail address, the URL and the phone number into links. These links do not have the inline styles of the text.
+- Classic Outlook colors these links blue.
+
+<Canvas of={AutoLinkedTextStories.AutoLinksProblem} />
+
+#### Fix
+
+A CSS rule in the mail head gives links inside text components the text style again, in Gmail (iOS and web), Outlook iOS and Apple Mail iOS. A style block for classic Outlook, inside `<!--[if mso]>…<![endif]-->`, sets the link color to `#767677`. Classic Outlook accepts only one link color for the whole mail.
+
+<Canvas of={AutoLinkedTextStories.AutoLinksFix} />

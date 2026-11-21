@@ -88,7 +88,7 @@
         "typescript": "^5.9.3",
         "unplugin-dts": "^1.1.2",
         "vite": "^8.3.8",
-        "vitest": "^5.1.0"
+        "vitest": "^5.1.1"
     },
     "peerDependencies": {
         "@aws-sdk/client-s3": "^3.0.0",

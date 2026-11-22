@@ -52,7 +52,7 @@ alwaysApply: false
 
 ## Entity column types
 
-- IDs: `type: "uuid"` (see [postgresql.instructions.md](postgresql.instructions.md)).
+- IDs: `type: "uuid"`, not auto-incrementing integers. Sequential IDs leak counts and invite enumeration (`/users/1` → `/users/2`), UUIDs can be generated on the client before insert (used by page-tree documents), and they let data move between environments without ID collisions.
 - Strings: always `columnType: "text"` — never `varchar(n)`.
 - JSON: prefer `jsonb` over `json`.
 - Timestamps: `columnType: "timestamp with time zone"`.

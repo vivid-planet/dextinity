@@ -75,7 +75,7 @@ Administrative interfaces should be separated from non-administrative ones as mu
 
 **Technical measures (examples):**
 
-- Access to the API from the site (without authentication) should only occur via BFF (Backend for Frontend).
+- Access to the API from the site (without authentication) should only occur via BFF (Backend for Frontend). In Dextinity, the site's GraphQL route built with `persistedQueryRoute` from `@dextinity/site-nextjs` is this BFF: the browser only sends the hash of a persisted query, the route rejects unknown queries, and it adds the system user's credentials on the server before forwarding the query to the API.
 
 ## Psychological Acceptability
 

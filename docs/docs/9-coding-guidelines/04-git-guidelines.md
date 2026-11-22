@@ -237,6 +237,8 @@ Since you cannot push to them directly, you must create them via the GitLab UI:
 Protection only works if the branch name **starts with `feature/`**.
 :::
 
+The `feature/` prefix is reserved for these protected branches. Never use it for a normal branch. Work on a feature branch happens in normal branches that target it with a merge request.
+
 #### What to Do in Case of Conflicts?
 
 If the `master/main` branch has changed and causes conflicts in your feature branch:

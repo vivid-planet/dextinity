@@ -30,7 +30,7 @@ alwaysApply: false
 ## Git
 
 - Standard long-lived branches: `main`, `staging`, optionally `test`.
-- Feature branches: must start with `feature/` to receive GitLab branch protection.
+- The `feature/` prefix is reserved for protected, long-lived feature branches. Never use it for a normal branch, see [git.instructions.md](git.instructions.md#branches).
 
 ## Consistency with other rules
 

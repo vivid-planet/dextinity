@@ -983,8 +983,8 @@ importers:
         specifier: ^10.0.0
         version: 10.0.0
       react-dropzone:
-        specifier: ^20.2.0
-        version: 20.2.0(@types/react@19.3.0)(react@19.3.1)
+        specifier: ^20.2.1
+        version: 20.2.1(@types/react@19.3.0)(react@19.3.1)
       use-constant:
         specifier: ^2.0.0
         version: 2.0.0(react@19.3.1)
@@ -1607,8 +1607,8 @@ importers:
         specifier: ^4.4.0
         version: 4.4.0
       react-dropzone:
-        specifier: ^20.2.0
-        version: 20.2.0(@types/react@19.3.0)(react@19.3.1)
+        specifier: ^20.2.1
+        version: 20.2.1(@types/react@19.3.0)(react@19.3.1)
     devDependencies:
       '@apollo/client':
         specifier: ^3.14.1
@@ -1782,8 +1782,8 @@ importers:
         specifier: ^3.0.1
         version: 3.0.1(react@19.3.1)
       react-dropzone:
-        specifier: ^20.2.0
-        version: 20.2.0(@types/react@19.3.0)(react@19.3.1)
+        specifier: ^20.2.1
+        version: 20.2.1(@types/react@19.3.0)(react@19.3.1)
       react-final-form-arrays:
         specifier: ^3.1.4
         version: 3.1.4(final-form-arrays@3.1.0(final-form@4.20.10))(final-form@4.20.10)(react-final-form@6.5.9(final-form@4.20.10)(react@19.3.1))(react@19.3.1)
@@ -16501,8 +16501,8 @@ packages:
     peerDependencies:
       react: ^19.3.1
 
-  react-dropzone@20.2.0:
-    resolution: {integrity: sha512-FRlcSp6UFT9Etg57U4+g6O6qF/jH7sUh2Hz67lQlrZJa/3FjfAFvw7DwDSItiG2vBUXTdh2wroEwXPPg7o/jkg==}
+  react-dropzone@20.2.1:
+    resolution: {integrity: sha512-8ldzI42a+iz6jlC5t0HoOO5ce65dU8ZGo8ZpesL2E57JByC8LBUieMrkGj97YYfgMaYKwkhpkfYxKOCKAekywA==}
     engines: {node: '>= 22'}
     peerDependencies:
       '@types/react': '*'
@@ -35290,7 +35290,7 @@ snapshots:
       react: 19.3.1
       scheduler: 0.28.0
 
-  react-dropzone@20.2.0(@types/react@19.3.0)(react@19.3.1):
+  react-dropzone@20.2.1(@types/react@19.3.0)(react@19.3.1):
     dependencies:
       attr-accept: 4.0.1
       file-selector: 5.0.3

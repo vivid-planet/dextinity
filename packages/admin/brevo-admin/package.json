@@ -44,7 +44,7 @@
         "@dextinity/admin-icons": "workspace:*",
         "@dextinity/cms-admin": "workspace:*",
         "date-fns": "^4.4.0",
-        "react-dropzone": "^20.2.0"
+        "react-dropzone": "^20.2.1"
     },
     "devDependencies": {
         "@apollo/client": "^3.14.1",

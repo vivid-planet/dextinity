@@ -26,6 +26,8 @@ export const createAdminTools = ({
             },
             required: ["path"],
         },
+        // Navigating changes no data, so the chat runs it without asking; see "Approval" in the README.
+        readOnlyHint: true,
         handler: (args) => {
             const path = String(args.path ?? "");
             const page = pages.find((candidate) => candidate.path === path);

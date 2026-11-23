@@ -1,6 +1,12 @@
 import type { AiModeTool } from "./AiModeToolsets";
-import { blockEditOperationsSchema, describeBlockEditBatch, describeBlockEditResults, describeBlockSchemaLookup } from "./blockEditTool";
-import { asBlockEditOperations, type EditBlocks } from "./editBlocks";
+import {
+    asBlockEditOperations,
+    createBlockEditOperationsSchema,
+    describeBlockEditBatch,
+    describeBlockEditResults,
+    describeBlockSchemaLookup,
+} from "./blockEditTool";
+import type { EditBlocks } from "./planBlockEdits";
 
 export type AiModePageState = {
     pageTreeNodeId: string;
@@ -48,14 +54,14 @@ export const createPageTools = ({
         inputSchema: {
             type: "object",
             properties: {
-                operations: blockEditOperationsSchema,
+                operations: createBlockEditOperationsSchema({ stateToolName: "get_page_state" }),
             },
             required: ["operations"],
         },
         // The chat runs a tool without asking only if it is read-only, so the user approves every edit.
         readOnlyHint: false,
         handler: async (args, { clearTextSelection }) => {
-            const { results } = await editBlocks({ operations: asBlockEditOperations(args.operations) });
+            const { results } = await editBlocks({ operations: asBlockEditOperations(args.operations, { stateToolName: "get_page_state" }) });
             const { changes, ...result } = describeBlockEditResults({ results, unsavedIn: "the page's content" });
 
             if (changes > 0) {

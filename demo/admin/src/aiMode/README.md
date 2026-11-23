@@ -160,7 +160,7 @@ The conversions are awaited and can query the API, and the user can keep typing 
 
 The tool schema states the fields each operation needs as an `anyOf` over the six operations. `anyOf` rather than `oneOf` because that is the keyword tool schemas support, and the `operation` constants make the branches exclusive anyway. A tool schema is guidance for the agent, not enforced before the handler runs, so `asBlockEditOperations` checks the same requirements itself and names the missing field and what it is for.
 
-`editBlocks.ts` holds the operations, the results, and the planner; `blockEditTool.ts` the schema of the operations and the parts of the tool descriptions that `edit_blocks` and `edit_<entity>_form_blocks` share; `blockChildren.ts` what one kind of change does to the list of blocks; `blockProps.ts` the conversion and the checks.
+`planBlockEdits.ts` holds the operations, the results, and the planner, which know nothing of the tools; `blockEditTool.ts` what `edit_blocks` and `edit_<entity>_form_blocks` share with the agent: the schema of the operations, the check of what the agent passes, the parts of the descriptions, and the result; `blockChildren.ts` what one kind of change does to the list of blocks; `blockProps.ts` the conversion and the checks. The schema and the check take the name of the tool that reports the keys of the blocks, e.g. `get_page_state`, because each of the two tools has its own.
 
 ### What is validated, and where
 

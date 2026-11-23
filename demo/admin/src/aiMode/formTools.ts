@@ -2,10 +2,16 @@ import type { BlockContext, BlockInterface } from "@dextinity/cms-admin";
 import type { FormApi } from "final-form";
 
 import type { AiModeTool } from "./AiModeToolsets";
-import { blockEditOperationsSchema, describeBlockEditBatch, describeBlockEditResults, describeBlockSchemaLookup } from "./blockEditTool";
+import {
+    asBlockEditOperations,
+    createBlockEditOperationsSchema,
+    describeBlockEditBatch,
+    describeBlockEditResults,
+    describeBlockSchemaLookup,
+} from "./blockEditTool";
 import type { BlocksBlockChild } from "./blockProps";
 import { summarizeBlockState } from "./blockStateSummary";
-import { asBlockEditOperations, planBlockEdits } from "./editBlocks";
+import { planBlockEdits } from "./planBlockEdits";
 
 /** A field of a form the AI Mode reads, and except for a single block, also changes. */
 export type AiModeFormField = { name: string; label: string } & (
@@ -205,7 +211,7 @@ function createEditBlocksTool({
             type: "object",
             properties: {
                 field: { type: "string", enum: blocksFields.map(({ name }) => name), description: "The block field to change." },
-                operations: blockEditOperationsSchema,
+                operations: createBlockEditOperationsSchema({ stateToolName }),
             },
             required: ["field", "operations"],
         },
@@ -221,7 +227,7 @@ function createEditBlocksTool({
             const plannedBlocks = (form.getState().values[field.name] as BlocksState).blocks;
             const { apply, results } = await planBlockEdits({
                 blocks: plannedBlocks,
-                operations: asBlockEditOperations(args.operations),
+                operations: asBlockEditOperations(args.operations, { stateToolName }),
                 supportedBlocks: field.supportedBlocks,
                 insertableBlocks: Object.fromEntries(Object.entries(field.supportedBlocks).filter(([, block]) => isBlockInsertable(block))),
                 schemaRootBlockName: field.schemaBlockName,

@@ -8,7 +8,7 @@ export interface PreviewElement {
     element: HTMLElement;
     adminRoute: string;
     label: string;
-    measurementTarget: "element";
+    measurementTarget: HTMLElement[];
 }
 
 export interface IFrameBridge {
@@ -17,18 +17,27 @@ export interface IFrameBridge {
     removePreviewElement: (previewElement: PreviewElement) => void;
 }
 
+// A block without a single root element, such as a rich text in a column, has its class on several elements.
 function findPreviewElements(container: HTMLElement): PreviewElement[] {
-    return Array.from(container.querySelectorAll(PREVIEW_ROUTE_CLASS_SELECTOR)).flatMap((element) => {
+    const previewElementsByRoute = new Map<string, PreviewElement>();
+
+    for (const element of Array.from(container.querySelectorAll(PREVIEW_ROUTE_CLASS_SELECTOR))) {
         const routeAndLabel = readPreviewRouteAndLabelFromClassNames(element);
 
         if (routeAndLabel === undefined || !(element instanceof HTMLElement)) {
-            return [];
+            continue;
         }
 
-        const previewElement: PreviewElement = { element, ...routeAndLabel, measurementTarget: "element" };
+        const previewElementWithSameRoute = previewElementsByRoute.get(routeAndLabel.adminRoute);
 
-        return [previewElement];
-    });
+        if (previewElementWithSameRoute === undefined) {
+            previewElementsByRoute.set(routeAndLabel.adminRoute, { element, ...routeAndLabel, measurementTarget: [element] });
+        } else {
+            previewElementWithSameRoute.measurementTarget.push(element);
+        }
+    }
+
+    return Array.from(previewElementsByRoute.values());
 }
 
 /**

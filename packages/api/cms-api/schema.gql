@@ -583,6 +583,11 @@ type Query {
   Returns the action log of all entities, restricted to the entries the current user could read in the action log of each entity.
   """
   myActionLogs(offset: Int! = 0, limit: Int! = 25, filter: ActionLogFilter, sort: [ActionLogSort!]): PaginatedActionLogs!
+
+  """
+  Returns the names of the entities that occur in the entries of `myActionLogs`, for instance to offer them as a filter.
+  """
+  myActionLogEntityNames: [String!]!
   builds(limit: Float): [Build!]!
   autoBuildStatus: AutoBuildStatus!
   buildTemplates: [BuildTemplate!]!

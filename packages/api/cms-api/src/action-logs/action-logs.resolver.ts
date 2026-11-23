@@ -1,4 +1,4 @@
-import { type AnyEntity, EntityManager, type ObjectQuery, PostgreSqlDriver, raw } from "@mikro-orm/postgresql";
+import { type AnyEntity, EntityManager, type ObjectQuery, PostgreSqlDriver, type QBFilterQuery, raw } from "@mikro-orm/postgresql";
 import { BadRequestException, ForbiddenException, Inject, type Type } from "@nestjs/common";
 import { Args, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 
@@ -120,6 +120,25 @@ export class ActionLogsResolver {
             },
         );
         return new PaginatedActionLogs(entities, totalCount);
+    }
+
+    @Query(() => [String], {
+        description: "Returns the names of the entities that occur in the entries of `myActionLogs`, for instance to offer them as a filter.",
+    })
+    @RequiredPermission("actionLog", { skipScopeCheck: true })
+    async myActionLogEntityNames(@GetCurrentUser() user: CurrentUser | SystemUser): Promise<string[]> {
+        const readableActionLogsFilter = await this.actionLogsAclService.getReadableActionLogsFilter(user);
+        if (readableActionLogsFilter === null) {
+            return [];
+        }
+
+        const rows = await this.entityManager
+            .createQueryBuilder(ActionLog)
+            .select("entityName", true)
+            .where(readableActionLogsFilter as QBFilterQuery<ActionLog>)
+            .orderBy({ entityName: "ASC" })
+            .execute<Array<{ entityName: string }>>();
+        return rows.map(({ entityName }) => entityName);
     }
 
     private getLoggedEntity(entity: string): Type<AnyEntity> {

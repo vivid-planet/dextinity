@@ -28,8 +28,9 @@ import { ActionLogShowVersionDialog } from "../../actionLog/actionLogShowVersion
 import { ActionLogTypeChip } from "../../components/actionLogTypeChip/ActionLogTypeChip";
 import { ScopeCell } from "../../components/scopeCell/ScopeCell";
 import { UserCell } from "../../components/userCell/UserCell";
-import { globalActionLogGridQuery } from "./GlobalActionLogGrid.gql";
+import { globalActionLogEntityNamesQuery, globalActionLogGridQuery } from "./GlobalActionLogGrid.gql";
 import type {
+    GQLGlobalActionLogEntityNamesQuery,
     GQLGlobalActionLogGridFragment,
     GQLGlobalActionLogGridQuery,
     GQLGlobalActionLogGridQueryVariables,
@@ -83,6 +84,8 @@ export function GlobalActionLogGrid() {
         ...usePersistentColumnState("GlobalActionLogGrid"),
     };
 
+    const { data: entityNamesData } = useQuery<GQLGlobalActionLogEntityNamesQuery>(globalActionLogEntityNamesQuery);
+
     const scopeValueOptions = useMemo(
         () => [
             { value: JSON.stringify(null), label: intl.formatMessage(messages.globalContentScope) },
@@ -122,6 +125,8 @@ export function GlobalActionLogGrid() {
             {
                 field: "entityName",
                 headerName: intl.formatMessage({ id: "dextinity.globalActionLog.columns.entityName", defaultMessage: "Entity type" }),
+                type: "singleSelect",
+                valueOptions: entityNamesData?.myActionLogEntityNames ?? [],
                 width: 150,
                 renderCell: ({ value }) => <Chip label={value} />,
             },
@@ -170,7 +175,7 @@ export function GlobalActionLogGrid() {
                 ),
             },
         ],
-        [intl, scopeValueOptions],
+        [intl, scopeValueOptions, entityNamesData?.myActionLogEntityNames],
     );
 
     const { filter: gqlFilter } = muiGridFilterToGql(columns, dataGridProps.filterModel);

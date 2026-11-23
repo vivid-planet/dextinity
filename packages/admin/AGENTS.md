@@ -55,7 +55,7 @@ All packages use **Vitest** as the test framework.
 | ---------------------- | ---------------- | --------------- |
 | `@dextinity/admin`     | jsdom            | vitest.setup.ts |
 | `@dextinity/admin-rte` | jsdom            | —               |
-| `@dextinity/cms-admin` | jsdom            | vitest.setup.ts |
+| `@dextinity/cms-admin` | jsdom            | —               |
 
 The remaining packages (`admin-babel-preset`, `admin-color-picker`, `admin-date-time`, `admin-icons`, `brevo-admin`) do not have tests.
 

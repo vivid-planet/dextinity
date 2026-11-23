@@ -25,6 +25,7 @@ import {
     useDataGridExcelExport,
     useDataGridRemote,
     usePersistentColumnState,
+    useStackSwitchApi,
 } from "@dextinity/admin";
 import { Add as AddIcon, Disabled, Edit, Education as EducationIcon, Excel, Online } from "@dextinity/admin-icons";
 import { CircularProgress, IconButton, useTheme } from "@mui/material";
@@ -35,6 +36,7 @@ import {
     type GridRowSelectionModel,
     type GridSlotsComponent,
 } from "@mui/x-data-grid-pro";
+import { useAiModeDataGridToolset } from "@src/aiMode/useAiModeDataGridToolset";
 import { ProductCategoryFilterOperators } from "@src/products/ProductCategoryFilter";
 import { useMemo, useState } from "react";
 import { FormattedMessage, FormattedNumber, useIntl } from "react-intl";
@@ -348,6 +350,18 @@ export function ProductsGrid() {
             sort: muiGridSortToGql(sortModel, columns),
         },
         notifyOnNetworkStatusChange: false,
+    });
+    const stackSwitchApi = useStackSwitchApi();
+    useAiModeDataGridToolset({
+        entityName: "product",
+        entityLabel: "products",
+        columns,
+        dataGridProps,
+        rows: data?.products.nodes ?? [],
+        totalCount: data?.products.totalCount,
+        isLoading: loading,
+        openEditForm: (id) => stackSwitchApi.activatePage("edit", id),
+        openAddForm: () => stackSwitchApi.activatePage("add", "add"),
     });
     if (error) {
         throw error;

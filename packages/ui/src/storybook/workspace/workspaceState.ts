@@ -4,7 +4,7 @@ export type WorkspaceZoom = "fit" | "0.5" | "0.75" | "1" | "1.5";
 
 export type WorkspaceMode = "components" | "prototypes";
 
-export type WorkspaceCompare = "off" | "viewports" | "variants";
+export type WorkspaceCompare = "off" | "viewports" | "variants" | "swipe";
 
 export interface WorkspaceState {
     /** The tab: a clickable prototype of a whole app, or a single story of the Storybook. */

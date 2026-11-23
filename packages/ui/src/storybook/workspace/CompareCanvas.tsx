@@ -13,7 +13,7 @@ import styles from "./CompareCanvas.module.scss";
 import { findElementByPath, getElementPath } from "./frameElements";
 import type { WorkspaceZoom } from "./workspaceState";
 
-export type CompareMode = "viewports" | "variants";
+export type CompareMode = "viewports" | "variants" | "swipe";
 
 const variantSettings = [
     { key: "colorScheme", setting: colorSchemeSetting, label: "Color scheme" },
@@ -201,6 +201,8 @@ export function CompareCanvas({
     onPageChange: (page: string) => void;
 }) {
     const [variants, setVariants] = useState(readVariants);
+    // Where variant B starts when swiping, in percent of the width
+    const [split, setSplit] = useState(50);
     const [canvasElement, setCanvasElement] = useState<HTMLDivElement | null>(null);
     const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
     const [loadCount, setLoadCount] = useState(0);
@@ -270,8 +272,10 @@ export function CompareCanvas({
     });
 
     // One scale for all frames, so that their sizes compare as they are
-    const gaps = frameGap * (frames.length - 1);
-    const framesWidth = frames.reduce((sum, frame) => sum + frame.width, 0);
+    // Swiping lays the two variants on top of each other, so they take the room of one
+    const isSwiping = mode === "swipe";
+    const gaps = isSwiping ? 0 : frameGap * (frames.length - 1);
+    const framesWidth = isSwiping ? frames[0].width : frames.reduce((sum, frame) => sum + frame.width, 0);
     const maxHeight = Math.max(...frames.map((frame) => frame.height));
     const fitScale = Math.max(0.1, Math.min(1, (canvasSize.width - gaps) / framesWidth, (canvasSize.height - labelHeight) / maxHeight));
     const scale = zoom === "fit" ? fitScale : Number(zoom);
@@ -280,48 +284,108 @@ export function CompareCanvas({
         setVariants((current) => current.map((variant, variantIndex) => (variantIndex === index ? { ...variant, [key]: value } : variant)));
     }
 
+    function renderFrame(frame: CompareFrame, index: number) {
+        return (
+            <div className={styles.frame} style={{ width: frame.width, height: frame.height, transform: `scale(${scale})` }}>
+                <iframe
+                    key={`${getFrameSrc(storyUrl, "", frame.variant)}-${reloadKey}`}
+                    ref={(element) => {
+                        frameRefs.current[index] = element;
+                    }}
+                    className={styles.iframe}
+                    src={getFrameSrc(storyUrl, pageRef.current, frame.variant)}
+                    title={frame.label}
+                    onLoad={(event) => {
+                        applyDensity(frame, event.currentTarget);
+                        setLoadCount((count) => count + 1);
+                    }}
+                />
+            </div>
+        );
+    }
+
+    function renderSheet(frame: CompareFrame, index: number) {
+        return (
+            <div className={styles.sheet} style={{ height: frame.height * scale }}>
+                {renderFrame(frame, index)}
+            </div>
+        );
+    }
+
+    function renderLabel(frame: CompareFrame, index: number) {
+        return (
+            <div className={styles.label}>
+                <span className={styles.name}>{frame.label}</span>
+                {frame.variant ? (
+                    <span className={styles.variantSettings}>
+                        {variantSettings.map(({ key, setting, label }) => (
+                            <VariantSetting
+                                key={key}
+                                label={label}
+                                options={setting.options}
+                                value={frame.variant?.[key]}
+                                onChange={(value) => changeVariant(index, key, value)}
+                            />
+                        ))}
+                    </span>
+                ) : (
+                    <span>
+                        {frame.width} × {frame.height} · {Math.round(scale * 100)} %
+                    </span>
+                )}
+            </div>
+        );
+    }
+
+    if (isSwiping) {
+        const [first] = frames;
+        return (
+            <div ref={setCanvasElement} className={styles.canvas}>
+                <div className={styles.frames}>
+                    <div className={styles.item} style={{ width: first.width * scale }}>
+                        <div className={styles.swipeLabels}>
+                            {frames.map((frame, index) => (
+                                <div key={frame.id}>{renderLabel(frame, index)}</div>
+                            ))}
+                        </div>
+                        <div className={styles.sheet} style={{ height: first.height * scale }}>
+                            {frames.map((frame, index) => (
+                                <div
+                                    key={frame.id}
+                                    className={styles.swipeLayer}
+                                    // Clipped-off parts take no clicks, so each side of the divider uses its own variant
+                                    style={index === 0 ? undefined : { clipPath: `inset(0 0 0 ${split}%)` }}
+                                >
+                                    {renderFrame(frame, index)}
+                                </div>
+                            ))}
+                            <div className={styles.swipeDivider} style={{ left: `${split}%` }}>
+                                <span>A</span>
+                                <span>B</span>
+                            </div>
+                        </div>
+                        <input
+                            type="range"
+                            className={styles.swipeRange}
+                            aria-label="Divider between variant A and B"
+                            min={0}
+                            max={100}
+                            value={split}
+                            onChange={(event) => setSplit(Number(event.target.value))}
+                        />
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div ref={setCanvasElement} className={styles.canvas}>
             <div className={styles.frames} style={{ gap: frameGap }}>
                 {frames.map((frame, index) => (
                     <div key={frame.id} className={styles.item} style={{ width: frame.width * scale }}>
-                        <div className={styles.label}>
-                            <span className={styles.name}>{frame.label}</span>
-                            {frame.variant ? (
-                                <span className={styles.variantSettings}>
-                                    {variantSettings.map(({ key, setting, label }) => (
-                                        <VariantSetting
-                                            key={key}
-                                            label={label}
-                                            options={setting.options}
-                                            value={frame.variant?.[key]}
-                                            onChange={(value) => changeVariant(index, key, value)}
-                                        />
-                                    ))}
-                                </span>
-                            ) : (
-                                <span>
-                                    {frame.width} × {frame.height} · {Math.round(scale * 100)} %
-                                </span>
-                            )}
-                        </div>
-                        <div className={styles.sheet} style={{ height: frame.height * scale }}>
-                            <div className={styles.frame} style={{ width: frame.width, height: frame.height, transform: `scale(${scale})` }}>
-                                <iframe
-                                    key={`${getFrameSrc(storyUrl, "", frame.variant)}-${reloadKey}`}
-                                    ref={(element) => {
-                                        frameRefs.current[index] = element;
-                                    }}
-                                    className={styles.iframe}
-                                    src={getFrameSrc(storyUrl, pageRef.current, frame.variant)}
-                                    title={frame.label}
-                                    onLoad={(event) => {
-                                        applyDensity(frame, event.currentTarget);
-                                        setLoadCount((count) => count + 1);
-                                    }}
-                                />
-                            </div>
-                        </div>
+                        {renderLabel(frame, index)}
+                        {renderSheet(frame, index)}
                     </div>
                 ))}
             </div>

@@ -55,6 +55,7 @@ const compareOptions: Array<{ value: WorkspaceCompare; icon: ReactNode; "aria-la
     { value: "off", icon: <Icon name="window" />, "aria-label": "One frame" },
     { value: "viewports", icon: <Icon name="device-tablet" />, "aria-label": "Phone, tablet, and desktop side by side" },
     { value: "variants", icon: <Icon name="swap-boxes" />, "aria-label": "Two variants side by side" },
+    { value: "swipe", icon: <Icon name="move-vertical" />, "aria-label": "Two variants on top of each other, with a divider" },
 ];
 
 const modeTabs: Array<{ value: WorkspaceMode; label: string }> = [
@@ -896,7 +897,7 @@ export function WorkspaceShell() {
                             />
                         ) : isComparing && storyUrl ? (
                             <CompareCanvas
-                                mode={state.compare === "variants" ? "variants" : "viewports"}
+                                mode={state.compare === "off" ? "viewports" : state.compare}
                                 storyUrl={storyUrl}
                                 startPage={prototypeStartPage}
                                 density={density}

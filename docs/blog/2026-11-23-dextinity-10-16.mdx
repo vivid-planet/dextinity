@@ -1,0 +1,196 @@
+---
+slug: dextinity-10-16
+title: "Dextinity 10.16: Leaner video blocks, CRUD agent skills and a stable TipTap block"
+description: Dextinity 10.16 lets video blocks store only what a site uses, adds agent skills that scaffold CRUD features, marks the TipTap Rich Text Block as stable and fixes search, uploads and DAM tags.
+authors: [dextinity]
+tags: [release]
+image: /img/blog/release-10-16/dextinity-10-16-poster.jpg
+---
+
+<video
+    src="/img/blog/release-10-16/dextinity-10-16.mp4"
+    poster="/img/blog/release-10-16/dextinity-10-16-poster.jpg"
+    autoPlay
+    muted
+    loop
+    playsInline
+    controls
+    style={{ width: "100%", borderRadius: 12 }}
+/>
+
+Dextinity 10.16 is out. Video blocks can now leave out the options your site doesn't use, coding agents get skills to scaffold complete CRUD features, and the TipTap Rich Text Block is no longer experimental. Editors will also notice a search that finds results while they type and a few fixes in the Asset Manager and in forms.
+
+<!-- truncate -->
+
+## Highlights
+
+### Video blocks that store only what your site uses
+
+The `DamVideoBlock` always stores autoplay, loop, show controls and a preview image, even if your site uses none of them. The admin factory could already hide these options from the editor, but they stayed in the block's data, in `blocks.generated.ts` and in the database.
+
+The new `createDamVideoBlock` factory in `@dextinity/cms-api` leaves out what you disable: a disabled option is neither part of the block's data nor accepted as input. Both options are enabled by default and disabled by passing `false`:
+
+- `controls`: autoplay, loop and show controls, offered together
+- `previewImage`: the poster image
+
+<video src="/img/blog/release-10-16/dam-video-block.mp4" autoPlay muted loop playsInline controls style={{ width: "100%", borderRadius: 12 }} />
+
+Create the block in the API and in the admin with the same options and the same name. `DamVideo` is taken by the exported `DamVideoBlock`, so a block created with the factory needs a name of its own:
+
+```ts
+// API
+import { createDamVideoBlock } from "@dextinity/cms-api";
+
+// For a site that only reads the video's URL
+export const TeaserVideoBlock = createDamVideoBlock({ controls: false, previewImage: false }, "TeaserVideo");
+```
+
+```tsx
+// Admin
+import { createDamVideoBlock } from "@dextinity/cms-admin";
+
+export const TeaserVideoBlock = createDamVideoBlock({ name: "TeaserVideo", controls: false, previewImage: false });
+```
+
+![The default DamVideoBlock offers autoplay, loop, controls and a preview image. The block created with createDamVideoBlock and both options disabled only offers the video file.](/img/blog/release-10-16/video-block.webp)
+
+This is opt-in: `DamVideoBlock` is now created from the factory with both options enabled, so nothing changes for existing blocks. A block created by the factory carries the migrations of the `DamVideoBlock`, so it can replace the `DamVideoBlock` in an existing project. Values stored before an option was disabled survive reading, and are dropped the next time an editor saves the block.
+
+**Migration note:** the `supports` option of the admin factory is deprecated. Replace it together with the API block:
+
+```diff
+-createDamVideoBlock({ name: "TeaserVideo", supports: ["controls"] });
++createDamVideoBlock({ name: "TeaserVideo", previewImage: false });
+```
+
+[#6272](https://github.com/vivid-planet/dextinity/pull/6272)
+
+### Agent skills that scaffold CRUD features
+
+Coding agents that build a CRUD feature in a Dextinity project don't know our conventions, so their code rarely matches what `api-generator` and `admin-generator` produce. `@dextinity/agent-features` now ships skills that describe these conventions. An agent that uses them writes code in the generator's style, and can also handle what the generator can't express, such as custom validation or a non-standard page layout.
+
+`dextinity-crud` is the entry point. Describe the entity in a short prompt:
+
+> Create CRUD for a `BlogPost` entity with title, content (rich text), author (string), and publishedAt (date).
+
+The skill shows a plan and waits for your confirmation. It then generates the API and the admin UI phase by phase, checks each phase with lint and `tsc`, commits it separately and finally adds the menu entry.
+
+![dextinity-crud runs dextinity-api-graphql, then dextinity-admin-enum, dextinity-admin-datagrid and dextinity-admin-form, then dextinity-admin-pages and the MasterMenu entry.](/img/blog/release-10-16/crud-skills.webp)
+
+Each skill also works on its own, for example to add a column to an existing grid:
+
+- `dextinity-api-graphql`: GraphQL resolver, DTOs and permission for a MikroORM entity
+- `dextinity-admin-enum`: translated labels, chips and form fields for GraphQL enums
+- `dextinity-admin-datagrid`: server-side DataGrid with filtering, sorting, search and pagination
+- `dextinity-admin-form`: Final Form edit form with create and edit modes and save conflict detection
+- `dextinity-admin-pages`: page navigation with `Stack`, `StackSwitch`, `RouterTabs` and `EditDialog`
+
+The docs now recommend the skills over the CRUD generator, which will be deprecated in a future version. See [Agent skills](/docs/agent-skills/) for more detailed prompts. [#5323](https://github.com/vivid-planet/dextinity/pull/5323)
+
+### The TipTap Rich Text Block is stable
+
+`createTipTapRichTextBlock` and `renderTipTapRichText` are no longer experimental. Their API has settled, so they now follow the regular semantic-versioning guarantees: no breaking changes in minor releases. The docs recommend the block for all projects.
+
+<video
+    src="/img/blog/release-10-16/tiptap-rich-text-block.mp4"
+    autoPlay
+    muted
+    loop
+    playsInline
+    controls
+    style={{ width: "100%", borderRadius: 12 }}
+/>
+
+![createTipTapRichTextBlock is imported from @dextinity/cms-api and @dextinity/cms-admin, renderTipTapRichText from @dextinity/site-nextjs.](/img/blog/release-10-16/tiptap-stable.webp)
+
+[#7254](https://github.com/vivid-planet/dextinity/pull/7254)
+
+## Security
+
+- **Block preview:** `BlockPreviewProvider` adds the `X-Block-Preview` header, which holds the content scope JWT, to requests to the preview's own host. When `fetch` was called with a `Request` object, the header was added to requests to every host. Other hosts could receive the token, and hosts that don't allow the header failed the CORS preflight, for instance when MapLibre loads its map style. The header now only goes to the preview's own host. Update `@dextinity/site-react` or `@dextinity/site-nextjs`. [#7322](https://github.com/vivid-planet/dextinity/pull/7322)
+- **Table block:** The API saved a table block created with `createTableBlock` without validating its columns, rows and cells. For example, it saved a `javascript:` link in a cell, which the rich text block rejects outside a table. The content is now validated. [#7320](https://github.com/vivid-planet/dextinity/pull/7320)
+
+## Fixes editors will notice
+
+### Search results while you type
+
+The search in the admin header only found whole words: typing `Navig` didn't find the page `Navigation`. The last word of the search now matches as a prefix, so results appear while the editor is still typing. This applies to `myFullTextSearch` and `pageTreeFullTextSearch`.
+
+<video src="/img/blog/release-10-16/full-text-search.mp4" autoPlay muted loop playsInline controls style={{ width: "100%", borderRadius: 12 }} />
+
+![Before: typing "Fix" showed "No results found". After: typing "Navig" already finds the page "Navigation".](/img/blog/release-10-16/search.webp)
+
+[#7403](https://github.com/vivid-planet/dextinity/pull/7403)
+
+### License tags in the Asset Manager are no longer clipped
+
+When the license column was narrower than the "License expires in …" tag, the tag was clipped on both sides: the warning icon disappeared on the left and the text was cut off on the right. The license and archived tags are now chips that keep the icon visible and end the text with an ellipsis.
+
+<video src="/img/blog/release-10-16/dam-license-tags.mp4" autoPlay muted loop playsInline controls style={{ width: "100%", borderRadius: 12 }} />
+
+![Before: the license tags are clipped on both sides. After: the icon stays visible and the text ends with an ellipsis.](/img/blog/release-10-16/dam-tags.webp)
+
+[#7196](https://github.com/vivid-planet/dextinity/pull/7196)
+
+### Failed uploads show an error
+
+When an upload in `FinalFormFileUpload` failed at the network level, for instance because of a dropped connection, or when the response wasn't JSON, the file stayed in the loading state forever. The file now shows "Upload failed." and can be removed and uploaded again.
+
+<video src="/img/blog/release-10-16/file-upload-error.mp4" autoPlay muted loop playsInline controls style={{ width: "100%", borderRadius: 12 }} />
+
+![Before: the file stays in the loading state. After: the file shows "Upload failed."](/img/blog/release-10-16/upload-error.webp)
+
+[#7231](https://github.com/vivid-planet/dextinity/pull/7231)
+
+### "Standard" redirects are now "Standard (Temporary)"
+
+The redirect type "Standard" didn't say which kind of redirect it creates, so it was unclear how it differs from "Permanent". The label is now "Standard (Temporary)".
+
+<video src="/img/blog/release-10-16/redirect-type-label.mp4" autoPlay muted loop playsInline controls style={{ width: "100%", borderRadius: 12 }} />
+
+[#7232](https://github.com/vivid-planet/dextinity/pull/7232)
+
+### Copied pages keep their order
+
+When editors copied several pages with subpages and pasted them, for instance into another scope, the pasted pages ended up in the order their data finished loading. Pages and subpages now keep the order of the page tree.
+
+<video src="/img/blog/release-10-16/page-tree-copy-order.mp4" autoPlay muted loop playsInline controls style={{ width: "100%", borderRadius: 12 }} />
+
+[#7205](https://github.com/vivid-planet/dextinity/pull/7205)
+
+### The menu shows when all items are in one group
+
+`MasterMenu` hid itself when it had at most one top-level entry, and counted a group as a single entry. Users whose permitted pages all sat inside one group got no navigation at all. The menu now counts the items inside groups and collapsible items. [#7233](https://github.com/vivid-planet/dextinity/pull/7233)
+
+## For developers and ops
+
+- **`dextinity-upload-build-assets` deletes old build assets:** The storage keeps the build assets of the last 10 uploads, configurable with `--keep-builds` (or `keepBuilds` of `uploadBuildAssets`). The storage needs to allow listing and deleting files. Build assets uploaded before this version aren't deleted: remove them manually from `<storage-key-prefix>/_next/static/` once all running instances serve builds uploaded with 10.16. [#7025](https://github.com/vivid-planet/dextinity/pull/7025)
+- **`rewriteImageSrc` in the mail `Config`:** Returns the `src` that `HtmlImage`, `MjmlImage`, `HtmlPixelImageBlock` and `MjmlPixelImageBlock` render, including the image in classic Outlook's VML. Use it when mail clients can't load an image from its own URL, for instance to reference an attachment of the sent mail. [#7283](https://github.com/vivid-planet/dextinity/pull/7283)
+
+    ```tsx
+    <MjmlMailRoot config={{ rewriteImageSrc: ({ src }) => `cid:${registerInlineImage(src)}` }}>
+        <MailContent />
+    </MjmlMailRoot>
+    ```
+
+- **Mail pixel image blocks:** `HtmlPixelImageBlock` and `MjmlPixelImageBlock` requested an invalid image width for full-width images, so the image failed to load. [#7282](https://github.com/vivid-planet/dextinity/pull/7282)
+- **`renderMailHtml`:** No longer crashes when a font family has quotes. [#7333](https://github.com/vivid-planet/dextinity/pull/7333)
+- **`dextinity-mail-react` skill:** Points the agent to the `@dextinity/mail-react` Storybook and its MCP server for the usage guide. [#7155](https://github.com/vivid-planet/dextinity/pull/7155)
+- **File uploads:** `FileUploadsService.delete()` keeps the stored file while another file upload with the same content still uses it. [#7368](https://github.com/vivid-planet/dextinity/pull/7368)
+- **Brevo campaigns:** Campaigns are cached by scope and Brevo ID [#7206](https://github.com/vivid-planet/dextinity/pull/7206), `loadBrevoCampaignsByIds` returns campaigns beyond the first page [#7180](https://github.com/vivid-planet/dextinity/pull/7180), and a campaign whose background send was interrupted is set to `FAILED` after an hour, so it can be edited and sent again [#7170](https://github.com/vivid-planet/dextinity/pull/7170).
+- **One-of blocks:** `output2State` keeps the additional fields of a one-of block, such as a link's title. [#7321](https://github.com/vivid-planet/dextinity/pull/7321)
+- **`useUserPermissionCheck`:** Returns a referentially stable callback. [#7201](https://github.com/vivid-planet/dextinity/pull/7201)
+- **`UserPermissionsUserGrid`:** No longer adds duplicate `actions` columns on re-render. [#7195](https://github.com/vivid-planet/dextinity/pull/7195)
+
+## Dependency updates
+
+| Area                | Notable updates                                                                                                                                   |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🧱 Frameworks       | NestJS `^11.2.11` · Next.js `^16.4.6` · MikroORM `^6.6.19` · Apollo Server `^5.5.2`                                                               |
+| 🎨 UI & editor      | TipTap `^3.34.0` · Material UI `^8.29.6` · react-dropzone `^20.2.1` · react-hook-form `^7.92.0`                                                   |
+| 🔒 Security & infra | DOMPurify `^3.4.18` · jose `^6.2.18` · fast-xml-parser `^5.12.1` · AWS SDK `^3.1173.0` · Sentry `^11.14.0` · nodemailer `^10.6.1` · OpenTelemetry |
+| 🛠️ Tooling          | Vite `^8.3.8` · Vitest `5.1.1` · Storybook `10.6.8` · pnpm `12.21.0` · typescript-eslint `^8.73.0` · Prettier `^3.10.1` · Playwright `^1.65.1`    |
+
+The major updates in this release only affect the development setup: Stylelint 18, MSW 3, `@testing-library/jest-dom` 8 and the PostgreSQL 17 image of the demo.
+
+All changes are in the [release notes on GitHub](https://github.com/vivid-planet/dextinity/releases/tag/v10.16.0).

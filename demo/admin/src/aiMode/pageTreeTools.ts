@@ -6,7 +6,7 @@ const categories = pageTreeCategories.map(({ category }) => category);
 
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-export const createPageTreeTools = ({
+export const createPageTreeNavigationTools = ({
     navigate,
     scopeUrl,
 }: {

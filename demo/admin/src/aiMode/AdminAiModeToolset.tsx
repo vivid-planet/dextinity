@@ -6,7 +6,7 @@ import { useLocation, useNavigate } from "react-router";
 import { findOpenAdminPage, getAdminPages } from "./adminPages";
 import { createAdminTools } from "./adminTools";
 import { AiModeToolset } from "./AiModeToolsets";
-import { createPageTreeTools } from "./pageTreeTools";
+import { createPageTreeNavigationTools } from "./pageTreeTools";
 
 /** The toolset of the whole admin, so that the AI Mode is available on every page and can open any page of the menu. */
 export function AdminAiModeToolset({ menu, children }: PropsWithChildren<{ menu: MasterMenuData }>) {
@@ -27,7 +27,7 @@ export function AdminAiModeToolset({ menu, children }: PropsWithChildren<{ menu:
             tools={[
                 ...createAdminTools({ pages, navigate: (path) => void navigate(path), scopeUrl: match.url }),
                 // On every page rather than only in the page tree, so that the agent opens a page's editor in one step.
-                ...(isAllowed("pageTree") ? createPageTreeTools({ navigate: (path) => void navigate(path), scopeUrl: match.url }) : []),
+                ...(isAllowed("pageTree") ? createPageTreeNavigationTools({ navigate: (path) => void navigate(path), scopeUrl: match.url }) : []),
             ]}
         >
             {children}

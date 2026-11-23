@@ -1,5 +1,5 @@
-import type { BlockContext, BlockInterface } from "@dextinity/cms-admin";
-
+import type { BlockContext } from "../blocks/context/BlockContext";
+import type { BlockInterface } from "../blocks/types";
 import {
     type AdditionalItemFields,
     clampInsertIndex,
@@ -93,17 +93,6 @@ export const isBlockEditChange = (result: BlockEditResult): boolean => {
             return true;
     }
 };
-
-type EditBlocksRequest = {
-    /** Applied in the order given; see `planBlockEdits`. */
-    operations: BlockEditOperation[];
-};
-
-type EditBlocksResult = {
-    results: BlockEditResult[];
-};
-
-export type EditBlocks = (request: EditBlocksRequest) => Promise<EditBlocksResult>;
 
 // The positions the agent reads back are 1-based: it counts the operations it wrote, not the array
 // indexes it did not think about.

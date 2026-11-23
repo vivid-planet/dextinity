@@ -1,16 +1,32 @@
 import { createContext, type PropsWithChildren, useContext, useEffect, useState, useSyncExternalStore } from "react";
 
-import type { HostTool } from "./aiHubBridge";
-
-/** What the flyout hands every tool call besides its arguments, for what the flyout owns rather than the page. */
-type AiModeToolHelpers = {
+/**
+ * What the chat hands every tool call besides its arguments, for what the chat owns rather than the page.
+ *
+ * @experimental
+ */
+export type AiModeToolHelpers = {
     clearTextSelection: () => void;
 };
 
-export type AiModeTool = Omit<HostTool, "handler"> & {
+/**
+ * A tool the agent calls, as the host tools of the AI Hub's chat describe it.
+ *
+ * @experimental
+ */
+export type AiModeTool = {
+    /** Unique among the tools of all mounted toolsets, in snake case. */
+    name: string;
+    description: string;
+    /** The JSON schema of the arguments. */
+    inputSchema: Record<string, unknown>;
+    /** Whether the tool only reads. The chat asks the user to approve every call of a tool that isn't read-only. */
+    readOnlyHint?: boolean;
+    metadata?: Record<string, string>;
     handler: (args: Record<string, unknown>, helpers: AiModeToolHelpers) => Promise<unknown> | unknown;
 };
 
+/** @experimental */
 export type AiModeToolsetOptions = {
     /** Names the toolset in the context pushed to the agent, e.g. "pageTree". */
     id: string;
@@ -29,6 +45,7 @@ type Registration = {
     signature: string;
 };
 
+/** @experimental */
 export type AiModeToolsetsStore = {
     /** The mounted toolsets, outermost first. */
     getToolsets: () => AiModeToolsetOptions[];
@@ -50,7 +67,7 @@ function getSignature(depth: number, { id, description, context, tools = [] }: A
     return JSON.stringify({ depth, id, description, context, tools: tools.map(getToolDefinition) });
 }
 
-export function getToolDefinition({ handler: _handler, ...definition }: AiModeTool) {
+function getToolDefinition({ handler: _handler, ...definition }: AiModeTool) {
     return definition;
 }
 
@@ -133,16 +150,19 @@ const AiModeToolsetsContext = createContext<AiModeToolsetsStore>(createAiModeToo
 
 const AiModeToolsetDepthContext = createContext(0);
 
+/** @experimental */
 export function AiModeToolsetsProvider({ children }: PropsWithChildren) {
     const [store] = useState(createAiModeToolsetsStore);
 
     return <AiModeToolsetsContext.Provider value={store}>{children}</AiModeToolsetsContext.Provider>;
 }
 
+/** @experimental */
 export function useAiModeToolsetsStore() {
     return useContext(AiModeToolsetsContext);
 }
 
+/** @experimental */
 export function useHasAiModeToolsets() {
     const store = useAiModeToolsetsStore();
 
@@ -152,6 +172,8 @@ export function useHasAiModeToolsets() {
 /**
  * Registers what the agent sees and can do while the calling component is mounted. Pass null for nothing, e.g. while
  * loading. Use `AiModeToolset` instead for a toolset that contains other toolsets, so that they are ordered below it.
+ *
+ * @experimental
  */
 export function useAiModeToolset(toolset: AiModeToolsetOptions | null) {
     const store = useAiModeToolsetsStore();
@@ -175,6 +197,7 @@ export function useAiModeToolset(toolset: AiModeToolsetOptions | null) {
     }, [store, token]);
 }
 
+/** @experimental */
 export function AiModeToolset({ children, ...toolset }: PropsWithChildren<AiModeToolsetOptions>) {
     const depth = useContext(AiModeToolsetDepthContext);
     useAiModeToolset(toolset);

@@ -1,12 +1,19 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { createPageTreeNavigationTools } from "./pageTreeTools";
+import { createAiModePageTreeNavigationTools } from "./pageTreeTools";
 
 const scopeUrl = "/main/en";
 
+const createTools = (navigate: (path: string) => void) =>
+    createAiModePageTreeNavigationTools({
+        categories: ["mainNavigation", "topMenu"],
+        getEditPath: ({ id, category }) => `${scopeUrl}/pages/pagetree/${category === "topMenu" ? "top-menu" : "main-navigation"}/${id}/edit`,
+        navigate,
+    });
+
 function getPageTreeNavigationTool(name: string) {
     const navigate = vi.fn();
-    const tool = createPageTreeNavigationTools({ navigate, scopeUrl }).find((candidate) => candidate.name === name);
+    const tool = createTools(navigate).find((candidate) => candidate.name === name);
     if (!tool) {
         throw new Error(`No page tree navigation tool "${name}"`);
     }
@@ -14,7 +21,7 @@ function getPageTreeNavigationTool(name: string) {
 }
 
 it("keeps every description within 4096 characters, the limit for a tool description", () => {
-    for (const tool of createPageTreeNavigationTools({ navigate: vi.fn(), scopeUrl })) {
+    for (const tool of createTools(vi.fn())) {
         expect(tool.description.length, tool.name).toBeLessThanOrEqual(4096);
     }
 });

@@ -23,7 +23,6 @@ import {
 } from "@dextinity/cms-admin";
 import { Chip } from "@mui/material";
 import { AdminAiModeToolset } from "@src/aiMode/AdminAiModeToolset";
-import { PageTreeAiModeToolset } from "@src/aiMode/PageTreeAiModeToolset";
 import { type BrevoContactConfig, getBrevoContactConfig } from "@src/brevo/brevoModuleConfig/brevoContactsPageAttributesConfig";
 import { additionalFormConfig } from "@src/brevo/brevoModuleConfig/targetGroupFormConfig";
 import { EmailCampaignContentBlock } from "@src/brevo/emailCampaigns/blocks/EmailCampaignContentBlock";
@@ -68,28 +67,26 @@ function PageTreePage() {
     }
 
     return (
-        <PageTreeAiModeToolset category={category}>
-            <PagesPage
-                path={`/pages/pagetree/${categoryParam}`}
-                documentTypes={(category): Record<DocumentType, DocumentInterface> => {
-                    if (category === "TopMenu") {
-                        return {
-                            Page,
-                            PredefinedPage,
-                        };
-                    }
-
+        <PagesPage
+            path={`/pages/pagetree/${categoryParam}`}
+            documentTypes={(category): Record<DocumentType, DocumentInterface> => {
+                if (category === "TopMenu") {
                     return {
                         Page,
                         PredefinedPage,
-                        Link,
                     };
-                }}
-                editPageNode={EditPageNode}
-                category={category}
-                renderContentScopeIndicator={(scope: ContentScope) => <ContentScopeIndicator scope={scope} />}
-            />
-        </PageTreeAiModeToolset>
+                }
+
+                return {
+                    Page,
+                    PredefinedPage,
+                    Link,
+                };
+            }}
+            editPageNode={EditPageNode}
+            category={category}
+            renderContentScopeIndicator={(scope: ContentScope) => <ContentScopeIndicator scope={scope} />}
+        />
     );
 }
 

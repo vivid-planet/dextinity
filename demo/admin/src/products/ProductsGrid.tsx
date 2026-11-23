@@ -28,6 +28,7 @@ import {
     useStackSwitchApi,
 } from "@dextinity/admin";
 import { Add as AddIcon, Disabled, Edit, Education as EducationIcon, Excel, Online } from "@dextinity/admin-icons";
+import { useAiModeDataGridToolset } from "@dextinity/cms-admin";
 import { CircularProgress, IconButton, useTheme } from "@mui/material";
 import {
     DataGridPro,
@@ -36,7 +37,6 @@ import {
     type GridRowSelectionModel,
     type GridSlotsComponent,
 } from "@mui/x-data-grid-pro";
-import { useAiModeDataGridToolset } from "@src/aiMode/useAiModeDataGridToolset";
 import { ProductCategoryFilterOperators } from "@src/products/ProductCategoryFilter";
 import { useMemo, useState } from "react";
 import { FormattedMessage, FormattedNumber, useIntl } from "react-intl";

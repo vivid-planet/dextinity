@@ -1,6 +1,8 @@
-import { useBlockContext, useBlocksConfig, useContentScope } from "@dextinity/cms-admin";
 import { useForm, useFormState } from "react-final-form";
 
+import { useBlocksConfig } from "../blocks/config/BlocksConfigContext";
+import { useBlockContext } from "../blocks/context/useBlockContext";
+import { useContentScope } from "../contentScope/Provider";
 import { useAiModeToolset } from "./AiModeToolsets";
 import { type AiModeFormField, createFormTools } from "./formTools";
 
@@ -17,6 +19,8 @@ type AiModeFormToolsetProps = {
 /**
  * Lets the AI Mode read and fill in the form it is rendered in, a `FinalForm`. A component rather than a hook, so that
  * it can read the form, and so that only it re-renders when the form's `dirty` changes.
+ *
+ * @experimental
  */
 export function AiModeFormToolset({ entityName, entityLabel, id, fields }: AiModeFormToolsetProps) {
     const form = useForm<Record<string, unknown>>();

@@ -8,6 +8,8 @@ import { type AiModeDataGridState, createDataGridTools } from "./dataGridTools";
 /**
  * Lets the AI Mode read and change the view of a grid with server-side filtering, sorting, and pagination, and open its
  * rows if they have a form. Call it in the component that renders the grid, with the props of `useDataGridRemote` and the rows of the grid's query.
+ *
+ * @experimental
  */
 export function useAiModeDataGridToolset({
     entityName,

@@ -1,7 +1,7 @@
+import type { AiModeEditableBlocksBlock, BlockContext, BlockInterface } from "@dextinity/cms-admin";
 import { describe, expect, it, vi } from "vitest";
 
 import { type AiModePageState, createPageTools } from "./pageTools";
-import type { EditBlocks } from "./planBlockEdits";
 
 const pageState: AiModePageState = {
     pageTreeNodeId: "1",
@@ -12,9 +12,27 @@ const pageState: AiModePageState = {
     hasChanges: true,
 };
 
-function getPageTool(name: string, { editBlocks = vi.fn<EditBlocks>() }: { editBlocks?: EditBlocks } = {}) {
+type ContentBlocks = Omit<AiModeEditableBlocksBlock, "schemaBlockName">;
+type ContentBlock = ReturnType<ContentBlocks["getBlocks"]>[number];
+
+const contentBlock = (key: string, type = "richtext"): ContentBlock => ({ key, type, visible: true, selected: false, slideIn: false, props: {} });
+
+function createContentBlocks(blocks: ContentBlock[] = []) {
+    let current = blocks;
+    const contentBlocks: ContentBlocks = {
+        supportedBlocks: { richtext: {} as BlockInterface, heading: {} as BlockInterface },
+        blockContext: {} as BlockContext,
+        getBlocks: () => current,
+        updateBlocks: vi.fn((update) => {
+            current = update([...current]);
+        }),
+    };
+    return { contentBlocks, getKeys: () => current.map(({ key }) => key) };
+}
+
+function getPageTool(name: string, { contentBlocks = createContentBlocks().contentBlocks }: { contentBlocks?: ContentBlocks } = {}) {
     const clearTextSelection = vi.fn();
-    const tool = createPageTools({ pageState, getDocumentSummary: () => ({ content: { blocks: [] } }), editBlocks }).find(
+    const tool = createPageTools({ pageState, getDocumentSummary: () => ({ content: { blocks: [] } }), contentBlocks }).find(
         (candidate) => candidate.name === name,
     );
     if (!tool) {
@@ -28,7 +46,7 @@ function getPageTool(name: string, { editBlocks = vi.fn<EditBlocks>() }: { editB
 }
 
 it("keeps every description within 4096 characters, the limit for a tool description", () => {
-    for (const tool of createPageTools({ pageState, getDocumentSummary: () => ({}), editBlocks: vi.fn() })) {
+    for (const tool of createPageTools({ pageState, getDocumentSummary: () => ({}), contentBlocks: createContentBlocks().contentBlocks })) {
         expect(tool.description.length, tool.name).toBeLessThanOrEqual(4096);
     }
 });
@@ -48,58 +66,56 @@ describe("edit_blocks", () => {
         expect(tool.readOnlyHint).toBe(false);
     });
 
-    it("hands the operations to the open page and counts the changes", async () => {
-        const editBlocks = vi.fn<EditBlocks>().mockResolvedValue({
-            results: [
-                { operation: "remove", key: "a", type: "richtext", index: 0 },
-                { operation: "move", key: "b", type: "heading", from: 1, index: 1 },
-            ],
-        });
-        const { call } = getPageTool("edit_blocks", { editBlocks });
+    it("tells the agent where the schema lookup starts and what it can't edit", () => {
+        const { tool } = getPageTool("edit_blocks");
+
+        expect(tool.description).toContain("The page's content is the 'PageContent' block.");
+        expect(tool.description).toContain("'media' is the 'StandaloneMedia' block");
+        expect(tool.description).toContain("not the stage or the SEO settings");
+    });
+
+    it("applies the operations to the page's content in one update and counts the changes", async () => {
+        const { contentBlocks, getKeys } = createContentBlocks([contentBlock("a"), contentBlock("b", "heading")]);
+        const { call } = getPageTool("edit_blocks", { contentBlocks });
 
         const result = await call({
             operations: [
                 { operation: "remove", key: "a" },
-                { operation: "move", key: "b", index: 1 },
+                { operation: "move", key: "b", index: 0 },
             ],
         });
 
-        expect(editBlocks).toHaveBeenCalledWith({
-            operations: [
-                { operation: "remove", key: "a" },
-                { operation: "move", key: "b", index: 1 },
-            ],
-        });
+        expect(getKeys()).toEqual(["b"]);
+        expect(contentBlocks.updateBlocks).toHaveBeenCalledTimes(1);
         expect(result).toMatchObject({ message: expect.stringMatching(/^Applied 1 change to the page's content/) });
     });
 
     it("forgets the selected text once the change is applied, because the agent replaced it", async () => {
-        const editBlocks = vi.fn<EditBlocks>().mockResolvedValue({
-            results: [{ operation: "update", key: "a", type: "richtext", index: 0 }],
-        });
-        const { call, clearTextSelection } = getPageTool("edit_blocks", { editBlocks });
+        const { contentBlocks } = createContentBlocks([contentBlock("a")]);
+        const { call, clearTextSelection } = getPageTool("edit_blocks", { contentBlocks });
 
-        await call({ operations: [{ operation: "update", key: "a", props: {} }] });
+        await call({ operations: [{ operation: "hide", key: "a" }] });
 
         expect(clearTextSelection).toHaveBeenCalledTimes(1);
     });
 
     it("keeps the selected text when nothing changed", async () => {
-        const editBlocks = vi.fn<EditBlocks>().mockResolvedValue({
-            results: [{ operation: "move", key: "a", type: "richtext", from: 0, index: 0 }],
-        });
-        const { call, clearTextSelection } = getPageTool("edit_blocks", { editBlocks });
+        const { contentBlocks } = createContentBlocks([contentBlock("a")]);
+        const { call, clearTextSelection } = getPageTool("edit_blocks", { contentBlocks });
 
         await call({ operations: [{ operation: "move", key: "a", index: 0 }] });
 
+        expect(contentBlocks.updateBlocks).not.toHaveBeenCalled();
         expect(clearTextSelection).not.toHaveBeenCalled();
     });
 
-    it("refuses an operation that lacks what it needs, before the page is asked", async () => {
-        const editBlocks = vi.fn<EditBlocks>();
-        const { call } = getPageTool("edit_blocks", { editBlocks });
+    it("refuses an operation that lacks what it needs, before the content is changed", async () => {
+        const { contentBlocks } = createContentBlocks([contentBlock("a")]);
+        const { call } = getPageTool("edit_blocks", { contentBlocks });
 
-        await expect(async () => call({ operations: [{ operation: "update", props: {} }] })).rejects.toThrow('Operation 1 ("update") needs a "key"');
-        expect(editBlocks).not.toHaveBeenCalled();
+        await expect(async () => call({ operations: [{ operation: "update", props: {} }] })).rejects.toThrow(
+            'Operation 1 ("update") needs a "key", the key of the block to act on, as get_page_state reports it.',
+        );
+        expect(contentBlocks.updateBlocks).not.toHaveBeenCalled();
     });
 });

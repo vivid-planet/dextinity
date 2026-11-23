@@ -1,5 +1,6 @@
+import type { AiModeTool } from "@dextinity/cms-admin";
+
 import type { AdminPage } from "./adminPages";
-import type { AiModeTool } from "./AiModeToolsets";
 
 export const createAdminTools = ({
     pages,

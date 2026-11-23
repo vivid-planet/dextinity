@@ -1,13 +1,13 @@
-import type { BlockInterface } from "@dextinity/cms-admin";
 import { describe, expect, it } from "vitest";
 
-import { summarizeBlockState, summarizeSeoBlockState } from "./blockStateSummary";
+import type { BlockInterface } from "../blocks/types";
+import { summarizeBlockStateForAiMode, summarizeSeoBlockStateForAiMode } from "./blockStateSummary";
 
 const contentBlock = { extractTextContents: () => ["Hello"] } as unknown as BlockInterface;
 
 const linkState = (activeType: string, attachedBlocks: { type: string; props: unknown }[]) => ({ attachedBlocks, activeType, block: {} });
 
-describe("summarizeBlockState", () => {
+describe("summarizeBlockStateForAiMode", () => {
     it("outlines the blocks by key and type, marking hidden ones, with the text contents of the block", () => {
         const state = {
             blocks: [
@@ -21,7 +21,7 @@ describe("summarizeBlockState", () => {
             ],
         };
 
-        expect(summarizeBlockState(contentBlock, state)).toEqual({
+        expect(summarizeBlockStateForAiMode(contentBlock, state)).toEqual({
             blocks: [
                 { key: "a", type: "text" },
                 { key: "b", type: "contentGroup", hidden: true, blocks: [{ key: "c", type: "divider" }] },
@@ -55,7 +55,7 @@ describe("summarizeBlockState", () => {
             ],
         };
 
-        expect(summarizeBlockState(contentBlock, state).blocks).toEqual([
+        expect(summarizeBlockStateForAiMode(contentBlock, state).blocks).toEqual([
             { key: "a", type: "image", files: [{ id: "file-1", name: "header.jpg" }] },
             { key: "b", type: "button", links: [{ url: "https://example.com" }] },
             { key: "c", type: "button", links: [{ email: "info@example.com" }] },
@@ -80,7 +80,9 @@ describe("summarizeBlockState", () => {
             ],
         };
 
-        expect(summarizeBlockState(contentBlock, state).blocks).toEqual([{ key: "a", type: "button", links: [{ email: "info@example.com" }] }]);
+        expect(summarizeBlockStateForAiMode(contentBlock, state).blocks).toEqual([
+            { key: "a", type: "button", links: [{ email: "info@example.com" }] },
+        ]);
     });
 
     it("attaches the pages an internal link points to and the videos a block embeds", () => {
@@ -100,21 +102,23 @@ describe("summarizeBlockState", () => {
             ],
         };
 
-        expect(summarizeBlockState(contentBlock, state).blocks).toEqual([
+        expect(summarizeBlockStateForAiMode(contentBlock, state).blocks).toEqual([
             { key: "a", type: "teaser", links: [{ pageTreeNodeId: "node-1", name: "About us", path: "/about-us" }] },
             { key: "b", type: "media", videos: [{ platform: "youtube", identifier: "dQw4w9WgXcQ" }] },
         ]);
     });
 });
 
-describe("summarizeSeoBlockState", () => {
+describe("summarizeSeoBlockStateForAiMode", () => {
     it("adds the SEO settings that are set, which the SEO block has no text contents for", () => {
         const seoBlock = {} as BlockInterface;
 
-        expect(summarizeSeoBlockState(seoBlock, { htmlTitle: "About us", metaDescription: "", noIndex: false, alternativeLinks: [] })).toMatchObject({
+        expect(
+            summarizeSeoBlockStateForAiMode(seoBlock, { htmlTitle: "About us", metaDescription: "", noIndex: false, alternativeLinks: [] }),
+        ).toMatchObject({
             htmlTitle: "About us",
             noIndex: false,
         });
-        expect(summarizeSeoBlockState(seoBlock, { metaDescription: "" })).not.toHaveProperty("metaDescription");
+        expect(summarizeSeoBlockStateForAiMode(seoBlock, { metaDescription: "" })).not.toHaveProperty("metaDescription");
     });
 });

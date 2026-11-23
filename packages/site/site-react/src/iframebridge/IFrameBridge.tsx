@@ -19,9 +19,26 @@ export type PreviewElement = {
     element: HTMLElement;
     adminRoute: string;
     label: string;
-    /** `"element"` measures the element's own box, for a block without a `display: contents` wrapper, such as an element found by its class names. */
-    measurementTarget?: "element" | "children";
+    /**
+     * What the overlay covers:
+     * - `"children"` (default): the children of `element`
+     * - `"element"`: `element` itself
+     * - a list of elements: all of them, for a block without a single root element
+     */
+    measurementTarget?: "element" | "children" | Element[];
 };
+
+function getMeasuredElements({ element, measurementTarget = "children" }: PreviewElement): Element[] {
+    if (measurementTarget === "children") {
+        return getRecursiveChildrenOfPreviewElement(element);
+    }
+
+    if (measurementTarget === "element") {
+        return [element];
+    }
+
+    return measurementTarget;
+}
 
 export type OverlayElementData = {
     adminRoute: string;
@@ -120,11 +137,7 @@ export const IFrameBridgeProvider = ({ children }: PropsWithChildren) => {
 
         const newPreviewElementsData = previewElements
             .map((previewElement) => {
-                const measuredElements =
-                    previewElement.measurementTarget === "element"
-                        ? [previewElement.element]
-                        : getRecursiveChildrenOfPreviewElement(previewElement.element);
-                const positioning = getCombinedPositioningOfElements(measuredElements);
+                const positioning = getCombinedPositioningOfElements(getMeasuredElements(previewElement));
 
                 if (positioning === null) {
                     return null;

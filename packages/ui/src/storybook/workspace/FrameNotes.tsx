@@ -4,6 +4,7 @@ import { Button } from "../../components/button/Button";
 import { Icon } from "../../components/icon/Icon";
 import { IconButton } from "../../components/iconButton/IconButton";
 import { Textarea } from "../../components/textarea/Textarea";
+import { readWrittenText } from "../textLength";
 import { findElementByPath, getElementPath, getFrameRect } from "./frameElements";
 import styles from "./FrameTools.module.scss";
 import { hotspotList } from "./hotspots";
@@ -319,7 +320,8 @@ export function TextLayer({ frameDocument, notePage }: { frameDocument: Document
             const existing = textChangeList
                 .get()
                 .find((change) => isOnPage(change, notePage.prototypeId, notePage.page) && change.path.join() === path.join());
-            const original = existing?.original ?? readOwnText(editable);
+            // The text as written, not as Text length shows it, which the designer edits and the change keeps
+            const original = existing?.original ?? readWrittenText(editable);
             const before = readOwnText(editable);
             const linesBefore = new Set(editable.querySelectorAll(":scope > br"));
 
@@ -327,8 +329,8 @@ export function TextLayer({ frameDocument, notePage }: { frameDocument: Document
                 editable.removeEventListener("blur", handleBlur);
                 editable.removeEventListener("keydown", handleKey);
                 editable.removeAttribute("contenteditable");
-                // A line break typed with Shift+Enter stays one in the text; one left in place of an emptied text goes, and an emptied
-                // text gets a text node to write to again
+                // A line break pasted into the text becomes a space; one left in place of an emptied text goes, and an emptied text
+                // gets a text node to write to again
                 editable.querySelectorAll(":scope > br").forEach((line) => {
                     if (linesBefore.has(line)) {
                         return;
@@ -336,7 +338,7 @@ export function TextLayer({ frameDocument, notePage }: { frameDocument: Document
                     if (readOwnText(editable).trim() === "") {
                         line.remove();
                     } else {
-                        line.replaceWith(editable.ownerDocument.createTextNode("\n"));
+                        line.replaceWith(editable.ownerDocument.createTextNode(" "));
                     }
                 });
                 if (getOwnTextNodes(editable).length === 0) {
@@ -359,7 +361,8 @@ export function TextLayer({ frameDocument, notePage }: { frameDocument: Document
             }
             const handleBlur = () => finish(true);
             const handleKey = (keyEvent: KeyboardEvent) => {
-                if (keyEvent.key === "Enter" && !keyEvent.shiftKey) {
+                // A label is a single line, so Enter with or without Shift keeps the change
+                if (keyEvent.key === "Enter") {
                     keyEvent.preventDefault();
                     editable.blur();
                 } else if (keyEvent.key === "Escape") {
@@ -368,6 +371,7 @@ export function TextLayer({ frameDocument, notePage }: { frameDocument: Document
                 }
             };
             editable.setAttribute("contenteditable", "plaintext-only");
+            writeOwnText(editable, readWrittenText(editable));
             editable.addEventListener("blur", handleBlur);
             editable.addEventListener("keydown", handleKey);
             editable.focus();
@@ -444,7 +448,7 @@ export function usePageTextChanges(prototypeId: string, page: string) {
             }
             for (const change of pageChanges) {
                 const element = findElementByPath(document, change.path);
-                if (element && !(element as HTMLElement).isContentEditable && readOwnText(element) === change.original) {
+                if (element && !(element as HTMLElement).isContentEditable && readWrittenText(element) === change.original) {
                     writeOwnText(element, change.text);
                 }
             }

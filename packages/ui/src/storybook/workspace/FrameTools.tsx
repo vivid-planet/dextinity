@@ -444,7 +444,6 @@ function AccessibilityLayer({ frameDocument, scale, tick }: { frameDocument: Doc
         const check = () => setChecked({ result: checkAccessibility(frameDocument), at: performance.now() });
         if (performance.now() - checked.at > 1000) {
             check();
-            return;
         }
         const timeout = window.setTimeout(check, 200);
         return () => window.clearTimeout(timeout);

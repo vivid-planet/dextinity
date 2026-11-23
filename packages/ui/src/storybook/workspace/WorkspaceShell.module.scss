@@ -71,10 +71,16 @@
     gap: 4px;
     align-items: center;
     min-inline-size: 0;
-    // Room for the focus ring, which the scrolling would cut off
-    padding-block: 3px;
+    // Room for the focus ring, which the scrolling would cut off, without moving the buttons
+    margin: -4px;
+    padding: 4px;
     overflow-x: auto;
-    scrollbar-width: none;
+    // A mouse needs the scrollbar to reach buttons out of view; a finger swipes
+    scrollbar-width: thin;
+
+    @media (pointer: coarse) {
+        scrollbar-width: none;
+    }
 
     // Aligned to the end while everything fits; a scrolling bar starts at its first button
     > :first-child {

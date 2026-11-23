@@ -48,6 +48,7 @@ const defaultVariants: Variant[] = [{}, { colorScheme: "dark" }];
 const variantNames = ["A", "B"];
 const frameGap = 32;
 const labelHeight = 36;
+const swipeRangeHeight = 40;
 
 function readVariants(): Variant[] {
     try {
@@ -279,7 +280,9 @@ export function CompareCanvas({
     const gaps = isSwiping ? 0 : frameGap * (frames.length - 1);
     const framesWidth = isSwiping ? frames[0].width : frames.reduce((sum, frame) => sum + frame.width, 0);
     const maxHeight = Math.max(...frames.map((frame) => frame.height));
-    const fitScale = Math.max(0.1, Math.min(1, (canvasSize.width - gaps) / framesWidth, (canvasSize.height - labelHeight) / maxHeight));
+    // Swiping also shows the divider's slider below the frame, and the two variants' settings may take two lines
+    const chromeHeight = isSwiping ? labelHeight * 2 + swipeRangeHeight : labelHeight;
+    const fitScale = Math.max(0.1, Math.min(1, (canvasSize.width - gaps) / framesWidth, (canvasSize.height - chromeHeight) / maxHeight));
     const scale = zoom === "fit" ? fitScale : Number(zoom);
 
     function changeVariant(index: number, key: VariantKey, value?: string) {

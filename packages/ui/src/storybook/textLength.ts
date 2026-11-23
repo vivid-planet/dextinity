@@ -27,6 +27,28 @@ function lengthen(text: string, factor: number) {
     return `${text.replace(/[aeiouAEOUncs]/g, (letter) => accented[letter] ?? letter).trimEnd()} ${"·".repeat(Math.max(1, added - 1))}${text.endsWith(" ") ? " " : ""}`;
 }
 
+type LengthenedTexts = WeakMap<Text, { original: string; lengthened: string }>;
+
+// The texts as written, of the texts shown lengthened, for the tools that work with the written text, e.g. editing a text. Kept on
+// the window of the document, since the workspace's tools run in another window, with their own copy of this module.
+function getLengthenedTexts(view: Window | null): LengthenedTexts {
+    const holder = (view ?? window) as Window & { dextinityLengthenedTexts?: LengthenedTexts };
+    holder.dextinityLengthenedTexts ??= new WeakMap();
+    return holder.dextinityLengthenedTexts;
+}
+
+/** An element's own text as written, also while it's shown lengthened. */
+export function readWrittenText(element: Element) {
+    const lengthenedTexts = getLengthenedTexts(element.ownerDocument.defaultView);
+    return Array.from(element.childNodes)
+        .filter((node): node is Text => node.nodeType === Node.TEXT_NODE)
+        .map((node) => {
+            const known = lengthenedTexts.get(node);
+            return known && known.lengthened === node.nodeValue ? known.original : (node.nodeValue ?? "");
+        })
+        .join("");
+}
+
 function isSkipped(node: Text) {
     return node.parentElement?.closest("script, style, [contenteditable], code") != null;
 }
@@ -39,19 +61,29 @@ export function useTextLength() {
         if (factor === 0) {
             return;
         }
-        const originals = new Map<Text, { original: string; lengthened: string }>();
+        const lengthenedTexts = getLengthenedTexts(window);
+        const lengthenedHere = new Set<Text>();
+        const lengthenNode = (node: Text) => {
+            const known = lengthenedTexts.get(node);
+            if (known?.lengthened === node.nodeValue || isSkipped(node)) {
+                return;
+            }
+            // A text the page rendered anew, or changed in place, is its new original
+            const original = node.nodeValue ?? "";
+            const lengthened = lengthen(original, factor);
+            lengthenedTexts.set(node, { original, lengthened });
+            lengthenedHere.add(node);
+            node.nodeValue = lengthened;
+        };
         const apply = (root: Node) => {
+            // A text changed in place is the root of its own change, which a walker from it would skip
+            if (root.nodeType === Node.TEXT_NODE) {
+                lengthenNode(root as Text);
+                return;
+            }
             const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
             for (let node = walker.nextNode() as Text | null; node; node = walker.nextNode() as Text | null) {
-                const known = originals.get(node);
-                if (known?.lengthened === node.nodeValue || isSkipped(node)) {
-                    continue;
-                }
-                // A text the page rendered anew is its new original
-                const original = node.nodeValue ?? "";
-                const lengthened = lengthen(original, factor);
-                originals.set(node, { original, lengthened });
-                node.nodeValue = lengthened;
+                lengthenNode(node);
             }
         };
         apply(document.body);
@@ -59,10 +91,12 @@ export function useTextLength() {
         observer.observe(document.body, { subtree: true, childList: true, characterData: true });
         return () => {
             observer.disconnect();
-            originals.forEach(({ original, lengthened }, node) => {
-                if (node.nodeValue === lengthened) {
-                    node.nodeValue = original;
+            lengthenedHere.forEach((node) => {
+                const known = lengthenedTexts.get(node);
+                if (known && node.nodeValue === known.lengthened) {
+                    node.nodeValue = known.original;
                 }
+                lengthenedTexts.delete(node);
             });
         };
     }, [textLength]);

@@ -54,41 +54,59 @@ export function PrototypeApp({ prototype, navGroups, renderPage }: PrototypeAppP
     const density = densitySetting.useValue();
     useTextLength();
     const tokenCss = getOverrideCss(tokenOverrideList.useItems());
+    // In the head, so that the page's elements keep their places, which hotspots, comments, and text changes are anchored to
+    useEffect(() => {
+        if (!tokenCss) {
+            return;
+        }
+        const style = document.createElement("style");
+        style.textContent = tokenCss;
+        document.head.append(style);
+        return () => style.remove();
+    }, [tokenCss]);
     const pageIdRef = useRef(pageId);
     const leaveGuardRef = useRef<LeaveGuard | null>(null);
-    // How the next page change was asked for; a change of the hash by a link on the page leaves it unset
-    const nextViaRef = useRef<FlowEdgeKind | null>(null);
+    // How the next page change was asked for, and to which page, so that a change to another page isn't taken for it; `via: null`
+    // keeps a change out of the flow map, e.g. one the workspace asked for and a leave guard held back
+    const nextIntentRef = useRef<{ to: string; via: FlowEdgeKind | null } | null>(null);
     const lastClickRef = useRef(-Infinity);
     pageIdRef.current = pageId;
 
     useEffect(() => {
         const handleHashChange = () => {
             const nextPageId = readPageId(prototype);
+            const intent = nextIntentRef.current?.to === nextPageId ? nextIntentRef.current : null;
+            nextIntentRef.current = null;
+            // A change without a click on the page came from outside, e.g. the workspace's page list, which isn't a way through the app
+            const via = intent ? intent.via : performance.now() - lastClickRef.current < clickToHashChange ? "link" : null;
             const leaveGuard = leaveGuardRef.current;
             if (leaveGuard != null && nextPageId !== pageIdRef.current) {
                 // The hash already changed: put the current page back until the guard lets the user leave
                 window.history.replaceState(null, "", `#${pageIdRef.current}`);
                 leaveGuard(() => {
                     leaveGuardRef.current = null;
+                    nextIntentRef.current = { to: nextPageId, via };
                     window.location.hash = nextPageId;
                 });
                 return;
             }
             leaveGuardRef.current = null;
-            // A change without a click on the page came from outside, e.g. the workspace's page list, which isn't a way through the app
-            const via = nextViaRef.current ?? (performance.now() - lastClickRef.current < clickToHashChange ? "link" : null);
             if (via) {
                 addFlowEdges([{ prototypeId: prototype.storyId, from: pageIdRef.current, to: nextPageId, kind: via }]);
             }
-            nextViaRef.current = null;
             setPageId(nextPageId);
+        };
+        const goTo = (pageId: string, via: FlowEdgeKind) => {
+            if (pageId !== pageIdRef.current) {
+                nextIntentRef.current = { to: pageId, via };
+            }
+            window.location.hash = pageId;
         };
         const handleClick = () => {
             lastClickRef.current = performance.now();
         };
-        // Storybook's preview sets `<base target="_parent">`, which would open a page's link in the window around the frame, e.g.
-        // the workspace, instead of in the prototype; the page's own handlers come first and may have taken the click already
-        // A hotspot the designer set wins over what the element does itself, unless a workspace tool uses the click
+        // A hotspot the designer set wins over what the element does itself, unless a workspace tool uses the click; of nested
+        // hotspots, the innermost
         const handleHotspot = (event: MouseEvent) => {
             if (document.documentElement.hasAttribute(toolAttribute) || !(event.target instanceof Node)) {
                 return;
@@ -96,27 +114,29 @@ export function PrototypeApp({ prototype, navGroups, renderPage }: PrototypeAppP
             const target = event.target;
             const hotspot = hotspotList
                 .get()
-                .find(
+                .filter(
                     (candidate) =>
                         candidate.prototypeId === prototype.storyId &&
                         candidate.page === pageIdRef.current &&
+                        candidate.path.length > 0 &&
                         findElementByPath(document, candidate.path)?.contains(target),
-                );
+                )
+                .sort((a, b) => b.path.length - a.path.length)[0];
             if (hotspot) {
                 event.preventDefault();
                 event.stopPropagation();
-                nextViaRef.current = "link";
-                window.location.hash = hotspot.target;
+                goTo(hotspot.target, "link");
             }
         };
+        // Storybook's preview sets `<base target="_parent">`, which would open a page's link in the window around the frame, e.g.
+        // the workspace, instead of in the prototype; the page's own handlers come first and may have taken the click already
         const handleLink = (event: MouseEvent) => {
             const link = (event.target as Element | null)?.closest?.('a[href^="#"]');
             if (!link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
                 return;
             }
             event.preventDefault();
-            nextViaRef.current = "link";
-            window.location.hash = link.getAttribute("href")?.slice(1) ?? "";
+            goTo(link.getAttribute("href")?.slice(1) ?? "", "link");
         };
         window.addEventListener("hashchange", handleHashChange);
         document.addEventListener("click", handleClick, true);
@@ -151,7 +171,9 @@ export function PrototypeApp({ prototype, navGroups, renderPage }: PrototypeAppP
         <PrototypeNavigationContext.Provider
             value={{
                 navigate: (id, via) => {
-                    nextViaRef.current = via ?? "link";
+                    if (id !== pageIdRef.current) {
+                        nextIntentRef.current = { to: id, via: via ?? "link" };
+                    }
                     window.location.hash = id;
                 },
                 navCollapsed,
@@ -164,7 +186,6 @@ export function PrototypeApp({ prototype, navGroups, renderPage }: PrototypeAppP
                 },
             }}
         >
-            {tokenCss && <style>{tokenCss}</style>}
             <Fragment key={pageId}>{page ?? <PageNotInPrototype prototype={prototype} pageId={pageId} />}</Fragment>
         </PrototypeNavigationContext.Provider>
     );

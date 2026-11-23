@@ -327,8 +327,18 @@ export function TextLayer({ frameDocument, notePage }: { frameDocument: Document
                 editable.removeEventListener("blur", handleBlur);
                 editable.removeEventListener("keydown", handleKey);
                 editable.removeAttribute("contenteditable");
-                // Emptying a text while editing can leave a line break in place of it, and no text node to write to again
-                editable.querySelectorAll(":scope > br").forEach((line) => !linesBefore.has(line) && line.remove());
+                // A line break typed with Shift+Enter stays one in the text; one left in place of an emptied text goes, and an emptied
+                // text gets a text node to write to again
+                editable.querySelectorAll(":scope > br").forEach((line) => {
+                    if (linesBefore.has(line)) {
+                        return;
+                    }
+                    if (readOwnText(editable).trim() === "") {
+                        line.remove();
+                    } else {
+                        line.replaceWith(editable.ownerDocument.createTextNode("\n"));
+                    }
+                });
                 if (getOwnTextNodes(editable).length === 0) {
                     writeOwnText(editable, "");
                 }
@@ -466,7 +476,8 @@ export function HotspotLayer({ frameDocument, scale, notePage }: { frameDocument
 
     useBlockedClicks(frameDocument, (event) => {
         const element = asElement(event.target);
-        if (!element) {
+        // The page's background would take every click of the page
+        if (!element || element === frameDocument.body || element === frameDocument.documentElement) {
             return;
         }
         const rect = getFrameRect(element);

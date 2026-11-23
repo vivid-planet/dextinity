@@ -28,9 +28,11 @@ import { scenarioSetting, useScenario } from "../scenario";
 import { textLengthSetting } from "../textLength";
 import { CompareCanvas } from "./CompareCanvas";
 import { getComponentStoryIds, type IndexedStory } from "./componentStories";
+import { flowEdgeList } from "./flowEdges";
 import { FlowMap } from "./FlowMap";
 import { type NotePage, useTextChanges } from "./FrameNotes";
 import { type FrameTool, FrameTools } from "./FrameTools";
+import { hotspotList } from "./hotspots";
 import { customPageList, customPagePrefix, type PageTemplate, pageTemplates } from "./pageTemplates";
 import { workspacePrototypes } from "./prototypes";
 import { TokenPlayground } from "./TokenPlayground";
@@ -181,7 +183,7 @@ export function WorkspaceShell() {
     const [stories, setStories] = useState<IndexedStory[]>([]);
     const [colorScheme, setColorScheme] = useState(getAppliedColorScheme);
     const [brand, setBrand] = useState(brandSetting.get);
-    const [density, setDensity] = useState(densitySetting.get);
+    const density = densitySetting.useValue();
     const scenario = useScenario();
     const textLength = textLengthSetting.useValue();
     const [canvasElement, setCanvasElement] = useState<HTMLDivElement | null>(null);
@@ -306,6 +308,13 @@ export function WorkspaceShell() {
                 note.prototypeId === prototypeId && note.page === currentCustomPage.id;
             commentList.update((comments) => comments.filter((comment) => !isOnRemovedPage(comment)));
             textChangeList.update((changes) => changes.filter((change) => !isOnRemovedPage(change)));
+            const removedId = currentCustomPage.id;
+            hotspotList.update((hotspots) =>
+                hotspots.filter((hotspot) => !(hotspot.prototypeId === prototypeId && (hotspot.page === removedId || hotspot.target === removedId))),
+            );
+            flowEdgeList.update((edges) =>
+                edges.filter((edge) => !(edge.prototypeId === prototypeId && (edge.from === removedId || edge.to === removedId))),
+            );
             selectPrototypeNode(getPrototypePageNodeId(prototypeId, currentWorkspacePrototype?.startPageId ?? ""));
         }
     }
@@ -390,7 +399,10 @@ export function WorkspaceShell() {
         if (!presenting) {
             return;
         }
-        const frameDocuments = [document, frameRef.current?.contentDocument].filter((target): target is Document => target != null);
+        // Also the frames of the compare modes, where the focus may be when Escape is pressed
+        const frameDocuments = [document, ...Array.from(document.querySelectorAll("iframe"), (frame) => frame.contentDocument)].filter(
+            (target): target is Document => target != null,
+        );
         const handleKey = (event: KeyboardEvent) => {
             if (event.key === "Escape") {
                 setPresenting(false);
@@ -621,7 +633,6 @@ export function WorkspaceShell() {
                                 value={density}
                                 onChange={(value) => {
                                     densitySetting.store(value);
-                                    setDensity(value);
                                 }}
                             />
                             <span className={styles.divider} />

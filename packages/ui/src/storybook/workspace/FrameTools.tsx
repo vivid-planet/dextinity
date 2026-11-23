@@ -437,12 +437,26 @@ const checks: Array<{ key: AccessibilityCheck; label: string; description: strin
  */
 function AccessibilityLayer({ frameDocument, scale, tick }: { frameDocument: Document; scale: number; tick: number }) {
     const [shown, setShown] = useState<AccessibilityCheck[]>(["tabOrder", "smallTargets", "lowContrast"]);
-    const [result, setResult] = useState(() => checkAccessibility(frameDocument));
-    // Checked again once the page has settled after a change or scrolling, not on every frame of it
+    const [checked, setChecked] = useState(() => ({ result: checkAccessibility(frameDocument), at: performance.now() }));
+    // Checked again once the page has settled after a change or scrolling, not on every frame of it, but at least every second
+    // while it keeps changing, e.g. during an animation
     useEffect(() => {
-        const timeout = window.setTimeout(() => setResult(checkAccessibility(frameDocument)), 200);
+        const check = () => setChecked({ result: checkAccessibility(frameDocument), at: performance.now() });
+        if (performance.now() - checked.at > 1000) {
+            check();
+            return;
+        }
+        const timeout = window.setTimeout(check, 200);
         return () => window.clearTimeout(timeout);
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- `checked.at` is read, not followed
     }, [frameDocument, tick]);
+    // Elements the page removed since the check have no place to mark
+    const result = {
+        ...checked.result,
+        tabOrder: checked.result.tabOrder.filter((finding) => finding.element.isConnected),
+        smallTargets: checked.result.smallTargets.filter((finding) => finding.element.isConnected),
+        lowContrast: checked.result.lowContrast.filter((finding) => finding.element.isConnected),
+    };
 
     return (
         <>

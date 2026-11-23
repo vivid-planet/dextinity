@@ -1,6 +1,7 @@
 import { type RefObject, useEffect, useRef, useState } from "react";
 
 import { findComponentWithStory } from "./componentStories";
+import { toolAttribute } from "./hotspots";
 
 export interface InspectedComponent {
     componentName: string;
@@ -147,7 +148,10 @@ export function useCanvasInspector({
             frameDocument.addEventListener(type, blockEvent, true);
         }
 
+        frameRoot.setAttribute(toolAttribute, "pick");
+
         return () => {
+            frameRoot.removeAttribute(toolAttribute);
             cursorStyle.remove();
             frameDocument.removeEventListener("pointermove", handlePointerMove, true);
             frameDocument.removeEventListener("click", handleClick, true);

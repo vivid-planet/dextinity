@@ -136,6 +136,14 @@
     }
 }
 
+// Where the canvas is, and the zoom while comparing frames: on the left, so the tools on the right keep their place
+.contextStart {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    min-inline-size: 0;
+}
+
 .location {
     display: flex;
     gap: 6px;

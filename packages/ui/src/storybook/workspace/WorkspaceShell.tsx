@@ -232,6 +232,8 @@ export function WorkspaceShell() {
     const isLoading = stories.length === 0;
     const isPrototypeMode = state.mode === "prototypes";
     const isComparing = isPrototypeMode && state.compare !== "off";
+    // The frame tools work on the single frame; while comparing or showing the flow they stay in place, disabled, so the bar doesn't move
+    const toolsDisabled = isComparing || showingFlow;
 
     // A stored story may since have been removed or renamed; until the index has loaded, there's nothing to check it against
     const storedStoryId = isLoading || componentStories.some((story) => story.id === state.storyId) ? state.storyId : null;
@@ -656,57 +658,68 @@ export function WorkspaceShell() {
                     </div>
 
                     <div className={styles.contextBar}>
-                        <p className={styles.location}>
-                            {isPrototypeMode ? (
-                                <>
-                                    <span className={styles.locationTrail}>{currentPrototype?.name}</span>
-                                    {currentCustomPage ? (
-                                        <input
-                                            key={`${currentCustomPage.id}-${currentCustomPage.title}`}
-                                            className={styles.locationInput}
-                                            aria-label="Page name"
-                                            title="Rename the page"
-                                            defaultValue={currentCustomPage.title}
-                                            size={Math.max(8, currentCustomPage.title.length)}
-                                            onBlur={(event) => {
-                                                renameCurrentPage(event.currentTarget.value);
-                                                // An empty name isn't kept, so the field shows the name again
-                                                if (event.currentTarget.value.trim() === "") {
-                                                    event.currentTarget.value = currentCustomPage.title;
-                                                }
-                                            }}
-                                            onKeyDown={(event) => {
-                                                if (event.key === "Enter") {
-                                                    event.currentTarget.blur();
-                                                } else if (event.key === "Escape") {
-                                                    event.currentTarget.value = currentCustomPage.title;
-                                                    event.currentTarget.blur();
-                                                }
-                                            }}
-                                        />
-                                    ) : (
-                                        prototypePageLabel && <span className={styles.locationCurrent}>{prototypePageLabel}</span>
-                                    )}
-                                    {isPrototypeMode && currentCustomPage && (
-                                        <IconButton
-                                            variant="text"
-                                            color="secondary"
-                                            aria-label={`Delete “${currentCustomPage.title}”`}
-                                            onClick={removeCurrentPage}
-                                        >
-                                            <Icon name="trash" />
-                                        </IconButton>
-                                    )}
-                                </>
-                            ) : (
-                                currentStory && (
+                        <div className={styles.contextStart}>
+                            <p className={styles.location}>
+                                {isPrototypeMode ? (
                                     <>
-                                        <span className={styles.locationTrail}>{currentStory.title.split("/").join(" / ")}</span>
-                                        <span className={styles.locationCurrent}>{currentStory.name}</span>
+                                        <span className={styles.locationTrail}>{currentPrototype?.name}</span>
+                                        {currentCustomPage ? (
+                                            <input
+                                                key={`${currentCustomPage.id}-${currentCustomPage.title}`}
+                                                className={styles.locationInput}
+                                                aria-label="Page name"
+                                                title="Rename the page"
+                                                defaultValue={currentCustomPage.title}
+                                                size={Math.max(8, currentCustomPage.title.length)}
+                                                onBlur={(event) => {
+                                                    renameCurrentPage(event.currentTarget.value);
+                                                    // An empty name isn't kept, so the field shows the name again
+                                                    if (event.currentTarget.value.trim() === "") {
+                                                        event.currentTarget.value = currentCustomPage.title;
+                                                    }
+                                                }}
+                                                onKeyDown={(event) => {
+                                                    if (event.key === "Enter") {
+                                                        event.currentTarget.blur();
+                                                    } else if (event.key === "Escape") {
+                                                        event.currentTarget.value = currentCustomPage.title;
+                                                        event.currentTarget.blur();
+                                                    }
+                                                }}
+                                            />
+                                        ) : (
+                                            prototypePageLabel && <span className={styles.locationCurrent}>{prototypePageLabel}</span>
+                                        )}
+                                        {isPrototypeMode && currentCustomPage && (
+                                            <IconButton
+                                                variant="text"
+                                                color="secondary"
+                                                aria-label={`Delete “${currentCustomPage.title}”`}
+                                                onClick={removeCurrentPage}
+                                            >
+                                                <Icon name="trash" />
+                                            </IconButton>
+                                        )}
                                     </>
-                                )
+                                ) : (
+                                    currentStory && (
+                                        <>
+                                            <span className={styles.locationTrail}>{currentStory.title.split("/").join(" / ")}</span>
+                                            <span className={styles.locationCurrent}>{currentStory.name}</span>
+                                        </>
+                                    )
+                                )}
+                            </p>
+                            {isComparing && (
+                                <SegmentedControl
+                                    size="small"
+                                    aria-label="Zoom"
+                                    options={zoomOptions}
+                                    value={state.zoom}
+                                    onChange={(zoom) => updateState({ zoom })}
+                                />
                             )}
-                        </p>
+                        </div>
                         <div className={styles.toolbarGroup}>
                             {isPrototypeMode && (
                                 <IconButton variant="text" color="secondary" aria-label="Restart the prototype" onClick={restartPrototype}>
@@ -722,19 +735,10 @@ export function WorkspaceShell() {
                             >
                                 <Icon name="back" />
                             </IconButton>
-                            {isComparing && <span className={styles.divider} />}
-                            {isComparing && (
-                                <SegmentedControl
-                                    size="small"
-                                    aria-label="Zoom"
-                                    options={zoomOptions}
-                                    value={state.zoom}
-                                    onChange={(zoom) => updateState({ zoom })}
-                                />
-                            )}
-                            {isPrototypeMode && !isComparing && !showingFlow && <span className={styles.divider} />}
-                            {isPrototypeMode && !isComparing && !showingFlow && (
+                            {isPrototypeMode && <span className={styles.divider} />}
+                            {isPrototypeMode && (
                                 <IconButton
+                                    disabled={toolsDisabled}
                                     variant={inspecting ? "contained" : "text"}
                                     color={inspecting ? "primary" : "secondary"}
                                     aria-label="Pick a component in the canvas"
@@ -747,8 +751,9 @@ export function WorkspaceShell() {
                                     <Icon name="select" />
                                 </IconButton>
                             )}
-                            {isPrototypeMode && !isComparing && !showingFlow && (
+                            {isPrototypeMode && (
                                 <IconButton
+                                    disabled={toolsDisabled}
                                     variant={frameTool === "measure" ? "contained" : "text"}
                                     color={frameTool === "measure" ? "primary" : "secondary"}
                                     aria-label="Measure sizes, distances, and tokens"
@@ -758,8 +763,9 @@ export function WorkspaceShell() {
                                     <Icon name="crop-action" />
                                 </IconButton>
                             )}
-                            {isPrototypeMode && !isComparing && !showingFlow && (
+                            {isPrototypeMode && (
                                 <IconButton
+                                    disabled={toolsDisabled}
                                     variant={frameTool === "comment" ? "contained" : "text"}
                                     color={frameTool === "comment" ? "primary" : "secondary"}
                                     aria-label="Pin comments to the page"
@@ -769,8 +775,9 @@ export function WorkspaceShell() {
                                     <Icon name="chat-add" />
                                 </IconButton>
                             )}
-                            {isPrototypeMode && !isComparing && !showingFlow && (
+                            {isPrototypeMode && (
                                 <IconButton
+                                    disabled={toolsDisabled}
                                     variant={frameTool === "text" ? "contained" : "text"}
                                     color={frameTool === "text" ? "primary" : "secondary"}
                                     aria-label="Edit texts"
@@ -780,8 +787,9 @@ export function WorkspaceShell() {
                                     <Icon name="pencil-line" />
                                 </IconButton>
                             )}
-                            {isPrototypeMode && !isComparing && !showingFlow && (
+                            {isPrototypeMode && (
                                 <IconButton
+                                    disabled={toolsDisabled}
                                     variant={frameTool === "hotspot" ? "contained" : "text"}
                                     color={frameTool === "hotspot" ? "primary" : "secondary"}
                                     aria-label="Link elements to pages"
@@ -791,8 +799,9 @@ export function WorkspaceShell() {
                                     <Icon name="link-diagonal" />
                                 </IconButton>
                             )}
-                            {isPrototypeMode && !isComparing && !showingFlow && (
+                            {isPrototypeMode && (
                                 <IconButton
+                                    disabled={toolsDisabled}
                                     variant={frameTool === "accessibility" ? "contained" : "text"}
                                     color={frameTool === "accessibility" ? "primary" : "secondary"}
                                     aria-label="Check accessibility"

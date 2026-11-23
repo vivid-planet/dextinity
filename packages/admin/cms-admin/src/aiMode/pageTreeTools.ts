@@ -1,17 +1,21 @@
-import type { AiModeTool } from "@dextinity/cms-admin";
-import { categoryToUrlParam, pageTreeCategories } from "@src/pageTree/pageTreeCategories";
-
-const categories = pageTreeCategories.map(({ category }) => category);
+import type { AiModeTool } from "./AiModeToolsets";
 
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-export const createPageTreeNavigationTools = ({
+/**
+ * The tools that open a node of the page tree, for a toolset on every page, such as the admin's, so that the agent opens
+ * a page's editor in one step.
+ */
+export const createAiModePageTreeNavigationTools = ({
+    categories,
+    getEditPath,
     navigate,
-    scopeUrl,
 }: {
+    /** The categories of the page tree, e.g. "mainNavigation". */
+    categories: string[];
+    /** The path of the editor of a page tree node, e.g. "/main/en/pages/pagetree/main-navigation/<id>/edit". */
+    getEditPath: (node: { id: string; category: string }) => string;
     navigate: (path: string) => void;
-    /** The URL prefix of the current content scope, e.g. "/main/en". */
-    scopeUrl: string;
 }): AiModeTool[] => [
     {
         name: "open_page_tree_node",
@@ -29,7 +33,7 @@ export const createPageTreeNavigationTools = ({
             },
             required: ["id", "category"],
         },
-        // Navigating changes no data, so the chat runs it without asking; see "Approval" in the README.
+        // Navigating changes no data, so the chat runs it without asking.
         readOnlyHint: true,
         handler: (args) => {
             const id = String(args.id ?? "");
@@ -41,7 +45,7 @@ export const createPageTreeNavigationTools = ({
                 throw new Error(`"${category}" is no page tree category. It must be one of: ${categories.join(", ")}.`);
             }
 
-            const path = `${scopeUrl}/pages/pagetree/${categoryToUrlParam(category)}/${id}/edit`;
+            const path = getEditPath({ id, category });
             navigate(path);
             // A page with unsaved changes asks the user before it is left, and the user may decide to stay.
             return `Asked the editor to open the page at ${path}. If the page that was open has unsaved changes, the user first decides whether to discard them and may stay on it, so check with get_page_state ("pageTreeNodeId") which page is open before you refer to it.`;

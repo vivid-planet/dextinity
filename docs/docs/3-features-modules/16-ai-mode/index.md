@@ -131,3 +131,17 @@ createAiModeEditBlocksTool({
 - `updateBlocks` applies the batch in one update, so that the content is marked as changed once.
 - `insertableBlocks` narrows the blocks an insertion may add, e.g. to those `isBlockSupported` allows in the content scope, and `additionalItemFields` are the blocks block's, whose defaults an inserted block starts with.
 - `schemaNameExamples` names block types whose name in block-meta differs from their type, e.g. `'image' is the 'DamImage' block`, and `restrictions` what the tool can't change.
+
+## Page tree
+
+`PagesPage` registers the toolset of the page tree, with its category as the context. `createAiModePageTreeNavigationTools` creates `open_page_tree_node`, which opens the editor of a page tree node. Add it to a toolset that is on every page, such as one around the routes of the master menu, so that the agent opens a page's editor in one step from anywhere:
+
+```tsx
+createAiModePageTreeNavigationTools({
+    categories: pageTreeCategories.map(({ category }) => category),
+    getEditPath: ({ id, category }) => `${match.url}/pages/pagetree/${categoryToUrlParam(category)}/${id}/edit`,
+    navigate: (path) => void navigate(path),
+});
+```
+
+Offer it only to users who may open the page tree.

@@ -23,6 +23,7 @@ import { type ComponentType, type ReactNode, useCallback, useEffect, useMemo, us
 import { FormattedMessage, useIntl } from "react-intl";
 
 import { type ContentScope, createEditPageNode, useSiteConfig } from "../..";
+import { AiModeToolset } from "../../aiMode/AiModeToolsets";
 import { useContentScope } from "../../contentScope/Provider";
 import { useContentScopeConfig } from "../../contentScope/useContentScopeConfig";
 import { DamScopeProvider } from "../../dam/config/DamScopeProvider";
@@ -137,161 +138,172 @@ export function PagesPage({
     }
 
     return (
-        <DamScopeProvider>
-            <Stack topLevelTitle={intl.formatMessage({ id: "dextinity.pages.pages", defaultMessage: "Pages" })}>
-                <StackSwitch>
-                    <StackPage name="table">
-                        <Toolbar scopeIndicator={renderContentScopeIndicator(pageTreeScope)}>
-                            <ToolbarItem sx={{ flexGrow: 1 }}>
-                                <PageSearch query={query} onQueryChange={setQuery} pageSearchApi={pageSearchApi} />
-                            </ToolbarItem>
-                            <ToolbarItem>
-                                <FormControlLabel
-                                    control={<Switch checked={showArchive} color="primary" onChange={handleArchiveToggleClick} />}
-                                    label={<FormattedMessage id="dextinity.pages.pages.archivedItems" defaultMessage="Archived items" />}
-                                />
-                            </ToolbarItem>
-                            <ToolbarActions>
-                                <Button
-                                    startIcon={<Add />}
-                                    onClick={() => {
-                                        editDialogApi.openAddDialog();
-                                    }}
-                                >
-                                    <FormattedMessage {...messages.add} />
-                                </Button>
-                            </ToolbarActions>
-                        </Toolbar>
-                        <PageTreeContext.Provider
-                            value={{
-                                currentCategory: category,
-                                getDocumentTypesByCategory: typeof passedDocumentTypes === "function" ? passedDocumentTypes : undefined,
-                                tree,
-                                query: pagesQuery,
-                            }}
-                        >
-                            <MainContent fullHeight sx={{ display: "flex", flexDirection: "column" }}>
-                                <Box>
-                                    <PagesPageActionToolbar
-                                        selectedState={selectState}
-                                        onSelectAllPressed={() => {
-                                            if (selectState === "nothing_selected" || selectState === "some_selected") {
-                                                // select all pages
-                                                if (data) {
-                                                    setSelectedIds(data.pages.map((page) => page.id));
-                                                }
-                                            } else if (selectState === "all_selected") {
-                                                // Unselect all
-                                                setSelectedIds([]);
-                                            }
-                                        }}
-                                        selectedTree={selectedTree}
-                                        collapseAllDisabled={!expandedIds.length}
-                                        onCollapseAllPressed={() => {
-                                            setExpandedIds([]);
-                                        }}
+        <AiModeToolset
+            id="pageTree"
+            description="The page tree of the current content scope, where the user opens pages to edit them."
+            context={{ category }}
+        >
+            <DamScopeProvider>
+                <Stack topLevelTitle={intl.formatMessage({ id: "dextinity.pages.pages", defaultMessage: "Pages" })}>
+                    <StackSwitch>
+                        <StackPage name="table">
+                            <Toolbar scopeIndicator={renderContentScopeIndicator(pageTreeScope)}>
+                                <ToolbarItem sx={{ flexGrow: 1 }}>
+                                    <PageSearch query={query} onQueryChange={setQuery} pageSearchApi={pageSearchApi} />
+                                </ToolbarItem>
+                                <ToolbarItem>
+                                    <FormControlLabel
+                                        control={<Switch checked={showArchive} color="primary" onChange={handleArchiveToggleClick} />}
+                                        label={<FormattedMessage id="dextinity.pages.pages.archivedItems" defaultMessage="Archived items" />}
                                     />
-                                </Box>
-                                <Paper variant="outlined" sx={{ flex: 1 }}>
-                                    {loading && isInitialLoad.current ? (
-                                        <Loading behavior="fillParent" />
-                                    ) : (
-                                        <>
-                                            <Divider />
-                                            {loading && !isInitialLoad.current ? (
-                                                <LinearProgress />
-                                            ) : (
-                                                /* Placeholder to avoid content jumping when the loading bar appears */
-                                                <Box sx={{ backgroundColor: "white", width: "100%", height: 2 }} />
-                                            )}
-                                            {data?.pages.length === 0 ? (
-                                                <InlineAlert
-                                                    severity="info"
-                                                    icon={<Error sx={{ fontSize: "32px", color: "common.black" }} />}
-                                                    title={<FormattedMessage id="dextinity.pages.pages.noPagesYet" defaultMessage="No pages yet" />}
-                                                    sx={{ height: "100%" }}
+                                </ToolbarItem>
+                                <ToolbarActions>
+                                    <Button
+                                        startIcon={<Add />}
+                                        onClick={() => {
+                                            editDialogApi.openAddDialog();
+                                        }}
+                                    >
+                                        <FormattedMessage {...messages.add} />
+                                    </Button>
+                                </ToolbarActions>
+                            </Toolbar>
+                            <PageTreeContext.Provider
+                                value={{
+                                    currentCategory: category,
+                                    getDocumentTypesByCategory: typeof passedDocumentTypes === "function" ? passedDocumentTypes : undefined,
+                                    tree,
+                                    query: pagesQuery,
+                                }}
+                            >
+                                <MainContent fullHeight sx={{ display: "flex", flexDirection: "column" }}>
+                                    <Box>
+                                        <PagesPageActionToolbar
+                                            selectedState={selectState}
+                                            onSelectAllPressed={() => {
+                                                if (selectState === "nothing_selected" || selectState === "some_selected") {
+                                                    // select all pages
+                                                    if (data) {
+                                                        setSelectedIds(data.pages.map((page) => page.id));
+                                                    }
+                                                } else if (selectState === "all_selected") {
+                                                    // Unselect all
+                                                    setSelectedIds([]);
+                                                }
+                                            }}
+                                            selectedTree={selectedTree}
+                                            collapseAllDisabled={!expandedIds.length}
+                                            onCollapseAllPressed={() => {
+                                                setExpandedIds([]);
+                                            }}
+                                        />
+                                    </Box>
+                                    <Paper variant="outlined" sx={{ flex: 1 }}>
+                                        {loading && isInitialLoad.current ? (
+                                            <Loading behavior="fillParent" />
+                                        ) : (
+                                            <>
+                                                <Divider />
+                                                {loading && !isInitialLoad.current ? (
+                                                    <LinearProgress />
+                                                ) : (
+                                                    /* Placeholder to avoid content jumping when the loading bar appears */
+                                                    <Box sx={{ backgroundColor: "white", width: "100%", height: 2 }} />
+                                                )}
+                                                {data?.pages.length === 0 ? (
+                                                    <InlineAlert
+                                                        severity="info"
+                                                        icon={<Error sx={{ fontSize: "32px", color: "common.black" }} />}
+                                                        title={
+                                                            <FormattedMessage id="dextinity.pages.pages.noPagesYet" defaultMessage="No pages yet" />
+                                                        }
+                                                        sx={{ height: "100%" }}
+                                                    />
+                                                ) : (
+                                                    <PageTree
+                                                        ref={refPageTree}
+                                                        pages={pagesToRenderWithMatches}
+                                                        editDialogApi={editDialogApi}
+                                                        toggleExpand={toggleExpand}
+                                                        onSelectChanged={onSelectChanged}
+                                                        category={category}
+                                                        siteUrl={siteConfig.url}
+                                                    />
+                                                )}
+                                            </>
+                                        )}
+                                    </Paper>
+                                </MainContent>
+                            </PageTreeContext.Provider>
+
+                            <EditDialog>
+                                <DialogContent>
+                                    <EditPageNode
+                                        id={editDialogSelection.id || null}
+                                        mode={editDialogSelection.mode ?? "add"}
+                                        category={category}
+                                        documentTypes={documentTypes}
+                                    />
+                                </DialogContent>
+                            </EditDialog>
+                        </StackPage>
+                        <StackPage
+                            name="edit"
+                            title={intl.formatMessage({ id: "dextinity.pages.pages.editContent", defaultMessage: "Edit content" })}
+                        >
+                            {(selectedId) => {
+                                const page = data?.pages.find((page) => page.id == selectedId);
+
+                                if (loading && isInitialLoad.current) {
+                                    return <Loading behavior="fillPageHeight" />;
+                                }
+
+                                if (!page) {
+                                    return (
+                                        <MainContent>
+                                            <Alert
+                                                title={<FormattedMessage id="dextinity.pages.pages.notFound" defaultMessage="Not found" />}
+                                                severity="error"
+                                            >
+                                                <FormattedMessage
+                                                    id="dextinity.pages.pages.documentDoesntExist"
+                                                    defaultMessage="This document doesn't exist"
                                                 />
-                                            ) : (
-                                                <PageTree
-                                                    ref={refPageTree}
-                                                    pages={pagesToRenderWithMatches}
-                                                    editDialogApi={editDialogApi}
-                                                    toggleExpand={toggleExpand}
-                                                    onSelectChanged={onSelectChanged}
-                                                    category={category}
-                                                    siteUrl={siteConfig.url}
+                                            </Alert>
+                                        </MainContent>
+                                    );
+                                }
+
+                                if (page.visibility === "Archived") {
+                                    return (
+                                        <MainContent>
+                                            <Alert
+                                                title={<FormattedMessage id="dextinity.pages.pages.archived" defaultMessage="Archived" />}
+                                                severity="error"
+                                            >
+                                                <FormattedMessage
+                                                    id="dextinity.pages.pages.documentHasBeenArchived"
+                                                    defaultMessage="This document has been archived and can no longer be edited"
                                                 />
-                                            )}
-                                        </>
-                                    )}
-                                </Paper>
-                            </MainContent>
-                        </PageTreeContext.Provider>
+                                            </Alert>
+                                        </MainContent>
+                                    );
+                                }
 
-                        <EditDialog>
-                            <DialogContent>
-                                <EditPageNode
-                                    id={editDialogSelection.id || null}
-                                    mode={editDialogSelection.mode ?? "add"}
-                                    category={category}
-                                    documentTypes={documentTypes}
-                                />
-                            </DialogContent>
-                        </EditDialog>
-                    </StackPage>
-                    <StackPage name="edit" title={intl.formatMessage({ id: "dextinity.pages.pages.editContent", defaultMessage: "Edit content" })}>
-                        {(selectedId) => {
-                            const page = data?.pages.find((page) => page.id == selectedId);
+                                const documentType = documentTypes[page.documentType];
 
-                            if (loading && isInitialLoad.current) {
-                                return <Loading behavior="fillPageHeight" />;
-                            }
+                                if (!documentType) {
+                                    return null;
+                                }
 
-                            if (!page) {
-                                return (
-                                    <MainContent>
-                                        <Alert
-                                            title={<FormattedMessage id="dextinity.pages.pages.notFound" defaultMessage="Not found" />}
-                                            severity="error"
-                                        >
-                                            <FormattedMessage
-                                                id="dextinity.pages.pages.documentDoesntExist"
-                                                defaultMessage="This document doesn't exist"
-                                            />
-                                        </Alert>
-                                    </MainContent>
-                                );
-                            }
+                                const EditComponent = documentType.editComponent;
 
-                            if (page.visibility === "Archived") {
-                                return (
-                                    <MainContent>
-                                        <Alert
-                                            title={<FormattedMessage id="dextinity.pages.pages.archived" defaultMessage="Archived" />}
-                                            severity="error"
-                                        >
-                                            <FormattedMessage
-                                                id="dextinity.pages.pages.documentHasBeenArchived"
-                                                defaultMessage="This document has been archived and can no longer be edited"
-                                            />
-                                        </Alert>
-                                    </MainContent>
-                                );
-                            }
-
-                            const documentType = documentTypes[page.documentType];
-
-                            if (!documentType) {
-                                return null;
-                            }
-
-                            const EditComponent = documentType.editComponent;
-
-                            return EditComponent ? <EditComponent id={selectedId} category={category} /> : null;
-                        }}
-                    </StackPage>
-                </StackSwitch>
-            </Stack>
-        </DamScopeProvider>
+                                return EditComponent ? <EditComponent id={selectedId} category={category} /> : null;
+                            }}
+                        </StackPage>
+                    </StackSwitch>
+                </Stack>
+            </DamScopeProvider>
+        </AiModeToolset>
     );
 }

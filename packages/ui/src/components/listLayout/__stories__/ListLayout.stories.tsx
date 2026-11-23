@@ -166,7 +166,6 @@ function JobAdsPage() {
                 />
                 {selectedIds.length > 0 && (
                     <BulkActionBar
-                        className={styles.bulkActionBar}
                         count={selectedIds.length}
                         onClear={() => setSelectedIds([])}
                         actions={[

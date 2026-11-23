@@ -1,13 +1,19 @@
 @use "../../theme/forcedColors" as forced-colors;
 
+// Centered at the bottom of the window, whatever the page's height or scroll position
 .root {
+    position: fixed;
+    inset-block-end: calc(var(--dextinity-bulk-action-bar-offset) + env(safe-area-inset-bottom, 0px));
+    inset-inline-start: 50%;
+    z-index: var(--dextinity-layer-bulk-action-bar);
+    translate: -50% 0;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: var(--dextinity-space-1);
     box-sizing: border-box;
     inline-size: max-content;
-    max-inline-size: 100%;
+    max-inline-size: calc(100% - 2 * var(--dextinity-bulk-action-bar-gutter));
     padding: var(--dextinity-bulk-action-bar-padding);
     padding-inline-start: var(--dextinity-space-4);
     border-radius: var(--dextinity-bulk-action-bar-radius);

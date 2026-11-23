@@ -23,6 +23,7 @@ import { densitySetting } from "../density";
 import { scenarioSetting, useScenario } from "../scenario";
 import { CompareCanvas } from "./CompareCanvas";
 import { getComponentStoryIds, type IndexedStory } from "./componentStories";
+import { type FrameTool, FrameTools } from "./FrameTools";
 import { workspacePrototypes } from "./prototypes";
 import { type InspectedComponent, useCanvasInspector } from "./useCanvasInspector";
 import { useFramePage } from "./useFramePage";
@@ -175,6 +176,7 @@ export function WorkspaceShell() {
     const [reloadKey, setReloadKey] = useState(0);
     const [frameLoadCount, setFrameLoadCount] = useState(0);
     const [inspecting, setInspecting] = useState(false);
+    const [frameTool, setFrameTool] = useState<FrameTool | null>(null);
     // The stories opened before the current one, most recent last, to go back to the page a component was picked on
     const [storyHistory, setStoryHistory] = useState<HistoryEntry[]>([]);
     // The prototype's page to open the frame on; the prototype keeps the page it navigates to in the frame's hash
@@ -288,8 +290,14 @@ export function WorkspaceShell() {
         }
     }
 
+    function toggleFrameTool(tool: FrameTool) {
+        setInspecting(false);
+        setFrameTool(frameTool === tool ? null : tool);
+    }
+
     function changeCompare(compare: WorkspaceCompare) {
         setInspecting(false);
+        setFrameTool(null);
         if (!isComparing) {
             setPrototypeStartPage(framePage.hash);
         }
@@ -298,6 +306,7 @@ export function WorkspaceShell() {
 
     function changeMode(mode: WorkspaceMode) {
         setInspecting(false);
+        setFrameTool(null);
         // The prototype opens again on the page it was left on
         setPrototypeStartPage(isPrototypeMode ? shownPage : prototypeStartPage);
         updateState({ mode });
@@ -549,9 +558,34 @@ export function WorkspaceShell() {
                                     color={inspecting ? "primary" : "secondary"}
                                     aria-label="Pick a component in the canvas"
                                     aria-pressed={inspecting}
-                                    onClick={() => setInspecting(!inspecting)}
+                                    onClick={() => {
+                                        setFrameTool(null);
+                                        setInspecting(!inspecting);
+                                    }}
                                 >
                                     <Icon name="select" />
+                                </IconButton>
+                            )}
+                            {isPrototypeMode && !isComparing && (
+                                <IconButton
+                                    variant={frameTool === "measure" ? "contained" : "text"}
+                                    color={frameTool === "measure" ? "primary" : "secondary"}
+                                    aria-label="Measure sizes, distances, and tokens"
+                                    aria-pressed={frameTool === "measure"}
+                                    onClick={() => toggleFrameTool("measure")}
+                                >
+                                    <Icon name="crop-action" />
+                                </IconButton>
+                            )}
+                            {isPrototypeMode && !isComparing && (
+                                <IconButton
+                                    variant={frameTool === "accessibility" ? "contained" : "text"}
+                                    color={frameTool === "accessibility" ? "primary" : "secondary"}
+                                    aria-label="Check accessibility"
+                                    aria-pressed={frameTool === "accessibility"}
+                                    onClick={() => toggleFrameTool("accessibility")}
+                                >
+                                    <Icon name="contrast" />
                                 </IconButton>
                             )}
                         </div>
@@ -672,6 +706,15 @@ export function WorkspaceShell() {
                                                 <span className={styles.inspectLabel}>{inspected.componentName}</span>
                                             </div>
                                         </div>
+                                    )}
+                                    {frameTool && (
+                                        <FrameTools
+                                            tool={frameTool}
+                                            frameRef={frameRef}
+                                            frameLoadCount={frameLoadCount}
+                                            scale={scale}
+                                            onExit={() => setFrameTool(null)}
+                                        />
                                     )}
                                     {!state.responsive && (
                                         <>

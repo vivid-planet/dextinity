@@ -96,21 +96,18 @@ export const DateTimeRangePicker = (inProps: DateTimeRangePickerProps) => {
                 onClose={() => setOpen(false)}
                 value={arrayValue}
                 onChange={([startDate, endDate]) => {
-                    const startDateIsInvalid = startDate !== null && !isValidDate(startDate);
-                    const endDateIsInvalid = endDate !== null && !isValidDate(endDate);
+                    // MUI X keeps the typed text only when the value changes, so an invalid date is published as empty instead of being ignored
+                    const validStartDate = startDate && isValidDate(startDate) ? startDate : null;
+                    const validEndDate = endDate && isValidDate(endDate) ? endDate : null;
 
-                    if (startDateIsInvalid || endDateIsInvalid) {
-                        return;
-                    }
-
-                    if (!startDate && !endDate) {
+                    if (!validStartDate && !validEndDate) {
                         onChange?.(undefined);
                         return;
                     }
 
                     onChange?.({
-                        start: startDate,
-                        end: endDate,
+                        start: validStartDate,
+                        end: validEndDate,
                     });
                 }}
                 {...slotProps?.root}

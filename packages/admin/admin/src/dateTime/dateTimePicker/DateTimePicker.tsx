@@ -89,12 +89,8 @@ export const DateTimePicker = (inProps: DateTimePickerProps) => {
             onClose={() => setOpen(false)}
             value={value}
             onChange={(date) => {
-                const dateIsInvalid = date !== null && !isValidDate(date);
-                if (dateIsInvalid) {
-                    return;
-                }
-
-                onChange?.(date || undefined);
+                // MUI X keeps the typed text only when the value changes, so an invalid date is published as empty instead of being ignored
+                onChange?.(date && isValidDate(date) ? date : undefined);
             }}
             {...slotProps?.root}
             {...restProps}

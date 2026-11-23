@@ -1,9 +1,15 @@
-import { type GridColDef, useBufferedRowCount, type useDataGridRemote, type usePersistentColumnState } from "@dextinity/admin";
+import {
+    dataGridDateTimeColumn,
+    type GridColDef,
+    useBufferedRowCount,
+    type useDataGridRemote,
+    type usePersistentColumnState,
+} from "@dextinity/admin";
 import { View } from "@dextinity/admin-icons";
 import { IconButton, Typography } from "@mui/material";
-import { getGridDateOperators, gridClasses, type GridRowParams, type GridRowSelectionModel, type GridSlotsComponent } from "@mui/x-data-grid";
+import { gridClasses, type GridRowParams, type GridRowSelectionModel, type GridSlotsComponent } from "@mui/x-data-grid";
 import { useMemo, useState } from "react";
-import { FormattedDate, FormattedMessage, useIntl } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 
 import { DataGrid } from "../../../dataGrid/DataGrid";
 import { ActionLogHeader } from "../../components/actionLogHeader/ActionLogHeader";
@@ -15,7 +21,7 @@ import type { GQLActionLogVersionGridFragment } from "./ActionLogVersionGrid.gql
 import { Root } from "./ActionLogVersionGrid.sc";
 
 // "is" and "not" would compare the timestamps to the millisecond on the server, so they would hardly ever match.
-const createdAtFilterOperators = getGridDateOperators(true).filter((operator) =>
+const createdAtFilterOperators = dataGridDateTimeColumn.filterOperators?.filter((operator) =>
     ["after", "onOrAfter", "before", "onOrBefore"].includes(operator.value),
 );
 
@@ -77,15 +83,11 @@ export function ActionLogVersionGrid<Row extends GQLActionLogVersionGridFragment
                   ]
                 : []),
             {
+                ...dataGridDateTimeColumn,
                 field: "createdAt",
-                type: "dateTime",
                 headerName: intl.formatMessage({ defaultMessage: "Date", id: "actionLog.actionLogVersionGrid.columns.createdAt" }),
                 minWidth: 200,
-                valueGetter: (value: string) => new Date(value),
                 filterOperators: createdAtFilterOperators,
-                renderCell: ({ row }) => {
-                    return <FormattedDate dateStyle="medium" timeStyle="short" value={row.createdAt} />;
-                },
             },
             {
                 field: "user",

@@ -25,6 +25,7 @@ import { brandSetting } from "../brand";
 import { colorSchemeSetting, getAppliedColorScheme } from "../colorScheme";
 import { densitySetting } from "../density";
 import { scenarioSetting, useScenario } from "../scenario";
+import { textLengthSetting } from "../textLength";
 import { CompareCanvas } from "./CompareCanvas";
 import { getComponentStoryIds, type IndexedStory } from "./componentStories";
 import { FlowMap } from "./FlowMap";
@@ -48,6 +49,7 @@ const maxPanelWidth = 520;
 const panelKeyboardStep = 20;
 const inspectLabelHeight = 18;
 const prototypesTitle = "Workspace/Prototypes";
+const textLengthOptions = textLengthSetting.options.map(({ value, title }) => ({ value, "aria-label": title, icon: null }));
 const scenarioOptions = scenarioSetting.options.map(({ value, title }) => ({ value, "aria-label": title, icon: null }));
 const brandOptions = brandSetting.options.map(({ value, title }) => ({ value, "aria-label": title, icon: null }));
 
@@ -181,6 +183,7 @@ export function WorkspaceShell() {
     const [brand, setBrand] = useState(brandSetting.get);
     const [density, setDensity] = useState(densitySetting.get);
     const scenario = useScenario();
+    const textLength = textLengthSetting.useValue();
     const [canvasElement, setCanvasElement] = useState<HTMLDivElement | null>(null);
     const [resizing, setResizing] = useState<"frame" | "panel" | null>(null);
     const [reloadKey, setReloadKey] = useState(0);
@@ -591,6 +594,15 @@ export function WorkspaceShell() {
                                     onChange={scenarioSetting.store}
                                 />
                             )}
+                            {isPrototypeMode && (
+                                <SettingMenu
+                                    label="Text length"
+                                    icon={<Icon name="align-justify" />}
+                                    options={textLengthOptions}
+                                    value={textLength}
+                                    onChange={textLengthSetting.store}
+                                />
+                            )}
                             {isPrototypeMode && <TokenPlayground />}
                             <SettingMenu label="Color scheme" options={colorSchemeOptions} value={colorScheme} onChange={changeColorScheme} />
                             <SettingMenu
@@ -626,7 +638,7 @@ export function WorkspaceShell() {
                                         window.open(storybookFrameRef.current?.contentWindow?.location.href ?? storybookSrc ?? undefined, "_blank");
                                     } else if (storyUrl) {
                                         // The link keeps the toolbar's settings, so whoever opens it sees the prototype as it's shown here
-                                        const settings = [colorSchemeSetting, brandSetting, densitySetting, scenarioSetting]
+                                        const settings = [colorSchemeSetting, brandSetting, densitySetting, scenarioSetting, textLengthSetting]
                                             .map((setting) => `&${setting.storageKey}=${encodeURIComponent(setting.get())}`)
                                             .join("");
                                         window.open(`${storyUrl}${settings}${shownPage ? `#${shownPage}` : ""}`, "_blank");

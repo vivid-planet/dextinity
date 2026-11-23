@@ -6,6 +6,7 @@ import type { SideNavGroup } from "../../components/sideNav/SideNav";
 import { densitySetting } from "../density";
 import { PageTypeShell } from "../pageTypes/PageTypeShell";
 import { type FlowEdgeKind, type LeaveGuard, PrototypeNavigationContext } from "../pageTypes/prototypeNavigation";
+import { useTextLength } from "../textLength";
 import { addFlowEdges } from "./flowEdges";
 import { findElementByPath } from "./frameElements";
 import { hotspotList, toolAttribute } from "./hotspots";
@@ -51,6 +52,7 @@ export function PrototypeApp({ prototype, navGroups, renderPage }: PrototypeAppP
     const [navCollapsed, setNavCollapsed] = useState(false);
     const [assistantOpen, setAssistantOpen] = useState(false);
     const density = densitySetting.useValue();
+    useTextLength();
     const tokenCss = getOverrideCss(tokenOverrideList.useItems());
     const pageIdRef = useRef(pageId);
     const leaveGuardRef = useRef<LeaveGuard | null>(null);

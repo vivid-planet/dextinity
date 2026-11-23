@@ -9,6 +9,7 @@ import { brandSetting } from "../brand";
 import { colorSchemeSetting } from "../colorScheme";
 import { densitySetting } from "../density";
 import { scenarioSetting } from "../scenario";
+import { textLengthSetting } from "../textLength";
 import styles from "./CompareCanvas.module.scss";
 import { findElementByPath, getElementPath } from "./frameElements";
 import type { WorkspaceZoom } from "./workspaceState";
@@ -20,6 +21,7 @@ const variantSettings = [
     { key: "brand", setting: brandSetting, label: "Theme" },
     { key: "density", setting: densitySetting, label: "Density" },
     { key: "scenario", setting: scenarioSetting, label: "Content" },
+    { key: "textLength", setting: textLengthSetting, label: "Text length" },
 ] as const;
 
 type VariantKey = (typeof variantSettings)[number]["key"];

@@ -65,9 +65,10 @@ export function findImportPath(importName: string, targetDirectory: string, meta
                     return {
                         importPath: relativePath,
                         exportedDeclaration,
+                        importSourceFile: importSource,
                     };
                 } else {
-                    return { importPath, exportedDeclaration };
+                    return { importPath, exportedDeclaration, importSourceFile: importSource };
                 }
             }
         }
@@ -108,6 +109,21 @@ export function findEnumImportPath(enumName: string, targetDirectory: string, me
         const { importPath } = findImportPathOrThrow(enumName, targetDirectory, metadata);
         return importPath;
     }
+}
+
+/**
+ * Returns the path of the file that declares the enum or that the entity imports it from, without extension.
+ */
+export function findEnumFilePath(enumName: string, targetDirectory: string, metadata: EntityMetadata<any>): string {
+    const tsSource = morphTsSource(metadata);
+    if (!tsSource.getEnum(enumName)) {
+        const { importPath, importSourceFile } = findImportPathOrThrow(enumName, targetDirectory, metadata);
+        if (!importPath.startsWith(".") && !importSourceFile.isInNodeModules()) {
+            // The import path of a path alias, for instance `@src/`, isn't a path in the file system
+            return path.join(targetDirectory, path.relative(targetDirectory, importSourceFile.getFilePath().replace(/\.ts$/, "")));
+        }
+    }
+    return `${targetDirectory}/${findEnumImportPath(enumName, targetDirectory, metadata)}`;
 }
 
 export function findValidatorImportPath(validatorName: string, targetDirectory: string, metadata: EntityMetadata<any>): string {

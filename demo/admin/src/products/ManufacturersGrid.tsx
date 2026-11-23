@@ -16,10 +16,12 @@ import {
     useBufferedRowCount,
     useDataGridRemote,
     usePersistentColumnState,
+    useStackSwitchApi,
 } from "@dextinity/admin";
 import { Add as AddIcon, Edit, Info } from "@dextinity/admin-icons";
 import { IconButton } from "@mui/material";
 import { DataGridPro, GridColumnHeaderTitle } from "@mui/x-data-grid-pro";
+import { useAiModeDataGridToolset } from "@src/aiMode/useAiModeDataGridToolset";
 import type {
     GQLDeleteManufacturerMutation,
     GQLDeleteManufacturerMutationVariables,
@@ -148,6 +150,18 @@ export function ManufacturersGrid() {
             sort: muiGridSortToGql(sortModel),
         },
         notifyOnNetworkStatusChange: false,
+    });
+    const stackSwitchApi = useStackSwitchApi();
+    useAiModeDataGridToolset({
+        entityName: "manufacturer",
+        entityLabel: "manufacturers",
+        columns,
+        dataGridProps,
+        rows: data?.manufacturers.nodes ?? [],
+        totalCount: data?.manufacturers.totalCount,
+        isLoading: loading,
+        openEditForm: (id) => stackSwitchApi.activatePage("edit", id),
+        openAddForm: () => stackSwitchApi.activatePage("add", "add"),
     });
     if (error) {
         throw error;

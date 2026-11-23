@@ -13,7 +13,7 @@ import { getResultDetails } from "./shared/resultDetails";
 import { EmptyState, Kbd, optionId } from "./shared/SearchPanelParts";
 import type { SearchResult } from "./shared/types";
 import { scrollActiveOptionIntoView } from "./shared/useListKeyboardNavigation";
-import { useSearchShortcut } from "./shared/useSearchShortcut";
+import { isMacPlatform, useSearchShortcut } from "./shared/useSearchShortcut";
 import { allEntitiesFilter, type PaletteItem, type QuickAction, useCommandPalette } from "./useCommandPalette";
 
 const enterKeyLabel = "↵";
@@ -350,6 +350,9 @@ function Palette({ onSelectResult, onQuickAction, onClose }: Required<Props> & {
             </Popover>
 
             <Footer>
+                <FooterHint keys={[isMacPlatform() ? "⌘" : "Ctrl", "K"]}>
+                    <FormattedMessage id="fullTextSearchPrototype.hint.openSearch" defaultMessage="Open search" />
+                </FooterHint>
                 <FooterHint keys={["↓", "↑"]}>
                     <FormattedMessage id="fullTextSearchPrototype.hint.move" defaultMessage="Move" />
                 </FooterHint>

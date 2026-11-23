@@ -1,23 +1,29 @@
+import { Tooltip } from "@dextinity/admin";
 import { Search } from "@dextinity/admin-icons";
 import { Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { FormattedMessage } from "react-intl";
 
-import { Kbd } from "./shared/SearchPanelParts";
 import { isMacPlatform } from "./shared/useSearchShortcut";
-
-const shortcutLetter = "K";
 
 export function PaletteTrigger({ onClick }: { onClick: () => void }) {
     return (
-        <Trigger onClick={onClick}>
-            <Search fontSize="small" />
-            <TriggerLabel variant="body2">
-                <FormattedMessage id="fullTextSearchPrototype.placeholder" defaultMessage="Search…" />
-            </TriggerLabel>
-            <TriggerKbd>{isMacPlatform() ? "⌘" : "Ctrl"}</TriggerKbd>
-            <TriggerKbd>{shortcutLetter}</TriggerKbd>
-        </Trigger>
+        <Tooltip
+            title={
+                <FormattedMessage
+                    id="fullTextSearchPrototype.trigger.tooltip"
+                    defaultMessage="Search ({shortcut})"
+                    values={{ shortcut: isMacPlatform() ? "⌘K" : "Ctrl+K" }}
+                />
+            }
+        >
+            <Trigger onClick={onClick}>
+                <Search fontSize="small" />
+                <Typography variant="body2">
+                    <FormattedMessage id="fullTextSearchPrototype.placeholder" defaultMessage="Search…" />
+                </Typography>
+            </Trigger>
+        </Tooltip>
     );
 }
 
@@ -25,7 +31,7 @@ const Trigger = styled("button")`
     display: flex;
     align-items: center;
     gap: ${({ theme }) => theme.spacing(1)};
-    width: 280px;
+    width: 160px;
     margin-right: ${({ theme }) => theme.spacing(2)};
     padding: ${({ theme }) => theme.spacing(1, 1.5)};
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -40,16 +46,4 @@ const Trigger = styled("button")`
     &:focus-visible {
         background-color: rgba(255, 255, 255, 0.2);
     }
-`;
-
-const TriggerLabel = styled(Typography)`
-    flex-grow: 1;
-    text-align: left;
-`;
-
-const TriggerKbd = styled(Kbd)`
-    margin: 0;
-    border-color: rgba(255, 255, 255, 0.25);
-    background-color: rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.8);
 `;

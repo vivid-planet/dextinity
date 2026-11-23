@@ -2333,6 +2333,9 @@ importers:
       '@dextinity/eslint-config':
         specifier: workspace:*
         version: link:../../eslint-config
+      '@electric-sql/pglite':
+        specifier: ^0.5.17
+        version: 0.5.17
       '@golevelup/ts-vitest':
         specifier: ^4.0.1
         version: 4.0.1(vitest@5.1.0)
@@ -4916,6 +4919,9 @@ packages:
 
   '@dual-bundle/import-meta-resolve@4.2.1':
     resolution: {integrity: sha512-id+7YRUgoUX6CgV0DtuhirQWodeeA7Lf4i2x71JS/vtA5pRb/hIGWlw+G6MeXvsM+MXrz0VAydTGElX1rAfgPg==}
+
+  '@electric-sql/pglite@0.5.17':
+    resolution: {integrity: sha512-8SvKjiUjaU+0O0dbxjOfN+jXz14TEqDWbwDkYOW1aQ11y/ph2JvFVI27ABBo5nfw+ZfSqy4hKCNlbnbB1TDE+g==}
 
   '@emnapi/core@1.11.0':
     resolution: {integrity: sha512-l9Oo58x0HOP5znGzVhYW9U3e5wVuA4LAZU2AGezTmkhO1CgQRFDhDg4nneHsu/t3WniXg9QrG2nIXL/ZS8ln8Q==}
@@ -22155,6 +22161,8 @@ snapshots:
       - webpack-cli
 
   '@dual-bundle/import-meta-resolve@4.2.1': {}
+
+  '@electric-sql/pglite@0.5.17': {}
 
   '@emnapi/core@1.11.0':
     dependencies:

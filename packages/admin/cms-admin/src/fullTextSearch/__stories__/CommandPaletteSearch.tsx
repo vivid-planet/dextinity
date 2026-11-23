@@ -256,9 +256,7 @@ function Palette({ onSelectResult, onQuickAction, onClose }: Required<Props> & {
                         "aria-activedescendant": activeItem ? optionId(activeItem.key) : undefined,
                     }}
                 />
-                {palette.isSearchEmpty ? (
-                    <Kbd>{escapeKeyLabel}</Kbd>
-                ) : (
+                {!palette.isSearchEmpty && (
                     <ClearButton
                         variant="textDark"
                         onClick={() => {

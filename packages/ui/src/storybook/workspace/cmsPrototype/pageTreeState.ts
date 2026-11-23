@@ -102,3 +102,51 @@ export function duplicatePages(pages: SitePage[], ids: string[]): { pages: SiteP
         });
     return { pages: duplicate(pages), copyIds };
 }
+
+/** The pages above a page, from the root; `undefined` when the page isn't in the tree. */
+export function findTrail(pages: SitePage[], id: string): SitePage[] | undefined {
+    for (const page of pages) {
+        if (page.id === id) {
+            return [];
+        }
+        const trail = findTrail(page.children ?? [], id);
+        if (trail != null) {
+            return [page, ...trail];
+        }
+    }
+    return undefined;
+}
+
+function copyBelow(page: SitePage, parentPath: string): SitePage {
+    copyCounter += 1;
+    const path = page.type === "link" ? page.path : `${parentPath}/${page.path?.split("/").pop() ?? "page"}`;
+    return {
+        ...page,
+        id: `${page.id}-copy-${copyCounter}`,
+        path,
+        status: "unpublished",
+        icon: undefined,
+        children: page.children?.map((child) => copyBelow(child, path ?? parentPath)),
+    };
+}
+
+/**
+ * Inserts copies of the pages, with the pages below them, as the last children of the target. A page below another copied page comes
+ * along with that one. Copies start unpublished; their paths follow the target's.
+ */
+export function pastePages(pages: SitePage[], ids: string[], targetId: string): { pages: SitePage[]; copyIds: string[] } {
+    const target = findInTree(pages, targetId);
+    if (target == null) {
+        return { pages, copyIds: [] };
+    }
+    const topLevelIds = ids.filter((id) => !(findTrail(pages, id) ?? []).some((ancestor) => ids.includes(ancestor.id)));
+    const targetPath = target.path == null || target.path === "/" ? "" : target.path;
+    const copies = topLevelIds.flatMap((id) => {
+        const page = findInTree(pages, id);
+        return page != null ? [copyBelow(page, targetPath)] : [];
+    });
+    return {
+        pages: updatePages(pages, [targetId], (page) => ({ ...page, children: [...(page.children ?? []), ...copies] })),
+        copyIds: copies.map((copy) => copy.id),
+    };
+}

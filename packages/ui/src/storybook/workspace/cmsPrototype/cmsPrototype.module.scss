@@ -425,6 +425,45 @@
     text-align: start;
 }
 
+// The chevron hints at the menu only where the pointer or focus is, so the column stays quiet
+.statusChevron {
+    display: inline-flex;
+    opacity: 0;
+    transition: opacity var(--dextinity-motion-duration-short);
+
+    .statusTrigger:hover &,
+    .statusTrigger:focus-visible &,
+    .statusTrigger[aria-expanded="true"] & {
+        opacity: 1;
+    }
+}
+
+// "Add subpage" and the actions appear on hover, focus, and on the active row; their room is kept, so the status column doesn't shift
+.rowButtons {
+    display: inline-flex;
+    gap: var(--dextinity-space-0-5);
+    opacity: 0;
+    transition: opacity var(--dextinity-motion-duration-short);
+
+    :global(.dextinityTreeView__row):hover &,
+    :global(.dextinityTreeView__row):focus-within &,
+    :global(.dextinityTreeView__row[data-selected]) &,
+    :global(.dextinityTreeView__item):focus-visible > :global(.dextinityTreeView__row) &,
+    &:has([aria-expanded="true"]) {
+        opacity: 1;
+    }
+
+    @media (hover: none) {
+        opacity: 1;
+    }
+}
+
+.changedBy {
+    display: inline-flex;
+    gap: var(--dextinity-space-2);
+    align-items: center;
+}
+
 // On a phone the names need the room, so the status shows as its dot; the button still names it
 @media (width < 600px) {
     .statusTrigger {

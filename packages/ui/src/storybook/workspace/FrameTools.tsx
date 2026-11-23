@@ -1,23 +1,16 @@
 import { type RefObject, useEffect, useMemo, useRef, useState } from "react";
 
 import { composite, contrastRatio, getBackgroundBehind, toRgba } from "./frameColor";
-import { type FrameRect, getFrameRect } from "./frameElements";
+import { type FrameRect, getFrameRect, useFrameDocument } from "./frameElements";
+import { CommentLayer, type NotePage, TextLayer } from "./FrameNotes";
 import { createTokenLookup } from "./frameTokens";
 import styles from "./FrameTools.module.scss";
 
-export type FrameTool = "measure" | "accessibility";
+export type FrameTool = "measure" | "accessibility" | "comment" | "text";
 
 // The frame's elements come from another window, so `instanceof Element` of this one doesn't recognize them
 function asElement(target: EventTarget | null): Element | null {
     return target != null && (target as Node).nodeType === Node.ELEMENT_NODE ? (target as Element) : null;
-}
-
-function useFrameDocument(frameRef: RefObject<HTMLIFrameElement | null>, frameLoadCount: number) {
-    const [frameDocument, setFrameDocument] = useState<Document | null>(null);
-    useEffect(() => {
-        setFrameDocument(frameRef.current?.contentDocument ?? null);
-    }, [frameRef, frameLoadCount]);
-    return frameDocument;
 }
 
 /** Changes whenever the frame's page may have moved: it scrolled, resized, or its content changed. */
@@ -456,9 +449,11 @@ export function FrameTools({
     frameRef,
     frameLoadCount,
     scale,
+    notePage,
     onExit,
 }: {
     tool: FrameTool;
+    notePage: NotePage;
     frameRef: RefObject<HTMLIFrameElement | null>;
     frameLoadCount: number;
     scale: number;
@@ -469,9 +464,14 @@ export function FrameTools({
     if (!frameDocument?.body) {
         return null;
     }
-    return tool === "measure" ? (
-        <MeasureLayer frameDocument={frameDocument} scale={scale} onExit={onExit} />
-    ) : (
-        <AccessibilityLayer frameDocument={frameDocument} scale={scale} tick={tick} />
-    );
+    switch (tool) {
+        case "measure":
+            return <MeasureLayer frameDocument={frameDocument} scale={scale} onExit={onExit} />;
+        case "accessibility":
+            return <AccessibilityLayer frameDocument={frameDocument} scale={scale} tick={tick} />;
+        case "comment":
+            return <CommentLayer frameDocument={frameDocument} scale={scale} notePage={notePage} />;
+        case "text":
+            return <TextLayer frameDocument={frameDocument} notePage={notePage} />;
+    }
 }

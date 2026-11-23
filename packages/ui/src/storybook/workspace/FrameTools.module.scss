@@ -220,3 +220,123 @@ $contrast: #d6336c;
         background: $contrast;
     }
 }
+
+$pin: #f59f00;
+
+.pin {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    inline-size: 24px;
+    block-size: 24px;
+    padding: 0;
+    border: 2px solid #fff;
+    border-radius: 50% 50% 50% 0;
+    background: $pin;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 30%);
+    color: #1d1f24;
+    font: 600 11px/1 var(--dextinity-font-family-text);
+    translate: 0 -100%;
+    cursor: pointer;
+    pointer-events: auto;
+
+    &[data-resolved] {
+        opacity: 0.5;
+    }
+
+    &[data-open] {
+        outline: 2px solid $pin;
+        outline-offset: 2px;
+    }
+}
+
+.commentEditor {
+    position: absolute;
+    display: grid;
+    gap: 8px;
+    inline-size: 260px;
+    padding: 8px;
+    border-radius: 8px;
+    background: var(--dextinity-color-surface);
+    box-shadow:
+        0 0 0 1px var(--dextinity-color-line),
+        0 8px 24px color-mix(in oklch, var(--dextinity-color-text) 18%, transparent);
+    font-family: var(--dextinity-font-family-text);
+    font-size: 12px;
+    pointer-events: auto;
+}
+
+.editorActions,
+.cardActions {
+    display: flex;
+    gap: 4px;
+    justify-content: flex-end;
+}
+
+.cardActions {
+    margin-block-start: 8px;
+}
+
+.noteList {
+    display: grid;
+    gap: 2px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+        display: flex;
+        gap: 4px;
+        align-items: center;
+
+        &[data-resolved] {
+            opacity: 0.6;
+        }
+    }
+
+    del {
+        color: var(--dextinity-color-text-subtle);
+    }
+}
+
+.noteLink {
+    display: flex;
+    flex: 1;
+    gap: 8px;
+    align-items: flex-start;
+    min-inline-size: 0;
+    padding: 4px;
+    border: 0;
+    border-radius: 4px;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+
+    &:is(button) {
+        cursor: pointer;
+    }
+
+    &:is(button):hover {
+        background: color-mix(in oklch, var(--dextinity-color-text) 6%, transparent);
+    }
+}
+
+.noteNumber {
+    display: grid;
+    flex: none;
+    place-items: center;
+    inline-size: 18px;
+    block-size: 18px;
+    border-radius: 50%;
+    background: $pin;
+    color: #1d1f24;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.notePage {
+    display: block;
+    color: var(--dextinity-color-text-subtle);
+    font-size: 11px;
+}

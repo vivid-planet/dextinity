@@ -1,3 +1,5 @@
+import { type RefObject, useEffect, useState } from "react";
+
 /**
  * Where an element sits in its document, as the child positions from `body` down. Frames that show the same page at the same size
  * have the same structure, so the path finds the same element in another frame, or in the same frame after a reload.
@@ -31,3 +33,12 @@ export function getFrameRect(element: Element) {
 }
 
 export type FrameRect = ReturnType<typeof getFrameRect>;
+
+/** The document the frame shows, again after each load. */
+export function useFrameDocument(frameRef: RefObject<HTMLIFrameElement | null>, frameLoadCount: number) {
+    const [frameDocument, setFrameDocument] = useState<Document | null>(null);
+    useEffect(() => {
+        setFrameDocument(frameRef.current?.contentDocument ?? null);
+    }, [frameRef, frameLoadCount]);
+    return frameDocument;
+}

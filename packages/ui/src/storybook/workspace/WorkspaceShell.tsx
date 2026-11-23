@@ -23,6 +23,7 @@ import { densitySetting } from "../density";
 import { scenarioSetting, useScenario } from "../scenario";
 import { CompareCanvas } from "./CompareCanvas";
 import { getComponentStoryIds, type IndexedStory } from "./componentStories";
+import { type NotePage, useTextChanges } from "./FrameNotes";
 import { type FrameTool, FrameTools } from "./FrameTools";
 import { workspacePrototypes } from "./prototypes";
 import { type InspectedComponent, useCanvasInspector } from "./useCanvasInspector";
@@ -245,6 +246,19 @@ export function WorkspaceShell() {
     // While comparing, the frames report their page to the start page, which the single frame then opens on again
     const shownPage = isComparing ? prototypeStartPage : framePage.hash;
     const currentPrototypePageId = shownPage || workspacePrototypes.get(prototypeId ?? "")?.startPageId;
+    const currentWorkspacePrototype = workspacePrototypes.get(prototypeId ?? "");
+    const notePage: NotePage = {
+        prototypeId: prototypeId ?? "",
+        page: currentPrototypePageId ?? "",
+        getPageLabel: (page) => currentWorkspacePrototype?.getPageLabel(page) ?? page,
+        onOpenPage: (page) => {
+            const frameWindow = frameRef.current?.contentWindow;
+            if (frameWindow) {
+                frameWindow.location.hash = page;
+            }
+        },
+    };
+    useTextChanges({ frameRef, frameLoadCount, prototypeId: notePage.prototypeId, page: notePage.page });
     const storiesById = useMemo(() => new Map(componentStories.map((story) => [story.id, story])), [componentStories]);
 
     function rememberCurrentStory() {
@@ -579,6 +593,28 @@ export function WorkspaceShell() {
                             )}
                             {isPrototypeMode && !isComparing && (
                                 <IconButton
+                                    variant={frameTool === "comment" ? "contained" : "text"}
+                                    color={frameTool === "comment" ? "primary" : "secondary"}
+                                    aria-label="Pin comments to the page"
+                                    aria-pressed={frameTool === "comment"}
+                                    onClick={() => toggleFrameTool("comment")}
+                                >
+                                    <Icon name="chat-add" />
+                                </IconButton>
+                            )}
+                            {isPrototypeMode && !isComparing && (
+                                <IconButton
+                                    variant={frameTool === "text" ? "contained" : "text"}
+                                    color={frameTool === "text" ? "primary" : "secondary"}
+                                    aria-label="Edit texts"
+                                    aria-pressed={frameTool === "text"}
+                                    onClick={() => toggleFrameTool("text")}
+                                >
+                                    <Icon name="pencil-line" />
+                                </IconButton>
+                            )}
+                            {isPrototypeMode && !isComparing && (
+                                <IconButton
                                     variant={frameTool === "accessibility" ? "contained" : "text"}
                                     color={frameTool === "accessibility" ? "primary" : "secondary"}
                                     aria-label="Check accessibility"
@@ -713,6 +749,7 @@ export function WorkspaceShell() {
                                             frameRef={frameRef}
                                             frameLoadCount={frameLoadCount}
                                             scale={scale}
+                                            notePage={notePage}
                                             onExit={() => setFrameTool(null)}
                                         />
                                     )}

@@ -9,7 +9,7 @@ import { buildNameVariants } from "../utils/build-name-variants";
 import { integerTypes, numberTypes } from "../utils/constants";
 import { findHooksService } from "../utils/find-hooks-service";
 import { generateImportsCode, type Imports } from "../utils/generate-imports-code";
-import { findBlockImportPath, findBlockName, findEnumImportPath, findEnumName } from "../utils/ts-morph-helper";
+import { findBlockImportPath, findBlockName, findEnumFilePath, findEnumName } from "../utils/ts-morph-helper";
 import type { GeneratedFile } from "../utils/write-generated-files";
 import { buildOptions } from "./build-options";
 import { generateEnumFilterDto } from "./generate-enum-filter-dto";
@@ -38,11 +38,10 @@ function generateFilterDto({
     crudFilterProps.map((prop) => {
         if (prop.type == "EnumArrayType" || prop.enum) {
             const enumName = findEnumName(prop.name, metadata);
-            const enumImportPath = findEnumImportPath(enumName, targetDirectory, metadata);
             const enumFilter = generateEnumFilterDto(
                 prop.type == "EnumArrayType" ? "enums" : "enum",
                 enumName,
-                `${targetDirectory}/${enumImportPath}`,
+                findEnumFilePath(enumName, targetDirectory, metadata),
             );
             generatedFiles.push(enumFilter);
             imports.push({

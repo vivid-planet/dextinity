@@ -367,8 +367,8 @@ importers:
         specifier: ^2.6.0
         version: 2.6.0
       '@swc/plugin-emotion':
-        specifier: ^20.0.2
-        version: 20.0.2
+        specifier: ^20.0.3
+        version: 20.0.3
       '@types/lodash.isequal':
         specifier: ^4.5.8
         version: 4.5.8
@@ -9187,8 +9187,8 @@ packages:
   '@swc/helpers@0.5.23':
     resolution: {integrity: sha512-5lSsMOTXURePglDfvuAQUqkGek9Hg2kksOYay2m0+XR++b2NWYL/4sWyuvVBIs8oKnJaxkdi9whaL/sqN13afw==}
 
-  '@swc/plugin-emotion@20.0.2':
-    resolution: {integrity: sha512-wU9iRHn2IBNTD5iTfCkrk4/wVv6YCsvxA6I3d9xaiE1zTIvlnd1R5c0tGYZO5hBQ4STSm47faNCk451dT6JNzQ==}
+  '@swc/plugin-emotion@20.0.3':
+    resolution: {integrity: sha512-hjyF9+zKPTbo6/1iWVqK+nPtMyAtzIyRStW0Rddm+XHjZH8IlupBXYxP3xFUT1G+9g4OaQmsThRQ6PFBqmkurA==}
 
   '@swc/types@0.1.28':
     resolution: {integrity: sha512-V6Mnml8v09QALx6K0elJ7o9K/MkVDtW3t6L+7Ou/JcWtb3xwId2AH4FeOceySd2JaO87IMw4+6vSZxLm34LPbw==}
@@ -26516,7 +26516,7 @@ snapshots:
     dependencies:
       tslib: 2.9.1
 
-  '@swc/plugin-emotion@20.0.2':
+  '@swc/plugin-emotion@20.0.3':
     dependencies:
       '@swc/counter': 0.1.3
 

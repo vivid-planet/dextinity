@@ -23,7 +23,7 @@ export interface TextChange extends NoteAnchor {
 }
 
 /** A list kept in the browser's storage and shared by everything in the workspace that shows it, including other tabs. */
-function createStoredList<Item>(storageKey: string) {
+export function createStoredList<Item>(storageKey: string) {
     const listeners = new Set<() => void>();
     let cache: Item[] | null = null;
 

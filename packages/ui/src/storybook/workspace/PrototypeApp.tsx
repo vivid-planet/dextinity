@@ -5,6 +5,7 @@ import { Icon } from "../../components/icon/Icon";
 import type { SideNavGroup } from "../../components/sideNav/SideNav";
 import { PageTypeShell } from "../pageTypes/PageTypeShell";
 import { type LeaveGuard, PrototypeNavigationContext } from "../pageTypes/prototypeNavigation";
+import { customPageList, customPagePrefix, renderCustomPage } from "./pageTemplates";
 import type { WorkspacePrototype } from "./prototypes";
 
 function PageNotInPrototype({ prototype, pageId }: { prototype: WorkspacePrototype; pageId: string }) {
@@ -29,9 +30,10 @@ interface PrototypeAppProps {
 }
 
 // The page is the location's hash, so a reload keeps it and the browser's back button goes to the page before
+// A page the designer added may arrive before the storage event that lists it, so its prefix is enough
 function readPageId({ getPageLabel, startPageId }: WorkspacePrototype) {
     const id = decodeURIComponent(window.location.hash.slice(1));
-    return getPageLabel(id) != null ? id : startPageId;
+    return getPageLabel(id) != null || id.startsWith(customPagePrefix) ? id : startPageId;
 }
 
 /**
@@ -65,12 +67,14 @@ export function PrototypeApp({ prototype, navGroups, renderPage }: PrototypeAppP
         return () => window.removeEventListener("hashchange", handleHashChange);
     }, [prototype]);
 
-    useEffect(() => {
-        document.title = `${prototype.getPageLabel(pageId)} · ${prototype.appName}`;
-        window.scrollTo(0, 0);
-    }, [prototype, pageId]);
+    const customPage = customPageList.useItems().find((candidate) => candidate.prototypeId === prototype.storyId && candidate.id === pageId);
 
-    const page = renderPage(pageId);
+    useEffect(() => {
+        document.title = `${customPage?.title ?? prototype.getPageLabel(pageId)} · ${prototype.appName}`;
+        window.scrollTo(0, 0);
+    }, [prototype, pageId, customPage?.title]);
+
+    const page = customPage ? renderCustomPage(customPage) : renderPage(pageId);
 
     return (
         <PrototypeNavigationContext.Provider

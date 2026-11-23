@@ -11,8 +11,11 @@ import {
 } from "react";
 
 import { useMediaQuery } from "../../components/appShell/useMediaQuery";
+import { Button } from "../../components/button/Button";
 import { Icon } from "../../components/icon/Icon";
 import { IconButton } from "../../components/iconButton/IconButton";
+import { Menu } from "../../components/menu/Menu";
+import { MenuItem } from "../../components/menu/MenuItem";
 import { Tabs } from "../../components/tabs/Tabs";
 import { Theme } from "../../components/theme/Theme";
 import { type TreeNode, TreeView } from "../../components/treeView/TreeView";
@@ -25,6 +28,7 @@ import { CompareCanvas } from "./CompareCanvas";
 import { getComponentStoryIds, type IndexedStory } from "./componentStories";
 import { type NotePage, useTextChanges } from "./FrameNotes";
 import { type FrameTool, FrameTools } from "./FrameTools";
+import { customPageList, customPagePrefix, type PageTemplate, pageTemplates } from "./pageTemplates";
 import { workspacePrototypes } from "./prototypes";
 import { type InspectedComponent, useCanvasInspector } from "./useCanvasInspector";
 import { useFramePage } from "./useFramePage";
@@ -223,6 +227,8 @@ export function WorkspaceShell() {
     const prototypeId = storedPrototypeId ?? prototypes[0]?.id ?? null;
     const currentPrototype = prototypes.find((story) => story.id === prototypeId);
 
+    const customPages = customPageList.useItems();
+    const [newPageMenuOpen, setNewPageMenuOpen] = useState(false);
     const prototypeNodes = useMemo<TreeNode[]>(
         () =>
             prototypes.map((story) => {
@@ -231,14 +237,24 @@ export function WorkspaceShell() {
                     id: story.id,
                     label: story.name,
                     icon: <Icon name="window" />,
-                    children: prototype?.designedPageIds.map((pageId) => ({
-                        id: getPrototypePageNodeId(story.id, pageId),
-                        label: prototype.getPageLabel(pageId) ?? pageId,
-                        type: "page" as const,
-                    })),
+                    children: [
+                        ...(prototype?.designedPageIds.map((pageId) => ({
+                            id: getPrototypePageNodeId(story.id, pageId),
+                            label: prototype.getPageLabel(pageId) ?? pageId,
+                            type: "page" as const,
+                        })) ?? []),
+                        ...customPages
+                            .filter((page) => page.prototypeId === story.id)
+                            .map((page) => ({
+                                id: getPrototypePageNodeId(story.id, page.id),
+                                label: page.title,
+                                icon: <Icon name="edit-page" />,
+                                type: "page" as const,
+                            })),
+                    ],
                 };
             }),
-        [prototypes],
+        [prototypes, customPages],
     );
     // Until the tree is first changed, every prototype shows its pages
     const [prototypeExpandedIds, setPrototypeExpandedIds] = useState<string[] | null>(null);
@@ -247,10 +263,34 @@ export function WorkspaceShell() {
     const shownPage = isComparing ? prototypeStartPage : framePage.hash;
     const currentPrototypePageId = shownPage || workspacePrototypes.get(prototypeId ?? "")?.startPageId;
     const currentWorkspacePrototype = workspacePrototypes.get(prototypeId ?? "");
+    const prototypeCustomPages = customPages.filter((page) => page.prototypeId === prototypeId);
+    const getPageLabel = (page: string) =>
+        prototypeCustomPages.find((customPage) => customPage.id === page)?.title ?? currentWorkspacePrototype?.getPageLabel(page) ?? page;
+    const currentCustomPage = prototypeCustomPages.find((page) => page.id === currentPrototypePageId);
+
+    function addPage(template: PageTemplate) {
+        if (!prototypeId) {
+            return;
+        }
+        const label = pageTemplates.find((option) => option.value === template)?.label ?? "Page";
+        const count = prototypeCustomPages.filter((page) => page.template === template).length + 1;
+        const id = `${customPagePrefix}${template}-${Date.now().toString(36)}`;
+        customPageList.update((pages) => [...pages, { id, prototypeId, template, title: `${label} (new${count > 1 ? ` ${count}` : ""})` }]);
+        setPrototypeExpandedIds([...new Set([...visiblePrototypeExpandedIds, prototypeId])]);
+        selectPrototypeNode(getPrototypePageNodeId(prototypeId, id));
+    }
+
+    function removeCurrentPage() {
+        if (currentCustomPage && prototypeId) {
+            customPageList.update((pages) => pages.filter((page) => page !== currentCustomPage));
+            selectPrototypeNode(getPrototypePageNodeId(prototypeId, currentWorkspacePrototype?.startPageId ?? ""));
+        }
+    }
+
     const notePage: NotePage = {
         prototypeId: prototypeId ?? "",
         page: currentPrototypePageId ?? "",
-        getPageLabel: (page) => currentWorkspacePrototype?.getPageLabel(page) ?? page,
+        getPageLabel,
         onOpenPage: (page) => {
             const frameWindow = frameRef.current?.contentWindow;
             if (frameWindow) {
@@ -406,11 +446,7 @@ export function WorkspaceShell() {
         // eslint-disable-next-line react-hooks/exhaustive-deps -- only the story Storybook shows changes the stored one here
     }, [storybookStoryId]);
     // A prototype titles the document after its page, e.g. "Job ads · Career portal"
-    const prototypePageLabel = !isPrototypeMode
-        ? ""
-        : isComparing
-          ? (workspacePrototypes.get(prototypeId ?? "")?.getPageLabel(currentPrototypePageId ?? "") ?? "")
-          : framePage.title.split(" · ")[0];
+    const prototypePageLabel = !isPrototypeMode ? "" : isComparing ? getPageLabel(currentPrototypePageId ?? "") : framePage.title.split(" · ")[0];
 
     function startFrameResize(edge: ResizeEdge, event: ReactPointerEvent) {
         const start = { width: state.width, height: state.height };
@@ -552,6 +588,16 @@ export function WorkspaceShell() {
                             )}
                         </p>
                         <div className={styles.toolbarGroup}>
+                            {isPrototypeMode && currentCustomPage && (
+                                <IconButton
+                                    variant="text"
+                                    color="secondary"
+                                    aria-label={`Delete “${currentCustomPage.title}”`}
+                                    onClick={removeCurrentPage}
+                                >
+                                    <Icon name="trash" />
+                                </IconButton>
+                            )}
                             {isPrototypeMode && (
                                 <IconButton variant="text" color="secondary" aria-label="Restart the prototype" onClick={restartPrototype}>
                                     <Icon name="home" />
@@ -664,6 +710,28 @@ export function WorkspaceShell() {
                                         }
                                         onSelect={selectPrototypeNode}
                                     />
+                                </div>
+                                <div className={styles.panelFooter}>
+                                    <Menu
+                                        open={newPageMenuOpen}
+                                        onOpenChange={setNewPageMenuOpen}
+                                        placement="top-start"
+                                        trigger={
+                                            <Button
+                                                variant="outlined"
+                                                color="secondary"
+                                                size="small"
+                                                startIcon={<Icon name="plus" />}
+                                                disabled={!prototypeId}
+                                            >
+                                                New page
+                                            </Button>
+                                        }
+                                    >
+                                        {pageTemplates.map((template) => (
+                                            <MenuItem key={template.value} label={template.label} onClick={() => addPage(template.value)} />
+                                        ))}
+                                    </Menu>
                                 </div>
                             </nav>
                         )}

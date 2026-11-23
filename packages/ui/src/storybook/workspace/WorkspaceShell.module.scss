@@ -231,6 +231,11 @@
     padding: 0 6px 12px;
 }
 
+.panelFooter {
+    padding: 8px 12px 12px;
+    border-block-start: var(--dextinity-line-width) solid var(--dextinity-color-line);
+}
+
 .canvas {
     position: relative;
     display: grid;

@@ -285,6 +285,61 @@ The `BigInt` scalar type represents non-fractional signed whole numeric values.
 """
 scalar BigInt
 
+type FullTextSearchHighlight {
+  """UTF-16 offset of the first highlighted character"""
+  start: Int!
+
+  """UTF-16 offset after the last highlighted character (exclusive)"""
+  end: Int!
+}
+
+type FullTextSearchHighlightedText {
+  text: String!
+  highlights: [FullTextSearchHighlight!]!
+
+  """
+  The text was cut at the start, clients should render a leading ellipsis
+  """
+  truncatedStart: Boolean!
+
+  """The text was cut at the end, clients should render a trailing ellipsis"""
+  truncatedEnd: Boolean!
+}
+
+type FullTextSearchResult {
+  id: String!
+  entityName: String!
+
+  """
+  The document type for page tree nodes (e.g. Page, Link), the entity name otherwise
+  """
+  type: String!
+  name: String!
+  secondaryInformation: String
+  visible: Boolean!
+
+  """Some or all search terms occur in the name"""
+  titleMatch: Boolean!
+  title: FullTextSearchHighlightedText!
+  snippet: FullTextSearchHighlightedText
+}
+
+type FullTextSearchTypeCount {
+  type: String!
+  entityName: String!
+  count: Int!
+}
+
+type FullTextSearchResults {
+  nodes: [FullTextSearchResult!]!
+
+  """Number of results matching the types filter"""
+  totalCount: Int!
+
+  """Number of results per type, ignoring the types filter"""
+  types: [FullTextSearchTypeCount!]!
+}
+
 type PaginatedEntityInfo {
   nodes: [EntityInfo!]!
   totalCount: Int!
@@ -606,7 +661,8 @@ type Query {
   damMediaAlternative(id: ID!): DamMediaAlternative!
   damMediaAlternatives(offset: Int! = 0, limit: Int! = 25, search: String, sort: [DamMediaAlternativeSort!], for: ID, alternative: ID, type: DamMediaAlternativeType): PaginatedDamMediaAlternatives!
   damSettings(scope: DamScopeInput! = {}): DamSettings
-  myFullTextSearch(search: String!, offset: Int! = 0, limit: Int! = 25, scope: JSONObject): PaginatedEntityInfo!
+  fullTextSearch(offset: Int! = 0, limit: Int! = 25, search: String!, scope: JSONObject, types: [String!]): FullTextSearchResults!
+  myFullTextSearch(search: String!, offset: Int! = 0, limit: Int! = 25, scope: JSONObject): PaginatedEntityInfo! @deprecated(reason: "Use fullTextSearch")
 }
 
 input RedirectScopeInput {

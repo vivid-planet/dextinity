@@ -184,6 +184,29 @@
     }
 }
 
+.root[data-presenting] {
+    grid-template-rows: minmax(0, 1fr);
+
+    .header {
+        display: none;
+    }
+}
+
+// At the bottom, where it covers less of an app than over its top bar
+.presentExit {
+    position: absolute;
+    inset-block-end: 12px;
+    inset-inline-end: 12px;
+    z-index: 3;
+    opacity: 0.4;
+    transition: opacity 150ms;
+
+    &:hover,
+    &:focus-visible {
+        opacity: 1;
+    }
+}
+
 .body {
     position: relative;
     display: flex;

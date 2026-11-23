@@ -3,6 +3,7 @@ import { Fragment, type ReactNode, useEffect, useRef, useState } from "react";
 import { EmptyState } from "../../components/emptyState/EmptyState";
 import { Icon } from "../../components/icon/Icon";
 import type { SideNavGroup } from "../../components/sideNav/SideNav";
+import { densitySetting } from "../density";
 import { PageTypeShell } from "../pageTypes/PageTypeShell";
 import { type LeaveGuard, PrototypeNavigationContext } from "../pageTypes/prototypeNavigation";
 import { customPageList, customPagePrefix, renderCustomPage } from "./pageTemplates";
@@ -43,6 +44,7 @@ export function PrototypeApp({ prototype, navGroups, renderPage }: PrototypeAppP
     const [pageId, setPageId] = useState(() => readPageId(prototype));
     const [navCollapsed, setNavCollapsed] = useState(false);
     const [assistantOpen, setAssistantOpen] = useState(false);
+    const density = densitySetting.useValue();
     const pageIdRef = useRef(pageId);
     const leaveGuardRef = useRef<LeaveGuard | null>(null);
     pageIdRef.current = pageId;
@@ -68,6 +70,11 @@ export function PrototypeApp({ prototype, navGroups, renderPage }: PrototypeAppP
     }, [prototype]);
 
     const customPage = customPageList.useItems().find((candidate) => candidate.prototypeId === prototype.storyId && candidate.id === pageId);
+
+    // The pages don't set the density themselves; in the workspace it sets it, opened on its own the prototype does
+    useEffect(() => {
+        document.documentElement.dataset.dextinityDensity = density;
+    }, [density]);
 
     useEffect(() => {
         document.title = `${customPage?.title ?? prototype.getPageLabel(pageId)} · ${prototype.appName}`;

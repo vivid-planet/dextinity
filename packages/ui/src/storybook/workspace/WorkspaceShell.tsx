@@ -183,6 +183,8 @@ export function WorkspaceShell() {
     const [frameLoadCount, setFrameLoadCount] = useState(0);
     const [inspecting, setInspecting] = useState(false);
     const [frameTool, setFrameTool] = useState<FrameTool | null>(null);
+    // Shows only the prototype, without the workspace around it, e.g. to walk stakeholders through it
+    const [presenting, setPresenting] = useState(false);
     // The stories opened before the current one, most recent last, to go back to the page a component was picked on
     const [storyHistory, setStoryHistory] = useState<HistoryEntry[]>([]);
     // The prototype's page to open the frame on; the prototype keeps the page it navigates to in the frame's hash
@@ -352,6 +354,27 @@ export function WorkspaceShell() {
         }
     }
 
+    function startPresenting() {
+        setInspecting(false);
+        setFrameTool(null);
+        setOverlayPanelOpen(false);
+        setPresenting(true);
+    }
+
+    useEffect(() => {
+        if (!presenting) {
+            return;
+        }
+        const frameDocuments = [document, frameRef.current?.contentDocument].filter((target): target is Document => target != null);
+        const handleKey = (event: KeyboardEvent) => {
+            if (event.key === "Escape") {
+                setPresenting(false);
+            }
+        };
+        frameDocuments.forEach((target) => target.addEventListener("keydown", handleKey));
+        return () => frameDocuments.forEach((target) => target.removeEventListener("keydown", handleKey));
+    }, [presenting, frameLoadCount]);
+
     function toggleFrameTool(tool: FrameTool) {
         setInspecting(false);
         setFrameTool(frameTool === tool ? null : tool);
@@ -493,7 +516,7 @@ export function WorkspaceShell() {
 
     return (
         <Theme colorScheme="light" brand="dextinity" density="compact" className={styles.themeRoot}>
-            <div className={styles.root} data-resizing={resizing ?? undefined}>
+            <div className={styles.root} data-resizing={resizing ?? undefined} data-presenting={presenting || undefined}>
                 <header className={styles.header}>
                     <div className={styles.toolbar}>
                         <div className={styles.brand}>
@@ -579,7 +602,11 @@ export function WorkspaceShell() {
                                     if (!isPrototypeMode) {
                                         window.open(storybookFrameRef.current?.contentWindow?.location.href ?? storybookSrc ?? undefined, "_blank");
                                     } else if (storyUrl) {
-                                        window.open(shownPage ? `${storyUrl}#${shownPage}` : storyUrl, "_blank");
+                                        // The link keeps the toolbar's settings, so whoever opens it sees the prototype as it's shown here
+                                        const settings = [colorSchemeSetting, brandSetting, densitySetting, scenarioSetting]
+                                            .map((setting) => `&${setting.storageKey}=${encodeURIComponent(setting.get())}`)
+                                            .join("");
+                                        window.open(`${storyUrl}${settings}${shownPage ? `#${shownPage}` : ""}`, "_blank");
                                     }
                                 }}
                             >
@@ -625,6 +652,11 @@ export function WorkspaceShell() {
                             )}
                         </p>
                         <div className={styles.toolbarGroup}>
+                            {isPrototypeMode && (
+                                <IconButton variant="text" color="secondary" aria-label="Present the prototype" onClick={startPresenting}>
+                                    <Icon name="eye" />
+                                </IconButton>
+                            )}
                             {isPrototypeMode && currentCustomPage && (
                                 <IconButton
                                     variant="text"
@@ -725,8 +757,20 @@ export function WorkspaceShell() {
                     </div>
                 ) : (
                     <div className={styles.body}>
-                        {panelVisible && narrow && <div className={styles.panelBackdrop} onClick={() => setOverlayPanelOpen(false)} />}
-                        {panelVisible && (
+                        {presenting && (
+                            <Button
+                                className={styles.presentExit}
+                                variant="outlined"
+                                color="secondary"
+                                size="small"
+                                startIcon={<Icon name="close" />}
+                                onClick={() => setPresenting(false)}
+                            >
+                                Exit presentation · Esc
+                            </Button>
+                        )}
+                        {panelVisible && !presenting && narrow && <div className={styles.panelBackdrop} onClick={() => setOverlayPanelOpen(false)} />}
+                        {panelVisible && !presenting && (
                             <nav
                                 className={styles.panel}
                                 aria-label="Prototypes"
@@ -772,7 +816,7 @@ export function WorkspaceShell() {
                                 </div>
                             </nav>
                         )}
-                        {panelVisible && !narrow && (
+                        {panelVisible && !presenting && !narrow && (
                             <div
                                 role="separator"
                                 aria-orientation="vertical"

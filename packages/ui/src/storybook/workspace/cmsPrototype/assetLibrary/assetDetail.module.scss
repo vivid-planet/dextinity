@@ -79,7 +79,12 @@
 
     // The checkerboard shows through transparent parts of the image
     background-color: var(--dextinity-color-surface);
-    background-image: conic-gradient(var(--dextinity-color-fill-subtle) 25%, transparent 0 50%, var(--dextinity-color-fill-subtle) 0 75%, transparent 0);
+    background-image: conic-gradient(
+        var(--dextinity-color-fill-subtle) 25%,
+        transparent 0 50%,
+        var(--dextinity-color-fill-subtle) 0 75%,
+        transparent 0
+    );
     background-size: 16px 16px;
 }
 

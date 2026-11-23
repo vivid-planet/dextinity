@@ -1,13 +1,14 @@
 import { Button, Dialog, Tab, Tabs } from "@dextinity/admin";
-import { Add, Link, Reload, Search, Settings, Time, Upload } from "@dextinity/admin-icons";
+import { Add, ChevronRight, Link, Reload, Search, Settings, Snips, Time, Upload } from "@dextinity/admin-icons";
 import { Chip, CircularProgress, IconButton, InputBase, Popover, Skeleton, Switch, Typography } from "@mui/material";
 import { alpha, styled, type Theme } from "@mui/material/styles";
-import { type PropsWithChildren, type ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import { Fragment, type PropsWithChildren, type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import { PaletteTrigger } from "./PaletteTrigger";
 import { getEntityType, knownEntityNames } from "./shared/entityTypes";
 import { HighlightedText } from "./shared/HighlightedText";
+import { type ContentMatch, findContentMatches } from "./shared/pageContents";
 import { getResultDetails } from "./shared/resultDetails";
 import { EmptyState, Kbd, optionId } from "./shared/SearchPanelParts";
 import type { SearchResult } from "./shared/types";
@@ -37,7 +38,7 @@ const entityColors: Record<string, PaletteColor | "default"> = {
 };
 
 interface Props {
-    onSelectResult: (result: SearchResult) => void;
+    onSelectResult: (result: SearchResult, contentMatch?: ContentMatch) => void;
     onQuickAction?: (action: QuickAction) => void;
 }
 
@@ -93,13 +94,16 @@ function Palette({ onSelectResult, onQuickAction, onClose }: Required<Props> & {
     const listRef = useRef<HTMLDivElement>(null);
     const [settingsAnchor, setSettingsAnchor] = useState<HTMLElement | null>(null);
     const { enabledEntityNames, toggleEntityName } = useEnabledEntityNames();
+    const searchRef = useRef("");
     const palette = useCommandPalette({
         quickActions,
-        onSelectResult,
+        onSelectResult: (result) => onSelectResult(result, getVisibleContentMatches(result, searchRef.current)[0]),
         onQuickAction,
         onClose,
         enabledEntityNames,
     });
+
+    searchRef.current = palette.debouncedSearch;
 
     useEffect(() => {
         scrollActiveOptionIntoView(listRef.current);
@@ -394,8 +398,25 @@ function Section({ title, action, children }: PropsWithChildren<{ title?: ReactN
     );
 }
 
+function textMatchesSearch(text: string, search: string) {
+    const lowerText = text.toLowerCase();
+    return search
+        .toLowerCase()
+        .split(/\s+/)
+        .filter(Boolean)
+        .every((term) => lowerText.includes(term));
+}
+
+function getVisibleContentMatches(result: SearchResult, search: string): ContentMatch[] {
+    if (search.length === 0 || textMatchesSearch(`${result.name} ${result.secondaryInformation ?? ""}`, search)) {
+        return [];
+    }
+    return findContentMatches(result.id, search);
+}
+
 function ResultContent({ result, search }: { result: SearchResult; search: string }) {
     const { icon: Icon } = getEntityType(result.entityName);
+    const [firstContentMatch, ...moreContentMatches] = getVisibleContentMatches(result, search);
     return (
         <>
             <RoundIcon className={`color-${entityColors[result.entityName] ?? "default"}`}>
@@ -416,6 +437,31 @@ function ResultContent({ result, search }: { result: SearchResult; search: strin
                     <Chip key={detail.label} size="small" label={detail.label} color={detail.color} />
                 ))}
             </DetailChips>
+            {firstContentMatch && (
+                <ContentMatchBox className="content-match">
+                    <MatchLocation variant="caption" color="text.secondary">
+                        <Snips fontSize="inherit" />
+                        {firstContentMatch.location.map((part, index) => (
+                            <Fragment key={`${index}:${part}`}>
+                                {index > 0 && <ChevronRight fontSize="inherit" />}
+                                <span>{part}</span>
+                            </Fragment>
+                        ))}
+                    </MatchLocation>
+                    <Snippet variant="body2">
+                        <HighlightedText text={firstContentMatch.snippet} search={search} />
+                    </Snippet>
+                    {moreContentMatches.length > 0 && (
+                        <Typography variant="caption" color="text.secondary">
+                            <FormattedMessage
+                                id="fullTextSearchPrototype.moreContentMatches"
+                                defaultMessage="+ {count, plural, one {# more match} other {# more matches}} on this page"
+                                values={{ count: moreContentMatches.length }}
+                            />
+                        </Typography>
+                    )}
+                </ContentMatchBox>
+            )}
         </>
     );
 }
@@ -600,9 +646,10 @@ const ChipRow = styled("div")`
 
 const Option = styled("div")`
     position: relative;
-    display: flex;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
-    gap: ${({ theme }) => theme.spacing(3)};
+    column-gap: ${({ theme }) => theme.spacing(3)};
     padding: ${({ theme }) => theme.spacing(2.5, 3)};
     border-radius: 12px;
     cursor: pointer;
@@ -618,6 +665,10 @@ const Option = styled("div")`
 
     &[aria-selected="true"] {
         background-color: ${({ theme }) => theme.palette.grey[50]};
+    }
+
+    &[aria-selected="true"] .content-match {
+        background-color: ${({ theme }) => theme.palette.background.paper};
     }
 
     &[aria-selected="true"]::after,
@@ -656,6 +707,31 @@ const Title = styled(Typography)`
 const SecondaryText = styled(Typography)`
     display: block;
     margin-top: 2px;
+`;
+
+const ContentMatchBox = styled("span")`
+    grid-column: 2 / -1;
+    display: flex;
+    flex-direction: column;
+    gap: ${({ theme }) => theme.spacing(0.5)};
+    margin-top: ${({ theme }) => theme.spacing(1.5)};
+    padding: ${({ theme }) => theme.spacing(1.5, 2)};
+    border-radius: 8px;
+    background-color: ${({ theme }) => theme.palette.grey[50]};
+`;
+
+const MatchLocation = styled(Typography)`
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: ${({ theme }) => theme.spacing(0.5)};
+`;
+
+const Snippet = styled(Typography)`
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
 `;
 
 const DetailChips = styled("span")`

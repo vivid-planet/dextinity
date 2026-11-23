@@ -1,5 +1,6 @@
 import { delay, HttpResponse } from "msw";
 
+import { findContentMatches } from "../../src/fullTextSearch/__stories__/shared/pageContents";
 import { graphqlApi } from "./graphqlApi";
 
 interface SearchResult {
@@ -50,7 +51,11 @@ export const fullTextSearchPrototypeHandler = graphqlApi.query<
     { search: string; limit?: number; offset?: number }
 >("FullTextSearchPrototype", async ({ variables }) => {
     await delay(350);
-    const matches = mockSearchResults.filter((result) => matchesSearch(result, variables.search));
+    const titleMatches = mockSearchResults.filter((result) => matchesSearch(result, variables.search));
+    const contentMatches = mockSearchResults.filter(
+        (result) => !titleMatches.includes(result) && findContentMatches(result.id, variables.search).length > 0,
+    );
+    const matches = [...titleMatches, ...contentMatches];
     const offset = variables.offset ?? 0;
     const limit = variables.limit ?? 10;
     return HttpResponse.json({

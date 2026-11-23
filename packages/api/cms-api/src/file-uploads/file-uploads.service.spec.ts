@@ -26,12 +26,17 @@ const mockEntityManager = {
     }),
     remove: vi.fn(),
     flush: vi.fn(),
+    fork: vi.fn(),
 };
+mockEntityManager.fork.mockReturnValue(mockEntityManager);
 
-const mockOrm = {};
+// @CreateRequestContext() on deleteExpiredFiles() requires a real MikroORM instance
+const mockOrm = Object.assign(Object.create(MikroORM.prototype), { em: mockEntityManager });
 
 const mockRepository = {
     create: vi.fn(),
+    count: vi.fn(),
+    find: vi.fn(),
 };
 
 const mockConfig: FileUploadsConfig = {
@@ -104,6 +109,55 @@ describe("FileUploadsService", () => {
         });
     });
 
+    describe("delete", () => {
+        it("should remove the blob if no other file upload has the same content", async () => {
+            mockRepository.count.mockResolvedValue(0);
+            mockBlobStorageBackendService.fileExists.mockResolvedValue(true);
+
+            await service.delete(fileUpload);
+
+            expect(mockRepository.count).toHaveBeenCalledWith({ contentHash: fileUpload.contentHash, id: { $ne: fileUpload.id } });
+            expect(mockBlobStorageBackendService.removeFile).toHaveBeenCalled();
+            expect(mockEntityManager.remove).toHaveBeenCalledWith(fileUpload);
+        });
+
+        it("should keep the blob if another file upload has the same content", async () => {
+            mockRepository.count.mockResolvedValue(1);
+            mockBlobStorageBackendService.fileExists.mockResolvedValue(true);
+
+            await service.delete(fileUpload);
+
+            expect(mockBlobStorageBackendService.removeFile).not.toHaveBeenCalled();
+            expect(mockEntityManager.remove).toHaveBeenCalledWith(fileUpload);
+        });
+    });
+
+    describe("deleteExpiredFiles", () => {
+        it("should remove a blob shared by expired file uploads only after the last of them is deleted", async () => {
+            const firstFileUpload = { ...fileUpload, id: "first" } as FileUpload;
+            const secondFileUpload = { ...fileUpload, id: "second" } as FileUpload;
+            const storedFileUploads = new Set([firstFileUpload, secondFileUpload]);
+            const removedFileUploads = new Set<FileUpload>();
+
+            mockRepository.find.mockResolvedValueOnce([firstFileUpload, secondFileUpload]);
+            mockRepository.count.mockImplementation(
+                async ({ contentHash, id }: { contentHash: string; id: { $ne: string } }) =>
+                    [...storedFileUploads].filter((upload) => upload.contentHash === contentHash && upload.id !== id.$ne).length,
+            );
+            mockEntityManager.remove.mockImplementation((upload: FileUpload) => removedFileUploads.add(upload));
+            mockEntityManager.flush.mockImplementation(async () => {
+                removedFileUploads.forEach((upload) => storedFileUploads.delete(upload));
+                removedFileUploads.clear();
+            });
+            mockBlobStorageBackendService.fileExists.mockResolvedValue(true);
+
+            await service.deleteExpiredFiles();
+
+            expect(storedFileUploads.size).toBe(0);
+            expect(mockBlobStorageBackendService.removeFile).toHaveBeenCalledTimes(1);
+        });
+    });
+
     describe("getFileContent expiration", () => {
         it("should handle expired files correctly", async () => {
             // Advance time by 1 hour and 1 second (past expiration)
@@ -113,6 +167,7 @@ describe("FileUploadsService", () => {
             mockBlobStorageBackendService.fileExists.mockResolvedValue(true);
             mockBlobStorageBackendService.getFile.mockResolvedValue(Readable.from([buffer]));
             mockBlobStorageBackendService.removeFile.mockResolvedValue(undefined);
+            mockRepository.count.mockResolvedValue(0);
 
             // expiration is handled by the subscriber when the entity is loaded
             await expirationSubscriber.onLoad({ entity: fileUpload, em: mockEntityManager, meta: {} } as unknown as EventArgs<FileUpload>);

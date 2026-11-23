@@ -315,8 +315,8 @@ function CollapsedEntry({
 
 /**
  * The main navigation: app header with logo, app name, and tenant, then groups with entries up to three levels deep. Collapses to an
- * icon rail whose sub-entries open as a menu. In an `AppShell` with an `environment`, the header shows the instance's label next to the
- * logo, or its first letter on the collapsed sign.
+ * icon rail whose sub-entries open as a menu. In an `AppShell` with an `environment`, the header shows the instance's label in its top right
+ * corner, or only its first letter while collapsed.
  */
 export const SideNav = forwardRef<HTMLElement, SideNavProps>(function SideNav(
     {
@@ -383,32 +383,21 @@ export const SideNav = forwardRef<HTMLElement, SideNavProps>(function SideNav(
         >
             <div {...headerProps}>
                 {ownerState.collapsed ? (
-                    (logoMark != null || environment != null) && (
-                        <span className={styles.logoMark}>
-                            {logoMark}
-                            {environment != null && (
-                                <EnvironmentLabel
-                                    label={environment.label}
-                                    color={environment.color}
-                                    variant="compact"
-                                    className={styles.environment}
-                                />
-                            )}
-                        </span>
-                    )
+                    logoMark != null && <span className={styles.logoMark}>{logoMark}</span>
                 ) : (
                     <>
-                        {environment != null ? (
-                            <span className={styles.brand}>
-                                {logo != null && <span className={styles.logo}>{logo}</span>}
-                                <EnvironmentLabel label={environment.label} color={environment.color} className={styles.environment} />
-                            </span>
-                        ) : (
-                            logo != null && <span className={styles.logo}>{logo}</span>
-                        )}
+                        {logo != null && <span className={styles.logo}>{logo}</span>}
                         {title != null && <span className={styles.title}>{title}</span>}
                         {subtitle != null && <span className={styles.subtitle}>{subtitle}</span>}
                     </>
+                )}
+                {environment != null && (
+                    <EnvironmentLabel
+                        label={environment.label}
+                        color={environment.color}
+                        variant={ownerState.collapsed ? "compact" : "default"}
+                        className={styles.environment}
+                    />
                 )}
             </div>
             <div className={styles.scroll}>

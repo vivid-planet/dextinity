@@ -26,6 +26,7 @@
 }
 
 .header {
+    position: relative;
     display: flex;
     flex: none;
     flex-direction: column;
@@ -55,7 +56,6 @@
 }
 
 .logoMark {
-    position: relative;
     display: grid;
     place-items: center;
     block-size: var(--dextinity-side-nav-logo-height);
@@ -63,26 +63,13 @@
     > * {
         max-block-size: 100%;
     }
-
-    // The compact label sits on the sign's corner, so that the collapsed navigation keeps its width
-    .environment {
-        position: absolute;
-        inset-block-start: calc(var(--dextinity-environment-label-compact-size) / -2);
-        inset-inline-end: calc(var(--dextinity-environment-label-compact-size) / -2);
-    }
 }
 
-// The logo and the label of the instance, e.g. Staging, side by side: the label at the end, the logo shrinking to make room
-.brand {
-    display: flex;
-    gap: var(--dextinity-space-2);
-    align-items: flex-start;
-    justify-content: space-between;
-    min-inline-size: 0;
-
-    .logo {
-        min-inline-size: 0;
-    }
+// Half the header's padding from its corner, so that it neither takes room from the logo's row nor widens the collapsed navigation
+.environment {
+    position: absolute;
+    inset-block-start: calc(var(--dextinity-side-nav-header-padding) / 2);
+    inset-inline-end: calc(var(--dextinity-side-nav-header-padding) / 2);
 }
 
 .title {

@@ -2,14 +2,15 @@ import { CurrentUserContext, type CurrentUserInterface } from "@dextinity/cms-ad
 import { renderAdmin } from "@src/testing/renderAdmin";
 import { fireEvent, screen } from "@testing-library/react";
 import { HTML5toTouch } from "rdndmb-html5-to-touch";
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import { useDragDropManager } from "react-dnd";
 import { DndProvider } from "react-dnd-multi-backend";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { AiModeProvider } from "./AiModeContext";
 import { AiModeFlyout } from "./AiModeFlyout";
+import { type AiModeTool, AiModeToolset, useAiModeToolset } from "./AiModeToolsets";
 
 // `vi.mock` is hoisted above the imports, so what its factory reads has to be hoisted with it.
 const { scriptSrc } = vi.hoisted(() => ({ scriptSrc: "https://ai-hub.test/ai-hub-chat.mjs" }));
@@ -60,6 +61,49 @@ function CaptureDragDropManager() {
     return null;
 }
 
+function createTool(name: string, handler: AiModeTool["handler"] = () => name): AiModeTool {
+    return { name, description: `The tool ${name}`, inputSchema: { type: "object", properties: {} }, handler };
+}
+
+function OpenablePage() {
+    const [isOpen, setIsOpen] = useState(false);
+    const [title, setTitle] = useState("Home");
+
+    return (
+        <>
+            {isOpen && <Page title={title} />}
+            <button onClick={() => setIsOpen((value) => !value)}>Toggle page</button>
+            <button onClick={() => setTitle("About us")}>Rename page</button>
+        </>
+    );
+}
+
+function Page({ title }: { title: string }) {
+    useAiModeToolset({
+        id: "page",
+        description: "A page",
+        context: { title },
+        tools: [
+            createTool("edit_page", (args, { clearTextSelection }) => {
+                clearTextSelection();
+                return `Edited ${title}`;
+            }),
+        ],
+    });
+    return null;
+}
+
+// Registers its toolset in the commit that navigates to the top menu, like a page whose data is cached.
+function TopMenuToolset() {
+    const { pathname } = useLocation();
+    useAiModeToolset(pathname === topMenuPath ? { id: "topMenu", description: "The top menu", tools: [createTool("edit_top_menu")] } : null);
+    return null;
+}
+
+function getRegisteredTools() {
+    return bridge.registerHostTools.mock.lastCall?.[0] as Array<{ name: string; handler: (args: Record<string, unknown>) => unknown }>;
+}
+
 // Unmounts the flyout alone, as closing it does, while the admin's DndProvider stays.
 function RemovableFlyout() {
     const [isMounted, setIsMounted] = useState(true);
@@ -72,14 +116,18 @@ function RemovableFlyout() {
     );
 }
 
-function renderFlyout({ isStrictMode = false }: { isStrictMode?: boolean } = {}) {
+function renderFlyout({ isStrictMode = false, beforeFlyout }: { isStrictMode?: boolean; beforeFlyout?: ReactNode } = {}) {
     return renderAdmin(
         <CurrentUserContext.Provider value={{ currentUser, isAllowed: () => true }}>
             <DndProvider options={HTML5toTouch}>
                 <CaptureDragDropManager />
                 <AiModeProvider isEnabled isAvailable>
-                    <RemovableFlyout />
-                    <OpenTopMenuButton />
+                    <AiModeToolset id="pageTree" description="The page tree" tools={[createTool("open_page_tree_node")]}>
+                        {beforeFlyout}
+                        <RemovableFlyout />
+                        <OpenTopMenuButton />
+                        <OpenablePage />
+                    </AiModeToolset>
                 </AiModeProvider>
             </DndProvider>
         </CurrentUserContext.Provider>,
@@ -109,6 +157,7 @@ describe("AiModeFlyout", () => {
     });
 
     beforeEach(() => {
+        vi.clearAllMocks();
         localStorage.setItem("ai-mode-open", "true");
         // Marks the script as loaded, so that `ScriptLoader` renders the chat right away.
         const script = document.createElement("script");
@@ -139,12 +188,89 @@ describe("AiModeFlyout", () => {
 
         expect(bridge.registerMcpServers).toHaveBeenCalledExactlyOnceWith([{ url: "https://admin.test/api/mcp" }]);
         expect(bridge.registerHostTools).toHaveBeenCalledTimes(1);
+        expect(getRegisteredTools().map(({ name }) => name)).toEqual(["open_page_tree_node"]);
 
         fireEvent.click(screen.getByRole("button", { name: "Open top menu" }));
 
         expect(bridge.registerMcpServers).toHaveBeenCalledTimes(1);
         expect(bridge.registerHostTools).toHaveBeenCalledTimes(1);
         expect(bridge.setContext).toHaveBeenLastCalledWith(expect.objectContaining({ pathname: topMenuPath }));
+    });
+
+    it("registers the tools of every mounted toolset again when a toolset mounts or unmounts", () => {
+        renderFlyout();
+
+        fireEvent.click(screen.getByRole("button", { name: "Toggle page" }));
+
+        expect(bridge.registerHostTools).toHaveBeenCalledTimes(2);
+        expect(getRegisteredTools().map(({ name }) => name)).toEqual(["open_page_tree_node", "edit_page"]);
+
+        fireEvent.click(screen.getByRole("button", { name: "Toggle page" }));
+
+        expect(bridge.registerHostTools).toHaveBeenCalledTimes(3);
+        expect(getRegisteredTools().map(({ name }) => name)).toEqual(["open_page_tree_node"]);
+    });
+
+    it("registers the tools of a toolset that mounts in the same commit as a navigation", () => {
+        renderFlyout({ beforeFlyout: <TopMenuToolset /> });
+
+        fireEvent.click(screen.getByRole("button", { name: "Open top menu" }));
+
+        expect(getRegisteredTools().map(({ name }) => name)).toEqual(["open_page_tree_node", "edit_top_menu"]);
+    });
+
+    it("calls the handler of the page's latest render, and doesn't register the tools again for it", async () => {
+        renderFlyout();
+        fireEvent.click(screen.getByRole("button", { name: "Toggle page" }));
+        const editPage = getRegisteredTools().find(({ name }) => name === "edit_page");
+
+        fireEvent.click(screen.getByRole("button", { name: "Rename page" }));
+
+        expect(bridge.registerHostTools).toHaveBeenCalledTimes(2);
+        expect(await editPage?.handler({})).toBe("Edited About us");
+    });
+
+    it("answers a call of a tool whose page is gone instead of failing", async () => {
+        renderFlyout();
+        fireEvent.click(screen.getByRole("button", { name: "Toggle page" }));
+        const editPage = getRegisteredTools().find(({ name }) => name === "edit_page");
+
+        fireEvent.click(screen.getByRole("button", { name: "Toggle page" }));
+
+        expect(await editPage?.handler({})).toBe("edit_page isn't available on the page that is open in the admin anymore.");
+    });
+
+    it("pushes the mounted toolsets with their context and the names of their tools", () => {
+        vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
+        renderFlyout();
+
+        fireEvent.click(screen.getByRole("button", { name: "Toggle page" }));
+        vi.runAllTimers();
+
+        expect(bridge.setContext).toHaveBeenLastCalledWith(
+            expect.objectContaining({
+                toolsets: [
+                    { id: "pageTree", description: "The page tree", context: undefined, tools: ["open_page_tree_node"] },
+                    { id: "page", description: "A page", context: { title: "Home" }, tools: ["edit_page"] },
+                ],
+            }),
+        );
+    });
+
+    it("lets a tool forget the selected text", async () => {
+        vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
+        renderFlyout();
+        fireEvent.click(screen.getByRole("button", { name: "Toggle page" }));
+        const input = selectInTextField("Welcome to our website", { start: 11, end: 22 });
+        vi.runAllTimers();
+
+        await getRegisteredTools()
+            .find(({ name }) => name === "edit_page")
+            ?.handler({});
+        vi.runAllTimers();
+
+        expect(bridge.setContext).toHaveBeenLastCalledWith(expect.objectContaining({ selection: null }));
+        input.remove();
     });
 
     it("pushes the text the user selects in the admin", () => {

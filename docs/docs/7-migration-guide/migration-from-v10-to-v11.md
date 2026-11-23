@@ -1351,8 +1351,10 @@ The deprecated `disableTypography` prop of `FormSection` is removed. The title i
 Find the usages:
 
 ```sh
-grep -rn "<FormSection" src | grep "disableTypography"
+grep -rn "disableTypography" src
 ```
+
+`AppHeaderButton` has a `disableTypography` prop as well, which is unchanged. Only update the matches on a `FormSection`.
 
 Remove the prop and customize the title with `slotProps.title` instead, for example to set a custom `variant` on the underlying `Typography` or to hide the divider:
 

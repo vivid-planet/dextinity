@@ -1,5 +1,6 @@
-import type { BlockContext, BlockInterface, BlocksBlockState } from "@dextinity/cms-admin";
-
+import type { BlockContext } from "../blocks/context/BlockContext";
+import type { BlocksBlockState } from "../blocks/factories/createBlocksBlock";
+import type { BlockInterface } from "../blocks/types";
 import { collectBlockKeys } from "./blockStateSummary";
 
 export type BlocksBlockChild = BlocksBlockState["blocks"][number];
@@ -126,6 +127,7 @@ export async function toBlockState({
     props,
     givenFields,
     blockContext,
+    schemaLookup = `call get_block_schema for "${schemaRootBlockName}" and follow its inputFields -> blocks -> props mapping for "${type}" to get the block name — a name that exists is not proof that it is the right one — then call get_block_schema for that name`,
 }: {
     block: BlockInterface;
     type: string;
@@ -140,22 +142,22 @@ export async function toBlockState({
     /** The fields the agent supplied, which an update merges into more than it passes on. */
     givenFields: readonly string[];
     blockContext: BlockContext;
+    /** How the agent finds the block's fields, for the errors. By default, through the mapping of the blocks block. */
+    schemaLookup?: string;
 }): Promise<{ state: unknown; warnings: string[] }> {
     let state: unknown;
     try {
         state = await block.output2State(props, blockContext);
     } catch (error) {
         const reason = error instanceof Error ? error.message : String(error);
-        throw new Error(
-            `The given props are not valid for the "${type}" block: ${reason}. Call get_block_schema for "${schemaRootBlockName}" and follow its inputFields -> blocks -> props mapping for "${type}" to get the block name, then call get_block_schema for that name to get the fields.`,
-        );
+        throw new Error(`The given props are not valid for the "${type}" block: ${reason}. To get its fields, ${schemaLookup}.`);
     }
 
     const unknownFields = findUnknownFields({ block, state, givenFields });
     if (unknownFields && unknownFields.unknown.length > 0) {
         throw new Error(
             `The "${type}" block has no ${unknownFields.unknown.length === 1 ? "field" : "fields"} ${listFields(unknownFields.unknown)}, so what was passed for ${unknownFields.unknown.length === 1 ? "it" : "them"} would be dropped and the block would keep the content it has. Its fields are ${listFields(unknownFields.fields)}. ` +
-                `Props built from another block's schema look like this: call get_block_schema for "${schemaRootBlockName}" and follow its inputFields -> blocks -> props mapping for "${type}" to get the block name — a name that exists is not proof that it is the right one — then call get_block_schema for that name to get the fields.`,
+                `Props built from another block's schema look like this: ${schemaLookup}.`,
         );
     }
 

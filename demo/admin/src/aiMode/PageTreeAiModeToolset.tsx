@@ -1,6 +1,5 @@
+import { AiModeToolset } from "@dextinity/cms-admin";
 import type { PropsWithChildren } from "react";
-
-import { AiModeToolset } from "./AiModeToolsets";
 
 export function PageTreeAiModeToolset({ category, children }: PropsWithChildren<{ category: string }>) {
     return (

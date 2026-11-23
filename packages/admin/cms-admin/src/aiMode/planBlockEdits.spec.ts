@@ -1,6 +1,7 @@
-import type { BlockContext, BlockInterface } from "@dextinity/cms-admin";
 import { describe, expect, it } from "vitest";
 
+import type { BlockContext } from "../blocks/context/BlockContext";
+import type { BlockInterface } from "../blocks/types";
 import type { BlocksBlockChild } from "./blockProps";
 import { planBlockEdits } from "./planBlockEdits";
 

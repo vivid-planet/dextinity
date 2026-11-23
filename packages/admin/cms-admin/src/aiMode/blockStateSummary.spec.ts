@@ -1,6 +1,6 @@
-import type { BlockInterface } from "@dextinity/cms-admin";
 import { describe, expect, it } from "vitest";
 
+import type { BlockInterface } from "../blocks/types";
 import { summarizeBlockState, summarizeSeoBlockState } from "./blockStateSummary";
 
 const contentBlock = { extractTextContents: () => ["Hello"] } as unknown as BlockInterface;

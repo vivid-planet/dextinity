@@ -18,6 +18,7 @@ import {
     useFormApiRef,
 } from "@dextinity/admin";
 import {
+    AiModeFormToolset,
     type BlockState,
     createFinalFormBlock,
     DamImageBlock,
@@ -30,7 +31,6 @@ import {
     useFormSaveConflict,
 } from "@dextinity/cms-admin";
 import { InputAdornment, MenuItem } from "@mui/material";
-import { AiModeFormToolset } from "@src/aiMode/AiModeFormToolset";
 import type { GQLProductMutationErrorCode, GQLProductType } from "@src/graphql.generated";
 import type {
     GQLManufacturerCountriesQuery,
@@ -377,6 +377,7 @@ export function ProductForm({ id, width, onCreate }: FormProps) {
                                 label: intl.formatMessage({ id: "product.image", defaultMessage: "Image" }),
                                 type: "block",
                                 block: rootBlocks.image,
+                                schemaBlockName: "DamImage",
                             },
                         ]}
                     />

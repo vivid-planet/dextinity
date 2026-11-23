@@ -1,4 +1,4 @@
-import type { BlockInterface } from "@dextinity/cms-admin";
+import type { BlockInterface } from "../blocks/types";
 
 type DamFileReference = {
     id: string;

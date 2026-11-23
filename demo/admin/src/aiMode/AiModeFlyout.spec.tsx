@@ -1,4 +1,4 @@
-import { CurrentUserContext, type CurrentUserInterface } from "@dextinity/cms-admin";
+import { type AiModeTool, AiModeToolset, CurrentUserContext, type CurrentUserInterface, useAiModeToolset } from "@dextinity/cms-admin";
 import { renderAdmin } from "@src/testing/renderAdmin";
 import { fireEvent, screen } from "@testing-library/react";
 import { HTML5toTouch } from "rdndmb-html5-to-touch";
@@ -10,7 +10,6 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vite
 
 import { AiModeProvider } from "./AiModeContext";
 import { AiModeFlyout } from "./AiModeFlyout";
-import { type AiModeTool, AiModeToolset, useAiModeToolset } from "./AiModeToolsets";
 
 // `vi.mock` is hoisted above the imports, so what its factory reads has to be hoisted with it.
 const { scriptSrc } = vi.hoisted(() => ({ scriptSrc: "https://ai-hub.test/ai-hub-chat.mjs" }));

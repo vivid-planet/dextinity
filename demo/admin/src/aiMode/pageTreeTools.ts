@@ -1,6 +1,5 @@
+import type { AiModeTool } from "@dextinity/cms-admin";
 import { categoryToUrlParam, pageTreeCategories } from "@src/pageTree/pageTreeCategories";
-
-import type { AiModeTool } from "./AiModeToolsets";
 
 const categories = pageTreeCategories.map(({ category }) => category);
 

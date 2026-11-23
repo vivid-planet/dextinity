@@ -1,11 +1,11 @@
 import type { GridColDef } from "@dextinity/admin";
-import type { DataGridProps } from "@mui/x-data-grid";
 import {
     getGridBooleanOperators,
     getGridDateOperators,
     getGridNumericOperators,
     getGridSingleSelectOperators,
     getGridStringOperators,
+    type GridCallbackDetails,
     type GridFilterModel,
     type GridPaginationModel,
     type GridSortModel,
@@ -15,14 +15,19 @@ import type { AiModeTool } from "./AiModeToolsets";
 import { isIsoDate } from "./isoDate";
 
 /** The controlled state of a grid with server-side filtering, sorting, and pagination, as `useDataGridRemote` returns it. */
-export type AiModeDataGridState = Pick<DataGridProps, "onFilterModelChange" | "onSortModelChange" | "onPaginationModelChange"> & {
+export type AiModeDataGridState = {
+    // Methods rather than function properties, so that both the community and the pro grid's handlers fit: their
+    // details differ in the grid API they carry, which the tools don't pass.
     filterModel: GridFilterModel;
+    onFilterModelChange?(model: GridFilterModel, details: GridCallbackDetails): void;
     sortModel: GridSortModel;
+    onSortModelChange?(model: GridSortModel, details: GridCallbackDetails): void;
     paginationModel: GridPaginationModel;
+    onPaginationModelChange?(model: GridPaginationModel, details: GridCallbackDetails): void;
 };
 
 // The change handlers of `useDataGridRemote` read only the model; the details describe a change made in the grid itself.
-const changeDetails = {} as Parameters<NonNullable<DataGridProps["onSortModelChange"]>>[1];
+const changeDetails = {} as GridCallbackDetails;
 
 const stateChangeTimeoutMs = 2000;
 

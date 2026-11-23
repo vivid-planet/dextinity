@@ -260,7 +260,13 @@ export function CmsPageTree() {
     const matchesStatus = (page: TreeNode, value: ContentStatus | "all") => value === "all" || statusOf(page) === value;
     const countFor = (value: ContentStatus | "all") => allPages.filter((page) => matchesSearch(page) && matchesStatus(page, value)).length;
     const filtered = search.trim() !== "" || statusFilter !== "all";
-    const matchesFilter = filtered ? (page: TreeNode) => matchesSearch(page) && matchesStatus(page, statusFilter) : undefined;
+    // Looks the page up, since the tree's nodes leave out the status, which the rows show themselves
+    const matchesFilter = filtered
+        ? (node: TreeNode) => {
+              const page = allPages.find((candidate) => candidate.id === node.id);
+              return page != null && matchesSearch(page) && matchesStatus(page, statusFilter);
+          }
+        : undefined;
     const visibleIds = collectVisibleIds(pages, expandedIds, matchesFilter);
     const checkedVisibleCount = visibleIds.filter((id) => checkedIds.includes(id)).length;
 

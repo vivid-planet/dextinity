@@ -18,8 +18,8 @@ import { Injectable, Logger } from "@nestjs/common";
 import { UserPermissionsStorageService } from "../user-permissions/user-permissions-storage.service.js";
 import { ACTION_LOGS_METADATA_KEY, type ActionLogMetadata } from "./action-logs.decorator.js";
 import { ActionLogsService } from "./action-logs.service.js";
-import { ActionLogType } from "./dto/action-log-type.enum.js";
 import { ActionLog } from "./entities/action-log.entity.js";
+import { getActionLogType } from "./get-action-log-type.js";
 
 // The snapshot holds the primary key of a referenced entity instead of the entity itself, so that a change of the
 // reference is visible without copying the referenced entity. Collections are left out.
@@ -32,18 +32,6 @@ function getReferencedPrimaryKeys(entity: AnyEntity, relations: EntityProperty[]
         }
     }
     return referencedPrimaryKeys;
-}
-
-function getActionLogType(changeSetType: ChangeSetType): ActionLogType {
-    switch (changeSetType) {
-        case ChangeSetType.CREATE:
-            return ActionLogType.created;
-        case ChangeSetType.DELETE:
-        case ChangeSetType.DELETE_EARLY:
-            return ActionLogType.deleted;
-        default:
-            return ActionLogType.updated;
-    }
 }
 
 @Injectable()

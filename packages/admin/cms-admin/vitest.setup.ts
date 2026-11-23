@@ -1,3 +1,5 @@
+import "@testing-library/jest-dom/vitest";
+
 // Workaround for https://github.com/jsdom/cssstyle/issues/247
 // cssstyle crashes when resolving border shorthands containing var() or CSS global keywords.
 // This suppresses the specific TypeError until the upstream fix lands (see also https://github.com/jsdom/cssstyle/issues/319).

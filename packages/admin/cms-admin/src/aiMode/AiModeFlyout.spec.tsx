@@ -1,26 +1,17 @@
-import { type AiModeTool, AiModeToolset, CurrentUserContext, type CurrentUserInterface, useAiModeToolset } from "@dextinity/cms-admin";
-import { renderAdmin } from "@src/testing/renderAdmin";
-import { fireEvent, screen } from "@testing-library/react";
-import { HTML5toTouch } from "rdndmb-html5-to-touch";
-import { type ReactNode, useState } from "react";
-import { useDragDropManager } from "react-dnd";
-import { DndProvider } from "react-dnd-multi-backend";
+import { RouterMemoryRouter } from "@dextinity/admin";
+import { type ReactNode, StrictMode, useState } from "react";
+import { DndProvider, useDragDropManager } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 import { useLocation, useNavigate } from "react-router";
+import { cleanup, fireEvent, render, screen } from "test-utils";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { AiModeProvider } from "./AiModeContext";
+import { CurrentUserContext, type CurrentUserInterface } from "../userPermissions/hooks/currentUser";
 import { AiModeFlyout } from "./AiModeFlyout";
+import { AiModeProvider } from "./AiModeProvider";
+import { type AiModeTool, AiModeToolset, useAiModeToolset } from "./AiModeToolsets";
 
-// `vi.mock` is hoisted above the imports, so what its factory reads has to be hoisted with it.
-const { scriptSrc } = vi.hoisted(() => ({ scriptSrc: "https://ai-hub.test/ai-hub-chat.mjs" }));
-
-vi.mock("@src/config", () => ({
-    createConfig: () => ({
-        apiUrl: "https://admin.test/api",
-        aiHubWebComponentScriptSrc: scriptSrc,
-        aiHubWidgetId: "widget-1",
-    }),
-}));
+const scriptSrc = "https://ai-hub.test/ai-hub-chat.mjs";
 
 const currentUser = {
     id: "user-1",
@@ -116,22 +107,31 @@ function RemovableFlyout() {
 }
 
 function renderFlyout({ isStrictMode = false, beforeFlyout }: { isStrictMode?: boolean; beforeFlyout?: ReactNode } = {}) {
-    return renderAdmin(
-        <CurrentUserContext.Provider value={{ currentUser, isAllowed: () => true }}>
-            <DndProvider options={HTML5toTouch}>
-                <CaptureDragDropManager />
-                <AiModeProvider isEnabled isAvailable>
-                    <AiModeToolset id="pageTree" description="The page tree" tools={[createTool("open_page_tree_node")]}>
-                        {beforeFlyout}
-                        <RemovableFlyout />
-                        <OpenTopMenuButton />
-                        <OpenablePage />
-                    </AiModeToolset>
-                </AiModeProvider>
-            </DndProvider>
-        </CurrentUserContext.Provider>,
-        { route: "/main/en/pages/pagetree/main-navigation", isStrictMode },
+    const tree = (
+        <RouterMemoryRouter initialEntries={["/main/en/pages/pagetree/main-navigation"]}>
+            <CurrentUserContext.Provider value={{ currentUser, isAllowed: () => true }}>
+                <DndProvider backend={HTML5Backend}>
+                    <CaptureDragDropManager />
+                    <AiModeProvider
+                        webComponentScriptSrc={scriptSrc}
+                        widgetId="widget-1"
+                        aiHubProxyUrl="https://admin.test/api/ai-hub"
+                        mcpServerUrl="https://admin.test/api/mcp"
+                        requiredPermission="pageTree"
+                    >
+                        <AiModeToolset id="pageTree" description="The page tree" tools={[createTool("open_page_tree_node")]}>
+                            {beforeFlyout}
+                            <RemovableFlyout />
+                            <OpenTopMenuButton />
+                            <OpenablePage />
+                        </AiModeToolset>
+                    </AiModeProvider>
+                </DndProvider>
+            </CurrentUserContext.Provider>
+        </RouterMemoryRouter>
     );
+
+    return render(isStrictMode ? <StrictMode>{tree}</StrictMode> : tree);
 }
 
 function selectInTextField(value: string, { start, end }: { start: number; end: number }) {
@@ -166,6 +166,7 @@ describe("AiModeFlyout", () => {
     });
 
     afterEach(() => {
+        cleanup();
         localStorage.clear();
         document.getElementById(scriptSrc)?.remove();
         vi.useRealTimers();
@@ -317,6 +318,12 @@ describe("AiModeFlyout", () => {
         fireEvent.click(screen.getByRole("button", { name: "Remove flyout" }));
 
         expect(getReactDndGlobalInstance()).toBe(otherInstance);
+    });
+
+    it("renders nothing without an AiModeProvider", () => {
+        const { container } = render(<AiModeFlyout />);
+
+        expect(container).toBeEmptyDOMElement();
     });
 
     it("tells the user that the chat couldn't be loaded when its script fails", () => {

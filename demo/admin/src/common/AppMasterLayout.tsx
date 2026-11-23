@@ -1,6 +1,5 @@
 import { MasterLayout } from "@dextinity/admin";
-import { useAiMode } from "@src/aiMode/AiModeContext";
-import { AiModeFlyout, aiModeFlyoutWidth } from "@src/aiMode/AiModeFlyout";
+import { AiModeFlyout, aiModeFlyoutWidth, useAiMode } from "@dextinity/cms-admin";
 
 import MasterHeader from "./MasterHeader";
 import { AppMasterMenu, AppMasterMenuRoutes } from "./MasterMenu";
@@ -37,7 +36,7 @@ export function AppMasterLayout() {
             }}
         >
             <AppMasterMenuRoutes />
-            {isAiModeEnabled && <AiModeFlyout />}
+            <AiModeFlyout />
         </MasterLayout>
     );
 }

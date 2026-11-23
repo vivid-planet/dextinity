@@ -5,7 +5,7 @@ The AI Mode puts the chat of the Dextinity AI Hub next to the admin. A switch in
 - the **MCP server** of the API (`demo/api/src/mcp`, at `/api/mcp`), which reads from the API: the page tree, pages as they were last saved, DAM files, and the block schemas,
 - the **host tools** of the admin, which act on what is open in the admin. The pages that are open offer them through AI Mode toolsets (see below): the admin as a whole offers `open_admin_page` and `open_page_tree_node`, the page editor `get_page_state` and `edit_blocks` (`adminTools.ts`, `createAiModePageTreeNavigationTools` of `@dextinity/cms-admin`, `pageTools.ts`), and the grid and the form of an entity, such as the news, read and change them (`dataGridTools.ts`, `formTools.ts`).
 
-What a page needs to offer the agent its context and tools is part of `@dextinity/cms-admin` (`packages/admin/cms-admin/src/aiMode`), so that the pages of the package, such as the redirects, can offer them too: the AI Mode toolsets, the tools of grids and forms, and block editing. The chat, the AI Hub proxy, the MCP server, and the tools of Demo's own pages are part of Demo. A page of a project without the AI Mode registers its toolset with no chat listening, which does nothing.
+The chat and what a page needs to offer the agent its context and tools are part of `@dextinity/cms-admin` (`packages/admin/cms-admin/src/aiMode`), so that every project gets the same chat, and the pages of the package, such as the redirects, can offer their tools too: the AI Mode's provider, header item, and flyout, the AI Mode toolsets, the tools of grids and forms, and block editing. The AI Hub proxy, the MCP server, and the tools of Demo's own pages are part of Demo. A page of a project without the AI Mode registers its toolset with no chat listening, which does nothing.
 
 The AI Mode is ported from vivid-websites. This README explains the decisions the code doesn't show. It is written for developers who maintain the AI Mode in Demo or port it to a project.
 
@@ -14,9 +14,9 @@ The AI Mode is ported from vivid-websites. This README explains the decisions th
 The AI Mode needs three settings: the script of the web component (`AI_HUB_WEB_COMPONENT_SCRIPT_SRC`) and a widget (`AI_HUB_WIDGET_ID`) in the admin, and the secret key of that widget (`AI_HUB_API_KEY`) in the API. `.env` sets the script and the URL of the AI Hub API (`staging-ai-hub-api.dextinity.com`) to the staging AI Hub, so the AI Mode is off until the widget ID and the key are set in `.env.local`.
 
 - Without the key, the API registers neither the AI Hub proxy nor the MCP server.
-- Without the script or the widget ID, the admin shows no switch (`isAiHubConfigured`). A missing setting turns the AI Mode off rather than leaving an empty flyout.
+- Without the script or the widget ID, the admin shows no switch (`isAiHubConfigured` of `@dextinity/cms-admin`). A missing setting turns the AI Mode off rather than leaving an empty flyout.
 
-The user also needs the `aiHub` permission, for the switch as much as for the proxy. It is a permission of its own rather than the page tree's because the AI Hub will serve more than the editing of pages. In Demo, every user has it, as every permission other than `userPermissions`.
+The user also needs the `aiHub` permission, for the switch as much as for the proxy. Demo passes it to `AiModeProvider` as its `requiredPermission`. It is a permission of its own rather than the page tree's because the AI Hub will serve more than the editing of pages. In Demo, every user has it, as every permission other than `userPermissions`.
 
 The AI Mode is available wherever an AI Mode toolset is mounted. In Demo, that is every page, because the admin as a whole has a toolset. Without one, the switch is disabled and its tooltip says the AI Mode isn't available on this page. The flyout closes there and opens again on returning to a page with a toolset, because whether it is open is stored separately from whether it is available.
 

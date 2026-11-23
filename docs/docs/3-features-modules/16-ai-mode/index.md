@@ -4,7 +4,45 @@ title: AI Mode (experimental)
 
 The AI Mode puts the chat of the Dextinity AI Hub next to the pages of the admin. The agent in the chat knows what the user is looking at, and it calls tools to read and change it: it fills in a form, edits the blocks of a page, or filters a grid. It changes only what the user sees, as unsaved changes the user saves, so the API checks the permissions as it does without the AI Mode.
 
-`@dextinity/cms-admin` contains what a page needs to offer the agent its context and tools. The chat itself, the AI Hub proxy in the API, and the MCP server are set up by the project; the Demo shows how, see [its README](https://github.com/vivid-planet/dextinity/blob/main/demo/admin/src/aiMode/README.md). Without the chat, a page's AI Mode toolset does nothing, so a project without the AI Mode needs no changes.
+`@dextinity/cms-admin` contains the chat and what a page needs to offer the agent its context and tools. The AI Hub proxy and the MCP server in the API are set up by the project; the Demo shows how, see [its README](https://github.com/vivid-planet/dextinity/blob/main/demo/admin/src/aiMode/README.md). Without the chat, a page's AI Mode toolset does nothing, so a project without the AI Mode needs no changes.
+
+## The chat
+
+`AiModeProvider` turns the AI Mode on for the admin within it. `AiModeHeaderItem` is the switch in the header that opens the chat, and `AiModeFlyout` is the chat, next to the content:
+
+```tsx
+<AiModeProvider
+    webComponentScriptSrc={config.aiHubWebComponentScriptSrc}
+    widgetId={config.aiHubWidgetId}
+    aiHubProxyUrl={`${config.apiUrl}/ai-hub`}
+    mcpServerUrl={`${config.apiUrl}/mcp`}
+    requiredPermission="aiHub"
+>
+    <MasterLayout headerComponent={MasterHeader} menuComponent={MasterMenu}>
+        <MasterMenuRoutes />
+        <AiModeFlyout />
+    </MasterLayout>
+</AiModeProvider>
+```
+
+```tsx
+<Header>
+    {/* ... */}
+    <AiModeHeaderItem />
+</Header>
+```
+
+The AI Mode is off unless the script of the web component and the widget ID are set and the user has the `requiredPermission`. While it's off, `AiModeHeaderItem` and `AiModeFlyout` render nothing. While it's on, the switch is disabled on a page without an AI Mode toolset.
+
+The chat doesn't talk to the AI Hub API itself, but to `aiHubProxyUrl`, a route of the project's API that forwards its requests with the widget's secret key. The key must not reach the browser: anyone who reads it could chat on the widget's account as any user.
+
+`AiModeHeaderItem` takes a `label` and an `icon` to replace the default ones:
+
+```tsx
+<AiModeHeaderItem label={<FormattedMessage id="aiMode.label" defaultMessage="Assistant" />} icon={<Assistant />} />
+```
+
+The flyout covers the right edge of the content on desktop, `aiModeFlyoutWidth` pixels wide. To keep the content visible next to it, narrow the content wrapper of the `MasterLayout` while `useAiMode().isOpen` is true, as the Demo's `AppMasterLayout` does.
 
 ## AI Mode toolsets
 

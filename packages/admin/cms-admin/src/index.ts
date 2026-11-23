@@ -1,15 +1,8 @@
+export { AiModeFlyout, aiModeFlyoutWidth } from "./aiMode/AiModeFlyout";
 export { AiModeFormToolset } from "./aiMode/AiModeFormToolset";
-export {
-    type AiModeTool,
-    type AiModeToolHelpers,
-    AiModeToolset,
-    type AiModeToolsetOptions,
-    AiModeToolsetsProvider,
-    type AiModeToolsetsStore,
-    useAiModeToolset,
-    useAiModeToolsetsStore,
-    useHasAiModeToolsets,
-} from "./aiMode/AiModeToolsets";
+export { AiModeHeaderItem, type AiModeHeaderItemProps } from "./aiMode/AiModeHeaderItem";
+export { AiModeProvider, type AiModeProviderProps, useAiMode } from "./aiMode/AiModeProvider";
+export { type AiModeTool, type AiModeToolHelpers, AiModeToolset, type AiModeToolsetOptions, useAiModeToolset } from "./aiMode/AiModeToolsets";
 export { type AiModeEditableBlocksBlock, createAiModeEditBlocksTool } from "./aiMode/blockEditTool";
 export { summarizeBlockStateForAiMode, summarizeSeoBlockStateForAiMode } from "./aiMode/blockStateSummary";
 export type { AiModeFormField } from "./aiMode/formTools";

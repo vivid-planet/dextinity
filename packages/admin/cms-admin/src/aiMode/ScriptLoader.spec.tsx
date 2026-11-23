@@ -1,5 +1,4 @@
-import { renderAdmin } from "@src/testing/renderAdmin";
-import { fireEvent, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "test-utils";
 import { afterEach, describe, expect, it } from "vitest";
 
 import { ScriptLoader } from "./ScriptLoader";
@@ -24,6 +23,7 @@ const getScriptById = (src: string) => {
 
 describe("ScriptLoader", () => {
     afterEach(() => {
+        cleanup();
         for (const script of document.querySelectorAll('script[src^="https://ai-hub.test/"]')) {
             script.remove();
         }
@@ -36,7 +36,7 @@ describe("ScriptLoader", () => {
         script.dataset.loaded = "true";
         document.body.appendChild(script);
 
-        renderAdmin(
+        render(
             <ScriptLoader src={scriptSrc}>
                 <p>Chat</p>
             </ScriptLoader>,
@@ -47,7 +47,7 @@ describe("ScriptLoader", () => {
     });
 
     it("adds the script as a module and renders the children only once it has loaded", () => {
-        renderAdmin(
+        render(
             <ScriptLoader src={scriptSrc}>
                 <p>Chat</p>
             </ScriptLoader>,
@@ -64,14 +64,14 @@ describe("ScriptLoader", () => {
     });
 
     it("waits for a script that another mount added and that is still loading, as in StrictMode", () => {
-        const first = renderAdmin(
+        const first = render(
             <ScriptLoader src={scriptSrc}>
                 <p>Chat</p>
             </ScriptLoader>,
         );
         first.unmount();
 
-        renderAdmin(
+        render(
             <ScriptLoader src={scriptSrc}>
                 <p>Chat</p>
             </ScriptLoader>,
@@ -87,7 +87,7 @@ describe("ScriptLoader", () => {
 
     it("renders the error fallback instead of the children when the script fails to load, and removes the script", () => {
         const src = failingScriptSrc("fails-once");
-        renderAdmin(
+        render(
             <ScriptLoader src={src} errorFallback={<p>Failed</p>}>
                 <p>Chat</p>
             </ScriptLoader>,
@@ -102,7 +102,7 @@ describe("ScriptLoader", () => {
 
     it("requests the script from another URL on the next mount after it failed to load, as the browser keeps the failed module", () => {
         const src = failingScriptSrc("fails-then-loads");
-        const first = renderAdmin(
+        const first = render(
             <ScriptLoader src={src}>
                 <p>Chat</p>
             </ScriptLoader>,
@@ -110,7 +110,7 @@ describe("ScriptLoader", () => {
         fireEvent.error(getScriptById(src));
         first.unmount();
 
-        renderAdmin(
+        render(
             <ScriptLoader src={src}>
                 <p>Chat</p>
             </ScriptLoader>,

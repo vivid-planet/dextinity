@@ -394,8 +394,7 @@
 .statusTrigger {
     display: inline-flex;
     align-items: center;
-    justify-content: space-between;
-    gap: var(--dextinity-space-1);
+    gap: var(--dextinity-space-2);
     min-inline-size: 118px;
     block-size: 26px;
     padding-inline: var(--dextinity-space-2) var(--dextinity-space-1);
@@ -418,6 +417,22 @@
     &:focus-visible {
         outline: none;
         box-shadow: var(--dextinity-focus-ring);
+    }
+}
+
+.statusText {
+    flex: 1;
+    text-align: start;
+}
+
+// On a phone the names need the room, so the status shows as its dot; the button still names it
+@media (width < 600px) {
+    .statusTrigger {
+        min-inline-size: 0;
+    }
+
+    .statusText {
+        display: none;
     }
 }
 

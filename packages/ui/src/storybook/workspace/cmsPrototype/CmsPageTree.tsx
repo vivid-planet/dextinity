@@ -35,7 +35,7 @@ import { TreeViewExpandButtons } from "../../../components/treeViewExpandButtons
 import { Typography } from "../../../components/typography/Typography";
 import { useUndoToast } from "../../../components/undoToast/useUndoToast";
 import { PageTypeShell } from "../../pageTypes/PageTypeShell";
-import { type ContentStatus, flattenPages, newsArticles, type SitePage } from "./cmsData";
+import { type ContentStatus, flattenPages, newsArticles, type SitePage, siteTree } from "./cmsData";
 import styles from "./cmsPrototype.module.scss";
 import { useCmsSite } from "./CmsSiteContext";
 import { MovePageDialog } from "./MovePageDialog";
@@ -331,7 +331,8 @@ function collectVisibleIds(pages: SitePage[], expandedIds: string[], matches: ((
 }
 
 export function CmsPageTree() {
-    const { pages, setPages, setRedirects } = useCmsSite();
+    const [pages, setPages] = useState<SitePage[]>(siteTree);
+    const { setRedirects } = useCmsSite();
     const [moveDialog, setMoveDialog] = useState({ key: 0, open: false, ids: [] as string[] });
     const [search, setSearch] = useState("");
     const [statusFilter, setStatusFilter] = useState<ContentStatus | "all">("all");

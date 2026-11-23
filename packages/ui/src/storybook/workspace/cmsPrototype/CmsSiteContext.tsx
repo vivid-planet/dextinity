@@ -1,7 +1,5 @@
 import { createContext, type PropsWithChildren, useContext, useState } from "react";
 
-import { type SitePage, siteTree } from "./cmsData";
-
 export interface Redirect {
     id: string;
     source: string;
@@ -17,19 +15,16 @@ const initialRedirects: Redirect[] = [
 ];
 
 interface CmsSite {
-    pages: SitePage[];
-    setPages: (pages: SitePage[] | ((pages: SitePage[]) => SitePage[])) => void;
     redirects: Redirect[];
     setRedirects: (redirects: Redirect[] | ((redirects: Redirect[]) => Redirect[])) => void;
 }
 
 const CmsSiteContext = createContext<CmsSite | null>(null);
 
-/** Keeps the page tree and the redirects while moving between the pages of the prototype. */
+/** Keeps the redirects while moving between the pages of the prototype, e.g. from the page tree, which creates them, to the redirects. */
 export function CmsSiteProvider({ children }: PropsWithChildren) {
-    const [pages, setPages] = useState<SitePage[]>(siteTree);
     const [redirects, setRedirects] = useState(initialRedirects);
-    return <CmsSiteContext.Provider value={{ pages, setPages, redirects, setRedirects }}>{children}</CmsSiteContext.Provider>;
+    return <CmsSiteContext.Provider value={{ redirects, setRedirects }}>{children}</CmsSiteContext.Provider>;
 }
 
 export function useCmsSite() {

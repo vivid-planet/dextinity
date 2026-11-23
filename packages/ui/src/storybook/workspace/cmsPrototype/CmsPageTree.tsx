@@ -30,15 +30,28 @@ import { Switch } from "../../../components/switch/Switch";
 import { ToastViewport } from "../../../components/toast/ToastViewport";
 import { useToasts } from "../../../components/toast/useToasts";
 import { TreeDetailLayout } from "../../../components/treeDetailLayout/TreeDetailLayout";
-import { getExpandableTreeNodeIds, type TreeNode, TreeView } from "../../../components/treeView/TreeView";
+import { getExpandableTreeNodeIds, type TreeNode, TreeView, type TreeViewMove } from "../../../components/treeView/TreeView";
 import { TreeViewExpandButtons } from "../../../components/treeViewExpandButtons/TreeViewExpandButtons";
 import { Typography } from "../../../components/typography/Typography";
 import { useUndoToast } from "../../../components/undoToast/useUndoToast";
 import { PageTypeShell } from "../../pageTypes/PageTypeShell";
-import { type ContentStatus, flattenPages, newsArticles, type SitePage, siteTree } from "./cmsData";
+import { type ContentStatus, flattenPages, newsArticles, type SitePage } from "./cmsData";
 import styles from "./cmsPrototype.module.scss";
+import { useCmsSite } from "./CmsSiteContext";
+import { MovePageDialog } from "./MovePageDialog";
 import { NewPageDialog } from "./NewPageDialog";
-import { addChild, duplicatePages, findInTree, findTrail, pastePages, removePages, setStatus, updatePages, withDescendantIds } from "./pageTreeState";
+import {
+    addChild,
+    duplicatePages,
+    findInTree,
+    findTrail,
+    movePages,
+    pastePages,
+    removePages,
+    setStatus,
+    updatePages,
+    withDescendantIds,
+} from "./pageTreeState";
 
 const statusFilters: { value: ContentStatus | "all"; label: string }[] = [
     { value: "all", label: "All" },
@@ -318,7 +331,8 @@ function collectVisibleIds(pages: SitePage[], expandedIds: string[], matches: ((
 }
 
 export function CmsPageTree() {
-    const [pages, setPages] = useState<SitePage[]>(siteTree);
+    const { pages, setPages, setRedirects } = useCmsSite();
+    const [moveDialog, setMoveDialog] = useState({ key: 0, open: false, ids: [] as string[] });
     const [search, setSearch] = useState("");
     const [statusFilter, setStatusFilter] = useState<ContentStatus | "all">("all");
     const [expandedIds, setExpandedIds] = useState(["home", "products"]);
@@ -431,6 +445,52 @@ export function CmsPageTree() {
         setNewPageDialog((dialog) => ({ key: dialog.key + 1, open: true, parentId }));
     }
 
+    /** A page dragged out of the multi-selection takes the other selected pages along. */
+    const movingIdsFor = (id: string) => (checkedIds.includes(id) ? checkedIds : [id]);
+
+    function canDrop({ id, targetId, position }: TreeViewMove) {
+        const ids = movingIdsFor(id);
+        const root = pages[0];
+        // The root stays in place, and pages go only into it, not next to it
+        if (ids.includes(root.id) || (targetId === root.id && position !== "inside")) {
+            return false;
+        }
+        return !withDescendantIds(pages, ids).includes(targetId);
+    }
+
+    /** Moves the pages, builds their paths anew, and creates a redirect from every old path, all undone together. */
+    function moveTo(ids: string[], targetId: string, position: TreeViewMove["position"]) {
+        const movedPages = allPages.filter((page) => ids.includes(page.id));
+        const { pages: nextPages, parent, pathChanges } = movePages(pages, ids, targetId, position);
+        const createdRedirects = pathChanges.map((pathChange) => ({
+            id: `redirect-${pathChange.pageId}-${Date.now()}`,
+            source: pathChange.from,
+            target: pathChange.to,
+            type: "automatic" as const,
+            comment: "Created automatically when moving",
+            created: "Today",
+        }));
+        const createdIds = createdRedirects.map((redirect) => redirect.id);
+        const previousPages = pages;
+        const redirectCount = createdRedirects.length;
+        undoToast.perform({
+            run: () => {
+                setPages(nextPages);
+                setRedirects((redirects) => [...createdRedirects, ...redirects]);
+                if (parent != null) {
+                    setExpandedIds((expanded) => (expanded.includes(parent.id) ? expanded : [...expanded, parent.id]));
+                }
+            },
+            undo: () => {
+                setPages(previousPages);
+                setRedirects((redirects) => redirects.filter((redirect) => !createdIds.includes(redirect.id)));
+            },
+            message: `${nameOrCount(movedPages)} moved under “${parent?.label ?? "the top level"}”${
+                redirectCount > 0 ? `, ${redirectCount === 1 ? "1 redirect" : `${redirectCount} redirects`} created` : ""
+            }`,
+        });
+    }
+
     const pageActions: PageActions = {
         onAddSubpage: (page) => openNewPageDialog(page.id),
         onPreview: (page) => addToast({ message: `The preview of “${page.label}” opens in a new tab`, color: "info" }),
@@ -440,7 +500,7 @@ export function CmsPageTree() {
         },
         onCopy: (page) => copyToClipboard([page.id]),
         onPaste: paste,
-        onMove: (page) => addToast({ message: `Choosing where to move “${page.label}” comes with drag and drop`, color: "info" }),
+        onMove: (page) => setMoveDialog((dialog) => ({ key: dialog.key + 1, open: true, ids: [page.id] })),
         onStatusChange: changeStatus,
         onDelete: (page) => deletePages([page.id]),
         copiedCount: copiedIds.filter((id) => findInTree(pages, id) != null).length,
@@ -644,6 +704,9 @@ export function CmsPageTree() {
                         checkable
                         checkedIds={checkedIds}
                         onCheckedChange={setCheckedIds}
+                        draggable
+                        canDrop={canDrop}
+                        onMove={(move) => moveTo(movingIdsFor(move.id), move.targetId, move.position)}
                         filter={matchesFilter}
                         onKeyDown={(event) => {
                             const id = (event.target as HTMLElement).dataset.id;
@@ -723,6 +786,14 @@ export function CmsPageTree() {
                     setSelectedId(id);
                     addToast({ message: `“${newPage.name}” created, unpublished` });
                 }}
+            />
+            <MovePageDialog
+                key={moveDialog.key}
+                open={moveDialog.open}
+                onOpenChange={(open) => setMoveDialog((dialog) => ({ ...dialog, open }))}
+                pages={pages}
+                movingIds={moveDialog.ids}
+                onMove={(targetId) => moveTo(moveDialog.ids, targetId, "inside")}
             />
             <ToastViewport toasts={toasts} onDismiss={dismiss} />
         </PageTypeShell>

@@ -9,6 +9,8 @@ import { CmsNews } from "./CmsNews";
 import { CmsNewsEditor } from "./CmsNewsEditor";
 import { CmsPageEditor } from "./CmsPageEditor";
 import { CmsPageTree } from "./CmsPageTree";
+import { CmsRedirects } from "./CmsRedirects";
+import { CmsSiteProvider } from "./CmsSiteContext";
 
 function renderPage(pageId: string) {
     const [section, id] = pageId.split("/");
@@ -31,6 +33,8 @@ function renderPage(pageId: string) {
             return <CmsNews />;
         case "assets":
             return <AssetLibrary />;
+        case "redirects":
+            return <CmsRedirects />;
         default:
             return undefined;
     }
@@ -38,12 +42,14 @@ function renderPage(pageId: string) {
 
 /**
  * A classic website CMS: the overview, the page tree with the page editor, structured data (news) with list and form, and the asset
- * library with the detail page of an asset.
+ * library with the detail page of an asset, and the redirects that moving pages creates.
  */
 export function CmsPrototype() {
     return (
-        <AssetLibraryProvider>
-            <PrototypeApp prototype={cmsPrototype} navGroups={cmsNavGroups} renderPage={renderPage} />
-        </AssetLibraryProvider>
+        <CmsSiteProvider>
+            <AssetLibraryProvider>
+                <PrototypeApp prototype={cmsPrototype} navGroups={cmsNavGroups} renderPage={renderPage} />
+            </AssetLibraryProvider>
+        </CmsSiteProvider>
     );
 }

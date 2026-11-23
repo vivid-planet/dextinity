@@ -34,14 +34,7 @@ export function AiModeHeaderItem() {
     }
 
     return (
-        <Tooltip
-            title={
-                <FormattedMessage
-                    id="aiMode.notAvailable"
-                    defaultMessage="The AI Companion isn't available here yet. For now, it works in the page tree only."
-                />
-            }
-        >
+        <Tooltip title={<FormattedMessage id="aiMode.notAvailableOnPage" defaultMessage="The AI Companion isn't available on this page." />}>
             {/* A disabled button fires no mouse events, so the tooltip listens on a wrapper. */}
             <span>{button}</span>
         </Tooltip>

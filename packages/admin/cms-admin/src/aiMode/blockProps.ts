@@ -120,6 +120,41 @@ function findUnknownFields({
  * correctness is not checked here and the API's validators remain the authority when the page is
  * saved. `isValid` is likewise too weak to refuse on, so it is reported as a warning.
  */
+/**
+ * A one-of block's `output2State` takes `activeType` as it is, so switching the type without an attachment of that type,
+ * e.g. a link from internal to external, converts without an error and only fails once the admin renders the block.
+ */
+function findActiveTypeWithoutAttachment(state: unknown): { activeType: string; attachedTypes: string[] } | undefined {
+    if (Array.isArray(state)) {
+        for (const item of state) {
+            const found = findActiveTypeWithoutAttachment(item);
+            if (found) {
+                return found;
+            }
+        }
+        return undefined;
+    }
+    if (!isPlainObject(state)) {
+        return undefined;
+    }
+
+    const { activeType, attachedBlocks } = state;
+    if (typeof activeType === "string" && Array.isArray(attachedBlocks)) {
+        const attachedTypes = attachedBlocks.map((attachedBlock) => (isPlainObject(attachedBlock) ? String(attachedBlock.type) : ""));
+        if (!attachedTypes.includes(activeType)) {
+            return { activeType, attachedTypes };
+        }
+    }
+
+    for (const value of Object.values(state)) {
+        const found = findActiveTypeWithoutAttachment(value);
+        if (found) {
+            return found;
+        }
+    }
+    return undefined;
+}
+
 export async function toBlockState({
     block,
     type,
@@ -158,6 +193,14 @@ export async function toBlockState({
         throw new Error(
             `The "${type}" block has no ${unknownFields.unknown.length === 1 ? "field" : "fields"} ${listFields(unknownFields.unknown)}, so what was passed for ${unknownFields.unknown.length === 1 ? "it" : "them"} would be dropped and the block would keep the content it has. Its fields are ${listFields(unknownFields.fields)}. ` +
                 `Props built from another block's schema look like this: ${schemaLookup}.`,
+        );
+    }
+
+    const detached = findActiveTypeWithoutAttachment(state);
+    if (detached) {
+        throw new Error(
+            `The "${type}" block's "activeType" is "${detached.activeType}", but its "attachedBlocks" ${detached.attachedTypes.length > 0 ? `only hold ${listFields(detached.attachedTypes)}` : "are empty"}. ` +
+                `To switch the type, also pass "attachedBlocks" with an entry of the type "${detached.activeType}" and its props: ${schemaLookup}.`,
         );
     }
 

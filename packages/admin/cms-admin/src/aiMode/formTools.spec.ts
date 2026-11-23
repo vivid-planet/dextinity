@@ -408,3 +408,55 @@ describe("a single block field", () => {
         );
     });
 });
+
+describe("a single one-of block field", () => {
+    // Converts like a link block that is a one-of block of an internal and an external link.
+    const oneOfLinkBlock = {
+        defaultValues: () => ({ attachedBlocks: [], activeType: undefined }),
+        output2State: async ({ attachedBlocks, activeType }: Record<string, unknown>) => ({ attachedBlocks, activeType }),
+        state2Output: (state: unknown) => state,
+        isValid: async () => true,
+        extractTextContents: () => [],
+    } as unknown as BlockInterface;
+
+    function createOneOfLinkTools() {
+        const form = createForm<Record<string, unknown>>({
+            onSubmit: vi.fn(),
+            initialValues: { target: { attachedBlocks: [{ type: "internal", props: { targetPage: null } }], activeType: "internal" } },
+        });
+        form.registerField("target", () => undefined, { value: true });
+        const tools = createFormTools({
+            entityName: "redirect",
+            entityLabel: "redirect",
+            fields: [{ name: "target", label: "Target", type: "block", block: oneOfLinkBlock, schemaBlockName: "RedirectsLink" }],
+            form,
+            blockContext: {} as BlockContext,
+        });
+        return {
+            form,
+            call: (args: Record<string, unknown>) => findTool(tools, "set_redirect_form_values").handler(args, { clearTextSelection: vi.fn() }),
+        };
+    }
+
+    it("refuses a type without an attachment of that type, which the admin couldn't render", async () => {
+        const { form, call } = createOneOfLinkTools();
+
+        await expect(async () => call({ values: { target: { activeType: "external" } } })).rejects.toThrow(
+            'also pass "attachedBlocks" with an entry of the type "external"',
+        );
+        expect(form.getState().values.target).toMatchObject({ activeType: "internal" });
+    });
+
+    it("switches the type together with an attachment of that type", async () => {
+        const { form, call } = createOneOfLinkTools();
+
+        await call({
+            values: { target: { activeType: "external", attachedBlocks: [{ type: "external", props: { targetUrl: "https://example.org" } }] } },
+        });
+
+        expect(form.getState().values.target).toEqual({
+            activeType: "external",
+            attachedBlocks: [{ type: "external", props: { targetUrl: "https://example.org" } }],
+        });
+    });
+});

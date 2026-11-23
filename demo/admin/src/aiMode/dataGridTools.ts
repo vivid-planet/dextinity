@@ -64,6 +64,13 @@ const isDataColumn = (column: GridColDef) => column.type !== "actions";
 
 const isPrimitive = (value: unknown) => value === null || ["string", "number", "boolean"].includes(typeof value);
 
+/** Reads a field such as "address.zip", which MUI's grid shows with a `valueGetter` from the nested object. */
+function getValueAtPath(row: Record<string, unknown>, path: string): unknown {
+    return path
+        .split(".")
+        .reduce<unknown>((value, key) => (typeof value === "object" && value !== null ? (value as Record<string, unknown>)[key] : undefined), row);
+}
+
 /**
  * The row as the agent gets it: the values of the grid's columns that are text, numbers, or booleans, plus the ID.
  * Block previews and other rendered values are left out, because the agent can't read them.
@@ -71,7 +78,7 @@ const isPrimitive = (value: unknown) => value === null || ["string", "number", "
 function summarizeRow(row: Record<string, unknown>, columns: GridColDef[]) {
     const summary: Record<string, unknown> = { id: row.id };
     for (const column of columns.filter(isDataColumn)) {
-        const value = row[column.field];
+        const value = getValueAtPath(row, column.field);
         if (isPrimitive(value)) {
             summary[column.field] = value;
         }

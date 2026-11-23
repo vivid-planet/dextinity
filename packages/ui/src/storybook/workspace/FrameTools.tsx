@@ -2,11 +2,12 @@ import { type RefObject, useEffect, useMemo, useRef, useState } from "react";
 
 import { composite, contrastRatio, getBackgroundBehind, toRgba } from "./frameColor";
 import { type FrameRect, getFrameRect, useFrameDocument } from "./frameElements";
-import { CommentLayer, type NotePage, TextLayer } from "./FrameNotes";
+import { CommentLayer, HotspotLayer, type NotePage, TextLayer } from "./FrameNotes";
 import { createTokenLookup } from "./frameTokens";
 import styles from "./FrameTools.module.scss";
+import { toolAttribute } from "./hotspots";
 
-export type FrameTool = "measure" | "accessibility" | "comment" | "text";
+export type FrameTool = "measure" | "accessibility" | "comment" | "text" | "hotspot";
 
 // The frame's elements come from another window, so `instanceof Element` of this one doesn't recognize them
 function asElement(target: EventTarget | null): Element | null {
@@ -527,6 +528,10 @@ export function FrameTools({
 }) {
     const frameDocument = useFrameDocument(frameRef, frameLoadCount);
     const tick = useFrameTick(frameDocument);
+    useEffect(() => {
+        frameDocument?.documentElement.setAttribute(toolAttribute, tool);
+        return () => frameDocument?.documentElement.removeAttribute(toolAttribute);
+    }, [frameDocument, tool]);
     if (!frameDocument?.body) {
         return null;
     }
@@ -539,5 +544,7 @@ export function FrameTools({
             return <CommentLayer frameDocument={frameDocument} scale={scale} notePage={notePage} />;
         case "text":
             return <TextLayer frameDocument={frameDocument} notePage={notePage} />;
+        case "hotspot":
+            return <HotspotLayer frameDocument={frameDocument} scale={scale} notePage={notePage} />;
     }
 }

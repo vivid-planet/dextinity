@@ -6,12 +6,15 @@ import { IconButton } from "../../components/iconButton/IconButton";
 import { Textarea } from "../../components/textarea/Textarea";
 import { findElementByPath, getElementPath, getFrameRect, useFrameDocument } from "./frameElements";
 import styles from "./FrameTools.module.scss";
+import { hotspotList } from "./hotspots";
 import { commentList, createNoteId, isOnPage, type PinnedComment, type TextChange, textChangeList } from "./workspaceNotes";
 
 /** The page of a prototype the notes belong to, and how to open another one. */
 export interface NotePage {
     prototypeId: string;
     page: string;
+    /** The pages a hotspot can open: the ones with a design and the ones the designer added. */
+    pageIds: string[];
     getPageLabel: (page: string) => string;
     onOpenPage: (page: string) => void;
 }
@@ -449,4 +452,113 @@ export function useTextChanges({
         observer.observe(frameDocument.body, { subtree: true, childList: true, characterData: true });
         return () => observer.disconnect();
     }, [frameDocument, changes, prototypeId, page]);
+}
+
+/**
+ * Links an element of the page to another page, without code: a click on an element offers the pages, and the prototype then
+ * opens the chosen page on a click there, also outside the tool. Shown as boxes with the page they open.
+ */
+export function HotspotLayer({ frameDocument, scale, notePage }: { frameDocument: Document; scale: number; notePage: NotePage }) {
+    const hotspots = hotspotList.useItems();
+    const [picking, setPicking] = useState<{ path: number[]; top: number; left: number } | null>(null);
+    const prototypeHotspots = hotspots.filter((hotspot) => hotspot.prototypeId === notePage.prototypeId);
+    const pageHotspots = prototypeHotspots.filter((hotspot) => isOnPage(hotspot, notePage.prototypeId, notePage.page));
+
+    useBlockedClicks(frameDocument, (event) => {
+        const element = asElement(event.target);
+        if (!element) {
+            return;
+        }
+        const rect = getFrameRect(element);
+        setPicking({ path: getElementPath(element), top: rect.top + rect.height, left: rect.left });
+    });
+
+    function link(target: string) {
+        if (!picking) {
+            return;
+        }
+        const path = picking.path;
+        hotspotList.update((items) => [
+            ...items.filter((item) => !(isOnPage(item, notePage.prototypeId, notePage.page) && item.path.join() === path.join())),
+            { id: createNoteId(), prototypeId: notePage.prototypeId, page: notePage.page, path, target },
+        ]);
+        setPicking(null);
+    }
+
+    return (
+        <>
+            <div className={styles.layer}>
+                {pageHotspots.map((hotspot) => {
+                    const element = findElementByPath(frameDocument, hotspot.path);
+                    if (!element) {
+                        return null;
+                    }
+                    const rect = getFrameRect(element);
+                    return (
+                        <div
+                            key={hotspot.id}
+                            className={styles.hotspot}
+                            style={{ top: rect.top * scale, left: rect.left * scale, width: rect.width * scale, height: rect.height * scale }}
+                        >
+                            <span className={styles.hotspotLabel}>→ {notePage.getPageLabel(hotspot.target)}</span>
+                        </div>
+                    );
+                })}
+                {picking && (
+                    <div className={styles.commentEditor} style={{ top: picking.top * scale + 6, left: picking.left * scale }}>
+                        <p className={styles.cardTitle}>Opens on a click</p>
+                        <ul className={styles.pagePicker}>
+                            {notePage.pageIds
+                                .filter((pageId) => pageId !== notePage.page)
+                                .map((pageId) => (
+                                    <li key={pageId}>
+                                        <button type="button" className={styles.noteLink} onClick={() => link(pageId)}>
+                                            {notePage.getPageLabel(pageId)}
+                                        </button>
+                                    </li>
+                                ))}
+                        </ul>
+                        <div className={styles.editorActions}>
+                            <Button variant="text" color="secondary" size="small" onClick={() => setPicking(null)}>
+                                Cancel
+                            </Button>
+                        </div>
+                    </div>
+                )}
+            </div>
+            <aside className={styles.card} aria-label="Hotspots">
+                <p className={styles.cardTitle}>
+                    Hotspots
+                    <span>
+                        {pageHotspots.length} here · {prototypeHotspots.length} in all
+                    </span>
+                </p>
+                {prototypeHotspots.length === 0 ? (
+                    <p className={styles.hint}>Click an element to choose the page it opens, e.g. a button of a page that isn&apos;t built yet.</p>
+                ) : (
+                    <ul className={styles.noteList}>
+                        {prototypeHotspots.map((hotspot) => (
+                            <li key={hotspot.id}>
+                                <button type="button" className={styles.noteLink} onClick={() => notePage.onOpenPage(hotspot.page)}>
+                                    <span>
+                                        <span className={styles.notePage}>{notePage.getPageLabel(hotspot.page)}</span>
+                                        Opens {notePage.getPageLabel(hotspot.target)}
+                                    </span>
+                                </button>
+                                <IconButton
+                                    variant="text"
+                                    color="secondary"
+                                    size="small"
+                                    aria-label="Remove hotspot"
+                                    onClick={() => hotspotList.update((items) => items.filter((item) => item.id !== hotspot.id))}
+                                >
+                                    <Icon name="trash" />
+                                </IconButton>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+            </aside>
+        </>
+    );
 }

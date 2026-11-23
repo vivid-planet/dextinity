@@ -4,6 +4,7 @@ import { Button } from "../../components/button/Button";
 import { Icon } from "../../components/icon/Icon";
 import { addFlowEdges, type FlowEdge, flowEdgeList } from "./flowEdges";
 import styles from "./FlowMap.module.scss";
+import { hotspotList } from "./hotspots";
 
 const nodeWidth = 200;
 const nodeHeight = 48;
@@ -90,7 +91,18 @@ export function FlowMap({
     getPageLabel: (pageId: string) => string;
     onOpenPage: (pageId: string) => void;
 }) {
-    const edges = flowEdgeList.useItems().filter((edge) => edge.prototypeId === prototypeId);
+    const recordedEdges = flowEdgeList.useItems();
+    const hotspots = hotspotList.useItems();
+    // A hotspot is a link too, already before anyone clicked it
+    const edges = useMemo(
+        () => [
+            ...recordedEdges.filter((edge) => edge.prototypeId === prototypeId),
+            ...hotspots
+                .filter((hotspot) => hotspot.prototypeId === prototypeId)
+                .map((hotspot): FlowEdge => ({ prototypeId, from: hotspot.page, to: hotspot.target, kind: "link" })),
+        ],
+        [recordedEdges, hotspots, prototypeId],
+    );
     const [scan, setScan] = useState<{ done: number; total: number } | null>(null);
     const [navigationIds, setNavigationIds] = useState<string[]>([]);
     const scanFrameRef = useRef<HTMLIFrameElement>(null);

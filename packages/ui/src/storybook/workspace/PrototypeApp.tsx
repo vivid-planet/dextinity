@@ -7,6 +7,8 @@ import { densitySetting } from "../density";
 import { PageTypeShell } from "../pageTypes/PageTypeShell";
 import { type FlowEdgeKind, type LeaveGuard, PrototypeNavigationContext } from "../pageTypes/prototypeNavigation";
 import { addFlowEdges } from "./flowEdges";
+import { findElementByPath } from "./frameElements";
+import { hotspotList, toolAttribute } from "./hotspots";
 import { customPageList, customPagePrefix, renderCustomPage } from "./pageTemplates";
 import type { WorkspacePrototype } from "./prototypes";
 import { getOverrideCss, tokenOverrideList } from "./tokenPlayground";
@@ -84,6 +86,27 @@ export function PrototypeApp({ prototype, navGroups, renderPage }: PrototypeAppP
         };
         // Storybook's preview sets `<base target="_parent">`, which would open a page's link in the window around the frame, e.g.
         // the workspace, instead of in the prototype; the page's own handlers come first and may have taken the click already
+        // A hotspot the designer set wins over what the element does itself, unless a workspace tool uses the click
+        const handleHotspot = (event: MouseEvent) => {
+            if (document.documentElement.hasAttribute(toolAttribute) || !(event.target instanceof Node)) {
+                return;
+            }
+            const target = event.target;
+            const hotspot = hotspotList
+                .get()
+                .find(
+                    (candidate) =>
+                        candidate.prototypeId === prototype.storyId &&
+                        candidate.page === pageIdRef.current &&
+                        findElementByPath(document, candidate.path)?.contains(target),
+                );
+            if (hotspot) {
+                event.preventDefault();
+                event.stopPropagation();
+                nextViaRef.current = "link";
+                window.location.hash = hotspot.target;
+            }
+        };
         const handleLink = (event: MouseEvent) => {
             const link = (event.target as Element | null)?.closest?.('a[href^="#"]');
             if (!link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
@@ -95,10 +118,12 @@ export function PrototypeApp({ prototype, navGroups, renderPage }: PrototypeAppP
         };
         window.addEventListener("hashchange", handleHashChange);
         document.addEventListener("click", handleClick, true);
+        document.addEventListener("click", handleHotspot, true);
         document.addEventListener("click", handleLink);
         return () => {
             window.removeEventListener("hashchange", handleHashChange);
             document.removeEventListener("click", handleClick, true);
+            document.removeEventListener("click", handleHotspot, true);
             document.removeEventListener("click", handleLink);
         };
     }, [prototype]);

@@ -309,6 +309,7 @@ export function WorkspaceShell() {
     const notePage: NotePage = {
         prototypeId: prototypeId ?? "",
         page: currentPrototypePageId ?? "",
+        pageIds: [...(currentWorkspacePrototype?.designedPageIds ?? []), ...prototypeCustomPages.map((page) => page.id)],
         getPageLabel,
         onOpenPage: (page) => {
             const frameWindow = frameRef.current?.contentWindow;
@@ -764,6 +765,17 @@ export function WorkspaceShell() {
                                     onClick={() => toggleFrameTool("text")}
                                 >
                                     <Icon name="pencil-line" />
+                                </IconButton>
+                            )}
+                            {isPrototypeMode && !isComparing && !showingFlow && (
+                                <IconButton
+                                    variant={frameTool === "hotspot" ? "contained" : "text"}
+                                    color={frameTool === "hotspot" ? "primary" : "secondary"}
+                                    aria-label="Link elements to pages"
+                                    aria-pressed={frameTool === "hotspot"}
+                                    onClick={() => toggleFrameTool("hotspot")}
+                                >
+                                    <Icon name="link-diagonal" />
                                 </IconButton>
                             )}
                             {isPrototypeMode && !isComparing && !showingFlow && (

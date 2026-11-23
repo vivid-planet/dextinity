@@ -4,6 +4,8 @@
 
 Add AI Mode toolsets, so that a page can offer its context and tools to the chat of the Dextinity AI Hub
 
+The AI Mode is experimental: its exports are marked `@experimental` and may change in a minor release.
+
 A page registers an AI Mode toolset with `useAiModeToolset`, or with the `AiModeToolset` component for a toolset that other toolsets are rendered in. A toolset has a description of what the user is looking at, a small context, and the tools the agent can call while the page is open. The chat that reads them is set up by the project: `AiModeToolsetsProvider` holds the mounted toolsets, and `useAiModeToolsetsStore` reads them. Without a provider, a toolset does nothing.
 
 An entity's grid and form get their tools without writing any:

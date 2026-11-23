@@ -1,11 +1,19 @@
 import { createContext, type PropsWithChildren, useContext, useEffect, useState, useSyncExternalStore } from "react";
 
-/** What the chat hands every tool call besides its arguments, for what the chat owns rather than the page. */
+/**
+ * What the chat hands every tool call besides its arguments, for what the chat owns rather than the page.
+ *
+ * @experimental
+ */
 export type AiModeToolHelpers = {
     clearTextSelection: () => void;
 };
 
-/** A tool the agent calls, as the host tools of the AI Hub's chat describe it. */
+/**
+ * A tool the agent calls, as the host tools of the AI Hub's chat describe it.
+ *
+ * @experimental
+ */
 export type AiModeTool = {
     /** Unique among the tools of all mounted toolsets, in snake case. */
     name: string;
@@ -18,6 +26,7 @@ export type AiModeTool = {
     handler: (args: Record<string, unknown>, helpers: AiModeToolHelpers) => Promise<unknown> | unknown;
 };
 
+/** @experimental */
 export type AiModeToolsetOptions = {
     /** Names the toolset in the context pushed to the agent, e.g. "pageTree". */
     id: string;
@@ -36,6 +45,7 @@ type Registration = {
     signature: string;
 };
 
+/** @experimental */
 export type AiModeToolsetsStore = {
     /** The mounted toolsets, outermost first. */
     getToolsets: () => AiModeToolsetOptions[];
@@ -140,16 +150,19 @@ const AiModeToolsetsContext = createContext<AiModeToolsetsStore>(createAiModeToo
 
 const AiModeToolsetDepthContext = createContext(0);
 
+/** @experimental */
 export function AiModeToolsetsProvider({ children }: PropsWithChildren) {
     const [store] = useState(createAiModeToolsetsStore);
 
     return <AiModeToolsetsContext.Provider value={store}>{children}</AiModeToolsetsContext.Provider>;
 }
 
+/** @experimental */
 export function useAiModeToolsetsStore() {
     return useContext(AiModeToolsetsContext);
 }
 
+/** @experimental */
 export function useHasAiModeToolsets() {
     const store = useAiModeToolsetsStore();
 
@@ -159,6 +172,8 @@ export function useHasAiModeToolsets() {
 /**
  * Registers what the agent sees and can do while the calling component is mounted. Pass null for nothing, e.g. while
  * loading. Use `AiModeToolset` instead for a toolset that contains other toolsets, so that they are ordered below it.
+ *
+ * @experimental
  */
 export function useAiModeToolset(toolset: AiModeToolsetOptions | null) {
     const store = useAiModeToolsetsStore();
@@ -182,6 +197,7 @@ export function useAiModeToolset(toolset: AiModeToolsetOptions | null) {
     }, [store, token]);
 }
 
+/** @experimental */
 export function AiModeToolset({ children, ...toolset }: PropsWithChildren<AiModeToolsetOptions>) {
     const depth = useContext(AiModeToolsetDepthContext);
     useAiModeToolset(toolset);

@@ -5,7 +5,11 @@ import type { AdditionalItemFields } from "./blockChildren";
 import { type BlocksBlockChild, describeType } from "./blockProps";
 import { type BlockEditOperation, type BlockEditResult, describeOperation, isBlockEditChange, planBlockEdits } from "./planBlockEdits";
 
-/** A blocks block whose top-level blocks a block editing tool changes. */
+/**
+ * A blocks block whose top-level blocks a block editing tool changes.
+ *
+ * @experimental
+ */
 export type AiModeEditableBlocksBlock = {
     /** The `supportedBlocks` of the blocks block. */
     supportedBlocks: Record<string, BlockInterface>;
@@ -236,6 +240,8 @@ export async function editBlocksBlock({
 /**
  * A tool that inserts, updates, removes, moves, hides, and shows the top-level blocks of a blocks block, e.g. the content
  * of a page. The changes are unsaved, as if the user had made them by hand, and the user approves every call.
+ *
+ * @experimental
  */
 export function createAiModeEditBlocksTool({
     name,

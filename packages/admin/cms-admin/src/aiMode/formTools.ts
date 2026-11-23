@@ -12,7 +12,11 @@ type FormValues = Record<string, unknown>;
 
 type ReferenceOption = Record<string, unknown> & { id: string };
 
-/** A field of a form the AI Mode reads, and except for a single block, also changes. */
+/**
+ * A field of a form the AI Mode reads, and except for a single block, also changes.
+ *
+ * @experimental
+ */
 export type AiModeFormField = {
     /** The field's name in the form, also a nested one, e.g. "address.street". */
     name: string;

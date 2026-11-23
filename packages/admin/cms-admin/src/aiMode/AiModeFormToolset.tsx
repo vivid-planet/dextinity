@@ -19,6 +19,8 @@ type AiModeFormToolsetProps = {
 /**
  * Lets the AI Mode read and fill in the form it is rendered in, a `FinalForm`. A component rather than a hook, so that
  * it can read the form, and so that only it re-renders when the form's `dirty` changes.
+ *
+ * @experimental
  */
 export function AiModeFormToolset({ entityName, entityLabel, id, fields }: AiModeFormToolsetProps) {
     const form = useForm<Record<string, unknown>>();

@@ -5,6 +5,8 @@ const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{1
 /**
  * The tools that open a node of the page tree, for a toolset on every page, such as the admin's, so that the agent opens
  * a page's editor in one step.
+ *
+ * @experimental
  */
 export const createAiModePageTreeNavigationTools = ({
     categories,

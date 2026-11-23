@@ -12,6 +12,7 @@ import {
 } from "@mui/x-data-grid-pro";
 
 import type { AiModeTool } from "./AiModeToolsets";
+import { isIsoDate } from "./isoDate";
 
 /** The controlled state of a grid with server-side filtering, sorting, and pagination, as `useDataGridRemote` returns it. */
 export type AiModeDataGridState = Pick<DataGridProps, "onFilterModelChange" | "onSortModelChange" | "onPaginationModelChange"> & {
@@ -80,6 +81,54 @@ function summarizeRow(row: Record<string, unknown>, columns: GridColDef[]) {
 
 type FilterItem = { field: string; operator: string; value?: unknown };
 
+const valuelessOperators = ["isEmpty", "isNotEmpty"];
+
+function getSelectOptions(column: GridColDef): string[] | null {
+    if (column.type !== "singleSelect" || !("valueOptions" in column) || !Array.isArray(column.valueOptions)) {
+        return null;
+    }
+    return column.valueOptions.map((option) => String(typeof option === "object" ? option.value : option));
+}
+
+/**
+ * `muiGridFilterToGql` passes the value on to the API as it is, and the API's error for a value that doesn't fit
+ * would replace the grid with an error page, so a value has to fit the column before the grid gets it.
+ */
+function asFilterValue(column: GridColDef, value: unknown, describeFilter: string): unknown {
+    const options = getSelectOptions(column);
+    if (options) {
+        if (typeof value !== "string" || !options.includes(value)) {
+            throw new Error(`${describeFilter} takes one of: ${options.join(", ")}, but got ${JSON.stringify(value)}.`);
+        }
+        return value;
+    }
+    switch (column.type) {
+        case "date":
+        case "dateTime":
+            if (typeof value !== "string" || !isIsoDate(value)) {
+                throw new Error(`${describeFilter} takes an existing date in the format YYYY-MM-DD, but got ${JSON.stringify(value)}.`);
+            }
+            return value;
+        case "number": {
+            const number = typeof value === "string" && value.trim() !== "" ? Number(value) : value;
+            if (typeof number !== "number" || !Number.isFinite(number)) {
+                throw new Error(`${describeFilter} takes a number, but got ${JSON.stringify(value)}.`);
+            }
+            return number;
+        }
+        case "boolean":
+            if (value !== true && value !== false && value !== "true" && value !== "false") {
+                throw new Error(`${describeFilter} takes true or false, but got ${JSON.stringify(value)}.`);
+            }
+            return value === true || value === "true";
+        default:
+            if (typeof value !== "string" && typeof value !== "number") {
+                throw new Error(`${describeFilter} takes a text, but got ${JSON.stringify(value)}.`);
+            }
+            return String(value);
+    }
+}
+
 function asFilterItems(filters: unknown, columns: GridColDef[]): FilterItem[] {
     if (!Array.isArray(filters)) {
         throw new Error('"filters" must be a list of filters, each with a "field", an "operator", and usually a "value".');
@@ -96,7 +145,17 @@ function asFilterItems(filters: unknown, columns: GridColDef[]): FilterItem[] {
         if (typeof operator !== "string" || !operators.includes(operator)) {
             throw new Error(`Filter ${index + 1}: "${operator}" is no operator of the column "${field}". It has: ${operators.join(", ")}.`);
         }
-        return { field: column.field, operator, value };
+        const describeFilter = `Filter ${index + 1} ("${column.field}" ${operator})`;
+        if (valuelessOperators.includes(operator)) {
+            return { field: column.field, operator };
+        }
+        if (operator === "isAnyOf") {
+            if (!Array.isArray(value) || value.length === 0) {
+                throw new Error(`${describeFilter} takes a list of values, but got ${JSON.stringify(value)}.`);
+            }
+            return { field: column.field, operator, value: value.map((item) => asFilterValue(column, item, describeFilter)) };
+        }
+        return { field: column.field, operator, value: asFilterValue(column, value, describeFilter) };
     });
 }
 
@@ -186,7 +245,10 @@ export function createDataGridTools({
                 `Changing the search or the filters goes back to the first page. Afterwards, read the rows with get_${entityName}_grid_rows. ` +
                 `The filterable columns and their operators are: ${dataColumns
                     .filter((column) => column.filterable !== false)
-                    .map((column) => `${column.field} (${getFilterOperators(column).join(", ")})`)
+                    .map((column) => {
+                        const options = getSelectOptions(column);
+                        return `${column.field} (${getFilterOperators(column).join(", ")}${options ? `; values: ${options.join(", ")}` : ""})`;
+                    })
                     .join("; ")}. A date is passed as YYYY-MM-DD, "isAnyOf" takes a list, and "isEmpty" and "isNotEmpty" take no value.`,
             inputSchema: {
                 type: "object",

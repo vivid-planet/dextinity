@@ -385,3 +385,44 @@
 .siteLead {
     font-size: 18px;
 }
+
+// The page status stays in view in every row: it is the row's information, not an action that appears on hover
+.pageTree :global(.dextinityTreeView__actions) {
+    opacity: 1;
+}
+
+.statusTrigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--dextinity-space-1);
+    min-inline-size: 118px;
+    block-size: 26px;
+    padding-inline: var(--dextinity-space-2) var(--dextinity-space-1);
+    border: 0;
+    border-radius: var(--dextinity-radius-item);
+    background: transparent;
+    color: var(--dextinity-color-text-subtle);
+    font: inherit;
+    font-size: var(--dextinity-typography-small-size);
+    cursor: pointer;
+
+    --dextinity-icon-size: var(--dextinity-icon-size-xxsmall);
+
+    &:hover,
+    &[aria-expanded="true"] {
+        background: var(--dextinity-color-fill-hover);
+        color: var(--dextinity-color-text);
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
+    }
+}
+
+.newPageForm {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-space-4);
+}

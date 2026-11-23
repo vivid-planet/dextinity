@@ -82,8 +82,10 @@
         scrollbar-width: none;
     }
 
-    // Aligned to the end while everything fits; a scrolling bar starts at its first button
-    > :first-child {
+    // Aligned to the end while everything fits; a scrolling bar starts at its first button. A pseudo-element, since an open menu puts
+    // focus guards before its button, which would otherwise take the first place and let the buttons jump to the start
+    &::before {
+        content: "";
         margin-inline-start: auto;
     }
 

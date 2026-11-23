@@ -577,17 +577,10 @@ export function WorkspaceShell() {
                             {isPrototypeMode && (
                                 <SettingMenu label="Compare" options={compareOptions} value={state.compare} onChange={changeCompare} />
                             )}
-                            {isComparing && (
-                                <SegmentedControl
-                                    size="small"
-                                    aria-label="Zoom"
-                                    options={zoomOptions}
-                                    value={state.zoom}
-                                    onChange={(zoom) => updateState({ zoom })}
-                                />
-                            )}
-                            {isPrototypeMode && !isComparing && !showingFlow && (
+                            {isPrototypeMode && (
                                 <ViewportControl
+                                    // Kept in place while comparing or showing the flow, where it has no effect, so the buttons don't move
+                                    disabled={isComparing || showingFlow}
                                     responsive={state.responsive}
                                     onResponsiveChange={() => updateState({ responsive: true })}
                                     width={state.width}
@@ -729,6 +722,16 @@ export function WorkspaceShell() {
                             >
                                 <Icon name="back" />
                             </IconButton>
+                            {isComparing && <span className={styles.divider} />}
+                            {isComparing && (
+                                <SegmentedControl
+                                    size="small"
+                                    aria-label="Zoom"
+                                    options={zoomOptions}
+                                    value={state.zoom}
+                                    onChange={(zoom) => updateState({ zoom })}
+                                />
+                            )}
                             {isPrototypeMode && !isComparing && !showingFlow && <span className={styles.divider} />}
                             {isPrototypeMode && !isComparing && !showingFlow && (
                                 <IconButton

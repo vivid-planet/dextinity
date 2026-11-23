@@ -61,6 +61,7 @@ export function ViewportControl({
     zoom,
     onSizeChange,
     onZoomChange,
+    disabled,
 }: {
     responsive: boolean;
     onResponsiveChange: () => void;
@@ -69,6 +70,7 @@ export function ViewportControl({
     zoom: WorkspaceZoom;
     onSizeChange: (size: { width?: number; height?: number }) => void;
     onZoomChange: (zoom: WorkspaceZoom) => void;
+    disabled?: boolean;
 }) {
     const [open, setOpen] = useState(false);
     const activePreset = responsive ? undefined : getViewportPreset(width, height);
@@ -84,6 +86,7 @@ export function ViewportControl({
                 <IconButton
                     variant="text"
                     color="secondary"
+                    disabled={disabled}
                     aria-label={responsive ? "Viewport · Responsive" : `Viewport · ${triggerLabel}, ${width} × ${height}`}
                 >
                     <Icon name={activePreset?.icon ?? "devices"} />

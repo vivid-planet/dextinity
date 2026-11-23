@@ -2,7 +2,7 @@
 "@comet/cms-admin": patch
 ---
 
-Fix duplicate columns and missing permission counts in `UserPermissionsUserGrid`
+Show the total counts, "All permissions" and "All scopes" in `UserPermissionsUserGrid` when the grid first loads
 
-The permission, scope and actions columns were added to the memoized column array during render. `useMemo` returns the same array on every render, so each re-render added another copy of these columns, and React reported duplicate keys.
-The grid also kept the first column definitions, which were made before the available permissions and content scopes had loaded. So the permission and scope columns never showed "All permissions" or "All scopes", the counts had no total, and the permission filter had no options.
+The grid kept the column definitions from before the available permissions and content scopes had loaded, until a change such as a filter made it read the columns again.
+Until then, the permission and scope columns showed, for instance, "2 of permissions" instead of "2 of 4 permissions", and never "All permissions" or "All scopes".

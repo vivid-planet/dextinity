@@ -1,5 +1,13 @@
 # @comet/cms-api
 
+## 8.33.3
+
+### Patch Changes
+
+- 9b9ca20: Keep the stored file when deleting a file upload whose content is used by another file upload
+
+    Previously, `FileUploadsService.delete()` removed the file from the blob storage even if another file upload with the same content hash still referenced it, which made that file upload's download fail.
+
 ## 8.33.2
 
 ## 8.33.1

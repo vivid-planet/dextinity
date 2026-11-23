@@ -126,6 +126,10 @@ export const IFrameBridgeProvider = ({ children }: PropsWithChildren) => {
                         : getRecursiveChildrenOfPreviewElement(previewElement.element);
                 const positioning = getCombinedPositioningOfElements(measuredElements);
 
+                if (positioning === null) {
+                    return null;
+                }
+
                 const widthInsideOfViewport = Math.min(positioning.width, childrenWrapperRight - positioning.left);
 
                 if (widthInsideOfViewport <= 0) {

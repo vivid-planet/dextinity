@@ -105,11 +105,6 @@ The docs now recommend the skills over the CRUD generator, which will be depreca
 
 [#7254](https://github.com/vivid-planet/dextinity/pull/7254)
 
-## Security
-
-- **Block preview:** `BlockPreviewProvider` adds the `X-Block-Preview` header, which holds the content scope JWT, to requests to the preview's own host. When `fetch` was called with a `Request` object, the header was added to requests to every host. Other hosts could receive the token, and hosts that don't allow the header failed the CORS preflight, for instance when MapLibre loads its map style. The header now only goes to the preview's own host. Update `@dextinity/site-react` or `@dextinity/site-nextjs`. [#7322](https://github.com/vivid-planet/dextinity/pull/7322)
-- **Table block:** The API saved a table block created with `createTableBlock` without validating its columns, rows and cells. For example, it saved a `javascript:` link in a cell, which the rich text block rejects outside a table. The content is now validated. [#7320](https://github.com/vivid-planet/dextinity/pull/7320)
-
 ## Fixes editors will notice
 
 ### Search results while you type
@@ -164,6 +159,8 @@ When editors copied several pages with subpages and pasted them, for instance in
 
 ## For developers and ops
 
+- **Block preview:** `BlockPreviewProvider` adds the `X-Block-Preview` header, which holds the content scope JWT, to requests to the preview's own host. When `fetch` was called with a `Request` object, the header was added to requests to every host. Other hosts could receive the token, and hosts that don't allow the header failed the CORS preflight, for instance when MapLibre loads its map style. The header now only goes to the preview's own host. Update `@dextinity/site-react` or `@dextinity/site-nextjs`. [#7322](https://github.com/vivid-planet/dextinity/pull/7322)
+- **Table block:** The API saved a table block created with `createTableBlock` without validating its columns, rows and cells. For example, it saved a `javascript:` link in a cell, which the rich text block rejects outside a table. The content is now validated. [#7320](https://github.com/vivid-planet/dextinity/pull/7320)
 - **`dextinity-upload-build-assets` deletes old build assets:** The storage keeps the build assets of the last 10 uploads, configurable with `--keep-builds` (or `keepBuilds` of `uploadBuildAssets`). The storage needs to allow listing and deleting files. Build assets uploaded before this version aren't deleted: remove them manually from `<storage-key-prefix>/_next/static/` once all running instances serve builds uploaded with 10.16. [#7025](https://github.com/vivid-planet/dextinity/pull/7025)
 - **`rewriteImageSrc` in the mail `Config`:** Returns the `src` that `HtmlImage`, `MjmlImage`, `HtmlPixelImageBlock` and `MjmlPixelImageBlock` render, including the image in classic Outlook's VML. Use it when mail clients can't load an image from its own URL, for instance to reference an attachment of the sent mail. [#7283](https://github.com/vivid-planet/dextinity/pull/7283)
 

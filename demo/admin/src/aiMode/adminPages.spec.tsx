@@ -1,5 +1,4 @@
 import type { MasterMenuData, Permission } from "@dextinity/cms-admin";
-import { createElement } from "react";
 import { createIntl, FormattedMessage } from "react-intl";
 import { describe, expect, it } from "vitest";
 
@@ -7,15 +6,18 @@ import { findOpenAdminPage, getAdminPages } from "./adminPages";
 
 const intl = createIntl({ locale: "en", messages: {} });
 
-const icon = createElement("span");
-
-const message = (id: string, defaultMessage: string) => createElement(FormattedMessage, { id, defaultMessage });
+const icon = <span />;
 
 const menu: MasterMenuData = [
-    { type: "route", primary: message("menu.dashboard", "Dashboard"), icon, route: { path: "/dashboard", element: null } },
+    {
+        type: "route",
+        primary: <FormattedMessage id="menu.dashboard" defaultMessage="Dashboard" />,
+        icon,
+        route: { path: "/dashboard", element: null },
+    },
     {
         type: "collapsible",
-        primary: message("menu.pageTree", "Page tree"),
+        primary: <FormattedMessage id="menu.pageTree" defaultMessage="Page tree" />,
         icon,
         items: [{ type: "route", primary: "Main navigation", to: "/pages/pagetree/main-navigation" }],
         route: { path: "/pages/pagetree/:category", element: null },
@@ -23,18 +25,18 @@ const menu: MasterMenuData = [
     },
     {
         type: "collapsible",
-        primary: message("menu.system", "System"),
+        primary: <FormattedMessage id="menu.system" defaultMessage="System" />,
         icon,
         items: [
             {
                 type: "route",
-                primary: message("menu.redirects", "Redirects"),
+                primary: <FormattedMessage id="menu.redirects" defaultMessage="Redirects" />,
                 route: { path: "/system/redirects", element: null },
                 requiredPermission: "pageTree",
             },
             {
                 type: "route",
-                primary: message("menu.cronJobs", "Cron Jobs"),
+                primary: <FormattedMessage id="menu.cronJobs" defaultMessage="Cron Jobs" />,
                 route: { path: "/system/cron-jobs", element: null },
                 requiredPermission: "cronJobs",
             },

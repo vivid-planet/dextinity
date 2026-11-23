@@ -38,6 +38,7 @@ import { workspacePrototypes } from "./prototypes";
 import { TokenPlayground } from "./TokenPlayground";
 import { type InspectedComponent, useCanvasInspector } from "./useCanvasInspector";
 import { useFramePage } from "./useFramePage";
+import { WorkspaceGuide } from "./WorkspaceGuide";
 import { workspaceLogo } from "./workspaceLogo";
 import { commentList, textChangeList } from "./workspaceNotes";
 import styles from "./WorkspaceShell.module.scss";
@@ -635,6 +636,7 @@ export function WorkspaceShell() {
                                 }}
                             />
                             <span className={styles.divider} />
+                            {isPrototypeMode && <WorkspaceGuide />}
                             <IconButton variant="text" color="secondary" aria-label="Reload story" onClick={reloadFrame}>
                                 <Icon name="refresh" />
                             </IconButton>

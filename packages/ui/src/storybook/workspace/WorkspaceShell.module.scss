@@ -140,6 +140,29 @@
     text-overflow: ellipsis;
 }
 
+// A page the designer added keeps its name editable where the other pages show theirs
+.locationInput {
+    min-inline-size: 0;
+    max-inline-size: 100%;
+    margin-block: -2px;
+    padding: 2px 4px;
+    border: var(--dextinity-line-width) solid transparent;
+    border-radius: 4px;
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-weight: 600;
+
+    &:hover {
+        border-color: var(--dextinity-color-line);
+    }
+
+    &:focus-visible {
+        border-color: var(--dextinity-color-accent);
+        outline: none;
+    }
+}
+
 .toolbarGroup {
     display: flex;
     gap: 4px;

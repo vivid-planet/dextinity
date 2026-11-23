@@ -16,6 +16,7 @@ import { Icon } from "../../components/icon/Icon";
 import { IconButton } from "../../components/iconButton/IconButton";
 import { Menu } from "../../components/menu/Menu";
 import { MenuItem } from "../../components/menu/MenuItem";
+import { SegmentedControl } from "../../components/segmentedControl/SegmentedControl";
 import { Tabs } from "../../components/tabs/Tabs";
 import { Theme } from "../../components/theme/Theme";
 import { type TreeNode, TreeView } from "../../components/treeView/TreeView";
@@ -35,7 +36,7 @@ import { useFramePage } from "./useFramePage";
 import { workspaceLogo } from "./workspaceLogo";
 import styles from "./WorkspaceShell.module.scss";
 import { defaultWorkspaceState, useWorkspaceState, type WorkspaceCompare, type WorkspaceMode } from "./workspaceState";
-import { colorSchemeOptions, densityOptions, minFrameSize, SettingMenu, ViewportControl } from "./WorkspaceToolbarControls";
+import { colorSchemeOptions, densityOptions, minFrameSize, SettingMenu, ViewportControl, zoomOptions } from "./WorkspaceToolbarControls";
 
 const shellStoryId = "workspace-shell--shell";
 const narrowQuery = "(width < 760px)";
@@ -280,6 +281,13 @@ export function WorkspaceShell() {
         selectPrototypeNode(getPrototypePageNodeId(prototypeId, id));
     }
 
+    function renameCurrentPage(title: string) {
+        const trimmed = title.trim();
+        if (currentCustomPage && trimmed !== "" && trimmed !== currentCustomPage.title) {
+            customPageList.update((pages) => pages.map((page) => (page === currentCustomPage ? { ...page, title: trimmed } : page)));
+        }
+    }
+
     function removeCurrentPage() {
         if (currentCustomPage && prototypeId) {
             customPageList.update((pages) => pages.filter((page) => page !== currentCustomPage));
@@ -509,6 +517,15 @@ export function WorkspaceShell() {
                             {isPrototypeMode && (
                                 <SettingMenu label="Compare" options={compareOptions} value={state.compare} onChange={changeCompare} />
                             )}
+                            {isComparing && (
+                                <SegmentedControl
+                                    size="small"
+                                    aria-label="Zoom"
+                                    options={zoomOptions}
+                                    value={state.zoom}
+                                    onChange={(zoom) => updateState({ zoom })}
+                                />
+                            )}
                             {isPrototypeMode && !isComparing && (
                                 <ViewportControl
                                     responsive={state.responsive}
@@ -576,7 +593,27 @@ export function WorkspaceShell() {
                             {isPrototypeMode ? (
                                 <>
                                     <span className={styles.locationTrail}>{currentPrototype?.name}</span>
-                                    {prototypePageLabel && <span className={styles.locationCurrent}>{prototypePageLabel}</span>}
+                                    {currentCustomPage ? (
+                                        <input
+                                            key={`${currentCustomPage.id}-${currentCustomPage.title}`}
+                                            className={styles.locationInput}
+                                            aria-label="Page name"
+                                            title="Rename the page"
+                                            defaultValue={currentCustomPage.title}
+                                            size={Math.max(8, currentCustomPage.title.length)}
+                                            onBlur={(event) => renameCurrentPage(event.currentTarget.value)}
+                                            onKeyDown={(event) => {
+                                                if (event.key === "Enter") {
+                                                    event.currentTarget.blur();
+                                                } else if (event.key === "Escape") {
+                                                    event.currentTarget.value = currentCustomPage.title;
+                                                    event.currentTarget.blur();
+                                                }
+                                            }}
+                                        />
+                                    ) : (
+                                        prototypePageLabel && <span className={styles.locationCurrent}>{prototypePageLabel}</span>
+                                    )}
                                 </>
                             ) : (
                                 currentStory && (
@@ -757,6 +794,7 @@ export function WorkspaceShell() {
                                 storyUrl={storyUrl}
                                 startPage={prototypeStartPage}
                                 density={density}
+                                zoom={state.zoom}
                                 reloadKey={reloadKey}
                                 onPageChange={setPrototypeStartPage}
                             />

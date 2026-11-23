@@ -11,6 +11,7 @@ import { densitySetting } from "../density";
 import { scenarioSetting } from "../scenario";
 import styles from "./CompareCanvas.module.scss";
 import { findElementByPath, getElementPath } from "./frameElements";
+import type { WorkspaceZoom } from "./workspaceState";
 
 export type CompareMode = "viewports" | "variants";
 
@@ -184,6 +185,7 @@ export function CompareCanvas({
     storyUrl,
     startPage,
     density,
+    zoom,
     reloadKey,
     onPageChange,
 }: {
@@ -192,6 +194,8 @@ export function CompareCanvas({
     startPage: string;
     /** The toolbar's density, which the workspace sets on the frame's document since the prototypes don't read it themselves. */
     density: string;
+    /** `fit` scales all frames to fit side by side; a number shows them at that size, the canvas then scrolls. */
+    zoom: WorkspaceZoom;
     reloadKey: number;
     onPageChange: (page: string) => void;
 }) {
@@ -265,7 +269,8 @@ export function CompareCanvas({
     const gaps = frameGap * (frames.length - 1);
     const framesWidth = frames.reduce((sum, frame) => sum + frame.width, 0);
     const maxHeight = Math.max(...frames.map((frame) => frame.height));
-    const scale = Math.max(0.1, Math.min(1, (canvasSize.width - gaps) / framesWidth, (canvasSize.height - labelHeight) / maxHeight));
+    const fitScale = Math.max(0.1, Math.min(1, (canvasSize.width - gaps) / framesWidth, (canvasSize.height - labelHeight) / maxHeight));
+    const scale = zoom === "fit" ? fitScale : Number(zoom);
 
     function changeVariant(index: number, key: VariantKey, value?: string) {
         setVariants((current) => current.map((variant, variantIndex) => (variantIndex === index ? { ...variant, [key]: value } : variant)));

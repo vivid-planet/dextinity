@@ -548,6 +548,7 @@ export function CmsPageTree() {
                                             variant="text"
                                             color="secondary"
                                             size="small"
+                                            className={styles.addSubpage}
                                             onClick={() => pageActions.onAddSubpage(page)}
                                         >
                                             <Icon name="plus" />

@@ -45,6 +45,7 @@ export const cmsPrototype: WorkspacePrototype = {
         "news",
         "news/article-1",
         "assets",
+        "redirects",
         // The asset detail page in every format, from the library's demo folder
         "assets/landscape-3x2-6000x4000",
         "assets/landscape-16x9-1920x1080",

@@ -150,3 +150,58 @@ export function pastePages(pages: SitePage[], ids: string[], targetId: string): 
         copyIds: copies.map((copy) => copy.id),
     };
 }
+
+export interface PathChange {
+    pageId: string;
+    from: string;
+    to: string;
+}
+
+function rebasePaths(page: SitePage, parentPath: string, changes: PathChange[]): SitePage {
+    const isLink = page.type === "link";
+    const path = isLink ? page.path : `${parentPath}/${page.path?.split("/").pop() ?? page.id}`;
+    if (!isLink && page.path != null && path != null && path !== page.path) {
+        changes.push({ pageId: page.id, from: page.path, to: path });
+    }
+    const childParentPath = isLink ? parentPath : (path ?? parentPath);
+    return { ...page, path, children: page.children?.map((child) => rebasePaths(child, childParentPath, changes)) };
+}
+
+function pathOf(page: SitePage | undefined) {
+    return page?.path == null || page.path === "/" ? "" : page.path;
+}
+
+/**
+ * Moves the pages, with the pages below them, before or after the target or inside it as its last children, and builds their paths
+ * anew below their new parent. Link pages keep their URL. Returns the old and new path of every page whose path changed, for the
+ * redirects.
+ */
+export function movePages(
+    pages: SitePage[],
+    ids: string[],
+    targetId: string,
+    position: "before" | "after" | "inside",
+): { pages: SitePage[]; parent: SitePage | undefined; pathChanges: PathChange[] } {
+    const topLevelIds = ids.filter((id) => !(findTrail(pages, id) ?? []).some((ancestor) => ids.includes(ancestor.id)));
+    const moved = topLevelIds.flatMap((id) => {
+        const page = findInTree(pages, id);
+        return page != null ? [page] : [];
+    });
+    const remaining = removePages(pages, topLevelIds);
+    const parent = position === "inside" ? findInTree(remaining, targetId) : (findTrail(remaining, targetId) ?? []).at(-1);
+    const pathChanges: PathChange[] = [];
+    const rebased = moved.map((page) => rebasePaths(page, pathOf(parent), pathChanges));
+
+    const insert = (siblings: SitePage[]): SitePage[] =>
+        siblings.flatMap((page) => {
+            if (page.id === targetId) {
+                if (position === "inside") {
+                    return [{ ...page, children: [...(page.children ?? []), ...rebased] }];
+                }
+                return position === "before" ? [...rebased, page] : [page, ...rebased];
+            }
+            return [page.children ? { ...page, children: insert(page.children) } : page];
+        });
+
+    return { pages: insert(remaining), parent, pathChanges };
+}

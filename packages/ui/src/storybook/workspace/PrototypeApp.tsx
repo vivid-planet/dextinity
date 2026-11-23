@@ -9,6 +9,7 @@ import { type FlowEdgeKind, type LeaveGuard, PrototypeNavigationContext } from "
 import { addFlowEdges } from "./flowEdges";
 import { customPageList, customPagePrefix, renderCustomPage } from "./pageTemplates";
 import type { WorkspacePrototype } from "./prototypes";
+import { getOverrideCss, tokenOverrideList } from "./tokenPlayground";
 
 function PageNotInPrototype({ prototype, pageId }: { prototype: WorkspacePrototype; pageId: string }) {
     const { getPageLabel, designedPageIds } = prototype;
@@ -48,6 +49,7 @@ export function PrototypeApp({ prototype, navGroups, renderPage }: PrototypeAppP
     const [navCollapsed, setNavCollapsed] = useState(false);
     const [assistantOpen, setAssistantOpen] = useState(false);
     const density = densitySetting.useValue();
+    const tokenCss = getOverrideCss(tokenOverrideList.useItems());
     const pageIdRef = useRef(pageId);
     const leaveGuardRef = useRef<LeaveGuard | null>(null);
     // How the next page change was asked for; a change of the hash by a link on the page leaves it unset
@@ -135,6 +137,7 @@ export function PrototypeApp({ prototype, navGroups, renderPage }: PrototypeAppP
                 },
             }}
         >
+            {tokenCss && <style>{tokenCss}</style>}
             <Fragment key={pageId}>{page ?? <PageNotInPrototype prototype={prototype} pageId={pageId} />}</Fragment>
         </PrototypeNavigationContext.Provider>
     );

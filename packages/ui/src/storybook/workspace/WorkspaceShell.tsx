@@ -32,6 +32,7 @@ import { type NotePage, useTextChanges } from "./FrameNotes";
 import { type FrameTool, FrameTools } from "./FrameTools";
 import { customPageList, customPagePrefix, type PageTemplate, pageTemplates } from "./pageTemplates";
 import { workspacePrototypes } from "./prototypes";
+import { TokenPlayground } from "./TokenPlayground";
 import { type InspectedComponent, useCanvasInspector } from "./useCanvasInspector";
 import { useFramePage } from "./useFramePage";
 import { workspaceLogo } from "./workspaceLogo";
@@ -588,6 +589,7 @@ export function WorkspaceShell() {
                                     onChange={scenarioSetting.store}
                                 />
                             )}
+                            {isPrototypeMode && <TokenPlayground />}
                             <SettingMenu label="Color scheme" options={colorSchemeOptions} value={colorScheme} onChange={changeColorScheme} />
                             <SettingMenu
                                 label="Theme"

@@ -693,6 +693,16 @@ export function WorkspaceShell() {
                                     ) : (
                                         prototypePageLabel && <span className={styles.locationCurrent}>{prototypePageLabel}</span>
                                     )}
+                                    {isPrototypeMode && currentCustomPage && (
+                                        <IconButton
+                                            variant="text"
+                                            color="secondary"
+                                            aria-label={`Delete “${currentCustomPage.title}”`}
+                                            onClick={removeCurrentPage}
+                                        >
+                                            <Icon name="trash" />
+                                        </IconButton>
+                                    )}
                                 </>
                             ) : (
                                 currentStory && (
@@ -704,32 +714,6 @@ export function WorkspaceShell() {
                             )}
                         </p>
                         <div className={styles.toolbarGroup}>
-                            {isPrototypeMode && (
-                                <IconButton
-                                    variant={showingFlow ? "contained" : "text"}
-                                    color={showingFlow ? "primary" : "secondary"}
-                                    aria-label="Show the flow map"
-                                    aria-pressed={showingFlow}
-                                    onClick={toggleFlow}
-                                >
-                                    <Icon name="tune-logic" />
-                                </IconButton>
-                            )}
-                            {isPrototypeMode && (
-                                <IconButton variant="text" color="secondary" aria-label="Present the prototype" onClick={startPresenting}>
-                                    <Icon name="eye" />
-                                </IconButton>
-                            )}
-                            {isPrototypeMode && currentCustomPage && (
-                                <IconButton
-                                    variant="text"
-                                    color="secondary"
-                                    aria-label={`Delete “${currentCustomPage.title}”`}
-                                    onClick={removeCurrentPage}
-                                >
-                                    <Icon name="trash" />
-                                </IconButton>
-                            )}
                             {isPrototypeMode && (
                                 <IconButton variant="text" color="secondary" aria-label="Restart the prototype" onClick={restartPrototype}>
                                     <Icon name="home" />
@@ -744,6 +728,7 @@ export function WorkspaceShell() {
                             >
                                 <Icon name="back" />
                             </IconButton>
+                            {isPrototypeMode && !isComparing && !showingFlow && <span className={styles.divider} />}
                             {isPrototypeMode && !isComparing && !showingFlow && (
                                 <IconButton
                                     variant={inspecting ? "contained" : "text"}
@@ -811,6 +796,23 @@ export function WorkspaceShell() {
                                     onClick={() => toggleFrameTool("accessibility")}
                                 >
                                     <Icon name="contrast" />
+                                </IconButton>
+                            )}
+                            {isPrototypeMode && <span className={styles.divider} />}
+                            {isPrototypeMode && (
+                                <IconButton
+                                    variant={showingFlow ? "contained" : "text"}
+                                    color={showingFlow ? "primary" : "secondary"}
+                                    aria-label="Show the flow map"
+                                    aria-pressed={showingFlow}
+                                    onClick={toggleFlow}
+                                >
+                                    <Icon name="tune-logic" />
+                                </IconButton>
+                            )}
+                            {isPrototypeMode && (
+                                <IconButton variant="text" color="secondary" aria-label="Present the prototype" onClick={startPresenting}>
+                                    <Icon name="eye" />
                                 </IconButton>
                             )}
                         </div>

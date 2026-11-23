@@ -22,6 +22,9 @@ const config: StorybookConfig = {
             ...config.resolve.alias,
             "@src": resolve(currentDirectory, "../src"),
         };
+        // Since the site is `"type": "module"`, Vite 8 gives default imports of CommonJS packages such as `redraft` the whole
+        // `module.exports`, ignoring `__esModule`. Next.js's webpack build respects `__esModule`, so do the same here.
+        config.legacy = { ...config.legacy, inconsistentCjsInterop: true };
         return config;
     },
 };

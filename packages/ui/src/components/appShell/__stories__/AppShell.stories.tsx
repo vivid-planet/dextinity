@@ -289,8 +289,8 @@ export const EditingPage: Story = {
 
 /**
  * `environment` marks an instance other than the live system, e.g. Staging: a line in its color along the top edge, which is seen on
- * every page, and its label next to the logo. Collapsed, the label shows its first letter on the sign; on narrow windows, where the
- * navigation is a drawer, the top bar shows it.
+ * every page, and its label in the top right corner of the navigation. Collapsed, the label shows only its first letter; on narrow
+ * windows, where the navigation is a drawer, the top bar shows it.
  *
  * **Rules**
  *

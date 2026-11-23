@@ -26,6 +26,7 @@
 }
 
 .header {
+    position: relative;
     display: flex;
     flex: none;
     flex-direction: column;
@@ -83,6 +84,13 @@
     .logo {
         min-inline-size: 0;
     }
+}
+
+// Half the header's padding from its corner, so that it neither takes room from the logo's row nor widens the collapsed navigation
+.environment {
+    position: absolute;
+    inset-block-start: calc(var(--dextinity-side-nav-header-padding) / 2);
+    inset-inline-end: calc(var(--dextinity-side-nav-header-padding) / 2);
 }
 
 .title {

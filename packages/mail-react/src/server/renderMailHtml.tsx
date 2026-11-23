@@ -2,7 +2,6 @@ import { renderToMjml } from "@faire/mjml-react/utils/renderToMjml.js";
 import mjml2html from "mjml";
 import type { ReactElement } from "react";
 
-import { addBodyTargetingId } from "../utils/addBodyTargetingId.js";
 import { replaceQuoteEntitiesInCssAttributes } from "../utils/replaceQuoteEntitiesInCssAttributes.js";
 
 type MjmlOptions = Parameters<typeof mjml2html>[1];
@@ -15,5 +14,5 @@ export async function renderMailHtml(element: ReactElement, options?: MjmlOption
         ...options,
         ignoreIncludes: options?.ignoreIncludes ?? true,
     });
-    return { html: addBodyTargetingId(html), mjmlWarnings };
+    return { html, mjmlWarnings };
 }

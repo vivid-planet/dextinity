@@ -315,8 +315,8 @@ function CollapsedEntry({
 
 /**
  * The main navigation: app header with logo, app name, and tenant, then groups with entries up to three levels deep. Collapses to an
- * icon rail whose sub-entries open as a menu. In an `AppShell` with an `environment`, the header shows the instance's label next to the
- * logo, or its first letter on the collapsed sign.
+ * icon rail whose sub-entries open as a menu. In an `AppShell` with an `environment`, the header shows the instance's label in its top right
+ * corner, or only its first letter while collapsed.
  */
 export const SideNav = forwardRef<HTMLElement, SideNavProps>(function SideNav(
     {
@@ -409,6 +409,14 @@ export const SideNav = forwardRef<HTMLElement, SideNavProps>(function SideNav(
                         {title != null && <span className={styles.title}>{title}</span>}
                         {subtitle != null && <span className={styles.subtitle}>{subtitle}</span>}
                     </>
+                )}
+                {environment != null && (
+                    <EnvironmentLabel
+                        label={environment.label}
+                        color={environment.color}
+                        variant={ownerState.collapsed ? "compact" : "default"}
+                        className={styles.environment}
+                    />
                 )}
             </div>
             <div className={styles.scroll}>

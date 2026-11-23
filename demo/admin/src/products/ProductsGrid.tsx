@@ -284,6 +284,12 @@ export function ProductsGrid() {
                 minWidth: 130,
                 type: "boolean",
                 valueGetter: (params, row) => row.status == "Published",
+                toGqlFilter: ({ value }) => {
+                    if (value === undefined || value === "") {
+                        return {};
+                    }
+                    return { status: { equal: value === true || value === "true" ? "Published" : "Unpublished" } };
+                },
                 renderCell: (params) => {
                     return (
                         <CrudVisibility

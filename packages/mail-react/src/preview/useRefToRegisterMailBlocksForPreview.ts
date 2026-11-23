@@ -17,7 +17,6 @@ export interface IFrameBridge {
     removePreviewElement: (previewElement: PreviewElement) => void;
 }
 
-// A block without a single root element, such as a rich text in a column, has its class on several elements.
 function findPreviewElements(container: HTMLElement): PreviewElement[] {
     const previewElementsByRoute = new Map<string, PreviewElement>();
 

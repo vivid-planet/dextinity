@@ -1,17 +1,18 @@
 import type { MailTwoColumnsContentBlockData } from "@src/blocks.generated";
 import { MailTwoColumnsBlock } from "@src/mail/blocks/MailTwoColumnsBlock";
-import { createBlocksItems, createListItems, createPixelImage, createRichText, loremIpsum } from "@src/storybook/blockFixtures";
+import { createBlocksItems, createListItems, createPixelImage } from "@src/storybook/blockFixtures";
 import { MailRendererDecorator } from "@src/storybook/MailRendererDecorator";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 
-import { createMailButton } from "./mailBlockFixtures";
+import { createMailButton, createMailHeading, createMailText } from "./mailBlockFixtures";
 
 function createColumn(title: string, seed: string): MailTwoColumnsContentBlockData {
     return {
         blocks: createBlocksItems<MailTwoColumnsContentBlockData["blocks"][number]["props"]>([
             { type: "image", props: createPixelImage({ seed }) },
             { type: "spacer", props: { spacing: "small" } },
-            { type: "text", props: createRichText({ text: title, type: "header" }, { text: loremIpsum, type: "copy" }) },
+            { type: "heading", props: createMailHeading(title, "header") },
+            { type: "text", props: createMailText() },
             { type: "button", props: createMailButton({ text: "Read more" }) },
         ]),
     };

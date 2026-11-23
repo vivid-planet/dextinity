@@ -87,7 +87,7 @@ pnpm run lint
 
 ## Demo application
 
-This repository includes a demo application which is showcasing the libraries.
+The demo application in this repository shows how to use the libraries. It is used mainly by developers who work on Dextinity, so its code and fixtures show the current best practice, not a state migrated from an earlier version. When you change block data or other database content, update the fixtures instead of adding a migration. Local data may break, and the fixtures regenerate it. Add a migration only to demonstrate the migration feature itself, for example a block migration or `migrateFromDraftJs`.
 
 **Api:**
 Demo backend API (NestJS, PostgreSQL)
@@ -207,6 +207,11 @@ Example:
 Fix description here
 ```
 
+## Branches
+
+- `next` is protected and can't be pushed to directly. When a session targets `next` (e.g. it was started on `next` or a task asks for a breaking change), always create a new branch from `next` before committing, push that branch, and open the pull request against `next`.
+- Name branches that merge one branch into another `merge-<source>-into-<target>`, replacing `/` with `-`, e.g. `merge-main-into-next` or `merge-next-into-feature-new-block`. The labeler workflow relies on the `merge-main-`/`merge-next-` prefix.
+
 ## Commit messages
 
 - Do not use Conventional Commits.
@@ -224,6 +229,10 @@ Fix description here
 - Keep the length proportional to the change. A one-line fix gets a paragraph, not a report.
 - The description becomes the message of the squashed commit. See CONTRIBUTING.md#pull-requests.
 - After opening a pull request, always check its description and rewrite it to follow these rules, also when the pull request was created by a tool or UI that generated the description.
+
+## Pull request labels
+
+- When opening a pull request from a feature branch (`feature/…`) or a `merge-main-…`/`merge-next-…` branch, add the `skip-greptile-review` label when creating it. The labeler workflow sets it as well, but may run after Greptile has already started its review.
 
 ## Pull request comments
 

@@ -166,11 +166,7 @@ export const FinalFormFileUpload = <Multiple extends boolean | undefined>({
                     if (expiresIn) {
                         formData.append("expiresIn", expiresIn.toString());
                     }
-                    const response = await fetch(uploadEndpoint ?? `${apiUrl}/file-uploads/upload`, {
-                        method: "POST",
-                        body: formData,
-                    });
-                    const jsonResponse: SuccessfulApiResponse | FailedApiResponse = await response.json();
+                    const jsonResponse = await uploadFile(uploadEndpoint ?? `${apiUrl}/file-uploads/upload`, formData);
 
                     if ("id" in jsonResponse) {
                         setUploadingFiles((existing) => existing.filter((loadingFile) => loadingFile.name !== file.name));
@@ -231,6 +227,20 @@ export const FinalFormFileUpload = <Multiple extends boolean | undefined>({
         />
     );
 };
+
+async function uploadFile(uploadEndpoint: string, formData: FormData): Promise<SuccessfulApiResponse | FailedApiResponse> {
+    try {
+        const response = await fetch(uploadEndpoint, {
+            method: "POST",
+            body: formData,
+        });
+        return await response.json();
+    } catch (error) {
+        // fetch rejects on network errors (e.g. a dropped connection), and json() rejects on non-JSON responses (e.g. an HTML error page from a proxy)
+        console.error("File upload failed", error);
+        return {};
+    }
+}
 
 function isDownloadableFile(
     file: GQLFinalFormFileUploadFragment | GQLFinalFormFileUploadDownloadableFragment,

@@ -33,14 +33,7 @@ interface DraftParagraph {
         | "header-five"
         | "header-six"
         | "unordered-list-item"
-        | "ordered-list-item"
-        // The mail rich text blocks define their own block types.
-        | "title"
-        | "header"
-        | "copy"
-        | "copy-small"
-        | "unordered-list-item-small"
-        | "ordered-list-item-small";
+        | "ordered-list-item";
     depth?: number;
     inlineStyleRanges?: DraftInlineStyleRange[];
     link?: { offset: number; length: number; data: LinkBlockData };

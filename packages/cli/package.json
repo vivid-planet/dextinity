@@ -38,7 +38,7 @@
     "dependencies": {
         "commander": "^15.1.0",
         "js-yaml": "^5.5.0",
-        "prettier": "^3.9.10",
+        "prettier": "^3.10.1",
         "ts-node": "^10.9.2"
     },
     "devDependencies": {
@@ -48,7 +48,7 @@
         "npm-run-all2": "^9.0.4",
         "rimraf": "^6.1.4",
         "typescript": "^5.9.3",
-        "vitest": "^5.1.0"
+        "vitest": "^5.1.1"
     },
     "engines": {
         "node": ">=22.12.0"

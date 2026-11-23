@@ -15,7 +15,7 @@ export const TextImageBlock = withPreview(
     ({ data: { text, image, imageAspectRatio, imagePosition } }: PropsWithData<TextImageBlockData>) => {
         return (
             <AnimateGroup>
-                <div className={clsx(styles.root, imagePosition === "left" && styles["root--imageLeft"])}>
+                <div className={clsx(styles.root, imagePosition === "right" && styles["root--imageRight"])}>
                     <AnimateBoxInOnScroll direction={imagePosition === "left" ? "left" : "right"} className={styles.imageContainer}>
                         <DamImageBlock data={image} aspectRatio={imageAspectRatio} sizes={createImageSizes({ default: "100vw", md: "30vw" })} />
                     </AnimateBoxInOnScroll>

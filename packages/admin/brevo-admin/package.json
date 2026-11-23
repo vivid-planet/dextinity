@@ -44,7 +44,7 @@
         "@dextinity/admin-icons": "workspace:*",
         "@dextinity/cms-admin": "workspace:*",
         "date-fns": "^4.4.0",
-        "react-dropzone": "^20.1.4"
+        "react-dropzone": "^20.2.1"
     },
     "devDependencies": {
         "@apollo/client": "^3.14.1",
@@ -61,9 +61,9 @@
         "@graphql-codegen/typescript-operations": "^4.6.1",
         "@mui/material": "^7.3.11",
         "@mui/system": "^7.3.11",
-        "@mui/x-data-grid": "^8.29.5",
-        "@mui/x-data-grid-pro": "^8.29.5",
-        "@mui/x-date-pickers": "^8.29.5",
+        "@mui/x-data-grid": "^8.29.6",
+        "@mui/x-data-grid-pro": "^8.29.6",
+        "@mui/x-date-pickers": "^8.29.6",
         "@types/react": "^19.3.0",
         "@types/react-dom": "^19.3.0",
         "@types/react-router": "^5.1.20",
@@ -71,7 +71,7 @@
         "eslint": "^9.39.5",
         "final-form": "^4.20.10",
         "graphql": "^16.15.0",
-        "prettier": "^3.9.10",
+        "prettier": "^3.10.1",
         "react": "^19.3.1",
         "react-dnd": "^16.0.1",
         "react-dnd-html5-backend": "^16.0.1",

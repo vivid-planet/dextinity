@@ -41,4 +41,4 @@ useAiModeDataGridToolset({
 />;
 ```
 
-A page that edits a blocks block outside a form, such as the content of a page, offers the same block editing with `createEditBlocksTool`, and reports the blocks with `summarizeBlockState`.
+A page that edits a blocks block outside a form, such as the content of a page, offers the same block editing with `createAiModeEditBlocksTool`, and reports the blocks with `summarizeBlockStateForAiMode`.

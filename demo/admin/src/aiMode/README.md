@@ -72,7 +72,7 @@ The agent needs to see the page that is being edited, including unsaved changes,
 - **Pushed on change, debounced**: the content scope, the pathname, the AI Mode toolsets with their context, which for the page editor is the page's metadata (page tree node ID, document type and ID, path, active tab, selected block route, `hasChanges`), and the selected text (see below). This keeps the agent oriented for a few hundred bytes per update.
 - **Pulled on demand** with `get_page_state`: a summary of the page's content, stage, and SEO, computed at call time, so it is never stale.
 
-`summarizeBlockState` (`blockStateSummary.ts`) reduces the block state to what the agent can act on, because the full output of a page overflows its context:
+`summarizeBlockStateForAiMode` (`blockStateSummary.ts`) reduces the block state to what the agent can act on, because the full output of a page overflows its context:
 
 - the nested block structure with keys, types, and hidden flags. The keys also appear in the selected block route, and they are what `edit_blocks` takes.
 - the DAM files, links (page tree node, URL, email address, or phone number), and YouTube and Vimeo videos, attached to the block that references them. Their IDs can be passed on to the MCP server's tools.
@@ -163,7 +163,7 @@ The conversions are awaited and can query the API, and the user can keep typing 
 
 The tool schema states the fields each operation needs as an `anyOf` over the six operations. `anyOf` rather than `oneOf` because that is the keyword tool schemas support, and the `operation` constants make the branches exclusive anyway. A tool schema is guidance for the agent, not enforced before the handler runs, so `asBlockEditOperations` checks the same requirements itself and names the missing field and what it is for.
 
-`edit_blocks` is created with `createEditBlocksTool` of `@dextinity/cms-admin`, which `edit_<entity>_form_blocks` shares its behavior with; `pageTools.ts` passes what is specific to the page, such as the block names that differ from their types. In the package, `planBlockEdits.ts` holds the operations, the results, and the planner, which know nothing of the tools; `blockEditTool.ts` the tool and what it shares with `edit_<entity>_form_blocks`: the schema of the operations, the check of what the agent passes, the parts of the descriptions, and the result; `blockChildren.ts` what one kind of change does to the list of blocks; `blockProps.ts` the conversion and the checks. The schema and the check take the name of the tool that reports the keys of the blocks, e.g. `get_page_state`, because each of the two tools has its own.
+`edit_blocks` is created with `createAiModeEditBlocksTool` of `@dextinity/cms-admin`, which `edit_<entity>_form_blocks` shares its behavior with; `pageTools.ts` passes what is specific to the page, such as the block names that differ from their types. In the package, `planBlockEdits.ts` holds the operations, the results, and the planner, which know nothing of the tools; `blockEditTool.ts` the tool and what it shares with `edit_<entity>_form_blocks`: the schema of the operations, the check of what the agent passes, the parts of the descriptions, and the result; `blockChildren.ts` what one kind of change does to the list of blocks; `blockProps.ts` the conversion and the checks. The schema and the check take the name of the tool that reports the keys of the blocks, e.g. `get_page_state`, because each of the two tools has its own.
 
 ### What is validated, and where
 

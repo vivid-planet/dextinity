@@ -23,8 +23,8 @@ import {
     DependentsList,
     openSitePreviewWindow,
     PageName,
-    summarizeBlockState,
-    summarizeSeoBlockState,
+    summarizeBlockStateForAiMode,
+    summarizeSeoBlockStateForAiMode,
     TranslateContentMenuItem,
     useAiModeToolset,
     useBlockContext,
@@ -201,9 +201,9 @@ export const EditPage = ({ id }: Props) => {
                   tools: createPageTools({
                       pageState: aiModePageState,
                       getDocumentSummary: () => ({
-                          content: summarizeBlockState(PageContentBlock, document.content),
-                          stage: summarizeBlockState(StageBlock, document.stage),
-                          seo: summarizeSeoBlockState(SeoBlock, document.seo),
+                          content: summarizeBlockStateForAiMode(PageContentBlock, document.content),
+                          stage: summarizeBlockStateForAiMode(StageBlock, document.stage),
+                          seo: summarizeSeoBlockStateForAiMode(SeoBlock, document.seo),
                       }),
                       contentBlocks: {
                           supportedBlocks: pageContentBlocks,

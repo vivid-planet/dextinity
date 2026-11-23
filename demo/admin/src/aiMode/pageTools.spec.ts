@@ -1,4 +1,4 @@
-import type { BlockContext, BlockInterface, EditableBlocksBlock } from "@dextinity/cms-admin";
+import type { AiModeEditableBlocksBlock, BlockContext, BlockInterface } from "@dextinity/cms-admin";
 import { describe, expect, it, vi } from "vitest";
 
 import { type AiModePageState, createPageTools } from "./pageTools";
@@ -12,7 +12,7 @@ const pageState: AiModePageState = {
     hasChanges: true,
 };
 
-type ContentBlocks = Omit<EditableBlocksBlock, "schemaBlockName">;
+type ContentBlocks = Omit<AiModeEditableBlocksBlock, "schemaBlockName">;
 type ContentBlock = ReturnType<ContentBlocks["getBlocks"]>[number];
 
 const contentBlock = (key: string, type = "richtext"): ContentBlock => ({ key, type, visible: true, selected: false, slideIn: false, props: {} });

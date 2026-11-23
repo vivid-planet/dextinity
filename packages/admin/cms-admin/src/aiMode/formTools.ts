@@ -5,7 +5,7 @@ import type { BlockInterface } from "../blocks/types";
 import type { AiModeTool } from "./AiModeToolsets";
 import { createBlockEditOperationsSchema, describeBlockEditBatch, describeBlockSchemaLookup, editBlocksBlock } from "./blockEditTool";
 import { type BlocksBlockChild, mergeBlockProps, toBlockState } from "./blockProps";
-import { summarizeBlockState } from "./blockStateSummary";
+import { summarizeBlockStateForAiMode } from "./blockStateSummary";
 import { isIsoDate } from "./isoDate";
 
 type FormValues = Record<string, unknown>;
@@ -181,7 +181,7 @@ async function toFormValue(
 /** The value as the agent reads it: a summary for a block, the ID and label of a selected option. */
 function summarizeValue(field: AiModeFormField, value: unknown) {
     if (field.type === "block" || field.type === "blocks") {
-        return summarizeBlockState(field.block, value);
+        return summarizeBlockStateForAiMode(field.block, value);
     }
     if (field.type === "reference") {
         const summarizeOption = (option: ReferenceOption) => ({ id: option.id, label: field.getOptionLabel(option) });

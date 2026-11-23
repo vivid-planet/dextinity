@@ -165,7 +165,7 @@ const collectOutlines = (state: unknown, visited: WeakSet<object> = new WeakSet(
 // the block structure (so block keys can be matched against the selected block route), the referenced
 // DAM files, link targets (pages, URLs, email addresses, phone numbers), and platform videos (usable with
 // the MCP server's DAM and page tree tools), and the text contents.
-export const summarizeBlockState = (block: BlockInterface, state: unknown) => {
+export const summarizeBlockStateForAiMode = (block: BlockInterface, state: unknown) => {
     const { blocks, files, links, videos } = collectOutlines(state);
     return {
         blocks,
@@ -198,8 +198,8 @@ const seoFieldNames = [
 
 // The SEO block has no extractTextContents, so its fields would be missing from the generic summary
 // even though they are prime material for the agent (e.g. "improve my meta description").
-export const summarizeSeoBlockState = (block: BlockInterface, state: unknown) => {
-    const summary = summarizeBlockState(block, state);
+export const summarizeSeoBlockStateForAiMode = (block: BlockInterface, state: unknown) => {
+    const summary = summarizeBlockStateForAiMode(block, state);
     if (!isPlainDataObject(state)) {
         return summary;
     }

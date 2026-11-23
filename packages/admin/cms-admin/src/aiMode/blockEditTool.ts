@@ -6,7 +6,7 @@ import { type BlocksBlockChild, describeType } from "./blockProps";
 import { type BlockEditOperation, type BlockEditResult, describeOperation, isBlockEditChange, planBlockEdits } from "./planBlockEdits";
 
 /** A blocks block whose top-level blocks a block editing tool changes. */
-export type EditableBlocksBlock = {
+export type AiModeEditableBlocksBlock = {
     /** The `supportedBlocks` of the blocks block. */
     supportedBlocks: Record<string, BlockInterface>;
     /**
@@ -200,7 +200,7 @@ export async function editBlocksBlock({
     clearTextSelection,
 }: {
     operations: unknown;
-    blocksBlock: EditableBlocksBlock;
+    blocksBlock: AiModeEditableBlocksBlock;
     /** Names the content in the result, e.g. "the page's content". */
     contentName: string;
     stateToolName: string;
@@ -237,7 +237,7 @@ export async function editBlocksBlock({
  * A tool that inserts, updates, removes, moves, hides, and shows the top-level blocks of a blocks block, e.g. the content
  * of a page. The changes are unsaved, as if the user had made them by hand, and the user approves every call.
  */
-export function createEditBlocksTool({
+export function createAiModeEditBlocksTool({
     name,
     description,
     contentName,
@@ -245,7 +245,7 @@ export function createEditBlocksTool({
     schemaNameExamples,
     restrictions,
     ...blocksBlock
-}: EditableBlocksBlock & {
+}: AiModeEditableBlocksBlock & {
     /** The tool's name, e.g. "edit_blocks". */
     name: string;
     /** The start of the tool's description: what the tool changes, and which requests it is for. */

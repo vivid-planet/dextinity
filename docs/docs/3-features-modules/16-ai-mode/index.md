@@ -21,7 +21,7 @@ useAiModeToolset({
             description: "Get the content of the footer as the user edits it, including unsaved changes.",
             inputSchema: { type: "object", properties: {} },
             readOnlyHint: true,
-            handler: () => summarizeBlockState(FooterContentBlock, state),
+            handler: () => summarizeBlockStateForAiMode(FooterContentBlock, state),
         },
     ],
 });
@@ -111,10 +111,10 @@ The redirects of `@dextinity/cms-admin` offer their grid and form this way.
 
 ## Blocks
 
-`createEditBlocksTool` creates a tool that inserts, updates, removes, moves, hides, and shows the top-level blocks of a blocks block outside a form, e.g. the content of a page. Add it to the tools of the toolset, next to a tool that reports the keys of the blocks, e.g. with `summarizeBlockState`:
+`createAiModeEditBlocksTool` creates a tool that inserts, updates, removes, moves, hides, and shows the top-level blocks of a blocks block outside a form, e.g. the content of a page. Add it to the tools of the toolset, next to a tool that reports the keys of the blocks, e.g. with `summarizeBlockStateForAiMode`:
 
 ```tsx
-createEditBlocksTool({
+createAiModeEditBlocksTool({
     name: "edit_footer_blocks",
     description: "Change the content of the footer of the current content scope: insert, update, remove, move, hide, and show its blocks.",
     contentName: "the footer's content",

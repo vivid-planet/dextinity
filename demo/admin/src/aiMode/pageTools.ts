@@ -1,4 +1,4 @@
-import { type AiModeTool, createEditBlocksTool, type EditableBlocksBlock } from "@dextinity/cms-admin";
+import { type AiModeEditableBlocksBlock, type AiModeTool, createAiModeEditBlocksTool } from "@dextinity/cms-admin";
 
 export type AiModePageState = {
     pageTreeNodeId: string;
@@ -18,7 +18,7 @@ export const createPageTools = ({
     pageState: AiModePageState;
     getDocumentSummary: () => Record<string, unknown>;
     /** The blocks of the page's `PageContent` block. */
-    contentBlocks: Omit<EditableBlocksBlock, "schemaBlockName">;
+    contentBlocks: Omit<AiModeEditableBlocksBlock, "schemaBlockName">;
 }): AiModeTool[] => [
     {
         name: "get_page_state",
@@ -29,7 +29,7 @@ export const createPageTools = ({
         readOnlyHint: true,
         handler: () => ({ ...pageState, document: getDocumentSummary() }),
     },
-    createEditBlocksTool({
+    createAiModeEditBlocksTool({
         ...contentBlocks,
         name: "edit_blocks",
         description:

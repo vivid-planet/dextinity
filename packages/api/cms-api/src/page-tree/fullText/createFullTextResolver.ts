@@ -2,6 +2,7 @@ import { EntityManager, FilterQuery } from "@mikro-orm/postgresql";
 import { Type } from "@nestjs/common";
 import { Args, Int, Query, Resolver } from "@nestjs/graphql";
 
+import { prefixFullTextCondition } from "../../full-text-search/prefix-full-text-query";
 import { RequiredPermission } from "../../user-permissions/decorators/required-permission.decorator";
 import { EmptyPageTreeNodeScope } from "../dto/empty-page-tree-node-scope";
 import { PageTreeService } from "../page-tree.service";
@@ -46,9 +47,7 @@ export function createFullTextResolver({
             @Args("offset", { type: () => Int, defaultValue: 0 }) offset: number,
             @Args("limit", { type: () => Int, defaultValue: 25 }) limit: number,
         ): Promise<typeof PaginatedPageTreeNodes> {
-            const where: FilterQuery<PageTreeNodeFullText> = {
-                fullText: { $fulltext: search },
-            };
+            const where: FilterQuery<PageTreeNodeFullText> = prefixFullTextCondition(search);
 
             const scopeValue = nonEmptyScopeOrNothing(scope);
             if (scopeValue) {

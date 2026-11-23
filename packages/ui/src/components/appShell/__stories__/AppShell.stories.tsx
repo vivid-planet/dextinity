@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
+import { expect, fn, screen, userEvent, waitFor, within } from "storybook/test";
 
 import { ProductLogo, ProductSign } from "../../../storybook/ProductLogo";
 import { useControlledArg } from "../../../storybook/storyArgs";
@@ -148,6 +148,16 @@ const meta = {
             options: ["Chat"],
             mapping: { Chat: <StoryAssistant closeKeyboardShortcut="mod+j" /> },
         },
+        environment: {
+            control: "select",
+            options: ["Development", "Test", "Staging", "Pre-live"],
+            mapping: {
+                Development: { label: "Dev", color: "info" },
+                Test: { label: "Test", color: "success" },
+                Staging: { label: "Staging", color: "warning" },
+                "Pre-live": { label: "Pre-live", color: "error" },
+            },
+        },
         disableKeyboardShortcuts: { control: "boolean" },
         nav: { control: false },
         topBar: { control: false },
@@ -274,5 +284,38 @@ export const EditingPage: Story = {
         await expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
         await userEvent.click(screen.getByRole("button", { name: "Back to job ads" }));
         await expect(await screen.findByRole("heading", { level: 1, name: "Job ads" })).toBeInTheDocument();
+    },
+};
+
+/**
+ * `environment` marks an instance other than the live system, e.g. Staging: a line in its color along the top edge, which is seen on
+ * every page, and its label in the top right corner of the navigation. Collapsed, the label shows only its first letter; on narrow
+ * windows, where the navigation is a drawer, the top bar shows it.
+ *
+ * **Rules**
+ *
+ * - Leave out `environment` on the live system: whatever isn't marked is live.
+ * - The warmer the color, the closer the instance is to the live system: `info` for development, `success` for test, `warning` for
+ *   staging, `error` for pre-live.
+ * - Name the instance as the team calls it, short: "Dev", "Test", "Staging", "Pre-live", "QA".
+ */
+export const WithEnvironment: Story = {
+    args: {
+        environment: { label: "Staging", color: "warning" },
+    },
+    play: async ({ canvas }) => {
+        await expect(within(canvas.getByRole("navigation", { name: "Main navigation" })).getByText("Staging")).toBeVisible();
+    },
+};
+
+export const WithEnvironmentNavCollapsed: Story = {
+    args: {
+        navCollapsed: true,
+        environment: { label: "Pre-live", color: "error" },
+    },
+    play: async ({ canvas }) => {
+        const label = within(canvas.getByRole("navigation", { name: "Main navigation" })).getByText("Pre-live").parentElement;
+        await userEvent.hover(label as HTMLElement);
+        await expect(await screen.findByRole("tooltip")).toHaveTextContent("Pre-live");
     },
 };

@@ -14,6 +14,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { DataGrid } from "../../../dataGrid/DataGrid";
 import { ActionLogHeader } from "../../components/actionLogHeader/ActionLogHeader";
 import { ActionLogTypeChip } from "../../components/actionLogTypeChip/ActionLogTypeChip";
+import { useActionLogTypeValueOptions } from "../../components/actionLogTypeChip/useActionLogTypeValueOptions";
 import { ScopeCell } from "../../components/scopeCell/ScopeCell";
 import { UserCell } from "../../components/userCell/UserCell";
 import { ActionGridToolbar, type ActionGridToolbarProps } from "./actionGridToolbar/ActionGridToolbar";
@@ -53,6 +54,7 @@ export function ActionLogVersionGrid<Row extends GQLActionLogVersionGridFragment
     ...dataGridProps
 }: ActionLogVersionGridProps<Row>) {
     const intl = useIntl();
+    const actionLogTypeValueOptions = useActionLogTypeValueOptions();
     const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>({ type: "include", ids: new Set() });
 
     const columns = useMemo<GridColDef<Row>[]>(
@@ -65,7 +67,8 @@ export function ActionLogVersionGrid<Row extends GQLActionLogVersionGridFragment
             {
                 field: "type",
                 headerName: intl.formatMessage({ defaultMessage: "Action", id: "actionLog.actionLogVersionGrid.columns.type" }),
-                filterable: false,
+                type: "singleSelect",
+                valueOptions: actionLogTypeValueOptions,
                 sortable: false,
                 width: 130,
                 renderCell: ({ row }) => <ActionLogTypeChip actionLogType={row.type} />,
@@ -125,7 +128,7 @@ export function ActionLogVersionGrid<Row extends GQLActionLogVersionGridFragment
                 type: "actions",
             },
         ],
-        [intl, showScope, onShowVersionClick],
+        [intl, showScope, onShowVersionClick, actionLogTypeValueOptions],
     );
 
     const rowCount = useBufferedRowCount(actionLogs?.totalCount);

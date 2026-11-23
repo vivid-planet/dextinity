@@ -26,6 +26,7 @@ import { DataGrid } from "../../../dataGrid/DataGrid";
 import { ActionLogDialog } from "../../actionLog/actionLogDialog/ActionLogDialog";
 import { ActionLogShowVersionDialog } from "../../actionLog/actionLogShowVersionDialog/ActionLogShowVersionDialog";
 import { ActionLogTypeChip } from "../../components/actionLogTypeChip/ActionLogTypeChip";
+import { useActionLogTypeValueOptions } from "../../components/actionLogTypeChip/useActionLogTypeValueOptions";
 import { ScopeCell } from "../../components/scopeCell/ScopeCell";
 import { UserCell } from "../../components/userCell/UserCell";
 import { globalActionLogGridQuery } from "./GlobalActionLogGrid.gql";
@@ -74,6 +75,7 @@ function GlobalActionLogGridToolbar() {
 
 export function GlobalActionLogGrid() {
     const intl = useIntl();
+    const actionLogTypeValueOptions = useActionLogTypeValueOptions();
     const { values: scopeValues } = useContentScope();
     const [selectedRow, setSelectedRow] = useState<GQLGlobalActionLogGridFragment | null>(null);
     const [openEntity, setOpenEntity] = useState<{ entityName: string; entityId: string } | null>(null);
@@ -113,9 +115,10 @@ export function GlobalActionLogGrid() {
             },
             {
                 field: "type",
-                headerName: intl.formatMessage({ id: "dextinity.globalActionLog.columns.type", defaultMessage: "Type" }),
+                headerName: intl.formatMessage({ id: "dextinity.globalActionLog.columns.type", defaultMessage: "Action" }),
+                type: "singleSelect",
+                valueOptions: actionLogTypeValueOptions,
                 sortable: false,
-                filterable: false,
                 width: 150,
                 renderCell: ({ row }) => <ActionLogTypeChip actionLogType={row.type} />,
             },
@@ -170,7 +173,7 @@ export function GlobalActionLogGrid() {
                 ),
             },
         ],
-        [intl, scopeValueOptions],
+        [intl, scopeValueOptions, actionLogTypeValueOptions],
     );
 
     const { filter: gqlFilter } = muiGridFilterToGql(columns, dataGridProps.filterModel);

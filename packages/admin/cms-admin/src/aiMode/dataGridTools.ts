@@ -9,7 +9,7 @@ import {
     type GridFilterModel,
     type GridPaginationModel,
     type GridSortModel,
-} from "@mui/x-data-grid-pro";
+} from "@mui/x-data-grid";
 
 import type { AiModeTool } from "./AiModeToolsets";
 import { isIsoDate } from "./isoDate";

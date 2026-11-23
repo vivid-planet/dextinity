@@ -1,10 +1,10 @@
-import { type RefObject, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Button } from "../../components/button/Button";
 import { Icon } from "../../components/icon/Icon";
 import { IconButton } from "../../components/iconButton/IconButton";
 import { Textarea } from "../../components/textarea/Textarea";
-import { findElementByPath, getElementPath, getFrameRect, useFrameDocument } from "./frameElements";
+import { findElementByPath, getElementPath, getFrameRect } from "./frameElements";
 import styles from "./FrameTools.module.scss";
 import { hotspotList } from "./hotspots";
 import { commentList, createNoteId, isOnPage, type PinnedComment, type TextChange, textChangeList } from "./workspaceNotes";
@@ -425,33 +425,25 @@ export function TextLayer({ frameDocument, notePage }: { frameDocument: Document
     );
 }
 
-/** Puts the edited texts back on the page whenever it renders them again, e.g. after a reload or when it opens the page again. */
-export function useTextChanges({
-    frameRef,
-    frameLoadCount,
-    prototypeId,
-    page,
-}: {
-    frameRef: RefObject<HTMLIFrameElement | null>;
-    frameLoadCount: number;
-    prototypeId: string;
-    page: string;
-}) {
-    const frameDocument = useFrameDocument(frameRef, frameLoadCount);
+/**
+ * Puts the edited texts back on the page whenever it renders them again, e.g. after a reload or when it opens the page again. The
+ * prototype runs it itself, so that every frame shows them, also the ones of the compare modes.
+ */
+export function usePageTextChanges(prototypeId: string, page: string) {
     const changes = textChangeList.useItems();
     useEffect(() => {
         const pageChanges = changes.filter((change) => isOnPage(change, prototypeId, page));
-        if (!frameDocument?.body || pageChanges.length === 0) {
+        if (pageChanges.length === 0) {
             return;
         }
         const apply = () => {
-            // Until the workspace follows a page change, the frame already shows the next page, which the changes aren't for
-            const shownPage = decodeURIComponent(frameDocument.defaultView?.location.hash.slice(1) ?? "");
+            // Until this effect follows a page change, the document already shows the next page, which the changes aren't for
+            const shownPage = decodeURIComponent(window.location.hash.slice(1));
             if (shownPage !== "" && shownPage !== page) {
                 return;
             }
             for (const change of pageChanges) {
-                const element = findElementByPath(frameDocument, change.path);
+                const element = findElementByPath(document, change.path);
                 if (element && !(element as HTMLElement).isContentEditable && readOwnText(element) === change.original) {
                     writeOwnText(element, change.text);
                 }
@@ -459,9 +451,9 @@ export function useTextChanges({
         };
         apply();
         const observer = new MutationObserver(apply);
-        observer.observe(frameDocument.body, { subtree: true, childList: true, characterData: true });
+        observer.observe(document.body, { subtree: true, childList: true, characterData: true });
         return () => observer.disconnect();
-    }, [frameDocument, changes, prototypeId, page]);
+    }, [changes, prototypeId, page]);
 }
 
 /**

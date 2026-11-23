@@ -9,6 +9,7 @@ import { type FlowEdgeKind, type LeaveGuard, PrototypeNavigationContext } from "
 import { useTextLength } from "../textLength";
 import { addFlowEdges } from "./flowEdges";
 import { findElementByPath } from "./frameElements";
+import { usePageTextChanges } from "./FrameNotes";
 import { hotspotList, toolAttribute } from "./hotspots";
 import { customPageList, customPagePrefix, renderCustomPage } from "./pageTemplates";
 import type { WorkspacePrototype } from "./prototypes";
@@ -164,6 +165,8 @@ export function PrototypeApp({ prototype, navGroups, renderPage }: PrototypeAppP
     useEffect(() => {
         window.scrollTo(0, 0);
     }, [pageId]);
+
+    usePageTextChanges(prototype.storyId, pageId);
 
     const page = customPage ? renderCustomPage(customPage) : renderPage(pageId);
 

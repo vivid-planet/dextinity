@@ -30,7 +30,7 @@ import { CompareCanvas } from "./CompareCanvas";
 import { getComponentStoryIds, type IndexedStory } from "./componentStories";
 import { flowEdgeList } from "./flowEdges";
 import { FlowMap } from "./FlowMap";
-import { type NotePage, useTextChanges } from "./FrameNotes";
+import type { NotePage } from "./FrameNotes";
 import { type FrameTool, FrameTools } from "./FrameTools";
 import { hotspotList } from "./hotspots";
 import { customPageList, customPagePrefix, type PageTemplate, pageTemplates } from "./pageTemplates";
@@ -331,7 +331,6 @@ export function WorkspaceShell() {
             }
         },
     };
-    useTextChanges({ frameRef, frameLoadCount, prototypeId: notePage.prototypeId, page: notePage.page });
     const storiesById = useMemo(() => new Map(componentStories.map((story) => [story.id, story])), [componentStories]);
 
     function rememberCurrentStory() {

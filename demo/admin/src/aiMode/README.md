@@ -3,7 +3,7 @@
 The AI Mode puts the chat of the Dextinity AI Hub next to the admin. A switch in the header (`AiModeHeaderItem`) opens the chat as a flyout (`AiModeFlyout`), which loads the AI Hub's web component and registers two sets of tools with it:
 
 - the **MCP server** of the API (`demo/api/src/mcp`, at `/api/mcp`), which reads from the API: the page tree, pages as they were last saved, DAM files, and the block schemas,
-- the **host tools** of the admin, which act on what is open in the admin. The pages that are open offer them through AI Mode toolsets (see below): the admin as a whole offers `open_admin_page`, the page tree `open_page_tree_node`, and the page editor `get_page_state` and `edit_blocks` (`adminTools.ts`, `pageTreeTools.ts`, `pageTools.ts`).
+- the **host tools** of the admin, which act on what is open in the admin. The pages that are open offer them through AI Mode toolsets (see below): the admin as a whole offers `open_admin_page` and `open_page_tree_node`, and the page editor `get_page_state` and `edit_blocks` (`adminTools.ts`, `pageTreeTools.ts`, `pageTools.ts`).
 
 The AI Mode is ported from vivid-websites. This README explains the decisions the code doesn't show. It is written for developers who maintain the AI Mode in Demo or port it to a project.
 
@@ -96,7 +96,7 @@ The agent gets the text only, not where it is in the block. To change it, it rew
 The host tools are tools of the admin rather than of the MCP server, because they act on what only the admin knows: which page is open, and its unsaved state.
 
 - `open_admin_page` opens a page of the main navigation, e.g. the assets or the redirects. The pages and their labels are in the description of its `path`, built from the master menu data with the permission checks of the menu (`adminPages.ts`), so the agent needs no call to list them, unlike in vivid-websites, and can't open a page the menu hides from the user. A route with a parameter in its path, such as the page tree's `/pages/pagetree/:category`, is left out unless its menu entry links to it with `to`. The admin toolset also pushes the menu page that is open, as `openPage`, so the agent knows where the user is, also on a page below it such as an edit page.
-- `open_page_tree_node` opens a page tree node's document in the editor. It takes the node's category as well as its ID, because the category is part of the URL. Unsaved changes of the page that is open aren't lost silently: the admin asks the user, as on any navigation. Because the user may stay on the page, `open_page_tree_node` reports only that it asked to open the page, and tells the agent to check with `get_page_state` (`pageTreeNodeId`) which page is open before referring to it.
+- `open_page_tree_node` opens a page tree node's document in the editor. It takes the node's category as well as its ID, because the category is part of the URL. The admin's toolset offers it on every page, to users who may edit the page tree, so that the agent opens a page's editor from anywhere in one step rather than opening the page tree first. Unsaved changes of the page that is open aren't lost silently: the admin asks the user, as on any navigation. Because the user may stay on the page, `open_page_tree_node` reports only that it asked to open the page, and tells the agent to check with `get_page_state` (`pageTreeNodeId`) which page is open before referring to it.
 - `get_page_state` returns the page's metadata and the summary described above.
 - `edit_blocks` changes the content blocks, see below.
 

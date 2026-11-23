@@ -267,6 +267,13 @@ function Palette({ onSelectResult, onQuickAction, onClose }: Required<Props> & {
                         <FormattedMessage id="fullTextSearchPrototype.clearShort" defaultMessage="Clear" />
                     </ClearButton>
                 )}
+                <SettingsButton
+                    aria-label={intl.formatMessage({ id: "fullTextSearchPrototype.configureTypes", defaultMessage: "Choose what to search" })}
+                    onClick={(event) => setSettingsAnchor(event.currentTarget)}
+                    className={settingsAnchor ? "is-open" : undefined}
+                >
+                    <Settings />
+                </SettingsButton>
             </InputRow>
 
             <TabsArea>
@@ -304,13 +311,6 @@ function Palette({ onSelectResult, onQuickAction, onClose }: Required<Props> & {
                         );
                     })}
                 </Tabs>
-                <SettingsButton
-                    aria-label={intl.formatMessage({ id: "fullTextSearchPrototype.configureTypes", defaultMessage: "Choose what to search" })}
-                    onClick={(event) => setSettingsAnchor(event.currentTarget)}
-                    className={settingsAnchor ? "is-open" : undefined}
-                >
-                    <Settings />
-                </SettingsButton>
             </TabsArea>
 
             <Popover
@@ -570,7 +570,7 @@ const TabsArea = styled("div")`
     & .DextinityAdminTabs-tabs {
         flex-shrink: 0;
         margin-bottom: 0;
-        padding: ${({ theme }) => theme.spacing(0, 14, 0, 5)};
+        padding: ${({ theme }) => theme.spacing(0, 5)};
     }
 
     & .DextinityAdminTabs-content {
@@ -581,9 +581,7 @@ const TabsArea = styled("div")`
 `;
 
 const SettingsButton = styled(IconButton)`
-    position: absolute;
-    top: ${({ theme }) => theme.spacing(1)};
-    right: ${({ theme }) => theme.spacing(4)};
+    flex-shrink: 0;
     border-radius: 10px;
     background-color: ${({ theme }) => theme.palette.grey[50]};
 

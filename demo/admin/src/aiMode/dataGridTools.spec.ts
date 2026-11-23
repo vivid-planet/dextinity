@@ -94,6 +94,7 @@ describe("set_<entity>_grid_view", () => {
 
         expect(description).toContain("title (contains,");
         expect(description).toContain("date (is, not, after, onOrAfter, before, onOrBefore, isEmpty, isNotEmpty)");
+        expect(description).toContain("category (is, not, isAnyOf; values: events, awards)");
         expect(description).not.toContain("image (");
     });
 
@@ -126,6 +127,13 @@ describe("set_<entity>_grid_view", () => {
     it.each([
         [{ filters: [{ field: "image", operator: "contains", value: "x" }] }, '"image" is no column that can be filtered'],
         [{ filters: [{ field: "date", operator: "contains", value: "x" }] }, '"contains" is no operator of the column "date"'],
+        [
+            { filters: [{ field: "category", operator: "is", value: "Awards" }] },
+            'Filter 1 ("category" is) takes one of: events, awards, but got "Awards"',
+        ],
+        [{ filters: [{ field: "category", operator: "isAnyOf", value: "awards" }] }, "takes a list of values"],
+        [{ filters: [{ field: "category", operator: "isAnyOf", value: ["awards", "sports"] }] }, 'takes one of: events, awards, but got "sports"'],
+        [{ filters: [{ field: "date", operator: "after", value: "2026-13-45" }] }, "takes an existing date in the format YYYY-MM-DD"],
         [{ sort: [{ field: "image", direction: "asc" }] }, '"image" is no column the grid can be sorted by'],
         [{ sort: [{ field: "title", direction: "up" }] }, 'the direction must be "asc" or "desc"'],
         [{ page: -1 }, '"page" must be a page number'],

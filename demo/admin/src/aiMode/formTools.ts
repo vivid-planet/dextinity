@@ -11,6 +11,7 @@ import {
 } from "./blockEditTool";
 import type { BlocksBlockChild } from "./blockProps";
 import { summarizeBlockState } from "./blockStateSummary";
+import { isIsoDate } from "./isoDate";
 import { planBlockEdits } from "./planBlockEdits";
 
 /** A field of a form the AI Mode reads, and except for a single block, also changes. */
@@ -35,8 +36,6 @@ type ValueField = Extract<AiModeFormField, { type: "text" | "date" | "select" }>
 type BlocksField = Extract<AiModeFormField, { type: "blocks" }>;
 type BlocksState = { blocks: BlocksBlockChild[] };
 
-const datePattern = /^\d{4}-\d{2}-\d{2}$/;
-
 function getValueSchema(field: ValueField) {
     if (field.type === "date") {
         return { type: "string", description: `${field.label}, as a date in the format YYYY-MM-DD.` };
@@ -55,8 +54,8 @@ function checkValue(field: ValueField, value: unknown) {
     if (typeof value !== "string") {
         return `"${field.name}" must be a string.`;
     }
-    if (field.type === "date" && !datePattern.test(value)) {
-        return `"${field.name}" must be a date in the format YYYY-MM-DD, but is "${value}".`;
+    if (field.type === "date" && !isIsoDate(value)) {
+        return `"${field.name}" must be an existing date in the format YYYY-MM-DD, but is "${value}".`;
     }
     if (field.type === "select" && !field.options.some((option) => option.value === value)) {
         return `"${field.name}" must be one of: ${field.options.map((option) => option.value).join(", ")}, but is "${value}".`;

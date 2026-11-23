@@ -190,7 +190,8 @@ export function NewsGrid() {
         rows,
         totalCount: data?.newsList.totalCount,
         isLoading: loading,
-        openForm: (id) => (id ? stackSwitchApi.activatePage("edit", id) : stackSwitchApi.activatePage("add", "add")),
+        openEditForm: (id) => stackSwitchApi.activatePage("edit", id),
+        openAddForm: () => stackSwitchApi.activatePage("add", "add"),
     });
     if (error) {
         throw error;

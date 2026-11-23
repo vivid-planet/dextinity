@@ -27,6 +27,7 @@ import { densitySetting } from "../density";
 import { scenarioSetting, useScenario } from "../scenario";
 import { CompareCanvas } from "./CompareCanvas";
 import { getComponentStoryIds, type IndexedStory } from "./componentStories";
+import { FlowMap } from "./FlowMap";
 import { type NotePage, useTextChanges } from "./FrameNotes";
 import { type FrameTool, FrameTools } from "./FrameTools";
 import { customPageList, customPagePrefix, type PageTemplate, pageTemplates } from "./pageTemplates";
@@ -185,6 +186,7 @@ export function WorkspaceShell() {
     const [frameTool, setFrameTool] = useState<FrameTool | null>(null);
     // Shows only the prototype, without the workspace around it, e.g. to walk stakeholders through it
     const [presenting, setPresenting] = useState(false);
+    const [showingFlow, setShowingFlow] = useState(false);
     // The stories opened before the current one, most recent last, to go back to the page a component was picked on
     const [storyHistory, setStoryHistory] = useState<HistoryEntry[]>([]);
     // The prototype's page to open the frame on; the prototype keeps the page it navigates to in the frame's hash
@@ -342,6 +344,7 @@ export function WorkspaceShell() {
         }
         setInspecting(false);
         setOverlayPanelOpen(false);
+        setShowingFlow(false);
         const frameWindow = frameRef.current?.contentWindow;
         // The prototype in the frame navigates itself, which keeps its state, like a click in its own navigation
         if (storyId === prototypeId && isComparing) {
@@ -354,10 +357,20 @@ export function WorkspaceShell() {
         }
     }
 
+    function toggleFlow() {
+        setInspecting(false);
+        setFrameTool(null);
+        if (!showingFlow) {
+            setPrototypeStartPage(shownPage);
+        }
+        setShowingFlow(!showingFlow);
+    }
+
     function startPresenting() {
         setInspecting(false);
         setFrameTool(null);
         setOverlayPanelOpen(false);
+        setShowingFlow(false);
         setPresenting(true);
     }
 
@@ -549,7 +562,7 @@ export function WorkspaceShell() {
                                     onChange={(zoom) => updateState({ zoom })}
                                 />
                             )}
-                            {isPrototypeMode && !isComparing && (
+                            {isPrototypeMode && !isComparing && !showingFlow && (
                                 <ViewportControl
                                     responsive={state.responsive}
                                     onResponsiveChange={() => updateState({ responsive: true })}
@@ -653,6 +666,17 @@ export function WorkspaceShell() {
                         </p>
                         <div className={styles.toolbarGroup}>
                             {isPrototypeMode && (
+                                <IconButton
+                                    variant={showingFlow ? "contained" : "text"}
+                                    color={showingFlow ? "primary" : "secondary"}
+                                    aria-label="Show the flow map"
+                                    aria-pressed={showingFlow}
+                                    onClick={toggleFlow}
+                                >
+                                    <Icon name="tune-logic" />
+                                </IconButton>
+                            )}
+                            {isPrototypeMode && (
                                 <IconButton variant="text" color="secondary" aria-label="Present the prototype" onClick={startPresenting}>
                                     <Icon name="eye" />
                                 </IconButton>
@@ -681,7 +705,7 @@ export function WorkspaceShell() {
                             >
                                 <Icon name="back" />
                             </IconButton>
-                            {isPrototypeMode && !isComparing && (
+                            {isPrototypeMode && !isComparing && !showingFlow && (
                                 <IconButton
                                     variant={inspecting ? "contained" : "text"}
                                     color={inspecting ? "primary" : "secondary"}
@@ -695,7 +719,7 @@ export function WorkspaceShell() {
                                     <Icon name="select" />
                                 </IconButton>
                             )}
-                            {isPrototypeMode && !isComparing && (
+                            {isPrototypeMode && !isComparing && !showingFlow && (
                                 <IconButton
                                     variant={frameTool === "measure" ? "contained" : "text"}
                                     color={frameTool === "measure" ? "primary" : "secondary"}
@@ -706,7 +730,7 @@ export function WorkspaceShell() {
                                     <Icon name="crop-action" />
                                 </IconButton>
                             )}
-                            {isPrototypeMode && !isComparing && (
+                            {isPrototypeMode && !isComparing && !showingFlow && (
                                 <IconButton
                                     variant={frameTool === "comment" ? "contained" : "text"}
                                     color={frameTool === "comment" ? "primary" : "secondary"}
@@ -717,7 +741,7 @@ export function WorkspaceShell() {
                                     <Icon name="chat-add" />
                                 </IconButton>
                             )}
-                            {isPrototypeMode && !isComparing && (
+                            {isPrototypeMode && !isComparing && !showingFlow && (
                                 <IconButton
                                     variant={frameTool === "text" ? "contained" : "text"}
                                     color={frameTool === "text" ? "primary" : "secondary"}
@@ -728,7 +752,7 @@ export function WorkspaceShell() {
                                     <Icon name="pencil-line" />
                                 </IconButton>
                             )}
-                            {isPrototypeMode && !isComparing && (
+                            {isPrototypeMode && !isComparing && !showingFlow && (
                                 <IconButton
                                     variant={frameTool === "accessibility" ? "contained" : "text"}
                                     color={frameTool === "accessibility" ? "primary" : "secondary"}
@@ -832,7 +856,19 @@ export function WorkspaceShell() {
                             />
                         )}
 
-                        {isComparing && storyUrl ? (
+                        {showingFlow && storyUrl && prototypeId ? (
+                            <FlowMap
+                                prototypeId={prototypeId}
+                                storyUrl={storyUrl}
+                                startPageId={currentWorkspacePrototype?.startPageId ?? ""}
+                                pageIds={[...(currentWorkspacePrototype?.designedPageIds ?? []), ...prototypeCustomPages.map((page) => page.id)]}
+                                getPageLabel={getPageLabel}
+                                onOpenPage={(page) => {
+                                    setPrototypeStartPage(page);
+                                    setShowingFlow(false);
+                                }}
+                            />
+                        ) : isComparing && storyUrl ? (
                             <CompareCanvas
                                 mode={state.compare === "variants" ? "variants" : "viewports"}
                                 storyUrl={storyUrl}

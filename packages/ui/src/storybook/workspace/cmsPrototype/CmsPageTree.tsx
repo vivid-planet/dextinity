@@ -33,6 +33,7 @@ import { TreeViewExpandButtons } from "../../../components/treeViewExpandButtons
 import { Typography } from "../../../components/typography/Typography";
 import { useUndoToast } from "../../../components/undoToast/useUndoToast";
 import { PageTypeShell } from "../../pageTypes/PageTypeShell";
+import { applyScenario, lengthen, type Scenario, ScenarioContent, useScenario } from "../../scenario";
 import { type ContentStatus, flattenPages, newsArticles, type SitePage, siteTree } from "./cmsData";
 import styles from "./cmsPrototype.module.scss";
 import { NewPageDialog } from "./NewPageDialog";
@@ -238,8 +239,28 @@ function collectVisibleIds(pages: SitePage[], expandedIds: string[], matches: ((
     ]);
 }
 
+function copyPages(pages: SitePage[], round: number): SitePage[] {
+    return pages.map((page) => ({ ...page, id: `${page.id}-${round}`, children: page.children && copyPages(page.children, round) }));
+}
+
+function stretchPages(pages: SitePage[]): SitePage[] {
+    return pages.map((page) => ({ ...page, label: lengthen(page.label), children: page.children && stretchPages(page.children) }));
+}
+
+function scenarioPages(scenario: Scenario) {
+    return applyScenario(siteTree, scenario, {
+        copy: (page, round) => ({ ...copyPages([page], round)[0], label: `${page.label} (${round + 1})` }),
+        stretch: (page) => stretchPages([page])[0],
+    });
+}
+
 export function CmsPageTree() {
-    const [pages, setPages] = useState<SitePage[]>(siteTree);
+    const scenario = useScenario();
+    return <PageTreeEditor key={scenario} scenario={scenario} />;
+}
+
+function PageTreeEditor({ scenario }: { scenario: Scenario }) {
+    const [pages, setPages] = useState<SitePage[]>(() => scenarioPages(scenario));
     const [search, setSearch] = useState("");
     const [statusFilter, setStatusFilter] = useState<ContentStatus | "all">("all");
     const [expandedIds, setExpandedIds] = useState(["home", "products"]);
@@ -487,87 +508,100 @@ export function CmsPageTree() {
                 detail={selected != null && <PageDetail page={selected} pages={pages} actions={pageActions} />}
                 detailLabel={selected?.label ?? "Page"}
             >
-                {filtered && visibleIds.length === 0 ? (
-                    <EmptyState
-                        icon={<Icon name="page-search" />}
-                        title={emptyTitle}
-                        actions={
-                            <Button
-                                variant="outlined"
-                                color="secondary"
-                                onClick={() => {
-                                    setSearch("");
-                                    setStatusFilter("all");
-                                }}
-                            >
-                                Clear filter
-                            </Button>
-                        }
-                    />
-                ) : (
-                    <TreeView
-                        aria-label="Pages"
-                        className={styles.pageTree}
-                        nodes={withCounts(pages)}
-                        expandedIds={expandedIds}
-                        onExpandedChange={setExpandedIds}
-                        selectedId={selected?.id}
-                        onSelect={setSelectedId}
-                        onOpen={(id) => {
-                            window.location.hash = `page-tree/${id}`;
-                        }}
-                        checkable
-                        checkedIds={checkedIds}
-                        onCheckedChange={setCheckedIds}
-                        filter={matchesFilter}
-                        onKeyDown={(event) => {
-                            const id = (event.target as HTMLElement).dataset.id;
-                            const page = id != null ? findInTree(pages, id) : undefined;
-                            if (page == null) {
-                                return;
+                <ScenarioContent scenario={scenario}>
+                    {pages.length === 0 ? (
+                        <EmptyState
+                            icon={<Icon name="page-search" />}
+                            title="No pages yet"
+                            description="Pages you create appear here as a tree."
+                            actions={
+                                <Button startIcon={<Icon name="plus" />} onClick={() => openNewPageDialog(null)}>
+                                    New page
+                                </Button>
                             }
-                            if (matchesKeyboardShortcut(event, "mod+c", apple)) {
-                                event.preventDefault();
-                                copyToClipboard(checkedIds.includes(page.id) ? checkedIds : [page.id]);
-                            } else if (matchesKeyboardShortcut(event, "mod+v", apple) && pageActions.copiedCount > 0) {
-                                event.preventDefault();
-                                paste(page);
+                        />
+                    ) : filtered && visibleIds.length === 0 ? (
+                        <EmptyState
+                            icon={<Icon name="page-search" />}
+                            title={emptyTitle}
+                            actions={
+                                <Button
+                                    variant="outlined"
+                                    color="secondary"
+                                    onClick={() => {
+                                        setSearch("");
+                                        setStatusFilter("all");
+                                    }}
+                                >
+                                    Clear filter
+                                </Button>
                             }
-                        }}
-                        renderActions={(node) => {
-                            const page = allPages.find((candidate) => candidate.id === node.id);
-                            if (page == null) {
-                                return null;
-                            }
-                            return (
-                                <>
-                                    <PageStatusMenu page={page} onChange={(status) => changeStatus(page, status)} />
-                                    <span className={styles.rowButtons}>
-                                        <IconButton
-                                            aria-label="Add subpage"
-                                            variant="text"
-                                            color="secondary"
-                                            size="small"
-                                            className={styles.addSubpage}
-                                            onClick={() => pageActions.onAddSubpage(page)}
-                                        >
-                                            <Icon name="plus" />
-                                        </IconButton>
-                                        <PageActionsMenu
-                                            page={page}
-                                            actions={pageActions}
-                                            trigger={
-                                                <IconButton aria-label="Actions" variant="text" color="secondary" size="small">
-                                                    <Icon name="more-horizontal" />
-                                                </IconButton>
-                                            }
-                                        />
-                                    </span>
-                                </>
-                            );
-                        }}
-                    />
-                )}
+                        />
+                    ) : (
+                        <TreeView
+                            aria-label="Pages"
+                            className={styles.pageTree}
+                            nodes={withCounts(pages)}
+                            expandedIds={expandedIds}
+                            onExpandedChange={setExpandedIds}
+                            selectedId={selected?.id}
+                            onSelect={setSelectedId}
+                            onOpen={(id) => {
+                                window.location.hash = `page-tree/${id}`;
+                            }}
+                            checkable
+                            checkedIds={checkedIds}
+                            onCheckedChange={setCheckedIds}
+                            filter={matchesFilter}
+                            onKeyDown={(event) => {
+                                const id = (event.target as HTMLElement).dataset.id;
+                                const page = id != null ? findInTree(pages, id) : undefined;
+                                if (page == null) {
+                                    return;
+                                }
+                                if (matchesKeyboardShortcut(event, "mod+c", apple)) {
+                                    event.preventDefault();
+                                    copyToClipboard(checkedIds.includes(page.id) ? checkedIds : [page.id]);
+                                } else if (matchesKeyboardShortcut(event, "mod+v", apple) && pageActions.copiedCount > 0) {
+                                    event.preventDefault();
+                                    paste(page);
+                                }
+                            }}
+                            renderActions={(node) => {
+                                const page = allPages.find((candidate) => candidate.id === node.id);
+                                if (page == null) {
+                                    return null;
+                                }
+                                return (
+                                    <>
+                                        <PageStatusMenu page={page} onChange={(status) => changeStatus(page, status)} />
+                                        <span className={styles.rowButtons}>
+                                            <IconButton
+                                                aria-label="Add subpage"
+                                                variant="text"
+                                                color="secondary"
+                                                size="small"
+                                                className={styles.addSubpage}
+                                                onClick={() => pageActions.onAddSubpage(page)}
+                                            >
+                                                <Icon name="plus" />
+                                            </IconButton>
+                                            <PageActionsMenu
+                                                page={page}
+                                                actions={pageActions}
+                                                trigger={
+                                                    <IconButton aria-label="Actions" variant="text" color="secondary" size="small">
+                                                        <Icon name="more-horizontal" />
+                                                    </IconButton>
+                                                }
+                                            />
+                                        </span>
+                                    </>
+                                );
+                            }}
+                        />
+                    )}
+                </ScenarioContent>
             </TreeDetailLayout>
             <BulkActionBar count={checkedIds.length} onClear={() => setCheckedIds([])} actions={bulkActions} />
             <NewPageDialog

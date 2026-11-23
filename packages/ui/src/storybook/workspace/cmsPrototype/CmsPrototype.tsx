@@ -1,3 +1,4 @@
+import { useScenario } from "../../scenario";
 import { PrototypeApp } from "../PrototypeApp";
 import { cmsPrototype } from "../prototypes";
 import { AssetDetail } from "./assetLibrary/AssetDetail";
@@ -41,8 +42,9 @@ function renderPage(pageId: string) {
  * library with the detail page of an asset.
  */
 export function CmsPrototype() {
+    const scenario = useScenario();
     return (
-        <AssetLibraryProvider>
+        <AssetLibraryProvider key={scenario} scenario={scenario}>
             <PrototypeApp prototype={cmsPrototype} navGroups={cmsNavGroups} renderPage={renderPage} />
         </AssetLibraryProvider>
     );

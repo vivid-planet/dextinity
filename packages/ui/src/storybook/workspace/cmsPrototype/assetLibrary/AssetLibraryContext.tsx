@@ -3,6 +3,7 @@ import { createContext, type Dispatch, type PropsWithChildren, type SetStateActi
 import { ToastViewport } from "../../../../components/toast/ToastViewport";
 import { type NewToast, useToasts } from "../../../../components/toast/useToasts";
 import { useUndoToast } from "../../../../components/undoToast/useUndoToast";
+import { applyScenario, lengthen, type Scenario } from "../../../scenario";
 import { type AssetKind, type LibraryAsset, libraryAssets, type LibraryFolder, libraryFolders } from "./assetLibraryData";
 
 export type LibraryView = "tiles" | "list";
@@ -57,9 +58,18 @@ const AssetLibraryContext = createContext<AssetLibraryState | null>(null);
  * The assets and folders of the CMS prototype and where the library stands, shared by the library and the detail page. Holds the
  * toasts too, so that an undo toast stays when the page changes, e.g. after deleting an asset on its detail page.
  */
-export function AssetLibraryProvider({ children, initial }: PropsWithChildren<{ initial?: Partial<LibraryLocation> }>) {
-    const [assets, setAssets] = useState(libraryAssets);
-    const [folders, setFolders] = useState(libraryFolders);
+export function AssetLibraryProvider({
+    children,
+    initial,
+    scenario = "default",
+}: PropsWithChildren<{ initial?: Partial<LibraryLocation>; scenario?: Scenario }>) {
+    const [assets, setAssets] = useState(() =>
+        applyScenario(libraryAssets, scenario, {
+            copy: (asset, round) => ({ ...asset, id: `${asset.id}-${round}`, name: asset.name.replace(/(\.\w+)$/, `-${round + 1}$1`) }),
+            stretch: (asset) => ({ ...asset, name: lengthen(asset.name) }),
+        }),
+    );
+    const [folders, setFolders] = useState(() => (scenario === "empty" ? [] : libraryFolders));
     const [location, setLocation] = useState<LibraryLocation>({ ...initialLocation, ...initial });
     const { toasts, add, dismiss } = useToasts();
     const undoToast = useUndoToast({ addToast: add });

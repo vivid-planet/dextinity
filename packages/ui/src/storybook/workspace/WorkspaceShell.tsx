@@ -19,6 +19,7 @@ import type { ThemeColorScheme } from "../../theme/types";
 import { brandSetting } from "../brand";
 import { colorSchemeSetting, getAppliedColorScheme } from "../colorScheme";
 import { densitySetting } from "../density";
+import { scenarioSetting, useScenario } from "../scenario";
 import { getComponentStoryIds, type IndexedStory } from "./componentStories";
 import { workspacePrototypes } from "./prototypes";
 import { type InspectedComponent, useCanvasInspector } from "./useCanvasInspector";
@@ -35,6 +36,7 @@ const maxPanelWidth = 520;
 const panelKeyboardStep = 20;
 const inspectLabelHeight = 18;
 const prototypesTitle = "Workspace/Prototypes";
+const scenarioOptions = scenarioSetting.options.map(({ value, title }) => ({ value, "aria-label": title, icon: null }));
 const brandOptions = brandSetting.options.map(({ value, title }) => ({ value, "aria-label": title, icon: null }));
 
 const modeTabs: Array<{ value: WorkspaceMode; label: string }> = [
@@ -159,6 +161,7 @@ export function WorkspaceShell() {
     const [colorScheme, setColorScheme] = useState(getAppliedColorScheme);
     const [brand, setBrand] = useState(brandSetting.get);
     const [density, setDensity] = useState(densitySetting.get);
+    const scenario = useScenario();
     const [canvasElement, setCanvasElement] = useState<HTMLDivElement | null>(null);
     const [resizing, setResizing] = useState<"frame" | "panel" | null>(null);
     const [reloadKey, setReloadKey] = useState(0);
@@ -428,6 +431,15 @@ export function WorkspaceShell() {
                                     zoom={state.zoom}
                                     onSizeChange={(size) => updateState({ ...size, responsive: false })}
                                     onZoomChange={(zoom) => updateState({ zoom })}
+                                />
+                            )}
+                            {isPrototypeMode && (
+                                <SettingMenu
+                                    label="Content"
+                                    icon={<Icon name="file-data" />}
+                                    options={scenarioOptions}
+                                    value={scenario}
+                                    onChange={scenarioSetting.store}
                                 />
                             )}
                             <SettingMenu label="Color scheme" options={colorSchemeOptions} value={colorScheme} onChange={changeColorScheme} />

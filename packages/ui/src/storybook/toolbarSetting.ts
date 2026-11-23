@@ -16,9 +16,15 @@ export function createToolbarSetting<Value extends string>({
         return typeof value === "string" && value in titles;
     }
 
+    // A frame can set its own value through its address, e.g. two variants side by side with different brands
+    function getFrameValue() {
+        const frameValue = new URLSearchParams(window.location.search).get(storageKey);
+        return isValue(frameValue) ? frameValue : null;
+    }
+
     function get(): Value {
         const storedValue = localStorage.getItem(storageKey);
-        return isValue(storedValue) ? storedValue : defaultValue;
+        return getFrameValue() ?? (isValue(storedValue) ? storedValue : defaultValue);
     }
 
     function store(value: unknown) {
@@ -39,6 +45,7 @@ export function createToolbarSetting<Value extends string>({
     }
 
     return {
+        storageKey,
         options: Object.entries<string>(titles).map(([value, title]) => ({ value, title })),
         get,
         store,

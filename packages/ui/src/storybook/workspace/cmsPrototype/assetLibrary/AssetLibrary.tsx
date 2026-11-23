@@ -35,6 +35,7 @@ import { Slider } from "../../../../components/slider/Slider";
 import { Tooltip } from "../../../../components/tooltip/Tooltip";
 import { PageTypeShell } from "../../../pageTypes/PageTypeShell";
 import { landscapeImage } from "../../../sampleImages";
+import { ScenarioContent, useScenario } from "../../../scenario";
 import styles from "./assetLibrary.module.scss";
 import { type LibraryLocation, type LibrarySortKey, type LibraryView, type SmartFilter, useAssetLibrary } from "./AssetLibraryContext";
 import { type AssetKind, getFolder, getFolderTrail, type LibraryAsset, today } from "./assetLibraryData";
@@ -106,6 +107,7 @@ function isFileDrag(event: DragEvent) {
 
 export function AssetLibrary() {
     const { assets, setAssets, folders, location, setLocation, addToast } = useAssetLibrary();
+    const scenario = useScenario();
     const actions = useLibraryActions();
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [renamingId, setRenamingId] = useState<string | null>(null);
@@ -723,7 +725,9 @@ export function AssetLibrary() {
                                 style={{ "--tile-size": `${location.tileSize}px` } as CSSProperties}
                                 onKeyDown={selection.onKeyDown}
                             >
-                                {pageItems.length === 0 ? (
+                                {scenario === "loading" || scenario === "error" ? (
+                                    <ScenarioContent scenario={scenario} />
+                                ) : pageItems.length === 0 ? (
                                     <div className={styles.empty}>{renderEmptyState()}</div>
                                 ) : location.view === "tiles" ? (
                                     renderTiles()

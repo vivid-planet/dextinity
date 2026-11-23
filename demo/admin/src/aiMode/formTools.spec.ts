@@ -1,5 +1,5 @@
 import { type BlockContext, type BlockInterface, DamImageBlock } from "@dextinity/cms-admin";
-import { createForm } from "final-form";
+import { createForm, type FormApi } from "final-form";
 import { describe, expect, it, vi } from "vitest";
 
 import type { AiModeTool } from "./AiModeToolsets";
@@ -235,7 +235,9 @@ describe("fields beyond text", () => {
         { id: "t2", title: "Sale" },
     ];
 
-    function createProductTools() {
+    function createProductTools({
+        whileLoadingManufacturers,
+    }: { whileLoadingManufacturers?: (form: FormApi<Record<string, unknown>>) => void } = {}) {
         const form = createForm<Record<string, unknown>>({
             onSubmit: vi.fn(),
             initialValues: {
@@ -276,8 +278,10 @@ describe("fields beyond text", () => {
                     label: "Manufacturer",
                     type: "reference",
                     // As in the product form, the manufacturers are those of the selected country.
-                    loadOptions: async (values) =>
-                        manufacturers.filter(({ country }) => country === (values.manufacturerCountry as { id: string } | null)?.id),
+                    loadOptions: async (values) => {
+                        whileLoadingManufacturers?.(form);
+                        return manufacturers.filter(({ country }) => country === (values.manufacturerCountry as { id: string } | null)?.id);
+                    },
                     getOptionLabel: (option) => String(option.name),
                 },
                 {
@@ -309,6 +313,15 @@ describe("fields beyond text", () => {
         await call("set_product_form_values", { values: { manufacturerCountry: "de", manufacturer: "m2", tags: ["t2", "t1"] } });
 
         expect(form.getState().values).toMatchObject({ manufacturerCountry: countries[1], manufacturer: manufacturers[1], tags: [tags[1], tags[0]] });
+    });
+
+    it("refuses the values when the user changed the form while the options were loaded", async () => {
+        const { form, call } = createProductTools({ whileLoadingManufacturers: (form) => form.change("manufacturerCountry", countries[1]) });
+
+        await expect(async () => call("set_product_form_values", { values: { manufacturer: "m1", inStock: true } })).rejects.toThrow(
+            "The product form changed while the options were loaded. No field was changed.",
+        );
+        expect(form.getState().values).toMatchObject({ manufacturerCountry: countries[1], manufacturer: null, inStock: false });
     });
 
     it("reads a reference as the ID and label of the selected option", async () => {

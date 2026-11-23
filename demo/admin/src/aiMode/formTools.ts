@@ -279,7 +279,8 @@ export function createFormTools({
                 // The options of a reference field may depend on other fields of the same call, e.g. the manufacturers on
                 // the country. The values are therefore converted in the order of the fields, and each reference loads its
                 // options with the values converted before it.
-                let proposedValues = form.getState().values;
+                const valuesBeforeLoading = form.getState().values;
+                let proposedValues = valuesBeforeLoading;
                 const formValues: Array<[string, unknown]> = [];
                 for (const field of settableFields) {
                     if (!(field.name in values)) {
@@ -293,6 +294,12 @@ export function createFormTools({
                     proposedValues = setIn(proposedValues, field.name, result.value) as FormValues;
                 }
 
+                // The options were loaded for the values before the call, e.g. the manufacturers of the country then selected.
+                if (form.getState().values !== valuesBeforeLoading) {
+                    throw new Error(
+                        `The ${entityLabel} form changed while the options were loaded. No field was changed. Read the form state with get_${entityName}_form_state and try again.`,
+                    );
+                }
                 form.batch(() => {
                     for (const [name, value] of formValues) {
                         form.change(name, value);

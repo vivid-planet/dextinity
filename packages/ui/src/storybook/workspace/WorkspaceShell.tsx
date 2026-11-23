@@ -1,6 +1,7 @@
 import {
     type KeyboardEvent as ReactKeyboardEvent,
     type PointerEvent as ReactPointerEvent,
+    type ReactNode,
     type RefObject,
     useEffect,
     useLayoutEffect,
@@ -20,13 +21,14 @@ import { brandSetting } from "../brand";
 import { colorSchemeSetting, getAppliedColorScheme } from "../colorScheme";
 import { densitySetting } from "../density";
 import { scenarioSetting, useScenario } from "../scenario";
+import { CompareCanvas } from "./CompareCanvas";
 import { getComponentStoryIds, type IndexedStory } from "./componentStories";
 import { workspacePrototypes } from "./prototypes";
 import { type InspectedComponent, useCanvasInspector } from "./useCanvasInspector";
 import { useFramePage } from "./useFramePage";
 import { workspaceLogo } from "./workspaceLogo";
 import styles from "./WorkspaceShell.module.scss";
-import { defaultWorkspaceState, useWorkspaceState, type WorkspaceMode } from "./workspaceState";
+import { defaultWorkspaceState, useWorkspaceState, type WorkspaceCompare, type WorkspaceMode } from "./workspaceState";
 import { colorSchemeOptions, densityOptions, minFrameSize, SettingMenu, ViewportControl } from "./WorkspaceToolbarControls";
 
 const shellStoryId = "workspace-shell--shell";
@@ -38,6 +40,12 @@ const inspectLabelHeight = 18;
 const prototypesTitle = "Workspace/Prototypes";
 const scenarioOptions = scenarioSetting.options.map(({ value, title }) => ({ value, "aria-label": title, icon: null }));
 const brandOptions = brandSetting.options.map(({ value, title }) => ({ value, "aria-label": title, icon: null }));
+
+const compareOptions: Array<{ value: WorkspaceCompare; icon: ReactNode; "aria-label": string }> = [
+    { value: "off", icon: <Icon name="window" />, "aria-label": "One frame" },
+    { value: "viewports", icon: <Icon name="device-tablet" />, "aria-label": "Phone, tablet, and desktop side by side" },
+    { value: "variants", icon: <Icon name="swap-boxes" />, "aria-label": "Two variants side by side" },
+];
 
 const modeTabs: Array<{ value: WorkspaceMode; label: string }> = [
     { value: "prototypes", label: "Prototypes" },
@@ -202,6 +210,7 @@ export function WorkspaceShell() {
     const prototypes = useMemo(() => stories.filter(isPrototype), [stories]);
     const isLoading = stories.length === 0;
     const isPrototypeMode = state.mode === "prototypes";
+    const isComparing = isPrototypeMode && state.compare !== "off";
 
     // A stored story may since have been removed or renamed; until the index has loaded, there's nothing to check it against
     const storedStoryId = isLoading || componentStories.some((story) => story.id === state.storyId) ? state.storyId : null;
@@ -231,7 +240,9 @@ export function WorkspaceShell() {
     // Until the tree is first changed, every prototype shows its pages
     const [prototypeExpandedIds, setPrototypeExpandedIds] = useState<string[] | null>(null);
     const visiblePrototypeExpandedIds = prototypeExpandedIds ?? prototypes.map((story) => story.id);
-    const currentPrototypePageId = framePage.hash || workspacePrototypes.get(prototypeId ?? "")?.startPageId;
+    // While comparing, the frames report their page to the start page, which the single frame then opens on again
+    const shownPage = isComparing ? prototypeStartPage : framePage.hash;
+    const currentPrototypePageId = shownPage || workspacePrototypes.get(prototypeId ?? "")?.startPageId;
     const storiesById = useMemo(() => new Map(componentStories.map((story) => [story.id, story])), [componentStories]);
 
     function rememberCurrentStory() {
@@ -267,7 +278,9 @@ export function WorkspaceShell() {
         setOverlayPanelOpen(false);
         const frameWindow = frameRef.current?.contentWindow;
         // The prototype in the frame navigates itself, which keeps its state, like a click in its own navigation
-        if (storyId === prototypeId && frameWindow) {
+        if (storyId === prototypeId && isComparing) {
+            setPrototypeStartPage(pageId);
+        } else if (storyId === prototypeId && frameWindow) {
             frameWindow.location.hash = pageId;
         } else {
             setPrototypeStartPage(pageId);
@@ -275,10 +288,18 @@ export function WorkspaceShell() {
         }
     }
 
+    function changeCompare(compare: WorkspaceCompare) {
+        setInspecting(false);
+        if (!isComparing) {
+            setPrototypeStartPage(framePage.hash);
+        }
+        updateState({ compare });
+    }
+
     function changeMode(mode: WorkspaceMode) {
         setInspecting(false);
         // The prototype opens again on the page it was left on
-        setPrototypeStartPage(isPrototypeMode ? framePage.hash : prototypeStartPage);
+        setPrototypeStartPage(isPrototypeMode ? shownPage : prototypeStartPage);
         updateState({ mode });
     }
 
@@ -313,7 +334,7 @@ export function WorkspaceShell() {
             storybookFrameRef.current?.contentWindow?.location.reload();
             return;
         }
-        setPrototypeStartPage(framePage.hash);
+        setPrototypeStartPage(shownPage);
         setReloadKey((key) => key + 1);
     }
 
@@ -362,7 +383,11 @@ export function WorkspaceShell() {
         // eslint-disable-next-line react-hooks/exhaustive-deps -- only the story Storybook shows changes the stored one here
     }, [storybookStoryId]);
     // A prototype titles the document after its page, e.g. "Job ads · Career portal"
-    const prototypePageLabel = isPrototypeMode ? framePage.title.split(" · ")[0] : "";
+    const prototypePageLabel = !isPrototypeMode
+        ? ""
+        : isComparing
+          ? (workspacePrototypes.get(prototypeId ?? "")?.getPageLabel(currentPrototypePageId ?? "") ?? "")
+          : framePage.title.split(" · ")[0];
 
     function startFrameResize(edge: ResizeEdge, event: ReactPointerEvent) {
         const start = { width: state.width, height: state.height };
@@ -423,6 +448,9 @@ export function WorkspaceShell() {
 
                         <div className={styles.settings}>
                             {isPrototypeMode && (
+                                <SettingMenu label="Compare" options={compareOptions} value={state.compare} onChange={changeCompare} />
+                            )}
+                            {isPrototypeMode && !isComparing && (
                                 <ViewportControl
                                     responsive={state.responsive}
                                     onResponsiveChange={() => updateState({ responsive: true })}
@@ -475,7 +503,7 @@ export function WorkspaceShell() {
                                     if (!isPrototypeMode) {
                                         window.open(storybookFrameRef.current?.contentWindow?.location.href ?? storybookSrc ?? undefined, "_blank");
                                     } else if (storyUrl) {
-                                        window.open(framePage.hash ? `${storyUrl}#${framePage.hash}` : storyUrl, "_blank");
+                                        window.open(shownPage ? `${storyUrl}#${shownPage}` : storyUrl, "_blank");
                                     }
                                 }}
                             >
@@ -515,7 +543,7 @@ export function WorkspaceShell() {
                             >
                                 <Icon name="back" />
                             </IconButton>
-                            {isPrototypeMode && (
+                            {isPrototypeMode && !isComparing && (
                                 <IconButton
                                     variant={inspecting ? "contained" : "text"}
                                     color={inspecting ? "primary" : "secondary"}
@@ -585,63 +613,76 @@ export function WorkspaceShell() {
                             />
                         )}
 
-                        <div ref={setCanvasElement} className={styles.canvas} data-responsive={state.responsive || undefined}>
-                            <div
-                                className={styles.stage}
-                                style={state.responsive ? undefined : { width: state.width * scale, height: state.height * scale }}
-                            >
-                                {!state.responsive && (
-                                    <div className={styles.frameLabel}>
-                                        <span className={styles.frameStory}>{currentPrototype ? getStoryLabel(currentPrototype) : ""}</span>
-                                        <span>
-                                            {state.width} × {state.height} · {Math.round(scale * 100)} %
-                                        </span>
-                                    </div>
-                                )}
+                        {isComparing && storyUrl ? (
+                            <CompareCanvas
+                                mode={state.compare === "variants" ? "variants" : "viewports"}
+                                storyUrl={storyUrl}
+                                startPage={prototypeStartPage}
+                                density={density}
+                                reloadKey={reloadKey}
+                                onPageChange={setPrototypeStartPage}
+                            />
+                        ) : (
+                            <div ref={setCanvasElement} className={styles.canvas} data-responsive={state.responsive || undefined}>
                                 <div
-                                    className={styles.frame}
-                                    style={state.responsive ? undefined : { width: state.width, height: state.height, transform: `scale(${scale})` }}
+                                    className={styles.stage}
+                                    style={state.responsive ? undefined : { width: state.width * scale, height: state.height * scale }}
                                 >
-                                    {storyUrl && (
-                                        <iframe
-                                            key={`${storyUrl}-${reloadKey}`}
-                                            ref={frameRef}
-                                            className={styles.iframe}
-                                            src={frameSrc ?? undefined}
-                                            title={currentPrototype ? `${currentPrototype.title} · ${currentPrototype.name}` : "Prototype"}
-                                            onLoad={() => {
-                                                applyDensityToFrame();
-                                                setFrameLoadCount((count) => count + 1);
-                                            }}
-                                        />
+                                    {!state.responsive && (
+                                        <div className={styles.frameLabel}>
+                                            <span className={styles.frameStory}>{currentPrototype ? getStoryLabel(currentPrototype) : ""}</span>
+                                            <span>
+                                                {state.width} × {state.height} · {Math.round(scale * 100)} %
+                                            </span>
+                                        </div>
+                                    )}
+                                    <div
+                                        className={styles.frame}
+                                        style={
+                                            state.responsive ? undefined : { width: state.width, height: state.height, transform: `scale(${scale})` }
+                                        }
+                                    >
+                                        {storyUrl && (
+                                            <iframe
+                                                key={`${storyUrl}-${reloadKey}`}
+                                                ref={frameRef}
+                                                className={styles.iframe}
+                                                src={frameSrc ?? undefined}
+                                                title={currentPrototype ? `${currentPrototype.title} · ${currentPrototype.name}` : "Prototype"}
+                                                onLoad={() => {
+                                                    applyDensityToFrame();
+                                                    setFrameLoadCount((count) => count + 1);
+                                                }}
+                                            />
+                                        )}
+                                    </div>
+                                    {inspected && (
+                                        <div className={styles.inspectLayer}>
+                                            <div
+                                                className={styles.inspectBox}
+                                                // At the frame's top edge, the label goes inside the box, where the frame doesn't cut it off
+                                                data-label-inside={inspected.rect.top * scale < inspectLabelHeight || undefined}
+                                                style={{
+                                                    top: inspected.rect.top * scale,
+                                                    left: inspected.rect.left * scale,
+                                                    width: inspected.rect.width * scale,
+                                                    height: inspected.rect.height * scale,
+                                                }}
+                                            >
+                                                <span className={styles.inspectLabel}>{inspected.componentName}</span>
+                                            </div>
+                                        </div>
+                                    )}
+                                    {!state.responsive && (
+                                        <>
+                                            <div className={styles.handleInline} onPointerDown={(event) => startFrameResize("inline", event)} />
+                                            <div className={styles.handleBlock} onPointerDown={(event) => startFrameResize("block", event)} />
+                                            <div className={styles.handleCorner} onPointerDown={(event) => startFrameResize("both", event)} />
+                                        </>
                                     )}
                                 </div>
-                                {inspected && (
-                                    <div className={styles.inspectLayer}>
-                                        <div
-                                            className={styles.inspectBox}
-                                            // At the frame's top edge, the label goes inside the box, where the frame doesn't cut it off
-                                            data-label-inside={inspected.rect.top * scale < inspectLabelHeight || undefined}
-                                            style={{
-                                                top: inspected.rect.top * scale,
-                                                left: inspected.rect.left * scale,
-                                                width: inspected.rect.width * scale,
-                                                height: inspected.rect.height * scale,
-                                            }}
-                                        >
-                                            <span className={styles.inspectLabel}>{inspected.componentName}</span>
-                                        </div>
-                                    </div>
-                                )}
-                                {!state.responsive && (
-                                    <>
-                                        <div className={styles.handleInline} onPointerDown={(event) => startFrameResize("inline", event)} />
-                                        <div className={styles.handleBlock} onPointerDown={(event) => startFrameResize("block", event)} />
-                                        <div className={styles.handleCorner} onPointerDown={(event) => startFrameResize("both", event)} />
-                                    </>
-                                )}
                             </div>
-                        </div>
+                        )}
                     </div>
                 )}
             </div>

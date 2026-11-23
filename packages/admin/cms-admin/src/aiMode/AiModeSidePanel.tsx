@@ -1,5 +1,5 @@
 import { Alert, MasterLayoutContext, useWindowSize } from "@dextinity/admin";
-import { Slide, useMediaQuery, useTheme } from "@mui/material";
+import { Collapse, Slide, useMediaQuery, useTheme } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useCallback, useContext, useEffect, useLayoutEffect, useRef } from "react";
 import { useDragDropManager } from "react-dnd";
@@ -14,8 +14,7 @@ import { useAiModeToolsetsStore } from "./AiModeToolsets";
 import { ScriptLoader } from "./ScriptLoader";
 import { useTextSelectionStore } from "./textSelection";
 
-/** @experimental */
-export const aiModeFlyoutWidth = 400;
+const desktopWidth = 400;
 
 const contextPushDebounceMs = 300;
 
@@ -46,17 +45,19 @@ function useShareDragDropManagerWithChat() {
 }
 
 /**
- * The chat of the AI Mode, next to the content of the admin. Renders nothing while the AI Mode is off, see `AiModeProvider`.
+ * The chat of the AI Mode, the side panel of the `MasterLayout`: `<MasterLayout sidePanelComponent={AiModeSidePanel} />`.
+ * On desktop, the content narrows while the chat is open. On mobile, the chat covers the content.
+ * Renders nothing while the AI Mode is off, see `AiModeProvider`.
  *
  * @experimental
  */
-export function AiModeFlyout() {
+export function AiModeSidePanel() {
     const chatConfig = useAiModeChatConfig();
 
-    return chatConfig ? <AiModeChatFlyout {...chatConfig} /> : null;
+    return chatConfig ? <AiModeChatSidePanel {...chatConfig} /> : null;
 }
 
-function AiModeChatFlyout({
+function AiModeChatSidePanel({
     webComponentScriptSrc,
     widgetId,
     aiHubProxyUrl,
@@ -183,39 +184,60 @@ function AiModeChatFlyout({
         };
     }, [toolsetsStore, textSelectionStore, registerHostTools]);
 
-    // Unmounted once closed, so the chat starts over with the next opening.
-    return (
-        <Slide direction="left" in={isOpen} mountOnEnter unmountOnExit>
-            <Root sx={{ top: headerHeight }}>
-                <ScriptLoader
-                    src={webComponentScriptSrc}
-                    errorFallback={
-                        <ErrorAlert severity="error">
-                            <FormattedMessage
-                                id="dextinity.aiMode.chatLoadError"
-                                defaultMessage="The chat couldn't be loaded. Switch it off and on again to retry."
-                            />
-                        </ErrorAlert>
-                    }
-                >
-                    <ai-hub-chat
-                        ref={registerBridge}
-                        api-url={aiHubProxyUrl}
-                        widget-id={widgetId}
-                        // Only a hint: the AI Hub proxy replaces it with the ID of the user the request was authenticated as.
-                        user-id={user.id}
-                        language={intl.locale}
-                        width={isMobile ? windowSize.width : aiModeFlyoutWidth}
-                        height={windowSize.height - headerHeight}
-                        integration-location="Admin Flyout"
+    const chatHeight = windowSize.height - headerHeight;
+
+    const chat = (
+        <ScriptLoader
+            src={webComponentScriptSrc}
+            errorFallback={
+                <ErrorAlert severity="error">
+                    <FormattedMessage
+                        id="dextinity.aiMode.chatLoadError"
+                        defaultMessage="The chat couldn't be loaded. Switch it off and on again to retry."
                     />
-                </ScriptLoader>
-            </Root>
-        </Slide>
+                </ErrorAlert>
+            }
+        >
+            <ai-hub-chat
+                ref={registerBridge}
+                api-url={aiHubProxyUrl}
+                widget-id={widgetId}
+                // Only a hint: the AI Hub proxy replaces it with the ID of the user the request was authenticated as.
+                user-id={user.id}
+                language={intl.locale}
+                width={isMobile ? windowSize.width : desktopWidth}
+                height={chatHeight}
+                integration-location="Admin Flyout"
+            />
+        </ScriptLoader>
+    );
+
+    // Unmounted once closed, so the chat starts over with the next opening.
+    if (isMobile) {
+        return (
+            <Slide direction="left" in={isOpen} mountOnEnter unmountOnExit>
+                <MobileRoot sx={{ top: headerHeight }}>{chat}</MobileRoot>
+            </Slide>
+        );
+    }
+
+    // Takes its width in the layout, which narrows the content along with the animation.
+    return (
+        <DesktopCollapse in={isOpen} orientation="horizontal" mountOnEnter unmountOnExit sx={{ top: headerHeight, height: chatHeight }}>
+            <DesktopRoot>{chat}</DesktopRoot>
+        </DesktopCollapse>
     );
 }
 
-const Root = styled("aside")(({ theme }) => ({
+const chatStyles = {
+    "& ai-hub-chat": {
+        display: "block",
+        width: "100%",
+        height: "100%",
+    },
+};
+
+const MobileRoot = styled("aside")(({ theme }) => ({
     position: "fixed",
     right: 0,
     bottom: 0,
@@ -224,16 +246,22 @@ const Root = styled("aside")(({ theme }) => ({
     backgroundColor: theme.palette.common.white,
     boxShadow: theme.shadows[4],
     zIndex: theme.zIndex.drawer - 10,
+    ...chatStyles,
+}));
 
-    [theme.breakpoints.up("md")]: {
-        width: aiModeFlyoutWidth,
-    },
+// Sticky, so that the chat stays below the header while the page scrolls.
+const DesktopCollapse = styled(Collapse)({
+    position: "sticky",
+});
 
-    "& ai-hub-chat": {
-        display: "block",
-        width: "100%",
-        height: "100%",
-    },
+const DesktopRoot = styled("aside")(({ theme }) => ({
+    boxSizing: "border-box",
+    width: desktopWidth,
+    height: "100%",
+    overflow: "hidden",
+    backgroundColor: theme.palette.common.white,
+    borderLeft: `1px solid ${theme.palette.divider}`,
+    ...chatStyles,
 }));
 
 const ErrorAlert = styled(Alert)(({ theme }) => ({

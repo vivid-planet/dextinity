@@ -39,7 +39,7 @@ const AiModeChatConfigContext = createContext<AiModeChatConfig | null>(null);
 
 /**
  * Turns the AI Mode on for the admin within, and collects the AI Mode toolsets of its pages. `AiModeHeaderItem` and
- * `AiModeFlyout` render nothing outside of it or while the AI Mode is off.
+ * `AiModeSidePanel` render nothing outside of it or while the AI Mode is off.
  *
  * @experimental
  */
@@ -70,7 +70,7 @@ export function AiModeProvider({
 function AiModeStateProvider({ isEnabled, children }: PropsWithChildren<{ isEnabled: boolean }>) {
     const isAvailable = useHasAiModeToolsets();
     const [isStoredOpen, setIsOpen] = useStoredState<boolean>("ai-mode-open", false);
-    // The stored state is kept while a page without the AI Mode is open, so the flyout opens again on returning to one with it.
+    // The stored state is kept while a page without the AI Mode is open, so the side panel opens again on returning to one with it.
     const isOpen = isEnabled && isAvailable && isStoredOpen;
 
     const toggle = useCallback(() => {
@@ -82,7 +82,6 @@ function AiModeStateProvider({ isEnabled, children }: PropsWithChildren<{ isEnab
     return <AiModeContext.Provider value={value}>{children}</AiModeContext.Provider>;
 }
 
-/** @experimental */
 export function useAiMode() {
     return useContext(AiModeContext);
 }

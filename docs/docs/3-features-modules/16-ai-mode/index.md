@@ -8,7 +8,7 @@ The AI Mode puts the chat of the Dextinity AI Hub next to the pages of the admin
 
 ## The chat
 
-`AiModeProvider` turns the AI Mode on for the admin within it. `AiModeHeaderItem` is the switch in the header that opens the chat, and `AiModeFlyout` is the chat, next to the content:
+`AiModeProvider` turns the AI Mode on for the admin within it. `AiModeHeaderItem` is the switch in the header that opens the chat, and `AiModeSidePanel` is the chat, the side panel of the `MasterLayout`:
 
 ```tsx
 <AiModeProvider
@@ -18,9 +18,8 @@ The AI Mode puts the chat of the Dextinity AI Hub next to the pages of the admin
     mcpServerUrl={`${config.apiUrl}/mcp`}
     requiredPermission="aiHub"
 >
-    <MasterLayout headerComponent={MasterHeader} menuComponent={MasterMenu}>
+    <MasterLayout headerComponent={MasterHeader} menuComponent={MasterMenu} sidePanelComponent={AiModeSidePanel}>
         <MasterMenuRoutes />
-        <AiModeFlyout />
     </MasterLayout>
 </AiModeProvider>
 ```
@@ -32,7 +31,7 @@ The AI Mode puts the chat of the Dextinity AI Hub next to the pages of the admin
 </Header>
 ```
 
-The AI Mode is off unless the script of the web component and the widget ID are set and the user has the `requiredPermission`. While it's off, `AiModeHeaderItem` and `AiModeFlyout` render nothing. While it's on, the switch is disabled on a page without an AI Mode toolset.
+The AI Mode is off unless the script of the web component and the widget ID are set and the user has the `requiredPermission`. While it's off, `AiModeHeaderItem` and `AiModeSidePanel` render nothing. While it's on, the switch is disabled on a page without an AI Mode toolset.
 
 The chat doesn't talk to the AI Hub API itself, but to `aiHubProxyUrl`, a route of the project's API that forwards its requests with the widget's secret key. The key must not reach the browser: anyone who reads it could chat on the widget's account as any user.
 
@@ -42,7 +41,7 @@ The chat doesn't talk to the AI Hub API itself, but to `aiHubProxyUrl`, a route 
 <AiModeHeaderItem label={<FormattedMessage id="aiMode.label" defaultMessage="Assistant" />} icon={<Assistant />} />
 ```
 
-The flyout covers the right edge of the content on desktop, `aiModeFlyoutWidth` pixels wide. To keep the content visible next to it, narrow the content wrapper of the `MasterLayout` while `useAiMode().isOpen` is true, as the Demo's `AppMasterLayout` does.
+On desktop, the chat opens next to the content, which narrows while it's open, and stays below the header while the page scrolls. On mobile, it covers the content.
 
 ## AI Mode toolsets
 

@@ -68,7 +68,8 @@ function PageStatusMenu({ page, onChange }: { page: SitePage; onChange: (status:
             placement="bottom-end"
             trigger={
                 <button type="button" className={styles.statusTrigger} aria-label={`Status of “${page.label}”: ${statusLabels[status]}`}>
-                    <StatusIndicator status={status} />
+                    <StatusIndicator status={status} decorative />
+                    <span className={styles.statusText}>{statusLabels[status]}</span>
                     <Icon name="chevron-down" />
                 </button>
             }

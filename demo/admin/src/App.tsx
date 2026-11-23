@@ -48,6 +48,8 @@ import { NewsLinkBlock } from "./news/blocks/NewsLinkBlock";
 import { NewsListBlock } from "./news/blocks/NewsListBlock";
 import { NewsDependency } from "./news/dependencies/NewsDependency";
 import { pageTreeCategories } from "./pageTree/pageTreeCategories";
+import { ManufacturerDependency } from "./products/dependencies/ManufacturerDependency";
+import { ProductDependency } from "./products/dependencies/ProductDependency";
 import { RedirectDependency } from "./redirects/RedirectsDependency";
 
 const GlobalStyle = () => (
@@ -133,6 +135,8 @@ export function App() {
                     News: NewsDependency,
                     Redirect: RedirectDependency,
                     PageTreeNode: PageTreeNodeDependency,
+                    Product: ProductDependency,
+                    Manufacturer: ManufacturerDependency,
                     DamFile: createDamFileDependency(),
                 },
             }}

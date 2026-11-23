@@ -1,7 +1,7 @@
 import { PGlite } from "@electric-sql/pglite";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { PREFIX_TSQUERY_SQL } from "./prefix-full-text-query";
+import { ALL_TERMS_TSQUERY_SQL, ANY_TERM_TSQUERY_SQL } from "./full-text-query";
 
 const documents = [
     { name: "Navigation", text: "Main menu of the site" },
@@ -11,7 +11,7 @@ const documents = [
 ];
 
 // Runs the condition in PostgreSQL (compiled to WebAssembly), because only the database shows how it parses the search
-describe("PREFIX_TSQUERY_SQL", () => {
+describe("full-text tsqueries", () => {
     let database: PGlite;
 
     beforeAll(async () => {
@@ -26,8 +26,8 @@ describe("PREFIX_TSQUERY_SQL", () => {
         await database.close();
     });
 
-    async function search(term: string) {
-        const condition = `"fullText" @@ ${PREFIX_TSQUERY_SQL.replace("?", "$1")}`;
+    async function search(term: string, tsQuerySql = ALL_TERMS_TSQUERY_SQL) {
+        const condition = `"fullText" @@ ${tsQuerySql.replace("?", "$1")}`;
         const results = await database.query<{ name: string }>(`SELECT "name" FROM "Document" WHERE ${condition} ORDER BY "name"`, [term]);
         const counts = await database.query<{ count: number }>(`SELECT count(*)::int AS "count" FROM "Document" WHERE ${condition}`, [term]);
         return { names: results.rows.map((row) => row.name), count: counts.rows[0].count };
@@ -49,12 +49,18 @@ describe("PREFIX_TSQUERY_SQL", () => {
     });
 
     it("keeps the lexemes of plainto_tsquery instead of parsing them again", async () => {
-        const result = await database.query<{ query: string }>(`SELECT ${PREFIX_TSQUERY_SQL.replace("?", "$1")}::text AS "query"`, ["foo-bar"]);
+        const result = await database.query<{ query: string }>(`SELECT ${ALL_TERMS_TSQUERY_SQL.replace("?", "$1")}::text AS "query"`, ["foo-bar"]);
         expect(result.rows[0].query).toBe("'foo-bar' & 'foo' & 'bar':*");
     });
 
     it("ignores tsquery operators in the search", async () => {
         expect(await search("navigation & | !menu:*")).toEqual({ names: ["Navigation"], count: 1 });
+    });
+
+    it("matches any of the words with ANY_TERM_TSQUERY_SQL", async () => {
+        expect(await search("fixtures navig", ANY_TERM_TSQUERY_SQL)).toEqual({ names: ["Fixtures: Blocks", "Navigation"], count: 2 });
+        expect(await search("foo-bar", ANY_TERM_TSQUERY_SQL)).toEqual({ names: ["Visit foo-bar"], count: 1 });
+        expect(await search(" &|! ", ANY_TERM_TSQUERY_SQL)).toEqual({ names: [], count: 0 });
     });
 
     it("matches nothing when the search has no words", async () => {

@@ -161,7 +161,7 @@ function PageDetail({ page, pages, actions }: { page: SitePage; pages: SitePage[
                     page={page}
                     actions={actions}
                     trigger={
-                        <IconButton aria-label={`Actions for “${page.label}”`}>
+                        <IconButton aria-label={`Actions for “${page.label}”`} variant="text" color="secondary">
                             <Icon name="more-horizontal" />
                         </IconButton>
                     }
@@ -537,14 +537,20 @@ export function CmsPageTree() {
                                 <>
                                     <PageStatusMenu page={page} onChange={(status) => changeStatus(page, status)} />
                                     <span className={styles.rowButtons}>
-                                        <IconButton aria-label="Add subpage" size="small" onClick={() => pageActions.onAddSubpage(page)}>
+                                        <IconButton
+                                            aria-label="Add subpage"
+                                            variant="text"
+                                            color="secondary"
+                                            size="small"
+                                            onClick={() => pageActions.onAddSubpage(page)}
+                                        >
                                             <Icon name="plus" />
                                         </IconButton>
                                         <PageActionsMenu
                                             page={page}
                                             actions={pageActions}
                                             trigger={
-                                                <IconButton aria-label="Actions" size="small">
+                                                <IconButton aria-label="Actions" variant="text" color="secondary" size="small">
                                                     <Icon name="more-horizontal" />
                                                 </IconButton>
                                             }

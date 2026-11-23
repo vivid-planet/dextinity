@@ -464,14 +464,24 @@
     align-items: center;
 }
 
-// On a phone the names need the room, so the status shows as its dot; the button still names it
+// On a phone the names need the room: the status shows as its dot, the button still names it, and only the active row keeps its
+// actions menu, which also holds "Add subpage"
 @media (width < 600px) {
     .statusTrigger {
         min-inline-size: 0;
     }
 
-    .statusText {
+    .statusText,
+    .addSubpage {
         display: none;
+    }
+
+    .rowButtons {
+        display: none;
+
+        :global(.dextinityTreeView__row[data-selected]) & {
+            display: inline-flex;
+        }
     }
 }
 

@@ -10,7 +10,7 @@ import {
     raw,
     wrap,
 } from "@mikro-orm/postgresql";
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 
 import { UserPermissionsStorageService } from "../user-permissions/user-permissions-storage.service.js";
 import { ACTION_LOGS_METADATA_KEY, type ActionLogMetadata } from "./action-logs.decorator.js";
@@ -19,6 +19,8 @@ import { ActionLog } from "./entities/action-log.entity.js";
 
 @Injectable()
 export class ActionLogsSubscriber implements EventSubscriber {
+    private readonly logger = new Logger(ActionLogsSubscriber.name);
+
     constructor(
         private readonly entityManager: EntityManager<PostgreSqlDriver>,
         private readonly service: ActionLogsService,
@@ -57,7 +59,7 @@ export class ActionLogsSubscriber implements EventSubscriber {
         }
 
         if (entityMetadata.primaryKeys.length != 1) {
-            console.error(`entity '${entityMetadata}' doesn't have a single primary key`);
+            this.logger.error(`Entity '${entityMetadata.className}' doesn't have a single primary key`);
             return null;
         }
         const user = this.userPermissionsStorageService.get("user");

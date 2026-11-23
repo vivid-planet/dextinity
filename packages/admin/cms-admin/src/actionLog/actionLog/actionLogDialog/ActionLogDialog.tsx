@@ -34,6 +34,11 @@ export type ActionLogDialogProps = {
      */
     name?: string;
     /**
+     * Scope of the entity. Defaults to the current content scope. Pass it when the entity's scope differs from the
+     * content scope, for instance when it has fewer dimensions.
+     */
+    scope?: ContentScope;
+    /**
      * Reads the versions of the entity in every scope the user may read, through `myActionLogs`, instead of the
      * current content scope. Requires the `actionLog` permission. Use it when the dialog is opened from the action
      * log of all entities, whose rows can belong to any scope.
@@ -43,9 +48,10 @@ export type ActionLogDialogProps = {
     onClose: () => void;
 };
 
-export function ActionLogDialog({ entity, entityId, name, showAllScopes, open, onClose }: ActionLogDialogProps) {
+export function ActionLogDialog({ entity, entityId, name, scope: entityScope, showAllScopes, open, onClose }: ActionLogDialogProps) {
     const intl = useIntl();
-    const { scope } = useContentScope();
+    const { scope: contentScope } = useContentScope();
+    const scope = entityScope ?? contentScope;
     const [view, setView] = useState<ActionLogDialogView>({ type: "grid" });
 
     useEffect(() => {

@@ -33,6 +33,18 @@ export function useScenario() {
 const longSuffix = " – with an unusually long name that wraps over several lines, as real content sometimes does";
 const manyCopies = 6;
 
+/**
+ * The id of an extra entry of the `many` scenario. It keeps the original's id in front, so that the entry opens the original's page,
+ * which the prototype knows.
+ */
+export function getCopyId(id: string, round: number) {
+    return `${id}~${round + 1}`;
+}
+
+export function getOriginalId(id: string) {
+    return id.split("~")[0];
+}
+
 /** Makes a text as long as real content sometimes gets, for the `long` scenario. */
 export function lengthen(text: string) {
     return `${text}${longSuffix}`;
@@ -85,7 +97,7 @@ export function ScenarioContent({ scenario, children }: PropsWithChildren<{ scen
                         color="secondary"
                         size="small"
                         startIcon={<Icon name="refresh" />}
-                        onClick={() => scenarioSetting.store("default")}
+                        onClick={() => scenarioSetting.storeForFrame("default")}
                     >
                         Try again
                     </Button>

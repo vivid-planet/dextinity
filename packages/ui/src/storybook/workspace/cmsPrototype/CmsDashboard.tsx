@@ -10,7 +10,7 @@ import { MiniChart } from "../../../components/miniChart/MiniChart";
 import { OverviewLayout } from "../../../components/overviewLayout/OverviewLayout";
 import { StatusIndicator } from "../../../components/statusIndicator/StatusIndicator";
 import { PageTypeShell } from "../../pageTypes/PageTypeShell";
-import { applyScenario, lengthen, type Scenario, ScenarioContent, useScenario } from "../../scenario";
+import { applyScenario, getCopyId, lengthen, type Scenario, ScenarioContent, useScenario } from "../../scenario";
 import { newsArticles } from "./cmsData";
 import styles from "./cmsPrototype.module.scss";
 
@@ -65,11 +65,11 @@ function CardList({ scenario, emptyTitle, children }: PropsWithChildren<{ scenar
 export function CmsDashboard() {
     const scenario = useScenario();
     const recentRows = applyScenario(recentlyEdited, scenario, {
-        copy: (item, round) => ({ ...item, href: `${item.href}?${round}` }),
+        copy: (item, round) => ({ ...item, title: `${item.title} (${round + 1})` }),
         stretch: (item) => ({ ...item, title: lengthen(item.title), editor: lengthen(item.editor) }),
     });
     const scheduledRows = applyScenario(scheduled, scenario, {
-        copy: (article, round) => ({ ...article, id: `${article.id}-${round}`, title: `${article.title} (${round + 1})` }),
+        copy: (article, round) => ({ ...article, id: getCopyId(article.id, round), title: `${article.title} (${round + 1})` }),
         stretch: (article) => ({ ...article, title: lengthen(article.title) }),
     });
     const warningRows = applyScenario(warnings, scenario, {
@@ -108,7 +108,7 @@ export function CmsDashboard() {
                     <CardList scenario={scenario} emptyTitle="Nothing edited yet">
                         {recentRows.map((item) => (
                             <Row
-                                key={item.href}
+                                key={`${item.href}-${item.title}`}
                                 title={item.title}
                                 subtitle={item.subtitle}
                                 href={item.href}

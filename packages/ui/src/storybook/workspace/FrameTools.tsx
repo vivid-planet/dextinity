@@ -121,17 +121,19 @@ interface Measurement {
     token?: string;
 }
 
+const spacingToken = /space|spacing|gap|padding|margin/;
+
 function measure(element: Element): Measurement[] {
     const style = element.ownerDocument.defaultView?.getComputedStyle(element);
     if (!style) {
         return [];
     }
     const tokens = createTokenLookup(element);
-    const lengths = (value: string) =>
+    const lengths = (value: string, prefer: RegExp) =>
         value
             .split(" ")
             .map((part) => {
-                const token = tokens.length(part);
+                const token = tokens.length(part, prefer);
                 return token ? `${part} (${token})` : part;
             })
             .join(" ");
@@ -143,30 +145,42 @@ function measure(element: Element): Measurement[] {
         }
         const [top, right, bottom, left] = values;
         const short = top === bottom && right === left ? (top === right ? top : `${top} ${right}`) : values.join(" ");
-        rows.push({ label: property === "padding" ? "Padding" : "Margin", value: lengths(short) });
+        rows.push({ label: property === "padding" ? "Padding" : "Margin", value: lengths(short, spacingToken) });
     };
     sides("padding");
     sides("margin");
     if (style.display.includes("flex") || style.display.includes("grid")) {
         const gap = style.rowGap === style.columnGap ? style.rowGap : `${style.rowGap} ${style.columnGap}`;
         if (gap !== "normal" && gap !== "0px") {
-            rows.push({ label: "Gap", value: lengths(gap) });
+            rows.push({ label: "Gap", value: lengths(gap, spacingToken) });
         }
     }
     if (style.borderTopLeftRadius !== "0px") {
-        rows.push({ label: "Radius", value: lengths(style.borderTopLeftRadius) });
+        rows.push({ label: "Radius", value: lengths(style.borderTopLeftRadius, /radius/) });
     }
     const hasText = Array.from(element.childNodes).some((node) => node.nodeType === Node.TEXT_NODE && node.textContent?.trim());
     if (hasText) {
-        rows.push({ label: "Font", value: `${style.fontSize} / ${style.lineHeight} · ${style.fontWeight}`, token: tokens.length(style.fontSize) });
-        rows.push({ label: "Text", value: style.color, token: tokens.color(style.color) });
+        rows.push({
+            label: "Font",
+            value: `${style.fontSize} / ${style.lineHeight} · ${style.fontWeight}`,
+            token: tokens.length(style.fontSize, /font-size|typography.*size|text.*size/),
+        });
+        rows.push({ label: "Text", value: style.color, token: tokens.color(style.color, /text|foreground/) });
     }
     const background = toRgba(style.backgroundColor);
     if (background && background[3] > 0) {
-        rows.push({ label: "Background", value: style.backgroundColor, token: tokens.color(style.backgroundColor) });
+        rows.push({
+            label: "Background",
+            value: style.backgroundColor,
+            token: tokens.color(style.backgroundColor, /surface|background|canvas|fill|bg/),
+        });
     }
     if (style.borderTopStyle !== "none" && style.borderTopWidth !== "0px") {
-        rows.push({ label: "Border", value: `${style.borderTopWidth} ${style.borderTopColor}`, token: tokens.color(style.borderTopColor) });
+        rows.push({
+            label: "Border",
+            value: `${style.borderTopWidth} ${style.borderTopColor}`,
+            token: tokens.color(style.borderTopColor, /line|border/),
+        });
     }
     return rows;
 }
@@ -211,8 +225,18 @@ function MeasureLayer({ frameDocument, scale, onExit }: { frameDocument: Documen
         for (const type of blockedEvents) {
             frameDocument.addEventListener(type, type === "click" ? handleClick : block, true);
         }
+        // In the workspace itself, Escape belongs to an open menu or a field first
+        const handleWorkspaceKey = (event: KeyboardEvent) => {
+            const target = event.target as Element | null;
+            if (
+                !event.defaultPrevented &&
+                !target?.closest?.('input, textarea, [contenteditable], [role="menu"], [role="dialog"], [role="listbox"]')
+            ) {
+                handleKey(event);
+            }
+        };
         frameDocument.addEventListener("keydown", handleKey, true);
-        window.addEventListener("keydown", handleKey, true);
+        window.addEventListener("keydown", handleWorkspaceKey);
         frameDocument.documentElement.dataset.workspaceMeasuring = "";
         return () => {
             frameDocument.removeEventListener("mousemove", handleMove, true);
@@ -221,7 +245,7 @@ function MeasureLayer({ frameDocument, scale, onExit }: { frameDocument: Documen
                 frameDocument.removeEventListener(type, type === "click" ? handleClick : block, true);
             }
             frameDocument.removeEventListener("keydown", handleKey, true);
-            window.removeEventListener("keydown", handleKey, true);
+            window.removeEventListener("keydown", handleWorkspaceKey);
             delete frameDocument.documentElement.dataset.workspaceMeasuring;
         };
     }, [frameDocument]);
@@ -302,9 +326,10 @@ const focusableSelector = 'a[href], button, input, select, textarea, summary, [t
 const targetSelector = `${focusableSelector}, [role="button"], [role="link"], [role="checkbox"], [role="radio"], [role="switch"], [role="tab"], [role="menuitem"], [role="option"]`;
 const minTargetSize = 24;
 
+// The element, not its box: the check runs once the page has settled, the boxes follow scrolling on every frame
 interface Finding {
     key: string;
-    rect: FrameRect;
+    element: Element;
     label: string;
 }
 
@@ -316,6 +341,21 @@ function isShown(element: Element, viewport: { width: number; height: number }) 
     return "checkVisibility" in element ? element.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true }) : true;
 }
 
+// Hidden from people, e.g. the native input behind a styled checkbox, so nobody has to hit it
+function isHiddenFromUsers(element: Element) {
+    const rect = element.getBoundingClientRect();
+    return (
+        element.closest('[aria-hidden="true"], [inert]') != null ||
+        (element.tagName === "INPUT" && (element as HTMLInputElement).type === "hidden") ||
+        rect.width <= 1 ||
+        rect.height <= 1
+    );
+}
+
+function isRendered(element: Element) {
+    return "checkVisibility" in element ? element.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true }) : true;
+}
+
 function isDisabled(element: Element) {
     return element.matches(":disabled") || element.getAttribute("aria-disabled") === "true";
 }
@@ -323,8 +363,9 @@ function isDisabled(element: Element) {
 function checkAccessibility(frameDocument: Document) {
     const frameWindow = frameDocument.defaultView;
     const viewport = { width: frameWindow?.innerWidth ?? 0, height: frameWindow?.innerHeight ?? 0 };
+    // Numbered among the elements Tab can reach at all, then shown where they're in view
     const focusables = Array.from(frameDocument.body.querySelectorAll<HTMLElement>(focusableSelector)).filter(
-        (element) => element.tabIndex >= 0 && !isDisabled(element),
+        (element) => element.tabIndex >= 0 && !isDisabled(element) && !isHiddenFromUsers(element) && isRendered(element),
     );
     // Positive tab indexes come first, in their order, then the document's order
     const ordered = [
@@ -334,14 +375,20 @@ function checkAccessibility(frameDocument: Document) {
     const tabOrder: Finding[] = ordered
         .map((element, index) => ({ element, index }))
         .filter(({ element }) => isShown(element, viewport))
-        .map(({ element, index }) => ({ key: `tab-${index}`, rect: getFrameRect(element), label: String(index + 1) }));
+        .map(({ element, index }) => ({ key: `tab-${index}`, element, label: String(index + 1) }));
 
     const smallTargets: Finding[] = Array.from(frameDocument.body.querySelectorAll(targetSelector))
         // WCAG exempts links inside a sentence, whose size the line of text sets
-        .filter((element) => !isDisabled(element) && isShown(element, viewport) && frameWindow?.getComputedStyle(element).display !== "inline")
+        .filter(
+            (element) =>
+                !isDisabled(element) &&
+                !isHiddenFromUsers(element) &&
+                isShown(element, viewport) &&
+                frameWindow?.getComputedStyle(element).display !== "inline",
+        )
         .map((element) => ({ element, rect: getFrameRect(element) }))
         .filter(({ rect }) => rect.width < minTargetSize || rect.height < minTargetSize)
-        .map(({ rect }, index) => ({ key: `target-${index}`, rect, label: `${round(rect.width)} × ${round(rect.height)}` }));
+        .map(({ element, rect }, index) => ({ key: `target-${index}`, element, label: `${round(rect.width)} × ${round(rect.height)}` }));
 
     const lowContrast: Finding[] = [];
     let unchecked = 0;
@@ -360,11 +407,16 @@ function checkAccessibility(frameDocument: Document) {
             unchecked++;
             continue;
         }
-        const ratio = contrastRatio(composite(text, background), background);
+        // A faded element or ancestor fades its text too
+        let opacity = 1;
+        for (let current: Element | null = element; current; current = current.parentElement) {
+            opacity *= Number(frameWindow?.getComputedStyle(current).opacity ?? 1);
+        }
+        const ratio = contrastRatio(composite([text[0], text[1], text[2], text[3] * opacity], background), background);
         const fontSize = parseFloat(style.fontSize);
         const large = fontSize >= 24 || (fontSize >= 18.66 && Number(style.fontWeight) >= 700);
         if (ratio < (large ? 3 : 4.5)) {
-            lowContrast.push({ key: `contrast-${lowContrast.length}`, rect: getFrameRect(element), label: `${ratio.toFixed(1)}:1` });
+            lowContrast.push({ key: `contrast-${lowContrast.length}`, element, label: `${ratio.toFixed(1)}:1` });
         }
     }
     return { tabOrder, smallTargets, lowContrast, unchecked };
@@ -384,21 +436,35 @@ const checks: Array<{ key: AccessibilityCheck; label: string; description: strin
  */
 function AccessibilityLayer({ frameDocument, scale, tick }: { frameDocument: Document; scale: number; tick: number }) {
     const [shown, setShown] = useState<AccessibilityCheck[]>(["tabOrder", "smallTargets", "lowContrast"]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- checked again when the page changes, which `tick` follows
-    const result = useMemo(() => checkAccessibility(frameDocument), [frameDocument, tick]);
+    const [result, setResult] = useState(() => checkAccessibility(frameDocument));
+    // Checked again once the page has settled after a change or scrolling, not on every frame of it
+    useEffect(() => {
+        const timeout = window.setTimeout(() => setResult(checkAccessibility(frameDocument)), 200);
+        return () => window.clearTimeout(timeout);
+    }, [frameDocument, tick]);
 
     return (
         <>
             <div className={styles.layer}>
                 {shown.includes("lowContrast") &&
                     result.lowContrast.map((finding) => (
-                        <div key={finding.key} className={styles.finding} data-check="lowContrast" style={scaled(finding.rect, scale)}>
+                        <div
+                            key={finding.key}
+                            className={styles.finding}
+                            data-check="lowContrast"
+                            style={scaled(getFrameRect(finding.element), scale)}
+                        >
                             <span className={styles.findingLabel}>{finding.label}</span>
                         </div>
                     ))}
                 {shown.includes("smallTargets") &&
                     result.smallTargets.map((finding) => (
-                        <div key={finding.key} className={styles.finding} data-check="smallTargets" style={scaled(finding.rect, scale)}>
+                        <div
+                            key={finding.key}
+                            className={styles.finding}
+                            data-check="smallTargets"
+                            style={scaled(getFrameRect(finding.element), scale)}
+                        >
                             <span className={styles.findingLabel}>{finding.label}</span>
                         </div>
                     ))}
@@ -407,7 +473,7 @@ function AccessibilityLayer({ frameDocument, scale, tick }: { frameDocument: Doc
                         <span
                             key={finding.key}
                             className={styles.tabBadge}
-                            style={{ top: finding.rect.top * scale, left: finding.rect.left * scale }}
+                            style={{ top: getFrameRect(finding.element).top * scale, left: getFrameRect(finding.element).left * scale }}
                         >
                             {finding.label}
                         </span>

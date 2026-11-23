@@ -41,20 +41,29 @@ function getTokenNames(frameDocument: Document) {
 const colorName = /color/;
 const lengthName = /space|spacing|gap|padding|margin|radius|size|width|height|inset|offset/;
 
+/** Finds the token for a value; `prefer` picks among tokens of the same value, e.g. a spacing token for a padding. */
 export interface TokenLookup {
-    color: (value: string) => string | undefined;
-    length: (value: string) => string | undefined;
+    color: (value: string, prefer?: RegExp) => string | undefined;
+    length: (value: string, prefer?: RegExp) => string | undefined;
+}
+
+function addName(map: Map<string, string[]>, key: string, name: string) {
+    map.set(key, [...(map.get(key) ?? []), name]);
+}
+
+function pick(names: string[] | undefined, prefer?: RegExp) {
+    return (prefer && names?.find((name) => prefer.test(name))) ?? names?.[0];
 }
 
 /**
  * Finds the tokens whose values match an element's colors and lengths, resolved where the element is, so that the brand,
- * color scheme, and density around it apply.
+ * color scheme, and density around it apply. A token that isn't defined there is left out.
  */
 export function createTokenLookup(element: Element): TokenLookup {
     const frameDocument = element.ownerDocument;
     const frameWindow = frameDocument.defaultView;
-    const colors = new Map<string, string>();
-    const lengths = new Map<string, string>();
+    const colors = new Map<string, string[]>();
+    const lengths = new Map<string, string[]>();
     const parent = element.parentElement;
     if (frameWindow && parent) {
         const probe = frameDocument.createElement("div");
@@ -62,19 +71,21 @@ export function createTokenLookup(element: Element): TokenLookup {
         parent.appendChild(probe);
         const style = frameWindow.getComputedStyle(probe);
         for (const name of getTokenNames(frameDocument)) {
+            if (style.getPropertyValue(name).trim() === "") {
+                continue;
+            }
             const shortName = name.slice(tokenPrefix.length);
             if (colorName.test(name)) {
                 probe.style.color = `var(${name})`;
                 const color = toRgba(style.color);
-                if (color && !colors.has(rgbaKey(color))) {
-                    colors.set(rgbaKey(color), shortName);
+                if (color) {
+                    addName(colors, rgbaKey(color), shortName);
                 }
                 probe.style.color = "";
             } else if (lengthName.test(name)) {
                 probe.style.width = `var(${name})`;
-                const width = style.width;
-                if (width !== "0px" && !lengths.has(width)) {
-                    lengths.set(width, shortName);
+                if (style.width !== "0px") {
+                    addName(lengths, style.width, shortName);
                 }
                 probe.style.width = "";
             }
@@ -82,10 +93,10 @@ export function createTokenLookup(element: Element): TokenLookup {
         probe.remove();
     }
     return {
-        color: (value) => {
+        color: (value, prefer) => {
             const color = toRgba(value);
-            return color && color[3] > 0 ? colors.get(rgbaKey(color)) : undefined;
+            return color && color[3] > 0 ? pick(colors.get(rgbaKey(color)), prefer) : undefined;
         },
-        length: (value) => lengths.get(value),
+        length: (value, prefer) => pick(lengths.get(value), prefer),
     };
 }

@@ -86,8 +86,9 @@ function useFrameSync(frames: Array<HTMLIFrameElement | null>, loadCount: number
 
     useEffect(() => {
         const windows = frames.map((frame) => frame?.contentWindow).filter((frameWindow): frameWindow is Window => frameWindow != null);
-        // Setting the others' hash and scroll position fires their events too, which mustn't be sent back
-        let syncingUntil = 0;
+        // Setting the others' scroll position fires their scroll events too, which mustn't be sent back; the frame the designer
+        // scrolls keeps being followed
+        const echoes = new WeakMap<Element, number>();
         const cleanups = windows.map((frameWindow) => {
             const frameDocument = frameWindow.document;
 
@@ -102,22 +103,22 @@ function useFrameSync(frames: Array<HTMLIFrameElement | null>, loadCount: number
             }
 
             function handleScroll(event: Event) {
-                if (performance.now() < syncingUntil) {
-                    return;
-                }
                 const source = getScrollElement(event.target, frameDocument);
                 if (!source) {
                     return;
                 }
+                if (performance.now() < (echoes.get(source) ?? 0)) {
+                    return;
+                }
                 const ratio = scrollRatio(source);
                 const path = source === frameDocument.scrollingElement ? null : getElementPath(source);
-                syncingUntil = performance.now() + 80;
                 for (const other of windows) {
                     if (other === frameWindow) {
                         continue;
                     }
                     const target = path ? findElementByPath(other.document, path) : other.document.scrollingElement;
                     if (target) {
+                        echoes.set(target, performance.now() + 100);
                         target.scrollTop = ratio * (target.scrollHeight - target.clientHeight);
                     }
                 }
@@ -206,6 +207,12 @@ export function CompareCanvas({
     const frameRefs = useRef<Array<HTMLIFrameElement | null>>([]);
     // A variant's frame reloads when its settings change, and opens on the page the frames show by then
     const pageRef = useRef(startPage);
+    // A page, reload, or prototype chosen outside the frames is the page new frames open on, already in this render
+    const openedRef = useRef({ startPage, reloadKey, storyUrl });
+    if (openedRef.current.startPage !== startPage || openedRef.current.reloadKey !== reloadKey || openedRef.current.storyUrl !== storyUrl) {
+        openedRef.current = { startPage, reloadKey, storyUrl };
+        pageRef.current = startPage;
+    }
 
     const frames: CompareFrame[] =
         mode === "viewports"
@@ -241,13 +248,10 @@ export function CompareCanvas({
     });
 
     useEffect(() => {
-        if (startPage === pageRef.current) {
-            return;
-        }
-        pageRef.current = startPage;
         for (const frame of frameRefs.current.slice(0, frames.length)) {
-            if (frame?.contentWindow) {
-                frame.contentWindow.location.hash = startPage;
+            const frameWindow = frame?.contentWindow;
+            if (frameWindow && frameWindow.location.href !== "about:blank" && frameWindow.location.hash.slice(1) !== startPage) {
+                frameWindow.location.hash = startPage;
             }
         }
         // Only a page opened from outside the frames, e.g. in the prototypes panel, is sent to them

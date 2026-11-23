@@ -3,7 +3,7 @@ import { createContext, type Dispatch, type PropsWithChildren, type SetStateActi
 import { ToastViewport } from "../../../../components/toast/ToastViewport";
 import { type NewToast, useToasts } from "../../../../components/toast/useToasts";
 import { useUndoToast } from "../../../../components/undoToast/useUndoToast";
-import { applyScenario, lengthen, type Scenario } from "../../../scenario";
+import { applyScenario, getCopyId, lengthen, type Scenario } from "../../../scenario";
 import { type AssetKind, type LibraryAsset, libraryAssets, type LibraryFolder, libraryFolders } from "./assetLibraryData";
 
 export type LibraryView = "tiles" | "list";
@@ -65,7 +65,7 @@ export function AssetLibraryProvider({
 }: PropsWithChildren<{ initial?: Partial<LibraryLocation>; scenario?: Scenario }>) {
     const [assets, setAssets] = useState(() =>
         applyScenario(libraryAssets, scenario, {
-            copy: (asset, round) => ({ ...asset, id: `${asset.id}-${round}`, name: asset.name.replace(/(\.\w+)$/, `-${round + 1}$1`) }),
+            copy: (asset, round) => ({ ...asset, id: getCopyId(asset.id, round), name: asset.name.replace(/(\.\w+)$/, `-${round + 1}$1`) }),
             stretch: (asset) => ({ ...asset, name: lengthen(asset.name) }),
         }),
     );

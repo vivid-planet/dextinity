@@ -35,12 +35,19 @@ function hasOwnText(element: Element) {
     return readOwnText(element).trim() !== "";
 }
 
+// Editing a text that also holds texts of its child elements would change those too, which the change doesn't keep
+function holdsOnlyOwnText(element: Element) {
+    return hasOwnText(element) && Array.from(element.children).every((child) => child.textContent?.trim() === "");
+}
+
 // Changes the text nodes instead of replacing them, so that React can still update the ones it rendered
 function writeOwnText(element: Element, text: string) {
     const [first, ...rest] = getOwnTextNodes(element);
     if (first) {
         first.nodeValue = text;
         rest.forEach((node) => (node.nodeValue = ""));
+    } else {
+        element.append(element.ownerDocument.createTextNode(text));
     }
 }
 
@@ -118,15 +125,30 @@ export function CommentLayer({ frameDocument, scale, notePage }: { frameDocument
         setDraft(comment.text);
     }
 
-    function close() {
-        const comment = comments.find((candidate) => candidate.id === openId);
-        if (comment && draft.trim() === "") {
-            commentList.update((items) => items.filter((item) => item.id !== comment.id));
-        } else if (comment) {
-            commentList.update((items) => items.map((item) => (item.id === comment.id ? { ...item, text: draft.trim() } : item)));
+    function save(id: string | null, text: string) {
+        if (text.trim() === "") {
+            commentList.update((items) => items.filter((item) => item.id !== id));
+        } else {
+            commentList.update((items) => items.map((item) => (item.id === id ? { ...item, text: text.trim() } : item)));
         }
+    }
+
+    function close() {
+        save(openId, draft);
         setOpenId(null);
     }
+
+    // Switching to another tool keeps what was typed, and drops a pin that never got a comment
+    const openDraftRef = useRef({ openId, draft });
+    openDraftRef.current = { openId, draft };
+    useEffect(
+        () => () => {
+            if (openDraftRef.current.openId) {
+                save(openDraftRef.current.openId, openDraftRef.current.draft);
+            }
+        },
+        [],
+    );
 
     useBlockedClicks(frameDocument, (event) => {
         const element = asElement(event.target);
@@ -286,7 +308,7 @@ export function TextLayer({ frameDocument, notePage }: { frameDocument: Document
         frameDocument,
         (event) => {
             const element = asElement(event.target);
-            if (!element || !hasOwnText(element) || (element as HTMLElement).isContentEditable) {
+            if (!element || !holdsOnlyOwnText(element) || (element as HTMLElement).isContentEditable) {
                 return;
             }
             const editable = element as HTMLElement;
@@ -296,11 +318,17 @@ export function TextLayer({ frameDocument, notePage }: { frameDocument: Document
                 .find((change) => isOnPage(change, notePage.prototypeId, notePage.page) && change.path.join() === path.join());
             const original = existing?.original ?? readOwnText(editable);
             const before = readOwnText(editable);
+            const linesBefore = new Set(editable.querySelectorAll(":scope > br"));
 
             function finish(keep: boolean) {
                 editable.removeEventListener("blur", handleBlur);
                 editable.removeEventListener("keydown", handleKey);
                 editable.removeAttribute("contenteditable");
+                // Emptying a text while editing can leave a line break in place of it, and no text node to write to again
+                editable.querySelectorAll(":scope > br").forEach((line) => !linesBefore.has(line) && line.remove());
+                if (getOwnTextNodes(editable).length === 0) {
+                    writeOwnText(editable, "");
+                }
                 if (!keep) {
                     writeOwnText(editable, before);
                     return;
@@ -404,6 +432,11 @@ export function useTextChanges({
             return;
         }
         const apply = () => {
+            // Until the workspace follows a page change, the frame already shows the next page, which the changes aren't for
+            const shownPage = decodeURIComponent(frameDocument.defaultView?.location.hash.slice(1) ?? "");
+            if (shownPage !== "" && shownPage !== page) {
+                return;
+            }
             for (const change of pageChanges) {
                 const element = findElementByPath(frameDocument, change.path);
                 if (element && !(element as HTMLElement).isContentEditable && readOwnText(element) === change.original) {

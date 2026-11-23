@@ -16,7 +16,7 @@ import { Pagination } from "../../../components/pagination/Pagination";
 import { StatusIndicator } from "../../../components/statusIndicator/StatusIndicator";
 import { PageTypeShell } from "../../pageTypes/PageTypeShell";
 import { usePrototypeNavigation } from "../../pageTypes/prototypeNavigation";
-import { applyScenario, lengthen, ScenarioContent, useScenario } from "../../scenario";
+import { applyScenario, getCopyId, lengthen, ScenarioContent, useScenario } from "../../scenario";
 import { StoryTable, type StoryTableColumn } from "../../StoryTable";
 import { type ContentStatus, type NewsArticle, newsArticles, newsCategories } from "./cmsData";
 import styles from "./cmsPrototype.module.scss";
@@ -81,7 +81,7 @@ export function CmsNews() {
     const [pageSize, setPageSize] = useState(10);
     const scenario = useScenario();
     const articles = applyScenario(newsArticles, scenario, {
-        copy: (article, round) => ({ ...article, id: `${article.id}-${round}`, title: `${article.title} (${round + 1})` }),
+        copy: (article, round) => ({ ...article, id: getCopyId(article.id, round), title: `${article.title} (${round + 1})` }),
         stretch: (article) => ({ ...article, title: lengthen(article.title), author: lengthen(article.author) }),
     });
 

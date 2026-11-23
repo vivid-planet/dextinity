@@ -110,8 +110,11 @@ export function PrototypeApp({ prototype, navGroups, renderPage }: PrototypeAppP
 
     useEffect(() => {
         document.title = `${customPage?.title ?? prototype.getPageLabel(pageId)} · ${prototype.appName}`;
-        window.scrollTo(0, 0);
     }, [prototype, pageId, customPage?.title]);
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [pageId]);
 
     const page = customPage ? renderCustomPage(customPage) : renderPage(pageId);
 

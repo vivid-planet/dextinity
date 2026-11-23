@@ -35,6 +35,7 @@ import { workspacePrototypes } from "./prototypes";
 import { type InspectedComponent, useCanvasInspector } from "./useCanvasInspector";
 import { useFramePage } from "./useFramePage";
 import { workspaceLogo } from "./workspaceLogo";
+import { commentList, textChangeList } from "./workspaceNotes";
 import styles from "./WorkspaceShell.module.scss";
 import { defaultWorkspaceState, useWorkspaceState, type WorkspaceCompare, type WorkspaceMode } from "./workspaceState";
 import { colorSchemeOptions, densityOptions, minFrameSize, SettingMenu, ViewportControl, zoomOptions } from "./WorkspaceToolbarControls";
@@ -295,6 +296,11 @@ export function WorkspaceShell() {
     function removeCurrentPage() {
         if (currentCustomPage && prototypeId) {
             customPageList.update((pages) => pages.filter((page) => page !== currentCustomPage));
+            // Its comments and text changes would otherwise stay in the lists, pointing to a page that's gone
+            const isOnRemovedPage = (note: { prototypeId: string; page: string }) =>
+                note.prototypeId === prototypeId && note.page === currentCustomPage.id;
+            commentList.update((comments) => comments.filter((comment) => !isOnRemovedPage(comment)));
+            textChangeList.update((changes) => changes.filter((change) => !isOnRemovedPage(change)));
             selectPrototypeNode(getPrototypePageNodeId(prototypeId, currentWorkspacePrototype?.startPageId ?? ""));
         }
     }
@@ -641,7 +647,13 @@ export function WorkspaceShell() {
                                             title="Rename the page"
                                             defaultValue={currentCustomPage.title}
                                             size={Math.max(8, currentCustomPage.title.length)}
-                                            onBlur={(event) => renameCurrentPage(event.currentTarget.value)}
+                                            onBlur={(event) => {
+                                                renameCurrentPage(event.currentTarget.value);
+                                                // An empty name isn't kept, so the field shows the name again
+                                                if (event.currentTarget.value.trim() === "") {
+                                                    event.currentTarget.value = currentCustomPage.title;
+                                                }
+                                            }}
                                             onKeyDown={(event) => {
                                                 if (event.key === "Enter") {
                                                     event.currentTarget.blur();

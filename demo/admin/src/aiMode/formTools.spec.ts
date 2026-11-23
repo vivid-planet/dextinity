@@ -178,6 +178,17 @@ describe("edit_<entity>_form_blocks", () => {
         expect(clearTextSelection).toHaveBeenCalledTimes(1);
     });
 
+    it("refers the agent to the form's state for the keys of the blocks, not to the page editor's", async () => {
+        const { tools, call } = createBlocksTools();
+
+        const { inputSchema } = findTool(tools, "edit_news_form_blocks");
+        expect(JSON.stringify(inputSchema)).toContain("get_news_form_state");
+        expect(JSON.stringify(inputSchema)).not.toContain("get_page_state");
+        await expect(async () => call({ field: "content", operations: [{ operation: "remove" }] })).rejects.toThrow(
+            'Operation 1 ("remove") needs a "key", the key of the block to act on, as get_news_form_state reports it.',
+        );
+    });
+
     it("refuses a field that isn't a blocks field", async () => {
         const { call } = createBlocksTools();
 

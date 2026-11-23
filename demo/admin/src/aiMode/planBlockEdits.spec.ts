@@ -2,7 +2,7 @@ import type { BlockContext, BlockInterface } from "@dextinity/cms-admin";
 import { describe, expect, it } from "vitest";
 
 import type { BlocksBlockChild } from "./blockProps";
-import { planBlockEdits } from "./editBlocks";
+import { planBlockEdits } from "./planBlockEdits";
 
 // Converts like a block that declares the fields "text" and "alignment": fields it does not declare are dropped on the
 // way in.

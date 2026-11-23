@@ -12,9 +12,9 @@ import {
     replaceChild,
     setChildVisibility,
 } from "./blockChildren";
-import { type BlocksBlockChild, describeType, findBlockByKey } from "./blockProps";
+import { type BlocksBlockChild, findBlockByKey } from "./blockProps";
 
-type BlockEditOperation =
+export type BlockEditOperation =
     | {
           operation: "insert";
           /** A key of the target blocks block's `supportedBlocks`, e.g. "heading". */
@@ -105,91 +105,10 @@ type EditBlocksResult = {
 
 export type EditBlocks = (request: EditBlocksRequest) => Promise<EditBlocksResult>;
 
-const blockEditOperations = ["insert", "update", "remove", "move", "show", "hide"] as const;
-
-const blockKeyPurpose = "the key of the block to act on, as get_page_state reports it";
-
-const isBlockEditOperation = (value: unknown): value is BlockEditOperation["operation"] =>
-    blockEditOperations.some((candidate) => candidate === value);
-
 // The positions the agent reads back are 1-based: it counts the operations it wrote, not the array
 // indexes it did not think about.
-const describeOperation = (position: number, operation?: string) =>
+export const describeOperation = (position: number, operation?: string) =>
     operation ? `Operation ${position + 1} ("${operation}")` : `Operation ${position + 1}`;
-
-/**
- * The schema states the required fields per operation, but a tool schema is guidance to the agent
- * rather than something the host enforces, and a missing field otherwise surfaces one step later as
- * a lookup for the empty string.
- */
-const requireField = ({
-    value,
-    field,
-    purpose,
-    position,
-    operation,
-}: {
-    value: unknown;
-    field: string;
-    purpose: string;
-    position: number;
-    operation: string;
-}): string => {
-    if (typeof value !== "string" || value.length === 0) {
-        throw new Error(`${describeOperation(position, operation)} needs a "${field}", ${purpose}.`);
-    }
-    return value;
-};
-
-/**
- * Only the shape of an operation is checked here — whether a key resolves, whether a type exists, and
- * whether the props fit are questions for the page's actual content, answered while the batch is
- * planned.
- */
-export function asBlockEditOperations(value: unknown): BlockEditOperation[] {
-    if (!Array.isArray(value)) {
-        throw new Error(`"operations" must be an array of the changes to apply, but was ${describeType(value)}.`);
-    }
-    if (value.length === 0) {
-        throw new Error(`"operations" is empty, so there is nothing to apply.`);
-    }
-
-    return value.map((entry, position) => {
-        if (entry === null || typeof entry !== "object" || Array.isArray(entry)) {
-            throw new Error(`${describeOperation(position)} must be an object describing one change, but was ${describeType(entry)}.`);
-        }
-
-        const { operation, key, type, props, index } = entry as Record<string, unknown>;
-        if (!isBlockEditOperation(operation)) {
-            throw new Error(`${describeOperation(position)} has no valid "operation". It must be one of: ${blockEditOperations.join(", ")}.`);
-        }
-
-        switch (operation) {
-            case "insert":
-                return {
-                    operation,
-                    type: requireField({ value: type, field: "type", purpose: "the type of block to insert", position, operation }),
-                    props,
-                    index: typeof index === "number" ? index : undefined,
-                };
-            case "update":
-                return { operation, key: requireField({ value: key, field: "key", purpose: blockKeyPurpose, position, operation }), props };
-            case "remove":
-                return { operation, key: requireField({ value: key, field: "key", purpose: blockKeyPurpose, position, operation }) };
-            case "move":
-                return {
-                    operation,
-                    key: requireField({ value: key, field: "key", purpose: blockKeyPurpose, position, operation }),
-                    // Not defaulted: clampMoveIndex rejects the NaN a missing or non-numeric index
-                    // produces, and names what the field is for.
-                    index: Number(index),
-                };
-            case "show":
-            case "hide":
-                return { operation, key: requireField({ value: key, field: "key", purpose: blockKeyPurpose, position, operation }) };
-        }
-    });
-}
 
 /**
  * The operations are planned in order against a working copy, so each one sees the content as the
@@ -221,7 +140,7 @@ export async function planBlockEdits({
     supportedBlocks: Record<string, BlockInterface>;
     /**
      * The blocks an insertion may add, when the content scope offers fewer than the blocks block supports:
-     * blocks already on the page can still be edited, as in the Admin's own block picker.
+     * blocks already there can still be edited, as in the Admin's own block picker.
      */
     insertableBlocks?: Record<string, BlockInterface>;
     /** The `additionalItemFields` of the blocks block, whose default values an inserted block starts with. */

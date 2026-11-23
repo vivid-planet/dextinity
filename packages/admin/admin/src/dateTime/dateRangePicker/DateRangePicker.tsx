@@ -9,7 +9,7 @@ import { OpenPickerAdornment } from "../../common/OpenPickerAdornment";
 import { ReadOnlyAdornment } from "../../common/ReadOnlyAdornment";
 import { createComponentSlot } from "../../helpers/createComponentSlot";
 import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
-import { getDateValue, getIsoDateString } from "../utils";
+import { getDateValue, getIsoDateString, isValidDate } from "../utils";
 
 /**
  * Represents a date range with start and end dates in ISO 8601 format (YYYY-MM-DD).
@@ -102,14 +102,18 @@ export const DateRangePicker = (inProps: DateRangePickerProps) => {
                 onClose={() => setOpen(false)}
                 value={dateRangeValue}
                 onChange={([startDate, endDate]) => {
-                    if (!startDate && !endDate) {
+                    // MUI X keeps the typed text only when the value changes, so an invalid date is published as empty instead of being ignored
+                    const validStartDate = startDate && isValidDate(startDate) ? startDate : null;
+                    const validEndDate = endDate && isValidDate(endDate) ? endDate : null;
+
+                    if (!validStartDate && !validEndDate) {
                         onChange?.(undefined);
                         return;
                     }
 
                     onChange?.({
-                        start: startDate ? getIsoDateString(startDate) : null,
-                        end: endDate ? getIsoDateString(endDate) : null,
+                        start: validStartDate ? getIsoDateString(validStartDate) : null,
+                        end: validEndDate ? getIsoDateString(validEndDate) : null,
                     });
                 }}
                 {...slotProps?.root}

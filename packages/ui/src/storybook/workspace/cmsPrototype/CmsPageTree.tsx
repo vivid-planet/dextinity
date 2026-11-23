@@ -440,7 +440,7 @@ export function CmsPageTree() {
                     <PageHeader
                         eyebrow={`Austria · German · ${allPages.length} pages`}
                         title="Page tree"
-                        subtitle={`${countFor("unpublished")} unpublished · ${countFor("archived")} archived`}
+                        subtitle={`${allPages.filter((page) => statusOf(page) === "unpublished").length} unpublished · ${allPages.filter((page) => statusOf(page) === "archived").length} archived`}
                         primaryAction={{ label: "New page", icon: <Icon name="plus" />, onClick: () => openNewPageDialog(selected?.id ?? null) }}
                     />
                 }

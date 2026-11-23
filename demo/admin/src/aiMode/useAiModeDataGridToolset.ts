@@ -7,7 +7,7 @@ import { type AiModeDataGridState, createDataGridTools } from "./dataGridTools";
 
 /**
  * Lets the AI Mode read and change the view of a grid with server-side filtering, sorting, and pagination, and open its
- * rows. Call it in the component that renders the grid, with the props of `useDataGridRemote` and the rows of the grid's query.
+ * rows if they have a form. Call it in the component that renders the grid, with the props of `useDataGridRemote` and the rows of the grid's query.
  */
 export function useAiModeDataGridToolset({
     entityName,
@@ -17,7 +17,8 @@ export function useAiModeDataGridToolset({
     rows,
     totalCount,
     isLoading,
-    openForm,
+    openEditForm,
+    openAddForm,
 }: {
     /** Names the toolset and the tools, in snake case, e.g. "news" or "product_variant". */
     entityName: string;
@@ -28,8 +29,10 @@ export function useAiModeDataGridToolset({
     rows: Array<Record<string, unknown>>;
     totalCount?: number;
     isLoading: boolean;
-    /** Opens the form of the entity with the given ID, or the form for a new one without. */
-    openForm: (id?: string) => void;
+    /** Opens the form of the entity with the given ID. Leave it out for a grid whose rows have no form. */
+    openEditForm?: (id: string) => void;
+    /** Opens the form for a new entity. Leave it out for a grid without one. */
+    openAddForm?: () => void;
 }) {
     // Read by the tools while they wait for a change of the view to render.
     const state: AiModeDataGridState = { ...dataGridProps, filterModel: dataGridProps.filterModel ?? { items: [] } };
@@ -40,7 +43,7 @@ export function useAiModeDataGridToolset({
 
     useAiModeToolset({
         id: `${entityName}_grid`,
-        description: `The grid of the ${entityLabel}, where the user finds them and opens one to edit it.`,
+        description: `The grid of the ${entityLabel}, where the user finds them${openEditForm ? " and opens one to edit it" : ""}.`,
         context: {
             search: filterModel.quickFilterValues?.join(" ") ?? "",
             filters: filterModel.items.length,
@@ -48,6 +51,16 @@ export function useAiModeDataGridToolset({
             page: paginationModel.page,
             totalCount,
         },
-        tools: createDataGridTools({ entityName, entityLabel, columns, getState: () => stateRef.current, rows, totalCount, isLoading, openForm }),
+        tools: createDataGridTools({
+            entityName,
+            entityLabel,
+            columns,
+            getState: () => stateRef.current,
+            rows,
+            totalCount,
+            isLoading,
+            openEditForm,
+            openAddForm,
+        }),
     });
 }

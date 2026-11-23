@@ -33,9 +33,14 @@ function createGridState() {
     return { getState: () => state };
 }
 
-function createTools({ isLoading = false }: { isLoading?: boolean } = {}) {
+function createTools({
+    isLoading = false,
+    forms = { openEditForm: vi.fn(), openAddForm: vi.fn() },
+}: {
+    isLoading?: boolean;
+    forms?: { openEditForm?: (id: string) => void; openAddForm?: () => void };
+} = {}) {
     const grid = createGridState();
-    const openForm = vi.fn();
     const tools = createDataGridTools({
         entityName: "news",
         entityLabel: "news articles",
@@ -44,10 +49,10 @@ function createTools({ isLoading = false }: { isLoading?: boolean } = {}) {
         rows,
         totalCount: 1,
         isLoading,
-        openForm,
+        ...forms,
     });
     const call = (name: string, args: Record<string, unknown> = {}) => findTool(tools, name).handler(args, { clearTextSelection: vi.fn() });
-    return { ...grid, tools, call, openForm };
+    return { ...grid, tools, call };
 }
 
 function findTool(tools: AiModeTool[], name: string) {
@@ -147,11 +152,30 @@ it("runs every tool without the user's approval, because none changes data", () 
 
 describe("open_<entity>_form", () => {
     it("opens the form of a row, or the form for a new one without an ID", () => {
-        const { call, openForm } = createTools();
+        const openEditForm = vi.fn();
+        const openAddForm = vi.fn();
+        const { call } = createTools({ forms: { openEditForm, openAddForm } });
 
         call("open_news_form", { id: "1" });
         call("open_news_form");
 
-        expect(openForm.mock.calls).toEqual([["1"], []]);
+        expect(openEditForm.mock.calls).toEqual([["1"]]);
+        expect(openAddForm).toHaveBeenCalledTimes(1);
+    });
+
+    it("isn't offered for a grid without a form, nor named by the rows tool", () => {
+        const { tools } = createTools({ forms: {} });
+
+        expect(tools.map(({ name }) => name)).not.toContain("open_news_form");
+        expect(findTool(tools, "get_news_grid_rows").description).not.toContain("open_news_form");
+    });
+
+    it("requires an ID for a grid without a form for a new one", () => {
+        const openEditForm = vi.fn();
+        const { tools, call } = createTools({ forms: { openEditForm } });
+
+        expect(findTool(tools, "open_news_form").inputSchema).toMatchObject({ required: ["id"] });
+        expect(() => call("open_news_form")).toThrow('"id" is missing.');
+        expect(openEditForm).not.toHaveBeenCalled();
     });
 });

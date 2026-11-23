@@ -132,7 +132,8 @@ export function createDataGridTools({
     rows,
     totalCount,
     isLoading,
-    openForm,
+    openEditForm,
+    openAddForm,
 }: {
     /** Names the tools, in snake case, e.g. "news" or "product_variant". */
     entityName: string;
@@ -145,10 +146,13 @@ export function createDataGridTools({
     totalCount?: number;
     /** Whether the grid's query is loading, e.g. right after the view changed, so that the rows are those of the previous view. */
     isLoading: boolean;
-    /** Opens the form of the entity with the given ID, or the form for a new one without. */
-    openForm: (id?: string) => void;
+    /** Opens the form of the entity with the given ID. Left out for a grid whose rows have no form. */
+    openEditForm?: (id: string) => void;
+    /** Opens the form for a new entity. Left out for a grid without one. */
+    openAddForm?: () => void;
 }): AiModeTool[] {
     const dataColumns = columns.filter(isDataColumn);
+    const formTool = createOpenFormTool({ entityName, entityLabel, openEditForm, openAddForm });
 
     return [
         {
@@ -156,7 +160,7 @@ export function createDataGridTools({
             description:
                 `Get the ${entityLabel} the grid open in the admin shows: the rows of the current page, the total number of rows, and the grid's search, filters, sorting, and page. ` +
                 `A row has its ID and the values of the columns ${dataColumns.map(({ field, headerName }) => (headerName ? `${field} (${headerName})` : field)).join(", ")} that are text, numbers, or booleans. ` +
-                `To search, filter, sort, or page, use set_${entityName}_grid_view; to open a row, use open_${entityName}_form.`,
+                `To search, filter, sort, or page, use set_${entityName}_grid_view${openEditForm ? `; to open a row, use open_${entityName}_form` : ""}.`,
             inputSchema: { type: "object", properties: {} },
             readOnlyHint: true,
             handler: () => {
@@ -266,30 +270,69 @@ export function createDataGridTools({
                     : `The ${entityLabel} grid already shows this view.`;
             },
         },
-        {
-            name: `open_${entityName}_form`,
-            description:
-                `Open the form of one of the ${entityLabel}, e.g. a row found with get_${entityName}_grid_rows, or without an ID, the form for a new one. ` +
-                "Once it is open, the form offers its own tools to read and fill it in.",
-            inputSchema: {
-                type: "object",
-                properties: { id: { type: "string", description: "The ID of the row to open. Leave it out to open the form for a new one." } },
-            },
-            // Navigating changes no data, so the chat runs it without asking.
-            readOnlyHint: true,
-            handler: (args) => {
-                if (args.id === undefined) {
-                    openForm();
-                    return `Opened the form for a new one of the ${entityLabel}.`;
-                }
-
-                const id = String(args.id);
-                if (id === "") {
-                    throw new Error('"id" must be the ID of a row, or be left out to open the form for a new one.');
-                }
-                openForm(id);
-                return `Opened the form of the row ${id}.`;
-            },
-        },
+        ...(formTool ? [formTool] : []),
     ];
+}
+
+function createOpenFormTool({
+    entityName,
+    entityLabel,
+    openEditForm,
+    openAddForm,
+}: {
+    entityName: string;
+    entityLabel: string;
+    openEditForm?: (id: string) => void;
+    openAddForm?: () => void;
+}): AiModeTool | null {
+    if (!openEditForm && !openAddForm) {
+        return null;
+    }
+
+    const opens = [
+        openEditForm ? `the form of one of the ${entityLabel}, e.g. a row found with get_${entityName}_grid_rows` : null,
+        openAddForm ? (openEditForm ? "or without an ID, the form for a new one" : `the form for a new one of the ${entityLabel}`) : null,
+    ].filter((part) => part !== null);
+
+    return {
+        name: `open_${entityName}_form`,
+        description: `Open ${opens.join(", ")}. Once it is open, the form offers its own tools to read and fill it in.`,
+        inputSchema: {
+            type: "object",
+            properties: openEditForm
+                ? {
+                      id: {
+                          type: "string",
+                          description: openAddForm
+                              ? "The ID of the row to open. Leave it out to open the form for a new one."
+                              : "The ID of the row to open.",
+                      },
+                  }
+                : {},
+            ...(openEditForm && !openAddForm ? { required: ["id"] } : {}),
+        },
+        // Navigating changes no data, so the chat runs it without asking.
+        readOnlyHint: true,
+        handler: (args) => {
+            if (args.id === undefined) {
+                if (!openAddForm) {
+                    throw new Error(`"id" is missing. The ${entityLabel} have no form for a new one, so pass the ID of the row to open.`);
+                }
+                openAddForm();
+                return `Opened the form for a new one of the ${entityLabel}.`;
+            }
+
+            if (!openEditForm) {
+                throw new Error(`The ${entityLabel} grid opens no rows, only the form for a new one, so leave out "id".`);
+            }
+            const id = String(args.id);
+            if (id === "") {
+                throw new Error(
+                    openAddForm ? '"id" must be the ID of a row, or be left out to open the form for a new one.' : '"id" must be the ID of a row.',
+                );
+            }
+            openEditForm(id);
+            return `Opened the form of the row ${id}.`;
+        },
+    };
 }

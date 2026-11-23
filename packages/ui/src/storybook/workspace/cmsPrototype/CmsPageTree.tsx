@@ -9,6 +9,7 @@ import { EmptyState } from "../../../components/emptyState/EmptyState";
 import { FilterBar } from "../../../components/filterBar/FilterBar";
 import { FilterChip } from "../../../components/filterChip/FilterChip";
 import { Icon } from "../../../components/icon/Icon";
+import type { IconName } from "../../../components/icon/iconRegistry";
 import { IconButton } from "../../../components/iconButton/IconButton";
 import { useKeyboardShortcutPlatform } from "../../../components/keyboardShortcut/keyboardShortcutPlatform";
 import { matchesKeyboardShortcut } from "../../../components/keyboardShortcut/useKeyboardShortcut";
@@ -21,6 +22,7 @@ import { MenuLinkItem } from "../../../components/menu/MenuLinkItem";
 import { MenuRadioGroup } from "../../../components/menu/MenuRadioGroup";
 import { MenuRadioItem } from "../../../components/menu/MenuRadioItem";
 import { MenuSeparator } from "../../../components/menu/MenuSeparator";
+import { MenuSubmenu } from "../../../components/menu/MenuSubmenu";
 import { PageHeader } from "../../../components/pageHeader/PageHeader";
 import { Panel } from "../../../components/panel/Panel";
 import { StatusIndicator } from "../../../components/statusIndicator/StatusIndicator";
@@ -196,6 +198,18 @@ function PageDetail({ page, pages, actions }: { page: SitePage; pages: SitePage[
                 >
                     Published
                 </Switch>
+                {status === "archived" && (
+                    <Button
+                        variant="outlined"
+                        color="secondary"
+                        size="small"
+                        startIcon={<Icon name="restore" />}
+                        className={styles.restoreButton}
+                        onClick={() => actions.onStatusChange(page, "unpublished")}
+                    >
+                        Restore page
+                    </Button>
+                )}
                 <KeyValueList
                     items={[
                         { key: "Status", value: <StatusIndicator status={status} /> },
@@ -225,6 +239,71 @@ function PageDetail({ page, pages, actions }: { page: SitePage; pages: SitePage[
     );
 }
 
+/** Takes the detail card's place while several pages are selected: what the bar's actions will act on. */
+function SelectionDetail({
+    selected,
+    pages,
+    onRemove,
+    onClear,
+}: {
+    selected: SitePage[];
+    pages: SitePage[];
+    onRemove: (id: string) => void;
+    onClear: () => void;
+}) {
+    const countOf = (status: ContentStatus) => selected.filter((page) => statusOf(page) === status).length;
+    const subpages =
+        withDescendantIds(
+            pages,
+            selected.map((page) => page.id),
+        ).length - selected.length;
+    return (
+        <Panel
+            title={`${selected.length} pages selected`}
+            actions={
+                <Button variant="text" color="secondary" size="small" onClick={onClear}>
+                    Clear
+                </Button>
+            }
+        >
+            <div className={styles.detail}>
+                <KeyValueList
+                    items={[
+                        ...(["published", "unpublished", "archived"] as ContentStatus[]).map((status) => ({
+                            key: statusLabels[status],
+                            value: <StatusIndicator status={status}>{String(countOf(status))}</StatusIndicator>,
+                        })),
+                        { key: "Hidden in menu", value: selected.filter((page) => page.hiddenInMenu === true).length },
+                        { key: "Subpages below", value: subpages },
+                    ]}
+                />
+                <ul className={styles.selectionList} aria-label="Selected pages">
+                    {selected.map((page) => (
+                        <li key={page.id} className={styles.selectionItem}>
+                            <span className={styles.selectionName}>
+                                <span>{page.label}</span>
+                                <span className={styles.selectionPath}>{page.path}</span>
+                            </span>
+                            <IconButton
+                                aria-label={`Remove “${page.label}” from the selection`}
+                                variant="text"
+                                color="secondary"
+                                size="small"
+                                onClick={() => onRemove(page.id)}
+                            >
+                                <Icon name="close" />
+                            </IconButton>
+                        </li>
+                    ))}
+                </ul>
+                <Typography variant="small">
+                    The bar below acts on all of them.{subpages > 0 ? ` Delete also removes the ${describePages(subpages, "subpage")} below.` : ""}
+                </Typography>
+            </div>
+        </Panel>
+    );
+}
+
 /** The rows a person sees: all pages of expanded parents, or, while filtering, the pages that match. */
 function collectVisibleIds(pages: SitePage[], expandedIds: string[], matches: ((page: SitePage) => boolean) | undefined): string[] {
     if (matches != null) {
@@ -247,6 +326,7 @@ export function CmsPageTree() {
     const [checkedIds, setCheckedIds] = useState<string[]>([]);
     const [copiedIds, setCopiedIds] = useState<string[]>([]);
     const [newPageDialog, setNewPageDialog] = useState({ key: 0, open: false, parentId: null as string | null });
+    const [openBulkMenu, setOpenBulkMenu] = useState<"status" | "menu" | "copy">();
     const [isCopyToScopeOpen, setIsCopyToScopeOpen] = useState(false);
     const { toasts, add: addToast, dismiss } = useToasts();
     const undoToast = useUndoToast({ addToast });
@@ -298,26 +378,33 @@ export function CmsPageTree() {
         change(setStatus(pages, [page.id], status), `“${page.label}” ${verb}`);
     }
 
-    /** Publishing and unpublishing leave archived pages alone; they have to be restored first. */
-    function bulkPublishAction(status: "published" | "unpublished", label: string): BulkActionBarAction {
-        const eligible = checkedPages.filter((page) => statusOf(page) !== "archived" && statusOf(page) !== status);
-        const skipped = checkedPages.filter((page) => statusOf(page) === "archived").length;
-        return {
-            label,
-            icon: <Icon name={status === "published" ? "check" : "eye-off"} />,
-            disabled: eligible.length === 0,
-            disabledReason: eligible.length === 0 ? `The selected pages are already ${status} or archived` : undefined,
-            onClick: () =>
-                change(
-                    setStatus(
-                        pages,
-                        eligible.map((page) => page.id),
-                        status,
-                    ),
-                    `${nameOrCount(eligible)} ${status === "published" ? "live" : "unpublished"}${skipped > 0 ? `, ${skipped} archived skipped` : ""}`,
-                    () => setCheckedIds([]),
-                ),
-        };
+    /**
+     * An item of the bulk bar's status menu. Publishing and unpublishing leave archived pages alone; they have to be restored first.
+     */
+    function bulkStatusItem(status: ContentStatus, label: string, icon: IconName) {
+        const eligible = checkedPages.filter((page) => statusOf(page) !== status && (status === "archived" || statusOf(page) !== "archived"));
+        const skipped = status === "archived" ? 0 : checkedPages.filter((page) => statusOf(page) === "archived").length;
+        const verb = status === "published" ? "live" : status;
+        return (
+            <MenuItem
+                key={status}
+                label={label}
+                icon={<Icon name={icon} />}
+                disabled={eligible.length === 0}
+                disabledReason={eligible.length === 0 ? `The selected pages are already ${status}${skipped > 0 ? " or archived" : ""}` : undefined}
+                onClick={() =>
+                    change(
+                        setStatus(
+                            pages,
+                            eligible.map((page) => page.id),
+                            status,
+                        ),
+                        `${nameOrCount(eligible)} ${verb}${skipped > 0 ? `, ${skipped} archived skipped` : ""}`,
+                        () => setCheckedIds([]),
+                    )
+                }
+            />
+        );
     }
 
     function copyToClipboard(ids: string[]) {
@@ -359,69 +446,96 @@ export function CmsPageTree() {
         copiedCount: copiedIds.filter((id) => findInTree(pages, id) != null).length,
     };
 
-    const allHidden = checkedPages.length > 0 && checkedPages.every((page) => page.hiddenInMenu === true);
-    const toArchive = checkedPages.filter((page) => statusOf(page) !== "archived");
+    const hiddenCount = checkedPages.filter((page) => page.hiddenInMenu === true).length;
 
+    function setHiddenInMenu(hiddenInMenu: boolean) {
+        const changed = checkedPages.filter((page) => (page.hiddenInMenu === true) !== hiddenInMenu);
+        change(
+            updatePages(
+                pages,
+                changed.map((page) => page.id),
+                (page) => ({ ...page, hiddenInMenu }),
+            ),
+            `${nameOrCount(changed)} ${hiddenInMenu ? "hidden in" : "shown in"} the menu`,
+            () => setCheckedIds([]),
+        );
+    }
+
+    // Related actions share a menu, so the bar stays one short row
     const bulkActions: BulkActionBarAction[] = [
-        bulkPublishAction("published", "Publish"),
-        bulkPublishAction("unpublished", "Unpublish"),
         {
-            label: "Archive",
-            icon: <Icon name="archive" />,
-            disabled: toArchive.length === 0,
-            disabledReason: toArchive.length === 0 ? "The selected pages are already archived" : undefined,
-            onClick: () =>
-                change(
-                    setStatus(
-                        pages,
-                        toArchive.map((page) => page.id),
-                        "archived",
-                    ),
-                    `${nameOrCount(toArchive)} archived`,
-                    () => setCheckedIds([]),
-                ),
+            label: "Status",
+            icon: <Icon name="check-circle" />,
+            open: openBulkMenu === "status",
+            onOpenChange: (open) => setOpenBulkMenu(open ? "status" : undefined),
+            menu: [
+                bulkStatusItem("published", "Publish", "check"),
+                bulkStatusItem("unpublished", "Unpublish", "eye-off"),
+                bulkStatusItem("archived", "Archive", "archive"),
+            ],
         },
         {
-            label: allHidden ? "Show in menu" : "Hide in menu",
-            icon: <Icon name={allHidden ? "invisible-item-show" : "invisible-item-hide"} />,
-            onClick: () =>
-                change(
-                    updatePages(pages, checkedIds, (page) => ({ ...page, hiddenInMenu: !allHidden })),
-                    `${nameOrCount(checkedPages)} ${allHidden ? "shown in" : "hidden in"} the menu`,
-                    () => setCheckedIds([]),
-                ),
+            label: "Menu",
+            icon: <Icon name="list" />,
+            open: openBulkMenu === "menu",
+            onOpenChange: (open) => setOpenBulkMenu(open ? "menu" : undefined),
+            menu: (
+                <>
+                    <MenuItem
+                        label="Show in menu"
+                        icon={<Icon name="invisible-item-show" />}
+                        disabled={hiddenCount === 0}
+                        disabledReason={hiddenCount === 0 ? "The selected pages are already shown in the menu" : undefined}
+                        onClick={() => setHiddenInMenu(false)}
+                    />
+                    <MenuItem
+                        label="Hide in menu"
+                        icon={<Icon name="invisible-item-hide" />}
+                        disabled={hiddenCount === checkedPages.length}
+                        disabledReason={hiddenCount === checkedPages.length ? "The selected pages are already hidden in the menu" : undefined}
+                        onClick={() => setHiddenInMenu(true)}
+                    />
+                </>
+            ),
         },
         {
             label: "Copy",
             icon: <Icon name="copy" />,
-            onClick: () => {
-                copyToClipboard(checkedIds);
-                setCheckedIds([]);
-            },
-        },
-        {
-            label: "Duplicate",
-            icon: <Icon name="duplicate" />,
-            onClick: () => {
-                const { pages: nextPages, copyIds } = duplicatePages(pages, checkedIds);
-                change(nextPages, `${describePages(copyIds.length)} duplicated, unpublished`, () => setCheckedIds(copyIds));
-            },
-        },
-        {
-            label: "Copy to scope",
-            icon: <Icon name="globe" />,
-            open: isCopyToScopeOpen,
-            onOpenChange: setIsCopyToScopeOpen,
-            menu: otherScopes.map((scope) => (
-                <MenuItem
-                    key={scope}
-                    label={scope}
-                    onClick={() => {
-                        addToast({ message: `${nameOrCount(checkedPages)} copied to ${scope}, unpublished` });
-                        setCheckedIds([]);
-                    }}
-                />
-            )),
+            open: openBulkMenu === "copy",
+            onOpenChange: (open) => setOpenBulkMenu(open ? "copy" : undefined),
+            menu: (
+                <>
+                    <MenuItem
+                        label="Copy"
+                        icon={<Icon name="copy" />}
+                        keyboardShortcut="mod+c"
+                        onClick={() => {
+                            copyToClipboard(checkedIds);
+                            setCheckedIds([]);
+                        }}
+                    />
+                    <MenuItem
+                        label="Duplicate"
+                        icon={<Icon name="duplicate" />}
+                        onClick={() => {
+                            const { pages: nextPages, copyIds } = duplicatePages(pages, checkedIds);
+                            change(nextPages, `${describePages(copyIds.length)} duplicated, unpublished`, () => setCheckedIds(copyIds));
+                        }}
+                    />
+                    <MenuSubmenu label="Copy to scope" icon={<Icon name="globe" />} open={isCopyToScopeOpen} onOpenChange={setIsCopyToScopeOpen}>
+                        {otherScopes.map((scope) => (
+                            <MenuItem
+                                key={scope}
+                                label={scope}
+                                onClick={() => {
+                                    addToast({ message: `${nameOrCount(checkedPages)} copied to ${scope}, unpublished` });
+                                    setCheckedIds([]);
+                                }}
+                            />
+                        ))}
+                    </MenuSubmenu>
+                </>
+            ),
         },
         { label: "Delete", icon: <Icon name="trash" />, color: "error", onClick: () => deletePages(checkedIds) },
     ];
@@ -484,8 +598,19 @@ export function CmsPageTree() {
                         ))}
                     </FilterBar>
                 }
-                detail={selected != null && <PageDetail page={selected} pages={pages} actions={pageActions} />}
-                detailLabel={selected?.label ?? "Page"}
+                detail={
+                    checkedPages.length > 1 ? (
+                        <SelectionDetail
+                            selected={checkedPages}
+                            pages={pages}
+                            onRemove={(id) => setCheckedIds((ids) => ids.filter((checkedId) => checkedId !== id))}
+                            onClear={() => setCheckedIds([])}
+                        />
+                    ) : (
+                        selected != null && <PageDetail page={selected} pages={pages} actions={pageActions} />
+                    )
+                }
+                detailLabel={checkedPages.length > 1 ? `${checkedPages.length} pages selected` : (selected?.label ?? "Page")}
             >
                 {filtered && visibleIds.length === 0 ? (
                     <EmptyState

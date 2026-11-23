@@ -93,6 +93,7 @@ describe("set_<entity>_form_values", () => {
         [{ date: "31.01.2026" }, '"date" must be an existing date in the format YYYY-MM-DD'],
         [{ date: "2026-13-45" }, '"date" must be an existing date in the format YYYY-MM-DD'],
         [{ date: "2026-02-30" }, '"date" must be an existing date in the format YYYY-MM-DD'],
+        [{ date: "2026-1-5" }, '"date" must be an existing date in the format YYYY-MM-DD'],
         [{ category: "sports" }, '"category" must be one of: events, awards'],
         [{ title: 42 }, '"title" must be a string'],
         [{ image: {} }, '"image" is no field this tool can set'],

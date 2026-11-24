@@ -43,7 +43,15 @@ const renderCmsBlock: TipTapNodeHandler = ({ node }) => {
 const nodeMapping: Record<string, TipTapNodeHandler> = {
     textBlock: ({ node, parent, children }) => {
         if (parent?.type === "listItem") {
-            return <span className={textAlignClassName(node.attrs?.textAlign, styles.listItemText)}>{children}</span>;
+            return (
+                <Typography
+                    as="span"
+                    variant={(node.attrs?.textBlockStyle as TypographyVariant | null) ?? undefined}
+                    className={textAlignClassName(node.attrs?.textAlign, styles.listItemText)}
+                >
+                    {children}
+                </Typography>
+            );
         }
         const typographyProps = typographyPropsByTextBlock[node.attrs?.textBlock as string] ?? typographyPropsByTextBlock.paragraph;
         // A paragraph picks its typography from the style the editor applied, a heading from the text block itself.

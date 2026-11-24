@@ -100,9 +100,11 @@ export function useDataGridUrlState({
         [replaceSearch, parsedSearch, sortParamName],
     );
 
-    const filterModel = parsedSearch[filterParamName]
-        ? JSON.parse(parsedSearch[filterParamName] as string)
-        : (fallbackFilter ?? initialFilter ?? { items: [] });
+    // Navigating updates the location asynchronously, so the grid renders with the previous filter first.
+    // A new object for that filter would reset the value the user is typing in the filter panel.
+    const filterModel: GridFilterModel = useDeepEqualMemo(
+        parsedSearch[filterParamName] ? JSON.parse(parsedSearch[filterParamName] as string) : (fallbackFilter ?? initialFilter ?? { items: [] }),
+    );
     const handleFilterChange = useCallback(
         (filterModel: GridFilterModel) => {
             replaceSearch({ ...parsedSearch, [filterParamName]: JSON.stringify(filterModel) });

@@ -13,4 +13,5 @@ export enum CorePermission {
     sitePreview = "sitePreview",
     blockPreview = "blockPreview",
     fullTextSearch = "fullTextSearch",
+    aiHub = "aiHub",
 }

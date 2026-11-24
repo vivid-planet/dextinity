@@ -1,6 +1,8 @@
 import "reflect-metadata";
 
 export { AccessLogModule } from "./access-log/access-log.module.js";
+export type { AiHubConfig } from "./ai-hub/ai-hub.config.js";
+export { AiHubModule } from "./ai-hub/ai-hub.module.js";
 export { DisableDextinityGuards } from "./auth/decorators/disable-dextinity-guards.decorator.js";
 export { GetCurrentUser } from "./auth/decorators/get-current-user.decorator.js";
 export { DextinityAuthGuard } from "./auth/guards/dextinity.guard.js";

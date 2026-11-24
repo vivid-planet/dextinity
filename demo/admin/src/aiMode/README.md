@@ -14,18 +14,18 @@ The AI Mode needs three settings: the script of the web component (`AI_HUB_WEB_C
 - Without the key, the API registers neither the AI Hub proxy nor the MCP server.
 - Without the script or the widget ID, the admin shows no switch (`isAiHubConfigured`). A missing setting turns the AI Mode off rather than leaving an empty flyout.
 
-The user also needs the `aiHub` permission, for the switch as much as for the proxy and the MCP server. It is a permission of its own rather than the page tree's because the AI Hub will serve more than the editing of pages. In Demo, every user has it, as every permission other than `userPermissions`.
+The user also needs the `aiHub` permission (`CorePermission.aiHub`), for the switch as much as for the proxy and the MCP server. It is a permission of its own rather than the page tree's because the AI Hub will serve more than the editing of pages. In Demo, every user has it, as every permission other than `userPermissions`.
 
 For now, the AI Mode works in the page tree only. Everywhere else, the switch is disabled and its tooltip says the AI Mode isn't available there yet. The flyout closes there and opens again on returning to the page tree, because whether it is open is stored separately from whether it is available.
 
 ## The chat goes through the API
 
-The chat doesn't talk to the AI Hub API itself. It sends its requests to the API (`api-url`, `/api/ai-hub`), which forwards them with the secret key and with the ID of the user the request was authenticated as. This is the server-to-server embedding of the AI Hub:
+The chat doesn't talk to the AI Hub API itself. It sends its requests to the API (`api-url`, `/api/ai-hub`), whose `AiHubModule` of `@dextinity/cms-api` (`packages/api/cms-api/src/ai-hub`) forwards them with the secret key and with the ID of the user the request was authenticated as. This is the server-to-server embedding of the AI Hub:
 
 - The key never reaches the browser. A key of type Widget in the browser would let anyone who reads it chat on the widget's account, as any user.
 - The conversations belong to the verified user. The chat sends a `user-id` too, but it is only a hint: the proxy replaces it with the authenticated user's ID wherever the AI Hub reads one.
 
-The proxy forwards only the requests the chat makes. They are listed in a route table in `ai-hub-proxy.ts`, taken from the bundle of the prod web component, which differs from the staging one only in its base URLs. For each request, the table lists the query parameters the chat sends and says where the AI Hub reads the user ID: in the query, in the body, or nowhere. No other query parameter is forwarded, so a variant such as `userId[0]` can't reach the AI Hub as a second user ID. The proxy sets the verified ID rather than replacing one the chat sent, because the AI Hub doesn't require a user ID everywhere it reads one: it checks the message feedback against the owner of the conversation only when it gets a `userId`.
+The proxy forwards only the requests the chat makes. They are listed in a route table in `packages/api/cms-api/src/ai-hub/ai-hub-proxy.ts`, taken from the bundle of the prod web component, which differs from the staging one only in its base URLs. For each request, the table lists the query parameters the chat sends and says where the AI Hub reads the user ID: in the query, in the body, or nowhere. No other query parameter is forwarded, so a variant such as `userId[0]` can't reach the AI Hub as a second user ID. The proxy sets the verified ID rather than replacing one the chat sent, because the AI Hub doesn't require a user ID everywhere it reads one: it checks the message feedback against the owner of the conversation only when it gets a `userId`.
 
 Only the file upload and the speech transcription send a body that isn't JSON, and the proxy pipes it through unread. Neither carries a user ID, and an uploaded file isn't tied to a user: any user of the AI Mode who has a file's ID can download it through the proxy.
 

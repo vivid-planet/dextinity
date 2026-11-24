@@ -326,12 +326,13 @@
 }
 
 // A group of the app's menu or an asset folder opens no page, so it has no icon and a lighter text than the pages
-.pageGroupMarker {
-    display: none;
-}
-
 .panelList :has(> * > .pageGroupMarker) {
     color: var(--dextinity-color-text-subtle);
+
+    // The name starts where the pages' icons start
+    > :has(> .pageGroupMarker) {
+        display: none;
+    }
 }
 
 .panelFooter {

@@ -1,6 +1,6 @@
 import { createTipTapRichTextBlock } from "@dextinity/cms-api";
 
-export const InlineRichTextBlock = createTipTapRichTextBlock(
+export const DescriptionRichTextBlock = createTipTapRichTextBlock(
     {
         strike: false,
         textBlocks: [{ name: "paragraph", tag: "p" }],
@@ -9,5 +9,5 @@ export const InlineRichTextBlock = createTipTapRichTextBlock(
         maxTextBlocks: 1,
         migrateFromDraftJs: true,
     },
-    "InlineRichText",
+    "DescriptionRichText",
 );

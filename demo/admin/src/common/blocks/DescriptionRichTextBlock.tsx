@@ -1,7 +1,7 @@
 import { createTipTapRichTextBlock } from "@dextinity/cms-admin";
 import { FormattedMessage } from "react-intl";
 
-export const InlineRichTextBlock = {
+export const DescriptionRichTextBlock = {
     ...createTipTapRichTextBlock({
         undoRedoButtons: false,
         strike: false,
@@ -9,7 +9,7 @@ export const InlineRichTextBlock = {
             {
                 name: "paragraph",
                 tag: "p",
-                label: <FormattedMessage id="inlineRichTextBlock.textBlock.paragraph" defaultMessage="Paragraph" />,
+                label: <FormattedMessage id="descriptionRichTextBlock.textBlock.paragraph" defaultMessage="Paragraph" />,
             },
         ],
         orderedList: false,
@@ -17,5 +17,5 @@ export const InlineRichTextBlock = {
         maxTextBlocks: 1,
         minHeight: 0,
     }),
-    name: "InlineRichText",
+    name: "DescriptionRichText",
 };

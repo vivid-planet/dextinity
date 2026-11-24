@@ -1,6 +1,6 @@
-import { type PropsWithData, withPreview } from "@dextinity/site-nextjs";
+import { type PropsWithData, renderTipTapRichText, withPreview } from "@dextinity/site-nextjs";
 import type { TeaserItemBlockData } from "@src/blocks.generated";
-import { InlineRichTextBlock } from "@src/common/blocks/InlineRichTextBlock";
+import { inlineRichTextNodeMapping } from "@src/common/blocks/inlineRichTextNodeMapping";
 import { LinkBlock } from "@src/common/blocks/LinkBlock";
 import { MediaBlock } from "@src/common/blocks/MediaBlock";
 import { Typography } from "@src/common/components/Typography";
@@ -23,7 +23,7 @@ export const TeaserItemBlock = withPreview(
                     {title}
                 </Typography>
                 <Typography variant="paragraph200">
-                    <InlineRichTextBlock data={description} />
+                    {renderTipTapRichText({ content: description.tipTapContent, nodeMapping: inlineRichTextNodeMapping })}
                 </Typography>
                 {link.text && isValidLink(link.link) && (
                     <div className={styles.textLinkContainer}>

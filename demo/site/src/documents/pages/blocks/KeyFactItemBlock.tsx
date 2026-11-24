@@ -1,6 +1,6 @@
-import { hasTipTapRichTextContent, type PropsWithData, SvgImageBlock, withPreview } from "@dextinity/site-nextjs";
+import { hasTipTapRichTextContent, type PropsWithData, renderTipTapRichText, SvgImageBlock, withPreview } from "@dextinity/site-nextjs";
 import type { KeyFactsItemBlockData } from "@src/blocks.generated";
-import { InlineRichTextBlock } from "@src/common/blocks/InlineRichTextBlock";
+import { inlineRichTextNodeMapping } from "@src/common/blocks/inlineRichTextNodeMapping";
 import { Typography } from "@src/common/components/Typography";
 
 import styles from "./KeyFactItemBlock.module.scss";
@@ -15,7 +15,7 @@ export const KeyFactItemBlock = withPreview(
             <Typography variant="headline350">{label}</Typography>
             {hasTipTapRichTextContent(description.tipTapContent) && (
                 <Typography variant="paragraph200" className={styles.description}>
-                    <InlineRichTextBlock data={description} />
+                    {renderTipTapRichText({ content: description.tipTapContent, nodeMapping: inlineRichTextNodeMapping })}
                 </Typography>
             )}
         </div>

@@ -45,7 +45,7 @@
         "@dextinity/eslint-config": "workspace:*",
         "@types/node": "^24.19.2",
         "eslint": "^9.39.5",
-        "npm-run-all2": "^9.0.4",
+        "npm-run-all2": "^9.1.0",
         "rimraf": "^6.1.4",
         "typescript": "^5.9.3",
         "vitest": "^5.1.1"

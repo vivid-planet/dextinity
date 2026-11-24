@@ -55,7 +55,7 @@
         "@types/pluralize": "^0.0.33",
         "class-validator": "^0.15.1",
         "eslint": "^9.39.5",
-        "npm-run-all2": "^9.0.4",
+        "npm-run-all2": "^9.1.0",
         "prettier": "^3.10.1",
         "reflect-metadata": "^0.2.2",
         "rimraf": "^6.1.4",

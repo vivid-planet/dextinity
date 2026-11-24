@@ -5,6 +5,7 @@ import type { ReactNode, SyntheticEvent } from "react";
 import { useDamConfig } from "../../../dam/config/damConfig";
 import { DamScopeProvider } from "../../../dam/config/DamScopeProvider";
 import { useDamScope } from "../../../dam/config/useDamScope";
+import { DamAiModeProvider } from "../../../dam/DamAiModeContext";
 import { DamTable } from "../../../dam/DamTable";
 import type { GQLDamFileTableFragment } from "../../../dam/DataGrid/FolderDataGrid";
 import DamItemLabel from "../../../dam/DataGrid/label/DamItemLabel";
@@ -71,37 +72,39 @@ export const BaseChooseDamFileDialog = ({
             }}
         >
             <DamScopeProvider>
-                <RouterMemoryRouter>
-                    <RedirectToPersistedDamLocation stateKey={scopedStateKey} />
-                    <DamTable
-                        renderDamLabel={(row, options) => {
-                            if (isFile(row)) {
-                                return renderFileLabel(row, { ...options, showLicenseWarnings: enableLicenseFeature });
-                            }
-                            return (
-                                <FolderStackLink
-                                    pageName="folder"
-                                    payload={row.id}
-                                    onClick={() => {
-                                        options.filterApi.formApi.change("searchText", undefined);
-                                    }}
-                                >
-                                    <DamItemLabel asset={row} matches={options.matches} showPath={options.showPath} />
-                                </FolderStackLink>
-                            );
-                        }}
-                        allowedMimetypes={allowedMimetypes}
-                        hideContextMenu={true}
-                        hideMultiselect={hideMultiselect}
-                        hideArchiveFilter={true}
-                        toolbarOptions={{ hideSelectiveActions: true, hideSettingsAction: true }}
-                        disableFolderSelection={disableFolderSelection}
-                        keepNonExistentRowsSelected={keepNonExistentRowsSelected}
-                        initialSelection={initialFileIds ? new Map(initialFileIds.map((id) => [id, "file"])) : undefined}
-                        onSelectionChange={onFileIdsChange ? (map) => onFileIdsChange(Array.from(map.keys())) : undefined}
-                        additionalToolbarItems={additionalToolbarItems}
-                    />
-                </RouterMemoryRouter>
+                <DamAiModeProvider value={false}>
+                    <RouterMemoryRouter>
+                        <RedirectToPersistedDamLocation stateKey={scopedStateKey} />
+                        <DamTable
+                            renderDamLabel={(row, options) => {
+                                if (isFile(row)) {
+                                    return renderFileLabel(row, { ...options, showLicenseWarnings: enableLicenseFeature });
+                                }
+                                return (
+                                    <FolderStackLink
+                                        pageName="folder"
+                                        payload={row.id}
+                                        onClick={() => {
+                                            options.filterApi.formApi.change("searchText", undefined);
+                                        }}
+                                    >
+                                        <DamItemLabel asset={row} matches={options.matches} showPath={options.showPath} />
+                                    </FolderStackLink>
+                                );
+                            }}
+                            allowedMimetypes={allowedMimetypes}
+                            hideContextMenu={true}
+                            hideMultiselect={hideMultiselect}
+                            hideArchiveFilter={true}
+                            toolbarOptions={{ hideSelectiveActions: true, hideSettingsAction: true }}
+                            disableFolderSelection={disableFolderSelection}
+                            keepNonExistentRowsSelected={keepNonExistentRowsSelected}
+                            initialSelection={initialFileIds ? new Map(initialFileIds.map((id) => [id, "file"])) : undefined}
+                            onSelectionChange={onFileIdsChange ? (map) => onFileIdsChange(Array.from(map.keys())) : undefined}
+                            additionalToolbarItems={additionalToolbarItems}
+                        />
+                    </RouterMemoryRouter>
+                </DamAiModeProvider>
             </DamScopeProvider>
             {actions}
         </Dialog>

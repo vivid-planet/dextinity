@@ -1,12 +1,37 @@
-import { Box } from "@mui/material";
-import { styled } from "@mui/material/styles";
+import {
+    MoreHorizontal,
+    RteAlignCenter,
+    RteAlignJustify,
+    RteAlignLeft,
+    RteAlignRight,
+    RteBold,
+    RteClearLink,
+    RteIndentDecrease,
+    RteIndentIncrease,
+    RteItalic,
+    RteLink,
+    RteNonBreakingSpace,
+    RteOl,
+    RteRedo,
+    RteSoftHyphen,
+    RteStrikethrough,
+    RteSub,
+    RteSup,
+    RteTextPlaceholder,
+    RteUl,
+    RteUnderlined,
+    RteUndo,
+    Translate,
+} from "@dextinity/admin-icons";
+import { type ComponentsOverrides, css, type FormControl, type Theme, useThemeProps } from "@mui/material";
 import { EditorContent, type JSONContent, useEditor } from "@tiptap/react";
 import { deepEqual } from "fast-equals";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { FormattedMessage } from "react-intl";
 
 import { useErrorDialog } from "../error/errordialog/useErrorDialog";
-import { greyPalette } from "../theme/colors";
+import { createComponentSlot } from "../helpers/createComponentSlot";
+import type { ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
 import { useContentTranslationService } from "../translator/useContentTranslationService";
 import { buildTipTapExtensions } from "./buildExtensions";
 import { translateTipTapContent } from "./contentTranslation";
@@ -17,34 +42,127 @@ import { resolveTipTapOptions, type TipTapResolvedOptions, type TipTapRichTextEd
 import { TextBlockContext } from "./TextBlockContext";
 import { TipTapRichTextEditorToolbar } from "./TipTapRichTextEditorToolbar";
 
-const ReadOnlyContent = styled("div")({
-    ".tiptap > :first-child, .tiptap > :first-child > :first-child": {
-        marginTop: 0,
-    },
+export type TipTapRichTextEditorClassKey = "root" | "readOnly" | "content" | "toolbar" | "toolbarGroup" | "toolbarSelect";
 
-    ".tiptap > :last-child, .tiptap > :last-child > :last-child": {
-        marginBottom: 0,
-    },
-});
-
-export interface TipTapRichTextEditorProps {
-    value: JSONContent;
-    onChange?: (value: JSONContent) => void;
-    options?: TipTapRichTextEditorOptions;
-    readOnly?: boolean;
+export interface TipTapRichTextEditorIconMapping {
+    undo?: ReactNode;
+    redo?: ReactNode;
+    translate?: ReactNode;
+    bold?: ReactNode;
+    italic?: ReactNode;
+    underline?: ReactNode;
+    strike?: ReactNode;
+    superscript?: ReactNode;
+    subscript?: ReactNode;
+    moreOptions?: ReactNode;
+    alignLeft?: ReactNode;
+    alignCenter?: ReactNode;
+    alignRight?: ReactNode;
+    alignJustify?: ReactNode;
+    orderedList?: ReactNode;
+    unorderedList?: ReactNode;
+    indent?: ReactNode;
+    dedent?: ReactNode;
+    link?: ReactNode;
+    removeLink?: ReactNode;
+    placeholder?: ReactNode;
+    nonBreakingSpace?: ReactNode;
+    softHyphen?: ReactNode;
 }
 
-export function TipTapRichTextEditor({ options, ...props }: TipTapRichTextEditorProps) {
+export interface TipTapRichTextEditorProps extends ThemedComponentBaseProps<{
+    root: "div";
+    content: "div";
+    toolbar: "div";
+    toolbarGroup: "div";
+    toolbarSelect: typeof FormControl;
+}> {
+    value: JSONContent;
+    onChange?: (value: JSONContent) => void;
+    /**
+     * Define the options outside of the component, so they keep their identity between renders.
+     */
+    options?: TipTapRichTextEditorOptions;
+    readOnly?: boolean;
+    iconMapping?: TipTapRichTextEditorIconMapping;
+}
+
+type OwnerState = {
+    readOnly: boolean;
+    minHeight: number;
+};
+
+export function TipTapRichTextEditor(inProps: TipTapRichTextEditorProps) {
+    const { options, ...props } = useThemeProps({ props: inProps, name: "DextinityAdminTipTapRichTextEditor" });
     const resolvedOptions = useMemo(() => resolveTipTapOptions(options), [options]);
     return <ResolvedTipTapRichTextEditor resolvedOptions={resolvedOptions} {...props} />;
 }
+
+const resolveIcons = ({
+    undo = <RteUndo />,
+    redo = <RteRedo />,
+    translate = <Translate />,
+    bold = <RteBold />,
+    italic = <RteItalic />,
+    underline = <RteUnderlined />,
+    strike = <RteStrikethrough />,
+    superscript = <RteSup />,
+    subscript = <RteSub />,
+    moreOptions = <MoreHorizontal />,
+    alignLeft = <RteAlignLeft />,
+    alignCenter = <RteAlignCenter />,
+    alignRight = <RteAlignRight />,
+    alignJustify = <RteAlignJustify />,
+    orderedList = <RteOl />,
+    unorderedList = <RteUl />,
+    indent = <RteIndentIncrease />,
+    dedent = <RteIndentDecrease />,
+    link = <RteLink />,
+    removeLink = <RteClearLink />,
+    placeholder = <RteTextPlaceholder />,
+    nonBreakingSpace = <RteNonBreakingSpace />,
+    softHyphen = <RteSoftHyphen />,
+}: TipTapRichTextEditorIconMapping): Required<TipTapRichTextEditorIconMapping> => ({
+    undo,
+    redo,
+    translate,
+    bold,
+    italic,
+    underline,
+    strike,
+    superscript,
+    subscript,
+    moreOptions,
+    alignLeft,
+    alignCenter,
+    alignRight,
+    alignJustify,
+    orderedList,
+    unorderedList,
+    indent,
+    dedent,
+    link,
+    removeLink,
+    placeholder,
+    nonBreakingSpace,
+    softHyphen,
+});
 
 interface ResolvedTipTapRichTextEditorProps extends Omit<TipTapRichTextEditorProps, "options"> {
     resolvedOptions: TipTapResolvedOptions;
 }
 
-export const ResolvedTipTapRichTextEditor = ({ value, onChange, resolvedOptions, readOnly }: ResolvedTipTapRichTextEditorProps) => {
+export const ResolvedTipTapRichTextEditor = ({
+    value,
+    onChange,
+    resolvedOptions,
+    readOnly = false,
+    iconMapping = {},
+    slotProps,
+    ...restProps
+}: ResolvedTipTapRichTextEditorProps) => {
     const { maxTextBlocks, listLevelMax, minHeight } = resolvedOptions;
+    const ownerState: OwnerState = { readOnly, minHeight };
 
     // Content the editor holds that hasn't come back through `value` yet. Matched by identity, not by
     // value: content set from outside can be equal to one of these and still has to be applied.
@@ -152,24 +270,24 @@ export const ResolvedTipTapRichTextEditor = ({ value, onChange, resolvedOptions,
         }
     }
 
-    const editorNode = <EditorContent editor={editor} />;
-
     return (
         <TextBlockContext.Provider value={textBlockContextValue}>
             <InlineStyleContext.Provider value={resolvedOptions.inlineStyles}>
-                {readOnly ? (
-                    <ReadOnlyContent>{editorNode}</ReadOnlyContent>
-                ) : (
-                    <Box sx={{ border: `1px solid ${greyPalette[100]}`, borderTopWidth: 0, backgroundColor: "white", borderRadius: "2px" }}>
+                <Root ownerState={ownerState} {...slotProps?.root} {...restProps}>
+                    {!readOnly && (
                         <TipTapRichTextEditorToolbar
                             editor={editor}
                             resolvedOptions={resolvedOptions}
                             canTranslate={canTranslate}
                             onTranslateClick={handleTranslateClick}
+                            icons={resolveIcons(iconMapping)}
+                            slotProps={slotProps}
                         />
-                        <Box sx={{ "& .tiptap": { minHeight, p: "20px", outline: "none" } }}>{editorNode}</Box>
-                    </Box>
-                )}
+                    )}
+                    <Content ownerState={ownerState} {...slotProps?.content}>
+                        <EditorContent editor={editor} />
+                    </Content>
+                </Root>
                 {translationDialogState && (
                     <ContentTranslationDialog
                         open
@@ -181,9 +299,72 @@ export const ResolvedTipTapRichTextEditor = ({ value, onChange, resolvedOptions,
                             setTranslationDialogState(null);
                         }}
                         resolvedOptions={resolvedOptions}
+                        iconMapping={iconMapping}
                     />
                 )}
             </InlineStyleContext.Provider>
         </TextBlockContext.Provider>
     );
 };
+
+const Root = createComponentSlot("div")<TipTapRichTextEditorClassKey, OwnerState>({
+    componentName: "TipTapRichTextEditor",
+    slotName: "root",
+    classesResolver(ownerState) {
+        return [ownerState.readOnly && "readOnly"];
+    },
+})(
+    ({ theme, ownerState }) => css`
+        ${
+            !ownerState.readOnly &&
+            css`
+                border: 1px solid ${theme.palette.grey[100]};
+                border-top-width: 0;
+                background-color: white;
+                border-radius: 2px;
+            `
+        }
+    `,
+);
+
+const Content = createComponentSlot("div")<TipTapRichTextEditorClassKey, OwnerState>({
+    componentName: "TipTapRichTextEditor",
+    slotName: "content",
+})(({ ownerState }) =>
+    ownerState.readOnly
+        ? css`
+              .tiptap > :first-child,
+              .tiptap > :first-child > :first-child {
+                  margin-top: 0;
+              }
+
+              .tiptap > :last-child,
+              .tiptap > :last-child > :last-child {
+                  margin-bottom: 0;
+              }
+          `
+        : css`
+              .tiptap {
+                  min-height: ${ownerState.minHeight}px;
+                  padding: 20px;
+                  outline: none;
+              }
+          `,
+);
+
+declare module "@mui/material/styles" {
+    interface ComponentsPropsList {
+        DextinityAdminTipTapRichTextEditor: TipTapRichTextEditorProps;
+    }
+
+    interface ComponentNameToClassKey {
+        DextinityAdminTipTapRichTextEditor: TipTapRichTextEditorClassKey;
+    }
+
+    interface Components {
+        DextinityAdminTipTapRichTextEditor?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminTipTapRichTextEditor"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminTipTapRichTextEditor"];
+        };
+    }
+}

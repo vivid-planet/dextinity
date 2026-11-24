@@ -79,7 +79,7 @@ export const TypingAfterDoubleClickAppendsToLastLine: Story = {
 };
 
 function getScrollArea(cellEditor: HTMLElement) {
-    const scrollArea = cellEditor.querySelector(".DextinityAdminTipTapToolbar-root")?.parentElement;
+    const scrollArea = cellEditor.querySelector(".DextinityAdminTipTapRichTextEditor-toolbar")?.parentElement;
     if (!scrollArea) {
         throw new Error("The cell editor has no scroll area");
     }

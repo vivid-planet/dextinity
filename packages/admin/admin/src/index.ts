@@ -360,7 +360,12 @@ export type {
     TipTapTextBlockStyle,
     TipTapTextBlockTag,
 } from "./tipTapRichTextEditor/textBlocks";
-export { TipTapRichTextEditor, type TipTapRichTextEditorProps } from "./tipTapRichTextEditor/TipTapRichTextEditor";
+export {
+    TipTapRichTextEditor,
+    type TipTapRichTextEditorClassKey,
+    type TipTapRichTextEditorIconMapping,
+    type TipTapRichTextEditorProps,
+} from "./tipTapRichTextEditor/TipTapRichTextEditor";
 export {
     TipTapRichTextEditorToolbarButton,
     type TipTapRichTextEditorToolbarButtonClassKey,

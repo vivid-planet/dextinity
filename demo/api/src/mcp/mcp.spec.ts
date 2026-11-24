@@ -22,6 +22,7 @@ import {
     type INestApplication,
     Inject,
     Injectable,
+    Logger,
     Module,
     type Provider,
     Scope,
@@ -84,8 +85,18 @@ class RequestScopedBlockTransformerService {
     }
 }
 
-function createBlockData() {
-    return { transformToPlain: () => RequestScopedBlockTransformerService, transformToSave: () => ({}) };
+const deletedNewsId = "0190a5f4-0000-7000-8000-000000000031";
+
+// Stands in for the service of a block transformer that loads the target of a link, such as a news link to a deleted news entry.
+@Injectable()
+class DeletedLinkTargetBlockTransformerService {
+    async transformToPlain() {
+        throw NotFoundError.findOneFailed("News", deletedNewsId);
+    }
+}
+
+function createBlockData(transformerService: unknown = RequestScopedBlockTransformerService) {
+    return { transformToPlain: () => transformerService, transformToSave: () => ({}) };
 }
 
 const homeNode = { id: "0190a5f4-0000-7000-8000-000000000001", name: "Home", slug: "home", documentType: "Page", scope: allowedScope };
@@ -97,6 +108,14 @@ const pages = [
         id: "0190a5f4-0000-7000-8000-000000000012",
         node: otherScopeNode,
         content: createBlockData(),
+        stage: createBlockData(),
+        seo: createBlockData(),
+    },
+    { id: "0190a5f4-0000-7000-8000-000000000013", node: null, content: createBlockData(), stage: createBlockData(), seo: createBlockData() },
+    {
+        id: "0190a5f4-0000-7000-8000-000000000014",
+        node: homeNode,
+        content: createBlockData(DeletedLinkTargetBlockTransformerService),
         stage: createBlockData(),
         seo: createBlockData(),
     },
@@ -167,6 +186,7 @@ const contentScopeServiceProvider = findUserPermissionsProvider(
 const appProviders: Provider[] = [
     BlocksTransformerService,
     RequestScopedBlockTransformerService,
+    DeletedLinkTargetBlockTransformerService,
     PageTreeNodeDocumentEntityScopeService,
     contentScopeServiceProvider,
     { provide: "access-control-service", useValue: accessControlService },
@@ -177,7 +197,7 @@ const appProviders: Provider[] = [
         useValue: {
             createReadApi: () => readApi,
             getActiveAttachedDocument: async (nodeId: string) => {
-                const page = pages.find((candidate) => candidate.node.id === nodeId);
+                const page = pages.find((candidate) => candidate.node?.id === nodeId);
                 return page ? { documentId: page.id } : null;
             },
         },
@@ -258,12 +278,24 @@ describe("MCP server of the API", () => {
     it.each([
         ["of a scope the user may not read", pages[1].id],
         ["that doesn't exist", unknownId],
+        ["that isn't attached to a page tree node", pages[2].id],
     ])("answers a page %s as if it didn't exist", async (_, id) => {
         const { text, isError } = await callTool("get_page", { id });
 
         expect(isError).toBe(true);
         expect(text).toBe(`There is no page ${id}.`);
         expect(transformedBlocks).toEqual([]);
+    });
+
+    it("doesn't answer a page whose link target is missing as if the page didn't exist", async () => {
+        const logError = vi.spyOn(Logger.prototype, "error").mockImplementation(() => undefined);
+
+        const { text, isError } = await callTool("get_page", { id: pages[3].id });
+
+        expect(isError).toBe(true);
+        expect(text).toBe("Internal server error");
+        expect(logError).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining(deletedNewsId) }));
+        logError.mockRestore();
     });
 
     it("answers get_page_tree_node with the ID of the attached document", async () => {

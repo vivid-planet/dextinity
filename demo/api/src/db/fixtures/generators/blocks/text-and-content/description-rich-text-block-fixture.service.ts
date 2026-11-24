@@ -9,7 +9,7 @@ export class DescriptionRichTextBlockFixtureService {
         return {
             tipTapContent: {
                 type: "doc",
-                content: [{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: faker.lorem.sentence() }] }],
+                content: [{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: faker.lorem.paragraph() }] }],
             },
         };
     }

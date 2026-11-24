@@ -6,12 +6,10 @@ import { faker } from "@src/db/fixtures/faker.js";
 @Injectable()
 export class RichTextBlockFixtureService {
     async generateBlockInput(): Promise<ExtractBlockInputFactoryProps<typeof RichTextBlock>> {
-        const paragraphCount = faker.number.int({ min: 1, max: 3 });
-
         return {
             tipTapContent: {
                 type: "doc",
-                content: Array.from({ length: paragraphCount }, () => ({
+                content: Array.from({ length: faker.number.int({ min: 1, max: 3 }) }, () => ({
                     type: "textBlock",
                     attrs: { textBlock: "paragraph", textBlockStyle: faker.helpers.arrayElement(["paragraph300", "paragraph200"]) },
                     content: [{ type: "text", text: faker.lorem.paragraph() }],

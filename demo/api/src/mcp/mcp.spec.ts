@@ -1,7 +1,6 @@
 import { fileURLToPath } from "node:url";
 
 import {
-    AiModeMcpModule,
     BlocksTransformerService,
     type ContentScope,
     CorePermission,
@@ -16,6 +15,7 @@ import {
     type RequestContextInterface,
     UserPermissionsModule,
 } from "@dextinity/cms-api";
+import { AiModeMcpModule } from "@dextinity/cms-api/ai-mode";
 import { EntityManager, MikroORM, NotFoundError } from "@mikro-orm/postgresql";
 import type { Client } from "@modelcontextprotocol/client";
 import {

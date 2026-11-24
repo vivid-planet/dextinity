@@ -13,6 +13,10 @@
         ".": {
             "types": "./lib/index.d.ts",
             "default": "./lib/index.js"
+        },
+        "./ai-mode": {
+            "types": "./lib/ai-mode.d.ts",
+            "default": "./lib/ai-mode.js"
         }
     },
     "sideEffects": false,
@@ -158,7 +162,16 @@
         "zod": "^4.0.0"
     },
     "peerDependenciesMeta": {
+        "@modelcontextprotocol/server": {
+            "optional": true
+        },
+        "@nestjs/mcp": {
+            "optional": true
+        },
         "@sentry/node": {
+            "optional": true
+        },
+        "zod": {
             "optional": true
         }
     },

@@ -4,7 +4,6 @@ import { BrevoModule } from "@dextinity/brevo-api";
 import {
     AccessLogModule,
     AiHubModule,
-    AiModeMcpModule,
     AzureAiTranslatorModule,
     AzureOpenAiContentGenerationModule,
     BlobStorageModule,
@@ -27,6 +26,7 @@ import {
     UserPermissionsModule,
     WarningsModule,
 } from "@dextinity/cms-api";
+import { AiModeMcpModule } from "@dextinity/cms-api/ai-mode";
 import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { ApolloDriver, type ApolloDriverConfig, ValidationError } from "@nestjs/apollo";
 import { type DynamicModule, Module } from "@nestjs/common";

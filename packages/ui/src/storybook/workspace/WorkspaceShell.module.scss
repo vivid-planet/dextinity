@@ -325,6 +325,15 @@
     padding: 0 6px 12px;
 }
 
+// A group of the app's menu or an asset folder opens no page, so it has no icon and a lighter text than the pages
+.pageGroupMarker {
+    display: none;
+}
+
+.panelList :has(> * > .pageGroupMarker) {
+    color: var(--dextinity-color-text-subtle);
+}
+
 .panelFooter {
     padding: 8px 12px 12px;
     border-block-start: var(--dextinity-line-width) solid var(--dextinity-color-line);

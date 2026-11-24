@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 import type { TreeNode } from "../../components/treeView/TreeView";
 import type { PageAncestor } from "./prototypes";
 
@@ -15,10 +17,12 @@ interface PageTreeInput {
     pageIds: string[];
     getPageLabel: (pageId: string) => string | undefined;
     getPageAncestors: (pageId: string) => PageAncestor[];
+    /** Replaces the folder icon of a step that isn't a page. */
+    groupIcon?: ReactNode;
 }
 
 /** The pages nested as in the app's menu and breadcrumbs; a step above a page that isn't listed itself is added for it. */
-export function buildPageTree({ storyId, pageIds, getPageLabel, getPageAncestors }: PageTreeInput) {
+export function buildPageTree({ storyId, pageIds, getPageLabel, getPageAncestors, groupIcon }: PageTreeInput) {
     const roots: TreeNode[] = [];
     const nodesById = new Map<string, TreeNode>();
     const parentIds = new Map<string, string>();
@@ -27,7 +31,7 @@ export function buildPageTree({ storyId, pageIds, getPageLabel, getPageAncestors
         const id = step.pageId != null ? getPrototypePageNodeId(storyId, step.pageId) : getGroupNodeId(storyId, step.id);
         let node = nodesById.get(id);
         if (!node) {
-            node = { id, label: step.label, type: step.pageId != null ? "page" : "folder" };
+            node = step.pageId != null ? { id, label: step.label, type: "page" } : { id, label: step.label, type: "folder", icon: groupIcon };
             nodesById.set(id, node);
             if (parent) {
                 parent.children = [...(parent.children ?? []), node];

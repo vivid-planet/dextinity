@@ -44,7 +44,7 @@ export class DamImagesModule {
                 IsValidImageAspectRatioConstraint,
             ],
             controllers: [createImagesController({ damBasePath })],
-            exports: [ImagesService, DamDominantColorService, DAM_DOMINANT_COLOR_CALCULATOR],
+            exports: [ImagesService, ScaledImagesService, DamDominantColorService, DAM_DOMINANT_COLOR_CALCULATOR],
         };
     }
 }

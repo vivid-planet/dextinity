@@ -11,6 +11,11 @@ export { AppHeaderMenuButton, type AppHeaderMenuButtonClassKey, type AppHeaderMe
 export { buildCreateRestMutation, buildDeleteRestMutation, buildUpdateRestMutation } from "./buildRestMutation";
 export { readClipboardText } from "./clipboard/readClipboardText";
 export { writeClipboardText } from "./clipboard/writeClipboardText";
+export { ColorField, type ColorFieldProps } from "./colorPicker/ColorField";
+export type { ColorPickerNoColorPreviewProps } from "./colorPicker/ColorPicker";
+export { ColorPicker, type ColorPickerColorPreviewProps, type ColorPickerProps, type ColorPickerPropsComponents } from "./colorPicker/ColorPicker";
+export type { ColorPickerClassKey } from "./colorPicker/ColorPicker.slots";
+export { FinalFormColorPicker, type FinalFormColorPickerProps } from "./colorPicker/FinalFormColorPicker";
 export { type Breadcrumb, Breadcrumbs, type BreadcrumbsProps } from "./common/breadcrumbs/Breadcrumbs";
 export { type BreadcrumbsClassKey } from "./common/breadcrumbs/Breadcrumbs.slots";
 export { Button, type ButtonClassKey, type ButtonProps } from "./common/buttons/Button";

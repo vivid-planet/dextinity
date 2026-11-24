@@ -24,7 +24,6 @@
     "dependencies": {
         "@apollo/client": "^4.3.5",
         "@dextinity/admin": "workspace:*",
-        "@dextinity/admin-color-picker": "workspace:*",
         "@dextinity/admin-date-time": "workspace:*",
         "@dextinity/admin-icons": "workspace:*",
         "@dextinity/admin-rte": "workspace:*",

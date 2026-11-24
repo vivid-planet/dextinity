@@ -120,7 +120,7 @@ export function findEnumFilePath(enumName: string, targetDirectory: string, meta
         const { importPath, importSourceFile } = findImportPathOrThrow(enumName, targetDirectory, metadata);
         if (!importPath.startsWith(".") && !importSourceFile.isInNodeModules()) {
             // The import path of a path alias, for instance `@src/`, isn't a path in the file system
-            return path.join(targetDirectory, path.relative(targetDirectory, importSourceFile.getFilePath().replace(/\.ts$/, "")));
+            return importSourceFile.getFilePath().replace(/\.ts$/, "");
         }
     }
     return `${targetDirectory}/${findEnumImportPath(enumName, targetDirectory, metadata)}`;

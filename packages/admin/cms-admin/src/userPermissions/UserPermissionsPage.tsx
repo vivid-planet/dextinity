@@ -1,16 +1,41 @@
-import { MainContent, RouterTab, RouterTabs, Stack, StackLink, StackPage, StackSwitch, StackToolbar } from "@dextinity/admin";
-import { Edit } from "@dextinity/admin-icons";
+import {
+    Button,
+    FillSpace,
+    MainContent,
+    RouterTab,
+    RouterTabs,
+    Stack,
+    StackLink,
+    StackPage,
+    StackSwitch,
+    StackToolbar,
+    ToolbarActions,
+    ToolbarAutomaticTitleItem,
+    ToolbarBackButton,
+} from "@dextinity/admin";
+import { Edit, Time } from "@dextinity/admin-icons";
 import { IconButton } from "@mui/material";
 import { FormattedMessage } from "react-intl";
 
+import { ActionLogsGrid } from "../actionLog/actionLog/actionLogsGrid/ActionLogsGrid";
 import { ContentScopeIndicator } from "../contentScope/ContentScopeIndicator";
 import { useContentScopeConfig } from "../contentScope/useContentScopeConfig";
 import { useRoutePathBelowContentScope } from "../contentScope/useRoutePathBelowContentScope";
+import { UserPermissionActionLogUser } from "./actionLog/UserPermissionActionLogUser";
 import { useUserPermissionCheck } from "./hooks/currentUser";
 import { UserPermissionsUserPageBasicDataPanel } from "./user/basicData/UserBasicData";
 import { UserPermissionsUserPagePermissionsPanel } from "./user/permissions/PermissionsPanel";
 import { UserPermissionsUserPageToolbar } from "./user/UserPageToolbar";
 import { UserPermissionsUserGrid } from "./UserGrid";
+import { camelCaseToHumanReadable } from "./utils/camelCaseToHumanReadable";
+
+function getUserPermissionDisplayName(snapshot: Record<string, unknown>): string | undefined {
+    return typeof snapshot.permission === "string" ? camelCaseToHumanReadable(snapshot.permission) : undefined;
+}
+
+function renderUserPermissionUser(snapshot: Record<string, unknown>) {
+    return typeof snapshot.userId === "string" ? <UserPermissionActionLogUser userId={snapshot.userId} /> : undefined;
+}
 
 export const UserPermissionsPage = () => {
     const isAllowed = useUserPermissionCheck();
@@ -21,7 +46,16 @@ export const UserPermissionsPage = () => {
         <Stack topLevelTitle={<FormattedMessage id="dextinity.userPermissions.title" defaultMessage="User Permissions" />}>
             <StackSwitch>
                 <StackPage name="table">
-                    <StackToolbar scopeIndicator={<ContentScopeIndicator global />} />
+                    <StackToolbar scopeIndicator={<ContentScopeIndicator global />}>
+                        <FillSpace />
+                        {isAllowed("userPermissions") && (
+                            <ToolbarActions>
+                                <Button variant="textDark" startIcon={<Time />} component={StackLink} pageName="action-log" payload="action-log">
+                                    <FormattedMessage id="dextinity.actionLogButton.title" defaultMessage="Action Log" />
+                                </Button>
+                            </ToolbarActions>
+                        )}
+                    </StackToolbar>
                     <MainContent fullHeight>
                         <UserPermissionsUserGrid
                             rowAction={(params) => (
@@ -31,6 +65,17 @@ export const UserPermissionsPage = () => {
                             )}
                         />
                     </MainContent>
+                </StackPage>
+                <StackPage name="action-log" title={<FormattedMessage id="dextinity.userPermissions.actionLog" defaultMessage="Action Log" />}>
+                    <StackToolbar scopeIndicator={<ContentScopeIndicator global />}>
+                        <ToolbarBackButton />
+                        <ToolbarAutomaticTitleItem />
+                    </StackToolbar>
+                    <ActionLogsGrid
+                        entity="UserPermission"
+                        getDisplayName={getUserPermissionDisplayName}
+                        renderEntitySecondaryText={renderUserPermissionUser}
+                    />
                 </StackPage>
                 <StackPage name="edit" title={<FormattedMessage id="dextinity.userPermissions.edit" defaultMessage="User" />}>
                     {(userId) => (

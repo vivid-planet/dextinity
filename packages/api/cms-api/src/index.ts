@@ -246,6 +246,11 @@ export { ImporterCsvParseAndTransformPipes } from "./importer/pipes/parsers/csv-
 export { KubernetesJobStatus } from "./kubernetes/job-status.enum";
 export { KubernetesModule } from "./kubernetes/kubernetes.module";
 export { KubernetesService } from "./kubernetes/kubernetes.service";
+export { MailAttachment } from "./mail-images/mail-attachment";
+export { MailImageCache, MailImageCacheOptions, MailImageCacheStats } from "./mail-images/mail-image-cache";
+export { MailImageLimits, MailImagesModuleConfig } from "./mail-images/mail-images.config";
+export { MailImagesModule } from "./mail-images/mail-images.module";
+export { MailImagesRenderContext, MailImagesService, RenderWithImagesOptions } from "./mail-images/mail-images.service";
 export { MailTemplate, MailTemplateInterface, PreparedTestProps } from "./mail-templates/mail-template.decorator";
 export { MailTemplateService } from "./mail-templates/mail-template.service";
 export { MailTemplatesModule } from "./mail-templates/mail-templates.module";

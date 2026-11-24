@@ -34,11 +34,14 @@ import { type FileRejection, useDropzone } from "react-dropzone";
 import { FormattedDate, FormattedMessage, useIntl } from "react-intl";
 import { useDebouncedCallback } from "use-debounce";
 
+import { useAiModeToolset } from "../../aiMode/AiModeToolsets";
 import { DataGrid } from "../../dataGrid/DataGrid";
 import type { GQLDamItemType } from "../../graphql.generated";
 import { useDamConfig } from "../config/damConfig";
 import { useDamAcceptedMimeTypes } from "../config/useDamAcceptedMimeTypes";
 import { useDamScope } from "../config/useDamScope";
+import { useIsDamAiModeEnabled } from "../DamAiModeContext";
+import { createDamTools, type DamAiModeItem } from "../damAiModeTools";
 import type { DamConfig, DamFilter } from "../DamTable";
 import { licenseTypeLabels } from "../FileForm/licenseType";
 import AddFolder from "../FolderForm/AddFolder";
@@ -450,6 +453,39 @@ const FolderDataGrid = ({
     });
 
     const rowCount = useBufferedRowCount(dataGridData?.damItemsList.totalCount);
+
+    const isAiModeEnabled = useIsDamAiModeEnabled();
+    const currentFolder = currentFolderId !== undefined ? (currentFolderData?.damFolder ?? null) : null;
+    useAiModeToolset(
+        isAiModeEnabled
+            ? {
+                  id: "dam_grid",
+                  description:
+                      "The grid of the DAM, where the user browses the folders and files of the digital asset management and opens a file to edit it.",
+                  context: {
+                      folder: currentFolder ? { id: currentFolder.id, name: currentFolder.name } : null,
+                      search: filterApi.current.searchText ?? "",
+                      totalCount: dataGridData?.damItemsList.totalCount,
+                  },
+                  tools: createDamTools({
+                      folder: currentFolder,
+                      items: (dataGridData?.damItemsList.nodes ?? []) as DamAiModeItem[],
+                      totalCount: dataGridData?.damItemsList.totalCount,
+                      isLoading: loading,
+                      search: filterApi.current.searchText ?? "",
+                      page: dataGridProps.paginationModel.page,
+                      pageSize: dataGridProps.paginationModel.pageSize,
+                      setSearch: (search) => filterApi.formApi.change("searchText", search === "" ? undefined : search),
+                      setPage: (page) => apiRef.current?.setPaginationModel({ ...dataGridProps.paginationModel, page }),
+                      openFolder: (id) => {
+                          filterApi.formApi.change("searchText", undefined);
+                          switchApi.activatePage("folder", id);
+                      },
+                      openFile: (id) => switchApi.activatePage("edit", id),
+                  }),
+              }
+            : null,
+    );
 
     const { matches } = useDamSearchHighlighting({
         items: dataGridData?.damItemsList.nodes ?? [],

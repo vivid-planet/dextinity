@@ -173,6 +173,11 @@ export function WarningsGrid({ showAllScopes = false }: WarningsGridProps) {
         {
             field: "message",
             headerName: intl.formatMessage({ id: "dextinity.warning.message", defaultMessage: "Message" }),
+            type: "singleSelect",
+            valueOptions: Object.entries(warningMessages).map(([value, message]) => ({
+                value,
+                label: getDisplayNameString(message, intl, value),
+            })),
             flex: 1,
             renderCell: (params) => <WarningMessage message={params.value} warningMessages={warningMessages} />,
         },

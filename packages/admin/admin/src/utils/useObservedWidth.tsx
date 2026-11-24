@@ -23,7 +23,6 @@ export const useObservedWidth = (ref: RefObject<HTMLElement | null>): number => 
 
         return () => {
             elementObserver.disconnect();
-            updateContainerWidth.cancel();
         };
     }, [ref, updateContainerWidth]);
 

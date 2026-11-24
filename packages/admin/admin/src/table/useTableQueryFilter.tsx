@@ -54,11 +54,7 @@ export function useTableQueryFilter<FilterValues>(
         if (!ref.current) {
             return;
         }
-        const unsubscribe = ref.current.subscribe(handleFormStateChange, { values: true });
-        return () => {
-            unsubscribe();
-            handleFormStateChange.cancel();
-        };
+        return ref.current.subscribe(handleFormStateChange, { values: true });
     }, [handleFormStateChange]);
 
     return {

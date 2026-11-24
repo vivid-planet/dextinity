@@ -1,0 +1,19 @@
+.person {
+    display: inline-flex;
+    gap: var(--dextinity-space-3);
+    align-items: center;
+}
+
+.personText {
+    display: flex;
+    flex-direction: column;
+}
+
+.name {
+    font-weight: var(--dextinity-font-weight-semibold);
+}
+
+.email {
+    color: var(--dextinity-color-text-subtle);
+    font-size: var(--dextinity-typography-small-size);
+}

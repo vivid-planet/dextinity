@@ -9,6 +9,7 @@ import * as treeDetailStories from "../../../components/treeDetailLayout/__stori
 import { CmsPrototype } from "../cmsPrototype/CmsPrototype";
 import { PrototypeApp } from "../PrototypeApp";
 import { careerPortalPrototype } from "../prototypes";
+import { TestPrototype } from "../testPrototype/TestPrototype";
 
 const careerPortalPages: Record<string, ComponentType> = {
     dashboard: composeStories(overviewStories).Default,
@@ -48,4 +49,9 @@ export const CareerPortal: Story = {
 export const Cms: Story = {
     name: "CMS",
     render: () => <CmsPrototype />,
+};
+
+/** A test prototype with a single page: the list of employees. */
+export const Test: Story = {
+    render: () => <TestPrototype />,
 };

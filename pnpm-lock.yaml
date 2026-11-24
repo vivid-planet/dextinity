@@ -678,7 +678,7 @@ importers:
   demo/site:
     dependencies:
       '@aws-sdk/client-s3':
-        specifier: ^3.1173.0
+        specifier: ^3.1175.0
         version: 3.1175.0
       '@base-ui/react':
         specifier: ^1.9.0
@@ -2207,10 +2207,10 @@ importers:
   packages/api/cms-api:
     dependencies:
       '@aws-sdk/client-s3':
-        specifier: ^3.1173.0
+        specifier: ^3.1175.0
         version: 3.1175.0
       '@aws-sdk/lib-storage':
-        specifier: ^3.1173.0
+        specifier: ^3.1175.0
         version: 3.1175.0(@aws-sdk/client-s3@3.1175.0)
       '@azure-rest/ai-translation-text':
         specifier: ^2.0.0
@@ -2746,7 +2746,7 @@ importers:
         version: 3.1.1(react@19.3.1)
     devDependencies:
       '@aws-sdk/client-s3':
-        specifier: ^3.1173.0
+        specifier: ^3.1175.0
         version: 3.1175.0
       '@azure/storage-blob':
         specifier: ^12.34.0

@@ -16,8 +16,8 @@ export interface AiModeMcpModuleOptions {
     blockMetaPath: string;
     dam: {
         File: Type<FileInterface>;
-        /** The schema of the DAM's scope, which the agent passes to list the files of a scope. */
-        scopeSchema: z.ZodType;
+        /** The schema of the DAM's scope, which the agent passes to list the files of a scope. Leave it out for a DAM without scope. */
+        scopeSchema?: z.ZodType;
     };
     /** The project's own tools, e.g. for its documents. */
     tools?: Type[];

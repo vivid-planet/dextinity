@@ -80,7 +80,12 @@ const appProviders: Provider[] = [
     { provide: MikroORM, useValue: orm },
     {
         provide: FilesService,
-        useValue: { findAndCount: findDamFiles, findOneById: async (id: string) => (id === damFile.id ? damFile : null) },
+        useValue: {
+            findAndCount: findDamFiles,
+            findOneById: async (id: string) => (id === damFile.id ? damFile : null),
+            createFileUrl: async () => "https://dam.example.com/spring.jpg",
+            getDamPath: async () => "/",
+        },
     },
 ];
 
@@ -224,5 +229,59 @@ describe("HTTP endpoint of the AI Mode's MCP server", () => {
         const response = await listTools({ origin: adminUrl, "x-test-user": "editorWithoutAiHub" });
 
         expect(response.status).toBe(403);
+    });
+});
+
+describe("MCP server of the AI Mode with a DAM without scope", () => {
+    let unscopedApp: INestApplication;
+    let client: Client;
+
+    beforeAll(async () => {
+        const moduleRef = await Test.createTestingModule({
+            imports: [
+                AppServicesModule,
+                AiModeMcpModule.forRoot({
+                    adminUrl,
+                    blockMetaPath: join(blockMetaDirectory, "block-meta.json"),
+                    dam: { File: TestDamFile as Type<FileInterface> },
+                }),
+            ],
+            providers: [
+                { provide: APP_GUARD, useClass: HeaderAuthGuard },
+                { provide: APP_GUARD, useClass: UserPermissionsGuard },
+            ],
+        }).compile();
+
+        unscopedApp = moduleRef.createNestApplication();
+        await unscopedApp.init();
+        client = await connectMcpClient(unscopedApp, { headers: { "x-test-user": "editor" } });
+    });
+
+    afterAll(async () => {
+        await client?.close();
+        await unscopedApp?.close();
+    });
+
+    it("lists the DAM files without a scope", async () => {
+        findDamFiles.mockClear();
+
+        const result = await client.callTool({ name: "list_dam_files", arguments: {} });
+
+        expect(result.isError).toBeFalsy();
+        expect(findDamFiles).toHaveBeenCalledWith(expect.objectContaining({ limit: 50, offset: 0 }), undefined);
+    });
+
+    it("doesn't ask the agent for a scope", async () => {
+        const { tools } = await client.listTools();
+
+        expect(tools.find((tool) => tool.name === "list_dam_files")?.inputSchema.properties).not.toHaveProperty("scope");
+    });
+
+    it("answers a DAM file", async () => {
+        const result = await client.callTool({ name: "get_dam_file", arguments: { id: damFile.id } });
+        const [content] = result.content as { type: "text"; text: string }[];
+
+        expect(result.isError).toBeFalsy();
+        expect(JSON.parse(content.text)).toMatchObject({ id: damFile.id, name: "spring.jpg" });
     });
 });

@@ -87,7 +87,7 @@ const createTextImageBlock = <TextBlock extends BlockInterface = RichTextBlock>(
                             onChange={(event) => {
                                 updateState((prevState) => ({
                                     ...prevState,
-                                    imagePosition: event.target.value as GeneratedTextImageBlockData["imagePosition"],
+                                    imagePosition: event.target.value as TextImageBlockData<TextBlock>["imagePosition"],
                                 }));
                             }}
                         >

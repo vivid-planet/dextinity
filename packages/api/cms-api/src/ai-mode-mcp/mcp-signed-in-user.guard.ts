@@ -1,7 +1,8 @@
-import type { CurrentUser } from "@dextinity/cms-api";
 import { type CanActivate, type ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
 import { McpExecutionContext } from "@nestjs/mcp";
 import type { Request } from "express";
+
+import type { CurrentUser } from "../user-permissions/dto/current-user.js";
 
 /** The HTTP request of a tool call, after the global `DextinityAuthGuard` has authenticated it. */
 type McpRequest = Request & { user?: CurrentUser | string };
@@ -11,7 +12,7 @@ type McpRequest = Request & { user?: CurrentUser | string };
  * Mode of the admin, which a person uses.
  */
 @Injectable()
-export class SignedInUserGuard implements CanActivate {
+export class McpSignedInUserGuard implements CanActivate {
     canActivate(context: ExecutionContext): boolean {
         const user = McpExecutionContext.create(context).getRequest<McpRequest>()?.user;
         if (typeof user !== "object") {

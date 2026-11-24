@@ -5,7 +5,7 @@ import { Catch, type ExceptionFilter, ForbiddenException } from "@nestjs/common"
  * guard's exception, which is "Forbidden resource".
  */
 @Catch(ForbiddenException)
-export class RefusalReasonFilter implements ExceptionFilter {
+export class McpRefusalReasonFilter implements ExceptionFilter {
     constructor(private readonly reason: string) {}
 
     catch(): never {

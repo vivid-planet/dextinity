@@ -90,10 +90,13 @@
         "@mikro-orm/migrations": "^7.2.0",
         "@mikro-orm/nestjs": "^7.1.0",
         "@mikro-orm/postgresql": "^7.2.0",
+        "@modelcontextprotocol/client": "^2.4.0",
+        "@modelcontextprotocol/server": "^2.4.0",
         "@nestjs/common": "^12.0.4",
         "@nestjs/core": "^12.0.4",
         "@nestjs/graphql": "^14.0.1",
         "@nestjs/jwt": "^12.0.2",
+        "@nestjs/mcp": "^0.0.4",
         "@nestjs/platform-express": "^12.0.4",
         "@nestjs/testing": "^12.0.4",
         "@opentelemetry/api": "^1.10.0",
@@ -125,7 +128,8 @@
         "rxjs": "^7.8.2",
         "typescript": "^6.0.3",
         "unplugin-swc": "^2.0.0",
-        "vitest": "^5.1.0"
+        "vitest": "^5.1.0",
+        "zod": "^4.6.7"
     },
     "peerDependencies": {
         "@kubernetes/client-node": "^1.0.0 || ^2.0.0",
@@ -134,10 +138,12 @@
         "@mikro-orm/migrations": "^7.1.8",
         "@mikro-orm/nestjs": "^7.0.0",
         "@mikro-orm/postgresql": "^7.1.8",
+        "@modelcontextprotocol/server": "^2.4.0",
         "@nestjs/common": "^12.0.0",
         "@nestjs/core": "^12.0.0",
         "@nestjs/graphql": "^14.0.0",
         "@nestjs/jwt": "^12.0.0",
+        "@nestjs/mcp": "^0.0.4",
         "@nestjs/platform-express": "^12.0.0",
         "@opentelemetry/api": "^1.0.0",
         "@sentry/node": "^9.0.0 || ^10.0.0 || ^11.0.0",
@@ -148,7 +154,8 @@
         "graphql-scalars": "^2.0.0",
         "nest-commander": "^3.0.0",
         "reflect-metadata": "^0.2.0",
-        "rxjs": "^7.1.0"
+        "rxjs": "^7.1.0",
+        "zod": "^4.0.0"
     },
     "peerDependenciesMeta": {
         "@sentry/node": {

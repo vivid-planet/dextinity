@@ -62,7 +62,7 @@
         "chokidar-cli": "^3.0.0",
         "eslint": "^9.39.5",
         "jsdom": "^28.1.0",
-        "npm-run-all2": "^9.0.4",
+        "npm-run-all2": "^9.1.0",
         "prettier": "^3.10.1",
         "react": "^19.3.1",
         "react-dom": "^19.3.1",

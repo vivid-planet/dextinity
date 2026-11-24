@@ -210,8 +210,8 @@ importers:
         specifier: ^17.6.1
         version: 17.6.1
       npm-run-all2:
-        specifier: ^9.0.4
-        version: 9.0.4
+        specifier: ^9.1.0
+        version: 9.1.0
       open-cli:
         specifier: ^9.0.0
         version: 9.0.0(supports-color@8.1.1)
@@ -424,8 +424,8 @@ importers:
         specifier: ^10.6.8
         version: 10.6.8(eslint@9.39.5(jiti@2.7.0)(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3)
       npm-run-all2:
-        specifier: ^9.0.4
-        version: 9.0.4
+        specifier: ^9.1.0
+        version: 9.1.0
       playwright:
         specifier: ^1.65.1
         version: 1.65.1
@@ -675,8 +675,8 @@ importers:
         specifier: ^10.6.8
         version: 10.6.8(eslint@9.39.5(jiti@2.7.0)(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3)
       npm-run-all2:
-        specifier: ^9.0.4
-        version: 9.0.4
+        specifier: ^9.1.0
+        version: 9.1.0
       prettier:
         specifier: ^3.10.1
         version: 3.10.1
@@ -880,8 +880,8 @@ importers:
         specifier: ^28.1.0
         version: 28.1.0(@noble/hashes@1.8.0)(supports-color@8.1.1)
       npm-run-all2:
-        specifier: ^9.0.4
-        version: 9.0.4
+        specifier: ^9.1.0
+        version: 9.1.0
       playwright:
         specifier: ^1.65.1
         version: 1.65.1
@@ -968,8 +968,8 @@ importers:
         specifier: ^9.39.5
         version: 9.39.5(jiti@2.7.0)(supports-color@8.1.1)
       npm-run-all2:
-        specifier: ^9.0.4
-        version: 9.0.4
+        specifier: ^9.1.0
+        version: 9.1.0
       prettier:
         specifier: ^3.10.1
         version: 3.10.1
@@ -1143,8 +1143,8 @@ importers:
         specifier: ^3.0.7
         version: 3.0.7(@types/node@24.19.2)(graphql@16.15.0)(supports-color@8.1.1)(typescript@5.9.3)(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.108.2)(terser@5.51.2)(yaml@2.9.1))
       npm-run-all2:
-        specifier: ^9.0.4
-        version: 9.0.4
+        specifier: ^9.1.0
+        version: 9.1.0
       playwright:
         specifier: ^1.65.1
         version: 1.65.1
@@ -1267,8 +1267,8 @@ importers:
         specifier: ^4.20.10
         version: 4.20.10
       npm-run-all2:
-        specifier: ^9.0.4
-        version: 9.0.4
+        specifier: ^9.1.0
+        version: 9.1.0
       prettier:
         specifier: ^3.10.1
         version: 3.10.1
@@ -1340,8 +1340,8 @@ importers:
         specifier: ^4.20.10
         version: 4.20.10
       npm-run-all2:
-        specifier: ^9.0.4
-        version: 9.0.4
+        specifier: ^9.1.0
+        version: 9.1.0
       prettier:
         specifier: ^3.10.1
         version: 3.10.1
@@ -1440,8 +1440,8 @@ importers:
         specifier: ^4.20.10
         version: 4.20.10
       npm-run-all2:
-        specifier: ^9.0.4
-        version: 9.0.4
+        specifier: ^9.1.0
+        version: 9.1.0
       prettier:
         specifier: ^3.10.1
         version: 3.10.1
@@ -1510,8 +1510,8 @@ importers:
         specifier: ^5.12.1
         version: 5.12.1
       npm-run-all2:
-        specifier: ^9.0.4
-        version: 9.0.4
+        specifier: ^9.1.0
+        version: 9.1.0
       prettier:
         specifier: ^3.10.1
         version: 3.10.1
@@ -1592,8 +1592,8 @@ importers:
         specifier: ^28.1.0
         version: 28.1.0(@noble/hashes@1.8.0)(supports-color@8.1.1)
       npm-run-all2:
-        specifier: ^9.0.4
-        version: 9.0.4
+        specifier: ^9.1.0
+        version: 9.1.0
       prettier:
         specifier: ^3.10.1
         version: 3.10.1
@@ -1990,8 +1990,8 @@ importers:
         specifier: ^3.0.7
         version: 3.0.7(@types/node@24.19.2)(graphql@16.15.0)(supports-color@8.1.1)(typescript@5.9.3)(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.108.2)(terser@5.51.2)(yaml@2.9.1))
       npm-run-all2:
-        specifier: ^9.0.4
-        version: 9.0.4
+        specifier: ^9.1.0
+        version: 9.1.0
       playwright:
         specifier: ^1.65.1
         version: 1.65.1
@@ -2098,8 +2098,8 @@ importers:
         specifier: ^9.39.5
         version: 9.39.5(jiti@2.7.0)(supports-color@8.1.1)
       npm-run-all2:
-        specifier: ^9.0.4
-        version: 9.0.4
+        specifier: ^9.1.0
+        version: 9.1.0
       prettier:
         specifier: ^3.10.1
         version: 3.10.1
@@ -2460,8 +2460,8 @@ importers:
         specifier: ^3.21.0
         version: 3.21.0(@nestjs/common@11.2.11(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1))(@nestjs/core@11.2.11)(@types/inquirer@8.2.13)(@types/node@24.19.2)(typescript@5.9.3)
       npm-run-all2:
-        specifier: ^9.0.4
-        version: 9.0.4
+        specifier: ^9.1.0
+        version: 9.1.0
       prettier:
         specifier: ^3.10.1
         version: 3.10.1
@@ -2509,8 +2509,8 @@ importers:
         specifier: ^9.39.5
         version: 9.39.5(jiti@2.7.0)(supports-color@8.1.1)
       npm-run-all2:
-        specifier: ^9.0.4
-        version: 9.0.4
+        specifier: ^9.1.0
+        version: 9.1.0
       rimraf:
         specifier: ^6.1.4
         version: 6.1.4
@@ -2582,8 +2582,8 @@ importers:
         specifier: ^9.39.5
         version: 9.39.5(jiti@2.7.0)(supports-color@8.1.1)
       npm-run-all2:
-        specifier: ^9.0.4
-        version: 9.0.4
+        specifier: ^9.1.0
+        version: 9.1.0
       prettier:
         specifier: ^3.10.1
         version: 3.10.1
@@ -2624,8 +2624,8 @@ importers:
         specifier: ^17.14.0
         version: 17.14.0
       npm-run-all2:
-        specifier: ^9.0.4
-        version: 9.0.4
+        specifier: ^9.1.0
+        version: 9.1.0
       prettier:
         specifier: ^3.10.1
         version: 3.10.1
@@ -2709,8 +2709,8 @@ importers:
         specifier: ^28.1.0
         version: 28.1.0(@noble/hashes@1.8.0)(supports-color@8.1.1)
       npm-run-all2:
-        specifier: ^9.0.4
-        version: 9.0.4
+        specifier: ^9.1.0
+        version: 9.1.0
       playwright:
         specifier: ^1.65.1
         version: 1.65.1
@@ -2809,8 +2809,8 @@ importers:
         specifier: ^16.4.6
         version: 16.4.6(@babel/core@7.29.13(supports-color@8.1.1))(@opentelemetry/api@1.10.0)(@types/node@24.19.2)(babel-plugin-macros@3.1.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(sass@1.108.2)
       npm-run-all2:
-        specifier: ^9.0.4
-        version: 9.0.4
+        specifier: ^9.1.0
+        version: 9.1.0
       prettier:
         specifier: ^3.10.1
         version: 3.10.1
@@ -2891,8 +2891,8 @@ importers:
         specifier: ^28.1.0
         version: 28.1.0(@noble/hashes@1.8.0)(supports-color@8.1.1)
       npm-run-all2:
-        specifier: ^9.0.4
-        version: 9.0.4
+        specifier: ^9.1.0
+        version: 9.1.0
       prettier:
         specifier: ^3.10.1
         version: 3.10.1
@@ -3096,8 +3096,8 @@ importers:
         specifier: ^3.0.7
         version: 3.0.7(@types/node@24.19.2)(graphql@16.15.0)(supports-color@8.1.1)(typescript@5.9.3)(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.108.2)(terser@5.51.2)(yaml@2.9.1))
       npm-run-all2:
-        specifier: ^9.0.4
-        version: 9.0.4
+        specifier: ^9.1.0
+        version: 9.1.0
       playwright:
         specifier: ^1.65.1
         version: 1.65.1
@@ -10443,10 +10443,6 @@ packages:
     resolution: {integrity: sha512-4Dj6M28JB+oAH8kFkTLUo+a2jwOFkuqb3yucU0CANcRRUbxS0cP0nZYCGjcc3BNXwRIsUVmDGgzawme7zvJHvg==}
     engines: {node: '>=12'}
 
-  ansi-styles@7.0.0:
-    resolution: {integrity: sha512-kKvt3m4uwzqL0wlkPd09CmljPJGOZZ4D0fP65sqFSvPkMRKhNi+74MgIJ5QxE6SxqB4t4KyUFGg8+n5zjo6hew==}
-    engines: {node: '>=22'}
-
   ansis@3.17.0:
     resolution: {integrity: sha512-0qWUglt9JEqLFr3w1I1pbrChn1grhaiAR2ocX1PP/flRmxgtwTzPFFFnfIlD6aMOLQZgSuCRlidD70lvx8yhzg==}
     engines: {node: '>=14'}
@@ -10495,6 +10491,10 @@ packages:
 
   argparse@3.0.4:
     resolution: {integrity: sha512-fwWK3Zq22l4XJJjx5mcBHGikIk+hJqO+32dPm0Jur7+rtG5x1scOjSfdT9ZKeWHPpsya/l0HHK4tDImBkTrtvA==}
+
+  argsclopts@1.1.1:
+    resolution: {integrity: sha512-6WxZv61e68WtkWfKkZSMJ85ErP5DKMr2O8J9cJ9AF/55fAJKq4PzPyVCmP26LGqtqyYhbLcZCAwlUiACYl0sZQ==}
+    engines: {node: ^22.13.0 || >=24, npm: '>=10'}
 
   aria-query@5.3.0:
     resolution: {integrity: sha512-b0P0sZPKtyu8HkeRAfCq0IfURZK+SuwMjY1UXGBU27wpAiTwQAIlq56IbIO+ytk/JjS1fMR14ee5WBBfKi5J6A==}
@@ -14636,10 +14636,6 @@ packages:
   memoizerific@1.11.3:
     resolution: {integrity: sha512-/EuHYwAPdLtXwAwSZkh/Gutery6pD2KYd44oQLhAvQp/50mpyduZh8Q7PYHXTCJ+wuXxt7oij2LXyIJOOYFPog==}
 
-  memorystream@0.3.1:
-    resolution: {integrity: sha512-S3UwM3yj5mtUSEfP41UZmt/0SCoVYUcU1rkXv+BQ5Ig8ndL4sPoJNBUJERafdPb5jjHJGuMgytgKvKIf58XNBw==}
-    engines: {node: '>= 0.10.0'}
-
   mensch@0.3.4:
     resolution: {integrity: sha512-IAeFvcOnV9V0Yk+bFhYR07O3yNina9ANIN5MoXBKYJ/RLYPurd2d0yw14MDhpr9/momp0WofT1bPUh3hkzdi/g==}
 
@@ -15267,8 +15263,8 @@ packages:
     resolution: {integrity: sha512-IciCE3SY3uE84Ld8WZU23gAPPV9rIYod4F+rc+vJ7h7cwAJt9Vk6TVsK60ry7Uj3SRS3bqRRIGuTp9YVlk6WNA==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  npm-run-all2@9.0.4:
-    resolution: {integrity: sha512-GuGRF8MddEKavyUzjy0k2z2pA76/N+eT8lHlypx0/AhShLKD2FOerQxHhpFhcqnQmAqCkunUCYlf6Z9RKh/4zg==}
+  npm-run-all2@9.1.0:
+    resolution: {integrity: sha512-zYpHPU7vMd/GeR1rRa4ZCd+Xt8/OdTSQELWeje6SE+amea/nWfyiYLj33h14G7w2odDzDH0sdXqBCrHgKSwjXA==}
     engines: {node: ^22.22.2 || ^24.15.0 || >=26.0.0, npm: '>= 10'}
     hasBin: true
 
@@ -27963,8 +27959,6 @@ snapshots:
 
   ansi-styles@6.2.3: {}
 
-  ansi-styles@7.0.0: {}
-
   ansis@3.17.0: {}
 
   ansis@4.2.0: {}
@@ -28032,6 +28026,8 @@ snapshots:
   argparse@2.0.1: {}
 
   argparse@3.0.4: {}
+
+  argsclopts@1.1.1: {}
 
   aria-query@5.3.0:
     dependencies:
@@ -32870,8 +32866,6 @@ snapshots:
     dependencies:
       map-or-similar: 1.5.0
 
-  memorystream@0.3.1: {}
-
   mensch@0.3.4: {}
 
   meow@14.1.0: {}
@@ -33812,11 +33806,10 @@ snapshots:
       semver: 7.8.6
       validate-npm-package-name: 7.0.2
 
-  npm-run-all2@9.0.4:
+  npm-run-all2@9.1.0:
     dependencies:
-      ansi-styles: 7.0.0
+      argsclopts: 1.1.1
       cross-spawn: 7.0.6
-      memorystream: 0.3.1
       picomatch: 4.0.7
       pidtree: 1.0.0
       read-package-json-fast: 6.0.0

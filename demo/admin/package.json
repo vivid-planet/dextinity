@@ -99,7 +99,7 @@
         "dotenv-cli": "^11.1.0",
         "eslint": "^9.39.5",
         "eslint-plugin-storybook": "^10.6.8",
-        "npm-run-all2": "^9.0.4",
+        "npm-run-all2": "^9.1.0",
         "playwright": "^1.65.1",
         "prettier": "^3.10.1",
         "rimraf": "^6.1.4",

@@ -142,8 +142,9 @@ export class FileUploadsService {
     }
 
     async delete(fileUpload: FileUpload): Promise<void> {
+        const otherFileUploadsWithSameContent = await this.repository.count({ contentHash: fileUpload.contentHash, id: { $ne: fileUpload.id } });
         const filePath = createHashedPath(fileUpload.contentHash);
-        if (await this.blobStorageBackendService.fileExists(this.config.directory, filePath)) {
+        if (otherFileUploadsWithSameContent === 0 && (await this.blobStorageBackendService.fileExists(this.config.directory, filePath))) {
             await this.blobStorageBackendService.removeFile(this.config.directory, filePath);
         }
 
@@ -171,9 +172,10 @@ export class FileUploadsService {
 
             for (const file of files) {
                 await this.delete(file);
+                // Flush each removal so that the next delete() no longer counts this file as using the same blob
+                await this.entityManager.flush();
             }
             hasMore = files.length === limit;
         } while (hasMore);
-        await this.entityManager.flush();
     }
 }

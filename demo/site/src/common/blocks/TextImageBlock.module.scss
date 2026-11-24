@@ -9,7 +9,7 @@
         flex-direction: row;
     }
 
-    &--imageLeft {
+    &--imageRight {
         @media (min-width: $breakpoint-md) {
             flex-direction: row-reverse;
         }

@@ -1009,7 +1009,7 @@ const { html } = renderMailHtml(
 
 :::caution
 `MjmlMailRoot` requires a `config` as soon as the campaign contains pixel-image blocks — `NewsletterImageBlock` as well as any block built on `MjmlPixelImageBlock` or `HtmlPixelImageBlock`.
-See [Pixel-image blocks](../13-building-html-emails/3-blocks.md#configuration) for how to build it.
+See [Pixel-image blocks](https://cms-storybook.dextinity.com/?path=/docs/@dextinity/mail-react_docs-blocks--docs#configuration) for how to build it.
 :::
 
 Your site must provide two endpoints:

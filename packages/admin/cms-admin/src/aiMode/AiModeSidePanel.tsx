@@ -207,7 +207,7 @@ function AiModeChatSidePanel({
                 language={intl.locale}
                 width={isMobile ? windowSize.width : desktopWidth}
                 height={chatHeight}
-                integration-location="Admin Flyout"
+                integration-location="Dextinity CMS"
             />
         </ScriptLoader>
     );

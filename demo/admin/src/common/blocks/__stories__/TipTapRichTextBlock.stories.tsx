@@ -1,9 +1,8 @@
 import type { BlockState } from "@dextinity/cms-admin";
+import { TipTapRichTextBlock } from "@src/common/blocks/TipTapRichTextBlock";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
-
-import { TipTapRichTextBlock } from "../TipTapRichTextBlock";
 
 function TipTapRichTextBlockStory() {
     const [state, setState] = useState<BlockState<typeof TipTapRichTextBlock>>(TipTapRichTextBlock.defaultValues());

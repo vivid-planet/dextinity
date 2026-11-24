@@ -1,10 +1,9 @@
 import { Stack } from "@dextinity/admin";
 import type { BlockState } from "@dextinity/cms-admin";
+import { HeadingBlock } from "@src/common/blocks/HeadingBlock";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
-
-import { HeadingBlock } from "../HeadingBlock";
 
 function HeadingBlockStory() {
     const [state, setState] = useState<BlockState<typeof HeadingBlock>>(HeadingBlock.defaultValues());

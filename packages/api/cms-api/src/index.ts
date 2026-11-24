@@ -114,6 +114,7 @@ export {
     type TipTapTextBlockStyle,
     type TipTapTextBlockTag,
 } from "./blocks/tipTap/createTipTapRichTextBlock.js";
+export { IsTipTapRichText, type IsTipTapRichTextOptions } from "./blocks/tipTap/isTipTapRichText.js";
 export { transformToBlockSaveIndex } from "./blocks/transformToBlockSaveIndex/transformToBlockSaveIndex.js";
 export { IsLinkTarget } from "./blocks/validator/is-link-target.validator.js";
 export { VimeoVideoBlock } from "./blocks/vimeo-video.block.js";

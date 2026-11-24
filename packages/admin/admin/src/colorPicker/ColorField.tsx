@@ -1,5 +1,4 @@
-import { Field, type FieldProps } from "@dextinity/admin";
-
+import { Field, type FieldProps } from "../form/Field";
 import { FinalFormColorPicker, type FinalFormColorPickerProps } from "./FinalFormColorPicker";
 
 export type ColorFieldProps = FieldProps<string, HTMLInputElement> & FinalFormColorPickerProps;

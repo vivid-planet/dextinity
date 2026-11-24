@@ -2,7 +2,6 @@ import { defineConfig } from "dev-process-manager";
 
 const packageFolderMapping = {
     "@dextinity/admin": "packages/admin/admin",
-    "@dextinity/admin-color-picker": "packages/admin/admin-color-picker",
     "@dextinity/admin-date-time": "packages/admin/admin-date-time",
     "@dextinity/admin-icons": "packages/admin/admin-icons",
     "@dextinity/admin-rte": "packages/admin/admin-rte",
@@ -26,12 +25,6 @@ export default defineConfig({
             script: "pnpm --filter @dextinity/admin run start",
             group: ["dextinity-admin"],
             waitOn: waitOnPackages("@dextinity/admin-icons"),
-        },
-        {
-            name: "dextinity-admin-color-picker",
-            script: "pnpm --filter @dextinity/admin-color-picker run start",
-            group: ["dextinity-admin"],
-            waitOn: waitOnPackages("@dextinity/admin"),
         },
         {
             name: "dextinity-admin-date-time",

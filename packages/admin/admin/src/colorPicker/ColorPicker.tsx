@@ -1,4 +1,3 @@
-import { ClearInputAdornment, type InputWithPopperComponents, type InputWithPopperProps } from "@dextinity/admin";
 import { Close } from "@dextinity/admin-icons";
 import { type ComponentsOverrides, type InputBaseProps, Typography } from "@mui/material";
 import { type Theme, useThemeProps } from "@mui/material/styles";
@@ -7,6 +6,8 @@ import { FormattedMessage } from "react-intl";
 import tinycolor from "tinycolor2";
 import { useDebouncedCallback } from "use-debounce";
 
+import { ClearInputAdornment } from "../common/ClearInputAdornment";
+import type { InputWithPopperComponents, InputWithPopperProps } from "../inputWithPopper/InputWithPopper";
 import {
     ColorPalette,
     ColorPaletteItem,

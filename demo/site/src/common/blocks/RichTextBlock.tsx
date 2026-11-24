@@ -100,16 +100,12 @@ export const RichTextBlock = withPreview(
     { label: "Rich Text" },
 );
 
-export const AnimatedRichTextBlock = ({ data }: PropsWithData<RichTextBlockData>) => (
-    <AnimateBoxInOnScroll direction="bottom" offset={300}>
-        <RichTextBlock data={data} disableLastBottomSpacing />
-    </AnimateBoxInOnScroll>
-);
-
-export const PageContentRichTextBlock = (props: PropsWithData<RichTextBlockData>) => (
+export const PageContentRichTextBlock = ({ data }: PropsWithData<RichTextBlockData>) => (
     <PageLayout grid>
         <div className={styles.pageLayoutContent}>
-            <AnimatedRichTextBlock {...props} />
+            <AnimateBoxInOnScroll direction="bottom" offset={300}>
+                <RichTextBlock data={data} disableLastBottomSpacing />
+            </AnimateBoxInOnScroll>
         </div>
     </PageLayout>
 );

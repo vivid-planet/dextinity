@@ -1,6 +1,6 @@
 import { BlocksBlock, type PropsWithData, type SupportedBlocks, withPreview } from "@dextinity/site-nextjs";
 import type { AccordionContentBlockData } from "@src/blocks.generated";
-import { AnimatedHeadingBlock } from "@src/common/blocks/HeadingBlock";
+import { HeadingBlock } from "@src/common/blocks/HeadingBlock";
 import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
 import { SpaceBlock } from "@src/common/blocks/SpaceBlock";
 import { StandaloneCallToActionListBlock } from "@src/common/blocks/StandaloneCallToActionListBlock";
@@ -9,7 +9,7 @@ import { TextImageBlock } from "./TextImageBlock";
 
 const supportedBlocks: SupportedBlocks = {
     richtext: (props) => <RichTextBlock data={props} />,
-    heading: (props) => <AnimatedHeadingBlock data={props} />,
+    heading: (props) => <HeadingBlock data={props} />,
     space: (props) => <SpaceBlock data={props} />,
     callToActionList: (props) => <StandaloneCallToActionListBlock data={props} />,
     textImage: (props) => <TextImageBlock data={props} />,

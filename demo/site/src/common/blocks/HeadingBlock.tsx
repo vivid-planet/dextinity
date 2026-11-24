@@ -67,16 +67,12 @@ export const HeadingBlock = withPreview(
     { label: "Heading" },
 );
 
-export const AnimatedHeadingBlock = (props: HeadingBlockProps) => (
-    <AnimateBoxInOnScroll direction="bottom">
-        <HeadingBlock {...props} />
-    </AnimateBoxInOnScroll>
-);
-
 export const PageContentHeadingBlock = (props: HeadingBlockProps) => (
     <PageLayout grid>
         <div className={styles.pageLayoutContent}>
-            <AnimatedHeadingBlock {...props} />
+            <AnimateBoxInOnScroll direction="bottom">
+                <HeadingBlock {...props} />
+            </AnimateBoxInOnScroll>
         </div>
     </PageLayout>
 );

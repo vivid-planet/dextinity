@@ -66,13 +66,5 @@ export const cmsPrototype: WorkspacePrototype = {
     getPageLabel: getCmsPageLabel,
 };
 
-export const testPrototype: WorkspacePrototype = {
-    storyId: "workspace-prototypes--test",
-    appName: "Test",
-    startPageId: "employees",
-    designedPageIds: ["employees"],
-    getPageLabel: (pageId) => (pageId === "employees" ? "Employees" : undefined),
-};
-
 /** The prototypes by their story's id, for the workspace to list their pages. */
-export const workspacePrototypes = new Map([careerPortalPrototype, cmsPrototype, testPrototype].map((prototype) => [prototype.storyId, prototype]));
+export const workspacePrototypes = new Map([careerPortalPrototype, cmsPrototype].map((prototype) => [prototype.storyId, prototype]));

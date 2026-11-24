@@ -1,5 +1,5 @@
 import { Alert, MasterLayoutContext, useWindowSize } from "@dextinity/admin";
-import { Collapse, Slide, useMediaQuery, useTheme } from "@mui/material";
+import { Collapse, useMediaQuery, useTheme } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useCallback, useContext, useEffect, useLayoutEffect, useRef } from "react";
 import { useDragDropManager } from "react-dnd";
@@ -186,82 +186,71 @@ function AiModeChatSidePanel({
 
     const chatHeight = windowSize.height - headerHeight;
 
-    const chat = (
-        <ScriptLoader
-            src={webComponentScriptSrc}
-            errorFallback={
-                <ErrorAlert severity="error">
-                    <FormattedMessage
-                        id="dextinity.aiMode.chatLoadError"
-                        defaultMessage="The chat couldn't be loaded. Switch it off and on again to retry."
-                    />
-                </ErrorAlert>
-            }
-        >
-            <ai-hub-chat
-                ref={registerBridge}
-                api-url={aiHubProxyUrl}
-                widget-id={widgetId}
-                // Only a hint: the AI Hub proxy replaces it with the ID of the user the request was authenticated as.
-                user-id={user.id}
-                language={intl.locale}
-                width={isMobile ? windowSize.width : desktopWidth}
-                height={chatHeight}
-                integration-location="Dextinity CMS"
-            />
-        </ScriptLoader>
-    );
-
-    // Unmounted once closed, so the chat starts over with the next opening.
-    if (isMobile) {
-        return (
-            <Slide direction="left" in={isOpen} mountOnEnter unmountOnExit>
-                <MobileRoot sx={{ top: headerHeight }}>{chat}</MobileRoot>
-            </Slide>
-        );
-    }
-
-    // Takes its width in the layout, which narrows the content along with the animation.
+    // Unmounted once closed, so the chat starts over with the next opening. The same Collapse on every screen size, so that
+    // crossing the breakpoint keeps the chat. On desktop, it takes its width in the layout, which narrows the content along
+    // with the animation. On mobile, it covers the content: anchored to the right edge, its growing width slides the chat in.
     return (
-        <DesktopCollapse in={isOpen} orientation="horizontal" mountOnEnter unmountOnExit sx={{ top: headerHeight, height: chatHeight }}>
-            <DesktopRoot>{chat}</DesktopRoot>
-        </DesktopCollapse>
+        <PanelCollapse in={isOpen} orientation="horizontal" mountOnEnter unmountOnExit sx={{ top: headerHeight, height: chatHeight }}>
+            <Panel>
+                <ScriptLoader
+                    src={webComponentScriptSrc}
+                    errorFallback={
+                        <ErrorAlert severity="error">
+                            <FormattedMessage
+                                id="dextinity.aiMode.chatLoadError"
+                                defaultMessage="The chat couldn't be loaded. Switch it off and on again to retry."
+                            />
+                        </ErrorAlert>
+                    }
+                >
+                    <ai-hub-chat
+                        ref={registerBridge}
+                        api-url={aiHubProxyUrl}
+                        widget-id={widgetId}
+                        // Only a hint: the AI Hub proxy replaces it with the ID of the user the request was authenticated as.
+                        user-id={user.id}
+                        language={intl.locale}
+                        width={isMobile ? windowSize.width : desktopWidth}
+                        height={chatHeight}
+                        integration-location="Dextinity CMS"
+                    />
+                </ScriptLoader>
+            </Panel>
+        </PanelCollapse>
     );
 }
 
-const chatStyles = {
+const PanelCollapse = styled(Collapse)(({ theme }) => ({
+    position: "fixed",
+    right: 0,
+    boxShadow: theme.shadows[4],
+    zIndex: theme.zIndex.drawer - 10,
+
+    [theme.breakpoints.up("md")]: {
+        // Sticky, so that the chat stays below the header while the page scrolls.
+        position: "sticky",
+        boxShadow: "none",
+        zIndex: "auto",
+    },
+}));
+
+const Panel = styled("aside")(({ theme }) => ({
+    boxSizing: "border-box",
+    width: "100vw",
+    height: "100%",
+    overflow: "hidden",
+    backgroundColor: theme.palette.common.white,
+
+    [theme.breakpoints.up("md")]: {
+        width: desktopWidth,
+        borderLeft: `1px solid ${theme.palette.divider}`,
+    },
+
     "& ai-hub-chat": {
         display: "block",
         width: "100%",
         height: "100%",
     },
-};
-
-const MobileRoot = styled("aside")(({ theme }) => ({
-    position: "fixed",
-    right: 0,
-    bottom: 0,
-    width: "100%",
-    overflow: "hidden",
-    backgroundColor: theme.palette.common.white,
-    boxShadow: theme.shadows[4],
-    zIndex: theme.zIndex.drawer - 10,
-    ...chatStyles,
-}));
-
-// Sticky, so that the chat stays below the header while the page scrolls.
-const DesktopCollapse = styled(Collapse)({
-    position: "sticky",
-});
-
-const DesktopRoot = styled("aside")(({ theme }) => ({
-    boxSizing: "border-box",
-    width: desktopWidth,
-    height: "100%",
-    overflow: "hidden",
-    backgroundColor: theme.palette.common.white,
-    borderLeft: `1px solid ${theme.palette.divider}`,
-    ...chatStyles,
 }));
 
 const ErrorAlert = styled(Alert)(({ theme }) => ({

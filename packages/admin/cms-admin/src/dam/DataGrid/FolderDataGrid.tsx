@@ -477,7 +477,10 @@ const FolderDataGrid = ({
                       pageSize: dataGridProps.paginationModel.pageSize,
                       setSearch: (search) => filterApi.formApi.change("searchText", search === "" ? undefined : search),
                       setPage: (page) => apiRef.current?.setPaginationModel({ ...dataGridProps.paginationModel, page }),
-                      openFolder: (id) => switchApi.activatePage("folder", id),
+                      openFolder: (id) => {
+                          filterApi.formApi.change("searchText", undefined);
+                          switchApi.activatePage("folder", id);
+                      },
                       openFile: (id) => switchApi.activatePage("edit", id),
                   }),
               }

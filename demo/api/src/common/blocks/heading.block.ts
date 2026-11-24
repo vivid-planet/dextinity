@@ -14,9 +14,9 @@ import {
 const EyebrowRichTextBlock = createTipTapRichTextBlock(
     {
         strike: false,
-        textBlocks: [{ name: "paragraph", tag: "p" }],
         orderedList: false,
         unorderedList: false,
+        textBlocks: [{ name: "paragraph", tag: "p" }],
         textAlign: { left: true, center: true },
         maxTextBlocks: 1,
     },
@@ -25,25 +25,24 @@ const EyebrowRichTextBlock = createTipTapRichTextBlock(
 
 const headlineTags = ["h1", "h2", "h3", "h4", "h5", "h6"] as const;
 
-const sizes = ["headline600", "headline550", "headline500", "headline450", "headline400", "headline350"];
+const sizes = ["size600", "size550", "size500", "size450", "size400", "size350"];
 
 const draftJsHeaderTypes = ["header-one", "header-two", "header-three", "header-four", "header-five", "header-six"];
 
-// The text block sets the headline's HTML tag, the style its size, so both can be chosen independently.
 const textBlocks: TipTapTextBlock[] = headlineTags.map((tag) => ({
     name: `heading-${tag.slice(1)}`,
     tag,
     styles: sizes.map((name) => ({ name })),
-    defaultStyle: "headline600",
+    defaultStyle: "size600",
 }));
 
 const HeadlineRichTextBlock = createTipTapRichTextBlock(
     {
         strike: false,
-        textBlocks,
-        defaultTextBlock: "heading-2",
         orderedList: false,
         unorderedList: false,
+        textBlocks,
+        defaultTextBlock: "heading-2",
         textAlign: { left: true, center: true },
         maxTextBlocks: 1,
         migrateFromDraftJs: {

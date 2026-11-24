@@ -3,11 +3,13 @@ import { Injectable } from "@nestjs/common";
 import type { HeadingBlock } from "@src/common/blocks/heading.block.js";
 import { faker } from "@src/db/fixtures/faker.js";
 
+const headlineTextBlocks = ["heading-1", "heading-2", "heading-3", "heading-4", "heading-5", "heading-6"];
+
+const headlineSizes = ["size600", "size550", "size500", "size450", "size400", "size350"];
+
 @Injectable()
 export class HeadingBlockFixtureService {
     async generateBlockInput(): Promise<ExtractBlockInputFactoryProps<typeof HeadingBlock>> {
-        const headlineTextBlocks = ["heading-1", "heading-2", "heading-3", "heading-4", "heading-5", "heading-6"];
-        const headlineSizes = ["headline600", "headline550", "headline500", "headline450", "headline400", "headline350"];
         const textAlign = faker.helpers.arrayElement(["left", "center"]);
 
         return {

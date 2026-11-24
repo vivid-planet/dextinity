@@ -1670,79 +1670,79 @@
                             "name": "heading-1",
                             "tag": "h1",
                             "styles": [
-                                "headline600",
-                                "headline550",
-                                "headline500",
-                                "headline450",
-                                "headline400",
-                                "headline350"
+                                "size600",
+                                "size550",
+                                "size500",
+                                "size450",
+                                "size400",
+                                "size350"
                             ],
-                            "defaultStyle": "headline600"
+                            "defaultStyle": "size600"
                         },
                         {
                             "name": "heading-2",
                             "tag": "h2",
                             "styles": [
-                                "headline600",
-                                "headline550",
-                                "headline500",
-                                "headline450",
-                                "headline400",
-                                "headline350"
+                                "size600",
+                                "size550",
+                                "size500",
+                                "size450",
+                                "size400",
+                                "size350"
                             ],
-                            "defaultStyle": "headline600"
+                            "defaultStyle": "size600"
                         },
                         {
                             "name": "heading-3",
                             "tag": "h3",
                             "styles": [
-                                "headline600",
-                                "headline550",
-                                "headline500",
-                                "headline450",
-                                "headline400",
-                                "headline350"
+                                "size600",
+                                "size550",
+                                "size500",
+                                "size450",
+                                "size400",
+                                "size350"
                             ],
-                            "defaultStyle": "headline600"
+                            "defaultStyle": "size600"
                         },
                         {
                             "name": "heading-4",
                             "tag": "h4",
                             "styles": [
-                                "headline600",
-                                "headline550",
-                                "headline500",
-                                "headline450",
-                                "headline400",
-                                "headline350"
+                                "size600",
+                                "size550",
+                                "size500",
+                                "size450",
+                                "size400",
+                                "size350"
                             ],
-                            "defaultStyle": "headline600"
+                            "defaultStyle": "size600"
                         },
                         {
                             "name": "heading-5",
                             "tag": "h5",
                             "styles": [
-                                "headline600",
-                                "headline550",
-                                "headline500",
-                                "headline450",
-                                "headline400",
-                                "headline350"
+                                "size600",
+                                "size550",
+                                "size500",
+                                "size450",
+                                "size400",
+                                "size350"
                             ],
-                            "defaultStyle": "headline600"
+                            "defaultStyle": "size600"
                         },
                         {
                             "name": "heading-6",
                             "tag": "h6",
                             "styles": [
-                                "headline600",
-                                "headline550",
-                                "headline500",
-                                "headline450",
-                                "headline400",
-                                "headline350"
+                                "size600",
+                                "size550",
+                                "size500",
+                                "size450",
+                                "size400",
+                                "size350"
                             ],
-                            "defaultStyle": "headline600"
+                            "defaultStyle": "size600"
                         }
                     ],
                     "defaultTextBlock": "heading-2",
@@ -1782,79 +1782,79 @@
                             "name": "heading-1",
                             "tag": "h1",
                             "styles": [
-                                "headline600",
-                                "headline550",
-                                "headline500",
-                                "headline450",
-                                "headline400",
-                                "headline350"
+                                "size600",
+                                "size550",
+                                "size500",
+                                "size450",
+                                "size400",
+                                "size350"
                             ],
-                            "defaultStyle": "headline600"
+                            "defaultStyle": "size600"
                         },
                         {
                             "name": "heading-2",
                             "tag": "h2",
                             "styles": [
-                                "headline600",
-                                "headline550",
-                                "headline500",
-                                "headline450",
-                                "headline400",
-                                "headline350"
+                                "size600",
+                                "size550",
+                                "size500",
+                                "size450",
+                                "size400",
+                                "size350"
                             ],
-                            "defaultStyle": "headline600"
+                            "defaultStyle": "size600"
                         },
                         {
                             "name": "heading-3",
                             "tag": "h3",
                             "styles": [
-                                "headline600",
-                                "headline550",
-                                "headline500",
-                                "headline450",
-                                "headline400",
-                                "headline350"
+                                "size600",
+                                "size550",
+                                "size500",
+                                "size450",
+                                "size400",
+                                "size350"
                             ],
-                            "defaultStyle": "headline600"
+                            "defaultStyle": "size600"
                         },
                         {
                             "name": "heading-4",
                             "tag": "h4",
                             "styles": [
-                                "headline600",
-                                "headline550",
-                                "headline500",
-                                "headline450",
-                                "headline400",
-                                "headline350"
+                                "size600",
+                                "size550",
+                                "size500",
+                                "size450",
+                                "size400",
+                                "size350"
                             ],
-                            "defaultStyle": "headline600"
+                            "defaultStyle": "size600"
                         },
                         {
                             "name": "heading-5",
                             "tag": "h5",
                             "styles": [
-                                "headline600",
-                                "headline550",
-                                "headline500",
-                                "headline450",
-                                "headline400",
-                                "headline350"
+                                "size600",
+                                "size550",
+                                "size500",
+                                "size450",
+                                "size400",
+                                "size350"
                             ],
-                            "defaultStyle": "headline600"
+                            "defaultStyle": "size600"
                         },
                         {
                             "name": "heading-6",
                             "tag": "h6",
                             "styles": [
-                                "headline600",
-                                "headline550",
-                                "headline500",
-                                "headline450",
-                                "headline400",
-                                "headline350"
+                                "size600",
+                                "size550",
+                                "size500",
+                                "size450",
+                                "size400",
+                                "size350"
                             ],
-                            "defaultStyle": "headline600"
+                            "defaultStyle": "size600"
                         }
                     ],
                     "defaultTextBlock": "heading-2",

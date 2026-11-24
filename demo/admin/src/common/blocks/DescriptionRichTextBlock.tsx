@@ -5,15 +5,9 @@ export const DescriptionRichTextBlock = {
     ...createTipTapRichTextBlock({
         undoRedoButtons: false,
         strike: false,
-        textBlocks: [
-            {
-                name: "paragraph",
-                tag: "p",
-                label: <FormattedMessage id="descriptionRichTextBlock.textBlock.paragraph" defaultMessage="Paragraph" />,
-            },
-        ],
         orderedList: false,
         unorderedList: false,
+        textBlocks: [{ name: "paragraph", label: <FormattedMessage id="descriptionRichTextBlock.paragraph" defaultMessage="Paragraph" />, tag: "p" }],
         maxTextBlocks: 1,
         minHeight: 0,
     }),

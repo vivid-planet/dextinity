@@ -23,14 +23,22 @@ const tagByTextBlock: Record<string, keyof HTMLElementTagNameMap> = {
     "heading-6": "h6",
 };
 
-// The headline's styles are named after the typography variant they're rendered with.
+const variantByStyle: Record<string, TypographyVariant> = {
+    size600: "headline600",
+    size550: "headline550",
+    size500: "headline500",
+    size450: "headline450",
+    size400: "headline400",
+    size350: "headline350",
+};
+
 const headlineNodeMapping: Record<string, TipTapNodeHandler> = {
     textBlock: ({ node, children }) => (
         <Typography
             as={tagByTextBlock[node.attrs?.textBlock as string] ?? "h2"}
-            variant={(node.attrs?.textBlockStyle as TypographyVariant | null) ?? "headline600"}
+            variant={variantByStyle[node.attrs?.textBlockStyle as string] ?? "headline600"}
             bottomSpacing
-            className={textAlignClassName(node.attrs?.textAlign)}
+            className={textAlignClassName(node.attrs?.textAlign, styles.text)}
         >
             {children}
         </Typography>

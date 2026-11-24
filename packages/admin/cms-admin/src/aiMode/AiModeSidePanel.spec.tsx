@@ -7,8 +7,8 @@ import { cleanup, fireEvent, render, screen } from "test-utils";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { CurrentUserContext, type CurrentUserInterface } from "../userPermissions/hooks/currentUser";
-import { AiModeFlyout } from "./AiModeFlyout";
 import { AiModeProvider } from "./AiModeProvider";
+import { AiModeSidePanel } from "./AiModeSidePanel";
 import { type AiModeTool, AiModeToolset, useAiModeToolset } from "./AiModeToolsets";
 
 const scriptSrc = "https://ai-hub.test/ai-hub-chat.mjs";
@@ -94,19 +94,19 @@ function getRegisteredTools() {
     return bridge.registerHostTools.mock.lastCall?.[0] as Array<{ name: string; handler: (args: Record<string, unknown>) => unknown }>;
 }
 
-// Unmounts the flyout alone, as closing it does, while the admin's DndProvider stays.
-function RemovableFlyout() {
+// Unmounts the side panel alone, as closing it does, while the admin's DndProvider stays.
+function RemovableSidePanel() {
     const [isMounted, setIsMounted] = useState(true);
 
     return (
         <>
-            {isMounted && <AiModeFlyout />}
-            <button onClick={() => setIsMounted(false)}>Remove flyout</button>
+            {isMounted && <AiModeSidePanel />}
+            <button onClick={() => setIsMounted(false)}>Remove side panel</button>
         </>
     );
 }
 
-function renderFlyout({ isStrictMode = false, beforeFlyout }: { isStrictMode?: boolean; beforeFlyout?: ReactNode } = {}) {
+function renderSidePanel({ isStrictMode = false, beforeSidePanel }: { isStrictMode?: boolean; beforeSidePanel?: ReactNode } = {}) {
     const tree = (
         <RouterMemoryRouter initialEntries={["/main/en/pages/pagetree/main-navigation"]}>
             <CurrentUserContext.Provider value={{ currentUser, isAllowed: () => true }}>
@@ -120,8 +120,8 @@ function renderFlyout({ isStrictMode = false, beforeFlyout }: { isStrictMode?: b
                         requiredPermission="pageTree"
                     >
                         <AiModeToolset id="pageTree" description="The page tree" tools={[createTool("open_page_tree_node")]}>
-                            {beforeFlyout}
-                            <RemovableFlyout />
+                            {beforeSidePanel}
+                            <RemovableSidePanel />
                             <OpenTopMenuButton />
                             <OpenablePage />
                         </AiModeToolset>
@@ -144,7 +144,7 @@ function selectInTextField(value: string, { start, end }: { start: number; end: 
     return input;
 }
 
-describe("AiModeFlyout", () => {
+describe("AiModeSidePanel", () => {
     beforeAll(() => {
         // Stands in for the web component, which the AI Hub script would define.
         customElements.define(
@@ -174,7 +174,7 @@ describe("AiModeFlyout", () => {
     });
 
     it("points the chat at the AI Hub proxy of the API, with the widget and the current user", () => {
-        const { container } = renderFlyout();
+        const { container } = renderSidePanel();
 
         const chat = container.querySelector("ai-hub-chat");
         expect(chat).toHaveAttribute("api-url", "https://admin.test/api/ai-hub");
@@ -184,7 +184,7 @@ describe("AiModeFlyout", () => {
     });
 
     it("registers the MCP server of the API and the host tools once, and pushes the new location on navigation", () => {
-        renderFlyout();
+        renderSidePanel();
 
         expect(bridge.registerMcpServers).toHaveBeenCalledExactlyOnceWith([{ url: "https://admin.test/api/mcp" }]);
         expect(bridge.registerHostTools).toHaveBeenCalledTimes(1);
@@ -198,7 +198,7 @@ describe("AiModeFlyout", () => {
     });
 
     it("registers the tools of every mounted toolset again when a toolset mounts or unmounts", () => {
-        renderFlyout();
+        renderSidePanel();
 
         fireEvent.click(screen.getByRole("button", { name: "Toggle page" }));
 
@@ -212,7 +212,7 @@ describe("AiModeFlyout", () => {
     });
 
     it("registers the tools of a toolset that mounts in the same commit as a navigation", () => {
-        renderFlyout({ beforeFlyout: <TopMenuToolset /> });
+        renderSidePanel({ beforeSidePanel: <TopMenuToolset /> });
 
         fireEvent.click(screen.getByRole("button", { name: "Open top menu" }));
 
@@ -220,7 +220,7 @@ describe("AiModeFlyout", () => {
     });
 
     it("calls the handler of the page's latest render, and doesn't register the tools again for it", async () => {
-        renderFlyout();
+        renderSidePanel();
         fireEvent.click(screen.getByRole("button", { name: "Toggle page" }));
         const editPage = getRegisteredTools().find(({ name }) => name === "edit_page");
 
@@ -231,7 +231,7 @@ describe("AiModeFlyout", () => {
     });
 
     it("answers a call of a tool whose page is gone instead of failing", async () => {
-        renderFlyout();
+        renderSidePanel();
         fireEvent.click(screen.getByRole("button", { name: "Toggle page" }));
         const editPage = getRegisteredTools().find(({ name }) => name === "edit_page");
 
@@ -242,7 +242,7 @@ describe("AiModeFlyout", () => {
 
     it("pushes the mounted toolsets with their context and the names of their tools", () => {
         vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
-        renderFlyout();
+        renderSidePanel();
 
         fireEvent.click(screen.getByRole("button", { name: "Toggle page" }));
         vi.runAllTimers();
@@ -259,7 +259,7 @@ describe("AiModeFlyout", () => {
 
     it("lets a tool forget the selected text", async () => {
         vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
-        renderFlyout();
+        renderSidePanel();
         fireEvent.click(screen.getByRole("button", { name: "Toggle page" }));
         const input = selectInTextField("Welcome to our website", { start: 11, end: 22 });
         vi.runAllTimers();
@@ -275,7 +275,7 @@ describe("AiModeFlyout", () => {
 
     it("pushes the text the user selects in the admin", () => {
         vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
-        renderFlyout();
+        renderSidePanel();
         expect(bridge.setContext).toHaveBeenLastCalledWith(expect.objectContaining({ selection: null }));
 
         const input = selectInTextField("Welcome to our website", { start: 11, end: 22 });
@@ -287,7 +287,7 @@ describe("AiModeFlyout", () => {
 
     it("forgets the selected text on navigation", () => {
         vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
-        renderFlyout();
+        renderSidePanel();
         const input = selectInTextField("Welcome to our website", { start: 11, end: 22 });
         vi.runAllTimers();
 
@@ -301,38 +301,38 @@ describe("AiModeFlyout", () => {
     // The chat's own react-dnd reuses the manager it finds on the window, and the admin's DndProvider takes it away again
     // when StrictMode runs its effects twice.
     it("shares the admin's drag and drop manager with the chat while it is open, also in StrictMode", () => {
-        renderFlyout({ isStrictMode: true });
+        renderSidePanel({ isStrictMode: true });
 
         expect(getReactDndGlobalInstance()?.dragDropManager).toBe(adminDragDropManager);
 
-        fireEvent.click(screen.getByRole("button", { name: "Remove flyout" }));
+        fireEvent.click(screen.getByRole("button", { name: "Remove side panel" }));
 
         expect(getReactDndGlobalInstance()).toBeFalsy();
     });
 
     it("leaves a drag and drop manager on the window that something else put there", () => {
-        renderFlyout({ isStrictMode: true });
+        renderSidePanel({ isStrictMode: true });
         const otherInstance = { dragDropManager: {} as DragDropManager };
         (window as unknown as Record<symbol, unknown>)[reactDndGlobalInstanceKey] = otherInstance;
 
-        fireEvent.click(screen.getByRole("button", { name: "Remove flyout" }));
+        fireEvent.click(screen.getByRole("button", { name: "Remove side panel" }));
 
         expect(getReactDndGlobalInstance()).toBe(otherInstance);
     });
 
     it("renders nothing without an AiModeProvider", () => {
-        const { container } = render(<AiModeFlyout />);
+        const { container } = render(<AiModeSidePanel />);
 
         expect(container).toBeEmptyDOMElement();
     });
 
     it("tells the user that the chat couldn't be loaded when its script fails", () => {
         document.getElementById(scriptSrc)?.remove();
-        renderFlyout();
+        renderSidePanel();
 
         const script = document.getElementById(scriptSrc);
         if (!script) {
-            throw new Error("The flyout added no script for the chat");
+            throw new Error("The side panel added no script for the chat");
         }
         fireEvent.error(script);
 

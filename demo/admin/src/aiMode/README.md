@@ -1,11 +1,11 @@
 # AI Mode
 
-The AI Mode puts the chat of the Dextinity AI Hub next to the admin. A switch in the header (`AiModeHeaderItem`) opens the chat as a flyout (`AiModeFlyout`), which loads the AI Hub's web component and registers two sets of tools with it:
+The AI Mode puts the chat of the Dextinity AI Hub next to the admin. A switch in the header (`AiModeHeaderItem`) opens the chat in a side panel of the `MasterLayout` (`AiModeSidePanel`), which loads the AI Hub's web component and registers two sets of tools with it:
 
 - the **MCP server** of the API (`demo/api/src/mcp`, at `/api/mcp`), which reads from the API: the page tree, pages as they were last saved, DAM files, and the block schemas,
 - the **host tools** of the admin, which act on what is open in the admin. The pages that are open offer them through AI Mode toolsets (see below): the admin as a whole offers `open_admin_page` and `open_page_tree_node`, the page editor `get_page_state` and `edit_blocks` (`adminTools.ts`, `createAiModePageTreeNavigationTools` of `@dextinity/cms-admin`, `pageTools.ts`), and the grid and the form of an entity, such as the news, read and change them (`dataGridTools.ts`, `formTools.ts`).
 
-The chat and what a page needs to offer the agent its context and tools are part of `@dextinity/cms-admin` (`packages/admin/cms-admin/src/aiMode`), so that every project gets the same chat, and the pages of the package, such as the redirects, can offer their tools too: the AI Mode's provider, header item, and flyout, the AI Mode toolsets, the tools of grids and forms, and block editing. The AI Hub proxy, the MCP server, and the tools of Demo's own pages are part of Demo. A page of a project without the AI Mode registers its toolset with no chat listening, which does nothing.
+The chat and what a page needs to offer the agent its context and tools are part of `@dextinity/cms-admin` (`packages/admin/cms-admin/src/aiMode`), so that every project gets the same chat, and the pages of the package, such as the redirects, can offer their tools too: the AI Mode's provider, header item, and side panel, the AI Mode toolsets, the tools of grids and forms, and block editing. The AI Hub proxy, the MCP server, and the tools of Demo's own pages are part of Demo. A page of a project without the AI Mode registers its toolset with no chat listening, which does nothing.
 
 The AI Mode is ported from vivid-websites. This README explains the decisions the code doesn't show. It is written for developers who maintain the AI Mode in Demo or port it to a project.
 
@@ -14,11 +14,11 @@ The AI Mode is ported from vivid-websites. This README explains the decisions th
 The AI Mode needs three settings: the script of the web component (`AI_HUB_WEB_COMPONENT_SCRIPT_SRC`) and a widget (`AI_HUB_WIDGET_ID`) in the admin, and the secret key of that widget (`AI_HUB_API_KEY`) in the API. `.env` sets the script and the URL of the AI Hub API (`staging-ai-hub-api.dextinity.com`) to the staging AI Hub, so the AI Mode is off until the widget ID and the key are set in `.env.local`.
 
 - Without the key, the API registers neither the AI Hub proxy nor the MCP server.
-- Without the script or the widget ID, the admin shows no switch (`isAiHubConfigured` of `@dextinity/cms-admin`). A missing setting turns the AI Mode off rather than leaving an empty flyout.
+- Without the script or the widget ID, the admin shows no switch (`isAiHubConfigured` of `@dextinity/cms-admin`). A missing setting turns the AI Mode off rather than leaving an empty side panel.
 
 The user also needs the `aiHub` permission, for the switch as much as for the proxy. Demo passes it to `AiModeProvider` as its `requiredPermission`. It is a permission of its own rather than the page tree's because the AI Hub will serve more than the editing of pages. In Demo, every user has it, as every permission other than `userPermissions`.
 
-The AI Mode is available wherever an AI Mode toolset is mounted. In Demo, that is every page, because the admin as a whole has a toolset. Without one, the switch is disabled and its tooltip says the AI Mode isn't available on this page. The flyout closes there and opens again on returning to a page with a toolset, because whether it is open is stored separately from whether it is available.
+The AI Mode is available wherever an AI Mode toolset is mounted. In Demo, that is every page, because the admin as a whole has a toolset. Without one, the switch is disabled and its tooltip says the AI Mode isn't available on this page. The side panel closes there and opens again on returning to a page with a toolset, because whether it is open is stored separately from whether it is available.
 
 ## The chat goes through the API
 
@@ -57,11 +57,13 @@ _Coming with #7293._ The MCP server will also change the page tree and pages: `c
 
 `ScriptLoader` renders the chat only once the script of the web component has loaded, not as soon as the script is in the document. Under `StrictMode`, the effect runs twice, and the second run finds the script the first one added while it is still loading. A custom element rendered before its script defined it gets its `bridge` only after React ran its ref callback, which then registers nothing.
 
-When the script fails to load, e.g. because the AI Hub is down or the CSP blocks its host, the flyout shows an error instead of staying empty. Closing and reopening the flyout tries again: the failed script is removed, and the retry loads it with a `retry` query parameter, because the browser remembers a module that failed to load for the rest of the page's life.
+When the script fails to load, e.g. because the AI Hub is down or the CSP blocks its host, the side panel shows an error instead of staying empty. Closing and reopening the side panel tries again: the failed script is removed, and the retry loads it with a `retry` query parameter, because the browser remembers a module that failed to load for the rest of the page's life.
 
 The ref callback (`registerBridge`) registers the MCP server and the host tools. It must not change on navigation, because React detaches and reattaches a ref whose callback changes, which would register the MCP server again. It therefore reads what changes on navigation through a ref.
 
-The flyout is unmounted once it is closed, so the chat starts over with the next opening.
+The side panel is unmounted once it is closed, so the chat starts over with the next opening.
+
+On desktop, the side panel is part of the layout rather than an overlay: it opens by animating its own width, and `MasterLayout` narrows the content by the width it measures, so the content resizes along with the animation instead of each project syncing a second animation. It is sticky below the header, so the chat stays in place while the page scrolls. On mobile, it covers the content, as there is no room for both.
 
 The admin's Content Security Policy (`demo/admin/server/index.ts`) allows the host of the web component for scripts, fonts, images, media, and connections, and only when the script and the widget ID are set. The chat's requests to the AI Hub go to the API, which is `'self'`. The Vite dev server sends no CSP, so a missing directive shows only in the built admin.
 
@@ -89,7 +91,7 @@ The text the user has selected is pushed too, as `selection` (`{ text, isTruncat
 
 `useTextSelectionStore` (`textSelection.ts`) reads the selection from the DOM on `selectionchange`: from the document for the rich text editor and the rest of the page, and from the focused element for a text field, whose selection isn't part of the document's. The TipTap editor of Dextinity doesn't expose its editor or selection, so the DOM is the only way to get it without a change to Dextinity.
 
-A selection change caused by the chat is ignored: clicking into the chat to ask about the selection moves the document's selection away from it, and the selection must stay until the agent has read it. Any other change replaces it, so clicking elsewhere in the admin clears it. Two changes happen while the chat has focus, so the store wouldn't see them, and they clear the selection explicitly: `edit_blocks` clears it once it has changed the content, because the selected text may no longer be there, and the flyout clears it on navigation, e.g. when `open_page_tree_node` opens another page.
+A selection change caused by the chat is ignored: clicking into the chat to ask about the selection moves the document's selection away from it, and the selection must stay until the agent has read it. Any other change replaces it, so clicking elsewhere in the admin clears it. Two changes happen while the chat has focus, so the store wouldn't see them, and they clear the selection explicitly: `edit_blocks` clears it once it has changed the content, because the selected text may no longer be there, and the side panel clears it on navigation, e.g. when `open_page_tree_node` opens another page.
 
 The agent gets the text only, not where it is in the block. To change it, it rewrites the block's text with `edit_blocks`, which keeps the rest of the block's text only as far as the agent reproduces it.
 
@@ -108,13 +110,13 @@ A page offers its context and tools by registering an AI Mode toolset (`AiModeTo
 
 A tool belongs to the toolset of the page it needs. A tool that needs nothing of a page but an ID, because it only navigates, such as `open_page_tree_node`, is offered by the admin's toolset on every page, to the users who may open its target, so that the agent reaches it in one step from anywhere. A tool that works on what a page shows, such as one that shows the archived nodes of the page tree, stays in that page's toolset, and the agent opens the page with `open_admin_page` first. So does a tool that opens something only the page lists, such as `open_<entity>_form` of an entity's grid: the agent finds the IDs of the news only with `get_news_grid_rows`, because the MCP server has no tool for them, so it is on the grid anyway when it opens one. In the admin's toolset, the tool would be in every chat while it can't be used, and every entity would add one. It belongs there once the agent can find the entities without the grid. Every tool of the admin's toolset is in the chat on every page, so it only gets tools that open something. The tools of a feature are in one file, with a factory for each toolset that offers them: `pageTreeTools.ts` of `@dextinity/cms-admin` has `createAiModePageTreeNavigationTools` for the admin's toolset, and gets a factory for the page tree's own toolset with its first tool that works on the page tree.
 
-The chat gets the tools of the toolsets that are mounted, so the agent sees only the tools of the page that is open. Each `registerHostTools` call of the bridge replaces the tools the chat had, so the flyout passes the tools of all mounted toolsets whenever a toolset mounts, unmounts, or changes a tool's definition. It registers them right away rather than debounced, so that the agent doesn't call a tool of a page that is gone. A page registers its toolset again on every render, so that the store always has the handlers of the latest render, but only a change the agent sees notifies the flyout: the handlers are looked up when a tool is called. The toolsets are kept in a store the flyout subscribes to, not in React context state, so that block edits don't re-render the flyout.
+The chat gets the tools of the toolsets that are mounted, so the agent sees only the tools of the page that is open. Each `registerHostTools` call of the bridge replaces the tools the chat had, so the side panel passes the tools of all mounted toolsets whenever a toolset mounts, unmounts, or changes a tool's definition. It registers them right away rather than debounced, so that the agent doesn't call a tool of a page that is gone. A page registers its toolset again on every render, so that the store always has the handlers of the latest render, but only a change the agent sees notifies the side panel: the handlers are looked up when a tool is called. The toolsets are kept in a store the side panel subscribes to, not in React context state, so that block edits don't re-render the side panel.
 
 A call that arrives for a tool whose page is gone gets an answer that says so, rather than an error. The chat itself refuses a tool it no longer has with `Unknown client tool`, e.g. when the user leaves the page while the chat waits for the approval of an edit.
 
 The chat gives a tool whose name another tool already has a suffix (`_2`), which no tool description mentions. The store therefore leaves out a tool whose name an outer toolset already has, and logs an error. It can't check the names of the MCP server's tools, so a host tool must not take one of those either.
 
-What the flyout owns rather than the page is passed to every handler as its second argument: `edit_blocks` clears the selected text with it.
+What the side panel owns rather than the page is passed to every handler as its second argument: `edit_blocks` clears the selected text with it.
 
 ### Grids and forms of entities
 

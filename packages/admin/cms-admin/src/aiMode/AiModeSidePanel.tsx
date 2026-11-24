@@ -1,5 +1,5 @@
 import { Alert, MasterLayoutContext, useWindowSize } from "@dextinity/admin";
-import { Slide, useMediaQuery, useTheme } from "@mui/material";
+import { Collapse, useMediaQuery, useTheme } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useCallback, useContext, useEffect, useLayoutEffect, useRef } from "react";
 import { useDragDropManager } from "react-dnd";
@@ -14,8 +14,7 @@ import { useAiModeToolsetsStore } from "./AiModeToolsets";
 import { ScriptLoader } from "./ScriptLoader";
 import { useTextSelectionStore } from "./textSelection";
 
-/** @experimental */
-export const aiModeFlyoutWidth = 400;
+const desktopWidth = 400;
 
 const contextPushDebounceMs = 300;
 
@@ -46,17 +45,19 @@ function useShareDragDropManagerWithChat() {
 }
 
 /**
- * The chat of the AI Mode, next to the content of the admin. Renders nothing while the AI Mode is off, see `AiModeProvider`.
+ * The chat of the AI Mode, the side panel of the `MasterLayout`: `<MasterLayout sidePanelComponent={AiModeSidePanel} />`.
+ * On desktop, the content narrows while the chat is open. On mobile, the chat covers the content.
+ * Renders nothing while the AI Mode is off, see `AiModeProvider`.
  *
  * @experimental
  */
-export function AiModeFlyout() {
+export function AiModeSidePanel() {
     const chatConfig = useAiModeChatConfig();
 
-    return chatConfig ? <AiModeChatFlyout {...chatConfig} /> : null;
+    return chatConfig ? <AiModeChatSidePanel {...chatConfig} /> : null;
 }
 
-function AiModeChatFlyout({
+function AiModeChatSidePanel({
     webComponentScriptSrc,
     widgetId,
     aiHubProxyUrl,
@@ -183,10 +184,14 @@ function AiModeChatFlyout({
         };
     }, [toolsetsStore, textSelectionStore, registerHostTools]);
 
-    // Unmounted once closed, so the chat starts over with the next opening.
+    const chatHeight = windowSize.height - headerHeight;
+
+    // Unmounted once closed, so the chat starts over with the next opening. The same Collapse on every screen size, so that
+    // crossing the breakpoint keeps the chat. On desktop, it takes its width in the layout, which narrows the content along
+    // with the animation. On mobile, it covers the content: anchored to the right edge, its growing width slides the chat in.
     return (
-        <Slide direction="left" in={isOpen} mountOnEnter unmountOnExit>
-            <Root sx={{ top: headerHeight }}>
+        <PanelCollapse in={isOpen} orientation="horizontal" mountOnEnter unmountOnExit sx={{ top: headerHeight, height: chatHeight }}>
+            <Panel>
                 <ScriptLoader
                     src={webComponentScriptSrc}
                     errorFallback={
@@ -205,28 +210,40 @@ function AiModeChatFlyout({
                         // Only a hint: the AI Hub proxy replaces it with the ID of the user the request was authenticated as.
                         user-id={user.id}
                         language={intl.locale}
-                        width={isMobile ? windowSize.width : aiModeFlyoutWidth}
-                        height={windowSize.height - headerHeight}
-                        integration-location="Admin Flyout"
+                        width={isMobile ? windowSize.width : desktopWidth}
+                        height={chatHeight}
+                        integration-location="Dextinity CMS"
                     />
                 </ScriptLoader>
-            </Root>
-        </Slide>
+            </Panel>
+        </PanelCollapse>
     );
 }
 
-const Root = styled("aside")(({ theme }) => ({
+const PanelCollapse = styled(Collapse)(({ theme }) => ({
     position: "fixed",
     right: 0,
-    bottom: 0,
-    width: "100%",
-    overflow: "hidden",
-    backgroundColor: theme.palette.common.white,
     boxShadow: theme.shadows[4],
     zIndex: theme.zIndex.drawer - 10,
 
     [theme.breakpoints.up("md")]: {
-        width: aiModeFlyoutWidth,
+        // Sticky, so that the chat stays below the header while the page scrolls.
+        position: "sticky",
+        boxShadow: "none",
+        zIndex: "auto",
+    },
+}));
+
+const Panel = styled("aside")(({ theme }) => ({
+    boxSizing: "border-box",
+    width: "100vw",
+    height: "100%",
+    overflow: "hidden",
+    backgroundColor: theme.palette.common.white,
+
+    [theme.breakpoints.up("md")]: {
+        width: desktopWidth,
+        borderLeft: `1px solid ${theme.palette.divider}`,
     },
 
     "& ai-hub-chat": {

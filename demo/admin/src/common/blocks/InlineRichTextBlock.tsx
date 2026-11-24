@@ -3,6 +3,7 @@ import { FormattedMessage } from "react-intl";
 
 export const InlineRichTextBlock = {
     ...createTipTapRichTextBlock({
+        undoRedoButtons: false,
         strike: false,
         textBlocks: [
             {

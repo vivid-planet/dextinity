@@ -1,7 +1,6 @@
 import type { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
 import { faker } from "@src/db/fixtures/faker.js";
-import { StandaloneRichTextBlockFixtureService } from "@src/db/fixtures/generators/blocks/text-and-content/standalone-rich-text-block-fixture.service.js";
 import type { ColumnsBlock, ColumnsContentBlock } from "@src/documents/pages/blocks/columns.block.js";
 
 import type { BlockFixture } from "../block-fixture.js";
@@ -9,7 +8,8 @@ import { MediaGalleryBlockFixtureService } from "../media/media-gallery-block-fi
 import { StandaloneMediaBlockFixtureService } from "../media/standalone-media-block-fixture.service.js";
 import { AnchorBlockFixtureService } from "../navigation/anchor-block-fixture.service.js";
 import { StandaloneCallToActionListBlockFixtureService } from "../navigation/standalone-call-to-action-list-block-fixture.service.js";
-import { StandaloneHeadingBlockFixtureService } from "../text-and-content/standalone-heading-block-fixture.service.js";
+import { HeadingBlockFixtureService } from "../text-and-content/heading-block-fixture.service.js";
+import { RichTextBlockFixtureService } from "../text-and-content/rich-text-block-fixture.service.js";
 import { TextImageBlockFixtureService } from "../text-and-content/text-image-block-fixture.service.js";
 import { AccordionBlockFixtureService } from "./accordion-block-fixture.service.js";
 import { SpaceBlockFixtureService } from "./space-block-fixture.service.js";
@@ -22,8 +22,8 @@ export class ColumnsBlockFixtureService {
         private readonly accordionBlockFixtureService: AccordionBlockFixtureService,
         private readonly anchorBlockFixtureService: AnchorBlockFixtureService,
         private readonly callToActionListBlockFixtureService: StandaloneCallToActionListBlockFixtureService,
-        private readonly headingBlockFixtureService: StandaloneHeadingBlockFixtureService,
-        private readonly standaloneRichTextBlockFixtureService: StandaloneRichTextBlockFixtureService,
+        private readonly headingBlockFixtureService: HeadingBlockFixtureService,
+        private readonly richTextBlockFixtureService: RichTextBlockFixtureService,
         private readonly mediaGalleryBlockFixtureService: MediaGalleryBlockFixtureService,
         private readonly spaceBlockFixtureService: SpaceBlockFixtureService,
         private readonly standaloneMediaBlockFixtureService: StandaloneMediaBlockFixtureService,
@@ -40,7 +40,7 @@ export class ColumnsBlockFixtureService {
             heading: this.headingBlockFixtureService,
             media: this.standaloneMediaBlockFixtureService,
             mediaGallery: this.mediaGalleryBlockFixtureService,
-            richtext: this.standaloneRichTextBlockFixtureService,
+            richtext: this.richTextBlockFixtureService,
             space: this.spaceBlockFixtureService,
             textImage: this.textImageBlockFixtureService,
         };

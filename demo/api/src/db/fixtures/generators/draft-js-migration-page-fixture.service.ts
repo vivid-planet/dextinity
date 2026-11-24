@@ -1,7 +1,6 @@
 import { type PageTreeNodeBaseCreateInput, PageTreeNodeVisibility, PageTreeService } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
-import { TextAlignment } from "@src/common/blocks/standalone-rich-text.block.js";
 import { PageContentBlock } from "@src/documents/pages/blocks/page-content.block.js";
 import { StageBlock } from "@src/documents/pages/blocks/stage.block.js";
 import { PageInput } from "@src/documents/pages/dto/page.input.js";
@@ -222,7 +221,7 @@ export class DraftJsMigrationPageFixtureService {
                         key: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
                         visible: true,
                         type: "richtext",
-                        props: { richText: { draftContent: legacyDraftJsContent }, textAlignment: TextAlignment.left },
+                        props: { draftContent: legacyDraftJsContent },
                         userGroup: UserGroup.all,
                     },
                 ],

@@ -1,7 +1,6 @@
 import {
     BlockData,
     type BlockDataInterface,
-    BlockField,
     BlockInput,
     blockInputToData,
     ChildBlock,
@@ -9,41 +8,24 @@ import {
     createBlock,
     type ExtractBlockInput,
 } from "@dextinity/cms-api";
-import { IsEnum } from "class-validator";
 
+import { EyebrowRichTextBlock } from "./eyebrow-rich-text.block.js";
 import { HeadlineRichTextBlock } from "./headline-rich-text.block.js";
-import { InlineRichTextBlock } from "./inline-rich-text.block.js";
-
-export enum HeadlineTag {
-    h1 = "h1",
-    h2 = "h2",
-    h3 = "h3",
-    h4 = "h4",
-    h5 = "h5",
-    h6 = "h6",
-}
 
 class HeadingBlockData extends BlockData {
-    @ChildBlock(InlineRichTextBlock)
+    @ChildBlock(EyebrowRichTextBlock)
     eyebrow: BlockDataInterface;
 
     @ChildBlock(HeadlineRichTextBlock)
     headline: BlockDataInterface;
-
-    @BlockField({ type: "enum", enum: HeadlineTag })
-    htmlTag: HeadlineTag;
 }
 
 class HeadingBlockInput extends BlockInput {
-    @ChildBlockInput(InlineRichTextBlock)
-    eyebrow: ExtractBlockInput<typeof InlineRichTextBlock>;
+    @ChildBlockInput(EyebrowRichTextBlock)
+    eyebrow: ExtractBlockInput<typeof EyebrowRichTextBlock>;
 
     @ChildBlockInput(HeadlineRichTextBlock)
     headline: ExtractBlockInput<typeof HeadlineRichTextBlock>;
-
-    @IsEnum(HeadlineTag)
-    @BlockField({ type: "enum", enum: HeadlineTag })
-    htmlTag: HeadlineTag;
 
     transformToBlockData(): HeadingBlockData {
         return blockInputToData(HeadingBlockData, this);

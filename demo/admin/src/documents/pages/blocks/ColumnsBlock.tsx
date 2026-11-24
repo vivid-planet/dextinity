@@ -7,12 +7,12 @@ import {
     createColumnsBlock,
 } from "@dextinity/cms-admin";
 import { AccordionBlock } from "@src/common/blocks/AccordionBlock";
+import { HeadingBlock } from "@src/common/blocks/HeadingBlock";
 import { MediaGalleryBlock } from "@src/common/blocks/MediaGalleryBlock";
+import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
 import { SpaceBlock } from "@src/common/blocks/SpaceBlock";
 import { StandaloneCallToActionListBlock } from "@src/common/blocks/StandaloneCallToActionListBlock";
-import { StandaloneHeadingBlock } from "@src/common/blocks/StandaloneHeadingBlock";
 import { StandaloneMediaBlock } from "@src/common/blocks/StandaloneMediaBlock";
-import { StandaloneRichTextBlock } from "@src/common/blocks/StandaloneRichTextBlock";
 import { TextImageBlock } from "@src/common/blocks/TextImageBlock";
 import { FormattedMessage } from "react-intl";
 
@@ -117,9 +117,9 @@ const ColumnsContentBlock = createBlocksBlock({
     supportedBlocks: {
         accordion: AccordionBlock,
         anchor: AnchorBlock,
-        richtext: StandaloneRichTextBlock,
+        richtext: RichTextBlock,
         space: SpaceBlock,
-        heading: StandaloneHeadingBlock,
+        heading: HeadingBlock,
         callToActionList: StandaloneCallToActionListBlock,
         media: StandaloneMediaBlock,
         mediaGallery: MediaGalleryBlock,

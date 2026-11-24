@@ -1,14 +1,14 @@
 import { AnchorBlock, createBlocksBlock, DamImageBlock } from "@dextinity/cms-admin";
 import { AccordionBlock } from "@src/common/blocks/AccordionBlock";
 import { ContactFormBlock } from "@src/common/blocks/ContactFormBlock";
+import { HeadingBlock } from "@src/common/blocks/HeadingBlock";
 import { LayoutBlock } from "@src/common/blocks/LayoutBlock";
 import { MediaGalleryBlock } from "@src/common/blocks/MediaGalleryBlock";
 import { PageTreeIndexBlock } from "@src/common/blocks/PageTreeIndexBlock";
+import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
 import { SpaceBlock } from "@src/common/blocks/SpaceBlock";
 import { StandaloneCallToActionListBlock } from "@src/common/blocks/StandaloneCallToActionListBlock";
-import { StandaloneHeadingBlock } from "@src/common/blocks/StandaloneHeadingBlock";
 import { StandaloneMediaBlock } from "@src/common/blocks/StandaloneMediaBlock";
-import { StandaloneRichTextBlock } from "@src/common/blocks/StandaloneRichTextBlock";
 import { TableBlock } from "@src/common/blocks/TableBlock";
 import { TextImageBlock } from "@src/common/blocks/TextImageBlock";
 import { NewsDetailBlock } from "@src/news/blocks/NewsDetailBlock";
@@ -31,8 +31,8 @@ export const pageContentBlocks = {
     billboardTeaser: BillboardTeaserBlock,
     space: SpaceBlock,
     teaser: TeaserBlock,
-    richtext: StandaloneRichTextBlock,
-    heading: StandaloneHeadingBlock,
+    richtext: RichTextBlock,
+    heading: HeadingBlock,
     columns: ColumnsBlock,
     callToActionList: StandaloneCallToActionListBlock,
     keyFacts: KeyFactsBlock,

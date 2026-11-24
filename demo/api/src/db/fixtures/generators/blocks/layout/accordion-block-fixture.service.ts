@@ -6,8 +6,8 @@ import { faker } from "@src/db/fixtures/faker.js";
 
 import type { BlockFixture } from "../block-fixture.js";
 import { StandaloneCallToActionListBlockFixtureService } from "../navigation/standalone-call-to-action-list-block-fixture.service.js";
+import { HeadingBlockFixtureService } from "../text-and-content/heading-block-fixture.service.js";
 import { RichTextBlockFixtureService } from "../text-and-content/rich-text-block-fixture.service.js";
-import { StandaloneHeadingBlockFixtureService } from "../text-and-content/standalone-heading-block-fixture.service.js";
 import { TextImageBlockFixtureService } from "../text-and-content/text-image-block-fixture.service.js";
 import { SpaceBlockFixtureService } from "./space-block-fixture.service.js";
 
@@ -15,7 +15,7 @@ import { SpaceBlockFixtureService } from "./space-block-fixture.service.js";
 export class AccordionBlockFixtureService {
     constructor(
         private readonly richTextBlockFixtureService: RichTextBlockFixtureService,
-        private readonly headingBlockFixtureService: StandaloneHeadingBlockFixtureService,
+        private readonly headingBlockFixtureService: HeadingBlockFixtureService,
         private readonly spaceBlockFixtureService: SpaceBlockFixtureService,
         private readonly callToActionListBlockFixtureService: StandaloneCallToActionListBlockFixtureService,
         private readonly textImageBlockFixtureService: TextImageBlockFixtureService,

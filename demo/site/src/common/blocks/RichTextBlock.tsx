@@ -8,24 +8,26 @@ import {
     withPreview,
 } from "@dextinity/site-nextjs";
 import type { LinkBlockData, ProductPriceBlockData, ProductTeaserBlockData, RichTextBlockData } from "@src/blocks.generated";
+import { PageLayout } from "@src/layout/PageLayout";
 import { ProductPriceBlock } from "@src/products/blocks/ProductPriceBlock";
 import { ProductTeaserBlock } from "@src/products/blocks/ProductTeaserBlock";
 import type { LoadedData as ProductTeaserLoadedData } from "@src/products/blocks/ProductTeaserBlock.loader";
+import { AnimateBoxInOnScroll } from "@src/util/animations/AnimateBoxInOnScroll";
 
-import { Typography, type TypographyProps } from "../components/Typography";
+import { Typography, type TypographyVariant } from "../components/Typography";
 import { isValidLink } from "../helpers/isValidLink";
 import { LinkBlock } from "./LinkBlock";
 import styles from "./RichTextBlock.module.scss";
+import { textAlignClassName } from "./textAlignClassName";
 
-type TypographyVariant = TypographyProps<"p">["variant"];
-
-const textBlockToVariant: Record<string, TypographyVariant> = {
-    display: "headline600",
-    "heading-1": "headline550",
-    "heading-2": "headline500",
-    "heading-3": "headline450",
-    "heading-4": "headline400",
-    "heading-5": "headline350",
+const typographyPropsByTextBlock: Record<string, { as: keyof HTMLElementTagNameMap; variant?: TypographyVariant }> = {
+    paragraph: { as: "p" },
+    display: { as: "h1", variant: "headline600" },
+    "heading-1": { as: "h1", variant: "headline550" },
+    "heading-2": { as: "h2", variant: "headline500" },
+    "heading-3": { as: "h3", variant: "headline450" },
+    "heading-4": { as: "h4", variant: "headline400" },
+    "heading-5": { as: "h5", variant: "headline350" },
 };
 
 const renderCmsBlock: TipTapNodeHandler = ({ node }) => {
@@ -39,15 +41,20 @@ const renderCmsBlock: TipTapNodeHandler = ({ node }) => {
 };
 
 const nodeMapping: Record<string, TipTapNodeHandler> = {
-    textBlock: ({ node, children }) => {
+    textBlock: ({ node, parent, children }) => {
+        if (parent?.type === "listItem") {
+            return <span className={textAlignClassName(node.attrs?.textAlign, styles.listItemText)}>{children}</span>;
+        }
+        const typographyProps = typographyPropsByTextBlock[node.attrs?.textBlock as string] ?? typographyPropsByTextBlock.paragraph;
         // A paragraph picks its typography from the style the editor applied, a heading from the text block itself.
-        const variant = textBlockToVariant[node.attrs?.textBlock as string] ?? (node.attrs?.textBlockStyle as TypographyVariant | null) ?? undefined;
+        const variant = typographyProps.variant ?? (node.attrs?.textBlockStyle as TypographyVariant | null) ?? undefined;
         return (
-            <Typography variant={variant} bottomSpacing className={styles.text}>
+            <Typography {...typographyProps} variant={variant} bottomSpacing className={textAlignClassName(node.attrs?.textAlign, styles.text)}>
                 {children}
             </Typography>
         );
     },
+    orderedList: ({ children }) => <ol className={styles.orderedList}>{children}</ol>,
     listItem: ({ node, children }) => {
         const firstTextBlock = node.content?.find((child) => child.type === "textBlock");
         const textBlockStyle = (firstTextBlock?.attrs?.textBlockStyle as TypographyVariant | null) ?? undefined;
@@ -91,4 +98,18 @@ export const RichTextBlock = withPreview(
         );
     },
     { label: "Rich Text" },
+);
+
+export const AnimatedRichTextBlock = ({ data }: PropsWithData<RichTextBlockData>) => (
+    <AnimateBoxInOnScroll direction="bottom" offset={300}>
+        <RichTextBlock data={data} disableLastBottomSpacing />
+    </AnimateBoxInOnScroll>
+);
+
+export const PageContentRichTextBlock = (props: PropsWithData<RichTextBlockData>) => (
+    <PageLayout grid>
+        <div className={styles.pageLayoutContent}>
+            <AnimatedRichTextBlock {...props} />
+        </div>
+    </PageLayout>
 );

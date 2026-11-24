@@ -18,12 +18,12 @@ const listStyles: TipTapTextBlockStyle[] = [
     {
         name: "list300",
         label: <FormattedMessage id="richTextBlock.list300" defaultMessage="List" />,
-        element: (props) => <Typography sx={textStyleSx(18, 26)} {...props} />,
+        element: (props, tag) => <Typography component={tag} sx={textStyleSx(18, 26)} {...props} />,
     },
     {
         name: "list200",
         label: <FormattedMessage id="richTextBlock.list200" defaultMessage="List Small" />,
-        element: (props) => <Typography sx={textStyleSx(15, 22)} {...props} />,
+        element: (props, tag) => <Typography component={tag} sx={textStyleSx(15, 22)} {...props} />,
     },
 ];
 
@@ -45,32 +45,32 @@ export const RichTextBlock = {
                     {
                         name: "paragraph300",
                         label: <FormattedMessage id="richTextBlock.paragraph300" defaultMessage="Paragraph" />,
-                        element: (props) => <Typography sx={textStyleSx(18, 26)} {...props} />,
+                        element: (props, tag) => <Typography component={tag} sx={textStyleSx(18, 26)} {...props} />,
                     },
                     {
                         name: "paragraph200",
                         label: <FormattedMessage id="richTextBlock.paragraph200" defaultMessage="Paragraph Small" />,
-                        element: (props) => <Typography sx={textStyleSx(15, 22)} {...props} />,
+                        element: (props, tag) => <Typography component={tag} sx={textStyleSx(15, 22)} {...props} />,
                     },
                     {
                         name: "eyebrow600",
                         label: <FormattedMessage id="richTextBlock.eyebrow600" defaultMessage="Eyebrow 600" />,
-                        element: (props) => <Typography sx={textStyleSx(30, 30)} {...props} />,
+                        element: (props, tag) => <Typography component={tag} sx={textStyleSx(30, 30)} {...props} />,
                     },
                     {
                         name: "eyebrow550",
                         label: <FormattedMessage id="richTextBlock.eyebrow550" defaultMessage="Eyebrow 550" />,
-                        element: (props) => <Typography sx={textStyleSx(26, 26)} {...props} />,
+                        element: (props, tag) => <Typography component={tag} sx={textStyleSx(26, 26)} {...props} />,
                     },
                     {
                         name: "eyebrow500",
                         label: <FormattedMessage id="richTextBlock.eyebrow500" defaultMessage="Eyebrow 500" />,
-                        element: (props) => <Typography sx={textStyleSx(22, 22)} {...props} />,
+                        element: (props, tag) => <Typography component={tag} sx={textStyleSx(22, 22)} {...props} />,
                     },
                     {
                         name: "eyebrow450",
                         label: <FormattedMessage id="richTextBlock.eyebrow450" defaultMessage="Eyebrow 450" />,
-                        element: (props) => <Typography sx={textStyleSx(18, 18)} {...props} />,
+                        element: (props, tag) => <Typography component={tag} sx={textStyleSx(18, 18)} {...props} />,
                     },
                 ],
                 defaultStyle: "paragraph300",
@@ -84,6 +84,8 @@ export const RichTextBlock = {
         ],
         orderedList: { styles: listStyles, defaultStyle: "list300" },
         unorderedList: { styles: listStyles, defaultStyle: "list300" },
+        listLevelMax: 4,
+        textAlign: true,
         inlineStyles: [
             {
                 name: "highlight",

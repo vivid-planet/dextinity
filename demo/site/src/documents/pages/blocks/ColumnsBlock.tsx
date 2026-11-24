@@ -2,12 +2,12 @@ import { BlocksBlock, type PropsWithData, type SupportedBlocks, withPreview } fr
 import type { ColumnsBlockData, ColumnsContentBlockData } from "@src/blocks.generated";
 import { AccordionBlock } from "@src/common/blocks/AccordionBlock";
 import { AnchorBlock } from "@src/common/blocks/AnchorBlock";
+import { AnimatedHeadingBlock } from "@src/common/blocks/HeadingBlock";
 import { MediaGalleryBlock } from "@src/common/blocks/MediaGalleryBlock";
+import { AnimatedRichTextBlock } from "@src/common/blocks/RichTextBlock";
 import { SpaceBlock } from "@src/common/blocks/SpaceBlock";
 import { StandaloneCallToActionListBlock } from "@src/common/blocks/StandaloneCallToActionListBlock";
-import { StandaloneHeadingBlock } from "@src/common/blocks/StandaloneHeadingBlock";
 import { StandaloneMediaBlock } from "@src/common/blocks/StandaloneMediaBlock";
-import { StandaloneRichTextBlock } from "@src/common/blocks/StandaloneRichTextBlock";
 import { TextImageBlock } from "@src/common/blocks/TextImageBlock";
 import { PageLayout } from "@src/layout/PageLayout";
 import clsx from "clsx";
@@ -17,9 +17,9 @@ import styles from "./ColumnsBlock.module.scss";
 const supportedBlocks: SupportedBlocks = {
     accordion: (props) => <AccordionBlock data={props} />,
     anchor: (props) => <AnchorBlock data={props} />,
-    richtext: (props) => <StandaloneRichTextBlock data={props} />,
+    richtext: (props) => <AnimatedRichTextBlock data={props} />,
     space: (props) => <SpaceBlock data={props} />,
-    heading: (props) => <StandaloneHeadingBlock data={props} />,
+    heading: (props) => <AnimatedHeadingBlock data={props} />,
     callToActionList: (props) => <StandaloneCallToActionListBlock data={props} />,
     media: (props) => <StandaloneMediaBlock data={props} />,
     mediaGallery: (props) => <MediaGalleryBlock data={props} />,

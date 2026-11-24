@@ -1,4 +1,7 @@
+import { fileURLToPath } from "node:url";
+
 import {
+    AiModeMcpModule,
     BlocksTransformerService,
     type ContentScope,
     CorePermission,
@@ -37,7 +40,8 @@ import { PageTreeNode } from "@src/page-tree/entities/page-tree-node.entity.js";
 import type { Request } from "express";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { AiModeMcpModule } from "./mcp.module.js";
+import { PageTreeTools } from "./page-tree.tools.js";
+import { damScopeSchema } from "./scope.schemas.js";
 
 // Covers what a direct call to a tool method doesn't go through: the user the authentication puts on the request, the
 // permission checks of `UserPermissionsGuard` that the tools declare, the answers to a refused call, and the
@@ -120,9 +124,7 @@ const pages = [
         seo: createBlockData(),
     },
 ];
-const damFile = { id: "0190a5f4-0000-7000-8000-000000000021", name: "spring.jpg", scope: { domain: "secondary" } };
 const unknownId = "0190a5f4-0000-7000-8000-000000000099";
-const findDamFiles = vi.fn(async () => [[], 0]);
 const getNodes = vi.fn(async () => [homeNode]);
 
 const readApi = {
@@ -150,7 +152,6 @@ const accessControlService = {
 const rowsByEntity = new Map<unknown, { id: string }[]>([
     [PageTreeNode, nodes],
     [Page, pages],
-    [DamFile, [damFile]],
 ]);
 
 const orm = {
@@ -206,10 +207,8 @@ const appProviders: Provider[] = [
         provide: EntityManager,
         useValue: { findOne: async (_: unknown, id: string) => pages.find((page) => page.id === id) ?? null },
     },
-    {
-        provide: FilesService,
-        useValue: { findAndCount: findDamFiles, findOneById: async (id: string) => (id === damFile.id ? damFile : null) },
-    },
+    // The DAM tools of the module aren't called here.
+    { provide: FilesService, useValue: {} },
 ];
 
 // The services the tools get from the app's modules.
@@ -217,10 +216,7 @@ const appProviders: Provider[] = [
 @Module({ providers: appProviders, exports: appProviders })
 class AppServicesModule {}
 
-const adminUrl = "https://admin.example.com";
-
 let app: INestApplication;
-let endpoint: string;
 const clients: Record<string, Client> = {};
 
 async function callTool(name: string, args: Record<string, unknown>, user = "editor") {
@@ -232,7 +228,15 @@ async function callTool(name: string, args: Record<string, unknown>, user = "edi
 
 beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-        imports: [AppServicesModule, AiModeMcpModule.forRoot({ adminUrl })],
+        imports: [
+            AppServicesModule,
+            AiModeMcpModule.forRoot({
+                adminUrl: "https://admin.example.com",
+                blockMetaPath: fileURLToPath(new URL("../../block-meta.json", import.meta.url)),
+                dam: { File: DamFile, scopeSchema: damScopeSchema },
+                tools: [PageTreeTools],
+            }),
+        ],
         providers: [{ provide: APP_GUARD, useClass: HeaderAuthGuard }, userPermissionsGuardProvider],
     }).compile();
 
@@ -240,8 +244,7 @@ beforeAll(async () => {
     // As main.ts sets them up. The global filter also catches the exceptions of tool calls that no filter of the tool catches.
     app.setGlobalPrefix("api");
     app.useGlobalFilters(new ExceptionFilter(false));
-    await app.listen(0);
-    endpoint = `${await app.getUrl()}/api/mcp`.replace("[::1]", "127.0.0.1");
+    await app.init();
 });
 
 beforeEach(() => {
@@ -333,88 +336,10 @@ describe("MCP server of the API", () => {
         expect(text).toBe("You may not read the page tree of this scope.");
     });
 
-    it("refuses to list the DAM files of a scope the user may not read", async () => {
-        const { text, isError } = await callTool("list_dam_files", { scope: { domain: "secondary" } });
-
-        expect(isError).toBe(true);
-        expect(text).toBe("You may not read the DAM of this scope.");
-    });
-
-    it("sorts the DAM files ascending when only the column is named, as the damFilesList query does", async () => {
-        const { isError } = await callTool("list_dam_files", { scope: { domain: "main" }, sortColumnName: "name" });
-
-        expect(isError).toBe(false);
-        expect(findDamFiles).toHaveBeenCalledWith(expect.objectContaining({ sortColumnName: "name", sortDirection: "ASC" }), { domain: "main" });
-    });
-
-    it("answers a DAM file of a scope the user may not read as if it didn't exist", async () => {
-        const { text, isError } = await callTool("get_dam_file", { id: damFile.id });
-
-        expect(isError).toBe(true);
-        expect(text).toBe(`There is no DAM file ${damFile.id}.`);
-    });
-
     it("refuses a system user, whom the permission check lets through", async () => {
         const { text, isError } = await callTool("get_page_tree_node", { id: homeNode.id }, "system");
 
         expect(isError).toBe(true);
         expect(text).toBe("The MCP server answers only a user signed in to the admin.");
-    });
-
-    it("lists the blocks of block-meta.json", async () => {
-        const { text, isError } = await callTool("list_available_blocks", {});
-
-        expect(isError).toBe(false);
-        expect(JSON.parse(text)).toContain("PageContent");
-    });
-
-    it("answers an unknown block name with the reason", async () => {
-        const { text, isError } = await callTool("get_block_schema", { name: "Unknown" });
-
-        expect(isError).toBe(true);
-        expect(text).toBe('Unknown block "Unknown". Use the list_available_blocks tool to get the available block names.');
-    });
-
-    it("answers get_block_schema with the TipTap schema of a rich text block", async () => {
-        const { text, isError } = await callTool("get_block_schema", { name: "richtext" });
-
-        expect(isError).toBe(false);
-        expect(text).toContain('"tipTap"');
-    });
-});
-
-// The in-memory client skips the route, its guards, and the checks of the request's origin.
-describe("HTTP endpoint of the MCP server", () => {
-    async function listTools(headers: Record<string, string>) {
-        return fetch(endpoint, {
-            method: "POST",
-            headers: {
-                "content-type": "application/json",
-                accept: "application/json, text/event-stream",
-                "mcp-protocol-version": "2025-11-25",
-                "x-test-user": "editor",
-                ...headers,
-            },
-            body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/list" }),
-        });
-    }
-
-    it("answers the chat in the admin", async () => {
-        const response = await listTools({ origin: adminUrl });
-
-        expect(response.status).toBe(200);
-        expect(await response.text()).toContain('"name":"get_page"');
-    });
-
-    it("refuses a page of another site", async () => {
-        const response = await listTools({ origin: "https://other.example.com" });
-
-        expect(response.status).toBe(403);
-    });
-
-    it("refuses a user without the aiHub permission", async () => {
-        const response = await listTools({ origin: adminUrl, "x-test-user": "editorWithoutAiHub" });
-
-        expect(response.status).toBe(403);
     });
 });

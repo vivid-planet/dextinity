@@ -1,23 +1,18 @@
 import { readFile } from "node:fs/promises";
 
-import { RequiredPermission } from "@dextinity/cms-api";
-import { Injectable, NotFoundException, UseGuards } from "@nestjs/common";
+import { Inject, Injectable, NotFoundException, UseGuards } from "@nestjs/common";
 import { Tool } from "@nestjs/mcp";
 import { z } from "zod";
 
-import { SignedInUserGuard } from "./signed-in-user.guard.js";
-
-// Written by the API itself at the root of the app, which is the same two levels up from src/mcp and dist/mcp.
-const blockMetaUrl = new URL("../../block-meta.json", import.meta.url);
+import { CorePermission } from "../common/enum/core-permission.enum.js";
+import { RequiredPermission } from "../user-permissions/decorators/required-permission.decorator.js";
+import { AI_MODE_MCP_OPTIONS } from "./ai-mode-mcp.constants.js";
+import { McpSignedInUserGuard } from "./mcp-signed-in-user.guard.js";
 
 // The entries are returned unchanged, so only the field the tools look at is typed.
 type BlockMeta = {
     name: string;
 };
-
-async function loadBlockMeta(): Promise<BlockMeta[]> {
-    return JSON.parse(await readFile(blockMetaUrl, "utf-8")) as BlockMeta[];
-}
 
 const getBlockSchemaParameters = z.object({
     name: z.string().describe('The block name, e.g. "Accordion" (case-insensitive)'),
@@ -25,9 +20,11 @@ const getBlockSchemaParameters = z.object({
 
 @Injectable()
 // The schemas aren't scoped, but they are no one's business outside the admin's page tree either.
-@RequiredPermission("pageTree", { skipScopeCheck: true })
-@UseGuards(SignedInUserGuard)
+@RequiredPermission(CorePermission.pageTree, { skipScopeCheck: true })
+@UseGuards(McpSignedInUserGuard)
 export class BlockTools {
+    constructor(@Inject(AI_MODE_MCP_OPTIONS) private readonly options: { blockMetaPath: string }) {}
+
     @Tool({
         name: "list_available_blocks",
         description: `List the names of all available CMS content blocks.
@@ -36,7 +33,7 @@ Pass one of the returned names to the get_block_schema tool to get that block's 
         annotations: { readOnlyHint: true },
     })
     async listAvailableBlocks() {
-        return (await loadBlockMeta()).map((block) => block.name);
+        return (await this.loadBlockMeta()).map((block) => block.name);
     }
 
     @Tool({
@@ -54,10 +51,14 @@ A block's "description" says what the block is for and, where the fields alone d
         annotations: { readOnlyHint: true },
     })
     async getBlockSchema({ name }: z.infer<typeof getBlockSchemaParameters>) {
-        const block = (await loadBlockMeta()).find((candidate) => candidate.name.toLowerCase() === name.toLowerCase());
+        const block = (await this.loadBlockMeta()).find((candidate) => candidate.name.toLowerCase() === name.toLowerCase());
         if (!block) {
             throw new NotFoundException(`Unknown block "${name}". Use the list_available_blocks tool to get the available block names.`);
         }
         return block;
+    }
+
+    private async loadBlockMeta(): Promise<BlockMeta[]> {
+        return JSON.parse(await readFile(this.options.blockMetaPath, "utf-8")) as BlockMeta[];
     }
 }

@@ -11,8 +11,8 @@ import { McpExecutionContext } from "@nestjs/mcp";
  * the item exists. A filter of the tool takes the place of the app's global filter, so this one logs them instead.
  */
 @Catch()
-export class NotFoundFilter implements ExceptionFilter {
-    private readonly logger = new Logger(NotFoundFilter.name);
+export class McpNotFoundFilter implements ExceptionFilter {
+    private readonly logger = new Logger(McpNotFoundFilter.name);
 
     constructor(private readonly itemName: string) {}
 

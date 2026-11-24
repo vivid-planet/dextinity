@@ -1,6 +1,9 @@
 import {
     AffectedEntity,
     BlocksTransformerService,
+    McpNotFoundFilter,
+    McpRefusalReasonFilter,
+    McpSignedInUserGuard,
     type PageTreeNodeInterface,
     type PageTreeReadApi,
     PageTreeService,
@@ -16,10 +19,7 @@ import { PageTreeNode } from "@src/page-tree/entities/page-tree-node.entity.js";
 import { PageTreeNodeCategory } from "@src/page-tree/page-tree-node-category.js";
 import { z } from "zod";
 
-import { NotFoundFilter } from "./not-found.filter.js";
-import { RefusalReasonFilter } from "./refusal-reason.filter.js";
 import { pageTreeScopeSchema } from "./scope.schemas.js";
-import { SignedInUserGuard } from "./signed-in-user.guard.js";
 
 const listPageTreeNodesParameters = z.object({
     scope: pageTreeScopeSchema,
@@ -52,7 +52,7 @@ const adminRequestHeaders = {
 
 @Injectable()
 @RequiredPermission("pageTree")
-@UseGuards(SignedInUserGuard)
+@UseGuards(McpSignedInUserGuard)
 export class PageTreeTools {
     constructor(
         private readonly entityManager: EntityManager,
@@ -68,7 +68,7 @@ Use get_page_tree_node with a returned id for the node's children and attached d
         inputSchema: listPageTreeNodesParameters,
         annotations: { readOnlyHint: true },
     })
-    @UseFilters(new RefusalReasonFilter(refusedScopeReason))
+    @UseFilters(new McpRefusalReasonFilter(refusedScopeReason))
     async listPageTreeNodes({ scope, category, documentType, limit, offset }: z.infer<typeof listPageTreeNodesParameters>) {
         const readApi = this.createReadApi();
         await readApi.preloadNodes(scope);
@@ -86,7 +86,7 @@ For a node of document type "Page", pass the "documentId" to get_page for the pa
         annotations: { readOnlyHint: true },
     })
     @AffectedEntity(PageTreeNode)
-    @UseFilters(new NotFoundFilter("page tree node"))
+    @UseFilters(new McpNotFoundFilter("page tree node"))
     async getPageTreeNode({ id }: z.infer<typeof getPageTreeNodeParameters>) {
         const readApi = this.createReadApi();
         const node = await readApi.getNode(id);
@@ -103,7 +103,7 @@ For a node of document type "Page", pass the "documentId" to get_page for the pa
         inputSchema: getPageTreeNodeByPathParameters,
         annotations: { readOnlyHint: true },
     })
-    @UseFilters(new RefusalReasonFilter(refusedScopeReason))
+    @UseFilters(new McpRefusalReasonFilter(refusedScopeReason))
     async getPageTreeNodeByPath({ scope, path }: z.infer<typeof getPageTreeNodeByPathParameters>) {
         const readApi = this.createReadApi();
         const node = await readApi.getNodeByPath(path, { scope });
@@ -122,7 +122,7 @@ The content is the "PageContent" block, the stage the "Stage" block, and the SEO
         annotations: { readOnlyHint: true },
     })
     @AffectedEntity(Page)
-    @UseFilters(new NotFoundFilter("page"))
+    @UseFilters(new McpNotFoundFilter("page"))
     async getPage({ id }: z.infer<typeof getPageParameters>) {
         const page = await this.entityManager.findOne(Page, id);
         const readApi = this.createReadApi();

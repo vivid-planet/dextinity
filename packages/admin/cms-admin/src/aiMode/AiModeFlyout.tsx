@@ -1,28 +1,23 @@
 import { Alert, MasterLayoutContext, useWindowSize } from "@dextinity/admin";
-import { useAiModeToolsetsStore, useContentScope, useCurrentUser } from "@dextinity/cms-admin";
 import { Slide, useMediaQuery, useTheme } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { createConfig } from "@src/config";
 import { useCallback, useContext, useEffect, useLayoutEffect, useRef } from "react";
 import { useDragDropManager } from "react-dnd";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useLocation } from "react-router";
 
+import { useContentScope } from "../contentScope/Provider";
+import { useCurrentUser } from "../userPermissions/hooks/currentUser";
 import type { BridgeElement } from "./aiHubBridge";
-import { useAiMode } from "./AiModeContext";
+import { useAiMode, useAiModeChatConfig } from "./AiModeProvider";
+import { useAiModeToolsetsStore } from "./AiModeToolsets";
 import { ScriptLoader } from "./ScriptLoader";
 import { useTextSelectionStore } from "./textSelection";
 
+/** @experimental */
 export const aiModeFlyoutWidth = 400;
 
 const contextPushDebounceMs = 300;
-
-const config = createConfig();
-
-// The chat sends its requests to the API, which forwards them to the AI Hub API with the secret key.
-const aiHubProxyUrl = `${config.apiUrl}/ai-hub`;
-
-const mcpServerUrl = `${config.apiUrl}/mcp`;
 
 // TODO Remove once the web component sets up its react-dnd backend on its own element rather than on the window.
 // The web component brings its own react-dnd. Its DndProvider reuses the manager it finds under this key on the window,
@@ -50,7 +45,28 @@ function useShareDragDropManagerWithChat() {
     }, [dragDropManager]);
 }
 
+/**
+ * The chat of the AI Mode, next to the content of the admin. Renders nothing while the AI Mode is off, see `AiModeProvider`.
+ *
+ * @experimental
+ */
 export function AiModeFlyout() {
+    const chatConfig = useAiModeChatConfig();
+
+    return chatConfig ? <AiModeChatFlyout {...chatConfig} /> : null;
+}
+
+function AiModeChatFlyout({
+    webComponentScriptSrc,
+    widgetId,
+    aiHubProxyUrl,
+    mcpServerUrl,
+}: {
+    webComponentScriptSrc: string;
+    widgetId: string;
+    aiHubProxyUrl: string;
+    mcpServerUrl: string;
+}) {
     const { isOpen } = useAiMode();
     const { headerHeight } = useContext(MasterLayoutContext);
     const theme = useTheme();
@@ -131,7 +147,7 @@ export function AiModeFlyout() {
             registerHostTools();
             pushContextRef.current();
         },
-        [registerHostTools],
+        [registerHostTools, mcpServerUrl],
     );
 
     // The selection belongs to the page it was made on. Navigating while the chat has focus changes no selection the
@@ -172,12 +188,12 @@ export function AiModeFlyout() {
         <Slide direction="left" in={isOpen} mountOnEnter unmountOnExit>
             <Root sx={{ top: headerHeight }}>
                 <ScriptLoader
-                    src={config.aiHubWebComponentScriptSrc}
+                    src={webComponentScriptSrc}
                     errorFallback={
                         <ErrorAlert severity="error">
                             <FormattedMessage
-                                id="aiMode.chatLoadError"
-                                defaultMessage="The chat couldn't be loaded. Close the AI Companion and open it again to retry."
+                                id="dextinity.aiMode.chatLoadError"
+                                defaultMessage="The chat couldn't be loaded. Switch it off and on again to retry."
                             />
                         </ErrorAlert>
                     }
@@ -185,7 +201,7 @@ export function AiModeFlyout() {
                     <ai-hub-chat
                         ref={registerBridge}
                         api-url={aiHubProxyUrl}
-                        widget-id={config.aiHubWidgetId}
+                        widget-id={widgetId}
                         // Only a hint: the AI Hub proxy replaces it with the ID of the user the request was authenticated as.
                         user-id={user.id}
                         language={intl.locale}

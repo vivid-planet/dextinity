@@ -1,31 +1,47 @@
 import { AppHeaderButton, Tooltip } from "@dextinity/admin";
 import { useMediaQuery, useTheme } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { FormattedMessage, useIntl } from "react-intl";
+import type { ReactNode } from "react";
+import { FormattedMessage } from "react-intl";
 
-import { useAiMode } from "./AiModeContext";
 import { AiModeIcon } from "./AiModeIcon";
+import { useAiMode } from "./AiModeProvider";
 
-export function AiModeHeaderItem() {
-    const { isAvailable, isOpen, toggle } = useAiMode();
+/** @experimental */
+export type AiModeHeaderItemProps = {
+    /** Hidden on mobile, where it remains the switch's accessible name. */
+    label?: ReactNode;
+    icon?: ReactNode;
+};
+
+/**
+ * The switch that opens and closes the chat of the AI Mode. Renders nothing while the AI Mode is off, see `AiModeProvider`.
+ *
+ * @experimental
+ */
+export function AiModeHeaderItem({
+    label = <FormattedMessage id="dextinity.aiMode.label" defaultMessage="AI Companion" />,
+    icon = <AiModeIcon fontSize="large" />,
+}: AiModeHeaderItemProps) {
+    const { isEnabled, isAvailable, isOpen, toggle } = useAiMode();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-    const intl = useIntl();
 
-    const label = intl.formatMessage({ id: "aiMode.label", defaultMessage: "AI Companion" });
+    if (!isEnabled) {
+        return null;
+    }
 
     const button = (
         <Root
             role="switch"
             aria-checked={isOpen}
-            aria-label={isMobile ? label : undefined}
             disabled={!isAvailable}
             onClick={toggle}
-            startIcon={<AiModeIcon fontSize="large" />}
+            startIcon={icon}
             endIcon={<Switch data-checked={isOpen || undefined} />}
             slotProps={{ typography: { variant: "subtitle1" } }}
         >
-            {!isMobile && label}
+            {isMobile ? <VisuallyHidden>{label}</VisuallyHidden> : label}
         </Root>
     );
 
@@ -34,7 +50,7 @@ export function AiModeHeaderItem() {
     }
 
     return (
-        <Tooltip title={<FormattedMessage id="aiMode.notAvailableOnPage" defaultMessage="The AI Companion isn't available on this page." />}>
+        <Tooltip title={<FormattedMessage id="dextinity.aiMode.notAvailableOnPage" defaultMessage="Not available on this page" />}>
             {/* A disabled button fires no mouse events, so the tooltip listens on a wrapper. */}
             <span>{button}</span>
         </Tooltip>
@@ -53,7 +69,16 @@ const Root = styled(AppHeaderButton)(({ theme }) => ({
     },
 }));
 
-// Track and thumb geometry match Comet's MuiSwitch override (36x16 track, 10px thumb, 20px travel).
+const VisuallyHidden = styled("span")({
+    position: "absolute",
+    width: 1,
+    height: 1,
+    overflow: "hidden",
+    clip: "rect(0 0 0 0)",
+    whiteSpace: "nowrap",
+});
+
+// Track and thumb geometry match Dextinity's MuiSwitch override (36x16 track, 10px thumb, 20px travel).
 // MUI's Switch itself cannot be used here because its <input type="checkbox"> is invalid inside the AppHeaderButton <button>.
 const Switch = styled("span")(({ theme }) => ({
     position: "relative",

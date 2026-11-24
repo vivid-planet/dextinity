@@ -10,7 +10,7 @@ const port = Number(process.env.ADMIN_PORT ?? 3000);
 const host = process.env.SERVER_HOST ?? "localhost";
 const previewUrls = process.env.PREVIEW_URL ? [process.env.PREVIEW_URL] : [];
 // The chat of the AI Mode loads its script and assets from the host of its web component and talks to the AI Hub API
-// through the API ('self'), which holds the key. Like the admin itself (see `isAiHubConfigured`), only with a widget.
+// through the API ('self'), which holds the key. Like the admin itself (see `AiModeProvider`), only with a widget.
 const aiHubWebComponentOrigins =
     process.env.AI_HUB_WEB_COMPONENT_SCRIPT_SRC && process.env.AI_HUB_WIDGET_ID ? [new URL(process.env.AI_HUB_WEB_COMPONENT_SCRIPT_SRC).origin] : [];
 

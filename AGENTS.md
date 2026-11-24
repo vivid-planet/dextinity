@@ -103,7 +103,7 @@ Demo admin app (Vite, React, Apollo)
 - Start using `pnpm exec dev-pm start @demo-admin`
 - access at: http://localhost:8000/
 - Usually Login as "Admin" in the IDP Login Page
-- run the unit tests (Vitest, jsdom) with `pnpm --filter dextinity-demo-admin run test:unit`; render a component with `renderAdmin` from `src/testing/`
+- run the unit tests (Vitest, jsdom) with `pnpm --filter dextinity-demo-admin run test:unit`
 
 **Site:**
 Demo frontend site (Next.js)

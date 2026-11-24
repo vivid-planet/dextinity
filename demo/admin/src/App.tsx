@@ -4,6 +4,7 @@ import { ApolloProvider } from "@apollo/client/react";
 import { ErrorDialogHandler, MuiThemeProvider, RouterBrowserRouter, SnackbarProvider, useStoredState } from "@dextinity/admin";
 import { BrevoConfigProvider } from "@dextinity/brevo-admin";
 import {
+    AiModeProvider,
     AzureAiTranslatorProvider,
     type ContentScope,
     ContentScopeProvider,
@@ -17,7 +18,6 @@ import { DataGridPro } from "@mui/x-data-grid-pro";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LicenseInfo } from "@mui/x-license";
-import { AdminAiModeProvider } from "@src/aiMode/AdminAiModeProvider";
 import { createApolloClient } from "@src/common/apollo/createApolloClient";
 import { createConfig } from "@src/config";
 import { PageTreeNodeDependency } from "@src/pageTree/PageTreeNodeDependency";
@@ -209,9 +209,15 @@ export function App() {
                                                                     <Route
                                                                         path="*"
                                                                         element={
-                                                                            <AdminAiModeProvider>
+                                                                            <AiModeProvider
+                                                                                webComponentScriptSrc={config.aiHubWebComponentScriptSrc}
+                                                                                widgetId={config.aiHubWidgetId}
+                                                                                aiHubProxyUrl={`${config.apiUrl}/ai-hub`}
+                                                                                mcpServerUrl={`${config.apiUrl}/mcp`}
+                                                                                requiredPermission="aiHub"
+                                                                            >
                                                                                 <AppMasterLayout />
-                                                                            </AdminAiModeProvider>
+                                                                            </AiModeProvider>
                                                                         }
                                                                     />
                                                                 </Routes>

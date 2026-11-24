@@ -1,6 +1,6 @@
 type AiHubConfig = {
-    aiHubWebComponentScriptSrc?: string;
-    aiHubWidgetId?: string;
+    webComponentScriptSrc?: string;
+    widgetId?: string;
 };
 
 /**
@@ -8,6 +8,6 @@ type AiHubConfig = {
  * chat can't reach the AI Hub. The AI Mode is therefore on only with both, and a missing setting turns it off rather
  * than leaving an empty flyout.
  */
-export function isAiHubConfigured({ aiHubWebComponentScriptSrc, aiHubWidgetId }: AiHubConfig): boolean {
-    return Boolean(aiHubWebComponentScriptSrc) && Boolean(aiHubWidgetId);
+export function isAiHubConfigured<Config extends AiHubConfig>(config: Config): config is Config & Required<AiHubConfig> {
+    return Boolean(config.webComponentScriptSrc) && Boolean(config.widgetId);
 }

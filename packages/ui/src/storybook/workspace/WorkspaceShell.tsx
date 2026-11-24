@@ -60,11 +60,11 @@ const maxPanelWidth = 520;
 const panelKeyboardStep = 20;
 const inspectLabelHeight = 18;
 const prototypesTitle = "Workspace/Prototypes";
-const compareOptions: Array<{ value: WorkspaceCompare; icon: ReactNode; "aria-label": string }> = [
-    { value: "off", icon: <Icon name="window" />, "aria-label": "One frame" },
-    { value: "viewports", icon: <Icon name="device-tablet" />, "aria-label": "Phone, tablet, and desktop side by side" },
-    { value: "variants", icon: <Icon name="swap-boxes" />, "aria-label": "Two variants side by side" },
-    { value: "swipe", icon: <Icon name="move-vertical" />, "aria-label": "Two variants on top of each other, with a divider" },
+const compareOptions: Array<{ value: WorkspaceCompare; icon: ReactNode; "aria-label": string; shortLabel: string }> = [
+    { value: "off", icon: <Icon name="window" />, "aria-label": "One frame", shortLabel: "Off" },
+    { value: "viewports", icon: <Icon name="device-tablet" />, "aria-label": "Phone, tablet, and desktop side by side", shortLabel: "Devices" },
+    { value: "variants", icon: <Icon name="swap-boxes" />, "aria-label": "Two variants side by side", shortLabel: "Variants" },
+    { value: "swipe", icon: <Icon name="move-vertical" />, "aria-label": "Two variants on top of each other, with a divider", shortLabel: "Swipe" },
 ];
 
 type ModeTab = WorkspaceIntent | "library";
@@ -81,29 +81,40 @@ const modeTabs: Array<{ value: ModeTab; label: string }> = [
 const intentKeys: Record<string, WorkspaceIntent> = { "1": "prototype", "2": "inspect", "3": "review", "4": "flow" };
 
 /** The tools of each mode, which the bar under the modes shows as labeled buttons. */
-const intentToolButtons: Record<WorkspaceIntent, Array<{ tool: WorkspaceTool; label: string; icon: IconName; description: string }>> = {
+/** The tools of each mode, which the bar under the modes shows as labeled buttons; the key opens the tool from any mode. */
+const intentToolButtons: Record<WorkspaceIntent, Array<{ tool: WorkspaceTool; label: string; icon: IconName; description: string; key: string }>> = {
     prototype: [],
     inspect: [
-        { tool: "component", label: "Component", icon: "select", description: "Click a component in the page to open its story" },
+        { tool: "component", label: "Component", icon: "select", description: "Click a component in the page to open its story", key: "I" },
         {
             tool: "measure",
             label: "Measure",
             icon: "crop-action",
             description: "Sizes, spacing, and tokens; point at another element for the distance",
+            key: "M",
         },
-        { tool: "accessibility", label: "Accessibility", icon: "contrast", description: "Tab order, small targets, and contrast" },
+        { tool: "accessibility", label: "Accessibility", icon: "contrast", description: "Tab order, small targets, and contrast", key: "A" },
     ],
     review: [
-        { tool: "comment", label: "Comments", icon: "chat-add", description: "Pin comments to the page" },
-        { tool: "text", label: "Edit texts", icon: "pencil-line", description: "Click a text to change it" },
+        { tool: "comment", label: "Comments", icon: "chat-add", description: "Pin comments to the page", key: "C" },
+        { tool: "text", label: "Edit texts", icon: "pencil-line", description: "Click a text to change it", key: "E" },
     ],
     flow: [
-        { tool: "map", label: "Flow map", icon: "tune-logic", description: "All pages and the links between them" },
-        { tool: "hotspot", label: "Link elements", icon: "link-diagonal", description: "Make an element open another page" },
+        { tool: "map", label: "Flow map", icon: "tune-logic", description: "All pages and the links between them", key: "F" },
+        { tool: "hotspot", label: "Link elements", icon: "link-diagonal", description: "Make an element open another page", key: "L" },
     ],
 };
 
-// Typing in a field or a text of the page doesn't switch the mode
+const toolKeys = new Map(
+    Object.entries(intentToolButtons).flatMap(([intent, buttons]) =>
+        buttons.map((button) => [button.key.toLowerCase(), { intent: intent as WorkspaceIntent, tool: button.tool }] as const),
+    ),
+);
+
+// The tools that end themselves on Escape, e.g. Measure first clears its selection
+const toolsWithOwnEscape: Array<WorkspaceTool | null> = ["measure", "component"];
+
+// Typing in a field or a text of the page doesn't switch the mode or tool, and Escape there belongs to the field
 function isTyping(target: EventTarget | null) {
     const element = target as HTMLElement | null;
     return element?.closest?.("input, textarea, select, [contenteditable]") != null;
@@ -480,12 +491,44 @@ export function WorkspaceShell() {
         }
     }
 
-    // 1–4 switch the mode, also while the focus is in the prototype's frame
+    /** Opens a tool, in its mode; the key of the tool that's open closes it again. */
+    function toggleToolOfMode(next: WorkspaceIntent, tool: WorkspaceTool) {
+        if (isPrototypeMode && next === intent) {
+            setTool(activeTool === tool ? null : tool);
+            return;
+        }
+        setMeasuredPath(null);
+        // Only the single frame knows its page; the next mode's view opens on it
+        if (isSingleFrame) {
+            setPrototypeStartPage(framePage.hash);
+        }
+        updateState({ mode: "prototypes", intent: next, intentTools: { ...state.intentTools, [next]: tool } });
+    }
+
+    // 1–4 switch the mode, a tool's letter opens the tool, and Escape closes it, also while the focus is in the prototype's frame
     useEffect(() => {
         const handleKey = (event: KeyboardEvent) => {
+            if (presenting || event.metaKey || event.ctrlKey || event.altKey || isTyping(event.target)) {
+                return;
+            }
+            const target = event.target as Element | null;
+            if (event.key === "Escape") {
+                // An open menu or dialog of the workspace closes first
+                if (
+                    activeTool &&
+                    !toolsWithOwnEscape.includes(activeTool) &&
+                    !target?.closest?.('[role="menu"], [role="dialog"], [role="listbox"]')
+                ) {
+                    setTool(null);
+                }
+                return;
+            }
             const next = intentKeys[event.key];
-            if (next && !presenting && !event.metaKey && !event.ctrlKey && !event.altKey && !isTyping(event.target)) {
+            const toolKey = toolKeys.get(event.key.toLowerCase());
+            if (next) {
                 changeIntent(next);
+            } else if (toolKey && !event.shiftKey) {
+                toggleToolOfMode(toolKey.intent, toolKey.tool);
             }
         };
         const documents = [document, frameRef.current?.contentDocument].filter((target): target is Document => target != null);
@@ -759,29 +802,9 @@ export function WorkspaceShell() {
                             </p>
                         </div>
                         {isPrototypeMode && (
-                            <div
-                                className={styles.toolbarGroup}
-                                role="group"
-                                aria-label={`${modeTabs.find((tab) => tab.value === intent)?.label} tools`}
-                            >
-                                {/* Comparing shows several frames, where the tools of the single frame don't work, so it takes their place */}
-                                {!isComparing &&
-                                    intentToolButtons[intent].map(({ tool, label, icon, description }) => (
-                                        <Button
-                                            key={tool}
-                                            variant={activeTool === tool ? "contained" : "text"}
-                                            color={activeTool === tool ? "primary" : "secondary"}
-                                            size="small"
-                                            startIcon={<Icon name={icon} />}
-                                            aria-pressed={activeTool === tool}
-                                            title={description}
-                                            onClick={() => setTool(activeTool === tool ? null : tool)}
-                                        >
-                                            {label}
-                                        </Button>
-                                    ))}
+                            <div className={styles.contextCenter}>
                                 {intent === "inspect" && (
-                                    <SettingMenu label="Compare" options={compareOptions} value={state.compare} onChange={changeCompare} />
+                                    <SettingMenu label="Compare" options={compareOptions} value={state.compare} onChange={changeCompare} showLabel />
                                 )}
                                 {isComparing && (
                                     <SegmentedControl
@@ -794,6 +817,7 @@ export function WorkspaceShell() {
                                 )}
                                 {!isComparing && !showingFlow && (
                                     <ViewportControl
+                                        showLabel
                                         responsive={state.responsive}
                                         onResponsiveChange={() => updateState({ responsive: true })}
                                         width={state.width}
@@ -803,6 +827,31 @@ export function WorkspaceShell() {
                                         onZoomChange={(zoom) => updateState({ zoom })}
                                     />
                                 )}
+                            </div>
+                        )}
+                        {isPrototypeMode && (
+                            <div
+                                className={styles.toolbarGroup}
+                                role="group"
+                                aria-label={`${modeTabs.find((tab) => tab.value === intent)?.label} tools`}
+                            >
+                                {/* Comparing shows several frames, where the tools of the single frame don't work, so it takes their place */}
+                                {!isComparing &&
+                                    intentToolButtons[intent].map(({ tool, label, icon, description, key }) => (
+                                        <Button
+                                            key={tool}
+                                            variant={activeTool === tool ? "contained" : "text"}
+                                            color={activeTool === tool ? "primary" : "secondary"}
+                                            size="small"
+                                            startIcon={<Icon name={icon} />}
+                                            aria-pressed={activeTool === tool}
+                                            title={`${description} · ${key}`}
+                                            aria-keyshortcuts={key}
+                                            onClick={() => setTool(activeTool === tool ? null : tool)}
+                                        >
+                                            {label}
+                                        </Button>
+                                    ))}
                             </div>
                         )}
                     </div>

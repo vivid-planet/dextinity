@@ -52,6 +52,10 @@ export function WorkspaceGuide() {
                 ))}
             </ul>
             <p className={styles.guideNote}>
+                Keys open a tool in its mode and close it again: I Component, M Measure, A Accessibility, C Comments, E Edit texts, F Flow map, L Link
+                elements. Escape closes the open tool.
+            </p>
+            <p className={styles.guideNote}>
                 View sets the content, text length, color scheme, theme, density, and tokens, and keeps combinations as presets.
             </p>
             <p className={styles.guideNote}>New pages, comments, text changes, hotspots, and tokens are kept in this browser only.</p>

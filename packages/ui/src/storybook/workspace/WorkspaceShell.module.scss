@@ -121,11 +121,21 @@
 }
 
 // The row for what the canvas shows: where it is, and the tools for the frame
+// Where the canvas is, how it's shown in the middle, and the mode's tools at the end
 .contextBar {
     display: flex;
     gap: 8px;
     align-items: center;
     justify-content: space-between;
+
+    @media (width >= 760px) {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+
+        .toolbarGroup {
+            justify-self: end;
+        }
+    }
     min-inline-size: 0;
     min-block-size: var(--workspace-bar-height);
     padding-inline: 16px 8px;
@@ -137,6 +147,13 @@
 }
 
 // Where the canvas is, and the zoom while comparing frames: on the left, so the tools on the right keep their place
+.contextCenter {
+    display: flex;
+    flex: none;
+    gap: 8px;
+    align-items: center;
+}
+
 .contextStart {
     display: flex;
     gap: 16px;

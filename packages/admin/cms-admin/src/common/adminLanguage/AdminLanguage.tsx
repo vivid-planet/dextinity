@@ -55,11 +55,29 @@ export function AdminLanguageProvider({ config, children }: PropsWithChildren<{ 
 export function getClosestSupportedLanguageFromBrowserLanguages(supportedLanguages: readonly string[], fallbackLanguage: string): string {
     const browserLanguages = typeof navigator !== "undefined" ? (navigator.languages ?? [navigator.language]) : [];
 
-    const language = browserLanguages
-        .map((browserLanguage) => browserLanguage.split("-")[0].toLowerCase())
-        .find((language) => supportedLanguages.includes(language));
+    for (const browserLanguage of browserLanguages) {
+        const supportedLanguage = findClosestSupportedLanguage(browserLanguage, supportedLanguages);
+        if (supportedLanguage) {
+            return supportedLanguage;
+        }
+    }
 
-    return language ?? fallbackLanguage;
+    return fallbackLanguage;
+}
+
+function findClosestSupportedLanguage(browserLanguage: string, supportedLanguages: readonly string[]): string | undefined {
+    const normalizedBrowserLanguage = browserLanguage.toLowerCase();
+    const browserBaseLanguage = getBaseLanguage(normalizedBrowserLanguage);
+
+    return (
+        supportedLanguages.find((language) => language.toLowerCase() === normalizedBrowserLanguage) ??
+        supportedLanguages.find((language) => language.toLowerCase() === browserBaseLanguage) ??
+        supportedLanguages.find((language) => getBaseLanguage(language.toLowerCase()) === browserBaseLanguage)
+    );
+}
+
+function getBaseLanguage(language: string): string {
+    return language.split("-")[0];
 }
 
 export function useOptionalAdminLanguage(): AdminLanguageContextValue | undefined {

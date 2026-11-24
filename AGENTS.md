@@ -181,7 +181,7 @@ Every process loads `.env.local` itself: the demo packages and `dev:*` scripts r
 | Package               | Description                                           |
 | --------------------- | ----------------------------------------------------- |
 | `dextinity-storybook` | Storybook for all Dextinity components (`storybook/`) |
-| `dextinity-docs`      | Docusaurus documentation site (`docs/`)               |
+| `dextinity-docs`      | Docusaurus documentation site and blog (`docs/`)      |
 
 ## Changesets and changelog
 

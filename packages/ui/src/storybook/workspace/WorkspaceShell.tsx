@@ -322,6 +322,7 @@ export function WorkspaceShell() {
                           pageIds: prototype.designedPageIds,
                           getPageLabel: prototype.getPageLabel,
                           getPageAncestors: prototype.getPageAncestors,
+                          groupIcon: <span className={styles.pageGroupMarker} />,
                       })
                     : undefined;
                 const node: TreeNode = {

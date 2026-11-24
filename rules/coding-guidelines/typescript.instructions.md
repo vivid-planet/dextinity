@@ -29,8 +29,6 @@ alwaysApply: false
 ## Imports / exports
 
 - Use **named exports only**. Default exports are allowed only when technically required (e.g. a framework demands it).
-- Use relative imports for every file in the same module, including files in a parent folder (e.g. `../entities/product.entity` from `products/dto/`). Imports from another module use the `@src/…` alias. A module is a top-level folder under `src/`; `@dextinity/no-other-module-relative-import` reports relative imports from another module.
-    - This only applies to projects that define the `@src/…` path alias. Library packages compiled with plain `tsc` can't use it, because `tsc` doesn't rewrite path aliases in its output, so they also use relative imports for other modules.
 
 ## Async & iteration
 

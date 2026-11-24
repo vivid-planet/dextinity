@@ -38,6 +38,7 @@ export class ScaledImagesService {
         file: FileInterface,
         { cropArea, resizeWidth, resizeHeight, focalPoint }: Pick<ImageParams, "cropArea" | "resizeWidth" | "resizeHeight" | "focalPoint">,
         format: Extension,
+        { background, signal }: { background?: string; signal?: AbortSignal } = {},
     ): Promise<ScaledImage> {
         if (!file.image) {
             throw new Error(`File ${file.id} is not an image`);
@@ -91,21 +92,24 @@ export class ScaledImagesService {
             cropGravity = Gravity.NORTHWEST;
         }
 
-        const path = this.imgproxyService
+        const builder = this.imgproxyService
             .builder()
             .crop(cropWidth, cropHeight, cropGravity, cropOffsetX, cropOffsetY)
             .resize(ResizingType.AUTO, resizeWidth)
-            .format(format)
-            .generateUrl(
-                `${this.blobStorageBackendService.getBackendFilePathPrefix()}${this.config.filesDirectory}/${createHashedPath(file.contentHash)}`,
-            );
+            .format(format);
+        if (background) {
+            builder.setOption("background", background);
+        }
+        const path = builder.generateUrl(
+            `${this.blobStorageBackendService.getBackendFilePathPrefix()}${this.config.filesDirectory}/${createHashedPath(file.contentHash)}`,
+        );
 
         const cache = await this.cacheService.get(file.contentHash, path);
         if (cache) {
             return { status: 200, contentType: cache.metaData.contentType, contentLength: cache.metaData.size, body: cache.file };
         }
 
-        const response = await fetch(this.imgproxyService.getSignedUrl(path));
+        const response = await fetch(this.imgproxyService.getSignedUrl(path), { signal });
         if (response.body === null) {
             throw new Error("Response body is null");
         }

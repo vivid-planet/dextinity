@@ -239,6 +239,8 @@ export function WorkspaceShell() {
     const storybookFrameRef = useRef<HTMLIFrameElement>(null);
     const storybookPage = useStorybookPage();
     const framePage = useFramePage(frameRef, frameLoadCount);
+    // The element's path belongs to the page it was double clicked on
+    useEffect(() => setMeasuredPath(null), [framePage.hash]);
     const canvasSize = useElementSize(canvasElement);
     const narrow = useMediaQuery(narrowQuery);
     // On a narrow screen, the prototypes cover the canvas, so they start closed and close again once a page is picked
@@ -262,15 +264,22 @@ export function WorkspaceShell() {
     const isLoading = stories.length === 0;
     const isPrototypeMode = state.mode === "prototypes";
     const intent = state.intent;
-    const activeTool = intent === "prototype" ? null : (state.intentTools[intent] ?? null);
+    // Presenting shows the prototype as it is, without the tool of the mode it was started from
+    const activeTool = intent === "prototype" || presenting ? null : (state.intentTools[intent] ?? null);
     // Comparing is a way of inspecting; the other modes show the single frame
-    const isComparing = isPrototypeMode && intent === "inspect" && state.compare !== "off";
+    const isComparing = isPrototypeMode && !presenting && intent === "inspect" && state.compare !== "off";
+    const isSingleFrame = isPrototypeMode && !isComparing && !(intent === "flow" && activeTool === "map");
     const showingFlow = isPrototypeMode && intent === "flow" && activeTool === "map";
     const inspecting = isPrototypeMode && !isComparing && activeTool === "component";
     const frameTool: FrameTool | null =
         isPrototypeMode && !isComparing && activeTool && activeTool !== "component" && activeTool !== "map" ? activeTool : null;
 
     function setTool(tool: WorkspaceTool | null) {
+        setMeasuredPath(null);
+        // The flow map takes the single frame's place; the frame opens again on the page it was left on
+        if (tool === "map" && isSingleFrame) {
+            setPrototypeStartPage(framePage.hash);
+        }
         if (intent !== "prototype") {
             updateState({ intentTools: { ...state.intentTools, [intent]: tool } });
         }
@@ -278,7 +287,8 @@ export function WorkspaceShell() {
 
     function changeIntent(next: WorkspaceIntent) {
         setMeasuredPath(null);
-        if (!showingFlow && !isComparing) {
+        // Only the single frame knows its page; the flow map, comparing, and Library keep it in the start page already
+        if (isSingleFrame) {
             setPrototypeStartPage(framePage.hash);
         }
         updateState({ mode: "prototypes", intent: next });
@@ -414,6 +424,7 @@ export function WorkspaceShell() {
             return;
         }
         setOverlayPanelOpen(false);
+        setMeasuredPath(null);
         // A page picked in the list opens in the frame, also from the flow map
         if (showingFlow) {
             setTool(null);
@@ -473,7 +484,7 @@ export function WorkspaceShell() {
     useEffect(() => {
         const handleKey = (event: KeyboardEvent) => {
             const next = intentKeys[event.key];
-            if (next && !event.metaKey && !event.ctrlKey && !event.altKey && !isTyping(event.target)) {
+            if (next && !presenting && !event.metaKey && !event.ctrlKey && !event.altKey && !isTyping(event.target)) {
                 changeIntent(next);
             }
         };
@@ -485,16 +496,19 @@ export function WorkspaceShell() {
     // A double click on an element while clicking through opens it in Inspect, measured
     useEffect(() => {
         const frameDocument = frameRef.current?.contentDocument;
-        if (!isPrototypeMode || intent !== "prototype" || !frameDocument) {
+        if (!isPrototypeMode || intent !== "prototype" || presenting || !frameDocument) {
             return;
         }
         const handleDoubleClick = (event: MouseEvent) => {
             const target = event.target as Element | null;
-            if (target?.nodeType !== Node.ELEMENT_NODE) {
+            // A double click in a field selects a word, one on a control uses it twice; neither asks to inspect
+            if (target?.nodeType !== Node.ELEMENT_NODE || isTyping(target) || target.closest('a, button, [role="button"], [role="link"], label')) {
                 return;
             }
             setMeasuredPath(getElementPath(target));
-            updateState({ intent: "inspect", intentTools: { ...state.intentTools, inspect: "measure" } });
+            setPrototypeStartPage(framePage.hash);
+            // Measured in the single frame, also when comparing was on in Inspect before
+            updateState({ intent: "inspect", compare: "off", intentTools: { ...state.intentTools, inspect: "measure" } });
         };
         frameDocument.addEventListener("dblclick", handleDoubleClick);
         return () => frameDocument.removeEventListener("dblclick", handleDoubleClick);
@@ -747,7 +761,7 @@ export function WorkspaceShell() {
                         {isPrototypeMode && (
                             <div
                                 className={styles.toolbarGroup}
-                                role="toolbar"
+                                role="group"
                                 aria-label={`${modeTabs.find((tab) => tab.value === intent)?.label} tools`}
                             >
                                 {/* Comparing shows several frames, where the tools of the single frame don't work, so it takes their place */}

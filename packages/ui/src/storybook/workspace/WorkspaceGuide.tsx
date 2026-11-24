@@ -13,7 +13,11 @@ const modes = [
         description:
             "Component opens a component's story, Measure shows spacing and tokens, Accessibility checks tab order, targets, and contrast, Compare shows devices or variants side by side.",
     },
-    { key: "3", name: "Review", description: "Pin comments to the page and edit texts in place; both copy as a list or as a request for code." },
+    {
+        key: "3",
+        name: "Review",
+        description: "Pin comments to the page and edit texts in place; comments copy as a list, text changes as a list or as a request for code.",
+    },
     {
         key: "4",
         name: "Flow",

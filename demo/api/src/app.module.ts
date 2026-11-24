@@ -48,8 +48,8 @@ import { ContentGenerationService } from "@src/content-generation/content-genera
 import { DbModule } from "@src/db/db.module.js";
 import { LinksModule } from "@src/documents/links/links.module.js";
 import { PagesModule } from "@src/documents/pages/pages.module.js";
-import { PageTreeTools } from "@src/mcp/page-tree.tools.js";
-import { damScopeSchema } from "@src/mcp/scope.schemas.js";
+import { damScopeSchema, pageTreeCategorySchema, pageTreeScopeSchema } from "@src/mcp/mcp.schemas.js";
+import { PageTools } from "@src/mcp/page.tools.js";
 import { TranslationModule } from "@src/translation/translation.module.js";
 import type { Request } from "express";
 
@@ -243,7 +243,13 @@ export class AppModule {
                               adminUrl: config.adminUrl,
                               blockMetaPath: fileURLToPath(new URL("../block-meta.json", import.meta.url)),
                               dam: { File: DamFile, scopeSchema: damScopeSchema },
-                              tools: [PageTreeTools],
+                              pageTree: {
+                                  PageTreeNode,
+                                  scopeSchema: pageTreeScopeSchema,
+                                  categorySchema: pageTreeCategorySchema,
+                                  additionalNodeFields: (node) => ({ userGroup: (node as PageTreeNode).userGroup }),
+                              },
+                              tools: [PageTools],
                           }),
                       ]
                     : []),

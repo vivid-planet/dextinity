@@ -8,6 +8,7 @@ import { RequiredPermission } from "../user-permissions/decorators/required-perm
 import { AI_MODE_MCP_OPTIONS } from "./ai-mode-mcp.constants.js";
 import { BlockTools } from "./block.tools.js";
 import { createDamTools } from "./dam.tools.js";
+import { createPageTreeTools, type PageTreeToolsOptions } from "./page-tree.tools.js";
 
 export interface AiModeMcpModuleOptions {
     /** The URL of the admin, from whose pages the AI Mode's chat calls the server. */
@@ -19,17 +20,18 @@ export interface AiModeMcpModuleOptions {
         /** The schema of the DAM's scope, which the agent passes to list the files of a scope. Leave it out for a DAM without scope. */
         scopeSchema?: z.ZodType;
     };
+    pageTree: PageTreeToolsOptions;
     /** The project's own tools, e.g. for its documents. */
     tools?: Type[];
 }
 
 /**
- * The MCP server of the admin's AI Mode: tools that give the agent the DAM files, the block schemas and what the project
- * adds, read as the user the request was authenticated as.
+ * The MCP server of the admin's AI Mode: tools that give the agent the page tree, the DAM files, the block schemas and
+ * what the project adds, e.g. its documents, read as the user the request was authenticated as.
  */
 @Module({})
 export class AiModeMcpModule {
-    static forRoot({ adminUrl, blockMetaPath, dam, tools = [] }: AiModeMcpModuleOptions): DynamicModule {
+    static forRoot({ adminUrl, blockMetaPath, dam, pageTree, tools = [] }: AiModeMcpModuleOptions): DynamicModule {
         return {
             module: AiModeMcpModule,
             imports: [
@@ -45,7 +47,13 @@ export class AiModeMcpModule {
                     http: { allowedOrigins: [new URL(adminUrl).hostname] },
                 }),
             ],
-            providers: [{ provide: AI_MODE_MCP_OPTIONS, useValue: { blockMetaPath } }, BlockTools, createDamTools(dam), ...tools],
+            providers: [
+                { provide: AI_MODE_MCP_OPTIONS, useValue: { blockMetaPath } },
+                BlockTools,
+                createDamTools(dam),
+                createPageTreeTools(pageTree),
+                ...tools,
+            ],
         };
     }
 }

@@ -7,6 +7,7 @@ export { AiModeMcpModule, type AiModeMcpModuleOptions } from "./ai-mode-mcp/ai-m
 export { McpNotFoundFilter } from "./ai-mode-mcp/mcp-not-found.filter.js";
 export { McpRefusalReasonFilter } from "./ai-mode-mcp/mcp-refusal-reason.filter.js";
 export { McpSignedInUserGuard } from "./ai-mode-mcp/mcp-signed-in-user.guard.js";
+export type { PageTreeToolsOptions } from "./ai-mode-mcp/page-tree.tools.js";
 export { DisableDextinityGuards } from "./auth/decorators/disable-dextinity-guards.decorator.js";
 export { GetCurrentUser } from "./auth/decorators/get-current-user.decorator.js";
 export { DextinityAuthGuard } from "./auth/guards/dextinity.guard.js";

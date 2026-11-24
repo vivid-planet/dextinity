@@ -40,8 +40,8 @@ import { PageTreeNode } from "@src/page-tree/entities/page-tree-node.entity.js";
 import type { Request } from "express";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { PageTreeTools } from "./page-tree.tools.js";
-import { damScopeSchema } from "./scope.schemas.js";
+import { damScopeSchema, pageTreeCategorySchema, pageTreeScopeSchema } from "./mcp.schemas.js";
+import { PageTools } from "./page.tools.js";
 
 // Covers what a direct call to a tool method doesn't go through: the user the authentication puts on the request, the
 // permission checks of `UserPermissionsGuard` that the tools declare, the answers to a refused call, and the
@@ -125,19 +125,10 @@ const pages = [
     },
 ];
 const unknownId = "0190a5f4-0000-7000-8000-000000000099";
-const getNodes = vi.fn(async () => [homeNode]);
 
 const readApi = {
-    preloadNodes: async () => undefined,
-    getNodes,
-    getNodesCount: async () => 1,
-    getNode: async (id: string) => nodes.find((node) => node.id === id) ?? null,
-    getNodeByPath: async (path: string, { scope }: { scope: unknown }) =>
-        nodes.find((node) => `/${node.slug}` === path && node.scope === scope) ?? null,
     getFirstNodeByAttachedPageId: async (pageId: string) => pages.find((page) => page.id === pageId)?.node ?? null,
     nodePath: async (node: { slug: string }) => `/${node.slug}`,
-    parentNodes: async () => [],
-    getChildNodes: async () => [],
 };
 
 const accessControlService = {
@@ -197,10 +188,6 @@ const appProviders: Provider[] = [
         provide: PageTreeService,
         useValue: {
             createReadApi: () => readApi,
-            getActiveAttachedDocument: async (nodeId: string) => {
-                const page = pages.find((candidate) => candidate.node?.id === nodeId);
-                return page ? { documentId: page.id } : null;
-            },
         },
     },
     {
@@ -234,7 +221,8 @@ beforeAll(async () => {
                 adminUrl: "https://admin.example.com",
                 blockMetaPath: fileURLToPath(new URL("../../block-meta.json", import.meta.url)),
                 dam: { File: DamFile, scopeSchema: damScopeSchema },
-                tools: [PageTreeTools],
+                pageTree: { PageTreeNode, scopeSchema: pageTreeScopeSchema, categorySchema: pageTreeCategorySchema },
+                tools: [PageTools],
             }),
         ],
         providers: [{ provide: APP_GUARD, useClass: HeaderAuthGuard }, userPermissionsGuardProvider],
@@ -256,7 +244,7 @@ afterAll(async () => {
     await app?.close();
 });
 
-describe("MCP server of the API", () => {
+describe("get_page", () => {
     it("answers get_page with the blocks transformed as the admin's editor sees them", async () => {
         const { text, isError } = await callTool("get_page", { id: pages[0].id });
 
@@ -299,47 +287,5 @@ describe("MCP server of the API", () => {
         expect(text).toBe("Internal server error");
         expect(logError).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining(deletedNewsId) }));
         logError.mockRestore();
-    });
-
-    it("answers get_page_tree_node with the ID of the attached document", async () => {
-        const { text, isError } = await callTool("get_page_tree_node", { id: homeNode.id });
-
-        expect(isError).toBe(false);
-        expect(JSON.parse(text)).toMatchObject({ id: homeNode.id, path: "/home", documentId: pages[0].id, scope: allowedScope });
-    });
-
-    it.each([
-        ["of a scope the user may not read", otherScopeNode.id],
-        ["that doesn't exist", unknownId],
-    ])("answers a page tree node %s as if it didn't exist", async (_, id) => {
-        const { text, isError } = await callTool("get_page_tree_node", { id });
-
-        expect(isError).toBe(true);
-        expect(text).toBe(`There is no page tree node ${id}.`);
-    });
-
-    it("lists the page tree nodes of a scope the user may read", async () => {
-        const { text, isError } = await callTool("list_page_tree_nodes", { scope: allowedScope, category: "mainNavigation" });
-
-        expect(isError).toBe(false);
-        expect(JSON.parse(text)).toMatchObject({ nodes: [{ id: homeNode.id, path: "/home" }], totalCount: 1 });
-        expect(getNodes).toHaveBeenCalledWith(expect.objectContaining({ scope: allowedScope, category: "mainNavigation", limit: 100, offset: 0 }));
-    });
-
-    it.each([
-        ["list_page_tree_nodes", { scope: otherScope }],
-        ["get_page_tree_node_by_path", { scope: otherScope, path: "/other" }],
-    ])("refuses %s in a scope the user may not read", async (tool, args) => {
-        const { text, isError } = await callTool(tool, args);
-
-        expect(isError).toBe(true);
-        expect(text).toBe("You may not read the page tree of this scope.");
-    });
-
-    it("refuses a system user, whom the permission check lets through", async () => {
-        const { text, isError } = await callTool("get_page_tree_node", { id: homeNode.id }, "system");
-
-        expect(isError).toBe(true);
-        expect(text).toBe("The MCP server answers only a user signed in to the admin.");
     });
 });

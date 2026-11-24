@@ -16,6 +16,8 @@ import { CorePermission } from "../common/enum/core-permission.enum.js";
 import { ExceptionFilter } from "../common/errors/exception.filter.js";
 import type { FileInterface } from "../dam/files/entities/file.entity.js";
 import { FilesService } from "../dam/files/files.service.js";
+import { PageTreeService } from "../page-tree/page-tree.service.js";
+import type { PageTreeNodeInterface } from "../page-tree/types.js";
 import { UserPermissionsGuard } from "../user-permissions/auth/user-permissions.guard.js";
 import { ContentScopeService } from "../user-permissions/content-scope.service.js";
 import type { CurrentUser } from "../user-permissions/dto/current-user.js";
@@ -26,6 +28,7 @@ import { AiModeMcpModule } from "./ai-mode-mcp.module.js";
 // permission checks of `UserPermissionsGuard` that the tools declare, and the answers to a refused call.
 
 const allowedScope = { domain: "main" };
+const otherScope = { domain: "secondary" };
 
 const users: Record<string, CurrentUser | string> = {
     editor: { id: "editor", name: "Editor" } as CurrentUser,
@@ -47,8 +50,36 @@ class HeaderAuthGuard implements CanActivate {
     }
 }
 
-// Only the class matters, as the entity `@AffectedEntity` reads the scope of.
+// Only the classes matter, as the entities `@AffectedEntity` reads the scope of.
 class TestDamFile {}
+class TestPageTreeNode {}
+
+const homeNode = {
+    id: "0190a5f4-0000-7000-8000-000000000001",
+    name: "Home",
+    slug: "home",
+    documentType: "Page",
+    category: "mainNavigation",
+    scope: allowedScope,
+    userGroup: "all",
+};
+const otherScopeNode = { id: "0190a5f4-0000-7000-8000-000000000002", name: "Other", slug: "other", documentType: "Page", scope: otherScope };
+const nodes = [homeNode, otherScopeNode];
+const homePageId = "0190a5f4-0000-7000-8000-000000000011";
+const unknownId = "0190a5f4-0000-7000-8000-000000000099";
+const getNodes = vi.fn(async () => [homeNode]);
+
+const readApi = {
+    preloadNodes: async () => undefined,
+    getNodes,
+    getNodesCount: async () => 1,
+    getNode: async (id: string) => nodes.find((node) => node.id === id) ?? null,
+    getNodeByPath: async (path: string, { scope }: { scope: unknown }) =>
+        nodes.find((node) => `/${node.slug}` === path && node.scope === scope) ?? null,
+    nodePath: async (node: { slug: string }) => `/${node.slug}`,
+    parentNodes: async () => [],
+    getChildNodes: async () => [],
+};
 
 const damFile = { id: "0190a5f4-0000-7000-8000-000000000021", name: "spring.jpg", scope: { domain: "secondary" } };
 const findDamFiles = vi.fn(async () => [[], 0]);
@@ -61,13 +92,20 @@ const accessControlService = {
               Object.entries(scope ?? {}).every(([dimension, value]) => value === (allowedScope as Record<string, string>)[dimension]),
 };
 
+// The rows `@AffectedEntity` reads the scope of.
+const rowsByEntity = new Map<unknown, { id: string }[]>([
+    [TestPageTreeNode, nodes],
+    [TestDamFile, [damFile]],
+]);
+
 const orm = {
     em: {
         findOneOrFail: async (entity: { name: string }, id: string) => {
-            if (entity !== TestDamFile || id !== damFile.id) {
+            const row = rowsByEntity.get(entity)?.find((candidate) => candidate.id === id);
+            if (!row) {
                 throw NotFoundError.findOneFailed(entity.name, { id });
             }
-            return damFile;
+            return row;
         },
         getMetadata: () => ({ get: () => ({ getPrimaryProps: () => [{ type: "uuid" }] }) }),
     },
@@ -87,6 +125,13 @@ const appProviders: Provider[] = [
             getDamPath: async () => "/",
         },
     },
+    {
+        provide: PageTreeService,
+        useValue: {
+            createReadApi: () => readApi,
+            getActiveAttachedDocument: async (nodeId: string) => (nodeId === homeNode.id ? { documentId: homePageId } : null),
+        },
+    },
 ];
 
 // The services the tools get from the app's modules.
@@ -95,6 +140,13 @@ const appProviders: Provider[] = [
 class AppServicesModule {}
 
 const adminUrl = "https://admin.example.com";
+
+const pageTree = {
+    PageTreeNode: TestPageTreeNode as Type<PageTreeNodeInterface>,
+    scopeSchema: z.strictObject({ domain: z.string() }),
+    categorySchema: z.enum(["mainNavigation", "topMenu"]),
+    additionalNodeFields: (node: PageTreeNodeInterface) => ({ userGroup: (node as PageTreeNodeInterface & { userGroup?: string }).userGroup }),
+};
 
 let blockMetaDirectory: string;
 let app: INestApplication;
@@ -120,6 +172,7 @@ beforeAll(async () => {
                 adminUrl,
                 blockMetaPath,
                 dam: { File: TestDamFile as Type<FileInterface>, scopeSchema: z.strictObject({ domain: z.string() }) },
+                pageTree,
             }),
         ],
         providers: [
@@ -143,6 +196,41 @@ afterAll(async () => {
 });
 
 describe("MCP server of the AI Mode", () => {
+    it("answers get_page_tree_node with the ID of the attached document and the project's fields", async () => {
+        const { text, isError } = await callTool("get_page_tree_node", { id: homeNode.id });
+
+        expect(isError).toBe(false);
+        expect(JSON.parse(text)).toMatchObject({ id: homeNode.id, path: "/home", documentId: homePageId, scope: allowedScope, userGroup: "all" });
+    });
+
+    it.each([
+        ["of a scope the user may not read", otherScopeNode.id],
+        ["that doesn't exist", unknownId],
+    ])("answers a page tree node %s as if it didn't exist", async (_, id) => {
+        const { text, isError } = await callTool("get_page_tree_node", { id });
+
+        expect(isError).toBe(true);
+        expect(text).toBe(`There is no page tree node ${id}.`);
+    });
+
+    it("lists the page tree nodes of a scope the user may read", async () => {
+        const { text, isError } = await callTool("list_page_tree_nodes", { scope: allowedScope, category: "mainNavigation" });
+
+        expect(isError).toBe(false);
+        expect(JSON.parse(text)).toMatchObject({ nodes: [{ id: homeNode.id, path: "/home", userGroup: "all" }], totalCount: 1 });
+        expect(getNodes).toHaveBeenCalledWith(expect.objectContaining({ scope: allowedScope, category: "mainNavigation", limit: 100, offset: 0 }));
+    });
+
+    it.each([
+        ["list_page_tree_nodes", { scope: otherScope }],
+        ["get_page_tree_node_by_path", { scope: otherScope, path: "/other" }],
+    ])("refuses %s in a scope the user may not read", async (tool, args) => {
+        const { text, isError } = await callTool(tool, args);
+
+        expect(isError).toBe(true);
+        expect(text).toBe("You may not read the page tree of this scope.");
+    });
+
     it("refuses to list the DAM files of a scope the user may not read", async () => {
         const { text, isError } = await callTool("list_dam_files", { scope: { domain: "secondary" } });
 
@@ -159,7 +247,7 @@ describe("MCP server of the AI Mode", () => {
 
     it.each([
         ["of a scope the user may not read", damFile.id],
-        ["that doesn't exist", "0190a5f4-0000-7000-8000-000000000099"],
+        ["that doesn't exist", unknownId],
     ])("answers a DAM file %s as if it didn't exist", async (_, id) => {
         const { text, isError } = await callTool("get_dam_file", { id });
 
@@ -244,6 +332,7 @@ describe("MCP server of the AI Mode with a DAM without scope", () => {
                     adminUrl,
                     blockMetaPath: join(blockMetaDirectory, "block-meta.json"),
                     dam: { File: TestDamFile as Type<FileInterface> },
+                    pageTree,
                 }),
             ],
             providers: [

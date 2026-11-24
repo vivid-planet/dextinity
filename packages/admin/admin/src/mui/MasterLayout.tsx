@@ -131,7 +131,12 @@ export function MasterLayout(inProps: MasterLayoutProps) {
                         <SidePanel
                             {...slotProps?.sidePanel}
                             ref={sidePanelRef}
-                            style={{ "--dextinity-admin-master-layout-content-top-spacing": `${headerHeight}px` } as CSSProperties}
+                            style={
+                                {
+                                    ...slotProps?.sidePanel?.style,
+                                    "--dextinity-admin-master-layout-content-top-spacing": `${headerHeight}px`,
+                                } as CSSProperties
+                            }
                         >
                             <SidePanelComponent />
                         </SidePanel>

@@ -1,5 +1,28 @@
 # @comet/mail-react
 
+## 10.16.0
+
+### Minor Changes
+
+- 581ceb4: Add `rewriteImageSrc` to `Config`
+
+    The function returns the `src` that `HtmlImage`, `MjmlImage`, `HtmlPixelImageBlock` and `MjmlPixelImageBlock` render for an image, including the image in classic Outlook's VML. Use it when mail clients can't load an image from its own URL, e.g. to reference an attachment of the sent mail instead:
+
+    ```tsx
+    <MjmlMailRoot config={{ rewriteImageSrc: ({ src }) => `cid:${registerInlineImage(src)}` }}>
+        <MailContent />
+    </MjmlMailRoot>
+    ```
+
+### Patch Changes
+
+- a777c2c: Request a valid image width for full-width pixel image blocks
+
+    `HtmlPixelImageBlock` and `MjmlPixelImageBlock` requested twice the width unrounded when `width` equaled `largestPossibleRenderWidth` (by default `theme.sizes.bodyWidth`), e.g. `1200`. The API's image route rejects widths that aren't in the allowed image sizes, so the image failed to load.
+    The blocks now always round to one of `validSizes`, and use `largestPossibleRenderWidth` when it is larger than `width`, as documented.
+
+- e7f8eee: Fix a crash in `renderMailHtml` when a font family has quotes
+
 ## 10.15.0
 
 No changes in this release.

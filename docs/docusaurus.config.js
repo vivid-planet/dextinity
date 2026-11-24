@@ -44,6 +44,9 @@ const config = {
                 },
                 blog: {
                     showReadingTime: true,
+                    blogTitle: "Dextinity Blog",
+                    blogDescription: "Release highlights and news from the Dextinity team",
+                    blogSidebarTitle: "Recent posts",
                 },
                 theme: {
                     customCss: require.resolve("./src/css/custom.css"),
@@ -68,6 +71,7 @@ const config = {
                         position: "left",
                         label: "Docs",
                     },
+                    { to: "/blog", position: "left", label: "Blog" },
                     {
                         href: getStorybookUrl(),
                         position: "right",

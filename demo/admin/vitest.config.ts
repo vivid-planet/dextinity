@@ -12,8 +12,8 @@ export default defineConfig({
         reporters: ["default", "junit"],
         projects: [
             {
-                // Applies the app's emotion JSX setup and `@src` alias, which Storybook only picks up for `storybook dev`.
-                extends: "./vite.config.mts",
+                // Like in vite.config.mts: Draft.js reads the Node.js `global`, which the browser doesn't have.
+                define: { global: "globalThis" },
                 plugins: [storybookTest({ configDir: join(currentDirectory, ".storybook") })],
                 optimizeDeps: {
                     rolldownOptions: {

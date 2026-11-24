@@ -654,6 +654,7 @@ input ActionLogFilter {
   version: NumberFilter
   createdAt: DateTimeFilter
   scope: ActionLogScopeFilter
+  type: ActionLogTypeEnumFilter
   and: [ActionLogFilter!]
   or: [ActionLogFilter!]
 }
@@ -692,6 +693,12 @@ input ActionLogScopeFilter {
   equal: JSONObject
   notEqual: JSONObject
   isGlobal: Boolean
+}
+
+input ActionLogTypeEnumFilter {
+  isAnyOf: [ActionLogType!]
+  equal: ActionLogType
+  notEqual: ActionLogType
 }
 
 input ActionLogSort {

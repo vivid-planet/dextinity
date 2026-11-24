@@ -1,18 +1,30 @@
-import { type GridColDef, useBufferedRowCount, type useDataGridRemote, type usePersistentColumnState } from "@dextinity/admin";
+import {
+    dataGridDateTimeColumn,
+    type GridColDef,
+    useBufferedRowCount,
+    type useDataGridRemote,
+    type usePersistentColumnState,
+} from "@dextinity/admin";
 import { View } from "@dextinity/admin-icons";
 import { IconButton, Typography } from "@mui/material";
 import { gridClasses, type GridRowParams, type GridRowSelectionModel, type GridSlotsComponent } from "@mui/x-data-grid";
 import { useMemo, useState } from "react";
-import { FormattedDate, FormattedMessage, useIntl } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 
 import { DataGrid } from "../../../dataGrid/DataGrid";
 import { ActionLogHeader } from "../../components/actionLogHeader/ActionLogHeader";
 import { ActionLogTypeChip } from "../../components/actionLogTypeChip/ActionLogTypeChip";
+import { useActionLogTypeValueOptions } from "../../components/actionLogTypeChip/useActionLogTypeValueOptions";
 import { ScopeCell } from "../../components/scopeCell/ScopeCell";
 import { UserCell } from "../../components/userCell/UserCell";
 import { ActionGridToolbar, type ActionGridToolbarProps } from "./actionGridToolbar/ActionGridToolbar";
 import type { GQLActionLogVersionGridFragment } from "./ActionLogVersionGrid.gql.generated";
 import { Root } from "./ActionLogVersionGrid.sc";
+
+// "is" and "not" would compare the timestamps to the millisecond on the server, so they would hardly ever match.
+const createdAtFilterOperators = dataGridDateTimeColumn.filterOperators?.filter((operator) =>
+    ["after", "onOrAfter", "before", "onOrBefore"].includes(operator.value),
+);
 
 type ActionLogVersionGridProps<Row extends GQLActionLogVersionGridFragment> = ReturnType<typeof useDataGridRemote> &
     ReturnType<typeof usePersistentColumnState> & {
@@ -42,17 +54,21 @@ export function ActionLogVersionGrid<Row extends GQLActionLogVersionGridFragment
     ...dataGridProps
 }: ActionLogVersionGridProps<Row>) {
     const intl = useIntl();
+    const actionLogTypeValueOptions = useActionLogTypeValueOptions();
     const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>({ type: "include", ids: new Set() });
 
     const columns = useMemo<GridColDef<Row>[]>(
         () => [
             {
                 field: "version",
+                type: "number",
                 headerName: intl.formatMessage({ defaultMessage: "Version", id: "actionLog.actionLogVersionGrid.columns.version" }),
             },
             {
                 field: "type",
                 headerName: intl.formatMessage({ defaultMessage: "Action", id: "actionLog.actionLogVersionGrid.columns.type" }),
+                type: "singleSelect",
+                valueOptions: actionLogTypeValueOptions,
                 sortable: false,
                 width: 130,
                 renderCell: ({ row }) => <ActionLogTypeChip actionLogType={row.type} />,
@@ -62,6 +78,7 @@ export function ActionLogVersionGrid<Row extends GQLActionLogVersionGridFragment
                       {
                           field: "scope",
                           headerName: intl.formatMessage({ defaultMessage: "Scope", id: "actionLog.actionLogVersionGrid.columns.scope" }),
+                          filterable: false,
                           sortable: false,
                           width: 150,
                           renderCell: ({ row }: { row: Row }) => <ScopeCell scopes={row.scope} />,
@@ -69,17 +86,17 @@ export function ActionLogVersionGrid<Row extends GQLActionLogVersionGridFragment
                   ]
                 : []),
             {
+                ...dataGridDateTimeColumn,
                 field: "createdAt",
                 headerName: intl.formatMessage({ defaultMessage: "Date", id: "actionLog.actionLogVersionGrid.columns.createdAt" }),
                 minWidth: 200,
-                renderCell: ({ row }) => {
-                    return <FormattedDate dateStyle="medium" timeStyle="short" value={row.createdAt} />;
-                },
+                filterOperators: createdAtFilterOperators,
             },
             {
                 field: "user",
                 headerName: intl.formatMessage({ defaultMessage: "Changed by", id: "actionLog.actionLogVersionGrid.columns.user" }),
                 minWidth: 400,
+                filterable: false,
                 sortable: false,
                 renderCell: ({ row }) => {
                     return <UserCell id={row.user.id} name={row.user.name ?? undefined} />;
@@ -111,7 +128,7 @@ export function ActionLogVersionGrid<Row extends GQLActionLogVersionGridFragment
                 type: "actions",
             },
         ],
-        [intl, showScope, onShowVersionClick],
+        [intl, showScope, onShowVersionClick, actionLogTypeValueOptions],
     );
 
     const rowCount = useBufferedRowCount(actionLogs?.totalCount);
@@ -167,7 +184,6 @@ export function ActionLogVersionGrid<Row extends GQLActionLogVersionGridFragment
                 }}
                 {...dataGridProps}
                 checkboxSelection
-                disableColumnFilter
                 showToolbar
                 columns={columns}
                 isRowSelectable={(params) => {

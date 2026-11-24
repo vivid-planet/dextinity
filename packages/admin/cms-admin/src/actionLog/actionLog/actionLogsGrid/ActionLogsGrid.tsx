@@ -22,6 +22,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { type ContentScope, useContentScope } from "../../../contentScope/Provider";
 import { DataGrid } from "../../../dataGrid/DataGrid";
 import { ActionLogTypeChip } from "../../components/actionLogTypeChip/ActionLogTypeChip";
+import { useActionLogTypeValueOptions } from "../../components/actionLogTypeChip/useActionLogTypeValueOptions";
 import { UserCell } from "../../components/userCell/UserCell";
 import { ActionLogDialog } from "../actionLogDialog/ActionLogDialog";
 import { ActionLogShowVersionDialog } from "../actionLogShowVersionDialog/ActionLogShowVersionDialog";
@@ -96,6 +97,7 @@ export function ActionLogsGrid({
     renderEntitySecondaryText,
 }: ActionLogsGridProps) {
     const intl = useIntl();
+    const actionLogTypeValueOptions = useActionLogTypeValueOptions();
     const { scope: contentScope } = useContentScope();
     const scope = entityScope ?? contentScope;
     const [selectedRow, setSelectedRow] = useState<GQLActionLogsGridFragment | null>(null);
@@ -117,8 +119,9 @@ export function ActionLogsGrid({
             {
                 field: "type",
                 headerName: intl.formatMessage({ id: "dextinity.actionLog.entity.columns.type", defaultMessage: "Action" }),
+                type: "singleSelect",
+                valueOptions: actionLogTypeValueOptions,
                 sortable: false,
-                filterable: false,
                 width: 150,
                 renderCell: ({ row }) => <ActionLogTypeChip actionLogType={row.type} />,
             },
@@ -191,7 +194,7 @@ export function ActionLogsGrid({
                 ),
             },
         ],
-        [intl, getDisplayName, renderEntitySecondaryText],
+        [intl, getDisplayName, renderEntitySecondaryText, actionLogTypeValueOptions],
     );
 
     const { filter: gqlFilter } = muiGridFilterToGql(columns, dataGridProps.filterModel);

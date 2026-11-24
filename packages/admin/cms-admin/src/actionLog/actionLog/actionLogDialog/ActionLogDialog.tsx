@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client/react";
-import { Dialog, InlineAlert, muiGridSortToGql, useDataGridRemote, usePersistentColumnState } from "@dextinity/admin";
+import { Dialog, InlineAlert, muiGridFilterToGql, muiGridSortToGql, useDataGridRemote, usePersistentColumnState } from "@dextinity/admin";
 import { useEffect, useMemo, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
@@ -63,7 +63,10 @@ export function ActionLogDialog({ entity, entityId, name, scope: entityScope, sh
     const dataGridRemote = useDataGridRemote({ queryParamsPrefix: "actionLogDialog", initialSort: [{ field: "version", sort: "desc" }] });
     const persistentColumnState = usePersistentColumnState(`ActionLogDialog-${entity}`);
 
-    const filter = useMemo(() => ({ entityId: { equal: entityId } }), [entityId]);
+    const filter = useMemo(
+        () => ({ and: [{ entityId: { equal: entityId } }, muiGridFilterToGql([], dataGridRemote.filterModel).filter] }),
+        [entityId, dataGridRemote.filterModel],
+    );
     const pagination = {
         offset: dataGridRemote.paginationModel.page * dataGridRemote.paginationModel.pageSize,
         limit: dataGridRemote.paginationModel.pageSize,

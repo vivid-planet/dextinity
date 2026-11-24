@@ -30,6 +30,7 @@ input ActionLogFilter {
   entityName: StringFilter
   or: [ActionLogFilter!]
   scope: ActionLogScopeFilter
+  type: ActionLogTypeEnumFilter
   userId: StringFilter
   version: NumberFilter
 }
@@ -57,6 +58,12 @@ enum ActionLogType {
   created
   deleted
   updated
+}
+
+input ActionLogTypeEnumFilter {
+  equal: ActionLogType
+  isAnyOf: [ActionLogType!]
+  notEqual: ActionLogType
 }
 
 type ActionLogsUser {

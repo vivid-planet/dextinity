@@ -1,3 +1,4 @@
+import { createTipTapRichTextDataAttribute } from "@dextinity/admin";
 import { Box } from "@mui/material";
 import { grey as muiGreyPalette } from "@mui/material/colors";
 import { Node } from "@tiptap/core";
@@ -9,7 +10,6 @@ import { useBlockContext } from "../../context/useBlockContext";
 import { type BlockInterface, type BlockState, isPreviewContentTextRule } from "../../types";
 import { ChildBlocksContext } from "../ChildBlocksContext";
 import { TipTapBlockDialog } from "../TipTapBlockDialog";
-import { createJsonDataAttribute } from "./jsonDataAttribute";
 
 declare module "@tiptap/core" {
     interface Commands<ReturnType> {
@@ -142,7 +142,7 @@ const createCmsBlock = ({ inline }: { inline: boolean }) =>
                 blockType: {
                     default: null,
                 },
-                data: createJsonDataAttribute("data-cms-block"),
+                data: createTipTapRichTextDataAttribute("data-cms-block"),
             };
         },
 

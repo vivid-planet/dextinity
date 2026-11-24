@@ -45,6 +45,13 @@
     "dependencies": {
         "@dextinity/admin-icons": "workspace:*",
         "@mui/utils": "^9.5.0",
+        "@tiptap/core": "^3.35.0",
+        "@tiptap/extension-subscript": "^3.35.0",
+        "@tiptap/extension-superscript": "^3.35.0",
+        "@tiptap/extensions": "^3.35.0",
+        "@tiptap/pm": "^3.35.0",
+        "@tiptap/react": "^3.35.0",
+        "@tiptap/starter-kit": "^3.35.0",
         "date-fns": "^4.4.0",
         "exceljs": "^4.4.0",
         "fast-equals": "^5.4.0",

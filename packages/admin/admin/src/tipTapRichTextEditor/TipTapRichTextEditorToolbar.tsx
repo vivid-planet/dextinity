@@ -1,6 +1,4 @@
-import { greyPalette, Tooltip } from "@dextinity/admin";
 import {
-    Add,
     MoreHorizontal,
     RteAlignCenter,
     RteAlignJustify,
@@ -43,12 +41,13 @@ import { type Editor, useEditorState } from "@tiptap/react";
 import { type ForwardRefExoticComponent, type MouseEvent, type ReactNode, type RefAttributes, useState } from "react";
 import { defineMessages, FormattedMessage, useIntl } from "react-intl";
 
-import type { BlockInterface, BlockState, LinkBlockInterface } from "../types";
-import type { TipTapChildBlock, TipTapInlineStyle, TipTapPlaceholder, TipTapResolvedOptions } from "./createTipTapRichTextBlock";
+import { greyPalette } from "../theme/colors";
 import type { TipTapTextAlign } from "./extensions/textBlockAttributes";
 import { toggleTextBlockList } from "./extensions/TextBlockList";
 import { findListNodeType } from "./findListNodeType";
 import { liftOutOfList } from "./liftOutOfList";
+import { LinkDialog } from "./LinkDialog";
+import type { TipTapResolvedOptions } from "./options";
 import {
     findTextBlock,
     getStyledNodes,
@@ -59,41 +58,8 @@ import {
     type TipTapResolvedTextBlock,
     unorderedListName,
 } from "./textBlocks";
-import { TipTapBlockDialog } from "./TipTapBlockDialog";
-import { TipTapLinkDialog } from "./TipTapLinkDialog";
+import { TipTapRichTextEditorToolbarButton } from "./TipTapRichTextEditorToolbarButton";
 import { updateTextBlockStyles } from "./updateTextBlockStyles";
-
-const toolbarButtonSx = {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: 24,
-    width: 24,
-    padding: 0,
-    backgroundColor: "transparent",
-    border: "1px solid transparent",
-    boxSizing: "border-box",
-    transition: "background-color 200ms, border-color 200ms, color 200ms",
-    color: muiGreyPalette[600],
-    "&:hover": {
-        backgroundColor: muiGreyPalette[200],
-        borderColor: muiGreyPalette[400],
-    },
-    "&:disabled": {
-        color: muiGreyPalette[300],
-        "&, &:hover": {
-            backgroundColor: "transparent",
-            borderColor: "transparent",
-        },
-    },
-} as const;
-
-const toolbarButtonSelectedSx = {
-    "&:not(:disabled), &:not(:disabled):hover": {
-        borderColor: muiGreyPalette[400],
-        backgroundColor: "white",
-    },
-} as const;
 
 const ToolbarButton = ({
     editor,
@@ -112,24 +78,14 @@ const ToolbarButton = ({
     disabled?: boolean;
     onToggle: () => void;
 }) => (
-    <Tooltip title={tooltip}>
-        <Box
-            component="button"
-            type="button"
-            aria-label={ariaLabel}
-            disabled={disabled}
-            onMouseDown={(e: MouseEvent) => {
-                e.preventDefault();
-                onToggle();
-            }}
-            sx={{
-                ...toolbarButtonSx,
-                ...((typeof isActive === "string" ? editor.isActive(isActive) : isActive) ? toolbarButtonSelectedSx : {}),
-            }}
-        >
-            <Icon sx={{ fontSize: 15 }} color="inherit" />
-        </Box>
-    </Tooltip>
+    <TipTapRichTextEditorToolbarButton
+        icon={<Icon />}
+        tooltip={tooltip}
+        ariaLabel={ariaLabel}
+        selected={typeof isActive === "string" ? editor.isActive(isActive) : isActive}
+        disabled={disabled}
+        onClick={onToggle}
+    />
 );
 
 const toolbarSlotSx = {
@@ -200,42 +156,29 @@ const selectSx = {
     },
 } as const;
 
-export const TipTapToolbar = ({
+export const TipTapRichTextEditorToolbar = ({
     editor,
     resolvedOptions,
-    inlineStyles,
-    placeholders,
-    linkBlock,
-    childBlocks,
-    listLevelMax,
     canTranslate,
     onTranslateClick,
 }: {
     editor: Editor;
     resolvedOptions: TipTapResolvedOptions;
-    inlineStyles: TipTapInlineStyle[];
-    placeholders: TipTapPlaceholder[];
-    linkBlock?: BlockInterface & LinkBlockInterface;
-    childBlocks: Record<string, TipTapChildBlock>;
-    listLevelMax?: number;
     canTranslate?: boolean;
     onTranslateClick?: () => void;
 }) => {
     const intl = useIntl();
     const [moreAnchorEl, setMoreAnchorEl] = useState<null | HTMLElement>(null);
     const [placeholderAnchorEl, setPlaceholderAnchorEl] = useState<null | HTMLElement>(null);
-    const [childBlockAnchorEl, setChildBlockAnchorEl] = useState<null | HTMLElement>(null);
-    const [insertChildBlock, setInsertChildBlock] = useState<({ key: string } & TipTapChildBlock) | null>(null);
     const [linkDialogOpen, setLinkDialogOpen] = useState(false);
     const hasInlineFormatButtons = resolvedOptions.bold || resolvedOptions.italic || resolvedOptions.underline || resolvedOptions.strike;
     const moreOptions = resolvedOptions.sub || resolvedOptions.sup;
     const lists = resolvedOptions.orderedList || resolvedOptions.unorderedList;
     const specialChars = resolvedOptions.nonBreakingSpace || resolvedOptions.softHyphen;
-    const hasLink = resolvedOptions.link && !!linkBlock;
+    const { inlineStyles, placeholders, link, listLevelMax, toolbarItems: ToolbarItems } = resolvedOptions;
     const textBlocks = resolvedOptions.textBlocks;
     const styledNodes = getStyledNodes(resolvedOptions);
     const hasPlaceholders = placeholders.length > 0;
-    const hasChildBlocks = Object.keys(childBlocks).length > 0;
 
     const editorState = useEditorState({
         editor,
@@ -316,11 +259,6 @@ export const TipTapToolbar = ({
 
     const handlePlaceholderClose = () => {
         setPlaceholderAnchorEl(null);
-        setTimeout(() => editor.commands.focus(), 0);
-    };
-
-    const handleChildBlockClose = () => {
-        setChildBlockAnchorEl(null);
         setTimeout(() => editor.commands.focus(), 0);
     };
 
@@ -554,7 +492,7 @@ export const TipTapToolbar = ({
                                     <ToolbarButton
                                         key={item.key}
                                         editor={editor}
-                                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- guaranteed by showMoreOptionsAsButtons
+
                                         icon={item.icon!}
                                         tooltip={item.label}
                                         isActive={item.isActive}
@@ -564,32 +502,17 @@ export const TipTapToolbar = ({
                             </>
                         ) : (
                             <>
-                                <Tooltip
-                                    title={
+                                <TipTapRichTextEditorToolbarButton
+                                    icon={<MoreHorizontal />}
+                                    tooltip={
                                         <FormattedMessage id="dextinity.blocks.tipTapRichText.moreOptions.tooltip" defaultMessage="More options" />
                                     }
-                                >
-                                    <Box
-                                        component="button"
-                                        type="button"
-                                        aria-label={intl.formatMessage({
-                                            id: "dextinity.blocks.tipTapRichText.moreOptions.tooltip",
-                                            defaultMessage: "More options",
-                                        })}
-                                        onMouseDown={(e: MouseEvent) => {
-                                            e.preventDefault();
-                                            setMoreAnchorEl(e.currentTarget as HTMLElement);
-                                        }}
-                                        onClick={(e: MouseEvent) => {
-                                            if (e.detail === 0) {
-                                                setMoreAnchorEl(e.currentTarget as HTMLElement);
-                                            }
-                                        }}
-                                        sx={toolbarButtonSx}
-                                    >
-                                        <MoreHorizontal sx={{ fontSize: 15 }} color="inherit" />
-                                    </Box>
-                                </Tooltip>
+                                    ariaLabel={intl.formatMessage({
+                                        id: "dextinity.blocks.tipTapRichText.moreOptions.tooltip",
+                                        defaultMessage: "More options",
+                                    })}
+                                    onClick={(e) => setMoreAnchorEl(e.currentTarget)}
+                                />
                                 <Menu open={Boolean(moreAnchorEl)} anchorEl={moreAnchorEl} onClose={handleMoreClose}>
                                     {moreOptionsItems.map((item) => {
                                         const Icon = item.icon;
@@ -669,7 +592,7 @@ export const TipTapToolbar = ({
                     />
                 </ToolbarGroup>
             )}
-            {hasLink && linkBlock && (
+            {link && (
                 <ToolbarGroup>
                     <ToolbarButton
                         editor={editor}
@@ -684,31 +607,21 @@ export const TipTapToolbar = ({
                         icon={RteClearLink}
                         tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.removeLink.tooltip" defaultMessage="Remove link" />}
                         disabled={!editorState.isLinkActive}
-                        onToggle={() => editor.chain().focus().extendMarkRange("link").unsetCmsLink().run()}
+                        onToggle={() => editor.chain().focus().extendMarkRange("link").unsetLinkData().run()}
                     />
                 </ToolbarGroup>
             )}
             {hasPlaceholders && (
                 <ToolbarGroup>
-                    <Tooltip
-                        title={<FormattedMessage id="dextinity.blocks.tipTapRichText.placeholder.tooltip" defaultMessage="Insert placeholder" />}
-                    >
-                        <Box
-                            component="button"
-                            type="button"
-                            aria-label={intl.formatMessage({
-                                id: "dextinity.blocks.tipTapRichText.placeholder.tooltip",
-                                defaultMessage: "Insert placeholder",
-                            })}
-                            onMouseDown={(e: MouseEvent) => {
-                                e.preventDefault();
-                                setPlaceholderAnchorEl(e.currentTarget as HTMLElement);
-                            }}
-                            sx={toolbarButtonSx}
-                        >
-                            <RteTextPlaceholder sx={{ fontSize: 15 }} color="inherit" />
-                        </Box>
-                    </Tooltip>
+                    <TipTapRichTextEditorToolbarButton
+                        icon={<RteTextPlaceholder />}
+                        tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.placeholder.tooltip" defaultMessage="Insert placeholder" />}
+                        ariaLabel={intl.formatMessage({
+                            id: "dextinity.blocks.tipTapRichText.placeholder.tooltip",
+                            defaultMessage: "Insert placeholder",
+                        })}
+                        onClick={(e) => setPlaceholderAnchorEl(e.currentTarget)}
+                    />
                     <Menu open={Boolean(placeholderAnchorEl)} anchorEl={placeholderAnchorEl} onClose={handlePlaceholderClose}>
                         {placeholders.map((placeholder) => (
                             <MenuItem
@@ -752,58 +665,12 @@ export const TipTapToolbar = ({
                     )}
                 </ToolbarGroup>
             )}
-            {hasChildBlocks && (
+            {ToolbarItems && (
                 <ToolbarGroup>
-                    <Tooltip title={<FormattedMessage id="dextinity.blocks.tipTapRichText.insertBlock.tooltip" defaultMessage="Insert block" />}>
-                        <Box
-                            component="button"
-                            type="button"
-                            aria-label={intl.formatMessage({
-                                id: "dextinity.blocks.tipTapRichText.insertBlock.tooltip",
-                                defaultMessage: "Insert block",
-                            })}
-                            onMouseDown={(e: MouseEvent) => {
-                                e.preventDefault();
-                                setChildBlockAnchorEl(e.currentTarget as HTMLElement);
-                            }}
-                            sx={toolbarButtonSx}
-                        >
-                            <Add sx={{ fontSize: 15 }} color="inherit" />
-                        </Box>
-                    </Tooltip>
-                    <Menu open={Boolean(childBlockAnchorEl)} anchorEl={childBlockAnchorEl} onClose={handleChildBlockClose}>
-                        {Object.entries(childBlocks).map(([key, childBlock]) => (
-                            <MenuItem
-                                key={key}
-                                onClick={() => {
-                                    // Refocusing the editor here would steal focus from the dialog after it has opened
-                                    setChildBlockAnchorEl(null);
-                                    setInsertChildBlock({ key, ...childBlock });
-                                }}
-                            >
-                                {childBlock.block.displayName}
-                            </MenuItem>
-                        ))}
-                    </Menu>
+                    <ToolbarItems editor={editor} />
                 </ToolbarGroup>
             )}
-            {linkDialogOpen && linkBlock && <TipTapLinkDialog editor={editor} linkBlock={linkBlock} onClose={() => setLinkDialogOpen(false)} />}
-            {insertChildBlock && (
-                <TipTapBlockDialog
-                    block={insertChildBlock.block}
-                    initialState={insertChildBlock.block.defaultValues() as BlockState<typeof insertChildBlock.block>}
-                    isEditing={false}
-                    onSubmit={(data) => {
-                        const attrs = { blockType: insertChildBlock.key, data };
-                        if (insertChildBlock.display === "inline") {
-                            editor.commands.insertCmsInlineBlock(attrs);
-                        } else {
-                            editor.commands.insertCmsBlock(attrs);
-                        }
-                    }}
-                    onClose={() => setInsertChildBlock(null)}
-                />
-            )}
+            {linkDialogOpen && link && <LinkDialog editor={editor} link={link} onClose={() => setLinkDialogOpen(false)} />}
         </Box>
     );
 };

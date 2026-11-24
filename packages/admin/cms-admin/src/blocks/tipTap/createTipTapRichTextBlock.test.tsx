@@ -9,7 +9,6 @@ import {
     buildTipTapExtensions,
     createTipTapRichTextBlock,
     isTipTapRichTextEmpty,
-    resolveTipTapOptions,
     type TipTapRichTextBlockFactoryOptions,
     type TipTapRichTextBlockState,
     type TipTapTextBlock,
@@ -104,14 +103,7 @@ describe("createTipTapRichTextBlock", () => {
     describe("editor", () => {
         function createEditor(options: TipTapRichTextBlockFactoryOptions = {}) {
             return new Editor({
-                extensions: buildTipTapExtensions({
-                    resolvedOptions: resolveTipTapOptions(options),
-                    inlineStyles: [],
-                    placeholders: [],
-                    linkBlock: options.link,
-                    childBlocks: options.childBlocks ?? {},
-                    maxTextBlocks: options.maxTextBlocks,
-                }),
+                extensions: buildTipTapExtensions({ ...options, inlineStyles: [], placeholders: [] }),
             });
         }
 
@@ -767,7 +759,7 @@ describe("createTipTapRichTextBlock", () => {
                             type: "textBlock",
                             content: [
                                 { type: "text", text: "Before " },
-                                // `false` is a valid (if unusual) value for a link mark's `data`: `setCmsLink`'s
+                                // `false` is a valid (if unusual) value for a link mark's `data`: `setLinkData`'s
                                 // `data` is typed as `any`, so nothing rules it out.
                                 { type: "text", marks: [{ type: "link", attrs: { data: false } }], text: "link" },
                                 { type: "text", text: " after" },

@@ -179,7 +179,6 @@ const EditFileInner = ({ file, id, contentScopeIndicator }: EditFileInnerProps) 
 
     const isAiModeEnabled = useIsDamAiModeEnabled();
     const aiModeFields: AiModeFormField[] = [
-        { name: "name", label: intl.formatMessage({ id: "dextinity.dam.file.fileName", defaultMessage: "File Name" }), type: "text" },
         {
             name: "altText",
             label: intl.formatMessage({ id: "dextinity.dam.file.altText", defaultMessage: "Alternative Text" }),

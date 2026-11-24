@@ -123,7 +123,7 @@ export function createDamTools({
         {
             name: "open_dam_file",
             description:
-                "Open the form of a file of the DAM, e.g. one that get_dam_items or list_dam_files reports, where its name, title, and alternative text are edited. Once it is open, the form offers its own tools to read and fill it in.",
+                "Open the form of a file of the DAM, e.g. one that get_dam_items or list_dam_files reports, where its title and alternative text are edited. Once it is open, the form offers its own tools to read and fill it in.",
             inputSchema: {
                 type: "object",
                 properties: { id: { type: "string", description: "The ID of the file." } },

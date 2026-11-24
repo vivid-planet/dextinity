@@ -47,4 +47,4 @@ A page that edits a blocks block outside a form, such as the content of a page, 
 
 The page tree registers its own toolset, and `createAiModePageTreeNavigationTools` lets the agent open the editor of a page tree node from any page.
 
-On the DAM page, the agent reads what the grid shows, searches and pages it, opens folders, and opens the form of a file, whose name, title, alternative text, and license it fills in as unsaved changes. The dialog that chooses a file offers none of this, so that the agent doesn't navigate in it.
+On the DAM page, the agent reads what the grid shows, searches and pages it, opens folders, and opens the form of a file, whose title, alternative text, and license it fills in as unsaved changes. The dialog that chooses a file offers none of this, so that the agent doesn't navigate in it.

@@ -985,9 +985,6 @@ importers:
       is-mobile:
         specifier: ^5.0.0
         version: 5.0.0
-      lodash.debounce:
-        specifier: ^4.0.8
-        version: 4.0.8
       query-string:
         specifier: ^10.0.0
         version: 10.0.0
@@ -1082,9 +1079,6 @@ importers:
       '@types/final-form-set-field-data':
         specifier: ^1.0.3
         version: 1.0.3
-      '@types/lodash.debounce':
-        specifier: ^4.0.9
-        version: 4.0.9
       '@types/node':
         specifier: ^24.19.2
         version: 24.19.2
@@ -10394,9 +10388,6 @@ packages:
 
   '@types/koa@3.0.3':
     resolution: {integrity: sha512-TdtNEJ7sYSrFQcVuS2ySsVqnq5EyE3oJbnfFJvkC9UtGP4Kpem5KE7r+ivHIbIAQAofSqnlB5D3vkfYO69TQpg==}
-
-  '@types/lodash.debounce@4.0.9':
-    resolution: {integrity: sha512-Ma5JcgTREwpLRwMM+XwBR7DaWe96nC38uCBDFKZWbNKD+osjVzdpnUSwBcqCptrp16sSOLBAUb50Car5I0TCsQ==}
 
   '@types/lodash.escaperegexp@4.1.9':
     resolution: {integrity: sha512-CMQc8v16YzhnPZnMhYQuJUksI8BmL1jy/lHJkiXi4/t24Lx7Qvy7qxew1abrDJGa1T2i0NzLLaR27NK1/qp5Ow==}
@@ -28384,10 +28375,6 @@ snapshots:
       '@types/keygrip': 1.0.6
       '@types/koa-compose': 3.2.9
       '@types/node': 24.19.2
-
-  '@types/lodash.debounce@4.0.9':
-    dependencies:
-      '@types/lodash': 4.17.25
 
   '@types/lodash.escaperegexp@4.1.9':
     dependencies:

@@ -60,7 +60,7 @@ const minPanelWidth = 260;
 const maxPanelWidth = 520;
 const panelKeyboardStep = 20;
 const inspectLabelHeight = 18;
-const prototypesTitle = "Workspace/Prototypes";
+const prototypesTitle = "Workbench/Prototypes";
 const compareOptions: Array<{ value: WorkspaceCompare; icon: ReactNode; "aria-label": string; shortLabel: string }> = [
     { value: "off", icon: <Icon name="window" />, "aria-label": "One frame", shortLabel: "Off" },
     { value: "viewports", icon: <Icon name="device-tablet" />, "aria-label": "Phone, tablet, and desktop side by side", shortLabel: "Devices" },
@@ -138,7 +138,7 @@ async function fetchStories(): Promise<IndexedStory[]> {
     return Object.values(index.entries)
         .filter((entry) => entry.type === "story" && entry.id !== shellStoryId && !entry.tags?.includes("development"))
         .map(({ id, title, name }) => ({ id, title, name }))
-        .sort((a, b) => Number(b.title.startsWith("Workspace/")) - Number(a.title.startsWith("Workspace/")));
+        .sort((a, b) => Number(b.title.startsWith("Workbench/")) - Number(a.title.startsWith("Workbench/")));
 }
 
 function useElementSize(element: HTMLElement | null) {
@@ -304,7 +304,7 @@ export function WorkspaceShell() {
 
     // A stored story may since have been removed or renamed; until the index has loaded, there's nothing to check it against
     const storedStoryId = isLoading || componentStories.some((story) => story.id === state.storyId) ? state.storyId : null;
-    const storyId = storedStoryId ?? componentStories.find((story) => story.title.startsWith("Workspace/"))?.id ?? componentStories[0]?.id ?? null;
+    const storyId = storedStoryId ?? componentStories.find((story) => story.title.startsWith("Workbench/"))?.id ?? componentStories[0]?.id ?? null;
     const currentStory = componentStories.find((story) => story.id === storyId);
     const storedPrototypeId = isLoading || prototypes.some((story) => story.id === state.prototypeId) ? state.prototypeId : null;
     const prototypeId = storedPrototypeId ?? prototypes[0]?.id ?? null;
@@ -723,7 +723,7 @@ export function WorkspaceShell() {
                                     <Icon name={panelVisible ? "sidebar-close" : "sidebar-open"} />
                                 </IconButton>
                             )}
-                            <img className={styles.logo} src={workspaceLogo} alt="Next UI Workspace" />
+                            <img className={styles.logo} src={workspaceLogo} alt="Workbench" />
                         </div>
 
                         <Tabs

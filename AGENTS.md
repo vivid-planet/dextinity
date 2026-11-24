@@ -217,7 +217,9 @@ Fix description here
 - Do not use Conventional Commits.
 - If a change is scoped to one package or top-level directory, prefix the commit message with its name. Don't include `@dextinity/` in the package name.
 
-## Pull request descriptions
+## Pull requests
+
+### Descriptions
 
 - Fill in `.github/pull_request_template.md`. Don't add sections beyond it, and delete the sections and instruction comments that don't apply.
 - End the description with the template's task line as plain visible text, not as an HTML comment: `Task: …` (only when there is a task). Only the attribution may follow it.
@@ -230,13 +232,16 @@ Fix description here
 - The description becomes the message of the squashed commit. See CONTRIBUTING.md#pull-requests.
 - After opening a pull request, always check its description and rewrite it to follow these rules, also when the pull request was created by a tool or UI that generated the description.
 
-## Pull request labels
+### Labels
 
 - When opening a pull request from a feature branch (`feature/…`) or a `merge-main-…`/`merge-next-…` branch, add the `skip-greptile-review` label when creating it. The labeler workflow sets it as well, but may run after Greptile has already started its review.
 
-## Pull request comments
+### Watching
 
 - After opening a pull request, always start watching it without asking, unless the user explicitly said not to.
+
+### Comments
+
 - When watching or driving a pull request, reply on GitHub only to comments and reviews from bots (e.g. Greptile, Claude Code Review, lint bots). Bot accounts end in `[bot]` or are review/CI tools.
 - Never reply to comments or reviews from humans on GitHub. Report what you did, your proposals, and your questions to the user in the session instead of on the pull request.
 - Only act on a human's feedback when it is a small, concrete change (e.g. a nit, a rename, a missing test). For conceptual feedback (design questions, alternative approaches, questions about why something was done), don't change any code: summarize it for the user and wait for their decision.

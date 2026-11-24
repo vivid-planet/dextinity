@@ -4,7 +4,10 @@ import { Tool } from "@nestjs/mcp";
 import { DamFile } from "@src/dam/entities/dam-file.entity.js";
 import { z } from "zod";
 
-import { damScopeSchema, NotFoundFilter, RefusalReasonFilter, SignedInUserGuard } from "./mcp-tool.utils.js";
+import { NotFoundFilter } from "./not-found.filter.js";
+import { RefusalReasonFilter } from "./refusal-reason.filter.js";
+import { damScopeSchema } from "./scope.schemas.js";
+import { SignedInUserGuard } from "./signed-in-user.guard.js";
 
 const listDamFilesParameters = z.object({
     scope: damScopeSchema,

@@ -16,7 +16,10 @@ import { PageTreeNode } from "@src/page-tree/entities/page-tree-node.entity.js";
 import { PageTreeNodeCategory } from "@src/page-tree/page-tree-node-category.js";
 import { z } from "zod";
 
-import { NotFoundFilter, pageTreeScopeSchema, RefusalReasonFilter, SignedInUserGuard } from "./mcp-tool.utils.js";
+import { NotFoundFilter } from "./not-found.filter.js";
+import { RefusalReasonFilter } from "./refusal-reason.filter.js";
+import { pageTreeScopeSchema } from "./scope.schemas.js";
+import { SignedInUserGuard } from "./signed-in-user.guard.js";
 
 const listPageTreeNodesParameters = z.object({
     scope: pageTreeScopeSchema,

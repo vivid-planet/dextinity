@@ -5,7 +5,7 @@ import { Injectable, NotFoundException, UseGuards } from "@nestjs/common";
 import { Tool } from "@nestjs/mcp";
 import { z } from "zod";
 
-import { SignedInUserGuard } from "./mcp-tool.utils.js";
+import { SignedInUserGuard } from "./signed-in-user.guard.js";
 
 // Written by the API itself at the root of the app, which is the same two levels up from src/mcp and dist/mcp.
 const blockMetaUrl = new URL("../../block-meta.json", import.meta.url);

@@ -367,6 +367,12 @@ export {
     type TipTapRichTextEditorProps,
 } from "./tipTapRichTextEditor/TipTapRichTextEditor";
 export {
+    FinalFormTipTapRichTextEditor,
+    type FinalFormTipTapRichTextEditorProps,
+    TipTapRichTextEditorField,
+    type TipTapRichTextEditorFieldProps,
+} from "./tipTapRichTextEditor/TipTapRichTextEditorField";
+export {
     TipTapRichTextEditorToolbarButton,
     type TipTapRichTextEditorToolbarButtonClassKey,
     type TipTapRichTextEditorToolbarButtonProps,

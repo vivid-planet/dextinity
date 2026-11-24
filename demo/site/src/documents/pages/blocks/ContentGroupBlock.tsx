@@ -2,12 +2,12 @@ import { BlocksBlock, type PropsWithData, type SupportedBlocks, withPreview } fr
 import type { ContentGroupBlockData, ContentGroupContentBlockData } from "@src/blocks.generated";
 import { PageContentAccordionBlock } from "@src/common/blocks/AccordionBlock";
 import { AnchorBlock } from "@src/common/blocks/AnchorBlock";
+import { PageContentHeadingBlock } from "@src/common/blocks/HeadingBlock";
 import { PageContentMediaGalleryBlock } from "@src/common/blocks/MediaGalleryBlock";
+import { PageContentRichTextBlock } from "@src/common/blocks/RichTextBlock";
 import { SpaceBlock } from "@src/common/blocks/SpaceBlock";
 import { PageContentStandaloneCallToActionListBlock } from "@src/common/blocks/StandaloneCallToActionListBlock";
-import { PageContentStandaloneHeadingBlock } from "@src/common/blocks/StandaloneHeadingBlock";
 import { StandaloneMediaBlock } from "@src/common/blocks/StandaloneMediaBlock";
-import { PageContentStandaloneRichTextBlock } from "@src/common/blocks/StandaloneRichTextBlock";
 import { TableBlock } from "@src/common/blocks/TableBlock";
 import { ColumnsBlock } from "@src/documents/pages/blocks/ColumnsBlock";
 import { KeyFactsBlock } from "@src/documents/pages/blocks/KeyFactsBlock";
@@ -22,8 +22,8 @@ const supportedBlocks: SupportedBlocks = {
     anchor: (props) => <AnchorBlock data={props} />,
     space: (props) => <SpaceBlock data={props} />,
     teaser: (props) => <TeaserBlock data={props} />,
-    richtext: (props) => <PageContentStandaloneRichTextBlock data={props} />,
-    heading: (props) => <PageContentStandaloneHeadingBlock data={props} />,
+    richtext: (props) => <PageContentRichTextBlock data={props} />,
+    heading: (props) => <PageContentHeadingBlock data={props} />,
     columns: (props) => <ColumnsBlock data={props} />,
     callToActionList: (props) => <PageContentStandaloneCallToActionListBlock data={props} />,
     keyFacts: (props) => <KeyFactsBlock data={props} />,

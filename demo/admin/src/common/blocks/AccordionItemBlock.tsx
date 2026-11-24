@@ -14,7 +14,7 @@ import { SpaceBlock } from "@src/common/blocks/SpaceBlock";
 import { StandaloneCallToActionListBlock } from "@src/common/blocks/StandaloneCallToActionListBlock";
 import { FormattedMessage } from "react-intl";
 
-import { StandaloneHeadingBlock } from "./StandaloneHeadingBlock";
+import { HeadingBlock } from "./HeadingBlock";
 import { TextImageBlock } from "./TextImageBlock";
 
 const AccordionContentBlock = createBlocksBlock({
@@ -22,7 +22,7 @@ const AccordionContentBlock = createBlocksBlock({
     supportedBlocks: {
         richtext: RichTextBlock,
         space: SpaceBlock,
-        heading: StandaloneHeadingBlock,
+        heading: HeadingBlock,
         callToActionList: StandaloneCallToActionListBlock,
         textImage: TextImageBlock,
     },

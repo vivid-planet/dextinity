@@ -1,6 +1,6 @@
 import { BlockCategory, createCompositeBlock, createCompositeBlockSelectField, createCompositeBlockTextField } from "@dextinity/cms-admin";
 import type { TeaserItemBlockData } from "@src/blocks.generated";
-import { InlineRichTextBlock } from "@src/common/blocks/InlineRichTextBlock";
+import { DescriptionRichTextBlock } from "@src/common/blocks/DescriptionRichTextBlock";
 import { MediaBlock } from "@src/common/blocks/MediaBlock";
 import { TextLinkBlock } from "@src/common/blocks/TextLinkBlock";
 import { FormattedMessage } from "react-intl";
@@ -31,7 +31,7 @@ export const TeaserItemBlock = createCompositeBlock(
                 }),
             },
             description: {
-                block: InlineRichTextBlock,
+                block: DescriptionRichTextBlock,
                 title: <FormattedMessage id="teaserItemBlock.description" defaultMessage="Description" />,
             },
             link: {

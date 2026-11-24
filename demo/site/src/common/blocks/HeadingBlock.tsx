@@ -7,31 +7,59 @@ import {
     withPreview,
 } from "@dextinity/site-nextjs";
 import type { HeadingBlockData } from "@src/blocks.generated";
-import { Typography, type TypographyProps } from "@src/common/components/Typography";
+import { Typography, type TypographyVariant } from "@src/common/components/Typography";
+import { PageLayout } from "@src/layout/PageLayout";
+import { AnimateBoxInOnScroll } from "@src/util/animations/AnimateBoxInOnScroll";
 
-import { InlineRichTextBlock } from "./InlineRichTextBlock";
+import styles from "./RichTextBlock.module.scss";
+import { textAlignClassName } from "./textAlignClassName";
 
-type TypographyVariant = TypographyProps<"p">["variant"];
+const tagByTextBlock: Record<string, keyof HTMLElementTagNameMap> = {
+    "heading-1": "h1",
+    "heading-2": "h2",
+    "heading-3": "h3",
+    "heading-4": "h4",
+    "heading-5": "h5",
+    "heading-6": "h6",
+};
 
-// The headline's text blocks are named after the typography variant they're rendered with.
-const createHeadlineNodeMapping = (htmlTag: HeadingBlockData["htmlTag"]): Record<string, TipTapNodeHandler> => ({
+const variantByStyle: Record<string, TypographyVariant> = {
+    size600: "headline600",
+    size550: "headline550",
+    size500: "headline500",
+    size450: "headline450",
+    size400: "headline400",
+    size350: "headline350",
+};
+
+const headlineNodeMapping: Record<string, TipTapNodeHandler> = {
     textBlock: ({ node, children }) => (
-        <Typography variant={node.attrs?.textBlock as TypographyVariant} as={htmlTag} bottomSpacing>
+        <Typography
+            as={tagByTextBlock[node.attrs?.textBlock as string] ?? "h2"}
+            variant={variantByStyle[node.attrs?.textBlockStyle as string] ?? "headline600"}
+            bottomSpacing
+            className={textAlignClassName(node.attrs?.textAlign, styles.text)}
+        >
             {children}
         </Typography>
     ),
-});
+};
+
+const eyebrowNodeMapping: Record<string, TipTapNodeHandler> = {
+    textBlock: ({ node, children }) => (
+        <Typography variant="headline400" as="p" bottomSpacing className={textAlignClassName(node.attrs?.textAlign)}>
+            {children}
+        </Typography>
+    ),
+};
 
 type HeadingBlockProps = PropsWithData<HeadingBlockData>;
 
 export const HeadingBlock = withPreview(
-    ({ data: { eyebrow, headline, htmlTag } }: HeadingBlockProps) => (
+    ({ data: { eyebrow, headline } }: HeadingBlockProps) => (
         <>
-            {hasTipTapRichTextContent(eyebrow.tipTapContent) && (
-                <Typography variant="headline400" as="p" bottomSpacing>
-                    <InlineRichTextBlock data={eyebrow} />
-                </Typography>
-            )}
+            {hasTipTapRichTextContent(eyebrow.tipTapContent) &&
+                renderTipTapRichText({ content: eyebrow.tipTapContent, nodeMapping: eyebrowNodeMapping })}
             <PreviewSkeleton
                 hasContent={hasTipTapRichTextContent(headline.tipTapContent)}
                 title={
@@ -40,9 +68,19 @@ export const HeadingBlock = withPreview(
                     </Typography>
                 }
             >
-                {renderTipTapRichText({ content: headline.tipTapContent, nodeMapping: createHeadlineNodeMapping(htmlTag) })}
+                {renderTipTapRichText({ content: headline.tipTapContent, nodeMapping: headlineNodeMapping })}
             </PreviewSkeleton>
         </>
     ),
     { label: "Heading" },
+);
+
+export const PageContentHeadingBlock = (props: HeadingBlockProps) => (
+    <PageLayout grid>
+        <div className={styles.pageLayoutContent}>
+            <AnimateBoxInOnScroll direction="bottom">
+                <HeadingBlock {...props} />
+            </AnimateBoxInOnScroll>
+        </div>
+    </PageLayout>
 );

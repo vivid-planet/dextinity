@@ -2,14 +2,15 @@ import { BlocksBlock, type PropsWithData, type SupportedBlocks, withPreview } fr
 import type { ColumnsBlockData, ColumnsContentBlockData } from "@src/blocks.generated";
 import { AccordionBlock } from "@src/common/blocks/AccordionBlock";
 import { AnchorBlock } from "@src/common/blocks/AnchorBlock";
+import { HeadingBlock } from "@src/common/blocks/HeadingBlock";
 import { MediaGalleryBlock } from "@src/common/blocks/MediaGalleryBlock";
+import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
 import { SpaceBlock } from "@src/common/blocks/SpaceBlock";
 import { StandaloneCallToActionListBlock } from "@src/common/blocks/StandaloneCallToActionListBlock";
-import { StandaloneHeadingBlock } from "@src/common/blocks/StandaloneHeadingBlock";
 import { StandaloneMediaBlock } from "@src/common/blocks/StandaloneMediaBlock";
-import { StandaloneRichTextBlock } from "@src/common/blocks/StandaloneRichTextBlock";
 import { TextImageBlock } from "@src/common/blocks/TextImageBlock";
 import { PageLayout } from "@src/layout/PageLayout";
+import { AnimateBoxInOnScroll } from "@src/util/animations/AnimateBoxInOnScroll";
 import clsx from "clsx";
 
 import styles from "./ColumnsBlock.module.scss";
@@ -17,9 +18,17 @@ import styles from "./ColumnsBlock.module.scss";
 const supportedBlocks: SupportedBlocks = {
     accordion: (props) => <AccordionBlock data={props} />,
     anchor: (props) => <AnchorBlock data={props} />,
-    richtext: (props) => <StandaloneRichTextBlock data={props} />,
+    richtext: (props) => (
+        <AnimateBoxInOnScroll direction="bottom" offset={300}>
+            <RichTextBlock data={props} disableLastBottomSpacing />
+        </AnimateBoxInOnScroll>
+    ),
     space: (props) => <SpaceBlock data={props} />,
-    heading: (props) => <StandaloneHeadingBlock data={props} />,
+    heading: (props) => (
+        <AnimateBoxInOnScroll direction="bottom">
+            <HeadingBlock data={props} />
+        </AnimateBoxInOnScroll>
+    ),
     callToActionList: (props) => <StandaloneCallToActionListBlock data={props} />,
     media: (props) => <StandaloneMediaBlock data={props} />,
     mediaGallery: (props) => <MediaGalleryBlock data={props} />,

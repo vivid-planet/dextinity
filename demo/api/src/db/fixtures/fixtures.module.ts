@@ -4,7 +4,6 @@ import { Module } from "@nestjs/common";
 import { ConfigModule } from "@src/config/config.module.js";
 import { DamFile } from "@src/dam/entities/dam-file.entity.js";
 import { FixturesCommand } from "@src/db/fixtures/fixtures.command.js";
-import { StandaloneRichTextBlockFixtureService } from "@src/db/fixtures/generators/blocks/text-and-content/standalone-rich-text-block-fixture.service.js";
 import { Link } from "@src/documents/links/entities/link.entity.js";
 import { LinksModule } from "@src/documents/links/links.module.js";
 import { Page } from "@src/documents/pages/entities/page.entity.js";
@@ -43,11 +42,10 @@ import { SliderBlockFixtureService } from "./generators/blocks/slider-fixture.se
 import { BasicStageBlockFixtureService } from "./generators/blocks/stage/basic-stage-block-fixture.service.js";
 import { BillboardTeaserBlockFixtureService } from "./generators/blocks/teaser/billboard-teaser-block-fixture.service.js";
 import { TeaserBlockFixtureService } from "./generators/blocks/teaser/teaser-block-fixture.service.js";
+import { DescriptionRichTextBlockFixtureService } from "./generators/blocks/text-and-content/description-rich-text-block-fixture.service.js";
 import { HeadingBlockFixtureService } from "./generators/blocks/text-and-content/heading-block-fixture.service.js";
-import { InlineRichTextBlockFixtureService } from "./generators/blocks/text-and-content/inline-rich-text-block-fixture.service.js";
 import { KeyFactsBlockFixtureService } from "./generators/blocks/text-and-content/key-facts-block-fixture.service.js";
 import { RichTextBlockFixtureService } from "./generators/blocks/text-and-content/rich-text-block-fixture.service.js";
-import { StandaloneHeadingBlockFixtureService } from "./generators/blocks/text-and-content/standalone-heading-block-fixture.service.js";
 import { TableBlockFixtureService } from "./generators/blocks/text-and-content/table-block-fixture.service.js";
 import { TextImageBlockFixtureService } from "./generators/blocks/text-and-content/text-image-block-fixture.service.js";
 import { DocumentGeneratorService } from "./generators/document-generator.service.js";
@@ -94,7 +92,7 @@ import { WelcomeEmailFixtureService } from "./generators/welcome-email-fixture.s
         HeadingBlockFixtureService,
         ImageFileFixtureService,
         ImageFixtureService,
-        InlineRichTextBlockFixtureService,
+        DescriptionRichTextBlockFixtureService,
         KeyFactsBlockFixtureService,
         LayoutBlockFixtureService,
         LinkBlockFixtureService,
@@ -115,9 +113,7 @@ import { WelcomeEmailFixtureService } from "./generators/welcome-email-fixture.s
         SvgImageFileFixtureService,
         StageBlockFixtureService,
         StandaloneCallToActionListBlockFixtureService,
-        StandaloneHeadingBlockFixtureService,
         StandaloneMediaBlockFixtureService,
-        StandaloneRichTextBlockFixtureService,
         TeaserBlockFixtureService,
         TextImageBlockFixtureService,
         TextLinkBlockFixtureService,

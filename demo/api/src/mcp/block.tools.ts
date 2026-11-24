@@ -41,7 +41,7 @@ Pass one of the returned names to the get_block_schema tool to get that block's 
 
     @Tool({
         name: "get_block_schema",
-        description: `Get the schema of a single CMS content block by name (e.g. "Accordion", "StandaloneHeading", "DamImage"). Use the list_available_blocks tool to find out which names exist.
+        description: `Get the schema of a single CMS content block by name (e.g. "Accordion", "Heading", "DamImage"). Use the list_available_blocks tool to find out which names exist.
 
 "fields" is the shape the block is read in, "inputFields" the shape it is saved in. Fields of kind "Block" and "OneOfBlocks" name the blocks this one nests — call this tool again for those to walk a block tree one block at a time.
 

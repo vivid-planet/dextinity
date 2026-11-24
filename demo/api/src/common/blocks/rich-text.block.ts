@@ -40,6 +40,8 @@ export const RichTextBlock = createTipTapRichTextBlock(
         orderedList: { styles: listStyles, defaultStyle: "list300" },
         unorderedList: { styles: listStyles, defaultStyle: "list300" },
         inlineStyles: [{ name: "highlight" }, { name: "tag", appliesTo: ["paragraph"] }],
+        listLevelMax: 4,
+        textAlign: true,
         migrateFromDraftJs: {
             textBlockMap: {
                 // The Draft.js `blocktypeMap` entry `paragraph-small` (configured in the former Draft.js-based admin RichTextBlock)

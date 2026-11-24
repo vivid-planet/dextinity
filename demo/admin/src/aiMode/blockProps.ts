@@ -78,8 +78,8 @@ const listFields = (fields: readonly string[]): string => fields.map((field) => 
  * A block converts the fields it declares and ignores the rest, so a field it does not have is
  * dropped on the way in rather than refused: the block keeps the content it had, and nothing says
  * so. That is what props built from the wrong block's schema look like from here, and the wrong
- * schema is easy to reach — "RichText" and "StandaloneRichText" are both real blocks, and only the
- * latter is what a "richtext" block on the page is, so the name that suggests itself returns a real
+ * schema is easy to reach — "Media" and "StandaloneMedia" are both real blocks, and only the
+ * latter is what a "media" block on the page is, so the name that suggests itself returns a real
  * schema instead of an error. Converting back is what makes the difference visible.
  *
  * Only the block's own fields are checked: the blocks nested inside it are not resolved here, so a

@@ -3,6 +3,7 @@ import { type ObjectQuery, raw } from "@mikro-orm/postgresql";
 import { filtersToMikroOrmQuery } from "../common/filter/mikro-orm.js";
 import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface.js";
 import type { ActionLogFilter } from "./dto/action-log.filter.js";
+import { ActionLogType } from "./dto/action-log-type.enum.js";
 import type { ActionLog } from "./entities/action-log.entity.js";
 
 export function actionLogFilterToWhere(filter: ActionLogFilter): ObjectQuery<ActionLog> {
@@ -23,7 +24,19 @@ export function actionLogFilterToWhere(filter: ActionLogFilter): ObjectQuery<Act
         }
     }
 
-    const { scope: _scope, and, or, ...rest } = filter;
+    if (filter.type) {
+        if (filter.type.equal != null) {
+            andConditions.push(rowHasType(filter.type.equal));
+        }
+        if (filter.type.isAnyOf != null) {
+            andConditions.push(filter.type.isAnyOf.length > 0 ? { $or: filter.type.isAnyOf.map(rowHasType) } : { id: { $in: [] } });
+        }
+        if (filter.type.notEqual != null) {
+            andConditions.push({ $not: rowHasType(filter.type.notEqual) });
+        }
+    }
+
+    const { scope: _scope, type: _type, and, or, ...rest } = filter;
     if (Object.keys(rest).length > 0) {
         andConditions.push(filtersToMikroOrmQuery(rest));
     }
@@ -42,6 +55,20 @@ export function actionLogFilterToWhere(filter: ActionLogFilter): ObjectQuery<Act
         return andConditions[0];
     }
     return { $and: andConditions };
+}
+
+/**
+ * The type isn't stored but derived from the snapshot and the version, the same way as the `type` field of the resolver.
+ */
+function rowHasType(type: ActionLogType): ObjectQuery<ActionLog> {
+    switch (type) {
+        case ActionLogType.deleted:
+            return { snapshot: null };
+        case ActionLogType.created:
+            return { snapshot: { $ne: null }, version: 1 };
+        case ActionLogType.updated:
+            return { snapshot: { $ne: null }, version: { $ne: 1 } };
+    }
 }
 
 /**

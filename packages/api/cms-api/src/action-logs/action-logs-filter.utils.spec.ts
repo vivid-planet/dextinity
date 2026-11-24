@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { NumberFilter } from "../common/filter/number.filter.js";
 import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface.js";
 import { actionLogFilterToWhere } from "./action-logs-filter.utils.js";
+import { ActionLogType } from "./dto/action-log-type.enum.js";
 
 // The key of a `raw()` condition holds a running index, so it's replaced by its parameters to compare whole queries.
 function withReadableRawKeys(where: unknown): unknown {
@@ -62,6 +63,34 @@ describe("actionLogFilterToWhere", () => {
 
     it("ignores scope filter fields that are null", () => {
         expect(actionLogFilterToWhere({ scope: { isAnyOf: null, equal: null, notEqual: null, isGlobal: null } })).toEqual({});
+    });
+
+    it("derives each type from the snapshot and the version, like the resolver does", () => {
+        expect(actionLogFilterToWhere({ type: { equal: ActionLogType.created } })).toEqual({ snapshot: { $ne: null }, version: 1 });
+        expect(actionLogFilterToWhere({ type: { equal: ActionLogType.updated } })).toEqual({ snapshot: { $ne: null }, version: { $ne: 1 } });
+        expect(actionLogFilterToWhere({ type: { equal: ActionLogType.deleted } })).toEqual({ snapshot: null });
+    });
+
+    it("negates the type condition for notEqual", () => {
+        expect(actionLogFilterToWhere({ type: { notEqual: ActionLogType.deleted } })).toEqual({ $not: { snapshot: null } });
+    });
+
+    it("matches any of the requested types for isAnyOf", () => {
+        expect(actionLogFilterToWhere({ type: { isAnyOf: [ActionLogType.created, ActionLogType.deleted] } })).toEqual({
+            $or: [{ snapshot: { $ne: null }, version: 1 }, { snapshot: null }],
+        });
+    });
+
+    it("matches no rows for an empty type isAnyOf", () => {
+        expect(actionLogFilterToWhere({ type: { isAnyOf: [] } })).toEqual({ id: { $in: [] } });
+    });
+
+    it("combines the type filter with the other fields", () => {
+        expect(
+            actionLogFilterToWhere({ type: { equal: ActionLogType.deleted }, version: Object.assign(new NumberFilter(), { greaterThan: 2 }) }),
+        ).toEqual({
+            $and: [{ snapshot: null }, { version: { $gt: 2 } }],
+        });
     });
 
     it("combines the scope filter with the other fields", () => {

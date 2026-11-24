@@ -128,12 +128,11 @@
     align-items: center;
     justify-content: space-between;
 
+    // The view controls in the middle, where the location and the tools on either side leave them the same room
     @media (width >= 760px) {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-
-        .toolbarGroup {
-            justify-self: end;
+        &[data-centered] {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
         }
     }
     min-inline-size: 0;

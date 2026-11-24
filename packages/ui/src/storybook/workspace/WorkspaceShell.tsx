@@ -493,7 +493,9 @@ export function WorkspaceShell() {
 
     /** Opens a tool, in its mode; the key of the tool that's open closes it again. */
     function toggleToolOfMode(next: WorkspaceIntent, tool: WorkspaceTool) {
-        if (isPrototypeMode && next === intent) {
+        // The tools of Inspect work on the single frame, so their key ends comparing
+        const compare = next === "inspect" ? "off" : state.compare;
+        if (isPrototypeMode && next === intent && !isComparing) {
             setTool(activeTool === tool ? null : tool);
             return;
         }
@@ -502,22 +504,33 @@ export function WorkspaceShell() {
         if (isSingleFrame) {
             setPrototypeStartPage(framePage.hash);
         }
-        updateState({ mode: "prototypes", intent: next, intentTools: { ...state.intentTools, [next]: tool } });
+        updateState({ mode: "prototypes", intent: next, compare, intentTools: { ...state.intentTools, [next]: tool } });
     }
 
     // 1–4 switch the mode, a tool's letter opens the tool, and Escape closes it, also while the focus is in the prototype's frame
     useEffect(() => {
         const handleKey = (event: KeyboardEvent) => {
-            if (presenting || event.metaKey || event.ctrlKey || event.altKey || isTyping(event.target)) {
+            // A key that a field, an editor, or a list already used, e.g. Escape ending a text edit or a letter jumping in a tree, is theirs
+            const target = event.target as Element | null;
+            // The workspace's page list jumps to a page by its first letter too, but there the tool's key wins
+            const inPageList = target?.closest?.("[data-prototypes]") != null;
+            if (
+                presenting ||
+                (event.defaultPrevented && !inPageList) ||
+                event.repeat ||
+                event.metaKey ||
+                event.ctrlKey ||
+                event.altKey ||
+                isTyping(event.target)
+            ) {
                 return;
             }
-            const target = event.target as Element | null;
             if (event.key === "Escape") {
-                // An open menu or dialog of the workspace closes first
+                // An open menu, dialog, or overlay panel closes first
                 if (
                     activeTool &&
                     !toolsWithOwnEscape.includes(activeTool) &&
-                    !target?.closest?.('[role="menu"], [role="dialog"], [role="listbox"]')
+                    !target?.closest?.('[role="menu"], [role="dialog"], [role="alertdialog"], [role="listbox"], nav[data-overlay]')
                 ) {
                     setTool(null);
                 }
@@ -525,9 +538,14 @@ export function WorkspaceShell() {
             }
             const next = intentKeys[event.key];
             const toolKey = toolKeys.get(event.key.toLowerCase());
+            // Lists jump to an entry by its first letter, so a letter there isn't a tool's key; the workspace's own page list is for
+            // moving around, where the keys are worth more
+            const inList =
+                target?.closest?.('[role="tree"], [role="treegrid"], [role="menu"], [role="listbox"], [role="grid"], [role="combobox"]') &&
+                !inPageList;
             if (next) {
                 changeIntent(next);
-            } else if (toolKey && !event.shiftKey) {
+            } else if (toolKey && !event.shiftKey && !inList) {
                 toggleToolOfMode(toolKey.intent, toolKey.tool);
             }
         };
@@ -733,7 +751,7 @@ export function WorkspaceShell() {
                         </div>
                     </div>
 
-                    <div className={styles.contextBar}>
+                    <div className={styles.contextBar} data-centered={isPrototypeMode || undefined}>
                         <div className={styles.contextStart}>
                             <IconButton
                                 variant="text"
@@ -804,7 +822,13 @@ export function WorkspaceShell() {
                         {isPrototypeMode && (
                             <div className={styles.contextCenter}>
                                 {intent === "inspect" && (
-                                    <SettingMenu label="Compare" options={compareOptions} value={state.compare} onChange={changeCompare} showLabel />
+                                    <SettingMenu
+                                        label="Compare"
+                                        options={compareOptions}
+                                        value={state.compare}
+                                        onChange={changeCompare}
+                                        showLabel={!narrow}
+                                    />
                                 )}
                                 {isComparing && (
                                     <SegmentedControl
@@ -817,7 +841,7 @@ export function WorkspaceShell() {
                                 )}
                                 {!isComparing && !showingFlow && (
                                     <ViewportControl
-                                        showLabel
+                                        showLabel={!narrow}
                                         responsive={state.responsive}
                                         onResponsiveChange={() => updateState({ responsive: true })}
                                         width={state.width}

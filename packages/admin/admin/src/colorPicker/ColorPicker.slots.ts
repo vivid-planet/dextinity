@@ -1,8 +1,11 @@
-import { createComponentSlot, InputWithPopper, type ThemedComponentBaseProps } from "@dextinity/admin";
 import { Box, ButtonBase, IconButton, InputAdornment as MuiInputAdornment, Typography } from "@mui/material";
 import { css, type Theme } from "@mui/material/styles";
 import type { ComponentProps, ComponentType } from "react";
 import { HexColorPicker as HexColorPickerBase, RgbaStringColorPicker as RgbaStringColorPickerBase } from "react-colorful";
+
+import { createComponentSlot } from "../helpers/createComponentSlot";
+import type { ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
+import { InputWithPopper } from "../inputWithPopper/InputWithPopper";
 
 export type ColorPickerClassKey =
     | "root"

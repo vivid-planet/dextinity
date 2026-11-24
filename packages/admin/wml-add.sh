@@ -25,7 +25,7 @@ target=$(custom_realpath "$1/node_modules/@dextinity");
 source=$(custom_realpath "$(dirname "$0")")
 echo $target
 echo $source
-packages=( admin cms-admin admin-color-picker admin-icons admin-rte )
+packages=( admin cms-admin admin-icons admin-rte )
 for package in "${packages[@]}"; do
     cmd="wml add $source/$package $target/$package"
     echo $cmd

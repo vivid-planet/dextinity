@@ -148,7 +148,6 @@ Packages extend `tsconfig.core.json`, directly or through `packages/{admin,api,s
 | ------------------------------- | -------------------------------------------------------------------- |
 | `@dextinity/admin`              | Core admin components and framework (React, MUI, Apollo, Final Form) |
 | `@dextinity/admin-babel-preset` | Shared Babel preset for transpiling admin packages                   |
-| `@dextinity/admin-color-picker` | Color picker form field component                                    |
 | `@dextinity/admin-date-time`    | Date/time picker form field components                               |
 | `@dextinity/admin-icons`        | SVG icon library as React components                                 |
 | `@dextinity/admin-rte`          | Rich text editor component (Draft.js-based)                          |

@@ -1,11 +1,10 @@
-import { Alert, FinalForm } from "@dextinity/admin";
-import { ColorField } from "@dextinity/admin-color-picker";
+import { Alert, ColorField, FinalForm } from "@dextinity/admin";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 type Story = StoryObj<typeof ColorField>;
 const config: Meta<typeof ColorField> = {
     component: ColorField,
-    title: "@dextinity/admin-color-picker/ColorField",
+    title: "@dextinity/admin/form/ColorField",
 };
 export default config;
 

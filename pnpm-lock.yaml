@@ -991,12 +991,21 @@ importers:
       query-string:
         specifier: ^10.0.0
         version: 10.0.0
+      react-colorful:
+        specifier: ^5.8.1
+        version: 5.8.1(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       react-dropzone:
         specifier: ^20.2.0
         version: 20.2.0(@types/react@19.3.0)(react@19.3.1)
+      tinycolor2:
+        specifier: ^1.6.0
+        version: 1.6.0
       use-constant:
         specifier: ^2.0.0
         version: 2.0.0(react@19.3.1)
+      use-debounce:
+        specifier: ^10.1.1
+        version: 10.1.1(react@19.3.1)
       uuid:
         specifier: ^14.0.3
         version: 14.0.3
@@ -1085,6 +1094,9 @@ importers:
       '@types/react-dom':
         specifier: ^19.3.0
         version: 19.3.0(@types/react@19.3.0)
+      '@types/tinycolor2':
+        specifier: ^1.4.6
+        version: 1.4.6
       '@vitest/browser':
         specifier: 5.1.0
         version: 5.1.0(@vitest/browser-playwright@5.1.0)(@vitest/ui@5.1.0)(msw@3.0.7(@types/node@24.19.2)(graphql@16.15.0)(supports-color@8.1.1)(typescript@6.0.3)(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.107.1)(terser@5.51.2)(yaml@2.9.1)))(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.107.1)(terser@5.51.2)(yaml@2.9.1))(vitest@5.1.0)
@@ -1188,79 +1200,6 @@ importers:
       vitest:
         specifier: ^5.0.4
         version: 5.1.0(@opentelemetry/api@1.10.0)(@types/node@24.19.2)(@vitest/browser-playwright@5.1.0)(@vitest/ui@5.1.0)(jsdom@31.0.0(@noble/hashes@1.8.0))(msw@3.0.7(@types/node@24.19.2)(graphql@16.15.0)(supports-color@8.1.1)(typescript@6.0.3)(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.107.1)(terser@5.51.2)(yaml@2.9.1)))(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.107.1)(terser@5.51.2)(yaml@2.9.1))
-
-  packages/admin/admin-color-picker:
-    dependencies:
-      '@dextinity/admin':
-        specifier: workspace:*
-        version: link:../admin
-      '@dextinity/admin-icons':
-        specifier: workspace:*
-        version: link:../admin-icons
-      react-colorful:
-        specifier: ^5.8.1
-        version: 5.8.1(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
-      tinycolor2:
-        specifier: ^1.6.0
-        version: 1.6.0
-      use-debounce:
-        specifier: ^10.1.1
-        version: 10.1.1(react@19.3.1)
-    devDependencies:
-      '@babel/cli':
-        specifier: ^8.0.6
-        version: 8.0.6(@babel/core@8.0.10)
-      '@babel/core':
-        specifier: ^8.0.10
-        version: 8.0.10
-      '@dextinity/admin-babel-preset':
-        specifier: workspace:*
-        version: link:../admin-babel-preset
-      '@dextinity/eslint-config':
-        specifier: workspace:*
-        version: link:../../eslint-config
-      '@mui/material':
-        specifier: ^9.5.0
-        version: 9.5.0(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.1)(supports-color@8.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.1)(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.1)(supports-color@8.1.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
-      '@types/react':
-        specifier: ^19.3.0
-        version: 19.3.0
-      '@types/react-dom':
-        specifier: ^19.3.0
-        version: 19.3.0(@types/react@19.3.0)
-      '@types/tinycolor2':
-        specifier: ^1.4.6
-        version: 1.4.6
-      eslint:
-        specifier: ^9.39.5
-        version: 9.39.5(jiti@2.7.0)(supports-color@8.1.1)
-      final-form:
-        specifier: ^4.20.10
-        version: 4.20.10
-      npm-run-all2:
-        specifier: ^9.0.4
-        version: 9.0.4
-      prettier:
-        specifier: ^3.10.1
-        version: 3.10.1
-      react:
-        specifier: ^19.3.1
-        version: 19.3.1
-      react-dom:
-        specifier: ^19.3.1
-        version: 19.3.1(react@19.3.1)
-      react-final-form:
-        specifier: ^6.5.9
-        version: 6.5.9(final-form@4.20.10)(react@19.3.1)
-      react-intl:
-        specifier: ^12.1.4
-        version: 12.1.5(@types/react@19.3.0)(react@19.3.1)
-      rimraf:
-        specifier: ^6.1.4
-        version: 6.1.4
-      typescript:
-        specifier: ^6.0.3
-        version: 6.0.3
 
   packages/admin/admin-date-time:
     dependencies:
@@ -2879,9 +2818,6 @@ importers:
       '@dextinity/admin':
         specifier: workspace:*
         version: link:../packages/admin/admin
-      '@dextinity/admin-color-picker':
-        specifier: workspace:*
-        version: link:../packages/admin/admin-color-picker
       '@dextinity/admin-date-time':
         specifier: workspace:*
         version: link:../packages/admin/admin-date-time

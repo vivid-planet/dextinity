@@ -2130,6 +2130,25 @@ The options of `useTableQuery` and `useSaveConflictQuery` are based on the Apoll
 
 `ITableQueryHookResult` is a type alias now, so you can't extend it with declaration merging.
 
+### Import the color picker from `@dextinity/admin`
+
+The `@dextinity/admin-color-picker` package has been merged into `@dextinity/admin`. Remove the package:
+
+```diff title="admin/package.json"
+{
+    "dependencies": {
+-       "@dextinity/admin-color-picker": "10.15.0",
+    }
+}
+```
+
+Import its components and types from `@dextinity/admin` instead:
+
+```diff
+- import { ColorField } from "@dextinity/admin-color-picker";
++ import { ColorField } from "@dextinity/admin";
+```
+
 <!-- "Verify lint passes" must always be the last step for this service. -->
 
 ### Verify lint passes

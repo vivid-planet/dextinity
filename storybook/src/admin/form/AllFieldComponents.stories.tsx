@@ -5,6 +5,7 @@ import {
     Button,
     CheckboxField,
     CheckboxListField,
+    ColorField,
     DatePickerField,
     DateRangePickerField,
     DateTimePickerField,
@@ -22,7 +23,6 @@ import {
     TimePickerField,
     TimeRangePickerField,
 } from "@dextinity/admin";
-import { ColorField } from "@dextinity/admin-color-picker";
 import { Box, Link, MenuItem } from "@mui/material";
 import { useMemo } from "react";
 import { Form } from "react-final-form";
@@ -324,7 +324,7 @@ export const AllFieldComponents = {
                                 <TimeRangePickerField name="timeRange" label="Time Range" variant={fieldVariant} fullWidth />
                                 <DateTimePickerField name="dateTime" label="Date Time" variant={fieldVariant} fullWidth />
                             </FieldSet>
-                            <FieldSet title="Color" supportText="@dextinity/admin-color-picker">
+                            <FieldSet title="Color" supportText="@dextinity/admin">
                                 <ColorField name="hexColor" label="Color (hex)" variant={fieldVariant} fullWidth />
                                 <ColorField name="rgbaColor" label="Color (rgba)" colorFormat="rgba" variant={fieldVariant} fullWidth />
                             </FieldSet>

@@ -1,8 +1,8 @@
-import type { CurrentUser } from "@dextinity/cms-api";
 import { BadRequestException, Logger, NotFoundException, UnsupportedMediaTypeException } from "@nestjs/common";
 import type { Request, Response } from "express";
 import { describe, expect, it, vi } from "vitest";
 
+import type { CurrentUser } from "../user-permissions/dto/current-user.js";
 import { AiHubController } from "./ai-hub.controller.js";
 import { forwardToAiHub } from "./ai-hub-proxy.js";
 

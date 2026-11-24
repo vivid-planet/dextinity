@@ -1,7 +1,10 @@
-import { CurrentUser, GetCurrentUser, RequiredPermission } from "@dextinity/cms-api";
 import { All, BadRequestException, Controller, Inject, Logger, NotFoundException, Req, Res, UnsupportedMediaTypeException } from "@nestjs/common";
 import type { Request, Response } from "express";
 
+import { GetCurrentUser } from "../auth/decorators/get-current-user.decorator.js";
+import { CorePermission } from "../common/enum/core-permission.enum.js";
+import { RequiredPermission } from "../user-permissions/decorators/required-permission.decorator.js";
+import { CurrentUser } from "../user-permissions/dto/current-user.js";
 import { AI_HUB_CONFIG, type AiHubConfig } from "./ai-hub.config.js";
 import {
     type AiHubRequestBody,
@@ -20,7 +23,7 @@ import {
  */
 @Controller("ai-hub")
 // No scope check, because the chat's requests carry none.
-@RequiredPermission("aiHub", { skipScopeCheck: true })
+@RequiredPermission(CorePermission.aiHub, { skipScopeCheck: true })
 export class AiHubController {
     private readonly logger = new Logger(AiHubController.name);
 

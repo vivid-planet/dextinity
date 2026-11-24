@@ -1,19 +1,15 @@
-import { debounce } from "@mui/material/utils";
-import { type RefObject, useEffect, useMemo, useState } from "react";
+import { type RefObject, useEffect, useState } from "react";
+import { useDebouncedCallback } from "use-debounce";
 
 export const useObservedWidth = (ref: RefObject<HTMLElement | null>): number => {
     const [containerWidth, setContainerWidth] = useState(ref.current?.clientWidth ?? 0);
 
-    const elementObserver = useMemo(() => {
-        return new ResizeObserver(() => {
-            debounce(() => {
-                if (!ref.current) {
-                    return;
-                }
-                setContainerWidth(ref.current.clientWidth);
-            }, 500)();
-        });
-    }, [ref]);
+    const updateContainerWidth = useDebouncedCallback(() => {
+        if (!ref.current) {
+            return;
+        }
+        setContainerWidth(ref.current.clientWidth);
+    }, 500);
 
     useEffect(() => {
         if (!ref.current) {
@@ -21,13 +17,15 @@ export const useObservedWidth = (ref: RefObject<HTMLElement | null>): number => 
         }
         const element = ref.current;
 
+        const elementObserver = new ResizeObserver(updateContainerWidth);
         elementObserver.observe(element);
         setContainerWidth(element.clientWidth);
 
         return () => {
-            elementObserver.unobserve(element);
+            elementObserver.disconnect();
+            updateContainerWidth.cancel();
         };
-    }, [elementObserver, ref]);
+    }, [ref, updateContainerWidth]);
 
     return containerWidth;
 };

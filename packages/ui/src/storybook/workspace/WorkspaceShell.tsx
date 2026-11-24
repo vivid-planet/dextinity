@@ -35,6 +35,7 @@ import type { NotePage } from "./FrameNotes";
 import { type FrameTool, FrameTools } from "./FrameTools";
 import { hotspotList } from "./hotspots";
 import { customPageList, customPagePrefix, type PageTemplate, pageTemplates } from "./pageTemplates";
+import { buildPageTree, getPrototypePageNodeId } from "./prototypePageTree";
 import { workspacePrototypes } from "./prototypes";
 import { type InspectedComponent, useCanvasInspector } from "./useCanvasInspector";
 import { useFramePage } from "./useFramePage";
@@ -192,10 +193,6 @@ function isPrototype(story: IndexedStory) {
     return story.title === prototypesTitle || story.title.startsWith(`${prototypesTitle}/`);
 }
 
-function getPrototypePageNodeId(storyId: string, pageId: string) {
-    return `${storyId}#${pageId}`;
-}
-
 function getStoryLabel(story: IndexedStory) {
     return `${story.title.split("/").at(-1)} · ${story.name}`;
 }
@@ -315,20 +312,24 @@ export function WorkspaceShell() {
 
     const customPages = customPageList.useItems();
     const [newPageMenuOpen, setNewPageMenuOpen] = useState(false);
-    const prototypeNodes = useMemo<TreeNode[]>(
+    const prototypeTrees = useMemo(
         () =>
             prototypes.map((story) => {
                 const prototype = workspacePrototypes.get(story.id);
-                return {
+                const pageTree = prototype
+                    ? buildPageTree({
+                          storyId: story.id,
+                          pageIds: prototype.designedPageIds,
+                          getPageLabel: prototype.getPageLabel,
+                          getPageAncestors: prototype.getPageAncestors,
+                      })
+                    : undefined;
+                const node: TreeNode = {
                     id: story.id,
                     label: story.name,
                     icon: <Icon name="window" />,
                     children: [
-                        ...(prototype?.designedPageIds.map((pageId) => ({
-                            id: getPrototypePageNodeId(story.id, pageId),
-                            label: prototype.getPageLabel(pageId) ?? pageId,
-                            type: "page" as const,
-                        })) ?? []),
+                        ...(pageTree?.nodes ?? []),
                         ...customPages
                             .filter((page) => page.prototypeId === story.id)
                             .map((page) => ({
@@ -339,16 +340,31 @@ export function WorkspaceShell() {
                             })),
                     ],
                 };
+                return { node, pageTree };
             }),
         [prototypes, customPages],
     );
-    // Until the tree is first changed, every prototype shows its pages
+    const prototypeNodes = prototypeTrees.map((tree) => tree.node);
+    // Until the tree is first changed, the prototypes and the groups of their menus are open, the pages with detail pages closed
     const [prototypeExpandedIds, setPrototypeExpandedIds] = useState<string[] | null>(null);
-    const visiblePrototypeExpandedIds = prototypeExpandedIds ?? prototypes.map((story) => story.id);
+    const visiblePrototypeExpandedIds = prototypeExpandedIds ?? prototypeTrees.flatMap((tree) => [tree.node.id, ...(tree.pageTree?.groupIds ?? [])]);
     // While comparing, the frames report their page to the start page, which the single frame then opens on again
     const shownPage = isComparing ? prototypeStartPage : framePage.hash;
     const currentPrototypePageId = shownPage || workspacePrototypes.get(prototypeId ?? "")?.startPageId;
     const currentWorkspacePrototype = workspacePrototypes.get(prototypeId ?? "");
+    const selectedPrototypeNodeId = prototypeId && currentPrototypePageId ? getPrototypePageNodeId(prototypeId, currentPrototypePageId) : undefined;
+    // A page opened in the frame or the flow map shows in the list, also when it's in a closed part of the tree
+    const [revealedPrototypeNodeId, setRevealedPrototypeNodeId] = useState(selectedPrototypeNodeId);
+    if (selectedPrototypeNodeId !== revealedPrototypeNodeId) {
+        setRevealedPrototypeNodeId(selectedPrototypeNodeId);
+        const pageTree = prototypeTrees.find((tree) => tree.node.id === prototypeId)?.pageTree;
+        const closedIds = [prototypeId ?? "", ...(pageTree?.getAncestorIds(selectedPrototypeNodeId ?? "") ?? [])].filter(
+            (id) => id !== "" && !visiblePrototypeExpandedIds.includes(id),
+        );
+        if (closedIds.length > 0) {
+            setPrototypeExpandedIds([...visiblePrototypeExpandedIds, ...closedIds]);
+        }
+    }
     const prototypeCustomPages = customPages.filter((page) => page.prototypeId === prototypeId);
     const getPageLabel = (page: string) =>
         prototypeCustomPages.find((customPage) => customPage.id === page)?.title ?? currentWorkspacePrototype?.getPageLabel(page) ?? page;
@@ -922,11 +938,7 @@ export function WorkspaceShell() {
                                         nodes={prototypeNodes}
                                         expandedIds={visiblePrototypeExpandedIds}
                                         onExpandedChange={setPrototypeExpandedIds}
-                                        selectedId={
-                                            prototypeId && currentPrototypePageId
-                                                ? getPrototypePageNodeId(prototypeId, currentPrototypePageId)
-                                                : undefined
-                                        }
+                                        selectedId={selectedPrototypeNodeId}
                                         onSelect={selectPrototypeNode}
                                     />
                                 </div>

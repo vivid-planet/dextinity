@@ -10,6 +10,8 @@ import {
     messages,
     SwitchField,
     TextField,
+    TipTapRichTextEditorField,
+    type TipTapRichTextEditorOptions,
     useFormApiRef,
     useStackSwitchApi,
 } from "@dextinity/admin";
@@ -52,6 +54,10 @@ type FormValues = Omit<GQLManufacturerFormDetailsFragment, "address" | "addressA
             streetNumber: string | null;
         };
     };
+};
+
+const descriptionOptions: TipTapRichTextEditorOptions = {
+    textBlocks: [{ name: "paragraph", tag: "p", label: <FormattedMessage id="manufacturer.description.paragraph" defaultMessage="Paragraph" /> }],
 };
 
 interface FormProps {
@@ -193,6 +199,12 @@ export function ManufacturerForm({ id }: FormProps) {
                 <>
                     <FieldSet>
                         <TextField required fullWidth name="name" label={<FormattedMessage id="manufacturer.name" defaultMessage="Name" />} />
+                        <TipTapRichTextEditorField
+                            fullWidth
+                            name="description"
+                            label={<FormattedMessage id="manufacturer.description" defaultMessage="Description" />}
+                            options={descriptionOptions}
+                        />
                     </FieldSet>
                     <FieldSet
                         title={<FormattedMessage id="manufacturer.address" defaultMessage="Address" />}

@@ -48,6 +48,19 @@ export class ProductsFixtureService {
                         country: faker.location.country(),
                     },
                 },
+                description: {
+                    type: "doc",
+                    content: [
+                        {
+                            type: "textBlock",
+                            attrs: { textBlock: "paragraph" },
+                            content: [
+                                { type: "text", text: faker.company.catchPhrase(), marks: [{ type: "bold" }] },
+                                { type: "text", text: ` ${faker.lorem.sentence()}` },
+                            ],
+                        },
+                    ],
+                },
             });
 
             this.entityManager.persist(manufacturer);

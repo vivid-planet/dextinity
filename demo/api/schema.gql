@@ -877,6 +877,7 @@ type Manufacturer {
   address: Address
   addressAsEmbeddable: AddressAsEmbeddable!
   coordinates: Coordinates
+  description: JSONObject
   id: ID!
   name: String!
   productType: ProductType
@@ -918,6 +919,7 @@ input ManufacturerInput {
   address: AddressInput
   addressAsEmbeddable: AddressAsEmbeddableInput!
   coordinates: CoordinatesInput
+  description: JSONObject
   name: String!
   productType: ProductType = null
 }
@@ -946,6 +948,7 @@ input ManufacturerUpdateInput {
   address: AddressInput
   addressAsEmbeddable: AddressAsEmbeddableInput
   coordinates: CoordinatesInput
+  description: JSONObject
   name: String
   productType: ProductType
 }

@@ -1,9 +1,10 @@
-import { EntityInfo, IsNullable, IsUndefinable, RequiredPermission } from "@dextinity/cms-api";
+import { EntityInfo, IsNullable, IsUndefinable, RequiredPermission, type TipTapRichTextBlockContent } from "@dextinity/cms-api";
 import { Embeddable, Embedded, Entity, Enum, Index, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
 import { BaseEntity, FullTextType, type IType, OptionalProps } from "@mikro-orm/postgresql";
 import { Field, ID, InputType, ObjectType } from "@nestjs/graphql";
 import { IsNumber, IsObject, IsString } from "class-validator";
 import { randomUUID } from "crypto";
+import { GraphQLJSONObject } from "graphql-scalars";
 
 import { Coordinates, CoordinatesType } from "../coordinates.type.js";
 import { ProductType } from "./product-type.enum.js";
@@ -113,6 +114,10 @@ export class Manufacturer extends BaseEntity {
     @Enum({ items: () => ProductType, nullable: true })
     @Field(() => ProductType, { nullable: true })
     productType?: ProductType;
+
+    @Property({ type: "json", nullable: true })
+    @Field(() => GraphQLJSONObject, { nullable: true })
+    description?: TipTapRichTextBlockContent = undefined;
 
     @Property({ onUpdate: () => new Date() })
     @Field()

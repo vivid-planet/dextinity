@@ -1,4 +1,4 @@
-import debounce from "lodash.debounce";
+import { debounce } from "@mui/material/utils";
 import { type RefObject, useEffect, useMemo, useState } from "react";
 
 export const useObservedWidth = (ref: RefObject<HTMLElement | null>): number => {

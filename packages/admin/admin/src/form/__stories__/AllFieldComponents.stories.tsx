@@ -1,34 +1,33 @@
-import {
-    AsyncAutocompleteField,
-    AsyncSelectField,
-    AutocompleteField,
-    Button,
-    CheckboxField,
-    CheckboxListField,
-    ColorField,
-    DatePickerField,
-    DateRangePickerField,
-    DateTimePickerField,
-    Field,
-    FieldSet,
-    FinalFormRangeInput,
-    FormSection,
-    NumberField,
-    RadioGroupField,
-    SearchField,
-    SelectField,
-    SwitchField,
-    TextAreaField,
-    TextField,
-    TimePickerField,
-    TimeRangePickerField,
-} from "@dextinity/admin";
 import { Box, Link, MenuItem } from "@mui/material";
 import { useMemo } from "react";
 import { Form } from "react-final-form";
 
+import { ColorField } from "../../colorPicker/ColorField";
+import { Button } from "../../common/buttons/Button";
+import { FieldSet } from "../../common/FieldSet";
+import { DatePickerField } from "../../dateTime/datePickerField/DatePickerField";
+import { DateRangePickerField } from "../../dateTime/dateRangePickerField/DateRangePickerField";
+import { DateTimePickerField } from "../../dateTime/dateTimePickerField/DateTimePickerField";
+import { TimePickerField } from "../../dateTime/timePickerField/TimePickerField";
+import { TimeRangePickerField } from "../../dateTime/timeRangePickerField/TimeRangePickerField";
+import { Field } from "../Field";
+import { AsyncAutocompleteField } from "../fields/AsyncAutocompleteField";
+import { AsyncSelectField } from "../fields/AsyncSelectField";
+import { AutocompleteField } from "../fields/AutocompleteField";
+import { CheckboxField } from "../fields/CheckboxField";
+import { CheckboxListField } from "../fields/CheckboxListField";
+import { NumberField } from "../fields/NumberField";
+import { RadioGroupField } from "../fields/RadioGroupField";
+import { SearchField } from "../fields/SearchField";
+import { SelectField } from "../fields/SelectField";
+import { SwitchField } from "../fields/SwitchField";
+import { TextAreaField } from "../fields/TextAreaField";
+import { TextField } from "../fields/TextField";
+import { FinalFormRangeInput } from "../FinalFormRangeInput";
+import { FormSection } from "../FormSection";
+
 export default {
-    title: "@dextinity/admin/form",
+    title: "components/form",
     args: {
         fieldVariant: "horizontal",
     },

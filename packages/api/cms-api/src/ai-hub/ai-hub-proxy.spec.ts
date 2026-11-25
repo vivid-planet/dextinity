@@ -4,7 +4,16 @@ import { Writable } from "node:stream";
 
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { type AiHubRoute, findAiHubRoute, forwardToAiHub, toAiHubJsonBody, toAiHubQuery, toChatCacheControl, toChatRequest } from "./ai-hub-proxy.js";
+import {
+    type AiHubRoute,
+    findAiHubRoute,
+    forwardToAiHub,
+    toAiHubJsonBody,
+    toAiHubQuery,
+    toAiHubUrl,
+    toChatCacheControl,
+    toChatRequest,
+} from "./ai-hub-proxy.js";
 
 describe("findAiHubRoute", () => {
     it.each([
@@ -40,15 +49,44 @@ describe("findAiHubRoute", () => {
 });
 
 describe("toChatRequest", () => {
+    const proxyRoute = { baseUrl: "", routePath: "/api/ai-hub/*path" };
+
     it("reads the path below the proxy and the query", () => {
-        const chatRequest = toChatRequest("/api/ai-hub/chat/history?offset=0&limit=50");
+        const chatRequest = toChatRequest({ ...proxyRoute, originalUrl: "/api/ai-hub/chat/history?offset=0&limit=50" });
 
         expect(chatRequest.path).toBe("/chat/history");
         expect(chatRequest.query.toString()).toBe("offset=0&limit=50");
     });
 
     it("keeps an encoded slash encoded, so that it doesn't separate path segments", () => {
-        expect(toChatRequest("/api/ai-hub/file-uploads/..%2F..%2Fadmin").path).toBe("/file-uploads/..%2F..%2Fadmin");
+        expect(toChatRequest({ ...proxyRoute, originalUrl: "/api/ai-hub/file-uploads/..%2F..%2Fadmin" }).path).toBe("/file-uploads/..%2F..%2Fadmin");
+    });
+
+    it.each([
+        ["without a global prefix", "", "/ai-hub/*path", "/ai-hub/chat"],
+        ["mounted below a base URL", "/admin", "/api/ai-hub/*path", "/admin/api/ai-hub/chat"],
+        ["requested in another case", "", "/api/ai-hub/*path", "/API/AI-Hub/chat"],
+    ])("finds the path below a proxy %s", (_, baseUrl, routePath, originalUrl) => {
+        expect(toChatRequest({ originalUrl, baseUrl, routePath }).path).toBe("/chat");
+    });
+});
+
+describe("toAiHubUrl", () => {
+    const chatRoute = findAiHubRoute("POST", "/chat") as AiHubRoute;
+
+    it.each([
+        ["https://ai-hub.test", "https://ai-hub.test/api/v2/chat"],
+        ["https://ai-hub.test/", "https://ai-hub.test/api/v2/chat"],
+        ["https://gateway.test/ai-hub", "https://gateway.test/ai-hub/api/v2/chat"],
+        ["https://gateway.test/ai-hub/", "https://gateway.test/ai-hub/api/v2/chat"],
+    ])("puts the path below %s", (apiUrl, expectedUrl) => {
+        expect(toAiHubUrl({ apiUrl, route: chatRoute, path: "/chat" }).toString()).toBe(expectedUrl);
+    });
+
+    it("keeps an encoded slash encoded", () => {
+        const fileRoute = findAiHubRoute("GET", "/file-uploads/file-1") as AiHubRoute;
+
+        expect(toAiHubUrl({ apiUrl: "https://ai-hub.test", route: fileRoute, path: "/file-uploads/a%2Fb" }).pathname).toBe("/api/file-uploads/a%2Fb");
     });
 });
 

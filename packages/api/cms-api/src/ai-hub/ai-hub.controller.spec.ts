@@ -26,7 +26,14 @@ describe("AiHubController", () => {
         contentType?: string;
         body?: unknown;
     }): Request {
-        return { method, originalUrl, body, is: (type: string) => (type === contentType ? type : false) } as unknown as Request;
+        return {
+            method,
+            originalUrl,
+            baseUrl: "",
+            route: { path: "/api/ai-hub/*path" },
+            body,
+            is: (type: string) => (type === contentType ? type : false),
+        } as unknown as Request;
     }
 
     function controller(): AiHubController {
@@ -83,6 +90,23 @@ describe("AiHubController", () => {
                 apiKey: "sk_secret",
                 body: { type: "json", value: { sessionId: "session-1", messageId: "message-1", userId: "user-1" } },
             }),
+        );
+    });
+
+    it("forwards a request to a proxy mounted at another path", () => {
+        controller().proxy(
+            {
+                method: "GET",
+                originalUrl: "/admin-api/v1/ai-hub/chat/history?offset=0",
+                baseUrl: "/admin-api",
+                route: { path: "/v1/ai-hub/*path" },
+            } as unknown as Request,
+            response,
+            user,
+        );
+
+        expect(forwardToAiHub).toHaveBeenCalledWith(
+            expect.objectContaining({ targetUrl: new URL("https://ai-hub.test/api/v2/chat/history?offset=0&userId=user-1") }),
         );
     });
 });

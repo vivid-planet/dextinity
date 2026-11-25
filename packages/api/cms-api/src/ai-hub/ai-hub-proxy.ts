@@ -44,10 +44,25 @@ export function findAiHubRoute(method: string, path: string): AiHubRoute | undef
 /**
  * The path below the proxy and the query of a request of the chat. They are read from the URL as it was requested
  * rather than from the route parameter, which is decoded: an encoded "/" would separate path segments there.
+ *
+ * Where the proxy is mounted depends on the app (its global prefix, a router module), so its path is taken from the
+ * route the request matched: `baseUrl` and `routePath` of the Express request.
  */
-export function toChatRequest(originalUrl: string): { path: string; query: URLSearchParams } {
+export function toChatRequest({ originalUrl, baseUrl, routePath }: { originalUrl: string; baseUrl: string; routePath: string }): {
+    path: string;
+    query: URLSearchParams;
+} {
     const url = new URL(originalUrl, "http://localhost");
-    return { path: url.pathname.replace(/^\/api\/ai-hub/, ""), query: url.searchParams };
+    // Sliced by length rather than replaced, because Express matches the route's path case-insensitively.
+    const proxyPathLength = `${baseUrl}${routePath.replace(/\/\*path$/, "")}`.length;
+    return { path: url.pathname.slice(proxyPathLength), query: url.searchParams };
+}
+
+/** The URL of a request in the AI Hub API. A path of `apiUrl`, such as that of a gateway, is kept. */
+export function toAiHubUrl({ apiUrl, route, path }: { apiUrl: string; route: AiHubRoute; path: string }): URL {
+    const url = new URL(apiUrl);
+    url.pathname = `${url.pathname.replace(/\/$/, "")}${route.targetPathPrefix}${path}`;
+    return url;
 }
 
 /**

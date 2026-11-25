@@ -13,6 +13,7 @@ import {
     forwardToAiHub,
     toAiHubJsonBody,
     toAiHubQuery,
+    toAiHubUrl,
     toChatRequest,
 } from "./ai-hub-proxy.js";
 
@@ -33,7 +34,7 @@ export class AiHubController {
     proxy(@Req() request: Request, @Res() response: Response, @GetCurrentUser() user: CurrentUser): void {
         const { apiUrl, apiKey } = this.config;
 
-        const chatRequest = toChatRequest(request.originalUrl);
+        const chatRequest = toChatRequest({ originalUrl: request.originalUrl, baseUrl: request.baseUrl, routePath: request.route.path });
         const route = findAiHubRoute(request.method, chatRequest.path);
         if (!route) {
             // A new release of the chat's web component may make a request the route table doesn't list yet.
@@ -41,7 +42,7 @@ export class AiHubController {
             throw new NotFoundException(`The AI Hub chat has no ${request.method} ${chatRequest.path}.`);
         }
 
-        const targetUrl = new URL(`${route.targetPathPrefix}${chatRequest.path}`, apiUrl);
+        const targetUrl = toAiHubUrl({ apiUrl, route, path: chatRequest.path });
         targetUrl.search = toAiHubQuery({ route, query: chatRequest.query, userId: user.id }).toString();
 
         forwardToAiHub({ request, response, targetUrl, apiKey, body: toAiHubRequestBody({ request, route, userId: user.id }), logger: this.logger });

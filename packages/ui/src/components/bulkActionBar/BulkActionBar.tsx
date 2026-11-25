@@ -125,7 +125,8 @@ export const BulkActionBar = forwardRef<HTMLDivElement, BulkActionBarProps>(func
             if (typeof ref === "function") {
                 // React 19 callback refs may return a cleanup, which `ForwardedRef` doesn't type
                 const refCleanup: unknown = ref(node);
-                // React 18 ignores the returned cleanup and calls the ref with `null` instead
+                // React 19 runs this cleanup instead of calling the ref with `null`, so a ref without its own cleanup gets the `null` here;
+                // React 18 ignores it and calls the ref with `null` itself
                 return () => {
                     setElement(null);
                     if (typeof refCleanup === "function") {

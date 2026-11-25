@@ -253,7 +253,9 @@ const MasterHeader = () => {
 };
 ```
 
-The search bar shows a chip per type with its number of results. Selecting chips filters the results. Each result shows its type, the title and a snippet with the matching words highlighted.
+The header shows a search field that opens the search in a dialog. <kbd>Ctrl</kbd>+<kbd>K</kbd> (<kbd>⌘</kbd>+<kbd>K</kbd> on macOS) opens it from anywhere in the admin.
+
+The dialog shows a tab per type with its number of results. Selecting a tab shows only the results of that type. The results are grouped by type, and each result shows the title and a snippet with the matching words highlighted. With the gear button next to the search field, users choose which types are searched. The choice is stored in the browser's local storage.
 
 The labels of the types and the links to the results come from the `entityDependencyMap` of the `DextinityConfigProvider`:
 

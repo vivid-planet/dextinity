@@ -67,6 +67,16 @@ const results = [
         }),
     },
     {
+        id: "4",
+        entityName: "PageTreeNode",
+        type: "Page",
+        name: "Contact",
+        secondaryInformation: "/contact",
+        titleMatch: false,
+        title: highlightedText({ text: "Contact" }),
+        snippet: highlightedText({ text: "Write us, we're able to help.", highlights: [{ start: 16, end: 20 }] }),
+    },
+    {
         id: "1",
         entityName: "Product",
         type: "Product",
@@ -90,7 +100,7 @@ function matchingResults(search: string) {
     return results;
 }
 
-export const fullTextSearchHandler = graphqlApi.query("SearchHeaderItem", ({ variables }) => {
+export const fullTextSearchHandler = graphqlApi.query("FullTextSearchDialog", ({ variables }) => {
     const { search, types, limit } = variables as { search: string; types?: string[]; limit: number };
 
     if (search.startsWith("error")) {

@@ -1,6 +1,6 @@
 import { MainContent, MasterLayout } from "@dextinity/admin";
 import { Typography } from "@mui/material";
-import type { Decorator, Meta, StoryObj } from "@storybook/react-vite";
+import type { Decorator, Meta, StoryContext, StoryObj } from "@storybook/react-vite";
 import { expect, screen, waitFor, within } from "storybook/test";
 
 import { Header } from "../../common/header/Header";
@@ -62,6 +62,10 @@ const config: Meta<typeof SearchHeaderItem> = {
     component: SearchHeaderItem,
     title: "fullTextSearch/SearchHeaderItem",
     decorators: [renderInMasterLayout, withSearchPermissionAndDependencies],
+    beforeEach: () => {
+        // The type settings are stored per user and would leak into the next story
+        window.localStorage.clear();
+    },
     render: () => (
         <Header>
             <SearchHeaderItem />
@@ -73,77 +77,131 @@ export default config;
 
 type Story = StoryObj<typeof config>;
 
+async function openSearchDialog({ canvas, userEvent }: Pick<StoryContext, "canvas" | "userEvent">) {
+    await userEvent.click(await canvas.findByRole("button", { name: "Search" }));
+    return screen.findByRole("dialog", { name: "Search" });
+}
+
+async function search({ dialog, userEvent, text }: { dialog: HTMLElement; userEvent: StoryContext["userEvent"]; text: string }) {
+    await userEvent.type(within(dialog).getByRole("textbox", { name: "Search" }), text);
+}
+
 /**
- * Search for "ab" to see title hits before content hits, highlighted snippets, and the type chips.
+ * Search for "ab" to see the results grouped by type, with highlighted titles and snippets and a tab per type.
  * The product result has no `entityDependencyMap` entry, so it can't be opened.
  */
 export const Default: Story = {
     play: async ({ canvas, userEvent, step }) => {
-        await step("Results show highlights and type labels", async () => {
-            await userEvent.type(await canvas.findByRole("textbox", { name: "Search" }), "ab");
+        const dialog = await openSearchDialog({ canvas, userEvent });
 
-            const resultsList = await screen.findByRole("list", {}, { timeout: 3000 });
-            expect(within(resultsList).getAllByRole("button")).toHaveLength(4);
-            expect(resultsList.querySelectorAll("mark").length).toBeGreaterThan(0);
-            expect(within(resultsList).getByText("Link")).toBeInTheDocument();
-            expect(within(resultsList).getByText("Product")).toBeInTheDocument();
-            expect(within(resultsList).getByText("able")).toBeInTheDocument();
-            expect(screen.getByText("Showing 4 of 4")).toBeInTheDocument();
+        await step("Results are grouped by type", async () => {
+            await search({ dialog, userEvent, text: "ab" });
+
+            await waitFor(
+                () => {
+                    expect(within(dialog).getAllByRole("list")).toHaveLength(4);
+                },
+                { timeout: 3000 },
+            );
+            const [newsGroup, linkGroup, pageGroup, productGroup] = within(dialog).getAllByRole("list");
+            expect(within(newsGroup).getByText("News")).toBeInTheDocument();
+            expect(within(linkGroup).getByText("Link")).toBeInTheDocument();
+            expect(within(pageGroup).getByText("Page")).toBeInTheDocument();
+            expect(within(pageGroup).getByText("2")).toBeInTheDocument();
+            expect(within(pageGroup).getAllByRole("button")).toHaveLength(2);
+            expect(within(productGroup).getByText("Product")).toBeInTheDocument();
+            expect(within(pageGroup).getAllByText("able")).toHaveLength(2);
+            expect(dialog.querySelectorAll("mark").length).toBeGreaterThan(0);
         });
 
-        await step("Selecting a type chip filters the results but keeps the counts", async () => {
-            await userEvent.click(screen.getByRole("button", { name: "Link (1)" }));
+        await step("Selecting a tab shows only that type but keeps the counts", async () => {
+            expect(within(dialog).getByRole("tab", { name: /^All/ })).toHaveTextContent("All5");
+
+            await userEvent.click(within(dialog).getByRole("tab", { name: /^Link/ }));
 
             await waitFor(() => {
-                expect(within(screen.getByRole("list")).getAllByRole("button")).toHaveLength(1);
+                expect(within(dialog).getAllByRole("list")).toHaveLength(1);
             });
-            expect(screen.getByText("Absolute")).toBeInTheDocument();
-            expect(screen.getByRole("button", { name: "Link (1)" })).toHaveAttribute("aria-pressed", "true");
-            expect(screen.getByRole("button", { name: "All (4)" })).toHaveAttribute("aria-pressed", "false");
-            expect(screen.getByRole("button", { name: "News (1)" })).toBeInTheDocument();
+            expect(within(dialog).getByText("Absolute")).toBeInTheDocument();
+            expect(within(dialog).getByRole("tab", { name: /^Link/ })).toHaveAttribute("aria-selected", "true");
+            expect(within(dialog).getByRole("tab", { name: /^All/ })).toHaveTextContent("All5");
+            expect(within(dialog).getByRole("tab", { name: /^Page/ })).toHaveTextContent("Page2");
         });
     },
 };
 
-/** A selected type without results stays visible with a count of 0, so it can be deselected. */
-export const NoResultsInSelectedTypes: Story = {
+/** Types switched off in the settings are neither searched nor shown as a tab. */
+export const ChooseWhatToSearch: Story = {
     play: async ({ canvas, userEvent, step }) => {
-        const searchInput = await canvas.findByRole("textbox", { name: "Search" });
+        const dialog = await openSearchDialog({ canvas, userEvent });
+        await search({ dialog, userEvent, text: "ab" });
+        await within(dialog).findByRole("tab", { name: /^Product/ }, { timeout: 3000 });
 
-        await step("Select a type", async () => {
-            await userEvent.type(searchInput, "ab");
-            await userEvent.click(await screen.findByRole("button", { name: "Link (1)" }, { timeout: 3000 }));
+        await step("Switch off products", async () => {
+            await userEvent.click(within(dialog).getByRole("button", { name: "Choose what to search" }));
+            const settings = await screen.findByRole("dialog", { name: "Choose what to search" });
+            await userEvent.click(within(settings).getByRole("switch", { name: "Product" }));
+            await userEvent.keyboard("{Escape}");
         });
 
-        await step("Refine the search so that the selected type has no results", async () => {
-            await userEvent.type(searchInput, "b");
+        await step("Products are no longer searched", async () => {
+            await waitFor(() => {
+                expect(within(dialog).queryByRole("tab", { name: /^Product/ })).not.toBeInTheDocument();
+            });
+            await waitFor(() => {
+                expect(within(dialog).getAllByRole("list")).toHaveLength(3);
+            });
+            expect(within(dialog).getByRole("tab", { name: /^All/ })).toHaveTextContent("All4");
+        });
+    },
+};
 
-            expect(await screen.findByText("No results in the selected types", {}, { timeout: 3000 })).toBeInTheDocument();
-            expect(screen.getByRole("button", { name: "Link (0)" })).toBeInTheDocument();
+/** Ctrl+K opens the dialog with the focus in the search input. Escape clears the search first and closes the dialog when there's nothing left to clear. */
+export const KeyboardShortcuts: Story = {
+    play: async ({ userEvent, step }) => {
+        await step("Ctrl+K opens the dialog", async () => {
+            await userEvent.keyboard("{Control>}k{/Control}");
+            expect(await screen.findByRole("dialog", { name: "Search" })).toBeInTheDocument();
+            await waitFor(() => {
+                expect(screen.getByRole("textbox", { name: "Search" })).toHaveFocus();
+            });
         });
 
-        await step("Show all clears the selection", async () => {
-            await userEvent.click(screen.getByRole("button", { name: "Show all" }));
+        await step("Escape clears the search", async () => {
+            const searchInput = screen.getByRole("textbox", { name: "Search" });
+            await userEvent.keyboard("ab");
+            expect(searchInput).toHaveValue("ab");
+            await userEvent.keyboard("{Escape}");
 
-            const resultsList = await screen.findByRole("list", {}, { timeout: 3000 });
-            expect(within(resultsList).getAllByRole("button")).toHaveLength(1);
-            expect(screen.getByRole("button", { name: "All (1)" })).toHaveAttribute("aria-pressed", "true");
+            expect(searchInput).toHaveValue("");
+            expect(screen.getByRole("dialog", { name: "Search" })).toBeInTheDocument();
+        });
+
+        await step("Escape closes the empty dialog", async () => {
+            await userEvent.keyboard("{Escape}");
+
+            await waitFor(() => {
+                expect(screen.queryByRole("dialog", { name: "Search" })).not.toBeInTheDocument();
+            });
         });
     },
 };
 
 export const NoResults: Story = {
     play: async ({ canvas, userEvent }) => {
-        await userEvent.type(await canvas.findByRole("textbox", { name: "Search" }), "nothing");
+        const dialog = await openSearchDialog({ canvas, userEvent });
+        await search({ dialog, userEvent, text: "nothing" });
 
-        expect(await screen.findByText("No results found", {}, { timeout: 3000 })).toBeInTheDocument();
+        expect(await within(dialog).findByText("Check the spelling or try a shorter search term.", {}, { timeout: 3000 })).toBeInTheDocument();
+        expect(within(dialog).getByText("nothing")).toBeInTheDocument();
     },
 };
 
 export const SearchFailed: Story = {
     play: async ({ canvas, userEvent }) => {
-        await userEvent.type(await canvas.findByRole("textbox", { name: "Search" }), "error");
+        const dialog = await openSearchDialog({ canvas, userEvent });
+        await search({ dialog, userEvent, text: "error" });
 
-        expect(await screen.findByText("The search failed. Please try again.", {}, { timeout: 3000 })).toBeInTheDocument();
+        expect(await within(dialog).findByText("The search failed. Please try again.", {}, { timeout: 3000 })).toBeInTheDocument();
     },
 };

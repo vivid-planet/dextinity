@@ -1,13 +1,13 @@
 import { gql } from "@apollo/client";
 import { Tooltip } from "@dextinity/admin";
-import { ListItemButton, Stack, Typography } from "@mui/material";
-import { styled } from "@mui/material/styles";
+import { ListItemButton, listItemButtonClasses, Stack, Typography } from "@mui/material";
+import { alpha, styled } from "@mui/material/styles";
 import { FormattedMessage } from "react-intl";
 
 import { MarkedMatches } from "../common/MarkedMatches";
 import type { GQLFullTextSearchResultItemFragment } from "./FullTextSearchResultItem.generated";
+import { FullTextSearchTypeIcon } from "./FullTextSearchTypeIcon";
 import { toTextMatches } from "./toTextMatches";
-import { useFullTextSearchTypeLabel } from "./useFullTextSearchTypeLabel";
 
 export const fullTextSearchResultItemFragment = gql`
     fragment FullTextSearchResultItem on FullTextSearchResult {
@@ -42,29 +42,32 @@ interface FullTextSearchResultItemProps {
 }
 
 export function FullTextSearchResultItem({ result, linkable, onClick }: FullTextSearchResultItemProps) {
-    const getTypeLabel = useFullTextSearchTypeLabel();
     const { title, snippet } = result;
 
     const item = (
         <ResultOption alignItems="flex-start" aria-disabled={!linkable} onClick={linkable ? onClick : undefined}>
-            <Stack spacing={0.5} sx={{ minWidth: 0, flexGrow: 1 }}>
-                <Stack direction="row" spacing={1} alignItems="center" sx={{ minWidth: 0 }}>
-                    <TypeLabel variant="overline">{getTypeLabel(result)}</TypeLabel>
+            <TypeIconCircle colorVariant={getIconColorVariant(result.entityName)}>
+                <FullTextSearchTypeIcon searchType={result} />
+            </TypeIconCircle>
+            <Stack spacing={1} sx={{ minWidth: 0, flexGrow: 1 }}>
+                <div>
+                    <Title variant="body1">
+                        <MarkedMatches text={title.text} matches={toTextMatches(title.highlights)} />
+                    </Title>
                     {result.secondaryInformation && (
-                        <SecondaryInformation variant="caption" color="text.secondary" noWrap>
+                        <Typography variant="body2" color="text.secondary" noWrap>
                             {result.secondaryInformation}
-                        </SecondaryInformation>
+                        </Typography>
                     )}
-                </Stack>
-                <Title variant="body1">
-                    <MarkedMatches text={title.text} matches={toTextMatches(title.highlights)} />
-                </Title>
+                </div>
                 {snippet && (
-                    <SnippetText variant="body2" color="text.secondary">
-                        {snippet.truncatedStart && "… "}
-                        <MarkedMatches text={snippet.text} matches={toTextMatches(snippet.highlights)} />
-                        {snippet.truncatedEnd && " …"}
-                    </SnippetText>
+                    <Snippet className={snippetClassName}>
+                        <SnippetText variant="body1">
+                            {snippet.truncatedStart && "… "}
+                            <MarkedMatches text={snippet.text} matches={toTextMatches(snippet.highlights)} />
+                            {snippet.truncatedEnd && " …"}
+                        </SnippetText>
+                    </Snippet>
                 )}
             </Stack>
         </ResultOption>
@@ -81,29 +84,83 @@ export function FullTextSearchResultItem({ result, linkable, onClick }: FullText
     );
 }
 
-const ResultOption = styled(ListItemButton)`
-    padding: ${({ theme }) => theme.spacing(1.5, 2)};
-    border-bottom: 1px solid ${({ theme }) => theme.palette.divider};
+const snippetClassName = "FullTextSearchResultItem-snippet";
 
-    &:last-of-type {
-        border-bottom: none;
+type IconColorVariant = "primary" | "success" | "default";
+
+function getIconColorVariant(entityName: string): IconColorVariant {
+    if (entityName === "PageTreeNode") {
+        return "primary";
+    }
+
+    if (entityName === "News") {
+        return "success";
+    }
+
+    return "default";
+}
+
+const ResultOption = styled(ListItemButton)`
+    gap: ${({ theme }) => theme.spacing(3)};
+    margin: ${({ theme }) => theme.spacing(0, 2)};
+    padding: ${({ theme }) => theme.spacing(2, 2)};
+    border-radius: ${({ theme }) => Number(theme.shape.borderRadius) * 6}px;
+
+    & + &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: ${({ theme }) => theme.spacing(2)};
+        left: ${({ theme }) => theme.spacing(2)};
+        border-top: 1px solid ${({ theme }) => theme.palette.divider};
+    }
+
+    &:hover,
+    &.Mui-focusVisible {
+        background-color: ${({ theme }) => theme.palette.grey[50]};
+    }
+
+    &:hover::before,
+    &.Mui-focusVisible::before,
+    &:hover + &::before,
+    &.Mui-focusVisible + &::before {
+        border-top-color: transparent;
+    }
+
+    &:hover .${snippetClassName}, &.Mui-focusVisible .${snippetClassName} {
+        background-color: ${({ theme }) => theme.palette.background.paper};
     }
 `;
 
-const TypeLabel = styled(Typography)`
+const TypeIconCircle = styled("div", { shouldForwardProp: (prop) => prop !== "colorVariant" })<{ colorVariant: IconColorVariant }>`
+    display: flex;
     flex-shrink: 0;
-    line-height: 1.5;
-    color: ${({ theme }) => theme.palette.primary.dark};
-    font-weight: ${({ theme }) => theme.typography.fontWeightBold};
-`;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    color: ${({ theme, colorVariant }) => (colorVariant === "default" ? theme.palette.grey[600] : theme.palette[colorVariant].main)};
+    background-color: ${({ theme, colorVariant }) =>
+        colorVariant === "default" ? theme.palette.grey[50] : alpha(theme.palette[colorVariant].main, 0.1)};
 
-const SecondaryInformation = styled(Typography)`
-    min-width: 0;
+    .${listItemButtonClasses.root}:hover &,
+    .${listItemButtonClasses.focusVisible} & {
+        background-color: ${({ theme, colorVariant }) =>
+            colorVariant === "default" ? theme.palette.grey[100] : alpha(theme.palette[colorVariant].main, 0.2)};
+    }
 `;
 
 const Title = styled(Typography)`
     font-weight: ${({ theme }) => theme.typography.fontWeightMedium};
     overflow-wrap: anywhere;
+`;
+
+// The padding is on a wrapper because the clamped text overflows into its own padding
+const Snippet = styled("div")`
+    padding: ${({ theme }) => theme.spacing(1.5, 2)};
+    border-radius: ${({ theme }) => Number(theme.shape.borderRadius) * 6}px;
+    background-color: ${({ theme }) => theme.palette.grey[50]};
 `;
 
 const SnippetText = styled(Typography)`

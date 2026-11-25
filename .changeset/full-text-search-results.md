@@ -44,7 +44,7 @@ query Search($search: String!, $types: [String!]) {
 }
 ```
 
-`SearchHeaderItem` uses the new query. It shows a chip per type to filter the results, and the type and a highlighted snippet for each result. The type labels come from the `displayName` in the `entityDependencyMap`.
+`SearchHeaderItem` uses the new query and shows the search in a dialog, which `Ctrl+K` (`⌘+K` on macOS) opens from anywhere in the admin. The dialog shows a tab per type with its number of results, the results grouped by type with a highlighted snippet, and a gear menu to choose the searched types. The type labels come from the `displayName` in the `entityDependencyMap`.
 
 `FullTextSearchQueryService` and `FullTextSnippetService` are exported, so a site search resolver can return the same results.
 

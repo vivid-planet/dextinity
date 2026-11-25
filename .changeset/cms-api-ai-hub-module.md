@@ -14,3 +14,14 @@ AiHubModule.register({
     apiKey: config.aiHub.apiKey,
 }),
 ```
+
+**Body size**
+
+The chat sends the whole conversation with every message, so a long chat outgrows the JSON body limit of most apps. Raise the limit for the proxy in `main.ts`, before the app's own JSON parser, which skips a body that is already parsed. The AI Hub accepts 10 MB:
+
+```ts
+app.use("/api/ai-hub", json({ limit: "10mb" }));
+app.use(json({ limit: "1mb" }));
+```
+
+The proxy pipes the file uploads and speech recordings of the chat through unread, so no middleware may read a `multipart/form-data` body below `/api/ai-hub`.

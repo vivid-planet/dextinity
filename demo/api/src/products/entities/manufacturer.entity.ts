@@ -1,4 +1,4 @@
-import { EntityInfo, IsNullable, IsUndefinable, RequiredPermission, type TipTapRichTextBlockContent } from "@dextinity/cms-api";
+import { EntityInfo, IsNullable, IsUndefinable, RequiredPermission, type TipTapRichTextContent } from "@dextinity/cms-api";
 import { Embeddable, Embedded, Entity, Enum, Index, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
 import { BaseEntity, FullTextType, type IType, OptionalProps } from "@mikro-orm/postgresql";
 import { Field, ID, InputType, ObjectType } from "@nestjs/graphql";
@@ -117,7 +117,7 @@ export class Manufacturer extends BaseEntity {
 
     @Property({ type: "json", nullable: true })
     @Field(() => GraphQLJSONObject, { nullable: true })
-    description?: TipTapRichTextBlockContent = undefined;
+    description?: TipTapRichTextContent = undefined;
 
     @Property({ onUpdate: () => new Date() })
     @Field()

@@ -9,6 +9,8 @@ import {
     resolveTipTapOptions,
 } from "./createTipTapRichTextBlock.js";
 
+export type { JSONContent as TipTapRichTextContent } from "@tiptap/core";
+
 export interface IsTipTapRichTextOptions extends Omit<
     CreateTipTapRichTextBlockOptions,
     "link" | "childBlocks" | "indexSearchText" | "migrateFromDraftJs"

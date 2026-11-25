@@ -4,7 +4,7 @@
 
 Add `IsTipTapRichText` to validate TipTap rich text outside of blocks
 
-Use it in the input of content stored by `TipTapRichTextEditorField` in the Admin, e.g. a JSON property of an entity. It takes the same options as `createTipTapRichTextBlock`, except that `link` is a class that validates a link's data:
+Use it in the input of content stored by `TipTapRichTextEditorField` in the Admin, e.g. a JSON property of an entity. It takes the same options as `createTipTapRichTextBlock`, except that `link` is a class that validates a link's data. Type the property with `TipTapRichTextContent`:
 
 ```ts
 class UrlLinkData {
@@ -17,6 +17,6 @@ export class ManufacturerInput {
     @IsNullable()
     @IsTipTapRichText({ link: UrlLinkData })
     @Field(() => GraphQLJSONObject, { nullable: true })
-    description?: TipTapRichTextBlockContent;
+    description?: TipTapRichTextContent;
 }
 ```

@@ -1,4 +1,4 @@
-import { IsNullable, IsTipTapRichText, PartialType, type TipTapRichTextBlockContent } from "@dextinity/cms-api";
+import { IsNullable, IsTipTapRichText, PartialType, type TipTapRichTextContent } from "@dextinity/cms-api";
 import { Field, InputType } from "@nestjs/graphql";
 import { Coordinates } from "@src/products/coordinates.type.js";
 import { Address, AddressAsEmbeddable } from "@src/products/entities/manufacturer.entity.js";
@@ -35,7 +35,7 @@ export class ManufacturerInput {
     @IsNullable()
     @IsTipTapRichText({ textBlocks: [{ name: "paragraph", tag: "p" }] })
     @Field(() => GraphQLJSONObject, { nullable: true })
-    description?: TipTapRichTextBlockContent;
+    description?: TipTapRichTextContent;
 }
 @InputType()
 export class ManufacturerUpdateInput extends PartialType(ManufacturerInput) {}

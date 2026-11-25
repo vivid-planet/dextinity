@@ -136,7 +136,7 @@ export interface CreateTipTapRichTextBlockOptions {
      *
      * Content using a tag no text block is configured for, or naming a text block that isn't
      * configured for the tag it is stored as, is rejected during validation. Leave the `p` text
-     * block out for a heading-only block (e.g. a headline); that also disables lists, because a
+     * block out for heading-only content (e.g. a headline); that also disables lists, because a
      * list item's content starts with a paragraph.
      *
      * Must match the Admin's `textBlocks`, otherwise the API rejects content the editor produces.

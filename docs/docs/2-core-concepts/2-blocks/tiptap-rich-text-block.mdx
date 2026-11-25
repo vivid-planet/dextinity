@@ -627,7 +627,7 @@ export class ManufacturerInput {
     @IsNullable()
     @IsTipTapRichText({ textBlocks: [{ name: "paragraph", tag: "p" }] })
     @Field(() => GraphQLJSONObject, { nullable: true })
-    description?: TipTapRichTextBlockContent;
+    description?: TipTapRichTextContent;
 }
 ```
 

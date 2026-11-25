@@ -121,6 +121,12 @@ export function CommentLayer({ frameDocument, scale, notePage }: { frameDocument
     const pageComments = prototypeComments.filter((comment) => isOnPage(comment, notePage.prototypeId, notePage.page));
 
     function open(comment: PinnedComment) {
+        if (comment.id === openId) {
+            return;
+        }
+        if (openId) {
+            save(openId, draft);
+        }
         setOpenId(comment.id);
         setDraft(comment.text);
     }
@@ -180,6 +186,12 @@ export function CommentLayer({ frameDocument, scale, notePage }: { frameDocument
         };
     });
     const openPin = pins.find((pin) => pin.comment.id === openId);
+    const layerHeight = (frameDocument.defaultView?.innerHeight ?? 0) * scale;
+    // The layer clips what leaves the frame, so the editor stays inside it and opens above pins in the lower half
+    const editorPosition = openPin?.position && {
+        left: `clamp(0px, ${openPin.position.left}px, calc(100% - 260px))`,
+        ...(openPin.position.top > layerHeight / 2 ? { bottom: `calc(100% - ${openPin.position.top - 32}px)` } : { top: openPin.position.top + 16 }),
+    };
 
     return (
         <>
@@ -201,8 +213,8 @@ export function CommentLayer({ frameDocument, scale, notePage }: { frameDocument
                             </button>
                         ),
                 )}
-                {openPin?.position && (
-                    <div className={styles.commentEditor} style={{ top: openPin.position.top + 16, left: openPin.position.left }}>
+                {openPin && editorPosition && (
+                    <div className={styles.commentEditor} style={editorPosition}>
                         <Textarea
                             name="comment"
                             aria-label="Comment"

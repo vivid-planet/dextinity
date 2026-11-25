@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import type { PropsWithChildren } from "react";
+import { useState } from "react";
 import { expect, fn, screen } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
@@ -10,31 +10,10 @@ import { MenuGroup } from "../MenuGroup";
 import { MenuItem } from "../MenuItem";
 import styles from "./Menu.stories.module.scss";
 
-function InOpenMenu({ children }: PropsWithChildren) {
-    return (
-        <Menu
-            open
-            onOpenChange={() => {}}
-            trigger={
-                <Button variant="outlined" color="secondary">
-                    Actions
-                </Button>
-            }
-        >
-            {children}
-        </Menu>
-    );
-}
-
 const meta = {
     component: MenuGroup,
     title: "Building blocks/Menus & messages/MenuGroup",
     decorators: [
-        (Story) => (
-            <InOpenMenu>
-                <Story />
-            </InOpenMenu>
-        ),
         themeDecorator,
         (Story) => (
             <div className={styles.stage}>
@@ -55,6 +34,22 @@ const meta = {
         children: { control: false },
         className: { control: false },
         slotProps: { control: false },
+    },
+    render: (args) => {
+        const [isMenuOpen, setIsMenuOpen] = useState(true);
+        return (
+            <Menu
+                open={isMenuOpen}
+                onOpenChange={setIsMenuOpen}
+                trigger={
+                    <Button variant="outlined" color="secondary">
+                        Actions
+                    </Button>
+                }
+            >
+                <MenuGroup {...args} />
+            </Menu>
+        );
     },
 } satisfies Meta<typeof MenuGroup>;
 

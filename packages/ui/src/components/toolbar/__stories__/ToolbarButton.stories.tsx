@@ -14,9 +14,7 @@ const meta = {
     decorators: [
         (Story) => (
             <div className={styles.surface}>
-                <Toolbar aria-label="Formatting">
-                    <Story />
-                </Toolbar>
+                <Story />
             </div>
         ),
         themeDecorator,
@@ -34,14 +32,16 @@ const meta = {
     render: (args, context) => {
         const [selected, setSelected] = useControlledArg(args, "selected", context);
         return (
-            <ToolbarButton
-                {...args}
-                selected={selected}
-                onSelectedChange={(next) => {
-                    args.onSelectedChange?.(next);
-                    setSelected(next);
-                }}
-            />
+            <Toolbar aria-label="Formatting">
+                <ToolbarButton
+                    {...args}
+                    selected={selected}
+                    onSelectedChange={(next) => {
+                        args.onSelectedChange?.(next);
+                        setSelected(next);
+                    }}
+                />
+            </Toolbar>
         );
     },
 } satisfies Meta<typeof ToolbarButton>;

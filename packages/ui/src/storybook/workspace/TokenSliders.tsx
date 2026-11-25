@@ -4,28 +4,29 @@ import { Button } from "../../components/button/Button";
 import { Field } from "../../components/field/Field";
 import { Icon } from "../../components/icon/Icon";
 import { Slider } from "../../components/slider/Slider";
-import { getOverrideCss, playgroundTokens, tokenOverrideList } from "./tokenPlayground";
+import type { ThemeBrand } from "../../theme/types";
+import { getInitialValue, getOverrideCss, playgroundTokens, tokenOverrideList } from "./tokenPlayground";
 import styles from "./WorkspaceToolbarControls.module.scss";
 
 /**
  * Changes the brand's tokens of every prototype frame live, e.g. the accent hue or the corner radii, to try a theme idea and
  * pass it on as CSS.
  */
-export function TokenSliders() {
+export function TokenSliders({ brand }: { brand: ThemeBrand }) {
     const [copied, setCopied] = useState(false);
     const overrides = tokenOverrideList.useItems();
 
+    // Kept even when it matches the brand's value, so that it stays when the designer switches to a brand with another value
     function change(name: string, value: number) {
-        const initial = playgroundTokens.find((token) => token.name === name)?.initial;
-        tokenOverrideList.update((items) => [...items.filter((item) => item.name !== name), ...(value === initial ? [] : [{ name, value }])]);
+        tokenOverrideList.update((items) => [...items.filter((item) => item.name !== name), { name, value }]);
     }
 
     return (
         <>
             {playgroundTokens.map((token) => {
-                const value = overrides.find((item) => item.name === token.name)?.value ?? token.initial;
+                const value = overrides.find((item) => item.name === token.name)?.value ?? getInitialValue(token, brand);
                 return (
-                    <Field key={token.name} label={`${token.label} · ${value}${token.unit}`}>
+                    <Field key={token.name} layout="group" label={`${token.label} · ${value}${token.unit}`}>
                         <Slider min={token.min} max={token.max} step={token.step} value={value} onChange={(next) => change(token.name, next)} />
                     </Field>
                 );

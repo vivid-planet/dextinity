@@ -260,6 +260,10 @@
     display: flex;
     min-inline-size: 0;
     min-block-size: 0;
+
+    &[hidden] {
+        display: none;
+    }
 }
 
 // Storybook's own UI, with its sidebar, toolbar, and docs, in place of the workspace's story list and canvas

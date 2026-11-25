@@ -5,7 +5,7 @@ import { Icon } from "../../components/icon/Icon";
 import { IconButton } from "../../components/iconButton/IconButton";
 import { Textarea } from "../../components/textarea/Textarea";
 import { readWrittenText } from "../textLength";
-import { findElementByPath, getElementPath, getFrameRect } from "./frameElements";
+import { findElementByPath, type FrameRect, getElementPath, getFrameRect } from "./frameElements";
 import styles from "./FrameTools.module.scss";
 import { hotspotList } from "./hotspots";
 import { commentList, createNoteId, isOnPage, type PinnedComment, type TextChange, textChangeList } from "./workspaceNotes";
@@ -125,6 +125,12 @@ export function CommentLayer({ frameDocument, scale, notePage }: { frameDocument
     const pageComments = prototypeComments.filter((comment) => isOnPage(comment, notePage.prototypeId, notePage.page));
 
     function open(comment: PinnedComment) {
+        if (comment.id === openId) {
+            return;
+        }
+        if (openId) {
+            save(openId, draft);
+        }
         setOpenId(comment.id);
         setDraft(comment.text);
     }
@@ -184,6 +190,12 @@ export function CommentLayer({ frameDocument, scale, notePage }: { frameDocument
         };
     });
     const openPin = pins.find((pin) => pin.comment.id === openId);
+    const layerHeight = (frameDocument.defaultView?.innerHeight ?? 0) * scale;
+    // The layer clips what leaves the frame, so the editor stays inside it and opens above pins in the lower half
+    const editorPosition = openPin?.position && {
+        left: `clamp(0px, ${openPin.position.left}px, calc(100% - 260px))`,
+        ...(openPin.position.top > layerHeight / 2 ? { bottom: `calc(100% - ${openPin.position.top - 32}px)` } : { top: openPin.position.top + 16 }),
+    };
 
     return (
         <>
@@ -205,8 +217,8 @@ export function CommentLayer({ frameDocument, scale, notePage }: { frameDocument
                             </button>
                         ),
                 )}
-                {openPin?.position && (
-                    <div className={styles.commentEditor} style={{ top: openPin.position.top + 16, left: openPin.position.left }}>
+                {openPin && editorPosition && (
+                    <div className={styles.commentEditor} style={editorPosition}>
                         <Textarea
                             name="comment"
                             aria-label="Comment"
@@ -397,13 +409,8 @@ export function TextLayer({ frameDocument, notePage }: { frameDocument: Document
         };
     }, [frameDocument]);
 
+    // The prototype restores the original text itself, since it would otherwise write the change back before it learns of the revert
     function revert(change: TextChange) {
-        if (isOnPage(change, notePage.prototypeId, notePage.page)) {
-            const element = findElementByPath(frameDocument, change.path);
-            if (element) {
-                writeOwnText(element, change.original);
-            }
-        }
         textChangeList.update((items) => items.filter((item) => item.id !== change.id));
     }
 
@@ -447,15 +454,31 @@ export function TextLayer({ frameDocument, notePage }: { frameDocument: Document
  */
 export function usePageTextChanges(prototypeId: string, page: string) {
     const changes = textChangeList.useItems();
+    const previousChangesRef = useRef(changes);
     useEffect(() => {
+        // Until this effect follows a page change, the document already shows the next page, which the changes aren't for
+        const showsPage = () => {
+            const shownPage = decodeURIComponent(window.location.hash.slice(1));
+            return shownPage === "" || shownPage === page;
+        };
+        const removedChanges = previousChangesRef.current.filter(
+            (previous) => isOnPage(previous, prototypeId, page) && !changes.some((change) => change.id === previous.id),
+        );
+        previousChangesRef.current = changes;
+        if (showsPage()) {
+            for (const change of removedChanges) {
+                const element = findElementByPath(document, change.path);
+                if (element && !(element as HTMLElement).isContentEditable && readWrittenText(element) === change.text) {
+                    writeOwnText(element, change.original);
+                }
+            }
+        }
         const pageChanges = changes.filter((change) => isOnPage(change, prototypeId, page));
         if (pageChanges.length === 0) {
             return;
         }
         const apply = () => {
-            // Until this effect follows a page change, the document already shows the next page, which the changes aren't for
-            const shownPage = decodeURIComponent(window.location.hash.slice(1));
-            if (shownPage !== "" && shownPage !== page) {
+            if (!showsPage()) {
                 return;
             }
             for (const change of pageChanges) {
@@ -472,13 +495,23 @@ export function usePageTextChanges(prototypeId: string, page: string) {
     }, [changes, prototypeId, page]);
 }
 
+// Opens toward the larger part of the frame, so that the layer, which clips everything outside the frame, doesn't cut the picker off
+function getPickerPosition({ rect, frameWidth, frameHeight }: { rect: FrameRect; frameWidth: number; frameHeight: number }, scale: number) {
+    const below = rect.top + rect.height / 2 < frameHeight / 2;
+    const fromLeft = rect.left + rect.width / 2 < frameWidth / 2;
+    return {
+        ...(below ? { top: (rect.top + rect.height) * scale + 6 } : { bottom: (frameHeight - rect.top) * scale + 6 }),
+        ...(fromLeft ? { left: rect.left * scale } : { right: (frameWidth - rect.left - rect.width) * scale }),
+    };
+}
+
 /**
  * Links an element of the page to another page, without code: a click on an element offers the pages, and the prototype then
  * opens the chosen page on a click there, also outside the tool. Shown as boxes with the page they open.
  */
 export function HotspotLayer({ frameDocument, scale, notePage }: { frameDocument: Document; scale: number; notePage: NotePage }) {
     const hotspots = hotspotList.useItems();
-    const [picking, setPicking] = useState<{ path: number[]; top: number; left: number } | null>(null);
+    const [picking, setPicking] = useState<{ path: number[]; rect: FrameRect; frameWidth: number; frameHeight: number } | null>(null);
     const prototypeHotspots = hotspots.filter((hotspot) => hotspot.prototypeId === notePage.prototypeId);
     const pageHotspots = prototypeHotspots.filter((hotspot) => isOnPage(hotspot, notePage.prototypeId, notePage.page));
 
@@ -488,8 +521,8 @@ export function HotspotLayer({ frameDocument, scale, notePage }: { frameDocument
         if (!element || element === frameDocument.body || element === frameDocument.documentElement) {
             return;
         }
-        const rect = getFrameRect(element);
-        setPicking({ path: getElementPath(element), top: rect.top + rect.height, left: rect.left });
+        const { clientWidth, clientHeight } = frameDocument.documentElement;
+        setPicking({ path: getElementPath(element), rect: getFrameRect(element), frameWidth: clientWidth, frameHeight: clientHeight });
     });
 
     function link(target: string) {
@@ -524,7 +557,7 @@ export function HotspotLayer({ frameDocument, scale, notePage }: { frameDocument
                     );
                 })}
                 {picking && (
-                    <div className={styles.commentEditor} style={{ top: picking.top * scale + 6, left: picking.left * scale }}>
+                    <div className={styles.commentEditor} style={getPickerPosition(picking, scale)}>
                         <p className={styles.cardTitle}>Opens on a click</p>
                         <ul className={styles.pagePicker}>
                             {notePage.pageIds

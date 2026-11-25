@@ -1,3 +1,4 @@
+import type { ThemeBrand } from "../../theme/types";
 import { createStoredList } from "./workspaceNotes";
 
 /** A brand token the designer sets for all prototype frames, in place of the theme's value. */
@@ -23,6 +24,23 @@ export const playgroundTokens = [
     { name: "--dextinity-brand-radius-factor", label: "Other radii", min: 0, max: 2, step: 0.05, initial: 1, unit: "×" },
     { name: "--dextinity-brand-display-font-weight", label: "Title weight", min: 300, max: 800, step: 50, initial: 500, unit: "" },
 ] as const;
+
+type PlaygroundToken = (typeof playgroundTokens)[number];
+
+// The values `_brand.scss` sets for a brand apart from the ones of `dextinity`, which are the tokens' `initial`
+const brandInitials: Record<ThemeBrand, Partial<Record<PlaygroundToken["name"], number>>> = {
+    dextinity: {},
+    "ai-hub": {
+        "--dextinity-brand-primary-hue": 288,
+        "--dextinity-brand-primary-chroma": 0.2,
+        "--dextinity-brand-secondary-hue": 40,
+    },
+};
+
+/** The token's value in the brand, which the slider shows as long as the designer hasn't set one. */
+export function getInitialValue(token: PlaygroundToken, brand: ThemeBrand) {
+    return brandInitials[brand][token.name] ?? token.initial;
+}
 
 function formatValue(name: string, value: number) {
     const token = playgroundTokens.find((candidate) => candidate.name === name);

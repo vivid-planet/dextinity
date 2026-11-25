@@ -36,7 +36,9 @@ export function MovePageDialog({
             return { value: page.id, label: page.label, group: trail.length > 0 ? trail.map((ancestor) => ancestor.label).join(" › ") : "Root" };
         });
     const target = allPages.find((page) => page.id === targetId);
-    const targetPath = target?.path == null || target.path === "/" ? "" : target.path;
+    // Below a link page, the path continues from the nearest page above it with a local path, as moving builds it
+    const pathParent = target == null ? undefined : [...(findTrail(pages, target.id) ?? []), target].findLast((page) => page.type !== "link");
+    const targetPath = pathParent?.path == null || pathParent.path === "/" ? "" : pathParent.path;
     const single = moving.length === 1 ? moving[0] : undefined;
     const title = single != null ? `Move “${single.label}”` : `Move ${moving.length} pages`;
 

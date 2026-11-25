@@ -6,7 +6,6 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { IconButton } from "../../iconButton/IconButton";
 import { type TreeNode, TreeView, type TreeViewMove, type TreeViewProps } from "../TreeView";
-import treeViewTokens from "../TreeView.tokens.scss?raw";
 import styles from "./TreeView.stories.module.scss";
 
 const pageTree: TreeNode[] = [
@@ -123,7 +122,6 @@ const meta = {
     component: TreeView,
     title: "Building blocks/Tree/TreeView",
     decorators: [themeDecorator],
-    parameters: { tokens: treeViewTokens },
     args: {
         "aria-label": "Pages",
         nodes: pageTree,

@@ -25,7 +25,14 @@ export const getRecursiveChildrenOfPreviewElement = (rootElement: Element): Elem
     return previewElementChildNodes;
 };
 
-export const getCombinedPositioningOfElements = (elements: Element[]) => {
+export const getCombinedPositioningOfElements = (allElements: Element[]) => {
+    // An element with `display: none` reports its box at the top left corner of the window.
+    const elements = allElements.filter((element) => element.getClientRects().length > 0);
+
+    if (elements.length === 0) {
+        return null;
+    }
+
     const topPositions: number[] = [];
     const leftPositions: number[] = [];
     const bottomPositions: number[] = [];

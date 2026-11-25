@@ -45,6 +45,8 @@ export interface ProgressBarProps extends Omit<HTMLAttributes<HTMLDivElement>, "
     max?: number;
     /** Visible text above the bar, e.g. "Uploading 3 files". Without it, give the bar an `aria-label`. */
     label?: ReactNode;
+    /** Names the bar when it has no visible `label`. */
+    "aria-label"?: string;
     /**
      * Shows the value at the end of the label row, as a percentage unless `format` says otherwise.
      *

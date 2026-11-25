@@ -6,7 +6,6 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { IconButton } from "../../iconButton/IconButton";
 import { DevicePreview } from "../DevicePreview";
-import devicePreviewTokens from "../DevicePreview.tokens.scss?raw";
 import styles from "./DevicePreview.stories.module.scss";
 
 function SamplePage() {
@@ -39,7 +38,6 @@ const meta = {
     component: DevicePreview,
     title: "Building blocks/Blocks & preview/DevicePreview",
     decorators: [themeDecorator],
-    parameters: { tokens: devicePreviewTokens },
     args: {
         url: "example.com/careers/open-positions",
         device: "desktop",

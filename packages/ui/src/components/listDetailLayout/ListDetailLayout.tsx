@@ -1,14 +1,5 @@
 import { clsx } from "clsx";
-import {
-    type FocusEvent,
-    forwardRef,
-    type HTMLAttributes,
-    type KeyboardEvent,
-    type PropsWithChildren,
-    type ReactNode,
-    useEffect,
-    useRef,
-} from "react";
+import { type FocusEvent, forwardRef, type HTMLAttributes, type KeyboardEvent, type ReactNode, useEffect, useRef } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import styles from "./ListDetailLayout.module.scss";
@@ -38,7 +29,7 @@ export interface ListDetailLayoutSlotProps {
     sidePanel?: SlotPropsValue<ListDetailLayoutOwnerState, "aside">;
 }
 
-export interface ListDetailLayoutProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children">, PropsWithChildren {
+export interface ListDetailLayoutProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children"> {
     /** The page header with the scope, the count, and the primary action, e.g. a `PageHeader`. */
     header: ReactNode;
     /** Search and filters above the list, e.g. a `FilterBar`. */
@@ -54,6 +45,8 @@ export interface ListDetailLayoutProps extends Omit<HTMLAttributes<HTMLDivElemen
      * outside the panel that had it last, e.g. the row that opened it.
      */
     onOpenChange: (open: boolean) => void;
+    /** The list, e.g. a table. A click on a row opens the side panel; the list stays visible. */
+    children?: ReactNode;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
@@ -63,8 +56,6 @@ export interface ListDetailLayoutProps extends Omit<HTMLAttributes<HTMLDivElemen
 /**
  * The layout of a list whose short records are edited in a side panel next to it: the page header, a toolbar, the list, and the side
  * panel. In narrow layouts the side panel moves above the list.
- *
- * `children`: The list, e.g. a table. A click on a row opens the side panel; the list stays visible.
  */
 export const ListDetailLayout = forwardRef<HTMLDivElement, ListDetailLayoutProps>(function ListDetailLayout(
     { header, toolbar, children, sidePanel, sidePanelLabel, open, onOpenChange, className, slotProps, onFocusCapture, ...restProps },

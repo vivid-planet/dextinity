@@ -6,7 +6,6 @@ import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { SegmentedControl, type SegmentedControlOption, type SegmentedControlProps } from "../SegmentedControl";
-import segmentedControlTokens from "../SegmentedControl.tokens.scss?raw";
 import styles from "./SegmentedControl.stories.module.scss";
 
 const employment: SegmentedControlOption[] = [
@@ -60,7 +59,6 @@ const meta = {
     component: SegmentedControl,
     title: "Building blocks/Selection & toggles/SegmentedControl",
     decorators: [themeDecorator],
-    parameters: { tokens: segmentedControlTokens },
     args: {
         "aria-label": "Employment",
         options: employment,

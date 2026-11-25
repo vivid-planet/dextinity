@@ -86,6 +86,7 @@ export type {
     TipTapListOptions,
     TipTapPlaceholder,
     TipTapRichTextBlockContent,
+    TipTapRichTextBlockInterface,
     TipTapTextBlock,
     TipTapTextBlockElement,
     TipTapTextBlockElementProps,

@@ -6,7 +6,6 @@ import {
     forwardRef,
     type HTMLAttributes,
     type MouseEvent,
-    type PropsWithChildren,
     type ReactNode,
     type RefAttributes,
     type SyntheticEvent,
@@ -61,8 +60,10 @@ interface ChipSlotProps<StartIcon extends ElementType, EndIcon extends ElementTy
     clearButton?: SlotPropsValue<ChipOwnerState, ClearButton>;
 }
 
-interface ChipOwnProps<StartIcon extends ElementType, EndIcon extends ElementType, ClearButton extends ClearButtonElement>
-    extends Omit<HTMLAttributes<HTMLElement>, "className" | "color">, PropsWithChildren {
+interface ChipOwnProps<StartIcon extends ElementType, EndIcon extends ElementType, ClearButton extends ClearButtonElement> extends Omit<
+    HTMLAttributes<HTMLElement>,
+    "className" | "children" | "color"
+> {
     /**
      * Visual emphasis: `contained` for chips that need attention, `outlined` for quieter ones, for example in a long list of filters.
      *
@@ -91,6 +92,8 @@ interface ChipOwnProps<StartIcon extends ElementType, EndIcon extends ElementTyp
     startIcon?: ReactNode;
     /** The icon to render after the label. */
     endIcon?: ReactNode;
+    /** The label, e.g. a value or a status. */
+    children: ReactNode;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Sets which element a named inner part renders as. */
@@ -135,8 +138,6 @@ function preventDefault(event: SyntheticEvent) {
 
 /**
  * A compact element for a value, a status, or a filter.
- *
- * `children`: The label, e.g. a value or a status.
  */
 export const Chip: <StartIcon extends ElementType = "span", EndIcon extends ElementType = "span", ClearButton extends ClearButtonElement = "button">(
     props: ChipProps<StartIcon, EndIcon, ClearButton> & RefAttributes<HTMLElement>,

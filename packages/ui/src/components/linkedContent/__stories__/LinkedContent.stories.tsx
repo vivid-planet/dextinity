@@ -4,7 +4,6 @@ import { expect, fn, userEvent, waitFor } from "storybook/test";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { LinkedContent } from "../LinkedContent";
-import linkedContentTokens from "../LinkedContent.tokens.scss?raw";
 import styles from "./LinkedContent.stories.module.scss";
 
 const iconOptions = {
@@ -25,7 +24,6 @@ const meta = {
         ),
         themeDecorator,
     ],
-    parameters: { tokens: linkedContentTokens },
     args: {
         title: "Job postings",
         description: "12 entries are shown here",
@@ -33,7 +31,6 @@ const meta = {
         onClick: fn((event) => event.preventDefault()),
     },
     argTypes: {
-        onClick: { description: "Called when the link is clicked, e.g. to navigate with a client-side router." },
         icon: { control: "select", options: Object.keys(iconOptions), mapping: iconOptions },
         className: { control: false },
         slotProps: { control: false },

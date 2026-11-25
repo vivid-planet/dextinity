@@ -11,7 +11,6 @@ import { MenuRadioGroup } from "../../menu/MenuRadioGroup";
 import { MenuRadioItem } from "../../menu/MenuRadioItem";
 import { StatusIndicator, type StatusIndicatorStatus } from "../../statusIndicator/StatusIndicator";
 import { FilterChip, type FilterChipProps } from "../FilterChip";
-import filterChipTokens from "../FilterChip.tokens.scss?raw";
 import styles from "./FilterChip.stories.module.scss";
 
 const statusFilters: Array<{ value: "all" | StatusIndicatorStatus; label: string; count: number }> = [
@@ -87,13 +86,13 @@ const meta = {
     component: FilterChip,
     title: "Building blocks/Selection & toggles/FilterChip",
     decorators: [themeDecorator],
-    parameters: { tokens: filterChipTokens },
     args: {
         children: "Published",
         selected: false,
         onClick: fn(),
     },
     argTypes: {
+        children: { control: "text" },
         startAdornment: { control: "select", options: Object.keys(adornmentOptions), mapping: adornmentOptions },
         endAdornment: { control: "select", options: Object.keys(adornmentOptions), mapping: adornmentOptions },
         className: { control: false },

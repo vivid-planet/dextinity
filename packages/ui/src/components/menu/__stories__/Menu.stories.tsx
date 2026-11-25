@@ -8,7 +8,6 @@ import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
 import { IconButton } from "../../iconButton/IconButton";
 import { Menu } from "../Menu";
-import menuTokens from "../Menu.tokens.scss?raw";
 import { MenuGroup } from "../MenuGroup";
 import { MenuItem } from "../MenuItem";
 import { MenuRadioGroup } from "../MenuRadioGroup";
@@ -49,7 +48,6 @@ const meta = {
             </div>
         ),
     ],
-    parameters: { tokens: menuTokens },
     render: (args, context) => {
         const [open, setOpen] = useControlledArg(args, "open", context);
         return (

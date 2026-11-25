@@ -1,13 +1,5 @@
 import { clsx } from "clsx";
-import {
-    type ElementType,
-    type ForwardedRef,
-    forwardRef,
-    type HTMLAttributes,
-    type PropsWithChildren,
-    type ReactNode,
-    type RefAttributes,
-} from "react";
+import { type ElementType, type ForwardedRef, forwardRef, type HTMLAttributes, type ReactNode, type RefAttributes } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Tooltip } from "../tooltip/Tooltip";
@@ -52,8 +44,7 @@ export interface StatusIndicatorSlotProps<Dot extends ElementType> {
     dot?: SlotPropsValue<StatusIndicatorOwnerState, Dot>;
 }
 
-export interface StatusIndicatorProps<Dot extends ElementType = "span">
-    extends Omit<HTMLAttributes<HTMLSpanElement>, "className" | "children">, PropsWithChildren {
+export interface StatusIndicatorProps<Dot extends ElementType = "span"> extends Omit<HTMLAttributes<HTMLSpanElement>, "className" | "children"> {
     /** Sets the color, the shape of the dot, and the default text. */
     status: StatusIndicatorStatus;
     /** The system words, e.g. translated; missing ones fall back to `defaultStatusIndicatorLabels`. */
@@ -72,6 +63,8 @@ export interface StatusIndicatorProps<Dot extends ElementType = "span">
      * @defaultValue `false`
      */
     decorative?: boolean;
+    /** Custom text, e.g. "Active" for redirects. Without it, the status's system word from `labels` is shown. */
+    children?: ReactNode;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Sets which element a named inner part renders as. */
@@ -82,8 +75,6 @@ export interface StatusIndicatorProps<Dot extends ElementType = "span">
 
 /**
  * Shows a status as a dot plus text, never by color alone. The usual state stays quiet; only deviations stand out.
- *
- * `children`: Custom text, e.g. "Active" for redirects. Without it, the status's system word from `labels` is shown.
  */
 export const StatusIndicator: <Dot extends ElementType = "span">(props: StatusIndicatorProps<Dot> & RefAttributes<HTMLSpanElement>) => ReactNode =
     forwardRef(function StatusIndicator<Dot extends ElementType = "span">(

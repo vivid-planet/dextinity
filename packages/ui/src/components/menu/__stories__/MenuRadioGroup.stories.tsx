@@ -7,7 +7,6 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
 import { Menu } from "../Menu";
-import menuTokens from "../Menu.tokens.scss?raw";
 import { MenuRadioGroup } from "../MenuRadioGroup";
 import { MenuRadioItem } from "../MenuRadioItem";
 import styles from "./Menu.stories.module.scss";
@@ -44,7 +43,6 @@ const meta = {
             </div>
         ),
     ],
-    parameters: { tokens: menuTokens },
     render: (args, context) => {
         const [value, setValue] = useControlledArg(args, "value", context);
         return (

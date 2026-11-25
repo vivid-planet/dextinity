@@ -2130,6 +2130,25 @@ The options of `useTableQuery` and `useSaveConflictQuery` are based on the Apoll
 
 `ITableQueryHookResult` is a type alias now, so you can't extend it with declaration merging.
 
+### Import the color picker from `@dextinity/admin`
+
+The `@dextinity/admin-color-picker` package has been merged into `@dextinity/admin`. Remove the package:
+
+```diff title="admin/package.json"
+{
+    "dependencies": {
+-       "@dextinity/admin-color-picker": "10.15.0",
+    }
+}
+```
+
+Import its components and types from `@dextinity/admin` instead:
+
+```diff
+- import { ColorField } from "@dextinity/admin-color-picker";
++ import { ColorField } from "@dextinity/admin";
+```
+
 <!-- "Verify lint passes" must always be the last step for this service. -->
 
 ### Verify lint passes
@@ -2252,6 +2271,15 @@ npm install mjml@^5.4.1
 ```
 
 Then verify that the package still builds and lint passes.
+
+### Add `id="body"` to mails without `MjmlMailRoot`
+
+`renderMailHtml` no longer adds `id="body"` to the `<body>` of every mail. `MjmlMailRoot` sets it on its `MjmlBody` now. If a mail renders its own `MjmlBody` instead of using `MjmlMailRoot` and its CSS targets `#body`, set the id yourself:
+
+```diff
+- <MjmlBody>
++ <MjmlBody id="body">
+```
 
 ### Test the mails in every supported mail client
 

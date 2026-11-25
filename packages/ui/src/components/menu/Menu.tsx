@@ -1,6 +1,6 @@
 import { Menu as BaseMenu } from "@base-ui/react/menu";
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type PropsWithChildren, type ReactElement } from "react";
+import { forwardRef, type HTMLAttributes, type ReactElement, type ReactNode } from "react";
 
 import { popupCollisionPadding } from "../../utils/popupCollisionPadding";
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
@@ -23,7 +23,7 @@ export interface MenuSlotProps {
     positioner?: SlotPropsValue<MenuOwnerState, typeof BaseMenu.Positioner>;
 }
 
-export interface MenuProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children">, PropsWithChildren {
+export interface MenuProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children"> {
     /** The element that opens the menu, e.g. an `IconButton`. It must accept a ref and event handlers; it gets `aria-haspopup` and `aria-expanded`. */
     trigger: ReactElement;
     /** Whether the menu is open. */
@@ -42,6 +42,8 @@ export interface MenuProps extends Omit<HTMLAttributes<HTMLDivElement>, "classNa
      * @defaultValue `false`
      */
     disabled?: boolean;
+    /** The entries: `MenuItem`, `MenuLinkItem`, `MenuCheckboxItem`, `MenuRadioGroup`, `MenuGroup`, `MenuSeparator`, and `MenuSubmenu`. */
+    children: ReactNode;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
@@ -50,8 +52,6 @@ export interface MenuProps extends Omit<HTMLAttributes<HTMLDivElement>, "classNa
 
 /**
  * A list of actions at a trigger. Arrow keys move through the items, Enter selects, Escape closes.
- *
- * `children`: The entries: `MenuItem`, `MenuCheckboxItem`, `MenuRadioGroup`, `MenuGroup`, `MenuSeparator`, and `MenuSubmenu`.
  */
 export const Menu = forwardRef<HTMLDivElement, MenuProps>(function Menu(
     { trigger, children, open, onOpenChange, placement = "bottom-start", disabled = false, className, slotProps, ...restProps },

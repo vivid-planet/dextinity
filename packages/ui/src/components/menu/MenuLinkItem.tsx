@@ -40,6 +40,8 @@ export interface MenuLinkItemProps extends Omit<BaseMenu.LinkItem.Props, "classN
     className?: string;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
     slotProps?: MenuLinkItemSlotProps;
+    /** Replaces the rendered `<a>` element, e.g. with a router's link component, which receives the link's props. */
+    render?: BaseMenu.LinkItem.Props["render"];
 }
 
 /**

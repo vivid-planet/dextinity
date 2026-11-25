@@ -1,6 +1,6 @@
 import { Toolbar as BaseToolbar } from "@base-ui/react/toolbar";
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type PropsWithChildren } from "react";
+import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 
 import styles from "./ToolbarGroup.module.scss";
 
@@ -11,7 +11,7 @@ export type ToolbarGroupOwnerState = {
     disabled: boolean;
 };
 
-export interface ToolbarGroupProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children">, PropsWithChildren {
+export interface ToolbarGroupProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children"> {
     /** The accessible name of the group, e.g. "Text style". */
     "aria-label"?: string;
     /**
@@ -20,14 +20,14 @@ export interface ToolbarGroupProps extends Omit<HTMLAttributes<HTMLDivElement>, 
      * @defaultValue `false`
      */
     disabled?: boolean;
+    /** The controls of the group. */
+    children: ReactNode;
     /** Added alongside the component's own classes. */
     className?: string;
 }
 
 /**
  * Related controls inside a `Toolbar`, e.g. bold and italic. Separate groups with `ToolbarSeparator`.
- *
- * `children`: The controls of the group.
  */
 export const ToolbarGroup = forwardRef<HTMLDivElement, ToolbarGroupProps>(function ToolbarGroup(
     { children, disabled = false, className, ...restProps },

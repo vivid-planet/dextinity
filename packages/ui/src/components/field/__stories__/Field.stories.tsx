@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, screen, userEvent, waitFor } from "storybook/test";
 
+import { fieldPropArgTypes } from "../../../storybook/fieldStoryArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Checkbox } from "../../checkbox/Checkbox";
 import { DatePicker } from "../../datePicker/DatePicker";
@@ -12,7 +13,6 @@ import { Select } from "../../select/Select";
 import { Toolbar } from "../../toolbar/Toolbar";
 import { ToolbarButton } from "../../toolbar/ToolbarButton";
 import { Field, type FieldControlProps } from "../Field";
-import fieldTokens from "../Field.tokens.scss?raw";
 import styles from "./Field.stories.module.scss";
 
 function TextInput({ name = "title", initialValue = "" }: { name?: string; initialValue?: string }) {
@@ -71,29 +71,19 @@ function EditorControl(control: FieldControlProps) {
     );
 }
 
-const adornmentOptions = {
-    Domain: "example.com",
-    Unit: "€ / year",
-    Search: <Icon name="search" />,
-};
-
 const meta = {
     component: Field,
     title: "Building blocks/Form fields/Field",
     decorators: [themeDecorator],
-    parameters: { tokens: fieldTokens },
     args: {
         label: "Title",
         children: <TextInput initialValue="Senior UX Designer" />,
     },
     argTypes: {
-        state: { control: "select", options: ["default", "success", "warning", "error"] },
-        size: { control: "radio", options: ["small", "default", "large"] },
+        ...fieldPropArgTypes,
         layout: { control: "radio", options: ["inline", "stacked", "group"] },
-        prefix: { control: "select", options: Object.keys(adornmentOptions), mapping: adornmentOptions },
-        suffix: { control: "select", options: Object.keys(adornmentOptions), mapping: adornmentOptions },
+        counter: { control: "text" },
         children: { control: false },
-        actions: { control: false },
         labels: { control: false },
         className: { control: false },
         slots: { control: false },

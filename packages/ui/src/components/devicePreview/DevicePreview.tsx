@@ -1,15 +1,5 @@
 import { clsx } from "clsx";
-import {
-    type CSSProperties,
-    forwardRef,
-    type HTMLAttributes,
-    type PropsWithChildren,
-    type ReactNode,
-    type SyntheticEvent,
-    useEffect,
-    useRef,
-    useState,
-} from "react";
+import { type CSSProperties, forwardRef, type HTMLAttributes, type ReactNode, type SyntheticEvent, useEffect, useRef, useState } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Icon } from "../icon/Icon";
@@ -87,7 +77,7 @@ export interface DevicePreviewSlotProps {
     loadingOverlay?: SlotPropsValue<DevicePreviewOwnerState, "div">;
 }
 
-export interface DevicePreviewProps extends Omit<HTMLAttributes<HTMLDivElement>, "className">, PropsWithChildren {
+export interface DevicePreviewProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children"> {
     /** The address of the previewed page, shown above it. */
     url: string;
     /** The device whose width the page is shown at. */
@@ -128,6 +118,8 @@ export interface DevicePreviewProps extends Omit<HTMLAttributes<HTMLDivElement>,
     actions?: ReactNode;
     /** The built-in texts. */
     labels?: Partial<DevicePreviewLabels>;
+    /** The previewed page, e.g. the rendered blocks. It is laid out at the device's width. Leave it out when using `src`. */
+    children?: ReactNode;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
@@ -136,8 +128,6 @@ export interface DevicePreviewProps extends Omit<HTMLAttributes<HTMLDivElement>,
 
 /**
  * The preview of a website page with a device switch: lays the page out at the device's width and scales it down to fit.
- *
- * `children`: The previewed page, e.g. the rendered blocks. It is laid out at the device's width. Leave it out when using `src`.
  */
 export const DevicePreview = forwardRef<HTMLDivElement, DevicePreviewProps>(function DevicePreview(
     {

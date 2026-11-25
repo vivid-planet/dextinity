@@ -8,7 +8,6 @@ import { Button } from "../../button/Button";
 import { Field } from "../../field/Field";
 import { Input } from "../../input/Input";
 import { Dialog, type DialogProps } from "../Dialog";
-import dialogTokens from "../Dialog.tokens.scss?raw";
 import { DialogFormActions } from "../DialogFormActions";
 import styles from "./Dialog.stories.module.scss";
 
@@ -39,7 +38,7 @@ const meta = {
     component: Dialog,
     title: "Building blocks/Modals & overlays/Dialog",
     decorators: [themeDecorator],
-    parameters: { tokens: dialogTokens, closedOnDocsPage: true },
+    parameters: { closedOnDocsPage: true },
     render: (args, context) => <DialogWithTrigger {...args} {...useOpenArgProps(args, context)} />,
     args: {
         open: false,

@@ -17,30 +17,13 @@
 
 .header {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: var(--dextinity-card-header-gap);
+    box-sizing: border-box;
+    min-block-size: var(--dextinity-card-header-min-height);
     padding: var(--dextinity-card-header-padding);
-    border-start-start-radius: inherit;
-    border-start-end-radius: inherit;
-    background: var(--dextinity-card-header-background);
-    color: var(--dextinity-card-header-foreground);
-
-    @include forced-colors.surface;
-    @include forced-colors.separator(block-end);
-}
-
-.orb {
-    display: grid;
-    flex: none;
-    place-items: center;
-    inline-size: var(--dextinity-card-orb-size);
-    block-size: var(--dextinity-card-orb-size);
-    border-radius: 50%;
-    background: var(--dextinity-card-orb-background);
-    box-shadow: var(--dextinity-card-orb-shadow);
-    color: var(--dextinity-card-orb-foreground);
-
-    --dextinity-icon-size: var(--dextinity-card-orb-icon-size);
+    border-block-end: var(--dextinity-line-width) solid var(--dextinity-card-header-line-color);
 }
 
 .title {
@@ -58,16 +41,13 @@
     white-space: nowrap;
 }
 
-.link {
+// The actions keep to the end of the header; where they don't fit next to the title, they move below it
+.actions {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
+    gap: var(--dextinity-card-actions-gap);
     margin-inline-start: auto;
-    padding-inline-end: var(--dextinity-space-1-5);
-
-    --dextinity-link-secondary-foreground: var(--dextinity-card-header-foreground);
-    --dextinity-link-secondary-foreground-hover: var(--dextinity-card-header-foreground);
-    --dextinity-link-accent-foreground: var(--dextinity-card-header-foreground);
-    --dextinity-link-accent-foreground-hover: var(--dextinity-card-header-foreground);
 }
 
 .body {

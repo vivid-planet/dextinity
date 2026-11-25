@@ -6,7 +6,6 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
 import { Menu } from "../Menu";
-import menuTokens from "../Menu.tokens.scss?raw";
 import { MenuItem } from "../MenuItem";
 import styles from "./Menu.stories.module.scss";
 
@@ -48,13 +47,11 @@ const meta = {
             </div>
         ),
     ],
-    parameters: { tokens: menuTokens },
     args: {
         label: "Duplicate",
         onClick: fn(),
     },
     argTypes: {
-        onClick: { description: "Runs the action on click, Enter, and Space; the menu then closes." },
         color: {
             control: "radio",
             options: ["default", "error"],

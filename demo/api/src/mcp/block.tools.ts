@@ -1,10 +1,11 @@
 import { readFile } from "node:fs/promises";
 
-import { Payload } from "@nestjs/microservices";
-import { McpController, McpRawRequest, Tool } from "@rekog/mcp-nest";
+import { RequiredPermission } from "@dextinity/cms-api";
+import { Injectable, NotFoundException, UseGuards } from "@nestjs/common";
+import { Tool } from "@nestjs/mcp";
 import { z } from "zod";
 
-import { errorResult, getSignedInUser, jsonResult, type McpRequest, notSignedInResult } from "./mcp-tool.utils.js";
+import { SignedInUserGuard } from "./signed-in-user.guard.js";
 
 // Written by the API itself at the root of the app, which is the same two levels up from src/mcp and dist/mcp.
 const blockMetaUrl = new URL("../../block-meta.json", import.meta.url);
@@ -22,7 +23,10 @@ const getBlockSchemaParameters = z.object({
     name: z.string().describe('The block name, e.g. "Accordion" (case-insensitive)'),
 });
 
-@McpController()
+@Injectable()
+// The schemas aren't scoped, but they are no one's business outside the admin's page tree either.
+@RequiredPermission("pageTree", { skipScopeCheck: true })
+@UseGuards(SignedInUserGuard)
 export class BlockTools {
     @Tool({
         name: "list_available_blocks",
@@ -31,12 +35,8 @@ export class BlockTools {
 Pass one of the returned names to the get_block_schema tool to get that block's fields and nesting.`,
         annotations: { readOnlyHint: true },
     })
-    async listAvailableBlocks(@McpRawRequest() request: McpRequest) {
-        // The schemas aren't scoped, but they are no one's business outside the admin either.
-        if (!getSignedInUser(request)) {
-            return notSignedInResult;
-        }
-        return jsonResult((await loadBlockMeta()).map((block) => block.name));
+    async listAvailableBlocks() {
+        return (await loadBlockMeta()).map((block) => block.name);
     }
 
     @Tool({
@@ -50,17 +50,14 @@ A block with the fields "attachedBlocks" and "activeType", such as "Link", holds
 Leave out a nullable field that should not be set, rather than passing null: some blocks read a null value as set, e.g. an image with "cropArea" null breaks the page, while one without "cropArea" uses the crop area of its DAM file.
 
 A block's "description" says what the block is for and, where the fields alone don't say it, how to fill them: follow it, and look up every block it refers to with this tool too.`,
-        parameters: getBlockSchemaParameters,
+        inputSchema: getBlockSchemaParameters,
         annotations: { readOnlyHint: true },
     })
-    async getBlockSchema(@Payload() { name }: z.infer<typeof getBlockSchemaParameters>, @McpRawRequest() request: McpRequest) {
-        if (!getSignedInUser(request)) {
-            return notSignedInResult;
-        }
+    async getBlockSchema({ name }: z.infer<typeof getBlockSchemaParameters>) {
         const block = (await loadBlockMeta()).find((candidate) => candidate.name.toLowerCase() === name.toLowerCase());
         if (!block) {
-            return errorResult(`Unknown block "${name}". Use the list_available_blocks tool to get the available block names.`);
+            throw new NotFoundException(`Unknown block "${name}". Use the list_available_blocks tool to get the available block names.`);
         }
-        return jsonResult(block);
+        return block;
     }
 }

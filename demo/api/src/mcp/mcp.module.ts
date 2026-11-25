@@ -1,9 +1,9 @@
+import { RequiredPermission } from "@dextinity/cms-api";
 import { type DynamicModule, Module } from "@nestjs/common";
-import { MCP_STRATEGY } from "@rekog/mcp-nest";
+import { McpModule } from "@nestjs/mcp";
 
 import { BlockTools } from "./block.tools.js";
 import { DamTools } from "./dam.tools.js";
-import { createMcpServer } from "./mcp.factory.js";
 import { PageTreeTools } from "./page-tree.tools.js";
 
 /**
@@ -12,19 +12,23 @@ import { PageTreeTools } from "./page-tree.tools.js";
  */
 @Module({})
 export class AiModeMcpModule {
-    // The module owns the server it declares: it builds route controller and strategy together and hands
-    // the strategy out under rekog's own token, which `main.ts` reads to connect it as a microservice.
-    static forRoot({ authModule }: { authModule: DynamicModule }): DynamicModule {
-        const { strategy, controller } = createMcpServer();
-
+    static forRoot({ adminUrl }: { adminUrl: string }): DynamicModule {
         return {
             module: AiModeMcpModule,
-            // For the AccessControlService the tools check permissions with.
-            imports: [authModule],
-            // The tool classes are controllers, not providers: NestJS only scans `controllers` for the
-            // @MessagePattern handlers that @Tool registers.
-            controllers: [controller, BlockTools, DamTools, PageTreeTools],
-            providers: [{ provide: MCP_STRATEGY, useValue: strategy }],
+            imports: [
+                McpModule.forRoot({
+                    name: "dextinity-demo-admin",
+                    version: "1.0.0",
+                    path: "mcp",
+                    // As the AI Hub proxy: the server serves the AI Mode's chat. No scope, because a JSON-RPC request
+                    // carries none; each tool declares the permission and the scope it reads.
+                    decorators: [RequiredPermission("aiHub", { skipScopeCheck: true })],
+                    include: [AiModeMcpModule],
+                    // The chat calls the server from the admin in the browser.
+                    http: { allowedOrigins: [new URL(adminUrl).hostname] },
+                }),
+            ],
+            providers: [BlockTools, DamTools, PageTreeTools],
         };
     }
 }

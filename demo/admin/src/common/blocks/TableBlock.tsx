@@ -3,9 +3,9 @@ import { FormattedMessage } from "react-intl";
 
 import { createResponsiveTableBlock } from "./table/createResponsiveTableBlock";
 import { PriceCellBlock } from "./table/PriceCellBlock";
-import { TableCellRichTextBlock } from "./table/TableCellRichTextBlock";
+import { TextCellBlock } from "./table/TextCellBlock";
 
-const TableContentBlock = createTableBlock({ cellBlocks: { richText: TableCellRichTextBlock, price: PriceCellBlock }, name: "TableContent" });
+const TableContentBlock = createTableBlock({ cellBlocks: { text: TextCellBlock, price: PriceCellBlock }, name: "TableContent" });
 
 export const TableBlock = createResponsiveTableBlock({
     name: "Table",

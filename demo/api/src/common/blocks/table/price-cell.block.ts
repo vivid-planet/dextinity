@@ -1,5 +1,7 @@
 import { BlockData, BlockField, BlockInput, blockInputToData, createBlock } from "@dextinity/cms-api";
-import { IsBoolean, IsNumber, IsOptional } from "class-validator";
+import { IsArray, IsBoolean, IsEnum, IsNumber, IsOptional } from "class-validator";
+
+import { TableCellBadge } from "./table-cell-badge.enum.js";
 
 class PriceCellBlockData extends BlockData {
     @BlockField({ type: "number", nullable: true })
@@ -7,6 +9,9 @@ class PriceCellBlockData extends BlockData {
 
     @BlockField()
     bold: boolean;
+
+    @BlockField({ type: "enum", enum: TableCellBadge, array: true })
+    badges: TableCellBadge[];
 }
 
 class PriceCellBlockInput extends BlockInput {
@@ -19,6 +24,11 @@ class PriceCellBlockInput extends BlockInput {
     @IsBoolean()
     @BlockField()
     bold: boolean;
+
+    @IsArray()
+    @IsEnum(TableCellBadge, { each: true })
+    @BlockField({ type: "enum", enum: TableCellBadge, array: true })
+    badges: TableCellBadge[];
 
     transformToBlockData(): PriceCellBlockData {
         return blockInputToData(PriceCellBlockData, this);

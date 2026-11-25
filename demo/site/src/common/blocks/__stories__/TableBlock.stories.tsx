@@ -7,8 +7,8 @@ type TableCell = TableBlockData["table"]["rows"][number]["cellValues"][number]["
 type CellBlock = NonNullable<TableCell["block"]>;
 
 const createCell = (block: CellBlock): TableCell => ({ attachedBlocks: [block], activeType: block.type, block });
-const createTextCell = (text: string) => createCell({ type: "richText", props: createRichText(text) });
-const createPriceCell = (amount: number) => createCell({ type: "price", props: { amount, bold: false } });
+const createTextCell = (text: string) => createCell({ type: "text", props: { text: createRichText(text), badges: [] } });
+const createPriceCell = (amount: number) => createCell({ type: "price", props: { amount, bold: false, badges: [] } });
 
 const columnIds = ["product", "price", "availability"];
 

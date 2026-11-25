@@ -3794,6 +3794,17 @@
                 "name": "bold",
                 "kind": "Boolean",
                 "nullable": false
+            },
+            {
+                "name": "badges",
+                "kind": "Enum",
+                "enum": [
+                    "new",
+                    "popular",
+                    "sale"
+                ],
+                "nullable": false,
+                "array": true
             }
         ],
         "inputFields": [
@@ -3806,6 +3817,17 @@
                 "name": "bold",
                 "kind": "Boolean",
                 "nullable": false
+            },
+            {
+                "name": "badges",
+                "kind": "Enum",
+                "enum": [
+                    "new",
+                    "popular",
+                    "sale"
+                ],
+                "nullable": false,
+                "array": true
             }
         ]
     },
@@ -5093,7 +5115,7 @@
                             "name": "props",
                             "kind": "OneOfBlocks",
                             "blocks": {
-                                "richText": "TableCellRichText",
+                                "text": "TextCell",
                                 "price": "PriceCell"
                             },
                             "nullable": false
@@ -5121,7 +5143,7 @@
                             "name": "props",
                             "kind": "OneOfBlocks",
                             "blocks": {
-                                "richText": "TableCellRichText",
+                                "text": "TextCell",
                                 "price": "PriceCell"
                             },
                             "nullable": false
@@ -5146,7 +5168,7 @@
                             "name": "props",
                             "kind": "OneOfBlocks",
                             "blocks": {
-                                "richText": "TableCellRichText",
+                                "text": "TextCell",
                                 "price": "PriceCell"
                             },
                             "nullable": false
@@ -5296,6 +5318,47 @@
                     "h6"
                 ],
                 "nullable": false
+            }
+        ]
+    },
+    {
+        "name": "TextCell",
+        "fields": [
+            {
+                "name": "text",
+                "kind": "Block",
+                "block": "TableCellRichText",
+                "nullable": false
+            },
+            {
+                "name": "badges",
+                "kind": "Enum",
+                "enum": [
+                    "new",
+                    "popular",
+                    "sale"
+                ],
+                "nullable": false,
+                "array": true
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "text",
+                "kind": "Block",
+                "block": "TableCellRichText",
+                "nullable": false
+            },
+            {
+                "name": "badges",
+                "kind": "Enum",
+                "enum": [
+                    "new",
+                    "popular",
+                    "sale"
+                ],
+                "nullable": false,
+                "array": true
             }
         ]
     },

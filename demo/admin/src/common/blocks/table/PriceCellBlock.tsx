@@ -13,6 +13,7 @@ import { Typography } from "@mui/material";
 import type { PriceCellBlockData } from "@src/blocks.generated";
 import { FormattedMessage, FormattedNumber } from "react-intl";
 
+import { createTableCellBadgesField } from "./createTableCellBadgesField";
 import { paddedInCellPopover } from "./paddedInCellPopover";
 
 const missingAmount = "–";
@@ -48,6 +49,7 @@ const PriceCellCompositeBlock = createCompositeBlock(
                             label: <FormattedMessage id="priceCellBlock.bold" defaultMessage="Bold" />,
                         }),
                     },
+                    badges: { block: createTableCellBadgesField() },
                 },
             },
         },

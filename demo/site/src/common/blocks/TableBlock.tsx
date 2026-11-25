@@ -1,14 +1,14 @@
 import { hasTipTapRichTextContent, OneOfBlock, type PropsWithData, type SupportedBlocks, withPreview } from "@dextinity/site-nextjs";
 import type { TableBlockData } from "@src/blocks.generated";
 
-import { RichTextBlock } from "./RichTextBlock";
 import { PriceCellBlock } from "./table/PriceCellBlock";
 import { ResponsiveTable } from "./table/ResponsiveTable";
+import { TextCellBlock } from "./table/TextCellBlock";
 
 type CellValue = TableBlockData["table"]["rows"][number]["cellValues"][number]["value"];
 
 const supportedCellBlocks: SupportedBlocks = {
-    richText: (data) => <RichTextBlock data={data} disableLastBottomSpacing />,
+    text: (data) => <TextCellBlock data={data} />,
     price: (data) => <PriceCellBlock data={data} />,
 };
 
@@ -19,8 +19,8 @@ const hasCellContent = ({ block }: CellValue) => {
         return false;
     }
 
-    if ("tipTapContent" in block.props) {
-        return hasTipTapRichTextContent(block.props.tipTapContent);
+    if ("text" in block.props) {
+        return block.props.badges.length > 0 || hasTipTapRichTextContent(block.props.text.tipTapContent);
     }
 
     // A price cell without an amount shows a dash

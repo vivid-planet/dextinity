@@ -102,7 +102,8 @@ function useFillViewportHeight(ref: RefObject<HTMLElement | null>, enabled: bool
 }
 
 function quoteFolderNames(folders: LibraryFolder[], folderIds: string[]) {
-    return [...new Set(folderIds)].map((folderId) => `“${getFolder(folders, folderId)?.name}”`).join(", ");
+    // A folder deleted while its upload was running has no name anymore
+    return [...new Set(folderIds)].map((folderId) => `“${getFolder(folders, folderId)?.name ?? "Assets"}”`).join(", ");
 }
 
 function isFileDrag(event: DragEvent) {

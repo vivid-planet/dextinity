@@ -11,6 +11,7 @@ import {
     raw,
     Reference,
     ReferenceKind,
+    Utils,
     wrap,
 } from "@mikro-orm/postgresql";
 import { Injectable, Logger } from "@nestjs/common";
@@ -26,8 +27,15 @@ function getReferencedPrimaryKeys(entity: AnyEntity, relations: EntityProperty[]
     const referencedPrimaryKeys: Record<string, unknown> = {};
     for (const relation of relations) {
         if (relation.kind === ReferenceKind.MANY_TO_ONE || (relation.kind === ReferenceKind.ONE_TO_ONE && relation.owner)) {
-            const referencedEntity = Reference.unwrapReference(entity[relation.name]);
-            referencedPrimaryKeys[relation.name] = referencedEntity ? wrap(referencedEntity, true).getPrimaryKey() : null;
+            const referencedValue = Reference.unwrapReference(entity[relation.name]);
+            if (Utils.isEntity(referencedValue)) {
+                referencedPrimaryKeys[relation.name] = wrap(referencedValue, true).getPrimaryKey(true);
+            } else if (typeof referencedValue === "bigint") {
+                // With `mapToPk`, the property holds the primary key itself. A native BigInt can't be written to jsonb.
+                referencedPrimaryKeys[relation.name] = referencedValue.toString();
+            } else {
+                referencedPrimaryKeys[relation.name] = referencedValue ?? null;
+            }
         }
     }
     return referencedPrimaryKeys;

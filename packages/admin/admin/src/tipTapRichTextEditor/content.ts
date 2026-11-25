@@ -2,7 +2,7 @@ import type { JSONContent } from "@tiptap/core";
 
 import { resolveTipTapOptions, type TipTapResolvedOptions, type TipTapRichTextEditorOptions } from "./options";
 
-export const buildEmptyContent = ({ defaultTextBlock }: Pick<TipTapResolvedOptions, "defaultTextBlock">): JSONContent => {
+const buildEmptyContent = ({ defaultTextBlock }: Pick<TipTapResolvedOptions, "defaultTextBlock">): JSONContent => {
     const attrs: JSONContent["attrs"] = { textBlock: defaultTextBlock.name };
     if (defaultTextBlock.defaultStyle !== null) {
         attrs.textBlockStyle = defaultTextBlock.defaultStyle;

@@ -48,7 +48,7 @@ interface TipTapRichTextBlockInput {
     tipTapContent: JSONContent;
 }
 
-export interface TipTapChildBlock {
+interface TipTapChildBlock {
     block: BlockInterface;
     /**
      * How the child block is displayed in the editor (and rendered output): as a standalone block
@@ -108,7 +108,7 @@ function getTextLines(content: JSONContent): string[] {
 const isCmsBlockNode = (content: JSONContent): boolean => content.type === "cmsBlock" || content.type === "cmsInlineBlock";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function mapLinkMarksData(content: JSONContent, fn: (data: any) => any): JSONContent {
+function mapLinkMarksData(content: JSONContent, fn: (data: any) => any): JSONContent {
     if (!content || typeof content !== "object") {
         return content;
     }
@@ -131,7 +131,7 @@ export function mapLinkMarksData(content: JSONContent, fn: (data: any) => any): 
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function mapLinkMarksDataAsync(content: JSONContent, fn: (data: any) => Promise<any>): Promise<JSONContent> {
+async function mapLinkMarksDataAsync(content: JSONContent, fn: (data: any) => Promise<any>): Promise<JSONContent> {
     if (!content || typeof content !== "object") {
         return content;
     }
@@ -156,7 +156,7 @@ export async function mapLinkMarksDataAsync(content: JSONContent, fn: (data: any
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function mapCmsBlockNodesData(content: JSONContent, fn: (blockType: string, data: any) => any): JSONContent {
+function mapCmsBlockNodesData(content: JSONContent, fn: (blockType: string, data: any) => any): JSONContent {
     if (!content || typeof content !== "object") {
         return content;
     }
@@ -174,7 +174,7 @@ export function mapCmsBlockNodesData(content: JSONContent, fn: (blockType: strin
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function mapCmsBlockNodesDataAsync(content: JSONContent, fn: (blockType: string, data: any) => Promise<any>): Promise<JSONContent> {
+async function mapCmsBlockNodesDataAsync(content: JSONContent, fn: (blockType: string, data: any) => Promise<any>): Promise<JSONContent> {
     if (!content || typeof content !== "object") {
         return content;
     }

@@ -1,4 +1,5 @@
 ---
+"@dextinity/admin-icons": major
 "@dextinity/cms-admin": major
 "@dextinity/cms-api": major
 ---
@@ -11,6 +12,7 @@ The following exports are removed:
 
 - API: `BuildsModule`, `BuildsResolver`, `BuildsService`, `AutoBuildStatus`, `ChangesSinceLastBuild`, `SkipBuild`, `SKIP_BUILD_METADATA_KEY`, `BUILDS_CONFIG` and `BUILDS_MODULE_OPTIONS`
 - Admin: `BuildEntry`, `PublisherPage` and `LatestBuildsDashboardWidget`
+- Icons: `SsgRunning` and `SsgStandby`
 
 The `check-changes` console command and the `builds` permission are removed as well.
 A migration drops the `ChangesSinceLastBuild` table.

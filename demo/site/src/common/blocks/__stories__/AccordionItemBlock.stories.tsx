@@ -15,7 +15,7 @@ const meta: Meta<typeof AccordionItemBlock> = {
             <AccordionContentBlock
                 data={{
                     blocks: createBlocksItems<AccordionContentBlockData["blocks"][number]["props"]>([
-                        { type: "heading", props: { heading: createHeading({ headline: "Heading inside an accordion" }), textAlignment: "left" } },
+                        { type: "heading", props: createHeading({ headline: "Heading inside an accordion" }) },
                         { type: "richtext", props: createRichText(loremIpsum) },
                         { type: "space", props: createSpace("s300") },
                         {

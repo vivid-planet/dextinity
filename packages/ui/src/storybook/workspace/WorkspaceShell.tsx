@@ -81,7 +81,6 @@ const modeTabs: Array<{ value: ModeTab; label: string }> = [
 
 const intentKeys: Record<string, WorkspaceIntent> = { "1": "prototype", "2": "inspect", "3": "review", "4": "flow" };
 
-/** The tools of each mode, which the bar under the modes shows as labeled buttons. */
 /** The tools of each mode, which the bar under the modes shows as labeled buttons; the key opens the tool from any mode. */
 const intentToolButtons: Record<WorkspaceIntent, Array<{ tool: WorkspaceTool; label: string; icon: IconName; description: string; key: string }>> = {
     prototype: [],
@@ -250,6 +249,7 @@ export function WorkspaceShell() {
     // The prototype's page to open the frame on; the prototype keeps the page it navigates to in the frame's hash
     const [prototypeStartPage, setPrototypeStartPage] = useState("");
     const frameRef = useRef<HTMLIFrameElement>(null);
+    const [compareFrameDocuments, setCompareFrameDocuments] = useState<Document[]>([]);
     const storybookFrameRef = useRef<HTMLIFrameElement>(null);
     const storybookPage = useStorybookPage();
     const framePage = useFramePage(frameRef, frameLoadCount);
@@ -575,7 +575,9 @@ export function WorkspaceShell() {
                 toggleToolOfMode(toolKey.intent, toolKey.tool);
             }
         };
-        const documents = [document, frameRef.current?.contentDocument].filter((target): target is Document => target != null);
+        const documents = [document, frameRef.current?.contentDocument, ...(isComparing ? compareFrameDocuments : [])].filter(
+            (target): target is Document => target != null,
+        );
         documents.forEach((target) => target.addEventListener("keydown", handleKey));
         return () => documents.forEach((target) => target.removeEventListener("keydown", handleKey));
     });
@@ -1023,6 +1025,7 @@ export function WorkspaceShell() {
                                 zoom={state.zoom}
                                 reloadKey={reloadKey}
                                 onPageChange={setPrototypeStartPage}
+                                onFrameDocumentsChange={setCompareFrameDocuments}
                             />
                         ) : (
                             <div ref={setCanvasElement} className={styles.canvas} data-responsive={state.responsive || undefined}>

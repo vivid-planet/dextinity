@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
-import type { EditBlocks } from "./editBlocks";
 import { type AiModePageState, createPageTools } from "./pageTools";
+import type { EditBlocks } from "./planBlockEdits";
 
 const pageState: AiModePageState = {
     pageTreeNodeId: "1",

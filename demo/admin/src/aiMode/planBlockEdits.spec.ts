@@ -2,7 +2,7 @@ import type { BlockContext, BlockInterface } from "@dextinity/cms-admin";
 import { describe, expect, it } from "vitest";
 
 import type { BlocksBlockChild } from "./blockProps";
-import { planBlockEdits } from "./editBlocks";
+import { planBlockEdits } from "./planBlockEdits";
 
 // Converts like a block that declares the fields "text" and "alignment": fields it does not declare are dropped on the
 // way in.
@@ -73,7 +73,7 @@ describe("planBlockEdits", () => {
                 { operation: "remove", key: "a" },
                 { operation: "update", key: "missing", props: { text: "Changed" } },
             ]),
-        ).rejects.toThrow('Operation 2 ("update") failed, so none of the 2 operations were applied and the page is unchanged.');
+        ).rejects.toThrow('Operation 2 ("update") failed, so none of the 2 operations were applied and the content is unchanged.');
     });
 
     it("inserts only the blocks the content scope offers, but still updates a block of another type", async () => {

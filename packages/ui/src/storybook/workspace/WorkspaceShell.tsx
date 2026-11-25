@@ -358,8 +358,8 @@ export function WorkspaceShell() {
     // Until the tree is first changed, the prototypes and the groups of their menus are open, the pages with detail pages closed
     const [prototypeExpandedIds, setPrototypeExpandedIds] = useState<string[] | null>(null);
     const visiblePrototypeExpandedIds = prototypeExpandedIds ?? prototypeTrees.flatMap((tree) => [tree.node.id, ...(tree.pageTree?.groupIds ?? [])]);
-    // While comparing, the frames report their page to the start page, which the single frame then opens on again
-    const shownPage = isComparing ? prototypeStartPage : framePage.hash;
+    // While comparing or showing the flow map, the start page holds the page, which the single frame then opens on again
+    const shownPage = isPrototypeMode && !isSingleFrame ? prototypeStartPage : framePage.hash;
     const currentPrototypePageId = shownPage || workspacePrototypes.get(prototypeId ?? "")?.startPageId;
     const currentWorkspacePrototype = workspacePrototypes.get(prototypeId ?? "");
     const selectedPrototypeNodeId = prototypeId && currentPrototypePageId ? getPrototypePageNodeId(prototypeId, currentPrototypePageId) : undefined;

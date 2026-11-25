@@ -1,10 +1,10 @@
 import { createTableBlock } from "@dextinity/cms-admin";
 import { FormattedMessage } from "react-intl";
 
-import { RichTextBlock } from "./RichTextBlock";
 import { createResponsiveTableBlock } from "./table/createResponsiveTableBlock";
+import { TableCellRichTextBlock } from "./table/TableCellRichTextBlock";
 
-const TableContentBlock = createTableBlock({ richText: RichTextBlock, name: "TableContent" });
+const TableContentBlock = createTableBlock({ richText: TableCellRichTextBlock, name: "TableContent" });
 
 export const TableBlock = createResponsiveTableBlock({
     name: "Table",

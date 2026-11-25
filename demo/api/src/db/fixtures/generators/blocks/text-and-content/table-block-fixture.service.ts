@@ -1,11 +1,11 @@
 import type { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
-import type { RichTextBlock } from "@src/common/blocks/rich-text.block.js";
+import type { TableCellRichTextBlock } from "@src/common/blocks/table/table-cell-rich-text.block.js";
 import { LinkBlockFixtureService } from "@src/db/fixtures/generators/blocks/navigation/link-block-fixture.service.js";
 
 import { type DescriptionCellContent, TableBlockFixtureBase } from "./table-block-fixture-base.js";
 
-type RichTextInput = ExtractBlockInputFactoryProps<typeof RichTextBlock>;
+type RichTextInput = ExtractBlockInputFactoryProps<typeof TableCellRichTextBlock>;
 
 const standardParagraphStyle = "paragraph300";
 const smallParagraphStyle = "paragraph200";

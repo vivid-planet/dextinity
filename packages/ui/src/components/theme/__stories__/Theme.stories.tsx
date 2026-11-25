@@ -51,7 +51,7 @@ export const GroupCmsAi: Story = {
 };
 
 /**
- * Original Style: the flat look of the MUI-based admin, with its light blue, gray neutrals, Roboto Flex, small corner radii, and
+ * Original Style: the flat look of the MUI-based admin, with its light blue, gray neutrals, Roboto, small corner radii, and
  * opaque surfaces instead of glass.
  */
 export const Original: Story = {

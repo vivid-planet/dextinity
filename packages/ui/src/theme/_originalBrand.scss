@@ -20,8 +20,12 @@ $brand: '[data-dextinity-brand="original"]';
         --dextinity-typography-display-xl-line-height: 1.17;
         --dextinity-typography-display-l-size: clamp(30px, 3.2vw, 44px);
         --dextinity-typography-display-l-line-height: 1.18;
+        --dextinity-typography-title-size: 19px;
+        --dextinity-typography-title-font-weight: var(--dextinity-font-weight-regular);
         --dextinity-typography-title-letter-spacing: 0;
         --dextinity-typography-section-letter-spacing: 0;
+        --dextinity-typography-ui-size: 14px;
+        --dextinity-typography-small-size: 13px;
 
         --dextinity-focus-halo-width: 0px;
 
@@ -42,6 +46,31 @@ $brand: '[data-dextinity-brand="original"]';
         --dextinity-tabs-radius: 0px;
         --dextinity-tabs-indicator-inset: 0px;
         --dextinity-field-adornment-font-family: var(--dextinity-font-family-text);
+
+        // Tall, square entries with the full text color, like the admin's main navigation
+        --dextinity-side-nav-item-height: calc(var(--dextinity-density-nav-item-height) * 1.2);
+        --dextinity-side-nav-item-radius: 0px;
+        --dextinity-side-nav-item-font-size: var(--dextinity-typography-body-size);
+        --dextinity-side-nav-item-foreground: var(--dextinity-color-text);
+        --dextinity-side-nav-item-icon-color: var(--dextinity-color-text);
+        --dextinity-side-nav-item-icon-size: 20px;
+        --dextinity-side-nav-item-indent-level-2: 46px;
+        --dextinity-side-nav-item-indent-level-3: 64px;
+        --dextinity-side-nav-collapsed-item-height: calc(var(--dextinity-density-nav-item-height) * 1.2);
+        --dextinity-side-nav-title-font-size: 20px;
+
+        // Square fields with the label above in the text color, like the admin's forms
+        --dextinity-field-radius: 2px;
+        --dextinity-field-radius-stacked: 2px;
+        --dextinity-field-label-font-size: var(--dextinity-typography-body-size);
+        --dextinity-field-label-font-weight: var(--dextinity-font-weight-semibold);
+        --dextinity-field-label-color: var(--dextinity-color-text);
+        --dextinity-checkbox-radius: 2px;
+        --dextinity-checkbox-line-width: var(--dextinity-line-width);
+
+        --dextinity-button-font-weight: var(--dextinity-font-weight-regular);
+        --dextinity-card-row-title-font-weight: var(--dextinity-font-weight-regular);
+        --dextinity-card-header-min-height: 60px;
     }
 
     // Opaque surfaces, solid accent, and plain shadows instead of glass, gradients, and glows. High contrast keeps its own values.
@@ -102,6 +131,10 @@ $brand: '[data-dextinity-brand="original"]';
         --dextinity-tree-view-row-shadow-selected: 0 0 transparent;
         --dextinity-asset-thumbnail-selected-shadow: 0 0 0 2px var(--dextinity-color-accent);
         --dextinity-field-background: var(--dextinity-color-surface);
+
+        // The current navigation entry: accent text on the plain surface, marked by a bar at its end
+        --dextinity-side-nav-item-current-background: transparent;
+        --dextinity-side-nav-item-current-shadow: inset calc(-1 * var(--dextinity-indicator-width)) 0 0 var(--dextinity-color-accent);
     }
 
     // The palette of the MUI-based admin

@@ -23,47 +23,49 @@ function KpiOverview() {
                 title="Business KPIs"
                 summary="Revenue grew 6.4 % on October, and churn is at its lowest this year."
             >
-                <Card title="Revenue" meta="Monthly recurring">
-                    <div className={styles.widget}>
-                        <StatTile value="€184.2k" label="Monthly recurring revenue" trend="up" context="+6.4 % on October" />
-                        <MiniChart
-                            variant="line"
-                            data={revenue}
-                            aria-label="Monthly recurring revenue, the last 12 months"
-                            startLabel="Dec 2025"
-                            endLabel="Nov 2026"
-                        />
-                    </div>
-                </Card>
-                <Card title="New customers" meta="Last 8 weeks">
-                    <div className={styles.widget}>
-                        <StatTile value={38} label="New customers this month" trend="up" context="+12 on October · goal 40" />
-                        <MiniChart
-                            data={newCustomers}
-                            aria-label="New customers per week, the last 8 weeks"
-                            startLabel="8 weeks ago"
-                            endLabel="This week"
-                        />
-                    </div>
-                </Card>
-                <Card title="Churn" meta="Monthly">
-                    <div className={styles.widget}>
-                        <StatTile
-                            value="1.8"
-                            unit="%"
-                            label="Customers who cancelled"
-                            trend="down"
-                            context="−0.4 points on October · lowest this year"
-                        />
-                        <MiniChart
-                            variant="line"
-                            data={churn}
-                            aria-label="Churn rate, the last 12 months"
-                            startLabel="Dec 2025"
-                            endLabel="Nov 2026"
-                        />
-                    </div>
-                </Card>
+                <div className={styles.kpis}>
+                    <Card title="Revenue" meta="Monthly recurring">
+                        <div className={styles.widget}>
+                            <StatTile value="€184.2k" label="Monthly recurring revenue" trend="up" context="+6.4 % on October" />
+                            <MiniChart
+                                variant="line"
+                                data={revenue}
+                                aria-label="Monthly recurring revenue, the last 12 months"
+                                startLabel="Dec 2025"
+                                endLabel="Nov 2026"
+                            />
+                        </div>
+                    </Card>
+                    <Card title="New customers" meta="Last 8 weeks">
+                        <div className={styles.widget}>
+                            <StatTile value={38} label="New customers this month" trend="up" context="+12 on October · goal 40" />
+                            <MiniChart
+                                data={newCustomers}
+                                aria-label="New customers per week, the last 8 weeks"
+                                startLabel="8 weeks ago"
+                                endLabel="This week"
+                            />
+                        </div>
+                    </Card>
+                    <Card title="Churn" meta="Monthly">
+                        <div className={styles.widget}>
+                            <StatTile
+                                value="1.8"
+                                unit="%"
+                                label="Customers who cancelled"
+                                trend="down"
+                                context="−0.4 points on October · lowest this year"
+                            />
+                            <MiniChart
+                                variant="line"
+                                data={churn}
+                                aria-label="Churn rate, the last 12 months"
+                                startLabel="Dec 2025"
+                                endLabel="Nov 2026"
+                            />
+                        </div>
+                    </Card>
+                </div>
             </OverviewLayout>
         </PageTypeShell>
     );

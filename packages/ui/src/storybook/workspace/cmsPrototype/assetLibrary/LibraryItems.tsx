@@ -45,7 +45,7 @@ export interface LibraryItemHandlers {
     getDropTargetProps: (folderId: string | null, folderName: string) => HTMLAttributes<HTMLElement> & { "data-drop-target"?: "" };
 }
 
-export interface MenuActions {
+interface MenuActions {
     open: (item: LibraryItem) => void;
     rename: (item: LibraryItem) => void;
     duplicate: (items: LibraryItem[]) => void;

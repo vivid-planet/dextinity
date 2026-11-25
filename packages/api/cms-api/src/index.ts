@@ -86,7 +86,12 @@ export { createRichTextBlock } from "./blocks/factories/createRichTextBlock.js";
 export { createSeoBlock, type SeoBlockInputInterface, SitemapPageChangeFrequency, SitemapPagePriority } from "./blocks/factories/createSeoBlock.js";
 export { createSpaceBlock } from "./blocks/factories/createSpaceBlock.js";
 export { createTableBlock } from "./blocks/factories/createTableBlock.js";
-export { createTableSettings, type TableSettingsDeclaration } from "./blocks/factories/createTableSettings.js";
+export {
+    createTableSettings,
+    defaultTableColumnSettings,
+    defaultTableRowSettings,
+    type TableSettingsDeclaration,
+} from "./blocks/factories/createTableSettings.js";
 export { createTextImageBlock, ImagePosition } from "./blocks/factories/createTextImageBlock.js";
 export { createTextLinkBlock } from "./blocks/factories/createTextLinkBlock.js";
 export type { BlockFactoryNameOrOptions } from "./blocks/factories/types.js";

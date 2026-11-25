@@ -5,13 +5,11 @@ import { createRteState, getPlainTextFromState, mockStates, mockTableBlockConfig
 import { insertRowDataAtIndex, type RowInsertData } from "../utils/row";
 
 const insertDataWithTwoValues: RowInsertData = {
-    highlighted: false,
     settings: {},
     cellValues: [createRteState("Two Values - Value 1"), createRteState("Two Values - Value 2")],
 };
 
 const insertDataWithFourValues: RowInsertData = {
-    highlighted: false,
     settings: {},
     cellValues: [
         createRteState("Four Values - Value 1"),
@@ -22,7 +20,6 @@ const insertDataWithFourValues: RowInsertData = {
 };
 
 const insertDataWithSixValues: RowInsertData = {
-    highlighted: false,
     settings: {},
     cellValues: [
         createRteState("Six Values - Value 1"),

@@ -46,8 +46,8 @@ const CompositeCellBlock: TableCellBlockInterface = {
 };
 
 const createTableState = (cellValue: OneOfBlockState) => ({
-    columns: [{ id: "column", size: "standard" as const, highlighted: false, settings: {} }],
-    rows: [{ id: "row", highlighted: false, settings: {}, cellValues: [{ columnId: "column", value: cellValue }] }],
+    columns: [{ id: "column", settings: {} }],
+    rows: [{ id: "row", settings: {}, cellValues: [{ columnId: "column", value: cellValue }] }],
 });
 
 const renderCellEditor = (
@@ -215,7 +215,6 @@ describe("cell blocks", () => {
                         ],
                         activeType: "number",
                     }}
-                    highlighted={false}
                     rowSettings={{}}
                     columnSettings={{}}
                 />

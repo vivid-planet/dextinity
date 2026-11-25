@@ -5,6 +5,12 @@ import { createRichTextBlock, type RichTextBlockState } from "../../createRichTe
 import type { TableBlockState } from "../../createTableBlock";
 import { createBlockSkeleton } from "../../helpers/createBlockSkeleton";
 import type { BlockInterface, LinkBlockInterface } from "../../types";
+import {
+    defaultTableColumnSettings,
+    defaultTableRowSettings,
+    getHighlightedTableCellStyle,
+    getTableColumnWidthFromSize,
+} from "../defaultTableSettings";
 import type { TableBlockConfig } from "../TableBlockContext";
 import type { ColumnInsertData } from "../utils/column";
 
@@ -16,7 +22,13 @@ const MockLinkBlock: BlockInterface & LinkBlockInterface = {
 
 export const MockRichTextBlock = createRichTextBlock({ link: MockLinkBlock, rte: { supports: [] } });
 
-export const mockTableBlockConfig: TableBlockConfig = { CellBlock: MockRichTextBlock, rowSettings: {}, columnSettings: {} };
+export const mockTableBlockConfig: TableBlockConfig = {
+    CellBlock: MockRichTextBlock,
+    rowSettings: defaultTableRowSettings,
+    columnSettings: defaultTableColumnSettings,
+    getCellStyle: getHighlightedTableCellStyle,
+    getColumnWidth: getTableColumnWidthFromSize,
+};
 
 export const createRteState = (text: string): RichTextBlockState => {
     return MockRichTextBlock.input2State(createRteInput(text));
@@ -46,9 +58,7 @@ export const createRteInput = (text: string): RichTextBlockInput => {
 };
 
 export const columnInsertDataWithFiveValues: ColumnInsertData = {
-    size: "standard",
-    highlighted: false,
-    settings: {},
+    settings: { size: "standard", highlighted: false },
     cellValues: [
         createRteState("Created date"),
         createRteState("2025-11-27"),
@@ -61,36 +71,27 @@ export const columnInsertDataWithFiveValues: ColumnInsertData = {
 const getDefaultState = (): TableBlockState => {
     const smallHighlightedColumn: TableBlockState["columns"][number] = {
         id: uuid(),
-        size: "small",
-        highlighted: true,
-        settings: {},
+        settings: { size: "small", highlighted: true },
     };
 
     const firstStandardColumn: TableBlockState["columns"][number] = {
         id: uuid(),
-        size: "standard",
-        highlighted: false,
-        settings: {},
+        settings: { size: "standard", highlighted: false },
     };
 
     const secondStandardColumn: TableBlockState["columns"][number] = {
         id: uuid(),
-        size: "standard",
-        highlighted: false,
-        settings: {},
+        settings: { size: "standard", highlighted: false },
     };
 
     const extraLargeColumn: TableBlockState["columns"][number] = {
         id: uuid(),
-        highlighted: false,
-        size: "extraLarge",
-        settings: {},
+        settings: { size: "extraLarge", highlighted: false },
     };
 
     const headerRow: TableBlockState["rows"][number] = {
         id: uuid(),
-        highlighted: true,
-        settings: {},
+        settings: { highlighted: true },
         cellValues: [
             { columnId: smallHighlightedColumn.id, value: createRteState("Product ID") },
             { columnId: firstStandardColumn.id, value: createRteState("Inventor") },
@@ -101,8 +102,7 @@ const getDefaultState = (): TableBlockState => {
 
     const dataRowOne: TableBlockState["rows"][number] = {
         id: uuid(),
-        highlighted: false,
-        settings: {},
+        settings: { highlighted: false },
         cellValues: [
             { columnId: smallHighlightedColumn.id, value: createRteState("p1") },
             { columnId: firstStandardColumn.id, value: createRteState("Chelsea Kuvalis") },
@@ -116,8 +116,7 @@ const getDefaultState = (): TableBlockState => {
 
     const dataRowTwo: TableBlockState["rows"][number] = {
         id: uuid(),
-        highlighted: false,
-        settings: {},
+        settings: { highlighted: false },
         cellValues: [
             { columnId: smallHighlightedColumn.id, value: createRteState("p2") },
             { columnId: firstStandardColumn.id, value: createRteState("Randal Renner") },
@@ -133,8 +132,7 @@ const getDefaultState = (): TableBlockState => {
 
     const dataRowThree: TableBlockState["rows"][number] = {
         id: uuid(),
-        highlighted: false,
-        settings: {},
+        settings: { highlighted: false },
         cellValues: [
             { columnId: smallHighlightedColumn.id, value: createRteState("p3") },
             { columnId: firstStandardColumn.id, value: createRteState("Greg Bednar") },
@@ -150,8 +148,7 @@ const getDefaultState = (): TableBlockState => {
 
     const dataRowFour: TableBlockState["rows"][number] = {
         id: uuid(),
-        highlighted: false,
-        settings: {},
+        settings: { highlighted: false },
         cellValues: [
             { columnId: smallHighlightedColumn.id, value: createRteState("p4") },
             { columnId: firstStandardColumn.id, value: createRteState("Julio Von") },
@@ -177,14 +174,13 @@ const getStateWithTwoColumnsAndTwoRows = (): TableBlockState => {
 
     return {
         columns: [
-            { id: columnIdOne, size: "standard", highlighted: false, settings: {} },
-            { id: columnIdTwo, size: "standard", highlighted: false, settings: {} },
+            { id: columnIdOne, settings: { size: "standard", highlighted: false } },
+            { id: columnIdTwo, settings: { size: "standard", highlighted: false } },
         ],
         rows: [
             {
                 id: uuid(),
-                highlighted: false,
-                settings: {},
+                settings: { highlighted: false },
                 cellValues: [
                     { columnId: columnIdOne, value: createRteState("Row 1 / Column 1") },
                     { columnId: columnIdTwo, value: createRteState("Row 1 / Column 2") },
@@ -192,8 +188,7 @@ const getStateWithTwoColumnsAndTwoRows = (): TableBlockState => {
             },
             {
                 id: uuid(),
-                highlighted: false,
-                settings: {},
+                settings: { highlighted: false },
                 cellValues: [
                     { columnId: columnIdOne, value: createRteState("Row 2 / Column 1") },
                     { columnId: columnIdTwo, value: createRteState("Row 2 / Column 2") },

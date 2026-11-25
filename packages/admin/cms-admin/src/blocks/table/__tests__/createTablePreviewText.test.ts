@@ -8,8 +8,6 @@ const getCellTexts = (cellState: string) => [cellState];
 const createState = (rows: string[][]): TableBlockState<string> => {
     const columns: TableBlockState<string>["columns"] = rows[0].map((_, columnIndex) => ({
         id: `column-${columnIndex}`,
-        size: "standard",
-        highlighted: false,
         settings: {},
     }));
 
@@ -17,7 +15,6 @@ const createState = (rows: string[][]): TableBlockState<string> => {
         columns,
         rows: rows.map((cells, rowIndex) => ({
             id: `row-${rowIndex}`,
-            highlighted: false,
             settings: {},
             cellValues: cells.map((value, columnIndex) => ({ columnId: columns[columnIndex].id, value })).reverse(),
         })),

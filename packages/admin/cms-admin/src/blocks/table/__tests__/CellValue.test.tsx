@@ -17,7 +17,7 @@ describe("CellValue", () => {
 
         const rendered = render(
             <TableBlockContextProvider CellBlock={editorAgnosticBlock}>
-                <CellValue value={{ label: "cell content" }} highlighted={false} rowSettings={{}} columnSettings={{}} />
+                <CellValue value={{ label: "cell content" }} rowSettings={{}} columnSettings={{}} />
             </TableBlockContextProvider>,
         );
 

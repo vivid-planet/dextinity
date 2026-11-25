@@ -20,17 +20,29 @@ export function createTableSettings<const Settings extends TableSettingsDeclarat
     return settings;
 }
 
+/**
+ * The column settings of a table that doesn't pass `columnSettings`.
+ * Extend them with `createTableSettings({ ...defaultTableColumnSettings, background: … })`.
+ */
+export const defaultTableColumnSettings = createTableSettings({
+    size: { type: "select", options: ["extraSmall", "small", "standard", "large", "extraLarge"], defaultValue: "standard" },
+    highlighted: { type: "checkbox", defaultValue: false },
+});
+
+/**
+ * The row settings of a table that doesn't pass `rowSettings`.
+ * Extend them with `createTableSettings({ ...defaultTableRowSettings, bold: … })`.
+ */
+export const defaultTableRowSettings = createTableSettings({
+    highlighted: { type: "checkbox", defaultValue: false },
+});
+
 type TableSettingsDecorators = {
     dataField: PropertyDecorator;
     inputField: PropertyDecorator;
 };
 
-export function createTableSettingsDecorators(settings?: TableSettingsDeclaration): TableSettingsDecorators {
-    if (!settings) {
-        // Keeps the block meta of a table without settings unchanged
-        return { dataField: () => undefined, inputField: () => undefined };
-    }
-
+export function createTableSettingsDecorators(settings: TableSettingsDeclaration): TableSettingsDecorators {
     class TableSettingsData extends BlockData {}
 
     const createSettingsDataWithDefaults = (values?: object | null) => {

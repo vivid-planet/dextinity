@@ -4,13 +4,12 @@ export type TableColumnSize = "extraSmall" | "small" | "standard" | "large" | "e
 
 export type TableColumn = {
     id: string;
-    size: TableColumnSize;
-    highlighted: boolean;
+    settings: { size: TableColumnSize; highlighted: boolean };
 };
 
 export type TableRow<CellValue> = {
     id: string;
-    highlighted: boolean;
+    settings: { highlighted: boolean };
     cellValues: Array<{ columnId: string; value: CellValue }>;
 };
 

@@ -11,7 +11,7 @@ export const ensureMinimumTableState = (state: TableBlockState, { CellBlock, row
         const newColumnId = uuid();
         result = {
             ...result,
-            columns: [{ id: newColumnId, size: "standard", highlighted: false, settings: createTableSettingsState(columnSettings) }],
+            columns: [{ id: newColumnId, settings: createTableSettingsState(columnSettings) }],
             rows: result.rows.map((row) => ({
                 ...row,
                 cellValues: [...row.cellValues, { columnId: newColumnId, value: CellBlock.defaultValues() }],
@@ -25,7 +25,6 @@ export const ensureMinimumTableState = (state: TableBlockState, { CellBlock, row
             rows: [
                 {
                     id: uuid(),
-                    highlighted: false,
                     settings: createTableSettingsState(rowSettings),
                     cellValues: result.columns.map((col) => ({
                         columnId: col.id,

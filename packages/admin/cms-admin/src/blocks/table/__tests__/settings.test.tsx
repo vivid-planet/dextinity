@@ -10,11 +10,13 @@ afterEach(cleanup);
 import { createTableBlock, type TableBlockState } from "../../createTableBlock";
 import { createRteInput, createRteState, MockRichTextBlock } from "../__mocks__/TableBlockData.mocks";
 import { createTableSettings } from "../createTableSettings";
+import { defaultTableColumnSettings, defaultTableRowSettings, getTableColumnWidthFromSize } from "../defaultTableSettings";
 import {
     clickButtonOfColumnAtIndex,
     clickButtonOfRowAtIndex,
     getBodyRowgroup,
     getCellsExcludingTheDragHandleAndActionsCells,
+    openColumnOptionsAtIndex,
     openRowOptionsAtIndex,
     renderTableBlock,
 } from "./utils";
@@ -49,13 +51,12 @@ const defaultColumnSettings = { background: "none", badges: [], hidden: false };
 
 const createState = (backgroundOfFirstColumn = "none", boldRow = false): TableBlockState => ({
     columns: [
-        { id: "first", size: "standard", highlighted: false, settings: { ...defaultColumnSettings, background: backgroundOfFirstColumn } },
-        { id: "second", size: "standard", highlighted: false, settings: defaultColumnSettings },
+        { id: "first", settings: { ...defaultColumnSettings, background: backgroundOfFirstColumn } },
+        { id: "second", settings: defaultColumnSettings },
     ],
     rows: [
         {
             id: "row",
-            highlighted: false,
             settings: { bold: boldRow },
             cellValues: [
                 { columnId: "first", value: createRteState("First") },
@@ -148,20 +149,91 @@ describe("createTableBlock with settings", () => {
 
     it("should fill in the defaults of settings that are missing or invalid in saved data", () => {
         const state = TableBlock.input2State({
-            columns: [{ id: "column", size: "standard", highlighted: false, settings: { background: "red", badges: ["sale"] } }],
-            rows: [{ id: "row", highlighted: false, cellValues: [{ columnId: "column", value: createRteInput("Text") }] }],
+            columns: [{ id: "column", settings: { background: "red", badges: ["sale"] } }],
+            rows: [{ id: "row", cellValues: [{ columnId: "column", value: createRteInput("Text") }] }],
         });
 
         expect(state.columns[0].settings).toEqual({ background: "none", badges: ["sale"], hidden: false });
         expect(state.rows[0].settings).toEqual({ bold: false });
     });
 
-    it("should not send settings to the API for a table without settings", () => {
-        const TableBlockWithoutSettings = createTableBlock({ richText: MockRichTextBlock });
+    it("should give a table without its own settings the default settings", () => {
+        const TableBlockWithDefaultSettings = createTableBlock({ richText: MockRichTextBlock });
 
-        const output = TableBlockWithoutSettings.state2Output(TableBlockWithoutSettings.defaultValues());
+        const output = TableBlockWithDefaultSettings.state2Output(TableBlockWithDefaultSettings.defaultValues());
 
-        expect(output.columns[0]).not.toHaveProperty("settings");
-        expect(output.rows[0]).not.toHaveProperty("settings");
+        expect(output.columns[0].settings).toEqual({ size: "standard", highlighted: false });
+        expect(output.rows[0].settings).toEqual({ highlighted: false });
+    });
+});
+
+describe("TableBlock: Default settings", () => {
+    const greyFiftyOfTheDefaultTheme = "rgb(250, 250, 250)";
+
+    const createStateWithDefaultSettings = ({ isRowHighlighted = false } = {}): TableBlockState => ({
+        columns: [
+            { id: "first", settings: { size: "standard", highlighted: false } },
+            { id: "second", settings: { size: "standard", highlighted: false } },
+        ],
+        rows: [
+            {
+                id: "row",
+                settings: { highlighted: isRowHighlighted },
+                cellValues: [
+                    { columnId: "first", value: createRteState("First") },
+                    { columnId: "second", value: createRteState("Second") },
+                ],
+            },
+        ],
+    });
+
+    const renderTableWithDefaultSettings = (state = createStateWithDefaultSettings()) =>
+        renderTableBlock(state, undefined, { rowSettings: defaultTableRowSettings, columnSettings: defaultTableColumnSettings });
+
+    it("should set the size of a column in the column width menu", () => {
+        const rendered = renderTableWithDefaultSettings();
+
+        clickButtonOfColumnAtIndex(rendered, 0, /column width/i);
+        fireEvent.click(rendered.getByRole("menuitem", { name: /^large/i }));
+
+        expect(rendered.getState().columns[0].settings.size).toBe("large");
+    });
+
+    it("should highlight a column", () => {
+        const rendered = renderTableWithDefaultSettings();
+
+        openColumnOptionsAtIndex(rendered, 0);
+        fireEvent.click(rendered.getByRole("menuitemcheckbox", { name: /highlight column/i }));
+
+        expect(rendered.getState().columns[0].settings.highlighted).toBe(true);
+    });
+
+    it("should highlight a row", () => {
+        const rendered = renderTableWithDefaultSettings();
+
+        openRowOptionsAtIndex(rendered, 0);
+        fireEvent.click(rendered.getByRole("menuitemcheckbox", { name: /highlight row/i }));
+
+        expect(rendered.getState().rows[0].settings.highlighted).toBe(true);
+    });
+
+    it("should give the cells of a highlighted row a background", () => {
+        const rendered = renderTableWithDefaultSettings(createStateWithDefaultSettings({ isRowHighlighted: true }));
+
+        expect(getCellValueStyles(rendered).map((style) => style.backgroundColor)).toEqual([greyFiftyOfTheDefaultTheme, greyFiftyOfTheDefaultTheme]);
+    });
+
+    it("should not give the cells of a row that isn't highlighted a background", () => {
+        const rendered = renderTableWithDefaultSettings();
+
+        expect(getCellValueStyles(rendered).map((style) => style.backgroundColor)).not.toContain(greyFiftyOfTheDefaultTheme);
+    });
+
+    it("should give a column without a known size the width of a standard column", () => {
+        const standardColumnWidth = getTableColumnWidthFromSize({ size: "standard" });
+
+        expect(getTableColumnWidthFromSize({})).toEqual(standardColumnWidth);
+        expect(getTableColumnWidthFromSize({ size: "huge" })).toEqual(standardColumnWidth);
+        expect(getTableColumnWidthFromSize({ size: "large" })).not.toEqual(standardColumnWidth);
     });
 });

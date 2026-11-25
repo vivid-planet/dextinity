@@ -12,7 +12,7 @@ type CellValue = TableBlockData["table"]["rows"][number]["cellValues"][number]["
 const getSupportedCellBlocks = (column: TableColumn): SupportedBlocks => ({
     text: (data) => <TextCellBlock data={data} />,
     price: (data) => <PriceCellBlock data={data} />,
-    image: (data) => <ImageCellBlock data={data} columnSize={column.size} />,
+    image: (data) => <ImageCellBlock data={data} columnSize={column.settings.size} />,
 });
 
 const renderCell: RenderTableCell<CellValue> = (value, column) => <OneOfBlock data={value} supportedBlocks={getSupportedCellBlocks(column)} />;

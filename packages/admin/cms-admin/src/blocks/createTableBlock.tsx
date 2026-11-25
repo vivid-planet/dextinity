@@ -6,7 +6,6 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { useLocation } from "react-router";
 import { v4 as uuid } from "uuid";
 
-import type { TableBlockData } from "../blocks.generated";
 import type { BlockContext } from "./context/BlockContext";
 import type { RichTextBlock } from "./createRichTextBlock";
 import type { OneOfBlockState } from "./factories/createOneOfBlock";
@@ -22,9 +21,11 @@ import {
 import {
     createTableSettingsState,
     type TableCellSettings,
+    type TableColumnWidth,
     type TableSettingsDeclaration,
     type TableSettingsState,
 } from "./table/createTableSettings";
+import { defaultTableColumnSettings, defaultTableRowSettings } from "./table/defaultTableSettings";
 import { TableBlockContextProvider } from "./table/TableBlockContext";
 import { TableBlockGrid } from "./table/TableBlockGrid";
 import { createCellRoute, parseCellHash } from "./table/utils/cellRoute";
@@ -32,15 +33,20 @@ import { createTablePreviewText, getPlainTexts } from "./table/utils/createTable
 import { BlockCategory, type BlockInputApi, type BlockInterface, type BlockOutputApi, type BlockPreviewContext, type BlockState } from "./types";
 
 type TableSettingsFactoryOptions = {
-    /** Declared with `createTableSettings`. */
+    /** Declared with `createTableSettings`. Defaults to `defaultTableRowSettings`. */
     rowSettings?: TableSettingsDeclaration;
-    /** Declared with `createTableSettings`. */
+    /** Declared with `createTableSettings`. Defaults to `defaultTableColumnSettings`. */
     columnSettings?: TableSettingsDeclaration;
     /**
      * Styles a cell in the admin grid depending on the settings of its row and column, e.g. with a background.
-     * The styles take precedence over the default styles of the cell, such as the background of a highlighted row.
+     * Defaults to `getHighlightedTableCellStyle`, which gives the cells of a highlighted row or column a background.
      */
     getCellStyle?: (cell: TableCellSettings) => SxProps<Theme>;
+    /**
+     * The width of a column in the admin grid depending on its settings.
+     * Defaults to the width of the column's `size` setting.
+     */
+    getColumnWidth?: (columnSettings: TableSettingsState) => TableColumnWidth;
 };
 
 type RichTextTableBlockFactoryOptions<RichText extends TableCellBlockInterface> = TableSettingsFactoryOptions & {
@@ -83,13 +89,14 @@ export interface TableBlockRowState<
     CellState = any,
 > {
     id: string;
-    highlighted: boolean;
     settings: TableSettingsState;
     cellValues: TableBlockCellValueState<CellState>[];
 }
 
-// The generated `TableBlockData` describes a table without settings
-export type TableBlockColumnState = TableBlockData["columns"][number] & { settings: TableSettingsState };
+export interface TableBlockColumnState {
+    id: string;
+    settings: TableSettingsState;
+}
 
 export interface TableBlockState<
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -104,15 +111,19 @@ interface TableBlockCellValue<Value> {
     value: Value;
 }
 
+interface TableBlockColumn {
+    id: string;
+    settings?: TableSettingsState;
+}
+
 interface TableBlockRow<Value> {
     id: string;
-    highlighted: boolean;
     settings?: TableSettingsState;
     cellValues: TableBlockCellValue<Value>[];
 }
 
 interface TableBlockCells<Value> {
-    columns: Array<TableBlockData["columns"][number] & { settings?: TableSettingsState }>;
+    columns: TableBlockColumn[];
     rows: TableBlockRow<Value>[];
 }
 
@@ -136,9 +147,10 @@ export function createTableBlock(
         richText,
         cellBlocks,
         convertCell,
-        rowSettings,
-        columnSettings,
+        rowSettings = defaultTableRowSettings,
+        columnSettings = defaultTableColumnSettings,
         getCellStyle,
+        getColumnWidth,
         name = "Table",
     }: TableBlockFactoryOptions<TableCellBlockInterface>,
     override?: (block: TableBlock<TableCellBlockInterface>) => TableBlock<TableCellBlockInterface>,
@@ -168,25 +180,18 @@ export function createTableBlock(
         };
     };
 
-    // A table without settings doesn't send them to the API, which would reject them
-    const withSettingsOutput = <Item extends { settings: TableSettingsState }>(
-        { settings, ...item }: Item,
-        declaration: TableSettingsDeclaration | undefined,
-    ): Omit<Item, "settings"> & { settings?: TableSettingsState } => (declaration ? { ...item, settings } : item);
-
     const getInitialTableState = (): TableBlockState<CellState> => {
         const columnIdOne = uuid();
         const columnIdTwo = uuid();
 
         return {
             columns: [
-                { id: columnIdOne, size: "standard", highlighted: false, settings: createTableSettingsState(columnSettings) },
-                { id: columnIdTwo, size: "standard", highlighted: false, settings: createTableSettingsState(columnSettings) },
+                { id: columnIdOne, settings: createTableSettingsState(columnSettings) },
+                { id: columnIdTwo, settings: createTableSettingsState(columnSettings) },
             ],
             rows: [
                 {
                     id: uuid(),
-                    highlighted: false,
                     settings: createTableSettingsState(rowSettings),
                     cellValues: [
                         { columnId: columnIdOne, value: CellBlock.defaultValues() },
@@ -195,7 +200,6 @@ export function createTableBlock(
                 },
                 {
                     id: uuid(),
-                    highlighted: false,
                     settings: createTableSettingsState(rowSettings),
                     cellValues: [
                         { columnId: columnIdOne, value: CellBlock.defaultValues() },
@@ -216,11 +220,11 @@ export function createTableBlock(
         defaultValues: getInitialTableState,
 
         input2State: (input: TableBlockCells<BlockInputApi<TableCellBlockInterface>>): TableBlockState<CellState> => ({
-            columns: input.columns.map((column) => ({ ...column, settings: createTableSettingsState(columnSettings, column.settings) })),
-            rows: input.rows.map((row) => ({
-                ...row,
-                settings: createTableSettingsState(rowSettings, row.settings),
-                cellValues: row.cellValues.map((cell) => ({
+            columns: input.columns.map(({ id, settings }) => ({ id, settings: createTableSettingsState(columnSettings, settings) })),
+            rows: input.rows.map(({ id, settings, cellValues }) => ({
+                id,
+                settings: createTableSettingsState(rowSettings, settings),
+                cellValues: cellValues.map((cell) => ({
                     ...cell,
                     value: CellBlock.input2State(cell.value),
                 })),
@@ -228,9 +232,9 @@ export function createTableBlock(
         }),
 
         state2Output: (state: TableBlockState<CellState>): TableBlockCells<BlockOutputApi<TableCellBlockInterface>> => ({
-            columns: state.columns.map((column) => withSettingsOutput(column, columnSettings)),
+            columns: state.columns,
             rows: state.rows.map((row) => ({
-                ...withSettingsOutput(row, rowSettings),
+                ...row,
                 cellValues: row.cellValues.map((cell) => ({
                     ...cell,
                     value: CellBlock.state2Output(cell.value),
@@ -242,13 +246,13 @@ export function createTableBlock(
             output: TableBlockCells<BlockOutputApi<TableCellBlockInterface>>,
             context: BlockContext,
         ): Promise<TableBlockState<CellState>> => ({
-            columns: output.columns.map((column) => ({ ...column, settings: createTableSettingsState(columnSettings, column.settings) })),
+            columns: output.columns.map(({ id, settings }) => ({ id, settings: createTableSettingsState(columnSettings, settings) })),
             rows: await Promise.all(
-                output.rows.map(async (row) => ({
-                    ...row,
-                    settings: createTableSettingsState(rowSettings, row.settings),
+                output.rows.map(async ({ id, settings, cellValues }) => ({
+                    id,
+                    settings: createTableSettingsState(rowSettings, settings),
                     cellValues: await Promise.all(
-                        row.cellValues.map(async (cell) => ({
+                        cellValues.map(async (cell) => ({
                             ...cell,
                             value: await CellBlock.output2State(cell.value, context),
                         })),
@@ -258,9 +262,9 @@ export function createTableBlock(
         }),
 
         createPreviewState: (state: TableBlockState<CellState>, previewCtx: BlockPreviewContext & BlockContext) => ({
-            columns: state.columns.map((column) => withSettingsOutput(column, columnSettings)),
+            columns: state.columns,
             rows: state.rows.map((row) => ({
-                ...withSettingsOutput(row, rowSettings),
+                ...row,
                 cellValues: row.cellValues.map((cell) => ({
                     ...cell,
                     value: createCellPreviewState(
@@ -300,6 +304,7 @@ export function createTableBlock(
                     rowSettings={rowSettings}
                     columnSettings={columnSettings}
                     getCellStyle={getCellStyle}
+                    getColumnWidth={getColumnWidth}
                 >
                     <SelectPreviewComponent>
                         <BlocksFinalForm<TableBlockState<CellState>> onSubmit={updateState} initialValues={state}>

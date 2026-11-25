@@ -13,7 +13,7 @@ const createPriceCell = (amount: number) => createCell({ type: "price", props: {
 const columnIds = ["product", "price", "availability"];
 
 const table: TableBlockData["table"] = {
-    columns: columnIds.map((id) => ({ id, size: "standard", highlighted: id === "price" })),
+    columns: columnIds.map((id) => ({ id, settings: { size: "standard", highlighted: id === "price" } })),
     rows: [
         [createTextCell("Product"), createTextCell("Price"), createTextCell("Availability")],
         [createTextCell("Product A"), createPriceCell(19.99), createTextCell("In stock")],
@@ -21,7 +21,7 @@ const table: TableBlockData["table"] = {
         [createTextCell("Product C"), createPriceCell(39.99), createTextCell("In stock")],
     ].map((cells, rowIndex) => ({
         id: `row${rowIndex}`,
-        highlighted: rowIndex === 0,
+        settings: { highlighted: rowIndex === 0 },
         cellValues: cells.map((value, columnIndex) => ({ columnId: columnIds[columnIndex], value })),
     })),
 };

@@ -13,7 +13,7 @@ import { ImageBlock } from "../transformToBlockSaveIndex/test/blocks/ImageBlock.
 import { transformToBlockSaveIndex } from "../transformToBlockSaveIndex/transformToBlockSaveIndex.js";
 import { createRichTextBlock } from "./createRichTextBlock.js";
 import { createTableBlock } from "./createTableBlock.js";
-import { createTableSettings } from "./createTableSettings.js";
+import { createTableSettings, defaultTableColumnSettings, defaultTableRowSettings } from "./createTableSettings.js";
 
 class FailingMigration extends BlockMigration<(from: object) => object> implements BlockMigrationInterface {
     public readonly toVersion = 1;
@@ -90,21 +90,21 @@ function createRichTextInputWithLink(targetUrl: string) {
 
 function createTableInputWithLink(targetUrl: string) {
     return TableBlock.blockInputFactory({
-        rows: [{ id: "row", highlighted: false, cellValues: [{ columnId: "column", value: createRichTextInputWithLink(targetUrl) }] }],
+        rows: [{ id: "row", cellValues: [{ columnId: "column", value: createRichTextInputWithLink(targetUrl) }] }],
     });
 }
 
 function createCellBlocksTableInput(cellValues: Array<{ attachedBlocks: Array<{ type: string; props: unknown }>; activeType: string }>) {
     return CellBlocksTableBlock.blockInputFactory({
-        columns: cellValues.map((_, index) => ({ id: `column${index}`, size: "standard", highlighted: false })),
-        rows: [{ id: "row", highlighted: false, cellValues: cellValues.map((value, index) => ({ columnId: `column${index}`, value })) }],
+        columns: cellValues.map((_, index) => ({ id: `column${index}` })),
+        rows: [{ id: "row", cellValues: cellValues.map((value, index) => ({ columnId: `column${index}`, value })) }],
     });
 }
 
 describe("createTableBlock", () => {
     it("converts the input to data without running the migrations of a cell's block", () => {
         const input = TableBlock.blockInputFactory({
-            rows: [{ id: "row", highlighted: false, cellValues: [{ columnId: "column", value: { draftContent: { blocks: [], entityMap: {} } } }] }],
+            rows: [{ id: "row", cellValues: [{ columnId: "column", value: { draftContent: { blocks: [], entityMap: {} } } }] }],
         });
 
         expect(() => input.transformToBlockData()).not.toThrow();
@@ -120,20 +120,16 @@ describe("createTableBlock", () => {
 
     it("indexes the dependencies of a cell's block", () => {
         const data = ImageTableBlock.blockInputFactory({
-            columns: [
-                { id: "first", size: "standard", highlighted: false },
-                { id: "second", size: "standard", highlighted: false },
-            ],
+            columns: [{ id: "first" }, { id: "second" }],
             rows: [
                 {
                     id: "firstRow",
-                    highlighted: false,
                     cellValues: [
                         { columnId: "first", value: { damFileId: "firstFile" } },
                         { columnId: "second", value: { damFileId: "secondFile" } },
                     ],
                 },
-                { id: "secondRow", highlighted: false, cellValues: [{ columnId: "first", value: { damFileId: "thirdFile" } }] },
+                { id: "secondRow", cellValues: [{ columnId: "first", value: { damFileId: "thirdFile" } }] },
             ],
         }).transformToBlockData();
 
@@ -147,11 +143,10 @@ describe("createTableBlock", () => {
 
     it("indexes a cell without a column as invisible", () => {
         const data = ImageTableBlock.blockInputFactory({
-            columns: [{ id: "column", size: "standard", highlighted: false }],
+            columns: [{ id: "column" }],
             rows: [
                 {
                     id: "row",
-                    highlighted: false,
                     cellValues: [
                         { columnId: "column", value: { damFileId: "firstFile" } },
                         { columnId: "removedColumn", value: { damFileId: "secondFile" } },
@@ -273,8 +268,8 @@ describe("createTableBlock", () => {
 
         function createSettingsTableInput({ rowSettings, columnSettings }: { rowSettings?: unknown; columnSettings?: unknown }) {
             return SettingsTableBlock.blockInputFactory({
-                columns: [{ id: "column", size: "standard", highlighted: false, settings: columnSettings }],
-                rows: [{ id: "row", highlighted: false, settings: rowSettings, cellValues: [{ columnId: "column", value: emptyRichText }] }],
+                columns: [{ id: "column", settings: columnSettings }],
+                rows: [{ id: "row", settings: rowSettings, cellValues: [{ columnId: "column", value: emptyRichText }] }],
             });
         }
 
@@ -305,8 +300,8 @@ describe("createTableBlock", () => {
 
         it("fills in the defaults of settings that didn't exist when the data was saved", async () => {
             const data = SettingsTableBlock.blockDataFactory({
-                columns: [{ id: "column", size: "standard", highlighted: false, settings: { background: "grey" } }],
-                rows: [{ id: "row", highlighted: false, cellValues: [] }],
+                columns: [{ id: "column", settings: { background: "grey" } }],
+                rows: [{ id: "row", cellValues: [] }],
             });
 
             expect(JSON.parse(JSON.stringify(transformToBlockSave(data)))).toMatchObject({
@@ -315,20 +310,59 @@ describe("createTableBlock", () => {
             });
         });
 
-        it("adds the settings to the block meta only when they are declared", () => {
-            const getFieldNames = (block: typeof TableBlock) => {
-                const tableFields = block.blockMeta.fields;
-                const getNestedFieldNames = (name: string) => {
-                    const field = tableFields.find((field) => field.name === name);
-                    return field && "object" in field ? field.object.fields.map((nestedField) => nestedField.name) : [];
-                };
-                return { columns: getNestedFieldNames("columns"), rows: getNestedFieldNames("rows") };
+        it("uses the default settings of a table that doesn't declare its own", () => {
+            const getSettingsFieldNames = (block: typeof TableBlock, name: "columns" | "rows") => {
+                const field = block.blockMeta.fields.find((field) => field.name === name);
+                const settingsField = field && "object" in field ? field.object.fields.find((field) => field.name === "settings") : undefined;
+                return settingsField && "object" in settingsField ? settingsField.object.fields.map((field) => field.name) : [];
             };
 
-            expect(getFieldNames(TableBlock)).toEqual({ columns: ["id", "size", "highlighted"], rows: ["id", "highlighted", "cellValues"] });
-            expect(getFieldNames(SettingsTableBlock)).toEqual({
-                columns: ["id", "size", "highlighted", "settings"],
-                rows: ["id", "highlighted", "settings", "cellValues"],
+            expect(getSettingsFieldNames(TableBlock, "columns")).toEqual(["size", "highlighted"]);
+            expect(getSettingsFieldNames(TableBlock, "rows")).toEqual(["highlighted"]);
+            expect(getSettingsFieldNames(SettingsTableBlock, "columns")).toEqual(["background", "badges"]);
+        });
+    });
+
+    describe("with data saved before size and highlighting became default settings", () => {
+        const savedTable = {
+            columns: [{ id: "column", size: "large", highlighted: true, settings: { background: "grey" } }],
+            rows: [{ id: "row", highlighted: true, cellValues: [] }],
+        };
+
+        const loadSavedTable = (block: typeof TableBlock) => JSON.parse(JSON.stringify(transformToBlockSave(block.blockDataFactory(savedTable))));
+
+        it("moves them into the default settings", () => {
+            expect(loadSavedTable(TableBlock)).toEqual({
+                columns: [{ id: "column", settings: { size: "large", highlighted: true } }],
+                rows: [{ id: "row", settings: { highlighted: true }, cellValues: [] }],
+                $$vendorVersion: 1,
+            });
+        });
+
+        it("moves them into settings that extend the defaults, keeping the other settings", () => {
+            const ExtendedSettingsTableBlock = createTableBlock(
+                {
+                    richText: RichTextBlock,
+                    rowSettings: defaultTableRowSettings,
+                    columnSettings: createTableSettings({
+                        ...defaultTableColumnSettings,
+                        background: { type: "select", options: ["none", "grey"], defaultValue: "none" },
+                    }),
+                },
+                "ExtendedSettingsTableTest",
+            );
+
+            expect(loadSavedTable(ExtendedSettingsTableBlock)).toMatchObject({
+                columns: [{ id: "column", settings: { size: "large", highlighted: true, background: "grey" } }],
+                rows: [{ id: "row", settings: { highlighted: true } }],
+            });
+        });
+
+        it("drops them for a table whose settings don't declare them", () => {
+            expect(loadSavedTable(SettingsTableBlock)).toEqual({
+                columns: [{ id: "column", settings: { background: "grey", badges: [] } }],
+                rows: [{ id: "row", settings: { bold: false }, cellValues: [] }],
+                $$vendorVersion: 1,
             });
         });
     });

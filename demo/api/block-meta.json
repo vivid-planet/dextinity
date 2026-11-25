@@ -4964,20 +4964,29 @@
                             "nullable": false
                         },
                         {
-                            "name": "size",
-                            "kind": "Enum",
-                            "enum": [
-                                "extraSmall",
-                                "small",
-                                "standard",
-                                "large",
-                                "extraLarge"
-                            ],
-                            "nullable": false
-                        },
-                        {
-                            "name": "highlighted",
-                            "kind": "Boolean",
+                            "name": "settings",
+                            "kind": "NestedObject",
+                            "object": {
+                                "fields": [
+                                    {
+                                        "name": "size",
+                                        "kind": "Enum",
+                                        "enum": [
+                                            "extraSmall",
+                                            "small",
+                                            "standard",
+                                            "large",
+                                            "extraLarge"
+                                        ],
+                                        "nullable": false
+                                    },
+                                    {
+                                        "name": "highlighted",
+                                        "kind": "Boolean",
+                                        "nullable": false
+                                    }
+                                ]
+                            },
                             "nullable": false
                         }
                     ]
@@ -4995,8 +5004,17 @@
                             "nullable": false
                         },
                         {
-                            "name": "highlighted",
-                            "kind": "Boolean",
+                            "name": "settings",
+                            "kind": "NestedObject",
+                            "object": {
+                                "fields": [
+                                    {
+                                        "name": "highlighted",
+                                        "kind": "Boolean",
+                                        "nullable": false
+                                    }
+                                ]
+                            },
                             "nullable": false
                         },
                         {
@@ -5036,20 +5054,29 @@
                             "nullable": false
                         },
                         {
-                            "name": "size",
-                            "kind": "Enum",
-                            "enum": [
-                                "extraSmall",
-                                "small",
-                                "standard",
-                                "large",
-                                "extraLarge"
-                            ],
-                            "nullable": false
-                        },
-                        {
-                            "name": "highlighted",
-                            "kind": "Boolean",
+                            "name": "settings",
+                            "kind": "NestedObject",
+                            "object": {
+                                "fields": [
+                                    {
+                                        "name": "size",
+                                        "kind": "Enum",
+                                        "enum": [
+                                            "extraSmall",
+                                            "small",
+                                            "standard",
+                                            "large",
+                                            "extraLarge"
+                                        ],
+                                        "nullable": false
+                                    },
+                                    {
+                                        "name": "highlighted",
+                                        "kind": "Boolean",
+                                        "nullable": false
+                                    }
+                                ]
+                            },
                             "nullable": false
                         }
                     ]
@@ -5067,8 +5094,17 @@
                             "nullable": false
                         },
                         {
-                            "name": "highlighted",
-                            "kind": "Boolean",
+                            "name": "settings",
+                            "kind": "NestedObject",
+                            "object": {
+                                "fields": [
+                                    {
+                                        "name": "highlighted",
+                                        "kind": "Boolean",
+                                        "nullable": false
+                                    }
+                                ]
+                            },
                             "nullable": false
                         },
                         {

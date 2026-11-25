@@ -10,7 +10,6 @@ A setting is a `select`, a `multiSelect` or a `checkbox`, and the API and the ad
 Editors change the settings in the menus of a row or column.
 
 The API fills in the default of a setting that is missing, so a setting can be added to a table that already has content.
-A table without settings keeps its block meta.
 
 **Example**
 
@@ -20,6 +19,7 @@ const TableBlock = createTableBlock(
     {
         richText: RichTextBlock,
         columnSettings: createTableSettings({
+            ...defaultTableColumnSettings,
             hiddenOnMobile: { type: "checkbox", defaultValue: false },
         }),
     },
@@ -33,6 +33,7 @@ const TableBlock = createTableBlock({
     name: "Table",
     richText: RichTextBlock,
     columnSettings: createTableSettings({
+        ...defaultTableColumnSettings,
         hiddenOnMobile: {
             type: "checkbox",
             label: <FormattedMessage id="tableBlock.hiddenOnMobile" defaultMessage="Hidden on mobile" />,

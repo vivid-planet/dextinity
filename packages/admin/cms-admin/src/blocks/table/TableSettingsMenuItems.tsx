@@ -9,6 +9,8 @@ type Props = {
     onChange: (key: string, value: unknown) => void;
 };
 
+export const hasTableSettings = (settings: TableSettingsDeclaration) => Object.keys(settings).length > 0;
+
 export const TableSettingsMenuItems = ({ settings, values, onChange }: Props) =>
     Object.entries(settings).map(([key, field]) => {
         const value = values[key];
@@ -32,7 +34,7 @@ export const TableSettingsMenuItems = ({ settings, values, onChange }: Props) =>
             const selectedValues = Array.isArray(value) ? value : [];
 
             return (
-                <RowActionsMenu key={key} text={field.label} icon={<Settings />}>
+                <RowActionsMenu key={key} text={field.label} icon={field.icon ?? <Settings />}>
                     {field.options.map((option) => {
                         const isChecked = selectedValues.includes(option.value);
 
@@ -59,7 +61,7 @@ export const TableSettingsMenuItems = ({ settings, values, onChange }: Props) =>
         }
 
         return (
-            <RowActionsMenu key={key} text={field.label} icon={<Settings />}>
+            <RowActionsMenu key={key} text={field.label} icon={field.icon ?? <Settings />}>
                 {field.options.map((option) => (
                     <RowActionsItem
                         key={option.value}

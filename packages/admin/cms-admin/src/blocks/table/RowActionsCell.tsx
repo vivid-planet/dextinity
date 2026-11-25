@@ -1,5 +1,5 @@
 import { Alert, RowActionsItem, RowActionsMenu, useSnackbarApi, writeClipboardText } from "@dextinity/admin";
-import { Add, Copy, Delete, Duplicate, Paste, Remove, RowInsertAbove, RowInsertBelow, RowMoveDown, RowMoveUp } from "@dextinity/admin-icons";
+import { Copy, Delete, Duplicate, Paste, RowInsertAbove, RowInsertBelow, RowMoveDown, RowMoveUp } from "@dextinity/admin-icons";
 import { Divider, Snackbar } from "@mui/material";
 import type { Dispatch, SetStateAction } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -10,7 +10,7 @@ import type { TableBlockState } from "../createTableBlock";
 import { createTableSettingsState } from "./createTableSettings";
 import { FailedToPasteSnackbar } from "./FailedToPasteSnackbar";
 import { useTableBlockContext } from "./TableBlockContext";
-import { TableSettingsMenuItems } from "./TableSettingsMenuItems";
+import { hasTableSettings, TableSettingsMenuItems } from "./TableSettingsMenuItems";
 import { getClipboardValueForSchema } from "./utils/getClipboardValueForSchema";
 import {
     deleteRowById,
@@ -48,7 +48,6 @@ export const RowActionsCell = ({ row, updateState, state, addToRecentlyPastedIds
             const newRowIndex = where === "above" ? currentRowIndex : currentRowIndex + 1;
 
             const insertData: RowInsertData = {
-                highlighted: false,
                 cellValues: state.columns.map(() => CellBlock.defaultValues()),
             };
             return insertRowDataAtIndex(state, insertData, newRowIndex, table);
@@ -66,20 +65,6 @@ export const RowActionsCell = ({ row, updateState, state, addToRecentlyPastedIds
     const handleDeleteRow = () => {
         updateState((state) => {
             return deleteRowById(state, row.id);
-        });
-    };
-
-    const toggleRowHighlight = () => {
-        updateState((state) => {
-            return {
-                ...state,
-                rows: state.rows.map((rowInState) => {
-                    if (rowInState.id === row.id) {
-                        return { ...rowInState, highlighted: !rowInState.highlighted };
-                    }
-                    return rowInState;
-                }),
-            };
         });
     };
 
@@ -168,20 +153,8 @@ export const RowActionsCell = ({ row, updateState, state, addToRecentlyPastedIds
                     },
                 }}
             >
-                <RowActionsItem
-                    icon={stateRow?.highlighted ? <Remove /> : <Add />}
-                    onClick={() => {
-                        toggleRowHighlight();
-                    }}
-                >
-                    {stateRow?.highlighted ? (
-                        <FormattedMessage id="dextinity.tableBlock.removeHighlighting" defaultMessage="Remove highlighting" />
-                    ) : (
-                        <FormattedMessage id="dextinity.tableBlock.highlightRow" defaultMessage="Highlight row" />
-                    )}
-                </RowActionsItem>
                 <TableSettingsMenuItems settings={rowSettings} values={settings} onChange={handleSetRowSetting} />
-                <Divider />
+                {hasTableSettings(rowSettings) && <Divider />}
                 <RowActionsItem
                     icon={<RowInsertAbove />}
                     onClick={() => {

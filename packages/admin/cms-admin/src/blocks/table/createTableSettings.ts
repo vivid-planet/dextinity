@@ -5,17 +5,27 @@ type TableSettingsOption = {
     label: ReactNode;
 };
 
+type TableSettingsSubmenu = {
+    /** The icon of the submenu that lists the options. */
+    icon?: ReactNode;
+};
+
 type TableSettingsField = {
     label: ReactNode;
 } & (
-    | { type: "select"; options: TableSettingsOption[]; defaultValue: string }
-    | { type: "multiSelect"; options: TableSettingsOption[]; defaultValue: string[] }
+    | ({ type: "select"; options: TableSettingsOption[]; defaultValue: string } & TableSettingsSubmenu)
+    | ({ type: "multiSelect"; options: TableSettingsOption[]; defaultValue: string[] } & TableSettingsSubmenu)
     | { type: "checkbox"; defaultValue: boolean }
 );
 
 export type TableSettingsDeclaration = Record<string, TableSettingsField>;
 
 export type TableSettingsState = Record<string, unknown>;
+
+export type TableColumnWidth = {
+    minWidth: number;
+    flex: number;
+};
 
 export type TableCellSettings = {
     rowSettings: TableSettingsState;

@@ -10,8 +10,7 @@ type ColumnSize = "extraSmall" | "small" | "standard" | "large" | "extraLarge";
 
 interface TableColumnInput {
     id: string;
-    size: ColumnSize;
-    highlighted: boolean;
+    settings: { size: ColumnSize; highlighted: boolean };
 }
 
 interface TableCellValueInput<CellInput> {
@@ -21,7 +20,7 @@ interface TableCellValueInput<CellInput> {
 
 interface TableRowInput<CellInput> {
     id: string;
-    highlighted: boolean;
+    settings: { highlighted: boolean };
     cellValues: TableCellValueInput<CellInput>[];
 }
 
@@ -70,17 +69,17 @@ export abstract class TableBlockFixtureBase<CellInput> {
 
     private async generateTableContentInput(): Promise<TableContentInput<CellInput>> {
         const columns: TableColumnInput[] = [
-            { id: columnIds.photo, size: "small", highlighted: false },
-            { id: columnIds.name, size: "standard", highlighted: false },
-            { id: columnIds.email, size: "standard", highlighted: false },
-            { id: columnIds.address, size: "large", highlighted: false },
-            { id: columnIds.description, size: "extraLarge", highlighted: false },
-            { id: columnIds.hourlyRate, size: "small", highlighted: false },
+            { id: columnIds.photo, settings: { size: "small", highlighted: false } },
+            { id: columnIds.name, settings: { size: "standard", highlighted: false } },
+            { id: columnIds.email, settings: { size: "standard", highlighted: false } },
+            { id: columnIds.address, settings: { size: "large", highlighted: false } },
+            { id: columnIds.description, settings: { size: "extraLarge", highlighted: false } },
+            { id: columnIds.hourlyRate, settings: { size: "small", highlighted: false } },
         ];
 
         const headerRow: TableRowInput<CellInput> = {
             id: faker.string.uuid(),
-            highlighted: true,
+            settings: { highlighted: true },
             cellValues: [
                 { columnId: columnIds.photo, value: this.createSimpleCellRichText("Photo") },
                 { columnId: columnIds.name, value: this.createSimpleCellRichText("Name") },
@@ -108,7 +107,7 @@ export abstract class TableBlockFixtureBase<CellInput> {
     private async generateDataRow(): Promise<TableRowInput<CellInput>> {
         return {
             id: faker.string.uuid(),
-            highlighted: false,
+            settings: { highlighted: false },
             cellValues: [
                 { columnId: columnIds.photo, value: await this.createImageCell() },
                 { columnId: columnIds.name, value: this.createSimpleCellRichText(faker.person.fullName()) },

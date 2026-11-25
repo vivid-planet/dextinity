@@ -8,22 +8,15 @@ import { insertRowDataAtIndex, type RowInsertData } from "./row";
 import { rteSchema } from "./rteSchema";
 
 export const getNewColumn = (settings: TableSettingsDeclaration): TableBlockColumnState => {
-    return { id: uuid(), highlighted: false, size: "standard", settings: createTableSettingsState(settings) };
+    return { id: uuid(), settings: createTableSettingsState(settings) };
 };
 
-const columnSizeSchema = z.enum(["extraSmall", "small", "standard", "large", "extraLarge"]);
-type ColumnSize = z.infer<typeof columnSizeSchema>;
-
 export const columnInsertSchema = z.object({
-    size: columnSizeSchema,
-    highlighted: z.boolean(),
     settings: z.record(z.string(), z.unknown()).optional(),
     cellValues: z.array(rteSchema),
 });
 
 export type ColumnInsertData = {
-    size: ColumnSize;
-    highlighted: boolean;
     settings?: TableSettingsState;
     cellValues: unknown[];
 };
@@ -43,8 +36,6 @@ export const getDuplicatedColumnInsertData = (
     const newCellValues = sourceCellsValues.map((sourceCellValue) => sourceCellValue?.value ?? CellBlock.defaultValues());
 
     return {
-        size: sourceColumn.size,
-        highlighted: sourceColumn.highlighted,
         settings: sourceColumn.settings,
         cellValues: newCellValues,
     };
@@ -57,8 +48,6 @@ export const getInsertDataFromColumnById = (state: TableBlockState, columnId: st
     }
 
     return {
-        size: column.size,
-        highlighted: column.highlighted,
         settings: column.settings,
         cellValues: state.rows.map((row) => {
             const cellValueOfColumn = row.cellValues.find((cellValue) => cellValue.columnId === columnId);
@@ -79,7 +68,6 @@ export const insertColumnDataAtIndex = (
 
     for (let i = 0; i < numberOfRowsToBeAdded; i++) {
         const newRowInsertData: RowInsertData = {
-            highlighted: false,
             cellValues: state.columns.map(() => CellBlock.defaultValues()),
         };
         state = insertRowDataAtIndex(state, newRowInsertData, state.rows.length, table);
@@ -89,8 +77,6 @@ export const insertColumnDataAtIndex = (
     const columnsAfterIndex = state.columns.slice(index);
     const newColumn: TableBlockColumnState = {
         id: newColumnId,
-        size: columnInsertData.size,
-        highlighted: columnInsertData.highlighted,
         settings: createTableSettingsState(table.columnSettings, columnInsertData.settings),
     };
 
@@ -118,29 +104,10 @@ export const removeColumnFromState = (state: TableBlockState, columnId: string):
     };
 };
 
-export const toggleColumnHighlight = (state: TableBlockState, columnId: string): TableBlockState => {
-    return {
-        ...state,
-        columns: state.columns.map((column) => {
-            if (column.id === columnId) {
-                return { ...column, highlighted: !column.highlighted };
-            }
-            return column;
-        }),
-    };
-};
-
 export const setColumnSetting = (state: TableBlockState, columnId: string, key: string, value: unknown): TableBlockState => {
     return {
         ...state,
         columns: state.columns.map((column) => (column.id === columnId ? { ...column, settings: { ...column.settings, [key]: value } } : column)),
-    };
-};
-
-export const setColumnSize = (state: TableBlockState, columnId: string, size: ColumnSize): TableBlockState => {
-    return {
-        ...state,
-        columns: state.columns.map((column) => (column.id === columnId ? { ...column, size } : column)),
     };
 };
 

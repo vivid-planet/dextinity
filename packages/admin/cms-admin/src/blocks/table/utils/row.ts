@@ -8,17 +8,15 @@ import { getNewColumn } from "./column";
 import { rteSchema } from "./rteSchema";
 
 const getNewRow = (cellValues: TableBlockRowState["cellValues"], settings: TableSettingsState, newRowId: string = uuid()): TableBlockRowState => {
-    return { id: newRowId, highlighted: false, settings, cellValues };
+    return { id: newRowId, settings, cellValues };
 };
 
 export const rowInsertSchema = z.object({
-    highlighted: z.boolean(),
     settings: z.record(z.string(), z.unknown()).optional(),
     cellValues: z.array(rteSchema),
 });
 
 export type RowInsertData = {
-    highlighted: boolean;
     settings?: TableSettingsState;
     cellValues: unknown[];
 };
@@ -95,7 +93,6 @@ export const getDuplicatedRowInsertData = (state: TableBlockState, rowId: string
     });
 
     return {
-        highlighted: row.highlighted,
         settings: row.settings,
         cellValues: cellValuesInOrderOfColumns,
     };
@@ -112,7 +109,6 @@ export const getInsertDataFromRowById = (state: TableBlockState, rowId: string, 
     });
 
     return {
-        highlighted: row.highlighted,
         settings: row.settings,
         cellValues: cellValuesInOrderOfColumns,
     };

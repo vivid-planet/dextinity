@@ -21,7 +21,7 @@ function toRecordCell<CellValue>(row: TableRow<CellValue>, column: TableColumn):
     return {
         value: findCellValue(row, column),
         column,
-        isHighlighted: row.highlighted || column.highlighted,
+        isHighlighted: row.settings.highlighted || column.settings.highlighted,
     };
 }
 

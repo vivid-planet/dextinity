@@ -1,5 +1,5 @@
 import { plainToInstance, Type } from "class-transformer";
-import { IsArray, IsBoolean, IsEnum, IsString, ValidateNested } from "class-validator";
+import { IsArray, IsString, ValidateNested } from "class-validator";
 
 import {
     type Block,
@@ -14,8 +14,16 @@ import {
 import { ChildBlock } from "../decorators/child-block.js";
 import { ChildBlockInput } from "../decorators/child-block-input.js";
 import { BlockField } from "../decorators/field.js";
+import type { MigrateVendorOptions } from "../migrations/types.js";
+import { typeSafeBlockMigrationPipe } from "../migrations/typeSafeBlockMigrationPipe.js";
 import { createOneOfBlock } from "./createOneOfBlock.js";
-import { createTableSettingsDecorators, type TableSettingsDeclaration } from "./createTableSettings.js";
+import {
+    createTableSettingsDecorators,
+    defaultTableColumnSettings,
+    defaultTableRowSettings,
+    type TableSettingsDeclaration,
+} from "./createTableSettings.js";
+import { buildMoveSizeAndHighlightingIntoSettingsMigration } from "./table-migrations/1-move-size-and-highlighting-into-settings.migration.js";
 import type { BlockFactoryNameOrOptions } from "./types.js";
 
 type CreateTableBlockOptions = (
@@ -31,40 +39,34 @@ type CreateTableBlockOptions = (
           richText?: never;
       }
 ) & {
-    /** Declared with `createTableSettings`. */
+    /** Declared with `createTableSettings`. Defaults to `defaultTableRowSettings`. */
     rowSettings?: TableSettingsDeclaration;
-    /** Declared with `createTableSettings`. */
+    /** Declared with `createTableSettings`. Defaults to `defaultTableColumnSettings`. */
     columnSettings?: TableSettingsDeclaration;
 };
 
-enum ColumnSize {
-    extraSmall = "extraSmall",
-    small = "small",
-    standard = "standard",
-    large = "large",
-    extraLarge = "extraLarge",
-}
-
-export function createTableBlock(options: CreateTableBlockOptions, nameOrOptions: BlockFactoryNameOrOptions = "Table"): Block {
-    const tableName = typeof nameOrOptions === "string" ? nameOrOptions : nameOrOptions.name;
+export function createTableBlock(
+    { rowSettings = defaultTableRowSettings, columnSettings = defaultTableColumnSettings, ...options }: CreateTableBlockOptions,
+    nameOrOptions: BlockFactoryNameOrOptions = "Table",
+): Block {
+    const { name: tableName, ...blockOptions } = typeof nameOrOptions === "string" ? { name: nameOrOptions } : nameOrOptions;
     const CellBlock = options.cellBlocks
         ? createOneOfBlock({ supportedBlocks: options.cellBlocks, allowEmpty: false }, `${tableName}Cell`)
         : options.richText;
-    const rowSettings = createTableSettingsDecorators(options.rowSettings);
-    const columnSettings = createTableSettingsDecorators(options.columnSettings);
+    const rowSettingsDecorators = createTableSettingsDecorators(rowSettings);
+    const columnSettingsDecorators = createTableSettingsDecorators(columnSettings);
+
+    const migrateVendor: MigrateVendorOptions = {
+        version: 1,
+        migrations: typeSafeBlockMigrationPipe([buildMoveSizeAndHighlightingIntoSettingsMigration({ columnSettings, rowSettings })]),
+    };
 
     class TableBlockColumnData extends BlockData {
         @BlockField()
         id: string;
 
-        @BlockField({ type: "enum", enum: ColumnSize })
-        size: ColumnSize;
-
-        @BlockField()
-        highlighted: boolean;
-
-        @columnSettings.dataField
-        settings?: BlockDataInterface;
+        @columnSettingsDecorators.dataField
+        settings: BlockDataInterface;
     }
 
     class TableBlockColumnInput extends BlockInput {
@@ -72,15 +74,7 @@ export function createTableBlock(options: CreateTableBlockOptions, nameOrOptions
         @IsString()
         id: string;
 
-        @BlockField({ type: "enum", enum: ColumnSize })
-        @IsEnum(ColumnSize)
-        size: ColumnSize;
-
-        @BlockField()
-        @IsBoolean()
-        highlighted: boolean;
-
-        @columnSettings.inputField
+        @columnSettingsDecorators.inputField
         settings?: BlockInputInterface;
 
         transformToBlockData(): TableBlockColumnData {
@@ -113,11 +107,8 @@ export function createTableBlock(options: CreateTableBlockOptions, nameOrOptions
         @BlockField()
         id: string;
 
-        @BlockField()
-        highlighted: boolean;
-
-        @rowSettings.dataField
-        settings?: BlockDataInterface;
+        @rowSettingsDecorators.dataField
+        settings: BlockDataInterface;
 
         @BlockField(TableBlockRowColumnValueData)
         @Type(() => TableBlockRowColumnValueData)
@@ -129,11 +120,7 @@ export function createTableBlock(options: CreateTableBlockOptions, nameOrOptions
         @IsString()
         id: string;
 
-        @BlockField()
-        @IsBoolean()
-        highlighted: boolean;
-
-        @rowSettings.inputField
+        @rowSettingsDecorators.inputField
         settings?: BlockInputInterface;
 
         @BlockField(TableBlockRowColumnValueInput)
@@ -195,5 +182,5 @@ export function createTableBlock(options: CreateTableBlockOptions, nameOrOptions
         }
     }
 
-    return createBlock(TableBlockData, TableBlockInput, nameOrOptions);
+    return createBlock(TableBlockData, TableBlockInput, { name: tableName, ...blockOptions, migrateVendor });
 }

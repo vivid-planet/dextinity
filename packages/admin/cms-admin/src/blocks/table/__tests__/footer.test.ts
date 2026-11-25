@@ -17,10 +17,9 @@ import { renderTableBlock } from "./utils";
 const createStateWithRows = (numberOfRows: number): TableBlockState => {
     const columnId = uuid();
     return {
-        columns: [{ id: columnId, size: "standard", highlighted: false, settings: {} }],
+        columns: [{ id: columnId, settings: {} }],
         rows: Array.from({ length: numberOfRows }, (_, index) => ({
             id: uuid(),
-            highlighted: false,
             settings: {},
             cellValues: [{ columnId, value: createRteState(`Row ${index + 1}`) }],
         })),

@@ -14,9 +14,8 @@ import {
 import type { DataGridProProps, GridApiPro } from "@mui/x-data-grid-pro";
 import { type ComponentType, type Dispatch, type SetStateAction, useCallback, useEffect, useRef } from "react";
 
-import type { TableBlockData } from "../../blocks.generated";
 import { type DextinityConfig, useDextinityConfig } from "../../config/DextinityConfigContext";
-import type { TableBlockColumnState, TableBlockState } from "../createTableBlock";
+import type { TableBlockState } from "../createTableBlock";
 import { CellValue } from "./CellValue";
 import { ColumnHeader } from "./ColumnHeader";
 import { dataGridStyles, freeDataGridStyles, lastContentColumnClassName } from "./dataGridStyles";
@@ -30,8 +29,6 @@ import { ensureMinimumTableState } from "./utils/ensureMinimumTableState";
 import { moveRowToIndex } from "./utils/row";
 import { useTemporarilyHighlightedIds } from "./utils/useTemporarilyHighlightedIds";
 
-type ColumnSize = TableBlockData["columns"][number]["size"];
-
 type ConfiguredDataGrid = NonNullable<DextinityConfig["dataGrid"]>["component"];
 
 const reorderColumnField = "__reorder__";
@@ -42,22 +39,6 @@ const isProOrPremiumDataGrid = (dataGrid: ConfiguredDataGrid): dataGrid is Compo
 
 const getLastContentColumnClassName = (columnIndex: number, numberOfColumns: number) =>
     columnIndex === numberOfColumns - 1 ? lastContentColumnClassName : undefined;
-
-const widthForColumnSize: Record<ColumnSize, number> = {
-    extraSmall: 100,
-    small: 200,
-    standard: 300,
-    large: 400,
-    extraLarge: 500,
-};
-
-const flexForColumnSize: Record<ColumnSize, number> = {
-    extraSmall: 1,
-    small: 2,
-    standard: 3,
-    large: 4,
-    extraLarge: 5,
-};
 
 type Props = {
     state: TableBlockState;
@@ -124,20 +105,17 @@ export const TableBlockGrid = ({ state, updateState, clickedCell }: Props) => {
     }, [apiRef, updateState]);
 
     const dataGridColumns: GridColDef[] = [
-        ...state.columns.map(({ id: columnId, highlighted, size, settings }: TableBlockColumnState, index: number) => ({
+        ...state.columns.map(({ id: columnId, settings }, index) => ({
             field: columnId,
             editable: true,
             sortable: false,
-            flex: flexForColumnSize[size],
-            minWidth: widthForColumnSize[size],
+            ...table.getColumnWidth(settings),
             headerClassName: getLastContentColumnClassName(index, state.columns.length),
             cellClassName: getLastContentColumnClassName(index, state.columns.length),
             renderHeader: (params: GridColumnHeaderParams) => (
                 <ColumnHeader
                     {...params}
                     state={state}
-                    columnSize={size}
-                    highlighted={highlighted}
                     settings={settings}
                     updateState={updateState}
                     columnIndex={index}
@@ -156,7 +134,6 @@ export const TableBlockGrid = ({ state, updateState, clickedCell }: Props) => {
                         value={value}
                         rowSettings={rowFromState?.settings ?? {}}
                         columnSettings={settings}
-                        highlighted={rowFromState?.highlighted || highlighted}
                         isTemporarilyHighlighted={rowWasRecentlyPasted || columnWasRecentlyPasted || cellWasRecentlyClicked}
                     />
                 );

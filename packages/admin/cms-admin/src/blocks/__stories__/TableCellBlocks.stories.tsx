@@ -91,14 +91,13 @@ const createTextCellInput = (text: string) => ({ attachedBlocks: [{ type: "text"
 
 const products = TableBlock.input2State({
     columns: [
-        { id: "photo", size: "small", highlighted: false },
-        { id: "product", size: "standard", highlighted: false },
-        { id: "price", size: "standard", highlighted: false },
+        { id: "photo", settings: { size: "small", highlighted: false } },
+        { id: "product", settings: { size: "standard", highlighted: false } },
+        { id: "price", settings: { size: "standard", highlighted: false } },
     ],
     rows: [
         {
             id: "espresso-machine",
-            highlighted: false,
             cellValues: [
                 { columnId: "photo", value: createImageCellInput("Espresso machine") },
                 { columnId: "product", value: createTextCellInput("Espresso machine") },
@@ -107,7 +106,6 @@ const products = TableBlock.input2State({
         },
         {
             id: "coffee-grinder",
-            highlighted: false,
             cellValues: [
                 { columnId: "photo", value: createImageCellInput("Coffee grinder") },
                 { columnId: "product", value: createTextCellInput("Coffee grinder") },
@@ -125,7 +123,6 @@ const products = TableBlock.input2State({
         },
         {
             id: "milk-frother",
-            highlighted: false,
             cellValues: [
                 { columnId: "photo", value: createImageCellInput("Milk frother") },
                 { columnId: "product", value: createTextCellInput("Milk frother") },

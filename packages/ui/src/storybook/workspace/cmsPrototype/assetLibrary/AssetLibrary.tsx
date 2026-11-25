@@ -37,7 +37,7 @@ import { PageTypeShell } from "../../../pageTypes/PageTypeShell";
 import { landscapeImage } from "../../../sampleImages";
 import styles from "./assetLibrary.module.scss";
 import { type LibraryLocation, type LibrarySortKey, type LibraryView, type SmartFilter, useAssetLibrary } from "./AssetLibraryContext";
-import { type AssetKind, getFolder, getFolderTrail, type LibraryAsset, today } from "./assetLibraryData";
+import { type AssetKind, getFolder, getFolderTrail, type LibraryAsset, type LibraryFolder, today } from "./assetLibraryData";
 import { AssetTable } from "./AssetTable";
 import { countActiveFilters, kindFilters, LibraryFilterDrawer, pageSizes, sortLabels } from "./LibraryFilterDrawer";
 import { AssetTile, FolderCard, LibraryItemContext, type LibraryItemHandlers } from "./LibraryItems";
@@ -52,6 +52,7 @@ interface Upload {
     name: string;
     progress: number;
     kind: AssetKind;
+    folderId: string;
 }
 
 function kindOfFile(file: File): AssetKind {
@@ -100,6 +101,10 @@ function useFillViewportHeight(ref: RefObject<HTMLElement | null>, enabled: bool
     return height;
 }
 
+function quoteFolderNames(folders: LibraryFolder[], folderIds: string[]) {
+    return [...new Set(folderIds)].map((folderId) => `“${getFolder(folders, folderId)?.name}”`).join(", ");
+}
+
 function isFileDrag(event: DragEvent) {
     return event.dataTransfer.types.includes("Files");
 }
@@ -127,13 +132,17 @@ export function AssetLibrary() {
 
     const content = getLibraryContent(location, folders, assets);
     const { mode } = content;
-    const pageItems = content.items.slice((location.page - 1) * location.pageSize, location.page * location.pageSize);
+    // Archiving, moving, or deleting the files of the last page leaves fewer pages than before
+    const currentPage = Math.min(location.page, Math.max(1, Math.ceil(content.items.length / location.pageSize)));
+    const pageItems = content.items.slice((currentPage - 1) * location.pageSize, currentPage * location.pageSize);
     const pageIds = pageItems.map((item) => item.id);
     const selection = useSelection({ ids: pageIds, selectedIds, onSelectionChange: setSelectedIds });
     const allItems = new Map(content.items.map((item) => [item.id, item]));
     const selectedItems = selectedIds.flatMap((id) => allItems.get(id) ?? []);
     const currentFolder = getFolder(folders, location.folderId);
     const currentFolderName = currentFolder?.name ?? "Assets";
+    // Files always live in a folder, so uploads at the top level go into Imagery
+    const uploadFolderId = location.folderId ?? "imagery";
     const acceptsUploads = mode === "folder" || mode === "flat";
 
     const activeAssets = assets.filter((asset) => !asset.archived);
@@ -191,12 +200,11 @@ export function AssetLibrary() {
         if (uploads.length === 0 || uploads.some((upload) => upload.progress < 100)) {
             return;
         }
-        const folderId = location.folderId ?? "imagery";
         const created: LibraryAsset[] = uploads.map((upload) => ({
             ...activeAssets[0],
             id: upload.id,
             name: upload.name,
-            folderId,
+            folderId: upload.folderId,
             kind: upload.kind,
             src: landscapeImage,
             width: 2400,
@@ -213,16 +221,28 @@ export function AssetLibrary() {
         }));
         setAssets((current) => [...current, ...created]);
         addToast({
-            message: `${created.length === 1 ? `“${created[0].name}”` : `${created.length} files`} uploaded to “${getFolder(folders, folderId)?.name ?? "Assets"}”`,
+            message: `${created.length === 1 ? `“${created[0].name}”` : `${created.length} files`} uploaded to ${quoteFolderNames(
+                folders,
+                created.map((asset) => asset.folderId),
+            )}`,
         });
         setUploads([]);
-    }, [uploads, activeAssets, location.folderId, folders, setAssets, addToast]);
+    }, [uploads, activeAssets, folders, setAssets, addToast]);
 
     function upload(files: File[]) {
         if (files.length === 0) {
             return;
         }
-        setUploads(files.map((file, index) => ({ id: `upload-${Date.now()}-${index}`, name: file.name, progress: 0, kind: kindOfFile(file) })));
+        setUploads((current) => [
+            ...current,
+            ...files.map((file, index) => ({
+                id: `upload-${Date.now()}-${index}`,
+                name: file.name,
+                progress: 0,
+                kind: kindOfFile(file),
+                folderId: uploadFolderId,
+            })),
+        ]);
     }
 
     const handlers: LibraryItemHandlers = {
@@ -534,7 +554,13 @@ export function AssetLibrary() {
                                             : undefined
                                     }
                                     searchValue={location.search}
-                                    onSearchChange={(search) => go({ search, flat: search.trim() === "" ? location.flat : false })}
+                                    onSearchChange={(search) =>
+                                        go({
+                                            search,
+                                            flat: search.trim() === "" ? location.flat : false,
+                                            smartFilter: search.trim() === "" ? location.smartFilter : null,
+                                        })
+                                    }
                                     labels={{ search: "Search all assets", searchPlaceholder: "Search all assets" }}
                                     searchKeyboardShortcut={false}
                                     actions={
@@ -744,7 +770,7 @@ export function AssetLibrary() {
                                     <div className={styles.dropZone}>
                                         <Icon name="cloud-upload" />
                                         <strong>Drop files here</strong>
-                                        <span>They go into “{currentFolderName}”</span>
+                                        <span>They go into {quoteFolderNames(folders, [uploadFolderId])}</span>
                                     </div>
                                 )}
                             </div>
@@ -758,21 +784,21 @@ export function AssetLibrary() {
                                             variant="text"
                                             color="secondary"
                                             aria-label="Previous page"
-                                            disabled={location.page === 1}
-                                            onClick={() => setLocation((current) => ({ ...current, page: current.page - 1 }))}
+                                            disabled={currentPage === 1}
+                                            onClick={() => setLocation((current) => ({ ...current, page: currentPage - 1 }))}
                                         >
                                             <Icon name="chevron-left" />
                                         </IconButton>
                                         <span className={styles.pageRange} aria-live="polite">
-                                            {(location.page - 1) * location.pageSize + 1}–
-                                            {Math.min(location.page * location.pageSize, content.items.length)} of {content.items.length}
+                                            {(currentPage - 1) * location.pageSize + 1}–
+                                            {Math.min(currentPage * location.pageSize, content.items.length)} of {content.items.length}
                                         </span>
                                         <IconButton
                                             variant="text"
                                             color="secondary"
                                             aria-label="Next page"
-                                            disabled={location.page * location.pageSize >= content.items.length}
-                                            onClick={() => setLocation((current) => ({ ...current, page: current.page + 1 }))}
+                                            disabled={currentPage * location.pageSize >= content.items.length}
+                                            onClick={() => setLocation((current) => ({ ...current, page: currentPage + 1 }))}
                                         >
                                             <Icon name="chevron-right" />
                                         </IconButton>
@@ -782,7 +808,7 @@ export function AssetLibrary() {
                                 <div className={styles.footer}>
                                     {content.items.length > 0 ? (
                                         <Pagination
-                                            page={location.page}
+                                            page={currentPage}
                                             pageSize={location.pageSize}
                                             total={content.items.length}
                                             pageSizeOptions={pageSizes}
@@ -872,7 +898,13 @@ export function AssetLibrary() {
             />
             {uploads.length > 0 && (
                 <div className={styles.uploadTray} role="status" aria-label="Uploads">
-                    <strong>Uploading to “{currentFolderName}”</strong>
+                    <strong>
+                        Uploading to{" "}
+                        {quoteFolderNames(
+                            folders,
+                            uploads.map((item) => item.folderId),
+                        )}
+                    </strong>
                     {uploads.map((item) => (
                         <ProgressBar key={item.id} value={item.progress} label={item.name} size="small" />
                     ))}

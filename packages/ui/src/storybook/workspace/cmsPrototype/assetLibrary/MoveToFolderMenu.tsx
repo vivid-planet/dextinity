@@ -12,7 +12,7 @@ export interface FolderChoice {
     path: string;
 }
 
-export function getFolderChoices(folders: LibraryFolder[]): FolderChoice[] {
+function getFolderChoices(folders: LibraryFolder[]): FolderChoice[] {
     return [
         { id: null, name: "Assets", path: "" },
         ...folders

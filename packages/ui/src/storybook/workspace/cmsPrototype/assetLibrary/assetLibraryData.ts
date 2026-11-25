@@ -9,7 +9,7 @@ export interface LibraryFolder {
     modified: string;
 }
 
-export interface AssetUsage {
+interface AssetUsage {
     page: string;
     path: string;
     block: string;

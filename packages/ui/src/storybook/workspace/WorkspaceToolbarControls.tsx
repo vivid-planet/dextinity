@@ -10,7 +10,6 @@ import { MenuRadioItem } from "../../components/menu/MenuRadioItem";
 import { NumberInput } from "../../components/numberInput/NumberInput";
 import { Popover } from "../../components/popover/Popover";
 import { SegmentedControl } from "../../components/segmentedControl/SegmentedControl";
-import type { ThemeColorScheme, ThemeDensity } from "../../theme/types";
 import type { WorkspaceZoom } from "./workspaceState";
 import styles from "./WorkspaceToolbarControls.module.scss";
 
@@ -32,18 +31,6 @@ export const zoomOptions: { value: WorkspaceZoom; label: string }[] = [
     { value: "0.75", label: "75 %" },
     { value: "1", label: "100 %" },
     { value: "1.5", label: "150 %" },
-];
-
-export const colorSchemeOptions: { value: ThemeColorScheme; icon: ReactNode; "aria-label": string }[] = [
-    { value: "light", icon: <Icon name="sun" />, "aria-label": "Light" },
-    { value: "dark", icon: <Icon name="moon" />, "aria-label": "Dark" },
-    { value: "high-contrast", icon: <Icon name="contrast" />, "aria-label": "High contrast" },
-];
-
-export const densityOptions: { value: ThemeDensity; icon: ReactNode; "aria-label": string }[] = [
-    { value: "comfortable", icon: <Icon name="density-comfortable" />, "aria-label": "Comfortable" },
-    { value: "standard", icon: <Icon name="density-standard" />, "aria-label": "Standard" },
-    { value: "compact", icon: <Icon name="density-compact" />, "aria-label": "Compact" },
 ];
 
 /** The preset the frame size matches, if any. */

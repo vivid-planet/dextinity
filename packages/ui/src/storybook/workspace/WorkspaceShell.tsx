@@ -483,6 +483,15 @@ export function WorkspaceShell() {
         setPresenting(true);
     }
 
+    // Comparing and the flow map come back after the presentation and open on the page it ended on
+    function stopPresenting() {
+        const frameWindow = frameRef.current?.contentWindow;
+        if (frameWindow) {
+            setPrototypeStartPage(frameWindow.location.hash.slice(1));
+        }
+        setPresenting(false);
+    }
+
     useEffect(() => {
         if (!presenting) {
             return;
@@ -493,7 +502,7 @@ export function WorkspaceShell() {
         );
         const handleKey = (event: KeyboardEvent) => {
             if (event.key === "Escape") {
-                setPresenting(false);
+                stopPresenting();
             }
         };
         frameDocuments.forEach((target) => target.addEventListener("keydown", handleKey));
@@ -940,7 +949,7 @@ export function WorkspaceShell() {
                                 color="secondary"
                                 size="small"
                                 startIcon={<Icon name="close" />}
-                                onClick={() => setPresenting(false)}
+                                onClick={stopPresenting}
                             >
                                 Exit presentation · Esc
                             </Button>

@@ -182,14 +182,14 @@ function pathOf(page: SitePage | undefined) {
 /**
  * Moves the pages, with the pages below them, before or after the target or inside it as its last children, and builds their paths
  * anew below their new parent. Link pages keep their URL. Returns the old and new path of every page whose path changed, for the
- * redirects.
+ * redirects, and the new paths that other pages already have, in which case the move must not happen.
  */
 export function movePages(
     pages: SitePage[],
     ids: string[],
     targetId: string,
     position: "before" | "after" | "inside",
-): { pages: SitePage[]; parent: SitePage | undefined; pathChanges: PathChange[] } {
+): { pages: SitePage[]; parent: SitePage | undefined; pathChanges: PathChange[]; takenPaths: string[] } {
     const topLevelIds = ids.filter((id) => !(findTrail(pages, id) ?? []).some((ancestor) => ids.includes(ancestor.id)));
     const moved = topLevelIds.flatMap((id) => {
         const page = findInTree(pages, id);
@@ -199,6 +199,8 @@ export function movePages(
     const parent = position === "inside" ? findInTree(remaining, targetId) : (findTrail(remaining, targetId) ?? []).at(-1);
     const pathChanges: PathChange[] = [];
     const rebased = moved.map((page) => rebasePaths(page, pathOf(parent), pathChanges));
+    const remainingPaths = new Set(flattenPages(remaining).map((page) => page.path));
+    const takenPaths = pathChanges.map((pathChange) => pathChange.to).filter((path) => remainingPaths.has(path));
 
     const insert = (siblings: SitePage[]): SitePage[] =>
         siblings.flatMap((page) => {
@@ -211,5 +213,5 @@ export function movePages(
             return [page.children ? { ...page, children: insert(page.children) } : page];
         });
 
-    return { pages: insert(remaining), parent, pathChanges };
+    return { pages: insert(remaining), parent, pathChanges, takenPaths };
 }

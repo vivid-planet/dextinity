@@ -4,14 +4,12 @@ import { expect, userEvent } from "storybook/test";
 import { documentImage, interiorImage, landscapeImage, portraitImage } from "../../../storybook/sampleImages";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { AssetThumbnail } from "../AssetThumbnail";
-import assetThumbnailTokens from "../AssetThumbnail.tokens.scss?raw";
 import styles from "./AssetThumbnail.stories.module.scss";
 
 const meta = {
     component: AssetThumbnail,
     title: "Building blocks/Media & upload/AssetThumbnail",
     decorators: [themeDecorator],
-    parameters: { tokens: assetThumbnailTokens },
     args: {
         type: "image",
         src: landscapeImage,
@@ -19,6 +17,8 @@ const meta = {
         meta: "JPG · 2.4 MB",
     },
     argTypes: {
+        title: { control: "text" },
+        meta: { control: "text" },
         type: { control: "select", options: ["image", "video", "document", "folder"] },
         ratio: { control: "radio", options: ["4:3", "1:1", "original"] },
         badges: { control: "check", options: ["missingAlt"] },

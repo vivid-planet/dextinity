@@ -5,7 +5,6 @@ import { expect, fn, userEvent, waitFor } from "storybook/test";
 import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Tabs, type TabsItem } from "../Tabs";
-import tabsTokens from "../Tabs.tokens.scss?raw";
 import styles from "./Tabs.stories.module.scss";
 
 const pageSections: TabsItem[] = [
@@ -24,7 +23,6 @@ const meta = {
     component: Tabs,
     title: "Building blocks/Selection & toggles/Tabs",
     decorators: [themeDecorator],
-    parameters: { tokens: tabsTokens },
     args: {
         "aria-label": "Page",
         items: pageSections,

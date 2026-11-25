@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type PropsWithChildren, type ReactNode, useId } from "react";
+import { forwardRef, type HTMLAttributes, type ReactNode, useId } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import styles from "./Panel.module.scss";
@@ -40,7 +40,7 @@ export interface PanelSlotProps {
     body?: SlotPropsValue<PanelOwnerState, "div">;
 }
 
-export interface PanelProps extends Omit<HTMLAttributes<HTMLElement>, "className" | "title">, PropsWithChildren {
+export interface PanelProps extends Omit<HTMLAttributes<HTMLElement>, "className" | "children" | "title"> {
     /** The heading of the panel, which also names it for assistive technology. */
     title?: ReactNode;
     /** A line under the title. */
@@ -59,6 +59,8 @@ export interface PanelProps extends Omit<HTMLAttributes<HTMLElement>, "className
      * @defaultValue `"default"`
      */
     padding?: PanelPadding;
+    /** The content. */
+    children?: ReactNode;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Sets which element a named inner part renders as. */
@@ -69,8 +71,6 @@ export interface PanelProps extends Omit<HTMLAttributes<HTMLElement>, "className
 
 /**
  * A surface that groups the content of one task. Panels sit side by side or stacked, never inside each other.
- *
- * `children`: The content.
  */
 export const Panel = forwardRef<HTMLElement, PanelProps>(function Panel(
     { children, title, description, actions, variant = "glass", padding = "default", className, slots, slotProps, ...restProps },

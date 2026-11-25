@@ -1,6 +1,5 @@
 ---
 "@dextinity/admin": patch
-"@dextinity/admin-color-picker": patch
 "@dextinity/admin-date-time": patch
 "@dextinity/admin-icons": patch
 "@dextinity/admin-rte": patch

@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type PropsWithChildren, type ReactNode } from "react";
+import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Icon } from "../icon/Icon";
@@ -30,7 +30,7 @@ export interface BannerSlotProps {
     action?: SlotPropsValue<BannerOwnerState, "span">;
 }
 
-export interface BannerProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "color">, PropsWithChildren {
+export interface BannerProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "color"> {
     /**
      * `warning` for a passing problem the page can live with (announced politely), `error` for one that blocks work (announced
      * at once), `info` for a notice.
@@ -42,6 +42,8 @@ export interface BannerProps extends Omit<HTMLAttributes<HTMLDivElement>, "class
     icon?: ReactNode;
     /** The way out, usually a small `Button` such as "Try again". */
     action?: ReactNode;
+    /** What is wrong and what happens now, e.g. "No connection. Changes stay here until they are saved." */
+    children?: ReactNode;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
@@ -51,8 +53,6 @@ export interface BannerProps extends Omit<HTMLAttributes<HTMLDivElement>, "class
 /**
  * A message above the content about the whole page, e.g. a lost connection. Field errors stay at the field, action results go in
  * a toast.
- *
- * `children`: What is wrong and what happens now, e.g. "No connection. Changes stay here until they are saved."
  */
 export const Banner = forwardRef<HTMLDivElement, BannerProps>(function Banner(
     { children, color = "warning", icon, action, className, slotProps, ...restProps },

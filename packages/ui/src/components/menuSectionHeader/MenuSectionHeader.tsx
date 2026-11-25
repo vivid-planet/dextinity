@@ -1,13 +1,5 @@
 import { clsx } from "clsx";
-import {
-    type ElementType,
-    type ForwardedRef,
-    forwardRef,
-    type HTMLAttributes,
-    type PropsWithChildren,
-    type ReactNode,
-    type RefAttributes,
-} from "react";
+import { type ElementType, type ForwardedRef, forwardRef, type HTMLAttributes, type ReactNode, type RefAttributes } from "react";
 
 import { hasRenderableContent } from "../../utils/hasRenderableContent";
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
@@ -57,8 +49,7 @@ export interface MenuSectionHeaderProps<
     Label extends ElementType = "span",
     ExpandIcon extends ExpandIconElementType = typeof Icon,
     Action extends ElementType = "span",
->
-    extends Omit<HTMLAttributes<HTMLDivElement>, "className">, PropsWithChildren {
+> extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children"> {
     /**
      * Shows an expand icon for a section that expands and collapses.
      *
@@ -74,6 +65,8 @@ export interface MenuSectionHeaderProps<
     expandable?: boolean;
     /** Content at the end of the header, such as a small text `IconButton` that adds an item to the section. */
     action?: ReactNode;
+    /** The section's name. */
+    children: ReactNode;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Sets which element a named inner part renders as. */
@@ -84,8 +77,6 @@ export interface MenuSectionHeaderProps<
 
 /**
  * Names a group of items in a menu, such as the main navigation.
- *
- * `children`: The section's name.
  */
 export const MenuSectionHeader: <
     Label extends ElementType = "span",

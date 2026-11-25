@@ -6,7 +6,6 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { MenuItem } from "../../menu/MenuItem";
 import { Toolbar } from "../Toolbar";
-import toolbarTokens from "../Toolbar.tokens.scss?raw";
 import { ToolbarMenu } from "../ToolbarMenu";
 import styles from "./Toolbar.stories.module.scss";
 
@@ -17,15 +16,12 @@ const meta = {
         (Story) => (
             <div className={styles.stage}>
                 <div className={styles.surface}>
-                    <Toolbar aria-label="Editor">
-                        <Story />
-                    </Toolbar>
+                    <Story />
                 </div>
             </div>
         ),
         themeDecorator,
     ],
-    parameters: { tokens: toolbarTokens },
     args: {
         label: "Insert",
         icon: <Icon name="plus" />,
@@ -40,6 +36,7 @@ const meta = {
         ),
     },
     argTypes: {
+        label: { control: "text" },
         placement: { control: "select", options: ["bottom-start", "bottom-end", "top-start", "top-end"] },
         disabled: { control: "boolean" },
         icon: { control: false },
@@ -50,14 +47,16 @@ const meta = {
     render: (args, context) => {
         const [open, setOpen] = useControlledArg(args, "open", context);
         return (
-            <ToolbarMenu
-                {...args}
-                open={open}
-                onOpenChange={(nextOpen) => {
-                    setOpen(nextOpen);
-                    args.onOpenChange(nextOpen);
-                }}
-            />
+            <Toolbar aria-label="Editor">
+                <ToolbarMenu
+                    {...args}
+                    open={open}
+                    onOpenChange={(nextOpen) => {
+                        setOpen(nextOpen);
+                        args.onOpenChange(nextOpen);
+                    }}
+                />
+            </Toolbar>
         );
     },
 } satisfies Meta<typeof ToolbarMenu>;

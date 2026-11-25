@@ -1,6 +1,6 @@
 import { Toolbar as BaseToolbar } from "@base-ui/react/toolbar";
 import { clsx } from "clsx";
-import { type ButtonHTMLAttributes, forwardRef, type MouseEvent, type PropsWithChildren } from "react";
+import { type ButtonHTMLAttributes, forwardRef, type MouseEvent, type ReactNode } from "react";
 
 import { IconButton } from "../iconButton/IconButton";
 import type { TooltipProps } from "../tooltip/Tooltip";
@@ -20,8 +20,7 @@ export interface ToolbarButtonSlotProps {
     tooltip?: Partial<Omit<TooltipProps, "content" | "children" | "keyboardShortcut">>;
 }
 
-export interface ToolbarButtonProps
-    extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "className" | "children" | "aria-pressed">, PropsWithChildren {
+export interface ToolbarButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "className" | "children" | "aria-pressed"> {
     /** The accessible name, also shown as the tooltip. Name the action, e.g. "Bold". */
     "aria-label": string;
     /** A keyboard shortcut for the action, shown in the tooltip, in the notation of `useKeyboardShortcut`, e.g. `"mod+b"`. */
@@ -33,6 +32,8 @@ export interface ToolbarButtonProps
     selected?: boolean;
     /** Called with the new state when the toggle is clicked. */
     onSelectedChange?: (selected: boolean) => void;
+    /** Called when the button is clicked. */
+    onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
     /**
      * Prevents interaction with the button. It stays focusable inside the toolbar.
      *
@@ -45,6 +46,8 @@ export interface ToolbarButtonProps
      * @defaultValue `false`
      */
     keepFocus?: boolean;
+    /** The icon, e.g. `<Icon name="bold" />`. */
+    children: ReactNode;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
@@ -57,8 +60,6 @@ function preventFocusLoss(event: MouseEvent) {
 
 /**
  * An icon button in a `Toolbar`, as a plain action or a toggle. Its accessible name and shortcut show as its tooltip.
- *
- * `children`: The icon, e.g. `<Icon name="bold" />`.
  */
 export const ToolbarButton = forwardRef<HTMLButtonElement, ToolbarButtonProps>(function ToolbarButton(
     {

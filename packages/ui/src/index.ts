@@ -1,7 +1,7 @@
 export { AiAssistantSwitch, type AiAssistantSwitchLabels, type AiAssistantSwitchOwnerState } from "./components/aiAssistantSwitch/AiAssistantSwitch";
 export { type AiAssistantSwitchProps, type AiAssistantSwitchSlotProps } from "./components/aiAssistantSwitch/AiAssistantSwitch";
 export { AppShell, type AppShellLabels, type AppShellOwnerState, type AppShellProps } from "./components/appShell/AppShell";
-export { type AppShellSlotProps } from "./components/appShell/AppShell";
+export { type AppShellEnvironment, type AppShellSlotProps } from "./components/appShell/AppShell";
 export type { AssetThumbnailBadge, AssetThumbnailLabels, AssetThumbnailRatio } from "./components/assetThumbnail/AssetThumbnail";
 export type { AssetThumbnailType, FocalPoint } from "./components/assetThumbnail/AssetThumbnail";
 export {
@@ -85,6 +85,12 @@ export { type EditLayoutPane, type EditLayoutVariant } from "./components/editLa
 export { type EditLayoutSlotProps } from "./components/editLayout/EditLayout";
 export { EmptyState, type EmptyStateOwnerState, type EmptyStateProps } from "./components/emptyState/EmptyState";
 export { type EmptyStateSlotProps, type EmptyStateSlots } from "./components/emptyState/EmptyState";
+export {
+    EnvironmentLabel,
+    type EnvironmentLabelColor,
+    type EnvironmentLabelOwnerState,
+    type EnvironmentLabelProps,
+} from "./components/environmentLabel/EnvironmentLabel";
 export {
     Field,
     type FieldBaseProps,
@@ -186,7 +192,9 @@ export { OverviewLayout, type OverviewLayoutOwnerState, type OverviewLayoutProps
 export { type OverviewLayoutBack, type OverviewLayoutSlotProps } from "./components/overviewLayout/OverviewLayout";
 export {
     PageHeader,
+    type PageHeaderAction,
     type PageHeaderBack,
+    type PageHeaderLabels,
     type PageHeaderOwnerState,
     type PageHeaderProps,
     type PageHeaderSlotProps,

@@ -3,14 +3,12 @@ import { expect } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Skeleton } from "../Skeleton";
-import skeletonTokens from "../Skeleton.tokens.scss?raw";
 import styles from "./Skeleton.stories.module.scss";
 
 const meta = {
     component: Skeleton,
     title: "Building blocks/Loading & save state/Skeleton",
     decorators: [themeDecorator],
-    parameters: { tokens: skeletonTokens },
     args: {
         count: 3,
     },

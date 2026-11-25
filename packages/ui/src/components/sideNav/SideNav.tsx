@@ -4,6 +4,7 @@ import { type ElementType, forwardRef, type HTMLAttributes, type MouseEvent, typ
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { useAppShellContext } from "../appShell/appShellContext";
 import { Badge } from "../badge/Badge";
+import { EnvironmentLabel } from "../environmentLabel/EnvironmentLabel";
 import { Icon } from "../icon/Icon";
 import { useAriaKeyShortcuts } from "../keyboardShortcut/useAriaKeyShortcuts";
 import { Menu } from "../menu/Menu";
@@ -314,7 +315,8 @@ function CollapsedEntry({
 
 /**
  * The main navigation: app header with logo, app name, and tenant, then groups with entries up to three levels deep. Collapses to an
- * icon rail whose sub-entries open as a menu.
+ * icon rail whose sub-entries open as a menu. In an `AppShell` with an `environment`, the header shows the instance's label in its top right
+ * corner, or only its first letter while collapsed.
  */
 export const SideNav = forwardRef<HTMLElement, SideNavProps>(function SideNav(
     {
@@ -338,6 +340,7 @@ export const SideNav = forwardRef<HTMLElement, SideNavProps>(function SideNav(
     ref,
 ) {
     const shell = useAppShellContext();
+    const environment = shell?.environment;
     const collapseKeyShortcuts = useAriaKeyShortcuts(shell?.navCollapseKeyboardShortcut);
     const labels = { ...defaultLabels, ...labelsProp };
     const ownerState: SideNavOwnerState = { collapsed: collapsedProp ?? shell?.navCollapsed ?? false };
@@ -387,6 +390,14 @@ export const SideNav = forwardRef<HTMLElement, SideNavProps>(function SideNav(
                         {title != null && <span className={styles.title}>{title}</span>}
                         {subtitle != null && <span className={styles.subtitle}>{subtitle}</span>}
                     </>
+                )}
+                {environment != null && (
+                    <EnvironmentLabel
+                        label={environment.label}
+                        color={environment.color}
+                        variant={ownerState.collapsed ? "compact" : "default"}
+                        className={styles.environment}
+                    />
                 )}
             </div>
             <div className={styles.scroll}>

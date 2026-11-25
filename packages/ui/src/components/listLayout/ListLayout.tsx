@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type PropsWithChildren, type ReactNode } from "react";
+import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import styles from "./ListLayout.module.scss";
@@ -21,11 +21,13 @@ export interface ListLayoutSlotProps {
     content?: SlotPropsValue<ListLayoutOwnerState, "div">;
 }
 
-export interface ListLayoutProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children">, PropsWithChildren {
+export interface ListLayoutProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children"> {
     /** The page header with the scope, the count, and the primary action, e.g. a `PageHeader`. */
     header: ReactNode;
     /** Search and filters above the list, e.g. a `FilterBar`. */
     toolbar?: ReactNode;
+    /** The list, e.g. a table with its selection, sorting, row menu, and paging. A row opens the edit page. */
+    children?: ReactNode;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
@@ -35,8 +37,6 @@ export interface ListLayoutProps extends Omit<HTMLAttributes<HTMLDivElement>, "c
 /**
  * The layout of a list page, which shows the structured content of one type as a table: the page header, a toolbar with search and
  * filters, then the list.
- *
- * `children`: The list, e.g. a table with its selection, sorting, row menu, and paging. A row opens the edit page.
  */
 export const ListLayout = forwardRef<HTMLDivElement, ListLayoutProps>(function ListLayout(
     { header, toolbar, children, className, slotProps, ...restProps },

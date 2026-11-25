@@ -2149,6 +2149,25 @@ Import its components and types from `@dextinity/admin` instead:
 + import { ColorField } from "@dextinity/admin";
 ```
 
+### Update styles targeting the TipTap rich text toolbar
+
+The editor of `createTipTapRichTextBlock` is now `TipTapRichTextEditor` from `@dextinity/admin`, so its toolbar's class name changes from `DextinityAdminTipTapToolbar-root` to `DextinityAdminTipTapRichTextEditor-toolbar`.
+
+Find the usages:
+
+```sh
+grep -rn "DextinityAdminTipTapToolbar" src
+```
+
+Replace the class name:
+
+```diff
+-    .DextinityAdminTipTapToolbar-root {
++    .DextinityAdminTipTapRichTextEditor-toolbar {
+```
+
+To restyle the toolbar everywhere, prefer `styleOverrides` of `DextinityAdminTipTapRichTextEditor` in the theme over a class name selector.
+
 <!-- "Verify lint passes" must always be the last step for this service. -->
 
 ### Verify lint passes

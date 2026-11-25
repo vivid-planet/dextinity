@@ -23,8 +23,10 @@ import { v4 as uuid } from "uuid";
 import type { TableBlockData } from "../../blocks.generated";
 import { useBlockContext } from "../context/useBlockContext";
 import type { TableBlockState } from "../createTableBlock";
+import type { TableSettingsState } from "./createTableSettings";
 import { FailedToPasteSnackbar } from "./FailedToPasteSnackbar";
 import { useTableBlockContext } from "./TableBlockContext";
+import { TableSettingsMenuItems } from "./TableSettingsMenuItems";
 import {
     columnInsertSchema,
     getDuplicatedColumnInsertData,
@@ -32,6 +34,7 @@ import {
     insertColumnDataAtIndex,
     moveColumnToIndex,
     removeColumnFromState,
+    setColumnSetting,
     setColumnSize,
     toggleColumnHighlight,
 } from "./utils/column";
@@ -42,6 +45,7 @@ type ColumnSize = TableBlockData["columns"][number]["size"];
 type Props = GridColumnHeaderParams & {
     columnSize: ColumnSize;
     highlighted: boolean;
+    settings: TableSettingsState;
     state: TableBlockState;
     updateState: Dispatch<SetStateAction<TableBlockState>>;
     columnIndex: number;
@@ -60,6 +64,7 @@ const columnSizes: Record<ColumnSize, ReactNode> = {
 export const ColumnHeader = ({
     columnSize,
     highlighted,
+    settings,
     state,
     updateState,
     columnIndex,
@@ -70,7 +75,8 @@ export const ColumnHeader = ({
     const snackbarApi = useSnackbarApi();
     const blockContext = useBlockContext();
     const intl = useIntl();
-    const { CellBlock } = useTableBlockContext();
+    const table = useTableBlockContext();
+    const { CellBlock, columnSettings } = table;
     const isFirstColumn = columnIndex === 0;
     const isLastColumn = columnIndex === state.columns.length - 1;
 
@@ -81,7 +87,7 @@ export const ColumnHeader = ({
                 highlighted: false,
                 cellValues: state.rows.map(() => CellBlock.defaultValues()),
             };
-            return insertColumnDataAtIndex(state, newColumnInsertData, newColumnIndex, CellBlock);
+            return insertColumnDataAtIndex(state, newColumnInsertData, newColumnIndex, table);
         });
     };
 
@@ -111,9 +117,15 @@ export const ColumnHeader = ({
         });
     };
 
+    const handleSetColumnSetting = (key: string, value: unknown) => {
+        updateState((state) => {
+            return setColumnSetting(state, columnId, key, value);
+        });
+    };
+
     const handleDuplicateColumn = () => {
         updateState((state) => {
-            const duplicatedColumnInsertData = getDuplicatedColumnInsertData(state, columnIndex, CellBlock);
+            const duplicatedColumnInsertData = getDuplicatedColumnInsertData(state, columnIndex, table);
             if (!duplicatedColumnInsertData) {
                 snackbarApi.showSnackbar(
                     <Snackbar autoHideDuration={5000}>
@@ -127,12 +139,12 @@ export const ColumnHeader = ({
 
             const newColumnId = uuid();
             addToRecentlyPastedIds(newColumnId);
-            return insertColumnDataAtIndex(state, duplicatedColumnInsertData, columnIndex + 1, CellBlock, newColumnId);
+            return insertColumnDataAtIndex(state, duplicatedColumnInsertData, columnIndex + 1, table, newColumnId);
         });
     };
 
     const handleCopyColumnToClipboard = () => {
-        const columnInsertData = getInsertDataFromColumnById(state, columnId, CellBlock);
+        const columnInsertData = getInsertDataFromColumnById(state, columnId, table);
         if (!columnInsertData) {
             snackbarApi.showSnackbar(
                 <Snackbar autoHideDuration={5000}>
@@ -166,7 +178,7 @@ export const ColumnHeader = ({
         updateState((state) => {
             const newColumnId = uuid();
             addToRecentlyPastedIds(newColumnId);
-            return insertColumnDataAtIndex(state, { ...clipboardData, cellValues: cellValuesToInsert }, columnIndex + 1, CellBlock, newColumnId);
+            return insertColumnDataAtIndex(state, { ...clipboardData, cellValues: cellValuesToInsert }, columnIndex + 1, table, newColumnId);
         });
     };
 
@@ -215,6 +227,7 @@ export const ColumnHeader = ({
                             <FormattedMessage id="dextinity.tableBlock.highlightColumn" defaultMessage="Highlight column" />
                         )}
                     </RowActionsItem>
+                    <TableSettingsMenuItems settings={columnSettings} values={settings} onChange={handleSetColumnSetting} />
                     <Divider />
                     <RowActionsItem
                         icon={<ColumnInsertLeft />}

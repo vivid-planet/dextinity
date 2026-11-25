@@ -7,8 +7,10 @@ import { v4 as uuid } from "uuid";
 
 import { useBlockContext } from "../context/useBlockContext";
 import type { TableBlockState } from "../createTableBlock";
+import { createTableSettingsState } from "./createTableSettings";
 import { FailedToPasteSnackbar } from "./FailedToPasteSnackbar";
 import { useTableBlockContext } from "./TableBlockContext";
+import { TableSettingsMenuItems } from "./TableSettingsMenuItems";
 import { getClipboardValueForSchema } from "./utils/getClipboardValueForSchema";
 import {
     deleteRowById,
@@ -18,6 +20,7 @@ import {
     moveRowToIndex,
     type RowInsertData,
     rowInsertSchema,
+    setRowSetting,
 } from "./utils/row";
 
 type Props = {
@@ -35,7 +38,9 @@ export const RowActionsCell = ({ row, updateState, state, addToRecentlyPastedIds
     const isFirstRow = rowIndex === 0;
     const isLastRow = rowIndex === state.rows.length - 1;
     const intl = useIntl();
-    const { CellBlock } = useTableBlockContext();
+    const table = useTableBlockContext();
+    const { CellBlock, rowSettings } = table;
+    const settings = stateRow?.settings ?? createTableSettingsState(rowSettings);
 
     const handleInsertNewRow = (where: "above" | "below") => {
         updateState((state) => {
@@ -46,7 +51,7 @@ export const RowActionsCell = ({ row, updateState, state, addToRecentlyPastedIds
                 highlighted: false,
                 cellValues: state.columns.map(() => CellBlock.defaultValues()),
             };
-            return insertRowDataAtIndex(state, insertData, newRowIndex, CellBlock);
+            return insertRowDataAtIndex(state, insertData, newRowIndex, table);
         });
     };
 
@@ -78,8 +83,14 @@ export const RowActionsCell = ({ row, updateState, state, addToRecentlyPastedIds
         });
     };
 
+    const handleSetRowSetting = (key: string, value: unknown) => {
+        updateState((state) => {
+            return setRowSetting(state, row.id, key, value);
+        });
+    };
+
     const handleDuplicateRow = () => {
-        const duplicatedRowInsertData = getDuplicatedRowInsertData(state, row.id, CellBlock);
+        const duplicatedRowInsertData = getDuplicatedRowInsertData(state, row.id, table);
         const currentRowIndex = state.rows.findIndex(({ id }) => id === row.id);
 
         if (!duplicatedRowInsertData) {
@@ -96,12 +107,12 @@ export const RowActionsCell = ({ row, updateState, state, addToRecentlyPastedIds
         updateState((state) => {
             const newRowId = uuid();
             addToRecentlyPastedIds(newRowId);
-            return insertRowDataAtIndex(state, duplicatedRowInsertData, currentRowIndex + 1, CellBlock, newRowId);
+            return insertRowDataAtIndex(state, duplicatedRowInsertData, currentRowIndex + 1, table, newRowId);
         });
     };
 
     const handleCopyRowToClipboard = () => {
-        const rowInsertData = getInsertDataFromRowById(state, row.id, CellBlock);
+        const rowInsertData = getInsertDataFromRowById(state, row.id, table);
         if (!rowInsertData) {
             snackbarApi.showSnackbar(
                 <Snackbar autoHideDuration={5000}>
@@ -137,7 +148,7 @@ export const RowActionsCell = ({ row, updateState, state, addToRecentlyPastedIds
             const newRowId = uuid();
             addToRecentlyPastedIds(newRowId);
             const currentRowIndex = state.rows.findIndex(({ id }) => id === row.id);
-            return insertRowDataAtIndex(state, { ...clipboardData, cellValues: cellValuesToInsert }, currentRowIndex + 1, CellBlock, newRowId);
+            return insertRowDataAtIndex(state, { ...clipboardData, cellValues: cellValuesToInsert }, currentRowIndex + 1, table, newRowId);
         });
     };
 
@@ -148,7 +159,10 @@ export const RowActionsCell = ({ row, updateState, state, addToRecentlyPastedIds
                     rowActionsIconItem: {
                         componentsProps: {
                             iconButton: {
-                                "aria-label": intl.formatMessage({ id: "dextinity.tableBlock.openRowOptions", defaultMessage: "Open row options" }),
+                                "aria-label": intl.formatMessage({
+                                    id: "dextinity.tableBlock.openRowOptions",
+                                    defaultMessage: "Open row options",
+                                }),
                             },
                         },
                     },
@@ -166,6 +180,7 @@ export const RowActionsCell = ({ row, updateState, state, addToRecentlyPastedIds
                         <FormattedMessage id="dextinity.tableBlock.highlightRow" defaultMessage="Highlight row" />
                     )}
                 </RowActionsItem>
+                <TableSettingsMenuItems settings={rowSettings} values={settings} onChange={handleSetRowSetting} />
                 <Divider />
                 <RowActionsItem
                     icon={<RowInsertAbove />}

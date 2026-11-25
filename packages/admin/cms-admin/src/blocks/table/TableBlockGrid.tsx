@@ -16,7 +16,7 @@ import { type ComponentType, type Dispatch, type SetStateAction, useCallback, us
 
 import type { TableBlockData } from "../../blocks.generated";
 import { type DextinityConfig, useDextinityConfig } from "../../config/DextinityConfigContext";
-import type { TableBlockState } from "../createTableBlock";
+import type { TableBlockColumnState, TableBlockState } from "../createTableBlock";
 import { CellValue } from "./CellValue";
 import { ColumnHeader } from "./ColumnHeader";
 import { dataGridStyles, freeDataGridStyles, lastContentColumnClassName } from "./dataGridStyles";
@@ -31,7 +31,6 @@ import { moveRowToIndex } from "./utils/row";
 import { useTemporarilyHighlightedIds } from "./utils/useTemporarilyHighlightedIds";
 
 type ColumnSize = TableBlockData["columns"][number]["size"];
-type TableBlockColumn = TableBlockData["columns"][number];
 
 type ConfiguredDataGrid = NonNullable<DextinityConfig["dataGrid"]>["component"];
 
@@ -67,7 +66,7 @@ type Props = {
 };
 
 export const TableBlockGrid = ({ state, updateState, clickedCell }: Props) => {
-    const { CellBlock } = useTableBlockContext();
+    const table = useTableBlockContext();
     const { dataGrid: { component: ConfiguredDataGrid } = {} } = useDextinityConfig();
     const hasDragAndDrop = isProOrPremiumDataGrid(ConfiguredDataGrid);
     const apiRef = useRef<GridApiPro | null>(null);
@@ -80,9 +79,9 @@ export const TableBlockGrid = ({ state, updateState, clickedCell }: Props) => {
 
     useEffect(() => {
         if (state.columns.length === 0 || state.rows.length === 0) {
-            updateState((prevState) => ensureMinimumTableState(prevState, CellBlock));
+            updateState((prevState) => ensureMinimumTableState(prevState, table));
         }
-    }, [state.columns.length, state.rows.length, updateState, CellBlock]);
+    }, [state.columns.length, state.rows.length, updateState, table]);
 
     const setRowData: Dispatch<SetStateAction<TableBlockState["rows"]>> = (newRows) => {
         updateState((state) => {
@@ -125,7 +124,7 @@ export const TableBlockGrid = ({ state, updateState, clickedCell }: Props) => {
     }, [apiRef, updateState]);
 
     const dataGridColumns: GridColDef[] = [
-        ...state.columns.map(({ id: columnId, highlighted, size }: TableBlockColumn, index: number) => ({
+        ...state.columns.map(({ id: columnId, highlighted, size, settings }: TableBlockColumnState, index: number) => ({
             field: columnId,
             editable: true,
             sortable: false,
@@ -139,6 +138,7 @@ export const TableBlockGrid = ({ state, updateState, clickedCell }: Props) => {
                     state={state}
                     columnSize={size}
                     highlighted={highlighted}
+                    settings={settings}
                     updateState={updateState}
                     columnIndex={index}
                     isDraggable={hasDragAndDrop}

@@ -15,9 +15,10 @@ import { ChildBlock } from "../decorators/child-block.js";
 import { ChildBlockInput } from "../decorators/child-block-input.js";
 import { BlockField } from "../decorators/field.js";
 import { createOneOfBlock } from "./createOneOfBlock.js";
+import { createTableSettingsDecorators, type TableSettingsDeclaration } from "./createTableSettings.js";
 import type { BlockFactoryNameOrOptions } from "./types.js";
 
-type CreateTableBlockOptions =
+type CreateTableBlockOptions = (
     | {
           richText: Block;
           cellBlocks?: never;
@@ -28,7 +29,13 @@ type CreateTableBlockOptions =
            */
           cellBlocks: Record<string, Block>;
           richText?: never;
-      };
+      }
+) & {
+    /** Declared with `createTableSettings`. */
+    rowSettings?: TableSettingsDeclaration;
+    /** Declared with `createTableSettings`. */
+    columnSettings?: TableSettingsDeclaration;
+};
 
 enum ColumnSize {
     extraSmall = "extraSmall",
@@ -38,40 +45,48 @@ enum ColumnSize {
     extraLarge = "extraLarge",
 }
 
-class TableBlockColumnData extends BlockData {
-    @BlockField()
-    id: string;
-
-    @BlockField({ type: "enum", enum: ColumnSize })
-    size: ColumnSize;
-
-    @BlockField()
-    highlighted: boolean;
-}
-
-class TableBlockColumnInput extends BlockInput {
-    @BlockField()
-    @IsString()
-    id: string;
-
-    @BlockField({ type: "enum", enum: ColumnSize })
-    @IsEnum(ColumnSize)
-    size: ColumnSize;
-
-    @BlockField()
-    @IsBoolean()
-    highlighted: boolean;
-
-    transformToBlockData(): TableBlockColumnData {
-        return blockInputToData(TableBlockColumnData, this);
-    }
-}
-
 export function createTableBlock(options: CreateTableBlockOptions, nameOrOptions: BlockFactoryNameOrOptions = "Table"): Block {
     const tableName = typeof nameOrOptions === "string" ? nameOrOptions : nameOrOptions.name;
     const CellBlock = options.cellBlocks
         ? createOneOfBlock({ supportedBlocks: options.cellBlocks, allowEmpty: false }, `${tableName}Cell`)
         : options.richText;
+    const rowSettings = createTableSettingsDecorators(options.rowSettings);
+    const columnSettings = createTableSettingsDecorators(options.columnSettings);
+
+    class TableBlockColumnData extends BlockData {
+        @BlockField()
+        id: string;
+
+        @BlockField({ type: "enum", enum: ColumnSize })
+        size: ColumnSize;
+
+        @BlockField()
+        highlighted: boolean;
+
+        @columnSettings.dataField
+        settings?: BlockDataInterface;
+    }
+
+    class TableBlockColumnInput extends BlockInput {
+        @BlockField()
+        @IsString()
+        id: string;
+
+        @BlockField({ type: "enum", enum: ColumnSize })
+        @IsEnum(ColumnSize)
+        size: ColumnSize;
+
+        @BlockField()
+        @IsBoolean()
+        highlighted: boolean;
+
+        @columnSettings.inputField
+        settings?: BlockInputInterface;
+
+        transformToBlockData(): TableBlockColumnData {
+            return blockInputToData(TableBlockColumnData, this);
+        }
+    }
 
     class TableBlockRowColumnValueData extends BlockData {
         @BlockField()
@@ -101,6 +116,9 @@ export function createTableBlock(options: CreateTableBlockOptions, nameOrOptions
         @BlockField()
         highlighted: boolean;
 
+        @rowSettings.dataField
+        settings?: BlockDataInterface;
+
         @BlockField(TableBlockRowColumnValueData)
         @Type(() => TableBlockRowColumnValueData)
         cellValues: TableBlockRowColumnValueData[] = [];
@@ -115,6 +133,9 @@ export function createTableBlock(options: CreateTableBlockOptions, nameOrOptions
         @IsBoolean()
         highlighted: boolean;
 
+        @rowSettings.inputField
+        settings?: BlockInputInterface;
+
         @BlockField(TableBlockRowColumnValueInput)
         @ValidateNested({ each: true })
         @Type(() => TableBlockRowColumnValueInput)
@@ -123,6 +144,7 @@ export function createTableBlock(options: CreateTableBlockOptions, nameOrOptions
         transformToBlockData(): TableBlockRowData {
             return plainToInstance(TableBlockRowData, {
                 ...this,
+                settings: this.settings?.transformToBlockData(),
                 cellValues: this.cellValues.map((cellValue) => cellValue.transformToBlockData()),
             });
         }

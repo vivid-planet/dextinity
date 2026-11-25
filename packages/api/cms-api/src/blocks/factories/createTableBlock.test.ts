@@ -13,6 +13,7 @@ import { ImageBlock } from "../transformToBlockSaveIndex/test/blocks/ImageBlock.
 import { transformToBlockSaveIndex } from "../transformToBlockSaveIndex/transformToBlockSaveIndex.js";
 import { createRichTextBlock } from "./createRichTextBlock.js";
 import { createTableBlock } from "./createTableBlock.js";
+import { createTableSettings } from "./createTableSettings.js";
 
 class FailingMigration extends BlockMigration<(from: object) => object> implements BlockMigrationInterface {
     public readonly toVersion = 1;
@@ -53,6 +54,18 @@ const PageReferenceBlock = createBlock(PageReferenceBlockData, PageReferenceBloc
 const ImageTableBlock = createTableBlock({ richText: ImageBlock }, "ImageTableTest");
 
 const CellBlocksTableBlock = createTableBlock({ cellBlocks: { richText: RichTextBlock, pageReference: PageReferenceBlock } }, "CellBlocksTableTest");
+
+const SettingsTableBlock = createTableBlock(
+    {
+        richText: RichTextBlock,
+        rowSettings: createTableSettings({ bold: { type: "checkbox", defaultValue: false } }),
+        columnSettings: createTableSettings({
+            background: { type: "select", options: ["none", "grey"], defaultValue: "none" },
+            badges: { type: "multiSelect", options: ["new", "sale"], defaultValue: [] },
+        }),
+    },
+    "SettingsTableTest",
+);
 
 function createRichTextInputWithLink(targetUrl: string) {
     return {
@@ -251,6 +264,71 @@ describe("createTableBlock", () => {
                         ],
                     },
                 ],
+            });
+        });
+    });
+
+    describe("with row and column settings", () => {
+        const emptyRichText = { draftContent: { blocks: [], entityMap: {} } };
+
+        function createSettingsTableInput({ rowSettings, columnSettings }: { rowSettings?: unknown; columnSettings?: unknown }) {
+            return SettingsTableBlock.blockInputFactory({
+                columns: [{ id: "column", size: "standard", highlighted: false, settings: columnSettings }],
+                rows: [{ id: "row", highlighted: false, settings: rowSettings, cellValues: [{ columnId: "column", value: emptyRichText }] }],
+            });
+        }
+
+        it("accepts settings with declared values", async () => {
+            const input = createSettingsTableInput({ rowSettings: { bold: true }, columnSettings: { background: "grey", badges: ["new", "sale"] } });
+
+            expect(await validate(input)).toHaveLength(0);
+        });
+
+        it.each([
+            { rowSettings: { bold: "yes" } },
+            { columnSettings: { background: "red" } },
+            { columnSettings: { badges: ["new", "old"] } },
+            { columnSettings: { badges: "new" } },
+        ])("rejects settings with an undeclared value: %j", async (settings) => {
+            expect(await validate(createSettingsTableInput(settings))).not.toHaveLength(0);
+        });
+
+        it("fills in the defaults of missing settings when converting the input to data", async () => {
+            const input = createSettingsTableInput({ columnSettings: { background: "grey" } });
+
+            expect(await validate(input)).toHaveLength(0);
+            expect(await transformToPlain(input.transformToBlockData(), {}, {} as ModuleRef, {} as ContextId)).toMatchObject({
+                columns: [{ id: "column", settings: { background: "grey", badges: [] } }],
+                rows: [{ id: "row", settings: { bold: false } }],
+            });
+        });
+
+        it("fills in the defaults of settings that didn't exist when the data was saved", async () => {
+            const data = SettingsTableBlock.blockDataFactory({
+                columns: [{ id: "column", size: "standard", highlighted: false, settings: { background: "grey" } }],
+                rows: [{ id: "row", highlighted: false, cellValues: [] }],
+            });
+
+            expect(JSON.parse(JSON.stringify(transformToBlockSave(data)))).toMatchObject({
+                columns: [{ settings: { background: "grey", badges: [] } }],
+                rows: [{ settings: { bold: false } }],
+            });
+        });
+
+        it("adds the settings to the block meta only when they are declared", () => {
+            const getFieldNames = (block: typeof TableBlock) => {
+                const tableFields = block.blockMeta.fields;
+                const getNestedFieldNames = (name: string) => {
+                    const field = tableFields.find((field) => field.name === name);
+                    return field && "object" in field ? field.object.fields.map((nestedField) => nestedField.name) : [];
+                };
+                return { columns: getNestedFieldNames("columns"), rows: getNestedFieldNames("rows") };
+            };
+
+            expect(getFieldNames(TableBlock)).toEqual({ columns: ["id", "size", "highlighted"], rows: ["id", "highlighted", "cellValues"] });
+            expect(getFieldNames(SettingsTableBlock)).toEqual({
+                columns: ["id", "size", "highlighted", "settings"],
+                rows: ["id", "highlighted", "settings", "cellValues"],
             });
         });
     });

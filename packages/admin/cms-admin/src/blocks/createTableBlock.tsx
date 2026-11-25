@@ -18,20 +18,28 @@ import {
     type TableCellConversions,
     type TableCellOneOfBlock,
 } from "./table/createTableCellBlock";
+import { createTableSettingsState, type TableSettingsDeclaration, type TableSettingsState } from "./table/createTableSettings";
 import { TableBlockContextProvider } from "./table/TableBlockContext";
 import { TableBlockGrid } from "./table/TableBlockGrid";
 import { createCellRoute, parseCellHash } from "./table/utils/cellRoute";
 import { createTablePreviewText, getPlainTexts } from "./table/utils/createTablePreviewText";
 import { BlockCategory, type BlockInputApi, type BlockInterface, type BlockOutputApi, type BlockPreviewContext, type BlockState } from "./types";
 
-type RichTextTableBlockFactoryOptions<RichText extends TableCellBlockInterface> = {
+type TableSettingsFactoryOptions = {
+    /** Declared with `createTableSettings`. */
+    rowSettings?: TableSettingsDeclaration;
+    /** Declared with `createTableSettings`. */
+    columnSettings?: TableSettingsDeclaration;
+};
+
+type RichTextTableBlockFactoryOptions<RichText extends TableCellBlockInterface> = TableSettingsFactoryOptions & {
     richText: RichText;
     cellBlocks?: never;
     convertCell?: never;
     name?: string;
 };
 
-type CellBlocksTableBlockFactoryOptions<CellBlocks extends Record<string, TableCellBlockInterface>> = {
+type CellBlocksTableBlockFactoryOptions<CellBlocks extends Record<string, TableCellBlockInterface>> = TableSettingsFactoryOptions & {
     /**
      * The first block is the default for new cells.
      */
@@ -65,14 +73,18 @@ export interface TableBlockRowState<
 > {
     id: string;
     highlighted: boolean;
+    settings: TableSettingsState;
     cellValues: TableBlockCellValueState<CellState>[];
 }
+
+// The generated `TableBlockData` describes a table without settings
+export type TableBlockColumnState = TableBlockData["columns"][number] & { settings: TableSettingsState };
 
 export interface TableBlockState<
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     CellState = any,
 > {
-    columns: TableBlockData["columns"];
+    columns: TableBlockColumnState[];
     rows: TableBlockRowState<CellState>[];
 }
 
@@ -84,11 +96,12 @@ interface TableBlockCellValue<Value> {
 interface TableBlockRow<Value> {
     id: string;
     highlighted: boolean;
+    settings?: TableSettingsState;
     cellValues: TableBlockCellValue<Value>[];
 }
 
 interface TableBlockCells<Value> {
-    columns: TableBlockData["columns"];
+    columns: Array<TableBlockData["columns"][number] & { settings?: TableSettingsState }>;
     rows: TableBlockRow<Value>[];
 }
 
@@ -108,7 +121,7 @@ export function createTableBlock<RichText extends TableCellBlockInterface = Rich
     override?: (block: TableBlock<RichText>) => TableBlock<RichText>,
 ): TableBlock<RichText>;
 export function createTableBlock(
-    { richText, cellBlocks, convertCell, name = "Table" }: TableBlockFactoryOptions<TableCellBlockInterface>,
+    { richText, cellBlocks, convertCell, rowSettings, columnSettings, name = "Table" }: TableBlockFactoryOptions<TableCellBlockInterface>,
     override?: (block: TableBlock<TableCellBlockInterface>) => TableBlock<TableCellBlockInterface>,
 ): TableBlock<TableCellBlockInterface> {
     type CellState = BlockState<TableCellBlockInterface>;
@@ -136,19 +149,26 @@ export function createTableBlock(
         };
     };
 
+    // A table without settings doesn't send them to the API, which would reject them
+    const withSettingsOutput = <Item extends { settings: TableSettingsState }>(
+        { settings, ...item }: Item,
+        declaration: TableSettingsDeclaration | undefined,
+    ): Omit<Item, "settings"> & { settings?: TableSettingsState } => (declaration ? { ...item, settings } : item);
+
     const getInitialTableState = (): TableBlockState<CellState> => {
         const columnIdOne = uuid();
         const columnIdTwo = uuid();
 
         return {
             columns: [
-                { id: columnIdOne, size: "standard", highlighted: false },
-                { id: columnIdTwo, size: "standard", highlighted: false },
+                { id: columnIdOne, size: "standard", highlighted: false, settings: createTableSettingsState(columnSettings) },
+                { id: columnIdTwo, size: "standard", highlighted: false, settings: createTableSettingsState(columnSettings) },
             ],
             rows: [
                 {
                     id: uuid(),
                     highlighted: false,
+                    settings: createTableSettingsState(rowSettings),
                     cellValues: [
                         { columnId: columnIdOne, value: CellBlock.defaultValues() },
                         { columnId: columnIdTwo, value: CellBlock.defaultValues() },
@@ -157,6 +177,7 @@ export function createTableBlock(
                 {
                     id: uuid(),
                     highlighted: false,
+                    settings: createTableSettingsState(rowSettings),
                     cellValues: [
                         { columnId: columnIdOne, value: CellBlock.defaultValues() },
                         { columnId: columnIdTwo, value: CellBlock.defaultValues() },
@@ -176,9 +197,10 @@ export function createTableBlock(
         defaultValues: getInitialTableState,
 
         input2State: (input: TableBlockCells<BlockInputApi<TableCellBlockInterface>>): TableBlockState<CellState> => ({
-            columns: input.columns,
+            columns: input.columns.map((column) => ({ ...column, settings: createTableSettingsState(columnSettings, column.settings) })),
             rows: input.rows.map((row) => ({
                 ...row,
+                settings: createTableSettingsState(rowSettings, row.settings),
                 cellValues: row.cellValues.map((cell) => ({
                     ...cell,
                     value: CellBlock.input2State(cell.value),
@@ -187,9 +209,9 @@ export function createTableBlock(
         }),
 
         state2Output: (state: TableBlockState<CellState>): TableBlockCells<BlockOutputApi<TableCellBlockInterface>> => ({
-            columns: state.columns,
+            columns: state.columns.map((column) => withSettingsOutput(column, columnSettings)),
             rows: state.rows.map((row) => ({
-                ...row,
+                ...withSettingsOutput(row, rowSettings),
                 cellValues: row.cellValues.map((cell) => ({
                     ...cell,
                     value: CellBlock.state2Output(cell.value),
@@ -201,10 +223,11 @@ export function createTableBlock(
             output: TableBlockCells<BlockOutputApi<TableCellBlockInterface>>,
             context: BlockContext,
         ): Promise<TableBlockState<CellState>> => ({
-            columns: output.columns,
+            columns: output.columns.map((column) => ({ ...column, settings: createTableSettingsState(columnSettings, column.settings) })),
             rows: await Promise.all(
                 output.rows.map(async (row) => ({
                     ...row,
+                    settings: createTableSettingsState(rowSettings, row.settings),
                     cellValues: await Promise.all(
                         row.cellValues.map(async (cell) => ({
                             ...cell,
@@ -216,9 +239,9 @@ export function createTableBlock(
         }),
 
         createPreviewState: (state: TableBlockState<CellState>, previewCtx: BlockPreviewContext & BlockContext) => ({
-            columns: state.columns,
+            columns: state.columns.map((column) => withSettingsOutput(column, columnSettings)),
             rows: state.rows.map((row) => ({
-                ...row,
+                ...withSettingsOutput(row, rowSettings),
                 cellValues: row.cellValues.map((cell) => ({
                     ...cell,
                     value: createCellPreviewState(
@@ -253,7 +276,7 @@ export function createTableBlock(
             };
 
             return (
-                <TableBlockContextProvider CellBlock={CellBlock}>
+                <TableBlockContextProvider CellBlock={CellBlock} rowSettings={rowSettings} columnSettings={columnSettings}>
                     <SelectPreviewComponent>
                         <BlocksFinalForm<TableBlockState<CellState>> onSubmit={updateState} initialValues={state}>
                             <Dialog

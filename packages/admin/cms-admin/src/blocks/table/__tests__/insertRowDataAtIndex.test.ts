@@ -1,16 +1,18 @@
 import { v4 as uuid } from "uuid";
 import { describe, expect, it } from "vitest";
 
-import { createRteState, getPlainTextFromState, MockRichTextBlock, mockStates } from "../__mocks__/TableBlockData.mocks";
+import { createRteState, getPlainTextFromState, mockStates, mockTableBlockConfig } from "../__mocks__/TableBlockData.mocks";
 import { insertRowDataAtIndex, type RowInsertData } from "../utils/row";
 
 const insertDataWithTwoValues: RowInsertData = {
     highlighted: false,
+    settings: {},
     cellValues: [createRteState("Two Values - Value 1"), createRteState("Two Values - Value 2")],
 };
 
 const insertDataWithFourValues: RowInsertData = {
     highlighted: false,
+    settings: {},
     cellValues: [
         createRteState("Four Values - Value 1"),
         createRteState("Four Values - Value 2"),
@@ -21,6 +23,7 @@ const insertDataWithFourValues: RowInsertData = {
 
 const insertDataWithSixValues: RowInsertData = {
     highlighted: false,
+    settings: {},
     cellValues: [
         createRteState("Six Values - Value 1"),
         createRteState("Six Values - Value 2"),
@@ -35,7 +38,7 @@ describe("insertRowDataAtIndex", () => {
     it("should insert a row with the specified id at index 0", () => {
         const newRowId = uuid();
         const targetIndex = 0;
-        const newState = insertRowDataAtIndex(mockStates.default, insertDataWithFourValues, targetIndex, MockRichTextBlock, newRowId);
+        const newState = insertRowDataAtIndex(mockStates.default, insertDataWithFourValues, targetIndex, mockTableBlockConfig, newRowId);
 
         const insertedRow = newState.rows[targetIndex];
         expect(insertedRow.id).toBe(newRowId);
@@ -47,7 +50,7 @@ describe("insertRowDataAtIndex", () => {
     it("should insert a row with the specified id at index 2", () => {
         const newRowId = uuid();
         const targetIndex = 2;
-        const newState = insertRowDataAtIndex(mockStates.default, insertDataWithFourValues, targetIndex, MockRichTextBlock, newRowId);
+        const newState = insertRowDataAtIndex(mockStates.default, insertDataWithFourValues, targetIndex, mockTableBlockConfig, newRowId);
 
         const insertedRow = newState.rows[targetIndex];
         expect(insertedRow.id).toBe(newRowId);
@@ -61,7 +64,7 @@ describe("insertRowDataAtIndex", () => {
         const targetIndex = 0;
 
         const initialBlockData = mockStates.default;
-        const newState = insertRowDataAtIndex(initialBlockData, insertDataWithTwoValues, targetIndex, MockRichTextBlock, newRowId);
+        const newState = insertRowDataAtIndex(initialBlockData, insertDataWithTwoValues, targetIndex, mockTableBlockConfig, newRowId);
         const insertedRow = newState.rows[targetIndex];
 
         expect(getPlainTextFromState(insertedRow.cellValues[0].value)).toBe("Two Values - Value 1");
@@ -77,7 +80,7 @@ describe("insertRowDataAtIndex", () => {
     it("should increase the number of columns when inserting a row with more values than the existing number of columns", () => {
         const newRowId = uuid();
         const targetIndex = 0;
-        const newState = insertRowDataAtIndex(mockStates.default, insertDataWithSixValues, targetIndex, MockRichTextBlock, newRowId);
+        const newState = insertRowDataAtIndex(mockStates.default, insertDataWithSixValues, targetIndex, mockTableBlockConfig, newRowId);
 
         expect(newState.columns.length).toBe(insertDataWithSixValues.cellValues.length);
     });
@@ -85,7 +88,7 @@ describe("insertRowDataAtIndex", () => {
     it("should add empty cell-values to all existing rows when new columns are created due to the insert-data having more values than the existing number of columns", () => {
         const newRowId = uuid();
         const targetIndex = 0;
-        const newState = insertRowDataAtIndex(mockStates.default, insertDataWithSixValues, targetIndex, MockRichTextBlock, newRowId);
+        const newState = insertRowDataAtIndex(mockStates.default, insertDataWithSixValues, targetIndex, mockTableBlockConfig, newRowId);
 
         newState.rows.forEach((row) => {
             if (row.id === newRowId) {

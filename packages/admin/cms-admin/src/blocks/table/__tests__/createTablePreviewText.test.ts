@@ -10,6 +10,7 @@ const createState = (rows: string[][]): TableBlockState<string> => {
         id: `column-${columnIndex}`,
         size: "standard",
         highlighted: false,
+        settings: {},
     }));
 
     return {
@@ -17,6 +18,7 @@ const createState = (rows: string[][]): TableBlockState<string> => {
         rows: rows.map((cells, rowIndex) => ({
             id: `row-${rowIndex}`,
             highlighted: false,
+            settings: {},
             cellValues: cells.map((value, columnIndex) => ({ columnId: columns[columnIndex].id, value })).reverse(),
         })),
     };

@@ -1,16 +1,17 @@
 import { v4 as uuid } from "uuid";
 
 import type { TableBlockState } from "../../createTableBlock";
-import type { BlockInterface } from "../../types";
+import { createTableSettingsState } from "../createTableSettings";
+import type { TableBlockConfig } from "../TableBlockContext";
 
-export const ensureMinimumTableState = (state: TableBlockState, CellBlock: BlockInterface): TableBlockState => {
+export const ensureMinimumTableState = (state: TableBlockState, { CellBlock, rowSettings, columnSettings }: TableBlockConfig): TableBlockState => {
     let result = state;
 
     if (result.columns.length === 0) {
         const newColumnId = uuid();
         result = {
             ...result,
-            columns: [{ id: newColumnId, size: "standard", highlighted: false }],
+            columns: [{ id: newColumnId, size: "standard", highlighted: false, settings: createTableSettingsState(columnSettings) }],
             rows: result.rows.map((row) => ({
                 ...row,
                 cellValues: [...row.cellValues, { columnId: newColumnId, value: CellBlock.defaultValues() }],
@@ -25,6 +26,7 @@ export const ensureMinimumTableState = (state: TableBlockState, CellBlock: Block
                 {
                     id: uuid(),
                     highlighted: false,
+                    settings: createTableSettingsState(rowSettings),
                     cellValues: result.columns.map((col) => ({
                         columnId: col.id,
                         value: CellBlock.defaultValues(),

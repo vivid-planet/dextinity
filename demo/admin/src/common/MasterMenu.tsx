@@ -22,7 +22,6 @@ import {
     WarningsPage,
 } from "@dextinity/cms-admin";
 import { Chip } from "@mui/material";
-import { AdminAiModeToolset } from "@src/aiMode/AdminAiModeToolset";
 import { type BrevoContactConfig, getBrevoContactConfig } from "@src/brevo/brevoModuleConfig/brevoContactsPageAttributesConfig";
 import { additionalFormConfig } from "@src/brevo/brevoModuleConfig/targetGroupFormConfig";
 import { EmailCampaignContentBlock } from "@src/brevo/emailCampaigns/blocks/EmailCampaignContentBlock";
@@ -389,9 +388,5 @@ export const AppMasterMenu = () => {
 export const AppMasterMenuRoutes = () => {
     const masterMenuData = useAppMasterMenuData();
 
-    return (
-        <AdminAiModeToolset menu={masterMenuData}>
-            <MasterMenuRoutes menu={masterMenuData} />
-        </AdminAiModeToolset>
-    );
+    return <MasterMenuRoutes menu={masterMenuData} />;
 };

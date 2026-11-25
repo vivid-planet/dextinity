@@ -4,12 +4,12 @@ import type { AiModeTool } from "./AiModeToolsets";
 export const createAdminPageNavigationTools = ({
     pages,
     navigate,
-    scopeUrl,
+    routeUrl,
 }: {
     pages: AdminPage[];
     navigate: (path: string) => void;
-    /** The URL prefix of the current content scope, e.g. "/main/en". */
-    scopeUrl: string;
+    /** The URL the paths of the pages are relative to, usually the one of the content scope, e.g. "/main/en". */
+    routeUrl: string;
 }): AiModeTool[] => [
     {
         name: "open_admin_page",
@@ -35,7 +35,7 @@ export const createAdminPageNavigationTools = ({
                 throw new Error(`"${path}" is no page the user can open. It must be one of: ${pages.map((candidate) => candidate.path).join(", ")}.`);
             }
 
-            navigate(`${scopeUrl}${page.path}`);
+            navigate(`${routeUrl}${page.path}`);
             return `Asked the admin to open "${page.label}". If the page that was open has unsaved changes, the user first decides whether to discard them and may stay on it, so check the context's 'toolsets' for which page is open before you use its tools.`;
         },
     },

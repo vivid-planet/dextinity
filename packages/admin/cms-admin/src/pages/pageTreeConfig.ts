@@ -17,6 +17,11 @@ export interface PageTreeConfig {
      * Defaults to `true` when not set.
      */
     allowPageDelete?: boolean;
+    /**
+     * The path of the editor of a page tree node below the content scope, e.g. `/pages/pagetree/main-navigation/<id>/edit`.
+     * The AI Mode needs it to open a page's editor from any page.
+     */
+    getNodeEditPath?: (node: { id: string; category: string }) => string;
 }
 
 export function usePageTreeConfig(): PageTreeConfig {

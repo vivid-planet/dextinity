@@ -1,11 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { createAiModePageTreeNavigationTools } from "./pageTreeTools";
+import { createPageTreeNavigationTools } from "./pageTreeTools";
 
 const scopeUrl = "/main/en";
 
 const createTools = (navigate: (path: string) => void) =>
-    createAiModePageTreeNavigationTools({
+    createPageTreeNavigationTools({
         categories: ["mainNavigation", "topMenu"],
         getEditPath: ({ id, category }) => `${scopeUrl}/pages/pagetree/${category === "topMenu" ? "top-menu" : "main-navigation"}/${id}/edit`,
         navigate,

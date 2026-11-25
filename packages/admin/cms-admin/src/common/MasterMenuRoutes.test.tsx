@@ -1,14 +1,18 @@
 import { RouterMemoryRouter, useCurrentRouteMatch } from "@dextinity/admin";
+import type { PropsWithChildren } from "react";
 import { type Location, type NavigationType, Route, Routes, useParams } from "react-router";
 import { cleanup, LocationSpy, render, screen, waitFor } from "test-utils";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { AiModeToolsetsProvider, type AiModeToolsetsStore, useAiModeToolsetsStore } from "../aiMode/AiModeToolsets";
+import { DextinityConfigProvider } from "../config/DextinityConfigContext";
+import type { PageTreeConfig } from "../pages/pageTreeConfig";
 import type { Permission } from "../userPermissions/hooks/currentUser";
 import type { MasterMenuData, MasterMenuRoute } from "./MasterMenu";
 import { MasterMenuRoutes, useRoutePropsFromMasterMenuData } from "./MasterMenuRoutes";
 
 vi.mock("../userPermissions/hooks/currentUser", () => ({
-    useUserPermissionCheck: () => (permission: string) => permission === "allowed",
+    useUserPermissionCheck: () => (permission: string) => permission === "allowed" || permission === "pageTree",
 }));
 
 const permissions = {
@@ -155,6 +159,24 @@ describe("useRoutePropsFromMasterMenuData", () => {
 });
 
 describe("MasterMenuRoutes", () => {
+    let aiModeToolsetsStore: AiModeToolsetsStore | undefined;
+
+    function CaptureAiModeToolsetsStore() {
+        aiModeToolsetsStore = useAiModeToolsetsStore();
+        return null;
+    }
+
+    function Providers({ pageTree, children }: PropsWithChildren<{ pageTree?: PageTreeConfig }>) {
+        return (
+            <DextinityConfigProvider apiUrl="" graphQLApiUrl="" adminUrl="" pageTree={pageTree}>
+                <AiModeToolsetsProvider>
+                    <CaptureAiModeToolsetsStore />
+                    {children}
+                </AiModeToolsetsProvider>
+            </DextinityConfigProvider>
+        );
+    }
+
     afterEach(() => {
         cleanup();
     });
@@ -208,14 +230,16 @@ describe("MasterMenuRoutes", () => {
         navigationType = newNavigationType;
     }
 
-    function renderInScope(initialEntry: string) {
+    function renderInScope(initialEntry: string, { pageTree }: { pageTree?: PageTreeConfig } = {}) {
         return render(
-            <RouterMemoryRouter initialEntries={[initialEntry]}>
-                <LocationSpy onChange={handleLocationChange} />
-                <Routes>
-                    <Route path="/:domain/:language/*" element={<MasterMenuRoutes menu={menu} />} />
-                </Routes>
-            </RouterMemoryRouter>,
+            <Providers pageTree={pageTree}>
+                <RouterMemoryRouter initialEntries={[initialEntry]}>
+                    <LocationSpy onChange={handleLocationChange} />
+                    <Routes>
+                        <Route path="/:domain/:language/*" element={<MasterMenuRoutes menu={menu} />} />
+                    </Routes>
+                </RouterMemoryRouter>
+            </Providers>,
         );
     }
 
@@ -267,17 +291,46 @@ describe("MasterMenuRoutes", () => {
         }
 
         render(
-            <RouterMemoryRouter initialEntries={["/failing"]}>
-                <MasterMenuRoutes
-                    menu={[{ type: "route", primary: "Failing", icon: undefined, route: { path: "/failing", element: <FailingPage /> } }]}
-                />
-                <div>Outside of the routes</div>
-            </RouterMemoryRouter>,
+            <Providers>
+                <RouterMemoryRouter initialEntries={["/failing"]}>
+                    <MasterMenuRoutes
+                        menu={[{ type: "route", primary: "Failing", icon: undefined, route: { path: "/failing", element: <FailingPage /> } }]}
+                    />
+                    <div>Outside of the routes</div>
+                </RouterMemoryRouter>
+            </Providers>,
         );
 
         expect(await screen.findByText("An error has occurred")).toBeTruthy();
         expect(screen.getByText("Outside of the routes")).toBeTruthy();
 
         consoleError.mockRestore();
+    });
+
+    it("should register the AI Mode toolset of the admin, which opens the pages of the menu", async () => {
+        renderInScope("/main/en/products/5/edit");
+
+        await screen.findByText(/^Products:/);
+        const toolset = aiModeToolsetsStore?.getToolsets().find(({ id }) => id === "admin");
+        expect(toolset?.context).toEqual({ openPage: { path: "/products", label: "Products › Products" } });
+        expect(toolset?.tools?.map(({ name }) => name)).toEqual(["open_admin_page"]);
+    });
+
+    it("should let the AI Mode open the editor of a page tree node if the page tree config has its path", async () => {
+        renderInScope("/main/en/dashboard", {
+            pageTree: {
+                categories: [{ category: "mainNavigation", label: "Main navigation" }],
+                documentTypes: {},
+                getNodeEditPath: ({ id }) => `/pages/pagetree/main-navigation/${id}/edit`,
+            },
+        });
+
+        await screen.findByText(/^Dashboard:/);
+        const tool = aiModeToolsetsStore?.getTool("open_page_tree_node");
+        tool?.handler({ id: "aaf2b62f-0bd9-4c7e-bb5a-2d1fd5bcc7d0", category: "mainNavigation" }, { clearTextSelection: vi.fn() });
+
+        await waitFor(() => {
+            expect(location?.pathname).toBe("/main/en/pages/pagetree/main-navigation/aaf2b62f-0bd9-4c7e-bb5a-2d1fd5bcc7d0/edit");
+        });
     });
 });

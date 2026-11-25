@@ -134,35 +134,18 @@ createAiModeEditBlocksTool({
 
 ## Master menu
 
-`useAiModeAdminPageNavigation` creates `open_admin_page`, which opens a page of the master menu, e.g. the assets or the redirects. The pages are those of the menu the user may open, and their labels are in the tool's description, so the agent needs no call to list them. A route with a parameter in its path is left out unless its menu entry links to it with `to`. Register it in a toolset around the routes of the master menu, with the page of the menu that is open as the context:
-
-```tsx
-export function AdminAiModeToolset({ menu, children }: PropsWithChildren<{ menu: MasterMenuData }>) {
-    const adminPageNavigation = useAiModeAdminPageNavigation(menu);
-
-    return (
-        <AiModeToolset
-            id="admin"
-            description="The Dextinity admin of the current content scope. The agent opens the pages of its main navigation with open_admin_page."
-            context={{ openPage: adminPageNavigation.openPage }}
-            tools={adminPageNavigation.tools}
-        >
-            {children}
-        </AiModeToolset>
-    );
-}
-```
+`MasterMenuRoutes` registers the toolset of the admin, which is on every page. Its `open_admin_page` opens a page of the master menu, e.g. the assets or the redirects. The pages are those of the menu the user may open, and their labels are in the tool's description, so the agent needs no call to list them. A route with a parameter in its path is left out unless its menu entry links to it with `to`. The toolset's context is the page of the menu that is open, also when the user is below it, e.g. on an edit page.
 
 ## Page tree
 
-`PagesPage` registers the toolset of the page tree, with its category as the context. `createAiModePageTreeNavigationTools` creates `open_page_tree_node`, which opens the editor of a page tree node. Add it to a toolset that is on every page, such as one around the routes of the master menu, so that the agent opens a page's editor in one step from anywhere:
+`PagesPage` registers the toolset of the page tree, with its category as the context. The admin's toolset offers `open_page_tree_node`, which opens the editor of a page tree node from any page, to users who may open the page tree. It needs the path of the editor below the content scope, which depends on where the project mounts `PagesPage`. Set it in the page tree config:
 
 ```tsx
-createAiModePageTreeNavigationTools({
-    categories: pageTreeCategories.map(({ category }) => category),
-    getEditPath: ({ id, category }) => `${match.url}/pages/pagetree/${categoryToUrlParam(category)}/${id}/edit`,
-    navigate: (path) => void navigate(path),
-});
+<DextinityConfigProvider
+    pageTree={{
+        categories: pageTreeCategories,
+        documentTypes: pageTreeDocumentTypes,
+        getNodeEditPath: ({ id, category }) => `/pages/pagetree/${categoryToUrlParam(category)}/${id}/edit`,
+    }}
+>
 ```
-
-Offer it only to users who may open the page tree.

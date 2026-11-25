@@ -80,6 +80,7 @@ type ActionLog {
   entityName: String!
   entityId: ID!
   version: Int!
+  type: ActionLogType!
   snapshot: JSONObject
   createdAt: DateTime!
 
@@ -87,11 +88,6 @@ type ActionLog {
   The most recent earlier action log entry for the same entity. Null when this is the first version, or when the earlier entry is scoped and lacks one of this entry's scopes.
   """
   previousVersion: ActionLog
-
-  """
-  Derived from snapshot and version: snapshot null → deleted, version 1 → created, otherwise → updated.
-  """
-  type: ActionLogType!
   user: ActionLogsUser!
 }
 

@@ -20,6 +20,7 @@ import { UserPermissionsStorageService } from "../user-permissions/user-permissi
 import { ACTION_LOGS_METADATA_KEY, type ActionLogMetadata } from "./action-logs.decorator.js";
 import { ActionLogsService } from "./action-logs.service.js";
 import { ActionLog } from "./entities/action-log.entity.js";
+import { getActionLogType } from "./get-action-log-type.js";
 
 // The snapshot holds the primary key of a referenced entity instead of the entity itself, so that a change of the
 // reference is visible without copying the referenced entity. Collections are left out.
@@ -105,6 +106,7 @@ export class ActionLogsSubscriber implements EventSubscriber {
                 userId: typeof user === "string" ? user : user.id,
                 entityName,
                 entityId,
+                type: getActionLogType(changeSet.type),
                 snapshot,
                 version: raw(
                     `(${this.entityManager

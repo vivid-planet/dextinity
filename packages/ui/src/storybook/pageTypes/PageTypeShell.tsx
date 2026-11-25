@@ -13,13 +13,14 @@ import { usePrototypeNavigation } from "./prototypeNavigation";
 
 function ShellNav({ initialCurrentId }: { initialCurrentId: string }) {
     const prototype = usePrototypeNavigation();
+    const groups = prototype?.navGroups ?? sideNavGroups;
     const [currentId, setCurrentId] = useState(initialCurrentId);
-    const [expandedIds, setExpandedIds] = useState(getSideNavAncestorIds(sideNavGroups, initialCurrentId));
+    const [expandedIds, setExpandedIds] = useState(getSideNavAncestorIds(groups, initialCurrentId));
     return (
         <SideNav
             logo={<ProductLogo />}
             logoMark={<ProductSign />}
-            groups={sideNavGroups}
+            groups={groups}
             currentId={currentId}
             expandedIds={expandedIds}
             onExpandedIdsChange={setExpandedIds}
@@ -47,7 +48,9 @@ export function PageTypeShell({ currentId, overlay, children }: PropsWithChildre
     const [ownNavCollapsed, setOwnNavCollapsed] = useState(false);
     const navCollapsed = prototype?.navCollapsed ?? ownNavCollapsed;
     const setNavCollapsed = prototype?.onNavCollapsedChange ?? setOwnNavCollapsed;
-    const [assistantOpen, setAssistantOpen] = useState(false);
+    const [ownAssistantOpen, setOwnAssistantOpen] = useState(false);
+    const assistantOpen = prototype?.assistantOpen ?? ownAssistantOpen;
+    const setAssistantOpen = prototype?.onAssistantOpenChange ?? setOwnAssistantOpen;
     return (
         <>
             <AppShell

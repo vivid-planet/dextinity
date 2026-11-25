@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { Button } from "../../../components/button/Button";
 import { Icon } from "../../../components/icon/Icon";
 import { PageHeader } from "../../../components/pageHeader/PageHeader";
 import { PageTypeShell } from "../../pageTypes/PageTypeShell";
 import { themeDecorator } from "../../themeDecorator";
+import { SegmentedControlStyles } from "./SegmentedControlStyles";
 
 /**
  * What's currently being designed in the workspace. Replace the stories freely; each one shows up in the workspace's story list.
@@ -27,8 +27,15 @@ export const Current: Story = {
                 eyebrow="Content · Careers"
                 title="Job ads"
                 subtitle="Start here: this page is the workspace's canvas"
-                actions={<Button startIcon={<Icon name="plus" />}>New job ad</Button>}
+                primaryAction={{ label: "New job ad", icon: <Icon name="plus" /> }}
             />
         </PageTypeShell>
     ),
+};
+
+/**
+ * Proposals for the segmented control's look; the gray of the current one looks dull in the light themes.
+ */
+export const SegmentedControlProposals: Story = {
+    render: () => <SegmentedControlStyles />,
 };

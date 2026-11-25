@@ -59,7 +59,9 @@ type StoryCode = {
 
 export function storyCodesOf(storyFile: ts.SourceFile): StoryCode[] {
     const styleImports = styleImportsOf(storyFile);
-    const renderSourceFile = parseStoryFile(withRenderSourceEdits(storyFile, styleImports), storyFile.fileName);
+    const shownSourceEdits = [...styleImportRenameEdits(storyFile, styleImports), ...actionsPanelSpyEdits(storyFile)];
+    const renderSourceEdits = [...childrenPlaceholderEdits(storyFile), ...argsSpreadEdits(storyFile), ...controlledArgEdits(storyFile)];
+    const renderSourceFile = parseStoryFile(applyEdits(storyFile.text, [...renderSourceEdits, ...shownSourceEdits]), storyFile.fileName);
     const renderSources = new Map(
         storyExportsOf(renderSourceFile).map(({ exportName, storyObject }) => [exportName, renderSourceOf(storyObject, renderSourceFile)]),
     );
@@ -72,7 +74,7 @@ export function storyCodesOf(storyFile: ts.SourceFile): StoryCode[] {
         const argNodes = argNodesOf(storyObject, storyFile);
         const mappingNodes = mappingNodesOf(storyObject, storyFile);
         const shownNodes = [...(renderBody ? [renderBody] : []), ...Object.values(argNodes), ...Object.values(mappingNodes).flatMap(Object.values)];
-        const writtenArgOf = (node: ts.Expression) => writtenValueOf(node, storyFile);
+        const writtenArgOf = (node: ts.Expression) => writtenValueOf(node, storyFile, shownSourceEdits);
         return [
             {
                 exportName,
@@ -85,8 +87,8 @@ export function storyCodesOf(storyFile: ts.SourceFile): StoryCode[] {
     });
 }
 
-function writtenValueOf(node: ts.Expression, storyFile: ts.SourceFile): ShownArg {
-    if (isActionsPanelSpyCall(node)) {
+function writtenValueOf(node: ts.Expression, storyFile: ts.SourceFile, edits: TextEdit[]): ShownArg {
+    if (isLoggingOnlyHandler(node)) {
         return { value: undefined };
     }
     if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) {
@@ -101,7 +103,7 @@ function writtenValueOf(node: ts.Expression, storyFile: ts.SourceFile): ShownArg
     if (node.kind === ts.SyntaxKind.NullKeyword) {
         return { value: null };
     }
-    return ts.isIdentifier(node) && node.text === "undefined" ? { value: undefined } : { source: dedentedSourceOf(node, storyFile) };
+    return ts.isIdentifier(node) && node.text === "undefined" ? { value: undefined } : { source: editedSourceOf(node, storyFile, edits) };
 }
 
 function mapValues<Value, MappedValue>(record: Record<string, Value>, mapValue: (value: Value) => MappedValue) {
@@ -156,8 +158,12 @@ function propertyNodesOf(objectLiteral: ts.ObjectLiteralExpression, storyFile: t
     );
 }
 
-function isActionsPanelSpyCall(expression: ts.Expression) {
-    return ts.isCallExpression(expression) && ts.isIdentifier(expression.expression) && expression.expression.text === "fn";
+function isLoggingOnlyHandler(expression: ts.Expression) {
+    return isActionsPanelSpyCall(expression) && expression.arguments.length === 0;
+}
+
+function isActionsPanelSpyCall(node: ts.Node): node is ts.CallExpression {
+    return ts.isCallExpression(node) && ts.isIdentifier(node.expression) && node.expression.text === "fn";
 }
 
 function isArgsAccess(expression: ts.Expression): expression is ts.PropertyAccessExpression {
@@ -195,20 +201,33 @@ function defaultRenderSourceOf(storyObject: ts.ObjectLiteralExpression, storyFil
     return componentName && `<${componentName} ${argsSpreadMarker([])}>${childrenPlaceholder}</${componentName}>`;
 }
 
-function withRenderSourceEdits(storyFile: ts.SourceFile, styleImports: StyleImport[]) {
-    const edits = [
-        ...childrenPlaceholderEdits(storyFile),
-        ...argsSpreadEdits(storyFile),
-        ...styleImportRenameEdits(storyFile, styleImports),
-        ...controlledArgEdits(storyFile),
-    ].sort((first, second) => first.start - second.start);
-    let editedCode = "";
-    let copiedUntil = 0;
-    for (const edit of edits) {
-        editedCode += storyFile.text.slice(copiedUntil, edit.start) + edit.text;
+function applyEdits(text: string, edits: TextEdit[], textStart = 0) {
+    let editedText = "";
+    let copiedUntil = textStart;
+    for (const edit of [...edits].sort((first, second) => first.start - second.start)) {
+        editedText += text.slice(copiedUntil - textStart, edit.start - textStart) + edit.text;
         copiedUntil = edit.end;
     }
-    return editedCode + storyFile.text.slice(copiedUntil);
+    return editedText + text.slice(copiedUntil - textStart);
+}
+
+function editedSourceOf(node: ts.Node, storyFile: ts.SourceFile, edits: TextEdit[]) {
+    const start = node.getStart();
+    const editsInNode = edits.filter((edit) => edit.start >= start && edit.end <= node.getEnd());
+    return dedented(applyEdits(node.getText(storyFile), editsInNode, start), indentationOfLineAt(start, storyFile));
+}
+
+function actionsPanelSpyEdits(storyFile: ts.SourceFile): TextEdit[] {
+    return nodesIn(storyFile, isActionsPanelSpyCall).flatMap((call) => {
+        const [handler] = call.arguments;
+        if (!handler) {
+            return [{ start: call.getStart(), end: call.getEnd(), text: "() => {}" }];
+        }
+        return [
+            { start: call.getStart(), end: handler.getStart(), text: "" },
+            { start: handler.getEnd(), end: call.getEnd(), text: "" },
+        ];
+    });
 }
 
 function childrenPlaceholderEdits(storyFile: ts.SourceFile): TextEdit[] {
@@ -286,9 +305,11 @@ function unwrapParentheses(expression: ts.Expression): ts.Expression {
 }
 
 function dedentedSourceOf(node: ts.Node, sourceFile: ts.SourceFile) {
-    const indentation = indentationOfLineAt(node.getStart(), sourceFile);
-    return node
-        .getText(sourceFile)
+    return dedented(node.getText(sourceFile), indentationOfLineAt(node.getStart(), sourceFile));
+}
+
+function dedented(text: string, indentation: string) {
+    return text
         .split("\n")
         .map((textLine) => (textLine.startsWith(indentation) ? textLine.slice(indentation.length) : textLine))
         .join("\n");

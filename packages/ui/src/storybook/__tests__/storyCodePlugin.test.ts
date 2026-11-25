@@ -132,3 +132,33 @@ export const Default: Story = {};
 
 <ToolbarButton aria-label="Bold" selected={selected} onSelectedChange={setSelected} />`);
 });
+
+it("unwraps `fn(handler)` and writes `() => {}` for a bare `fn()` in the `render` function", () => {
+    const [storyCode] = storyCodesOf(
+        parseStoryFile(
+            `
+const meta = {
+    component: Menu,
+    args: { onSelect: fn((id) => select(id)) },
+    render: (args) => (
+        <Menu {...args}>
+            <MenuItem label="Duplicate" onClick={fn()} />
+        </Menu>
+    ),
+} satisfies Meta<typeof Menu>;
+
+export default meta;
+
+export const Default: Story = {};
+`,
+            "Menu.stories.tsx",
+        ),
+    );
+    const args = { onSelect: () => {} };
+
+    const source = renderSourceWithArgs("", { parameters: storyCode, args, initialArgs: args, argTypes: {} });
+
+    expect(source).toBe(`<Menu onSelect={(id) => select(id)}>
+    <MenuItem label="Duplicate" onClick={() => {}} />
+</Menu>`);
+});

@@ -1,6 +1,6 @@
 import { isValidElement } from "react";
 
-import { childrenPlaceholder } from "./childrenPlaceholder";
+import { argsSpreadMarkerPattern, childrenPlaceholder } from "./renderSourceMarkers";
 
 export type ShownArg = { value: unknown } | { source: string };
 
@@ -15,7 +15,6 @@ type RenderSourceContext = {
     argTypes: Record<string, { mapping?: Record<string, unknown> }>;
 };
 
-const argsSpreadPattern = /\s*\{\s*\.\.\.args\s*\}/g;
 const childrenPlaceholderPattern = new RegExp(`>${childrenPlaceholder}(</[\\w.]+>)`, "g");
 
 /**
@@ -62,11 +61,15 @@ function containsElement(value: unknown): boolean {
 }
 
 function renderSourceWithShownArgs(renderSource: string, { children, ...attributeArgs }: Record<string, ShownArg>) {
-    const attributes = Object.entries(attributeArgs)
-        .map(([name, shownArg]) => jsxAttributeSource(name, shownArg))
-        .filter((attribute) => attribute !== undefined)
-        .map((attribute) => ` ${attribute}`);
-    const withAttributes = renderSource.replace(argsSpreadPattern, () => attributes.join(""));
+    const withAttributes = renderSource.replace(argsSpreadMarkerPattern, (_, overriddenArgNames: string) => {
+        const leftOutNames = overriddenArgNames.trim().split(" ");
+        return Object.entries(attributeArgs)
+            .filter(([name]) => !leftOutNames.includes(name))
+            .map(([name, shownArg]) => jsxAttributeSource(name, shownArg))
+            .filter((attribute) => attribute !== undefined)
+            .map((attribute) => ` ${attribute}`)
+            .join("");
+    });
     return replaceChildrenPlaceholder(withAttributes, children && jsxChildrenSource(children));
 }
 

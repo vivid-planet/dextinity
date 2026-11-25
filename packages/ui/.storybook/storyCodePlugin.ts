@@ -1,13 +1,14 @@
 import ts from "typescript";
 import type { Plugin } from "vite";
 
-import { childrenPlaceholder } from "../src/storybook/childrenPlaceholder";
+import { argsSpreadMarker, childrenPlaceholder } from "../src/storybook/renderSourceMarkers";
 import type { ShownArg } from "../src/storybook/renderSourceWithArgs";
 import {
     findProperty,
     localStoryObjectOf,
     metaComponentNameOf,
     metaObjectOf,
+    nodesIn,
     objectLiteralOf,
     parseStoryFile,
     renderBodyOf,
@@ -191,13 +192,16 @@ function propertyNameOf(property: ts.ObjectLiteralElementLike) {
 
 function defaultRenderSourceOf(storyObject: ts.ObjectLiteralExpression, storyFile: ts.SourceFile) {
     const componentName = rendersWithDefaultRender(storyObject, storyFile) ? metaComponentNameOf(storyFile) : undefined;
-    return componentName && `<${componentName} {...args}>${childrenPlaceholder}</${componentName}>`;
+    return componentName && `<${componentName} ${argsSpreadMarker([])}>${childrenPlaceholder}</${componentName}>`;
 }
 
 function withRenderSourceEdits(storyFile: ts.SourceFile, styleImports: StyleImport[]) {
-    const edits = [...childrenPlaceholderEdits(storyFile), ...styleImportRenameEdits(storyFile, styleImports), ...controlledArgEdits(storyFile)].sort(
-        (first, second) => first.start - second.start,
-    );
+    const edits = [
+        ...childrenPlaceholderEdits(storyFile),
+        ...argsSpreadEdits(storyFile),
+        ...styleImportRenameEdits(storyFile, styleImports),
+        ...controlledArgEdits(storyFile),
+    ].sort((first, second) => first.start - second.start);
     let editedCode = "";
     let copiedUntil = 0;
     for (const edit of edits) {
@@ -208,11 +212,29 @@ function withRenderSourceEdits(storyFile: ts.SourceFile, styleImports: StyleImpo
 }
 
 function childrenPlaceholderEdits(storyFile: ts.SourceFile): TextEdit[] {
-    return selfClosingElementsSpreadingArgs(storyFile).map((element) => ({
-        start: element.attributes.getEnd(),
-        end: element.getEnd(),
-        text: `>${childrenPlaceholder}</${element.tagName.getText()}>`,
+    return nodesIn(storyFile, isArgsSpread)
+        .filter((spread) => ts.isJsxSelfClosingElement(spread.parent.parent) && !attributeNamesAfter(spread).includes("children"))
+        .map(({ parent: { parent: element } }) => ({
+            start: element.attributes.getEnd(),
+            end: element.getEnd(),
+            text: `>${childrenPlaceholder}</${element.tagName.getText()}>`,
+        }));
+}
+
+function argsSpreadEdits(storyFile: ts.SourceFile): TextEdit[] {
+    return nodesIn(storyFile, isArgsSpread).map((spread) => ({
+        start: spread.getStart(),
+        end: spread.getEnd(),
+        text: argsSpreadMarker(attributeNamesAfter(spread)),
     }));
+}
+
+function attributeNamesAfter(spread: ts.JsxSpreadAttribute) {
+    const attributes = spread.parent.properties;
+    return attributes
+        .slice(attributes.indexOf(spread) + 1)
+        .filter(ts.isJsxAttribute)
+        .map((attribute) => attribute.name.getText());
 }
 
 function styleImportRenameEdits(storyFile: ts.SourceFile, styleImports: StyleImport[]): TextEdit[] {
@@ -225,7 +247,7 @@ function styleImportRenameEdits(storyFile: ts.SourceFile, styleImports: StyleImp
 
 // A reader copies the shown code, which can't import the story-only helper; `useState` keeps the value just as well outside Storybook
 function controlledArgEdits(storyFile: ts.SourceFile): TextEdit[] {
-    return controlledArgCalls(storyFile).flatMap((call) => {
+    return nodesIn(storyFile, isControlledArgCall).flatMap((call) => {
         const [argsExpression, keyExpression] = call.arguments;
         if (!argsExpression || !keyExpression || !ts.isStringLiteral(keyExpression)) {
             return [];
@@ -234,18 +256,12 @@ function controlledArgEdits(storyFile: ts.SourceFile): TextEdit[] {
     });
 }
 
-function controlledArgCalls(node: ts.Node): ts.CallExpression[] {
-    const ownMatch = ts.isCallExpression(node) && ts.isIdentifier(node.expression) && node.expression.text === "useControlledArg" ? [node] : [];
-    return [...ownMatch, ...node.getChildren().flatMap(controlledArgCalls)];
+function isControlledArgCall(node: ts.Node): node is ts.CallExpression {
+    return ts.isCallExpression(node) && ts.isIdentifier(node.expression) && node.expression.text === "useControlledArg";
 }
 
-function selfClosingElementsSpreadingArgs(node: ts.Node): ts.JsxSelfClosingElement[] {
-    const ownMatch = ts.isJsxSelfClosingElement(node) && node.attributes.properties.some(isArgsSpread) ? [node] : [];
-    return [...ownMatch, ...node.getChildren().flatMap(selfClosingElementsSpreadingArgs)];
-}
-
-function isArgsSpread(attribute: ts.JsxAttributeLike) {
-    return ts.isJsxSpreadAttribute(attribute) && ts.isIdentifier(attribute.expression) && attribute.expression.text === "args";
+function isArgsSpread(node: ts.Node): node is ts.JsxSpreadAttribute {
+    return ts.isJsxSpreadAttribute(node) && ts.isIdentifier(node.expression) && node.expression.text === "args";
 }
 
 function renderSourceOf(storyObject: ts.ObjectLiteralExpression, sourceFile: ts.SourceFile) {

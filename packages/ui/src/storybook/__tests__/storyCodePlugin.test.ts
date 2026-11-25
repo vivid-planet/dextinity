@@ -104,3 +104,31 @@ export const Default: Story = {};
 
     expect(storyCode.usedStyleImports).toEqual([{ importName: "cardStyles", modulePath: "./Card.stories.module.scss" }]);
 });
+
+it("leaves out of `{...args}` the args that a later attribute sets", () => {
+    const [storyCode] = storyCodesOf(
+        parseStoryFile(
+            `
+const meta = {
+    component: ToolbarButton,
+    render: (args) => {
+        const [selected, setSelected] = useState(false);
+        return <ToolbarButton {...args} selected={selected} onSelectedChange={setSelected} />;
+    },
+} satisfies Meta<typeof ToolbarButton>;
+
+export default meta;
+
+export const Default: Story = {};
+`,
+            "ToolbarButton.stories.tsx",
+        ),
+    );
+    const args = { "aria-label": "Bold", selected: false };
+
+    const source = renderSourceWithArgs("", { parameters: storyCode, args, initialArgs: args, argTypes: {} });
+
+    expect(source).toBe(`const [selected, setSelected] = useState(false);
+
+<ToolbarButton aria-label="Bold" selected={selected} onSelectedChange={setSelected} />`);
+});

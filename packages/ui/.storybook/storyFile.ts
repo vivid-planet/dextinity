@@ -123,8 +123,7 @@ export function styleImportsOf(sourceFile: ts.SourceFile): StyleImport[] {
  * Returns the identifiers in a node that read a class name from a style import, such as `styles` in `styles.largeIcon`.
  */
 export function styleImportReferencesIn(node: ts.Node, styleImports: StyleImport[]): ts.Identifier[] {
-    const ownMatch = isStyleImportReference(node, styleImports) ? [node] : [];
-    return [...ownMatch, ...node.getChildren().flatMap((child) => styleImportReferencesIn(child, styleImports))];
+    return nodesIn(node, (candidate) => isStyleImportReference(candidate, styleImports));
 }
 
 /**
@@ -142,6 +141,11 @@ function isStyleImportReference(node: ts.Node, styleImports: StyleImport[]): nod
         ts.isPropertyAccessExpression(node.parent) &&
         node.parent.expression === node
     );
+}
+
+export function nodesIn<Match extends ts.Node>(node: ts.Node, isMatch: (candidate: ts.Node) => candidate is Match): Match[] {
+    const ownMatch = isMatch(node) ? [node] : [];
+    return [...ownMatch, ...node.getChildren().flatMap((child) => nodesIn(child, isMatch))];
 }
 
 export function findProperty(objectLiteral: ts.ObjectLiteralExpression, name: string) {

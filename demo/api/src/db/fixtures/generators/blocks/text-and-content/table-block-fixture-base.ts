@@ -14,28 +14,28 @@ interface TableColumnInput {
     highlighted: boolean;
 }
 
-interface TableCellValueInput<RichTextInput> {
+interface TableCellValueInput<CellInput> {
     columnId: string;
-    value: RichTextInput;
+    value: CellInput;
 }
 
-interface TableRowInput<RichTextInput> {
+interface TableRowInput<CellInput> {
     id: string;
     highlighted: boolean;
-    cellValues: TableCellValueInput<RichTextInput>[];
+    cellValues: TableCellValueInput<CellInput>[];
 }
 
-interface TableContentInput<RichTextInput> {
+interface TableContentInput<CellInput> {
     columns: TableColumnInput[];
-    rows: TableRowInput<RichTextInput>[];
+    rows: TableRowInput<CellInput>[];
 }
 
-interface TableBlockInput<RichTextInput> {
-    table: TableContentInput<RichTextInput>;
+interface TableBlockInput<CellInput> {
+    table: TableContentInput<CellInput>;
     responsiveBehavior: ResponsiveBehavior;
 }
 
-/** Content of a description cell, to be encoded by the rich text editor of the concrete fixture service. */
+/** Content of a description cell, to be encoded by the concrete fixture service. */
 export interface DescriptionCellContent {
     jobTitle: string;
     textBeforeLink: string;
@@ -49,24 +49,26 @@ const columnIds = {
     email: "email",
     address: "address",
     description: "description",
+    image: "image",
 } as const;
 
 /**
- * Generates the columns and rows of a table block, leaving the rich text of the cells to the subclass.
+ * Generates the columns and rows of a table block, leaving the content of the cells to the subclass.
+ * The image column is only added when the subclass supports image cells.
  *
  * `createTableBlock` returns a plain `Block`, so the input types can't be derived from it and are declared here.
  */
-export abstract class TableBlockFixtureBase<RichTextInput> {
+export abstract class TableBlockFixtureBase<CellInput> {
     constructor(private readonly linkBlockFixtureService: LinkBlockFixtureService) {}
 
-    async generateBlockInput(): Promise<TableBlockInput<RichTextInput>> {
+    async generateBlockInput(): Promise<TableBlockInput<CellInput>> {
         return {
             table: await this.generateTableContentInput(),
             responsiveBehavior: faker.helpers.arrayElement(Object.values(ResponsiveBehavior)),
         };
     }
 
-    private async generateTableContentInput(): Promise<TableContentInput<RichTextInput>> {
+    private async generateTableContentInput(): Promise<TableContentInput<CellInput>> {
         const columns: TableColumnInput[] = [
             { id: columnIds.name, size: "standard", highlighted: false },
             { id: columnIds.email, size: "standard", highlighted: false },
@@ -74,7 +76,11 @@ export abstract class TableBlockFixtureBase<RichTextInput> {
             { id: columnIds.description, size: "extraLarge", highlighted: false },
         ];
 
-        const headerRow: TableRowInput<RichTextInput> = {
+        if (this.createImageCell) {
+            columns.push({ id: columnIds.image, size: "small", highlighted: false });
+        }
+
+        const headerRow: TableRowInput<CellInput> = {
             id: faker.string.uuid(),
             highlighted: true,
             cellValues: [
@@ -82,6 +88,7 @@ export abstract class TableBlockFixtureBase<RichTextInput> {
                 { columnId: columnIds.email, value: this.createSimpleCellRichText("Email") },
                 { columnId: columnIds.address, value: this.createSimpleCellRichText("Address") },
                 { columnId: columnIds.description, value: this.createSimpleCellRichText("Description") },
+                ...(this.createImageCell ? [{ columnId: columnIds.image, value: this.createSimpleCellRichText("Image") }] : []),
             ],
         };
 
@@ -91,11 +98,15 @@ export abstract class TableBlockFixtureBase<RichTextInput> {
         return { columns, rows: [headerRow, ...dataRows] };
     }
 
-    protected abstract createSimpleCellRichText(text: string): RichTextInput;
+    protected abstract createSimpleCellRichText(text: string): CellInput;
 
-    protected abstract createDescriptionCellRichText(content: DescriptionCellContent): RichTextInput;
+    protected abstract createDescriptionCellRichText(content: DescriptionCellContent): CellInput;
 
-    private async generateDataRow(): Promise<TableRowInput<RichTextInput>> {
+    protected createImageCell?(): Promise<CellInput>;
+
+    private async generateDataRow(): Promise<TableRowInput<CellInput>> {
+        const imageCellValues = this.createImageCell ? [{ columnId: columnIds.image, value: await this.createImageCell() }] : [];
+
         return {
             id: faker.string.uuid(),
             highlighted: false,
@@ -104,6 +115,7 @@ export abstract class TableBlockFixtureBase<RichTextInput> {
                 { columnId: columnIds.email, value: this.createSimpleCellRichText(faker.internet.email()) },
                 { columnId: columnIds.address, value: this.createSimpleCellRichText(faker.location.streetAddress({ useFullAddress: true })) },
                 { columnId: columnIds.description, value: this.createDescriptionCellRichText(await this.generateDescriptionCellContent()) },
+                ...imageCellValues,
             ],
         };
     }

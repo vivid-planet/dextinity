@@ -4947,6 +4947,93 @@
         ]
     },
     {
+        "name": "TipTapTableCell",
+        "description": "One of several blocks. `attachedBlocks` lists entries of a `type` and the `props` of the block that type names in the `blocks` of the `props` field. `activeType` names the entry in use, so an entry with that `type` must be in the list. Entries of other types may stay in the list and aren't shown. The block can't be empty, so `activeType` must be set.",
+        "fields": [
+            {
+                "name": "attachedBlocks",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "type",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "OneOfBlocks",
+                            "blocks": {
+                                "richText": "TipTapRichText",
+                                "image": "DamImage"
+                            },
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            },
+            {
+                "name": "activeType",
+                "kind": "String",
+                "nullable": true
+            },
+            {
+                "name": "block",
+                "kind": "NestedObject",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "type",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "OneOfBlocks",
+                            "blocks": {
+                                "richText": "TipTapRichText",
+                                "image": "DamImage"
+                            },
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": true
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "attachedBlocks",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "type",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "OneOfBlocks",
+                            "blocks": {
+                                "richText": "TipTapRichText",
+                                "image": "DamImage"
+                            },
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            },
+            {
+                "name": "activeType",
+                "kind": "String",
+                "nullable": false
+            }
+        ]
+    },
+    {
         "name": "TipTapTableContent",
         "fields": [
             {
@@ -5008,7 +5095,7 @@
                                     {
                                         "name": "value",
                                         "kind": "Block",
-                                        "block": "TipTapRichText",
+                                        "block": "TipTapTableCell",
                                         "nullable": false
                                     }
                                 ]
@@ -5080,7 +5167,7 @@
                                     {
                                         "name": "value",
                                         "kind": "Block",
-                                        "block": "TipTapRichText",
+                                        "block": "TipTapTableCell",
                                         "nullable": false
                                     }
                                 ]

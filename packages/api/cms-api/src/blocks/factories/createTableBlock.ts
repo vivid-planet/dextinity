@@ -1,7 +1,7 @@
 import { plainToInstance, Type } from "class-transformer";
 import { IsArray, IsBoolean, IsEnum, IsString, ValidateNested } from "class-validator";
 
-import { type Block, BlockData, type BlockDataInterface, BlockInput, type BlockInputInterface, blockInputToData, createBlock } from "../block.js";
+import { type Block, BlockData, type BlockDataInterface, BlockInput, type BlockInputInterface, blockInputToData, type ChildBlockInfo, createBlock } from "../block.js";
 import { ChildBlock } from "../decorators/child-block.js";
 import { ChildBlockInput } from "../decorators/child-block-input.js";
 import { BlockField } from "../decorators/field.js";
@@ -112,6 +112,19 @@ export function createTableBlock({ richText: RichTextBlock }: CreateTableBlockOp
         @BlockField(TableBlockRowData)
         @Type(() => TableBlockRowData)
         rows: TableBlockRowData[] = [];
+
+        childBlocksInfo(): ChildBlockInfo[] {
+            const existingColumnIds = new Set(this.columns.map((column) => column.id));
+
+            return this.rows.flatMap((row, rowIndex) =>
+                row.cellValues.map((cellValue, cellValueIndex) => ({
+                    visible: existingColumnIds.has(cellValue.columnId),
+                    relJsonPath: ["rows", rowIndex, "cellValues", cellValueIndex, "value"],
+                    block: cellValue.value,
+                    name: RichTextBlock.name,
+                })),
+            );
+        }
     }
 
     class TableBlockInput extends BlockInput {

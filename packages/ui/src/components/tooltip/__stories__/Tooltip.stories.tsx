@@ -31,6 +31,7 @@ const meta = {
         onOpenChange: fn(),
     },
     argTypes: {
+        content: { control: "text" },
         placement: {
             control: "radio",
             options: ["top", "bottom", "left", "right"],

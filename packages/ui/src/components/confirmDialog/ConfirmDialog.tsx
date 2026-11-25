@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { forwardRef, type PropsWithChildren, type ReactNode } from "react";
+import { forwardRef, type ReactNode } from "react";
 
 import { Button, type ButtonProps } from "../button/Button";
 import { Dialog, type DialogProps } from "../dialog/Dialog";
@@ -29,7 +29,7 @@ export interface ConfirmDialogSlotProps {
     confirmButton?: Partial<ButtonProps>;
 }
 
-export interface ConfirmDialogProps extends PropsWithChildren {
+export interface ConfirmDialogProps {
     /** Whether the dialog is open. */
     open: boolean;
     /** Called when Cancel or Escape requests to close the dialog. */
@@ -62,6 +62,8 @@ export interface ConfirmDialogProps extends PropsWithChildren {
     loading?: boolean;
     /** Built-in texts, e.g. the cancel button's label. */
     labels?: Partial<typeof defaultLabels>;
+    /** Details that help decide, between the description and the actions, e.g. what a deletion takes along. */
+    children?: ReactNode;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
@@ -71,8 +73,6 @@ export interface ConfirmDialogProps extends PropsWithChildren {
 /**
  * Asks before an action that loses data and can't be undone, e.g. leaving with unsaved changes or deleting for good.
  * Prefer doing the action right away and offering Undo in a `Toast`.
- *
- * `children`: Details that help decide, between the description and the actions, e.g. what a deletion takes along.
  */
 export const ConfirmDialog = forwardRef<HTMLDivElement, ConfirmDialogProps>(function ConfirmDialog(
     {

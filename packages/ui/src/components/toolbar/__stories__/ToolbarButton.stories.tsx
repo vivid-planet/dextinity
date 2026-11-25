@@ -25,7 +25,6 @@ const meta = {
     parameters: { tokens: toolbarTokens },
     args: { "aria-label": "Bold", children: <Icon name="bold" />, onClick: fn(), onSelectedChange: fn() },
     argTypes: {
-        onClick: { description: "Called when the button is clicked." },
         selected: { control: "boolean" },
         disabled: { control: "boolean" },
         keepFocus: { control: "boolean" },

@@ -40,6 +40,7 @@ const meta = {
         ),
     },
     argTypes: {
+        label: { control: "text" },
         placement: { control: "select", options: ["bottom-start", "bottom-end", "top-start", "top-end"] },
         disabled: { control: "boolean" },
         icon: { control: false },

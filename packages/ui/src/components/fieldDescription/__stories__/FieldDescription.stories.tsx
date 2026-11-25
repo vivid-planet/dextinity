@@ -13,6 +13,7 @@ const meta = {
         children: "Shown in the browser tab and in search results.",
     },
     argTypes: {
+        children: { control: "text" },
         className: { control: false },
         ref: { control: false },
     },

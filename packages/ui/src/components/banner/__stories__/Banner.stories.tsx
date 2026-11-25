@@ -23,6 +23,7 @@ const meta = {
         ),
     },
     argTypes: {
+        children: { control: "text" },
         color: { control: "radio", options: ["warning", "error", "info"] },
         icon: { control: "select", options: ["Info", "Globe"], mapping: { Info: <Icon name="info" />, Globe: <Icon name="globe" /> } },
         action: { control: false },

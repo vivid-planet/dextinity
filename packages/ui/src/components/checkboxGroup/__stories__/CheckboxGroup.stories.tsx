@@ -71,6 +71,7 @@ const meta = {
         onChange: fn(),
     },
     argTypes: {
+        selectAllLabel: { control: "text" },
         ...groupFieldArgTypes,
         orientation: { control: "radio", options: ["vertical", "horizontal"] },
         className: { control: false },

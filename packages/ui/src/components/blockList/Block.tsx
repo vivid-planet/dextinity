@@ -1,6 +1,6 @@
 import { Collapsible } from "@base-ui/react/collapsible";
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type PropsWithChildren, type ReactNode, useEffect, useId, useRef } from "react";
+import { forwardRef, type HTMLAttributes, type ReactNode, useEffect, useId, useRef } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Checkbox } from "../checkbox/Checkbox";
@@ -63,7 +63,7 @@ export interface BlockSlotProps {
     body?: SlotPropsValue<BlockOwnerState, typeof Collapsible.Panel>;
 }
 
-export interface BlockProps extends Omit<HTMLAttributes<HTMLLIElement>, "className" | "title" | "onSelect">, PropsWithChildren {
+export interface BlockProps extends Omit<HTMLAttributes<HTMLLIElement>, "className" | "children" | "title" | "onSelect"> {
     /** The block's title, taken from its content (e.g. the first heading), not its type. */
     title: ReactNode;
     /** A short summary below the title, e.g. the block type or "3 teasers". */
@@ -105,6 +105,8 @@ export interface BlockProps extends Omit<HTMLAttributes<HTMLLIElement>, "classNa
     actions?: ReactNode;
     /** The built-in texts. */
     labels?: Partial<BlockLabels>;
+    /** The block's fields, shown while `expanded`. */
+    children?: ReactNode;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
@@ -115,8 +117,6 @@ export interface BlockProps extends Omit<HTMLAttributes<HTMLLIElement>, "classNa
  * A block in the page editor: grip, type icon, title, summary, visibility, and actions, with its fields below when expanded. Use it
  * inside a `BlockList`. Its ref and attributes, e.g. `data-block-key`, go to the list item, so the editor can find the block to scroll it
  * into view when it's selected in the preview.
- *
- * `children`: The block's fields, shown while `expanded`.
  */
 export const Block = forwardRef<HTMLLIElement, BlockProps>(function Block(
     {

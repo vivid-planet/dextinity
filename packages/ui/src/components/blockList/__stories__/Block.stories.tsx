@@ -42,6 +42,8 @@ const meta = {
         onExpandedChange: fn(),
     },
     argTypes: {
+        title: { control: "text" },
+        summary: { control: "text" },
         selected: { control: "boolean" },
         expanded: { control: "boolean" },
         invalid: { control: "boolean" },

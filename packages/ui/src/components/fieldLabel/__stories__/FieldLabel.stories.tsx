@@ -15,6 +15,7 @@ const meta = {
         children: "Label",
     },
     argTypes: {
+        children: { control: "text" },
         info: { control: "text" },
         labels: { control: false },
         className: { control: false },

@@ -1,6 +1,6 @@
 import { useRender } from "@base-ui/react/use-render";
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type PropsWithChildren } from "react";
+import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 
 import styles from "./Typography.module.scss";
 
@@ -25,7 +25,7 @@ const variantElement: Record<TypographyVariant, TypographyElement> = {
     mono: "span",
 };
 
-export interface TypographyProps extends Omit<HTMLAttributes<HTMLElement>, "className">, PropsWithChildren {
+export interface TypographyProps extends Omit<HTMLAttributes<HTMLElement>, "className" | "children"> {
     /**
      * Visual style. Each variant has a default semantic element: `displayXl` for the greeting on an overview, `displayL` for the page title
      * (one per view), `title` for panels and cards, `section` for form sections, `body` for UI text and tables, `small` for help texts and
@@ -40,6 +40,8 @@ export interface TypographyProps extends Omit<HTMLAttributes<HTMLElement>, "clas
      * @defaultValue The variant's default element
      */
     element?: TypographyElement;
+    /** The text. */
+    children: ReactNode;
     /** Added alongside the component's own classes. */
     className?: string;
     /**
@@ -56,8 +58,6 @@ export interface TypographyProps extends Omit<HTMLAttributes<HTMLElement>, "clas
 /**
  * Renders a single block of text in one of several visual variants, each
  * mapping to a default semantic element.
- *
- * `children`: The text.
  */
 export const Typography = forwardRef<HTMLElement, TypographyProps>(function Typography(
     { variant = "body", element, className, children, render, ...restProps },

@@ -71,6 +71,8 @@ const meta = {
         onChange: fn(),
     },
     argTypes: {
+        children: { control: "text" },
+        description: { control: "text" },
         size: { control: "radio", options: ["default", "small"] },
         required: fieldArgTypes.required,
         validationMessage: fieldArgTypes.validationMessage,

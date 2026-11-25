@@ -138,6 +138,7 @@ const meta = {
         icon: <Icon name="file" />,
     },
     argTypes: {
+        placeholder: { control: "text" },
         value: { control: "object" },
         ...fieldArgTypes,
         renderValue: { control: false },

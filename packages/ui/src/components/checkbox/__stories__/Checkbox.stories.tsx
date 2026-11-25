@@ -103,6 +103,7 @@ const meta = {
         onChange: fn(),
     },
     argTypes: {
+        children: { control: "text" },
         required: fieldArgTypes.required,
         description: fieldArgTypes.description,
         validationMessage: fieldArgTypes.validationMessage,

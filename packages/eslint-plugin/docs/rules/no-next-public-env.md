@@ -1,6 +1,8 @@
-# `@dextinity/no-next-public-env`
+# @dextinity/no-next-public-env
 
-Disallow reading `NEXT_PUBLIC_*` environment variables.
+📝 Disallow reading `NEXT_PUBLIC_*` environment variables.
+
+<!-- end auto-generated rule header -->
 
 Next.js replaces `process.env.NEXT_PUBLIC_*` with its value when it builds the site. The value is then fixed in the build, so the same build can't run with different values in different environments, for example staging and production. Use site configs or a custom provider instead, see [Environment variables in the site](https://cms-docs.dextinity.com/docs/faqs/environment-variables-in-site).
 
@@ -18,10 +20,6 @@ Code that passes:
 ```ts
 const apiUrl = process.env.API_URL;
 ```
-
-## Options
-
-None.
 
 ## Presets
 

@@ -3,6 +3,7 @@
     "version": "10.15.0",
     "description": "A set of ESLint rules and configurations for Dextinity projects",
     "type": "module",
+    "main": "./lib/index.js",
     "exports": {
         ".": {
             "types": "./lib/index.d.ts",
@@ -18,8 +19,10 @@
         "build": "pnpm run clean && tsc --project ./tsconfig.build.json",
         "clean": "rimraf lib",
         "dev": "tsc --watch",
-        "lint": "run-p lint:prettier lint:eslint lint:tsc",
+        "docs:generate": "eslint-doc-generator",
+        "lint": "run-p lint:prettier lint:eslint lint:tsc lint:docs",
         "lint:ci": "pnpm run lint",
+        "lint:docs": "eslint-doc-generator --check",
         "lint:eslint": "eslint --max-warnings 0 src/ '**/*.json' --no-warn-ignored",
         "lint:fix": "run-p lint:fix:eslint lint:fix:prettier",
         "lint:fix:eslint": "pnpm run lint:eslint --fix",
@@ -34,6 +37,7 @@
         "@eslint/js": "^9.39.5",
         "eslint": "^9.39.5",
         "eslint-config-prettier": "^10.1.8",
+        "eslint-doc-generator": "^3.7.1",
         "eslint-plugin-import": "^2.32.0",
         "eslint-plugin-jsonc": "^2.21.1",
         "eslint-plugin-package-json": "^0.91.2",

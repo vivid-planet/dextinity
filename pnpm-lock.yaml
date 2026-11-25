@@ -2751,7 +2751,7 @@ importers:
         specifier: ^15.1.0
         version: 15.1.0
       fast-equals:
-        specifier: ^6.4.0
+        specifier: ^6.4.1
         version: 6.4.1
       jose:
         specifier: ^6.2.18
@@ -2848,7 +2848,7 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       fast-equals:
-        specifier: ^6.4.0
+        specifier: ^6.4.1
         version: 6.4.1
       jose:
         specifier: ^6.2.18

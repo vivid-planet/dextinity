@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import type { PropsWithChildren } from "react";
+import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
@@ -13,31 +13,10 @@ const iconOptions = {
     PageTree: <Icon name="sitemap" />,
 };
 
-function InOpenMenu({ children }: PropsWithChildren) {
-    return (
-        <Menu
-            open
-            onOpenChange={() => {}}
-            trigger={
-                <Button variant="outlined" color="secondary">
-                    Go to
-                </Button>
-            }
-        >
-            {children}
-        </Menu>
-    );
-}
-
 const meta = {
     component: MenuLinkItem,
     title: "Building blocks/Menus & messages/MenuLinkItem",
     decorators: [
-        (Story) => (
-            <InOpenMenu>
-                <Story />
-            </InOpenMenu>
-        ),
         themeDecorator,
         (Story) => (
             <div className={styles.stage}>
@@ -60,6 +39,22 @@ const meta = {
         slotProps: { control: false },
         render: { control: false },
     },
+    render: (args) => {
+        const [isMenuOpen, setIsMenuOpen] = useState(true);
+        return (
+            <Menu
+                open={isMenuOpen}
+                onOpenChange={setIsMenuOpen}
+                trigger={
+                    <Button variant="outlined" color="secondary">
+                        Go to
+                    </Button>
+                }
+            >
+                <MenuLinkItem {...args} />
+            </Menu>
+        );
+    },
 } satisfies Meta<typeof MenuLinkItem>;
 
 export default meta;
@@ -71,7 +66,7 @@ type Story = StoryObj<typeof meta>;
  * tab instead.
  */
 export const Default: Story = {
-    play: async ({ args }) => {
+    play: async ({ args, canvas }) => {
         const link = await screen.findByRole("menuitem", { name: "Careers" });
         await expect(link).toHaveAttribute("href", "#careers");
 
@@ -89,9 +84,15 @@ export const Default: Story = {
         }
         await expect(defaultPrevented).toBe(false);
         await expect(args.onClick).not.toHaveBeenCalled();
+        await waitFor(() => expect(screen.queryByRole("menu")).toBeNull());
 
-        await userEvent.click(link);
+        await userEvent.click(canvas.getByRole("button", { name: "Go to" }));
+        await userEvent.click(await screen.findByRole("menuitem", { name: "Careers" }));
         await waitFor(() => expect(args.onClick).toHaveBeenCalledTimes(1));
+        await waitFor(() => expect(screen.queryByRole("menu")).toBeNull());
+
+        await userEvent.click(canvas.getByRole("button", { name: "Go to" }));
+        await screen.findByRole("menuitem", { name: "Careers" });
     },
 };
 

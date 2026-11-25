@@ -37,6 +37,10 @@ function isProcessEnv(node: SyntaxNode): boolean {
 export default {
     meta: {
         type: "problem",
+        docs: {
+            description: "Disallow reading `NEXT_PUBLIC_*` environment variables",
+            url: "https://github.com/vivid-planet/dextinity/blob/main/packages/eslint-plugin/docs/rules/no-next-public-env.md",
+        },
         schema: [],
     },
     create(context) {

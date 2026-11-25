@@ -11,7 +11,7 @@ const meta = {
     argTypes: {
         children: { control: false },
         colorScheme: { control: "radio", options: ["light", "dark", "high-contrast"] },
-        brand: { control: "select", options: ["dextinity", "ai-hub"] },
+        brand: { control: "select", options: ["dextinity", "ai-hub", "groupcms-ai", "original"] },
         density: { control: "radio", options: ["comfortable", "standard", "compact"] },
         className: { control: false },
     },
@@ -41,6 +41,21 @@ export const HighContrast: Story = {
  */
 export const AiHub: Story = {
     args: { brand: "ai-hub" },
+};
+
+/**
+ * GroupCMS AI: the teal of the GroupCMS AI logo, with blue-gray neutrals.
+ */
+export const GroupCmsAi: Story = {
+    args: { brand: "groupcms-ai" },
+};
+
+/**
+ * Original Style: the flat look of the MUI-based admin, with its light blue, gray neutrals, Roboto Flex, small corner radii, and
+ * opaque surfaces instead of glass.
+ */
+export const Original: Story = {
+    args: { brand: "original" },
 };
 
 export const Compact: Story = {

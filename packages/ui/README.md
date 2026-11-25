@@ -164,7 +164,9 @@ The contract has two parts: **structural class names** for a component's element
 
 The Storybook sidebar mirrors the design system's areas — Foundations, Building blocks, Shell, Patterns, Page types — and each area's pages: a story title is `<Area>/<Page>/<Component>`, e.g. `Building blocks/Buttons/IconButton`. Each consumer-facing component has its own story file in an `__stories__/` directory next to its source; story-only helpers such as decorators live in [`src/storybook/`](src/storybook). The component's TSDoc and prop table (see [TSDoc](#tsdoc)) drive its autodocs page, so stories don't restate it. The page ends with a table of the tokens that `meta.component` reads, with their live values (see [Component tokens](#component-tokens)); a page without `meta.component` has no table.
 
-The docs show only the body of a story's `render` function, so everything the example needs goes inside it. A `render` function names its parameter `args`. To show a story's full source instead of its `render` body, set `parameters.docs.source.type` to `"code"`.
+The docs show only the body of a story's `render` function, or `meta.component` when it has none, so everything the example needs goes inside it. A `render` function names its parameter `args`.
+
+The docs don't show decorators, so a decorator only sets the stage, such as the theme or a background. A parent that the component needs, such as the `Toolbar` of a `ToolbarButton`, goes into `render`.
 
 On the docs page, each story is only as tall as its content, and its frame cuts off what overflows it. So that a popup, such as a select's options, a menu, a calendar, or a dialog, isn't cut off or shrunk, the story grows when the popup opens: it measures the open popup and makes room for it, and keeps that room once the popup closes. When the popup still lacks room because its trigger is next to the window's edge, e.g. a select at the window's bottom, the page scrolls so that the popup opens in full. No story sets a height for this. A story whose popup opens above its trigger, e.g. a menu in a bar at the bottom of the page, sets `parameters.popupRoom` to `{ side: "above" }`, so the room is made above the story and the popup doesn't flip below. `test:storybook` checks that the frame doesn't cut off or shrink a popup (see [Testing](#testing)).
 
@@ -302,7 +304,7 @@ Components read their colors, metrics, and font family from CSS custom propertie
 
 The tokens live in SCSS partials under [`src/theme/`](src/theme), composed into the `Theme` module with `@use` and wrapped in a single `@layer dextinity`. Each layer references only the layers before it:
 
-1. **Brand** (`_brand.scss`) — hues and chromas (primary, secondary, neutral tint, success, danger), font families, display weight and tracking, label case, control radius, and the radius factor. The brands `dextinity` and `ai-hub` are built in.
+1. **Brand** (`_brand.scss`) — hues and chromas (primary, secondary, neutral tint, success, danger), font families, display weight and tracking, label case, control radius, and the radius factor. The brands `dextinity`, `ai-hub`, `groupcms-ai`, and `original` are built in; `original` also overrides semantic and component tokens (see [Brands](#brands)).
 2. **Primitives** (`_primitives.scss`) — 11-stop OKLCH scales on a fixed lightness curve, computed from the brand's hue and chroma; spacing and radii.
 3. **Semantic** (`_semantic.scss`) — surfaces, text, lines, accent, status, material (glass, blur, grain, light fields), and shadows, per color scheme (light, dark, high contrast). High contrast turns light and glass off and lines on.
 4. **Typography, motion, density, layout, layers** (`_typography.scss`, `_motion.scss`, `_density.scss`, `_layout.scss`, `_layers.scss`) — text styles and the font-weight scale, one easing with three durations (reduced motion keeps only short fades), fixed metrics per density level, the page layout rhythm, and the stacking order of overlays.
@@ -343,6 +345,8 @@ A brand is a CSS block on `[data-dextinity-brand="<name>"]` that sets the `--dex
     --dextinity-icon-search: url("./icons/acme-search.svg#icon");
 }
 ```
+
+A built-in brand that changes more than the brand tokens, like `original`, keeps those overrides in its own partial (`_originalBrand.scss`), `@use`d after the component tokens. Its rules add the color scheme attribute to the brand selector, e.g. `[data-dextinity-brand="original"][data-dextinity-color-scheme="light"]`, so they outrank the tokens declared on the theme boundary, and leave the high-contrast color scheme its own values for colors, glass, and lines.
 
 ### Selecting a color scheme, brand, and density
 

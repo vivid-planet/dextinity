@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { type PropsWithChildren, useState } from "react";
+import { useState } from "react";
 import { expect, screen } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
@@ -10,32 +10,6 @@ import { MenuRadioGroup } from "../MenuRadioGroup";
 import { MenuRadioItem } from "../MenuRadioItem";
 import styles from "./Menu.stories.module.scss";
 
-function InOpenMenu({ children }: PropsWithChildren) {
-    return (
-        <Menu
-            open
-            onOpenChange={() => {}}
-            trigger={
-                <Button variant="outlined" color="secondary">
-                    Actions
-                </Button>
-            }
-        >
-            {children}
-        </Menu>
-    );
-}
-
-function InRadioGroup({ children }: PropsWithChildren) {
-    const [value, setValue] = useState("dark");
-    return (
-        <MenuRadioGroup value={value} onChange={setValue}>
-            {children}
-            <MenuRadioItem value="light" label="Light" icon={<Icon name="sun" />} />
-        </MenuRadioGroup>
-    );
-}
-
 const iconOptions = {
     Sun: <Icon name="sun" />,
     Moon: <Icon name="moon" />,
@@ -45,13 +19,6 @@ const meta = {
     component: MenuRadioItem,
     title: "Building blocks/Menus & messages/MenuRadioItem",
     decorators: [
-        (Story) => (
-            <InOpenMenu>
-                <InRadioGroup>
-                    <Story />
-                </InRadioGroup>
-            </InOpenMenu>
-        ),
         themeDecorator,
         (Story) => (
             <div className={styles.stage}>
@@ -72,6 +39,26 @@ const meta = {
         className: { control: false },
         slots: { control: false },
         slotProps: { control: false },
+    },
+    render: (args) => {
+        const [isMenuOpen, setIsMenuOpen] = useState(true);
+        const [colorScheme, setColorScheme] = useState("dark");
+        return (
+            <Menu
+                open={isMenuOpen}
+                onOpenChange={setIsMenuOpen}
+                trigger={
+                    <Button variant="outlined" color="secondary">
+                        Actions
+                    </Button>
+                }
+            >
+                <MenuRadioGroup value={colorScheme} onChange={setColorScheme}>
+                    <MenuRadioItem {...args} />
+                    <MenuRadioItem value="light" label="Light" icon={<Icon name="sun" />} />
+                </MenuRadioGroup>
+            </Menu>
+        );
     },
 } satisfies Meta<typeof MenuRadioItem>;
 

@@ -1,6 +1,7 @@
 .root {
     display: inline-flex;
     block-size: 100%;
+    align-items: center;
 }
 
 .positive,
@@ -8,16 +9,39 @@
     block-size: 100%;
 }
 
-.negative {
+.negative,
+.groupCmsAi {
     display: none;
 }
 
 :where([data-dextinity-color-scheme="dark"], [data-dextinity-color-scheme="high-contrast"]) .root {
-    .positive {
+    .dextinity.positive {
         display: none;
     }
 
-    .negative {
+    .dextinity.negative {
+        display: block;
+    }
+}
+
+:where([data-dextinity-brand="groupcms-ai"]) .root {
+    .dextinity,
+    .dextinity.negative {
+        display: none;
+    }
+
+    .groupCmsAi.positive,
+    .groupCmsAi.sign {
+        display: block;
+    }
+}
+
+:where([data-dextinity-brand="groupcms-ai"]):where([data-dextinity-color-scheme="dark"], [data-dextinity-color-scheme="high-contrast"]) .root {
+    .groupCmsAi.positive {
+        display: none;
+    }
+
+    .groupCmsAi.negative {
         display: block;
     }
 }

@@ -14,9 +14,7 @@ const meta = {
     decorators: [
         (Story) => (
             <div className={styles.surface}>
-                <Toolbar aria-label="Formatting">
-                    <Story />
-                </Toolbar>
+                <Story />
             </div>
         ),
         themeDecorator,
@@ -39,6 +37,11 @@ const meta = {
         children: { control: false },
         className: { control: false },
     },
+    render: (args) => (
+        <Toolbar aria-label="Formatting">
+            <ToolbarGroup {...args} />
+        </Toolbar>
+    ),
 } satisfies Meta<typeof ToolbarGroup>;
 
 export default meta;

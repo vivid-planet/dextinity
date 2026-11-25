@@ -8,6 +8,7 @@ import { type IFrameBridge, type PreviewElement, useRefToRegisterMailBlocksForPr
 Reflect.set(globalThis, "IS_REACT_ACT_ENVIRONMENT", true);
 
 const textBlock = `<div class="dextinity-preview-route:%2Fedit%2Fblocks%23text dextinity-preview-label:Text"></div>`;
+const secondTextBlock = `<div class="dextinity-preview-route:%2Fedit%2Fblocks%23secondText dextinity-preview-label:Text"></div>`;
 const listBlock = `<div class="dextinity-preview-route:%2Fedit%2Fblocks%23list dextinity-preview-label:Two%20List%20Sizes"></div>`;
 
 function RenderedHtml({ html, iFrameBridge }: { html: string; iFrameBridge: IFrameBridge }) {
@@ -31,7 +32,11 @@ function createFakeIFrameBridge() {
                 root.render(<RenderedHtml html={html} iFrameBridge={iFrameBridge} />);
             }),
         registeredElements: () =>
-            Array.from(registeredElements, ({ adminRoute, label, measurementTarget }) => ({ adminRoute, label, measurementTarget })),
+            Array.from(registeredElements, ({ adminRoute, label, measurementTarget }) => ({
+                adminRoute,
+                label,
+                measuredElementCount: measurementTarget.length,
+            })),
     };
 }
 
@@ -42,8 +47,30 @@ describe("useRefToRegisterMailBlocksForPreview", () => {
         await fakeIFrameBridge.render(`${textBlock}${listBlock}`);
 
         expect(fakeIFrameBridge.registeredElements()).toEqual([
-            { adminRoute: "/edit/blocks#text", label: "Text", measurementTarget: "element" },
-            { adminRoute: "/edit/blocks#list", label: "Two List Sizes", measurementTarget: "element" },
+            { adminRoute: "/edit/blocks#text", label: "Text", measuredElementCount: 1 },
+            { adminRoute: "/edit/blocks#list", label: "Two List Sizes", measuredElementCount: 1 },
+        ]);
+    });
+
+    it("registers the elements of a block that carry the same route as one preview element", async () => {
+        const fakeIFrameBridge = createFakeIFrameBridge();
+
+        await fakeIFrameBridge.render(`${textBlock}${textBlock}${listBlock}${textBlock}`);
+
+        expect(fakeIFrameBridge.registeredElements()).toEqual([
+            { adminRoute: "/edit/blocks#text", label: "Text", measuredElementCount: 3 },
+            { adminRoute: "/edit/blocks#list", label: "Two List Sizes", measuredElementCount: 1 },
+        ]);
+    });
+
+    it("registers neighboring blocks of the same type separately", async () => {
+        const fakeIFrameBridge = createFakeIFrameBridge();
+
+        await fakeIFrameBridge.render(`${textBlock}${secondTextBlock}`);
+
+        expect(fakeIFrameBridge.registeredElements()).toEqual([
+            { adminRoute: "/edit/blocks#text", label: "Text", measuredElementCount: 1 },
+            { adminRoute: "/edit/blocks#secondText", label: "Text", measuredElementCount: 1 },
         ]);
     });
 
@@ -54,7 +81,7 @@ describe("useRefToRegisterMailBlocksForPreview", () => {
         await fakeIFrameBridge.render(listBlock);
 
         expect(fakeIFrameBridge.registeredElements()).toEqual([
-            { adminRoute: "/edit/blocks#list", label: "Two List Sizes", measurementTarget: "element" },
+            { adminRoute: "/edit/blocks#list", label: "Two List Sizes", measuredElementCount: 1 },
         ]);
     });
 });

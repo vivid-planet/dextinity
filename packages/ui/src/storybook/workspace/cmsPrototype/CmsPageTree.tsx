@@ -306,16 +306,20 @@ function SelectionDetail({
 }
 
 /** The rows a person sees: all pages of expanded parents, or, while filtering, the pages that match. */
+function hasMatch(page: SitePage, matches: (page: SitePage) => boolean): boolean {
+    return matches(page) || (page.children ?? []).some((child) => hasMatch(child, matches));
+}
+
+/** The pages the tree shows, by its rules: while filtering, a matching page shows its children only when it's expanded. */
 function collectVisibleIds(pages: SitePage[], expandedIds: string[], matches: ((page: SitePage) => boolean) | undefined): string[] {
-    if (matches != null) {
-        return flattenPages(pages)
-            .filter(matches)
-            .map((page) => page.id);
-    }
-    return pages.flatMap((page) => [
-        page.id,
-        ...(expandedIds.includes(page.id) ? collectVisibleIds(page.children ?? [], expandedIds, undefined) : []),
-    ]);
+    return pages.flatMap((page) => {
+        if (matches != null && !hasMatch(page, matches)) {
+            return [];
+        }
+        const isMatch = matches == null || matches(page);
+        const isExpanded = expandedIds.includes(page.id) || !isMatch;
+        return [...(isMatch ? [page.id] : []), ...(isExpanded ? collectVisibleIds(page.children ?? [], expandedIds, matches) : [])];
+    });
 }
 
 function copyPages(pages: SitePage[], round: number): SitePage[] {

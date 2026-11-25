@@ -27,7 +27,7 @@ function ShellNav({ initialCurrentId }: { initialCurrentId: string }) {
             onNavigate={(item, event) => {
                 event.preventDefault();
                 setCurrentId(item.id);
-                prototype?.navigate(item.id);
+                prototype?.navigate(item.id, "navigation");
             }}
         />
     );

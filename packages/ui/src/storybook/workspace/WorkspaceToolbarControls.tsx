@@ -25,7 +25,7 @@ const viewportPresets = [
     { value: "phone", label: "Phone", icon: "device-phone", width: 390, height: 844 },
 ] as const;
 
-const zoomOptions: { value: WorkspaceZoom; label: string }[] = [
+export const zoomOptions: { value: WorkspaceZoom; label: string }[] = [
     { value: "fit", label: "Fit" },
     { value: "0.5", label: "50 %" },
     { value: "0.75", label: "75 %" },

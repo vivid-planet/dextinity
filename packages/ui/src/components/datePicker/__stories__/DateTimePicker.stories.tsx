@@ -4,8 +4,6 @@ import { expect, fn, screen, userEvent, waitFor, within } from "storybook/test";
 import { fieldArgTypes, type FieldStoryArgs, splitFieldArgs, StoryField } from "../../../storybook/fieldStoryArgs";
 import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import fieldTokens from "../../field/Field.tokens.scss?raw";
-import datePickerTokens from "../DatePicker.tokens.scss?raw";
 import { DateTimePicker, type DateTimePickerProps } from "../DateTimePicker";
 import styles from "./DatePicker.stories.module.scss";
 
@@ -38,7 +36,6 @@ const meta = {
     component: DateTimePicker,
     title: "Building blocks/Form fields/DateTimePicker",
     decorators: [themeDecorator],
-    parameters: { tokens: `${datePickerTokens}\n${fieldTokens}` },
     render: (args, context) => <ControlledDateTimePicker {...args} storyId={context.id} />,
     args: {
         name: "publishAt",
@@ -50,6 +47,8 @@ const meta = {
         ...fieldArgTypes,
         locale: { control: "select", options: ["en-GB", "en-US", "de-AT", "fr-FR", "ja-JP"] },
         weekStartsOn: { control: "select", options: [0, 1, 2, 3, 4, 5, 6] },
+        isDateDisabled: { control: false },
+        isTimeDisabled: { control: false },
         labels: { control: false },
         className: { control: false },
     },
@@ -161,6 +160,62 @@ export const Clearable: Story = {
 
 export const MinAndMax: Story = {
     args: { min: "2026-11-01", max: "2026-12-31", description: "Until the end of the year" },
+};
+
+/**
+ * `isDateDisabled` disables more days, such as weekends. They are struck through in the calendar, and a typed one shows an error.
+ */
+export const DisabledDates: Story = {
+    args: {
+        locale: "en-GB",
+        isDateDisabled: (date: string) => [0, 6].includes(new Date(date).getUTCDay()),
+        description: "Weekdays only",
+    },
+    play: async ({ args, canvas }) => {
+        await userEvent.click(canvas.getByRole("button", { name: "Choose date" }));
+        const grid = await screen.findByRole("grid");
+        const saturday = within(grid).getByRole("button", { name: "Saturday, 7 November 2026" });
+        await expect(saturday).toHaveAttribute("aria-disabled", "true");
+        await userEvent.click(saturday);
+        await expect(args.onChange).not.toHaveBeenCalled();
+        await userEvent.keyboard("{Escape}");
+
+        const date = canvas.getByRole("textbox", { name: "Publish at" });
+        await userEvent.clear(date);
+        await userEvent.type(date, "14/11/2026");
+        await userEvent.tab();
+        await expect(date).toHaveAccessibleDescription("14/11/2026 can't be chosen.");
+        await expect(args.onChange).not.toHaveBeenCalled();
+    },
+};
+
+/**
+ * `isTimeDisabled` disables times, such as those outside office hours. It gets the day too, so each day can have its own times. Disabled
+ * times can't be chosen in the list, and a typed one shows an error.
+ */
+export const DisabledTimes: Story = {
+    args: {
+        locale: "en-GB",
+        isTimeDisabled: (time: string) => time < "08:00" || time >= "18:00",
+        description: "From 08:00 to 18:00",
+    },
+    play: async ({ args, canvas }) => {
+        await userEvent.click(canvas.getByRole("button", { name: "Choose time" }));
+        const list = await screen.findByRole("listbox", { name: "Publish at Time" });
+        const early = within(list).getByRole("option", { name: "07:45" });
+        await expect(early).toHaveAttribute("aria-disabled", "true");
+        await userEvent.click(early);
+        await expect(args.onChange).not.toHaveBeenCalled();
+        await expect(within(list).getByRole("option", { name: "08:00" })).not.toHaveAttribute("aria-disabled");
+        await userEvent.keyboard("{Escape}");
+
+        const time = canvas.getByRole("textbox", { name: "Publish at Time" });
+        await userEvent.clear(time);
+        await userEvent.type(time, "19:00");
+        await userEvent.tab();
+        await expect(time).toHaveAccessibleDescription("19:00 can't be chosen.");
+        await expect(args.onChange).not.toHaveBeenCalled();
+    },
 };
 
 export const Error: Story = {

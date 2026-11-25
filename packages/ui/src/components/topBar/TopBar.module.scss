@@ -81,9 +81,27 @@
     }
 }
 
+.actions .environment {
+    flex: none;
+}
+
+.actions .environmentCompact {
+    display: none;
+}
+
+/* Below this width, the full label would cover the search button next to the scope, assistant switch, and user menu */
+@container dextinity-shell-bar (max-width: 340px) {
+    .actions .environment {
+        display: none;
+    }
+
+    .actions .environmentCompact {
+        display: inline-flex;
+    }
+}
+
 @container dextinity-shell-bar (max-width: 860px) {
-    .searchText,
-    .searchKeyboardShortcut {
+    .searchText {
         display: none;
     }
 

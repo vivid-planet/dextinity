@@ -1,6 +1,6 @@
 ---
 name: dextinity-core-admin-component-authoring
-description: Authoring or changing a component in @dextinity/admin or a sibling package that uses its slot and theme machinery (admin-color-picker, admin-date-time, admin-rte) so it supports MUI-style customization: per-instance sx/className overrides, theme styleOverrides, and defaultProps. Use whenever adding a new component or editing an existing one's slots, props, class keys, overridable icons, or theme-type registration — even for small changes.
+description: Authoring or changing a component in @dextinity/admin or a sibling package that uses its slot and theme machinery (admin-date-time, admin-rte) so it supports MUI-style customization: per-instance sx/className overrides, theme styleOverrides, and defaultProps. Use whenever adding a new component or editing an existing one's slots, props, class keys, overridable icons, or theme-type registration — even for small changes.
 metadata:
     internal: true
 ---
@@ -19,7 +19,7 @@ customize it. Add the customization from the start.
 This applies to any component built with the slot and theme machinery —
 `createComponentSlot` and `ThemedComponentBaseProps`, both from `@dextinity/admin`. Today
 that means components in `@dextinity/admin` and the sibling packages that use it:
-`admin-color-picker`, `admin-date-time`, `admin-rte`. Other packages under
+`admin-date-time`, `admin-rte`. Other packages under
 `packages/admin/`, such as `cms-admin`, don't use this pattern and are out of scope.
 
 ## How to use this skill

@@ -66,7 +66,7 @@ export const PermissionDialog = ({ userId, permissionId, handleDialogClose }: Fo
                     }
                 `,
                 variables: { userId, input },
-                refetchQueries: [namedOperations.Query.Permission, "Permissions"],
+                refetchQueries: ["Permissions"],
             });
         }
         handleDialogClose();

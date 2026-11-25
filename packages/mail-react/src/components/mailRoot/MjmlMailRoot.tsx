@@ -50,7 +50,7 @@ export function MjmlMailRoot({ theme: themeProp, attributes, head, config, child
                     <Styles />
                     {head}
                 </MjmlHead>
-                <MjmlBody width={theme.sizes.bodyWidth} backgroundColor={theme.colors.background.body}>
+                <MjmlBody id="body" width={theme.sizes.bodyWidth} backgroundColor={theme.colors.background.body}>
                     {children}
                 </MjmlBody>
             </Mjml>

@@ -4,7 +4,6 @@ import { expect, fn, userEvent, waitFor } from "storybook/test";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { BulkActionBar } from "../../bulkActionBar/BulkActionBar";
 import { Button } from "../../button/Button";
-import toastTokens from "../Toast.tokens.scss?raw";
 import { ToastViewport, type ToastViewportProps } from "../ToastViewport";
 import { type NewToast, useToasts } from "../useToasts";
 import styles from "./Toast.stories.module.scss";
@@ -35,7 +34,6 @@ const meta = {
     component: ToastViewport,
     title: "Building blocks/Menus & messages/ToastViewport",
     decorators: [themeDecorator],
-    parameters: { tokens: toastTokens },
     args: {
         toasts: [],
         onDismiss: fn(),

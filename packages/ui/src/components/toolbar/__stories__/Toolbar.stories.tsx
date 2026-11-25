@@ -7,7 +7,6 @@ import { Icon } from "../../icon/Icon";
 import { MenuRadioGroup } from "../../menu/MenuRadioGroup";
 import { MenuRadioItem } from "../../menu/MenuRadioItem";
 import { Toolbar, type ToolbarProps } from "../Toolbar";
-import toolbarTokens from "../Toolbar.tokens.scss?raw";
 import { ToolbarButton } from "../ToolbarButton";
 import { ToolbarGroup } from "../ToolbarGroup";
 import { ToolbarMenu } from "../ToolbarMenu";
@@ -86,7 +85,6 @@ const meta = {
             </div>
         ),
     ],
-    parameters: { tokens: toolbarTokens },
     args: { "aria-label": "Formatting", children: null },
     argTypes: {
         orientation: { control: "radio", options: ["horizontal", "vertical"] },

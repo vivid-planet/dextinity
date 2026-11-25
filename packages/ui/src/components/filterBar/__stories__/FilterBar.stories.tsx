@@ -11,7 +11,6 @@ import { FilterChip } from "../../filterChip/FilterChip";
 import { Icon } from "../../icon/Icon";
 import { StatusIndicator } from "../../statusIndicator/StatusIndicator";
 import { FilterBar } from "../FilterBar";
-import filterBarTokens from "../FilterBar.tokens.scss?raw";
 
 const statusFilters: { value: JobAdStatus | "all"; label: string }[] = [
     { value: "all", label: "All" },
@@ -24,7 +23,6 @@ const meta = {
     component: FilterBar,
     title: "Patterns/Search & filter/FilterBar",
     decorators: [themeDecorator],
-    parameters: { tokens: filterBarTokens },
     args: {
         searchValue: "",
         onSearchChange: fn(),

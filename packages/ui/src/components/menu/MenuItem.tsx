@@ -46,6 +46,8 @@ export interface MenuItemProps<IconElement extends ElementType = "span"> extends
     icon?: ReactNode;
     /** The keyboard shortcut of the action, shown at the end, in the notation of `useKeyboardShortcut`, e.g. `"mod+d"`. */
     keyboardShortcut?: string;
+    /** Runs the action on click, Enter, and Space; the menu then closes. */
+    onClick?: BaseMenu.Item.Props["onClick"];
     /**
      * `error` for destructive actions, e.g. Delete. Put them last, after a separator.
      *
@@ -72,7 +74,7 @@ export interface MenuItemProps<IconElement extends ElementType = "span"> extends
 }
 
 /**
- * An action in a `Menu`. `onClick` runs on click, Enter, and Space; the menu then closes.
+ * An action in a `Menu`.
  */
 export const MenuItem: <IconElement extends ElementType = "span">(props: MenuItemProps<IconElement> & RefAttributes<HTMLDivElement>) => ReactNode =
     forwardRef(function MenuItem<IconElement extends ElementType = "span">(

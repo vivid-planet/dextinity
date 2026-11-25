@@ -3,18 +3,17 @@ import { expect, screen, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { FieldLabel } from "../FieldLabel";
-import fieldLabelTokens from "../FieldLabel.tokens.scss?raw";
 import styles from "./fieldLabel.module.scss";
 
 const meta = {
     component: FieldLabel,
     title: "Building blocks/Form fields/FieldLabel",
-    parameters: { tokens: fieldLabelTokens },
     decorators: [themeDecorator],
     args: {
         children: "Label",
     },
     argTypes: {
+        children: { control: "text" },
         info: { control: "text" },
         labels: { control: false },
         className: { control: false },

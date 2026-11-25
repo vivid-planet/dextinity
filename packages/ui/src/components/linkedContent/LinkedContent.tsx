@@ -1,6 +1,6 @@
 import { useRender } from "@base-ui/react/use-render";
 import { clsx } from "clsx";
-import { type AnchorHTMLAttributes, forwardRef, type ReactNode } from "react";
+import { type AnchorHTMLAttributes, forwardRef, type MouseEvent, type ReactNode } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Icon } from "../icon/Icon";
@@ -39,6 +39,8 @@ export interface LinkedContentProps extends Omit<AnchorHTMLAttributes<HTMLAnchor
     icon?: ReactNode;
     /** Opens the list of the content. */
     href: string;
+    /** Called when the link is clicked, e.g. to navigate with a client-side router. */
+    onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */

@@ -6,7 +6,6 @@ import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Tooltip, type TooltipProps } from "../Tooltip";
-import tooltipTokens from "../Tooltip.tokens.scss?raw";
 import styles from "./Tooltip.stories.module.scss";
 
 const meta = {
@@ -20,7 +19,6 @@ const meta = {
             </div>
         ),
     ],
-    parameters: { tokens: tooltipTokens },
     args: {
         content: "More actions",
         children: (
@@ -31,6 +29,7 @@ const meta = {
         onOpenChange: fn(),
     },
     argTypes: {
+        content: { control: "text" },
         placement: {
             control: "radio",
             options: ["top", "bottom", "left", "right"],

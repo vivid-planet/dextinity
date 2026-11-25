@@ -1,14 +1,6 @@
 import { useRender } from "@base-ui/react/use-render";
 import { clsx } from "clsx";
-import {
-    type ElementType,
-    type ForwardedRef,
-    forwardRef,
-    type HTMLAttributes,
-    type PropsWithChildren,
-    type ReactNode,
-    type RefAttributes,
-} from "react";
+import { type ElementType, type ForwardedRef, forwardRef, type HTMLAttributes, type ReactNode, type RefAttributes } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Icon } from "../icon/Icon";
@@ -46,10 +38,14 @@ interface FieldValidationMessageSlotProps<IconSlot extends ElementType, Text ext
     text?: SlotPropsValue<FieldValidationMessageOwnerState, Text>;
 }
 
-export interface FieldValidationMessageProps<IconSlot extends ElementType = "span", Text extends ElementType = "span">
-    extends Omit<HTMLAttributes<HTMLElement>, "className">, PropsWithChildren {
+export interface FieldValidationMessageProps<IconSlot extends ElementType = "span", Text extends ElementType = "span"> extends Omit<
+    HTMLAttributes<HTMLElement>,
+    "className" | "children"
+> {
     /** The result of the validation, shown by the message's icon and color. */
     state: FieldValidationMessageState;
+    /** The message. */
+    children: ReactNode;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Sets which element a named inner part renders as. */
@@ -67,8 +63,6 @@ const stateIcons: Record<FieldValidationMessageState, IconName> = {
 /**
  * Says whether a form field's value is valid, e.g. why it is invalid and how to fix it, or an error about the whole form. For a control
  * without a `Field`; `Field` shows its own `validationMessage`.
- *
- * `children`: The message.
  */
 export const FieldValidationMessage: <IconSlot extends ElementType = "span", Text extends ElementType = "span">(
     props: FieldValidationMessageProps<IconSlot, Text> & RefAttributes<HTMLElement>,

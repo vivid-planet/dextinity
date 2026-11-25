@@ -14,11 +14,9 @@ import {
 import { documentImage, interiorImage, landscapeImage, portraitImage } from "../../../storybook/sampleImages";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { AssetThumbnail, type AssetThumbnailBadge, type AssetThumbnailType } from "../../assetThumbnail/AssetThumbnail";
-import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
 import { PageHeader } from "../../pageHeader/PageHeader";
 import { FinderLayout } from "../FinderLayout";
-import finderLayoutTokens from "../FinderLayout.tokens.scss?raw";
 import styles from "./FinderLayout.stories.module.scss";
 
 interface StoryFolder {
@@ -132,14 +130,8 @@ function AssetsPage() {
                     eyebrow="Content"
                     title="Assets"
                     subtitle={`${assets.length} files · shared by all scopes`}
-                    actions={
-                        <>
-                            <Button variant="outlined" color="secondary" startIcon={<Icon name="folder" />}>
-                                New folder
-                            </Button>
-                            <Button startIcon={<Icon name="cloud-upload" />}>Upload</Button>
-                        </>
-                    }
+                    secondaryActions={[{ label: "New folder", icon: <Icon name="folder" /> }]}
+                    primaryAction={{ label: "Upload", icon: <Icon name="cloud-upload" /> }}
                 />
             }
         >
@@ -153,7 +145,6 @@ const meta = {
     title: "Page types/Finder",
     decorators: [themeDecorator],
     parameters: {
-        tokens: finderLayoutTokens,
         layout: "fullscreen",
         docs: {
             description: {

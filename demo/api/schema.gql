@@ -71,12 +71,6 @@ input AttachedDocumentInput {
   type: String!
 }
 
-type AutoBuildStatus {
-  hasChangesSinceLastBuild: Boolean!
-  lastCheck: DateTime
-  nextCheck: DateTime!
-}
-
 """
 The `BigInt` scalar type represents non-fractional signed whole numeric values.
 """
@@ -288,31 +282,6 @@ input BrevoTestContactInput {
   email: String!
 }
 
-type Build {
-  completionTime: DateTime
-  estimatedCompletionTime: DateTime
-  id: ID!
-
-  """
-  Human readable label provided by dextinity.com/label (or the legacy comet-dxp.com/label) annotation. Use name as fallback if not present
-  """
-  label: String
-  name: String
-  startTime: DateTime
-  status: KubernetesJobStatus!
-  trigger: String
-}
-
-type BuildTemplate {
-  id: ID!
-
-  """
-  Human readable label provided by dextinity.com/label (or the legacy comet-dxp.com/label) annotation. Use name as fallback if not present
-  """
-  label: String
-  name: String!
-}
-
 type ContentScopeDimension {
   label: String!
   name: String!
@@ -335,10 +304,6 @@ input CoordinatesInput {
 
 type CopyFilesResponse {
   mappedFiles: [MappedFile!]!
-}
-
-input CreateBuildsInput {
-  names: [String!]!
 }
 
 input CreateDamFolderInput {
@@ -988,7 +953,6 @@ type Mutation {
   createBrevoEmailCampaign(input: EmailCampaignInput!, scope: EmailCampaignContentScopeInput!): BrevoEmailCampaign!
   createBrevoTargetGroup(input: TargetGroupInput!, scope: EmailCampaignContentScopeInput!): BrevoTargetGroup!
   createBrevoTestContact(input: BrevoTestContactInput!, scope: EmailCampaignContentScopeInput!): SubscribeResponse!
-  createBuilds(input: CreateBuildsInput!): Boolean!
   createDamFolder(input: CreateDamFolderInput!, scope: DamScopeInput!): DamFolder!
   createDamMediaAlternative(alternative: ID!, for: ID!, input: DamMediaAlternativeInput!): DamMediaAlternative!
   createManufacturer(input: ManufacturerInput!): Manufacturer!
@@ -1414,7 +1378,6 @@ enum Permission {
   blockPreview
   brevoNewsletter
   brevoNewsletterConfig
-  builds
   cronJobs
   dam
   dependencies
@@ -1967,7 +1930,6 @@ input ProductVariantUpdateInput {
 }
 
 type Query {
-  autoBuildStatus: AutoBuildStatus!
   blockPreviewJwt(includeInvisible: Boolean!, scope: JSONObject!, url: String!): String!
   brevoConfig(scope: EmailCampaignContentScopeInput!): BrevoConfig
   brevoContact(id: Int!, scope: EmailCampaignContentScopeInput!): BrevoContact!
@@ -1980,8 +1942,6 @@ type Query {
   brevoTargetGroup(id: ID!): BrevoTargetGroup!
   brevoTargetGroups(filter: TargetGroupFilter, limit: Int! = 25, offset: Int! = 0, scope: EmailCampaignContentScopeInput!, search: String, sort: [TargetGroupSort!]): PaginatedTargetGroups!
   brevoTestContacts(email: String, limit: Int! = 25, offset: Int! = 0, scope: EmailCampaignContentScopeInput!, targetGroupId: ID): PaginatedBrevoContacts!
-  buildTemplates: [BuildTemplate!]!
-  builds(limit: Float): [Build!]!
   currentUser: CurrentUser!
   damAreFilenamesOccupied(filenames: [FilenameInput!]!, scope: DamScopeInput!): [FilenameResponse!]!
   damFile(id: ID!): DamFile!

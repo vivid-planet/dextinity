@@ -3,7 +3,6 @@ import { Args, Context, Mutation, Parent, Query, ResolveField, Resolver } from "
 import { GraphQLJSONObject } from "graphql-scalars";
 import { IncomingMessage } from "http";
 
-import { SkipBuild } from "../../builds/skip-build.decorator.js";
 import { isScopeWithin } from "../../user-permissions/access-control.service.js";
 import { DisablePermissionCheck, RequiredPermission } from "../../user-permissions/decorators/required-permission.decorator.js";
 import { ContentScopeWithLabel } from "../../user-permissions/dto/content-scope.js";
@@ -34,7 +33,6 @@ export function createAuthResolver(config?: AuthResolverConfig): Type<unknown> {
         }
 
         @Mutation(() => String)
-        @SkipBuild()
         async currentUserSignOut(@Context("req") req: IncomingMessage): Promise<string | null> {
             let signOutUrl = config?.postLogoutRedirectUri || "/";
 

@@ -16,3 +16,6 @@ export const PARENT_CRON_JOB_LABEL = `${LABEL_PREFIX}/parent-cron-job`;
 
 /** Annotation for a cron job or job to provide a human readable name */
 export const LABEL_ANNOTATION = `${LABEL_PREFIX}/label`;
+
+/** Annotation that includes the content scope used for the CronJob or Job */
+export const CONTENT_SCOPE_ANNOTATION = `${LABEL_PREFIX}/content-scope`;

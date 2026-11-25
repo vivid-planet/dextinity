@@ -1,5 +1,4 @@
 export enum CorePermission {
-    builds = "builds",
     dam = "dam",
     pageTree = "pageTree",
     cronJobs = "cronJobs",

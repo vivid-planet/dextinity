@@ -2,8 +2,6 @@ import { Inject, UseGuards } from "@nestjs/common";
 import { Args, Mutation, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 
 import { GetCurrentUser } from "../auth/decorators/get-current-user.decorator.js";
-import { BUILDER_LABEL } from "../builds/builds.constants.js";
-import { SkipBuild } from "../builds/skip-build.decorator.js";
 import { KubernetesJobStatus } from "../kubernetes/job-status.enum.js";
 import { INSTANCE_LABEL } from "../kubernetes/kubernetes.constants.js";
 import { KubernetesService } from "../kubernetes/kubernetes.service.js";
@@ -30,14 +28,12 @@ export class CronJobsResolver {
 
     @Query(() => [CronJob])
     async kubernetesCronJobs(@GetCurrentUser() user: CurrentUser): Promise<CronJob[]> {
-        const cronJobs = await this.kubernetesService.getAllCronJobs(
-            `${INSTANCE_LABEL} = ${this.kubernetesService.helmRelease}, ${BUILDER_LABEL} != true`,
-        );
+        const cronJobs = await this.kubernetesService.getAllCronJobs(`${INSTANCE_LABEL} = ${this.kubernetesService.helmRelease}`);
         return cronJobs
             .filter((cronJob) => {
                 const contentScope = this.kubernetesService.getContentScope(cronJob);
                 if (contentScope) {
-                    return this.accessControlService.isAllowed(user, "builds", contentScope);
+                    return this.accessControlService.isAllowed(user, "cronJobs", contentScope);
                 }
 
                 return true;
@@ -49,7 +45,7 @@ export class CronJobsResolver {
     async kubernetesCronJob(@Args("name") name: string, @GetCurrentUser() user: CurrentUser): Promise<CronJob> {
         const cronJob = await this.kubernetesService.getCronJob(name);
         const contentScope = this.kubernetesService.getContentScope(cronJob);
-        if (contentScope && !this.accessControlService.isAllowed(user, "builds", contentScope)) {
+        if (contentScope && !this.accessControlService.isAllowed(user, "cronJobs", contentScope)) {
             throw new Error("Access denied");
         }
 
@@ -57,11 +53,10 @@ export class CronJobsResolver {
     }
 
     @Mutation(() => Job)
-    @SkipBuild()
     async triggerKubernetesCronJob(@Args("name") name: string, @GetCurrentUser() user: CurrentUser): Promise<Job> {
         const cronJob = await this.kubernetesService.getCronJob(name);
         const contentScope = this.kubernetesService.getContentScope(cronJob);
-        if (contentScope && !this.accessControlService.isAllowed(user, "builds", contentScope)) {
+        if (contentScope && !this.accessControlService.isAllowed(user, "cronJobs", contentScope)) {
             throw new Error("Access denied");
         }
 

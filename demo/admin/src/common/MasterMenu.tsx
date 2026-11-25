@@ -16,7 +16,6 @@ import {
     type MasterMenuData,
     MasterMenuRoutes,
     PagesPage,
-    PublisherPage,
     useContentScope,
     UserPermissionsPage,
     WarningsPage,
@@ -258,15 +257,6 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
             primary: <FormattedMessage id="menu.system" defaultMessage="System" />,
             icon: <Wrench />,
             items: [
-                {
-                    type: "route",
-                    primary: <FormattedMessage id="menu.publisher" defaultMessage="Publisher" />,
-                    route: {
-                        path: "/system/publisher",
-                        element: <PublisherPage />,
-                    },
-                    requiredPermission: "builds",
-                },
                 {
                     type: "route",
                     primary: <FormattedMessage id="menu.cronJobs" defaultMessage="Cron Jobs" />,

@@ -2,7 +2,6 @@ import { EntityManager } from "@mikro-orm/postgresql";
 import { Args, ArgsType, Field, ID, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { IsString } from "class-validator";
 
-import { SkipBuild } from "../builds/skip-build.decorator.js";
 import { RequiredPermission } from "./decorators/required-permission.decorator.js";
 import { UserPermissionInput, UserPermissionOverrideContentScopesInput } from "./dto/user-permission.input.js";
 import { UserPermission, UserPermissionSource } from "./entities/user-permission.entity.js";
@@ -37,7 +36,6 @@ export class UserPermissionResolver {
     }
 
     @Mutation(() => UserPermission)
-    @SkipBuild()
     async userPermissionsCreatePermission(
         @Args("userId", { type: () => String }) userId: string,
         @Args("input", { type: () => UserPermissionInput }) input: UserPermissionInput,
@@ -56,7 +54,6 @@ export class UserPermissionResolver {
     }
 
     @Mutation(() => UserPermission)
-    @SkipBuild()
     async userPermissionsUpdatePermission(
         @Args("id", { type: () => String }) id: string,
         @Args("input", { type: () => UserPermissionInput }) input: UserPermissionInput,
@@ -68,7 +65,6 @@ export class UserPermissionResolver {
     }
 
     @Mutation(() => Boolean)
-    @SkipBuild()
     async userPermissionsDeletePermission(@Args("id", { type: () => ID }) id: string): Promise<boolean> {
         await this.entityManager.remove(await this.getPermission(id)).flush();
         return true;

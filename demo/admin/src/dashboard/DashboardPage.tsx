@@ -1,11 +1,5 @@
 import { MainContent, Stack, Toolbar } from "@dextinity/admin";
-import {
-    ContentScopeIndicator,
-    DashboardHeader,
-    LatestBuildsDashboardWidget,
-    LatestWarningsDashboardWidget,
-    useUserPermissionCheck,
-} from "@dextinity/cms-admin";
+import { ContentScopeIndicator, DashboardHeader, LatestWarningsDashboardWidget, useUserPermissionCheck } from "@dextinity/cms-admin";
 import { Grid } from "@mui/material";
 import { useIntl } from "react-intl";
 
@@ -39,16 +33,6 @@ export function DashboardPage() {
                         </Grid>
                     )}
 
-                    {import.meta.env.MODE !== "development" && (
-                        <Grid
-                            size={{
-                                xs: 12,
-                                lg: 6,
-                            }}
-                        >
-                            <LatestBuildsDashboardWidget />
-                        </Grid>
-                    )}
                     {isAllowed("warnings") && (
                         <Grid
                             size={{

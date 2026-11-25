@@ -26,8 +26,12 @@ function ShellNav({ initialCurrentId }: { initialCurrentId: string }) {
             onExpandedIdsChange={setExpandedIds}
             onNavigate={(item, event) => {
                 event.preventDefault();
-                setCurrentId(item.id);
-                prototype?.navigate(item.id);
+                // In a prototype, the page that opens brings its own shell, and a guard may keep the current page open
+                if (prototype) {
+                    prototype.navigate(item.id);
+                } else {
+                    setCurrentId(item.id);
+                }
             }}
         />
     );

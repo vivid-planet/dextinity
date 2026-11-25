@@ -36,7 +36,7 @@ export class WarningResolver {
 
     @Query(() => PaginatedWarnings)
     async warnings(
-        @Args() { status, search, messageLabels = [], filter, scopes, sort, offset, limit }: WarningsArgs,
+        @Args() { status, search, messageLabels, filter, scopes, sort, offset, limit }: WarningsArgs,
         @GetCurrentUser() user: CurrentUser,
     ): Promise<PaginatedWarnings> {
         // check if there are any scopes that the user does not have permission to
@@ -65,7 +65,7 @@ export class WarningResolver {
         if (search) {
             where.$and = where.$and ?? [];
             for (const searchPart of splitSearchString(search)) {
-                const messagesMatchingLabel = findMessagesMatchingSearchPart(searchPart, messageLabels);
+                const messagesMatchingLabel = findMessagesMatchingSearchPart(searchPart, messageLabels ?? []);
                 where.$and.push({
                     $or: [
                         { message: { $ilike: searchPart } },

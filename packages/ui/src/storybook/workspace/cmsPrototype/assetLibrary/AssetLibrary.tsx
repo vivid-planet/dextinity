@@ -103,8 +103,7 @@ function useFillViewportHeight(ref: RefObject<HTMLElement | null>, enabled: bool
 }
 
 function quoteFolderNames(folders: LibraryFolder[], folderIds: string[]) {
-    // A folder deleted while its upload was running has no name anymore
-    return [...new Set(folderIds)].map((folderId) => `“${getFolder(folders, folderId)?.name ?? "Assets"}”`).join(", ");
+    return [...new Set(folderIds)].map((folderId) => `“${getFolder(folders, folderId)?.name}”`).join(", ");
 }
 
 function isFileDrag(event: DragEvent) {
@@ -203,7 +202,10 @@ export function AssetLibrary() {
         if (uploads.length === 0 || uploads.some((upload) => upload.progress < 100)) {
             return;
         }
-        const created: LibraryAsset[] = uploads.map((upload) => ({
+        // The destination folder may have been deleted while the upload was running
+        const finishedUploads = uploads.filter((upload) => getFolder(folders, upload.folderId) != null);
+        const canceledCount = uploads.length - finishedUploads.length;
+        const created: LibraryAsset[] = finishedUploads.map((upload) => ({
             ...activeAssets[0],
             id: upload.id,
             name: upload.name,
@@ -222,6 +224,13 @@ export function AssetLibrary() {
             alt: "",
             contentHash: upload.id,
         }));
+        setUploads([]);
+        if (canceledCount > 0) {
+            addToast({ message: `${canceledCount === 1 ? "1 upload" : `${canceledCount} uploads`} canceled because the folder was deleted` });
+        }
+        if (created.length === 0) {
+            return;
+        }
         setAssets((current) => [...current, ...created]);
         addToast({
             message: `${created.length === 1 ? `“${created[0].name}”` : `${created.length} files`} uploaded to ${quoteFolderNames(
@@ -229,7 +238,6 @@ export function AssetLibrary() {
                 created.map((asset) => asset.folderId),
             )}`,
         });
-        setUploads([]);
     }, [uploads, activeAssets, folders, setAssets, addToast]);
 
     function upload(files: File[]) {

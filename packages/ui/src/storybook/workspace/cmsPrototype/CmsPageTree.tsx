@@ -35,8 +35,8 @@ import { TreeViewExpandButtons } from "../../../components/treeViewExpandButtons
 import { Typography } from "../../../components/typography/Typography";
 import { useUndoToast } from "../../../components/undoToast/useUndoToast";
 import { PageTypeShell } from "../../pageTypes/PageTypeShell";
-import { applyScenario, getCopyId, lengthen, type Scenario, ScenarioContent, useScenario } from "../../scenario";
-import { type ContentStatus, flattenPages, newsArticles, type SitePage, siteTree } from "./cmsData";
+import { type Scenario, ScenarioContent, useScenario } from "../../scenario";
+import { type ContentStatus, flattenPages, newsArticles, type SitePage } from "./cmsData";
 import styles from "./cmsPrototype.module.scss";
 import { useCmsSite } from "./CmsSiteContext";
 import { MovePageDialog } from "./MovePageDialog";
@@ -331,33 +331,13 @@ function collectVisibleIds(pages: SitePage[], expandedIds: string[], matches: ((
     ]);
 }
 
-function copyPages(pages: SitePage[], round: number): SitePage[] {
-    return pages.map((page) => ({ ...page, id: getCopyId(page.id, round), children: page.children && copyPages(page.children, round) }));
-}
-
-function stretchPages(pages: SitePage[]): SitePage[] {
-    return pages.map((page) => ({ ...page, label: lengthen(page.label), children: page.children && stretchPages(page.children) }));
-}
-
-function scenarioPages(scenario: Scenario) {
-    // The tree has a single root, so a few pages are a few below it
-    if (scenario === "few") {
-        return siteTree.map((root) => ({ ...root, children: root.children?.slice(0, 2).map((page) => ({ ...page, children: undefined })) }));
-    }
-    return applyScenario(siteTree, scenario, {
-        copy: (page, round) => ({ ...copyPages([page], round)[0], label: `${page.label} (${round + 1})` }),
-        stretch: (page) => stretchPages([page])[0],
-    });
-}
-
 export function CmsPageTree() {
     const scenario = useScenario();
     return <PageTreeEditor key={scenario} scenario={scenario} />;
 }
 
 function PageTreeEditor({ scenario }: { scenario: Scenario }) {
-    const [pages, setPages] = useState<SitePage[]>(() => scenarioPages(scenario));
-    const { setRedirects } = useCmsSite();
+    const { pages, setPages, setRedirects } = useCmsSite();
     const [moveDialog, setMoveDialog] = useState({ key: 0, open: false, ids: [] as string[] });
     const [search, setSearch] = useState("");
     const [statusFilter, setStatusFilter] = useState<ContentStatus | "all">("all");

@@ -16,9 +16,10 @@ import { BlocksFinalForm } from "./form/BlocksFinalForm";
 import { createBlockSkeleton } from "./helpers/createBlockSkeleton";
 import { SelectPreviewComponent } from "./iframebridge/SelectPreviewComponent";
 import { EditImageDialog } from "./image/EditImageDialog";
+import { ImageThumbnail } from "./image/ImageThumbnail";
 import { pixelImageBlockFragment } from "./PixelImageBlock.fragment";
 import type { GQLImageBlockDamFileQuery, GQLImageBlockDamFileQueryVariables } from "./PixelImageBlock.generated";
-import { BlockCategory, type BlockDependency, type BlockInterface } from "./types";
+import { BlockCategory, type BlockDependency, type BlockInterface, type ReadOnlyBlockRenderInterface } from "./types";
 
 export type ImageBlockState = Omit<PixelImageBlockData, "urlTemplate">;
 
@@ -49,7 +50,8 @@ function createPreviewUrl(
     return url.toString();
 }
 
-export const PixelImageBlock: BlockInterface<PixelImageBlockData, ImageBlockState, PixelImageBlockInput> = {
+export const PixelImageBlock: BlockInterface<PixelImageBlockData, ImageBlockState, PixelImageBlockInput> &
+    ReadOnlyBlockRenderInterface<ImageBlockState> = {
     ...createBlockSkeleton(),
 
     name: "Image",
@@ -211,6 +213,20 @@ export const PixelImageBlock: BlockInterface<PixelImageBlockData, ImageBlockStat
             </SelectPreviewComponent>
         );
     },
+    ReadOnlyComponent: ({ state }) => {
+        const { apiUrl } = useDextinityConfig();
+        const damBasePath = useDamBasePath();
+
+        if (!state.damFile) {
+            return null;
+        }
+
+        // The API only delivers the image sizes allowed in its DAM config, so the thumbnail uses the size of the preview in the form
+        const thumbnailUrl = createPreviewUrl(state, { apiUrl, resize: { width: 320, height: 320 }, damBasePath });
+
+        return <ImageThumbnail src={thumbnailUrl} alt={state.damFile.altText ?? state.damFile.name} />;
+    },
+
     previewContent: (state, context) => {
         if (!state.damFile || !state.damFile?.fileUrl || !context?.apiUrl || !context?.damBasePath) {
             return [];

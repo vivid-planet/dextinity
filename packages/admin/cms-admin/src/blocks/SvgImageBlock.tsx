@@ -10,8 +10,9 @@ import { FileField } from "../form/file/FileField";
 import { BlocksFinalForm } from "./form/BlocksFinalForm";
 import { createBlockSkeleton } from "./helpers/createBlockSkeleton";
 import { SelectPreviewComponent } from "./iframebridge/SelectPreviewComponent";
+import { ImageThumbnail } from "./image/ImageThumbnail";
 import type { GQLSvgImageBlockDamFileQuery, GQLSvgImageBlockDamFileQueryVariables } from "./SvgImageBlock.generated";
-import { BlockCategory, type BlockDependency, type BlockInterface } from "./types";
+import { BlockCategory, type BlockDependency, type BlockInterface, type ReadOnlyBlockRenderInterface } from "./types";
 
 type SvgImageBlockState = Omit<SvgImageBlockData, "urlTemplate">;
 
@@ -22,7 +23,8 @@ function createPreviewUrl({ damFile }: SvgImageBlockState, { apiUrl }: { apiUrl:
     return `${apiUrl}${damFile.fileUrl}`;
 }
 
-export const SvgImageBlock: BlockInterface<SvgImageBlockData, SvgImageBlockState, SvgImageBlockInput> = {
+export const SvgImageBlock: BlockInterface<SvgImageBlockData, SvgImageBlockState, SvgImageBlockInput> &
+    ReadOnlyBlockRenderInterface<SvgImageBlockState> = {
     ...createBlockSkeleton(),
 
     name: "SVG",
@@ -141,6 +143,16 @@ export const SvgImageBlock: BlockInterface<SvgImageBlockData, SvgImageBlockState
             </SelectPreviewComponent>
         );
     },
+    ReadOnlyComponent: ({ state }) => {
+        const { apiUrl } = useDextinityConfig();
+
+        if (!state.damFile) {
+            return null;
+        }
+
+        return <ImageThumbnail src={createPreviewUrl(state, { apiUrl })} alt={state.damFile.altText ?? state.damFile.name} />;
+    },
+
     previewContent: (state, context) => {
         if (!state.damFile || !state.damFile?.fileUrl || !context?.apiUrl) {
             return [];

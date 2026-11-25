@@ -1,9 +1,10 @@
-import type { AiModeEditableBlocksBlock, BlockContext, BlockInterface } from "@dextinity/cms-admin";
 import { describe, expect, it, vi } from "vitest";
 
-import { type AiModePageState, createPageTools } from "./pageTools";
+import type { BlockContext } from "../blocks/context/BlockContext";
+import type { BlockInterface } from "../blocks/types";
+import { type AiModePageTreeDocumentEditableBlocks, type AiModePageTreeDocumentState, createPageTreeDocumentTools } from "./pageTreeDocumentTools";
 
-const pageState: AiModePageState = {
+const state: AiModePageTreeDocumentState = {
     pageTreeNodeId: "1",
     documentType: "Page",
     documentId: "2",
@@ -12,7 +13,7 @@ const pageState: AiModePageState = {
     hasChanges: true,
 };
 
-type ContentBlocks = Omit<AiModeEditableBlocksBlock, "schemaBlockName">;
+type ContentBlocks = AiModePageTreeDocumentEditableBlocks;
 type ContentBlock = ReturnType<ContentBlocks["getBlocks"]>[number];
 
 const contentBlock = (key: string, type = "richtext"): ContentBlock => ({ key, type, visible: true, selected: false, slideIn: false, props: {} });
@@ -20,6 +21,8 @@ const contentBlock = (key: string, type = "richtext"): ContentBlock => ({ key, t
 function createContentBlocks(blocks: ContentBlock[] = []) {
     let current = blocks;
     const contentBlocks: ContentBlocks = {
+        rootBlockKey: "content",
+        schemaBlockName: "PageContent",
         supportedBlocks: { richtext: {} as BlockInterface, heading: {} as BlockInterface },
         blockContext: {} as BlockContext,
         getBlocks: () => current,
@@ -32,7 +35,7 @@ function createContentBlocks(blocks: ContentBlock[] = []) {
 
 function getPageTool(name: string, { contentBlocks = createContentBlocks().contentBlocks }: { contentBlocks?: ContentBlocks } = {}) {
     const clearTextSelection = vi.fn();
-    const tool = createPageTools({ pageState, getDocumentSummary: () => ({ content: { blocks: [] } }), contentBlocks }).find(
+    const tool = createPageTreeDocumentTools({ state, getDocumentSummary: () => ({ content: { blocks: [] } }), editableBlocks: contentBlocks }).find(
         (candidate) => candidate.name === name,
     );
     if (!tool) {
@@ -46,7 +49,7 @@ function getPageTool(name: string, { contentBlocks = createContentBlocks().conte
 }
 
 it("keeps every description within 4096 characters, the limit for a tool description", () => {
-    for (const tool of createPageTools({ pageState, getDocumentSummary: () => ({}), contentBlocks: createContentBlocks().contentBlocks })) {
+    for (const tool of createPageTreeDocumentTools({ state, getDocumentSummary: () => ({}), editableBlocks: createContentBlocks().contentBlocks })) {
         expect(tool.description.length, tool.name).toBeLessThanOrEqual(4096);
     }
 });
@@ -55,8 +58,15 @@ describe("get_page_state", () => {
     it("returns the metadata and the summary of the open page", () => {
         const { call } = getPageTool("get_page_state");
 
-        expect(call({})).toEqual({ ...pageState, document: { content: { blocks: [] } } });
+        expect(call({})).toEqual({ ...state, document: { content: { blocks: [] } } });
     });
+});
+
+it("offers no block editing for a document whose blocks the agent only reads", () => {
+    const tools = createPageTreeDocumentTools({ state, getDocumentSummary: () => ({}) });
+
+    expect(tools.map(({ name }) => name)).toEqual(["get_page_state"]);
+    expect(tools[0].description).not.toContain("edit_blocks");
 });
 
 describe("edit_blocks", () => {
@@ -70,8 +80,7 @@ describe("edit_blocks", () => {
         const { tool } = getPageTool("edit_blocks");
 
         expect(tool.description).toContain("The page's content is the 'PageContent' block.");
-        expect(tool.description).toContain("'media' is the 'StandaloneMedia' block");
-        expect(tool.description).toContain("not the stage or the SEO settings");
+        expect(tool.description).toContain("Only the top-level blocks of the 'content' root block can be edited");
     });
 
     it("applies the operations to the page's content in one update and counts the changes", async () => {

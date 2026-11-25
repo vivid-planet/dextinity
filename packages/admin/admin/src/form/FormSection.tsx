@@ -19,14 +19,10 @@ export interface FormSectionProps extends ThemedComponentBaseProps<{
     title?: ReactNode;
     disableMarginBottom?: boolean;
     infoTooltip?: ComponentProps<typeof Title>["infoTooltip"];
-    /**
-     * @deprecated Use `slotProps.title` for custom styling or for setting a custom `variant` on the underlying `Typography` component.
-     */
-    disableTypography?: boolean;
 }
 
 export function FormSection(inProps: FormSectionProps) {
-    const { children, title, disableMarginBottom, disableTypography, slotProps, infoTooltip, ...restProps } = useThemeProps({
+    const { children, title, disableMarginBottom, slotProps, infoTooltip, ...restProps } = useThemeProps({
         props: inProps,
         name: "DextinityAdminFormSection",
     });
@@ -38,15 +34,9 @@ export function FormSection(inProps: FormSectionProps) {
     return (
         <Root ownerState={ownerState} {...slotProps?.root} {...restProps}>
             {title && (
-                <>
-                    {disableTypography ? (
-                        <LegacyTitle {...slotProps?.title}>{title}</LegacyTitle>
-                    ) : (
-                        <Title infoTooltip={infoTooltip} divider {...slotProps?.title}>
-                            {title}
-                        </Title>
-                    )}
-                </>
+                <Title infoTooltip={infoTooltip} divider {...slotProps?.title}>
+                    {title}
+                </Title>
             )}
 
             <Children {...slotProps?.children}>{children}</Children>
@@ -72,16 +62,6 @@ const Root = createComponentSlot("div")<FormSectionClassKey, OwnerState>({
 );
 
 const Title = createComponentSlot(SectionHeadline)<FormSectionClassKey>({
-    componentName: "FormSection",
-    slotName: "title",
-})(
-    ({ theme }) => css`
-        margin-bottom: ${theme.spacing(4)};
-    `,
-);
-
-// TODO: Remove this slot once the `disableTypography` prop has been removed
-const LegacyTitle = createComponentSlot("div")<FormSectionClassKey>({
     componentName: "FormSection",
     slotName: "title",
 })(

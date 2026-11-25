@@ -633,7 +633,7 @@ export function WorkspaceShell() {
                                     onChange={textLengthSetting.store}
                                 />
                             )}
-                            {isPrototypeMode && <TokenPlayground />}
+                            {isPrototypeMode && <TokenPlayground brand={brand} />}
                             <SettingMenu label="Color scheme" options={colorSchemeOptions} value={colorScheme} onChange={changeColorScheme} />
                             <SettingMenu
                                 label="Theme"

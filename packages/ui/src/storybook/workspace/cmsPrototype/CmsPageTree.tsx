@@ -467,7 +467,12 @@ function PageTreeEditor({ scenario }: { scenario: Scenario }) {
     /** Moves the pages, builds their paths anew, and creates a redirect from every old path, all undone together. */
     function moveTo(ids: string[], targetId: string, position: TreeViewMove["position"]) {
         const movedPages = allPages.filter((page) => ids.includes(page.id));
-        const { pages: nextPages, parent, pathChanges } = movePages(pages, ids, targetId, position);
+        const { pages: nextPages, parent, pathChanges, takenPaths } = movePages(pages, ids, targetId, position);
+        // An address must lead to one page, as when creating a page
+        if (takenPaths.length > 0) {
+            addToast({ message: `Not moved: ${takenPaths.map((path) => `“${path}”`).join(", ")} already exists`, color: "error" });
+            return;
+        }
         const createdRedirects = pathChanges.map((pathChange) => ({
             id: `redirect-${pathChange.pageId}-${Date.now()}`,
             source: pathChange.from,

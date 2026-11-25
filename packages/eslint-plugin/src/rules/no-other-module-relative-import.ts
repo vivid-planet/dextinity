@@ -32,7 +32,7 @@ export default {
     create(context) {
         return {
             ImportDeclaration: function (node) {
-                const options = context.options[0] ?? { sourceRoot: "./src", sourceRootAlias: "@src" };
+                const options = { sourceRoot: "./src", sourceRootAlias: "@src", ...context.options[0] };
 
                 // An import source is always a string literal
                 if (typeof node.source.value !== "string") return;

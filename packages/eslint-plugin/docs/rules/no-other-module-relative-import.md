@@ -39,8 +39,6 @@ Files outside the source root and files directly in it are not checked.
 | `sourceRoot`      | `"./src"` | Path to the source root, relative to the directory ESLint runs in                      |
 | `sourceRootAlias` | `"@src"`  | Import alias that points to the source root, as set in `paths` in your `tsconfig.json` |
 
-When you pass the options object, set both options: an option missing from the object does not fall back to its default.
-
 ## Presets
 
 Enabled as `warn` in the `core` preset of `@dextinity/eslint-config` and `@dextinity/oxlint-config`, so all other presets include it.

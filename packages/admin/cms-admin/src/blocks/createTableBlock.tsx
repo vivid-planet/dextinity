@@ -12,7 +12,12 @@ import type { OneOfBlockState } from "./factories/createOneOfBlock";
 import { BlocksFinalForm } from "./form/BlocksFinalForm";
 import { createBlockSkeleton } from "./helpers/createBlockSkeleton";
 import { SelectPreviewComponent } from "./iframebridge/SelectPreviewComponent";
-import { createTableCellBlock, type TableCellBlockInterface, type TableCellOneOfBlock } from "./table/createTableCellBlock";
+import {
+    createTableCellBlock,
+    type TableCellBlockInterface,
+    type TableCellConversions,
+    type TableCellOneOfBlock,
+} from "./table/createTableCellBlock";
 import { TableBlockContextProvider } from "./table/TableBlockContext";
 import { TableBlockGrid } from "./table/TableBlockGrid";
 import { createCellRoute, parseCellHash } from "./table/utils/cellRoute";
@@ -22,20 +27,29 @@ import { BlockCategory, type BlockInputApi, type BlockInterface, type BlockOutpu
 type RichTextTableBlockFactoryOptions<RichText extends TableCellBlockInterface> = {
     richText: RichText;
     cellBlocks?: never;
+    convertCell?: never;
     name?: string;
 };
 
-type CellBlocksTableBlockFactoryOptions = {
+type CellBlocksTableBlockFactoryOptions<CellBlocks extends Record<string, TableCellBlockInterface>> = {
     /**
      * The first block is the default for new cells.
      */
-    cellBlocks: Record<string, TableCellBlockInterface>;
+    cellBlocks: CellBlocks;
+    /**
+     * Converts a cell's content when its type changes, e.g. `{ text: { price: (textState) => priceState } }`.
+     * Return `null` when the content can't be converted.
+     * A conversion takes precedence over the content the cell had in the new type before.
+     */
+    convertCell?: TableCellConversions<NoInfer<CellBlocks>>;
     richText?: never;
     name?: string;
 };
 
-export type TableBlockFactoryOptions<RichText extends TableCellBlockInterface = RichTextBlock> =
-    RichTextTableBlockFactoryOptions<RichText> | CellBlocksTableBlockFactoryOptions;
+export type TableBlockFactoryOptions<
+    RichText extends TableCellBlockInterface = RichTextBlock,
+    CellBlocks extends Record<string, TableCellBlockInterface> = Record<string, TableCellBlockInterface>,
+> = RichTextTableBlockFactoryOptions<RichText> | CellBlocksTableBlockFactoryOptions<CellBlocks>;
 
 interface TableBlockCellValueState<
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -84,21 +98,22 @@ type TableBlock<CellBlock extends TableCellBlockInterface> = BlockInterface<
     TableBlockCells<BlockOutputApi<CellBlock>>
 >;
 
+// Comes first, otherwise the functions in `convertCell` lose the state types of their cell blocks
+export function createTableBlock<CellBlocks extends Record<string, TableCellBlockInterface>>(
+    options: CellBlocksTableBlockFactoryOptions<CellBlocks>,
+    override?: (block: TableBlock<TableCellOneOfBlock>) => TableBlock<TableCellOneOfBlock>,
+): TableBlock<TableCellOneOfBlock>;
 export function createTableBlock<RichText extends TableCellBlockInterface = RichTextBlock>(
     options: RichTextTableBlockFactoryOptions<RichText>,
     override?: (block: TableBlock<RichText>) => TableBlock<RichText>,
 ): TableBlock<RichText>;
 export function createTableBlock(
-    options: CellBlocksTableBlockFactoryOptions,
-    override?: (block: TableBlock<TableCellOneOfBlock>) => TableBlock<TableCellOneOfBlock>,
-): TableBlock<TableCellOneOfBlock>;
-export function createTableBlock(
-    { richText, cellBlocks, name = "Table" }: TableBlockFactoryOptions<TableCellBlockInterface>,
+    { richText, cellBlocks, convertCell, name = "Table" }: TableBlockFactoryOptions<TableCellBlockInterface>,
     override?: (block: TableBlock<TableCellBlockInterface>) => TableBlock<TableCellBlockInterface>,
 ): TableBlock<TableCellBlockInterface> {
     type CellState = BlockState<TableCellBlockInterface>;
 
-    const CellBlock: TableCellBlockInterface = cellBlocks ? createTableCellBlock({ name: `${name}Cell`, cellBlocks }) : richText;
+    const CellBlock: TableCellBlockInterface = cellBlocks ? createTableCellBlock({ name: `${name}Cell`, cellBlocks, convertCell }) : richText;
 
     const createCellPreviewState = (cellState: CellState, cellRoute: string, previewCtx: BlockPreviewContext & BlockContext) => {
         if (!cellBlocks) {

@@ -21,12 +21,19 @@ export type TableCellBlockInterface = BlockInterface & ReadOnlyBlockRenderInterf
 export type TableCellOneOfBlock = BlockInterface<OneOfBlockFragment, OneOfBlockState, OneOfBlockOutput<false>, OneOfBlockPreviewState> &
     ReadOnlyBlockRenderInterface<OneOfBlockState>;
 
+export type TableCellConversions<CellBlocks extends Record<string, TableCellBlockInterface>> = {
+    [From in keyof CellBlocks]?: {
+        [To in keyof CellBlocks]?: (state: BlockState<CellBlocks[From]>) => BlockState<CellBlocks[To]> | null;
+    };
+};
+
 type Options = {
     name: string;
     cellBlocks: Record<string, TableCellBlockInterface>;
+    convertCell?: TableCellConversions<Record<string, TableCellBlockInterface>>;
 };
 
-export const createTableCellBlock = ({ name, cellBlocks }: Options): TableCellOneOfBlock => {
+export const createTableCellBlock = ({ name, cellBlocks, convertCell }: Options): TableCellOneOfBlock => {
     const getCellBlock = (type: string) => {
         const block = cellBlocks[type];
         if (!block) {
@@ -44,8 +51,10 @@ export const createTableCellBlock = ({ name, cellBlocks }: Options): TableCellOn
     };
 
     const switchType = (state: OneOfBlockState, type: string): OneOfBlockState => {
+        const activeItem = getActiveItem(state);
         const previousItem = state.attachedBlocks.find((item) => item.type === type);
-        const props: BlockState<TableCellBlockInterface> = previousItem ? previousItem.props : getCellBlock(type).defaultValues();
+        const props: BlockState<TableCellBlockInterface> =
+            convertCell?.[activeItem.type]?.[type]?.(activeItem.props) ?? previousItem?.props ?? getCellBlock(type).defaultValues();
 
         return {
             ...state,

@@ -10,7 +10,7 @@ import type { OneOfBlockState } from "../../factories/createOneOfBlock";
 import { createBlockSkeleton } from "../../helpers/createBlockSkeleton";
 import type { BlockInterface, BlockPreviewContext, ReadOnlyBlockRenderInterface } from "../../types";
 import { CellValue } from "../CellValue";
-import { createTableCellBlock, type TableCellBlockInterface } from "../createTableCellBlock";
+import { createTableCellBlock, type TableCellBlockInterface, type TableCellConversions } from "../createTableCellBlock";
 import { TableBlockContextProvider } from "../TableBlockContext";
 import { parseCellHash } from "../utils/cellRoute";
 
@@ -50,8 +50,12 @@ const createTableState = (cellValue: OneOfBlockState) => ({
     rows: [{ id: "row", highlighted: false, cellValues: [{ columnId: "column", value: cellValue }] }],
 });
 
-const renderCellEditor = (cellBlocks: Record<string, TableCellBlockInterface>, initialState?: OneOfBlockState) => {
-    const CellBlock = createTableCellBlock({ name: "TestTableCell", cellBlocks });
+const renderCellEditor = (
+    cellBlocks: Record<string, TableCellBlockInterface>,
+    initialState?: OneOfBlockState,
+    convertCell?: TableCellConversions<Record<string, TableCellBlockInterface>>,
+) => {
+    const CellBlock = createTableCellBlock({ name: "TestTableCell", cellBlocks, convertCell });
     let latestState: OneOfBlockState = initialState ?? CellBlock.defaultValues();
 
     const CellEditor = () => {
@@ -135,6 +139,65 @@ describe("cell blocks", () => {
                     { type: "number", props: { amount: 42 } },
                 ],
                 activeType: "text",
+            });
+        });
+    });
+
+    describe("with a conversion", () => {
+        const convertCell: TableCellConversions<{ text: typeof TextCellBlock; number: typeof NumberCellBlock }> = {
+            text: {
+                number: ({ text }: TextCellState) => {
+                    const amount = Number(text);
+                    return Number.isNaN(amount) ? null : { amount };
+                },
+            },
+        };
+
+        it("converts the content instead of restoring the content the cell had in the new type", async () => {
+            const { rendered, getState } = renderCellEditor(
+                { text: TextCellBlock, number: NumberCellBlock },
+                {
+                    attachedBlocks: [
+                        { type: "text", props: { text: "42" } },
+                        { type: "number", props: { amount: 7 } },
+                    ],
+                    activeType: "text",
+                },
+                convertCell,
+            );
+
+            await selectType(rendered, "Number");
+
+            expect(await rendered.findByLabelText("Amount")).toHaveProperty("value", "42");
+            await waitFor(() => {
+                expect(getState()).toEqual({
+                    attachedBlocks: [
+                        { type: "text", props: { text: "42" } },
+                        { type: "number", props: { amount: 42 } },
+                    ],
+                    activeType: "number",
+                });
+            });
+        });
+
+        it("restores the content the cell had in the new type when the conversion returns null", async () => {
+            const { rendered, getState } = renderCellEditor(
+                { text: TextCellBlock, number: NumberCellBlock },
+                {
+                    attachedBlocks: [
+                        { type: "text", props: { text: "Content" } },
+                        { type: "number", props: { amount: 7 } },
+                    ],
+                    activeType: "text",
+                },
+                convertCell,
+            );
+
+            await selectType(rendered, "Number");
+
+            expect(await rendered.findByLabelText("Amount")).toHaveProperty("value", "7");
+            await waitFor(() => {
+                expect(getState().activeType).toBe("number");
             });
         });
     });

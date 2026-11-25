@@ -25,7 +25,7 @@ export interface LibraryLocation {
     search: string;
 }
 
-export const initialLocation: LibraryLocation = {
+const initialLocation: LibraryLocation = {
     folderId: null,
     view: "tiles",
     tileSize: 168,

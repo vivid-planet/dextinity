@@ -110,7 +110,7 @@ export function flattenPages(pages: SitePage[]): SitePage[] {
     return pages.flatMap((page) => [page, ...flattenPages(page.children ?? [])]);
 }
 
-export const allSitePages = flattenPages(siteTree);
+const allSitePages = flattenPages(siteTree);
 
 export function findPage(id: string) {
     return allSitePages.find((page) => page.id === id);
@@ -179,12 +179,6 @@ export function findArticle(id: string) {
     return newsArticles.find((article) => article.id === id);
 }
 
-export interface AssetFolder {
-    id: string;
-    name: string;
-    parentId: string | null;
-}
-
 export interface Asset {
     id: string;
     name: string;
@@ -200,17 +194,6 @@ export interface Asset {
     alt?: string;
     usedOn: { label: string; href: string }[];
 }
-
-export const assetFolders: AssetFolder[] = [
-    { id: "root", name: "All assets", parentId: null },
-    { id: "pages", name: "Pages", parentId: "root" },
-    { id: "products", name: "Products", parentId: "pages" },
-    { id: "team", name: "Team", parentId: "pages" },
-    { id: "news", name: "News", parentId: "root" },
-    { id: "news-2026", name: "2026", parentId: "news" },
-    { id: "brand", name: "Brand", parentId: "root" },
-    { id: "downloads", name: "Downloads", parentId: "root" },
-];
 
 export const assets: Asset[] = [
     {

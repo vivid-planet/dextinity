@@ -132,6 +132,27 @@ createAiModeEditBlocksTool({
 - `insertableBlocks` narrows the blocks an insertion may add, e.g. to those `isBlockSupported` allows in the content scope, and `additionalItemFields` are the blocks block's, whose defaults an inserted block starts with.
 - `schemaNameExamples` names block types whose name in block-meta differs from their type, e.g. `'image' is the 'DamImage' block`, and `restrictions` what the tool can't change.
 
+## Master menu
+
+`useAiModeAdminPageNavigation` creates `open_admin_page`, which opens a page of the master menu, e.g. the assets or the redirects. The pages are those of the menu the user may open, and their labels are in the tool's description, so the agent needs no call to list them. A route with a parameter in its path is left out unless its menu entry links to it with `to`. Register it in a toolset around the routes of the master menu, with the page of the menu that is open as the context:
+
+```tsx
+export function AdminAiModeToolset({ menu, children }: PropsWithChildren<{ menu: MasterMenuData }>) {
+    const adminPageNavigation = useAiModeAdminPageNavigation(menu);
+
+    return (
+        <AiModeToolset
+            id="admin"
+            description="The Dextinity admin of the current content scope. The agent opens the pages of its main navigation with open_admin_page."
+            context={{ openPage: adminPageNavigation.openPage }}
+            tools={adminPageNavigation.tools}
+        >
+            {children}
+        </AiModeToolset>
+    );
+}
+```
+
 ## Page tree
 
 `PagesPage` registers the toolset of the page tree, with its category as the context. `createAiModePageTreeNavigationTools` creates `open_page_tree_node`, which opens the editor of a page tree node. Add it to a toolset that is on every page, such as one around the routes of the master menu, so that the agent opens a page's editor in one step from anywhere:

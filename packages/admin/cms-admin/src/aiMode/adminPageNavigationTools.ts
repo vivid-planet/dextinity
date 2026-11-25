@@ -1,8 +1,7 @@
-import type { AiModeTool } from "@dextinity/cms-admin";
-
 import type { AdminPage } from "./adminPages";
+import type { AiModeTool } from "./AiModeToolsets";
 
-export const createAdminTools = ({
+export const createAdminPageNavigationTools = ({
     pages,
     navigate,
     scopeUrl,
@@ -27,7 +26,7 @@ export const createAdminTools = ({
             },
             required: ["path"],
         },
-        // Navigating changes no data, so the chat runs it without asking; see "Approval" in the README.
+        // Navigating changes no data, so the chat runs it without asking.
         readOnlyHint: true,
         handler: (args) => {
             const path = String(args.path ?? "");

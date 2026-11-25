@@ -1,7 +1,8 @@
-import type { MasterMenuData, Permission } from "@dextinity/cms-admin";
 import { createIntl, FormattedMessage } from "react-intl";
 import { describe, expect, it } from "vitest";
 
+import type { MasterMenuData } from "../common/MasterMenu";
+import type { Permission } from "../userPermissions/hooks/currentUser";
 import { findOpenAdminPage, getAdminPages } from "./adminPages";
 
 const intl = createIntl({ locale: "en", messages: {} });

@@ -1,6 +1,8 @@
-import type { MasterMenuData, Permission } from "@dextinity/cms-admin";
 import { isValidElement, type ReactNode } from "react";
 import { FormattedMessage, type IntlShape } from "react-intl";
+
+import type { MasterMenuData } from "../common/MasterMenu";
+import type { Permission } from "../userPermissions/hooks/currentUser";
 
 /** A page of the admin's main navigation that the AI Mode can open, at a path below the content scope. */
 export type AdminPage = {

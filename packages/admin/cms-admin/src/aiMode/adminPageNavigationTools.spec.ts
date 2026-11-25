@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { createAdminTools } from "./adminTools";
+import { createAdminPageNavigationTools } from "./adminPageNavigationTools";
 
 const scopeUrl = "/main/en";
 
@@ -11,7 +11,7 @@ const pages = [
 
 function getAdminTool(name: string) {
     const navigate = vi.fn();
-    const tool = createAdminTools({ pages, navigate, scopeUrl }).find((candidate) => candidate.name === name);
+    const tool = createAdminPageNavigationTools({ pages, navigate, scopeUrl }).find((candidate) => candidate.name === name);
     if (!tool) {
         throw new Error(`No admin tool "${name}"`);
     }
@@ -19,7 +19,7 @@ function getAdminTool(name: string) {
 }
 
 it("keeps every description within 4096 characters, the limit for a tool description", () => {
-    for (const tool of createAdminTools({ pages: [], navigate: vi.fn(), scopeUrl })) {
+    for (const tool of createAdminPageNavigationTools({ pages: [], navigate: vi.fn(), scopeUrl })) {
         expect(tool.description.length, tool.name).toBeLessThanOrEqual(4096);
     }
 });

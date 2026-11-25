@@ -1,4 +1,3 @@
-import { createElement } from "react";
 import { expect, it } from "vitest";
 
 import { storyCodesOf } from "../../../.storybook/storyCodePlugin";
@@ -45,9 +44,9 @@ export const Default: Story = {};
             "Banner.stories.tsx",
         ),
     );
-    const initialArgs = { action: createElement("button"), items: [{ label: "Page", onClick: () => {} }], onClick: () => {}, size: "small" };
+    const initialArgs = { action: <button />, items: [{ label: "Page", onClick: () => {} }], onClick: () => {}, size: "small" };
     const args = { ...initialArgs, size: "large", icon: "Trash" };
-    const argTypes = { icon: { mapping: { None: undefined, Trash: createElement("svg") } } };
+    const argTypes = { icon: { mapping: { None: undefined, Trash: <svg /> } } };
 
     const source = renderSourceWithArgs("", { parameters: storyCode, args, initialArgs, argTypes });
 

@@ -304,3 +304,19 @@ In the API, you defined custom warning messages for your blocks or entities. To 
 ```
 
 This allows you to map your custom warning message keys to their translations using the `FormattedMessage` component. The keys used in the API (`missingTitle`, etc.) will be matched with these translations to display user-friendly messages in the admin interface.
+
+The warnings grid uses the text of these messages for the options of the message filter and for the search. If a message is a component that renders its own text, its text can't be read, and the grid uses the key instead. Add a plain-text label for such messages:
+
+```tsx
+<DextinityConfigProvider
+    {...otherConfigs}
+    warnings: {
+        messages: {
+            reviewRequired: <ReviewRequiredMessage />
+        },
+        messageLabels: {
+            reviewRequired: defineMessage({ id: "warnings.reviewRequired", defaultMessage: "Review required" })
+        }
+    }
+/>
+```

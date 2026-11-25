@@ -25,6 +25,7 @@ import { useContentScope } from "../contentScope/Provider";
 import { DataGrid } from "../dataGrid/DataGrid";
 import { useDependenciesConfig } from "../dependencies/dependenciesConfig";
 import { getDisplayNameString } from "../dependencies/getDisplayNameString";
+import { getWarningMessageLabels } from "./getWarningMessageLabels";
 import { WarningActions } from "./WarningActions";
 import { WarningMessage } from "./WarningMessage";
 import { useWarningsConfig } from "./warningsConfig";
@@ -96,11 +97,9 @@ export function WarningsGrid({ showAllScopes = false }: WarningsGridProps) {
         ...useDataGridRemote({ initialFilter: { items: [{ field: "visible", operator: "is", value: true }] } }),
         ...usePersistentColumnState("WarningsGrid"),
     };
-    const { messages: warningMessages } = useWarningsConfig();
-    const messageLabels = Object.entries(warningMessages).map(([message, label]) => ({
-        message,
-        label: getDisplayNameString(label, intl, message),
-    }));
+    const warningsConfig = useWarningsConfig();
+    const warningMessages = warningsConfig.messages;
+    const messageLabels = getWarningMessageLabels(warningsConfig, intl);
     const { entityDependencyMap } = useDependenciesConfig();
     const { scope: currentScope, values: scopeValues } = useContentScope();
     const scopes = showAllScopes ? scopeValues.map((item) => item.scope) : [currentScope];

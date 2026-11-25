@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { forwardRef, Fragment, type HTMLAttributes, type PropsWithChildren } from "react";
+import { forwardRef, Fragment, type HTMLAttributes, type ReactNode } from "react";
 
 import { keysByContent } from "../../utils/keysByContent";
 import { describeKeyboardShortcut, formatKeyboardShortcut, type KeyboardShortcutLabels } from "./formatKeyboardShortcut";
@@ -13,7 +13,7 @@ export type KeyboardShortcutOwnerState = {
     platform: KeyboardShortcutPlatform;
 };
 
-export interface KeyboardShortcutProps extends Omit<HTMLAttributes<HTMLElement>, "className" | "children">, PropsWithChildren {
+export interface KeyboardShortcutProps extends Omit<HTMLAttributes<HTMLElement>, "className" | "children"> {
     /**
      * The shortcut in the notation of `useKeyboardShortcut`, e.g. `"mod+k"`, `"shift+mod+n"` or `"Escape"`. It shows as the platform's
      * key caps, `⌘K` on Apple platforms and `Ctrl+K` elsewhere, and screen readers read its spoken name, e.g. "Command K".
@@ -23,6 +23,8 @@ export interface KeyboardShortcutProps extends Omit<HTMLAttributes<HTMLElement>,
     platform?: KeyboardShortcutPlatform;
     /** The spoken names of keys; English defaults. */
     labels?: Partial<KeyboardShortcutLabels>;
+    /** Fixed text for keys the notation doesn't cover, e.g. `"Right-click"`. Only shown without `shortcut`. */
+    children?: ReactNode;
     /** Added alongside the component's own classes. */
     className?: string;
 }
@@ -38,8 +40,6 @@ export interface KeyboardShortcutProps extends Omit<HTMLAttributes<HTMLElement>,
  * Screen readers read its spoken name where it stands, e.g. in a table. Components whose shortcut belongs to a control, such as
  * `MenuItem`, `IconButton` and the entries of `CommandPalette`, set `aria-keyshortcuts` on the control instead, so its name stays its
  * label.
- *
- * `children`: Fixed text for keys the notation doesn't cover, e.g. `"Right-click"`. Only shown without `shortcut`.
  */
 export const KeyboardShortcut = forwardRef<HTMLElement, KeyboardShortcutProps>(function KeyboardShortcut(
     { shortcut, children, platform: platformProp, labels: labelsProp, className, ...restProps },

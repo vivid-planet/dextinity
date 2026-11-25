@@ -4,10 +4,8 @@ import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 import { fieldArgTypes, type FieldStoryArgs, splitFieldArgs, StoryField } from "../../../storybook/fieldStoryArgs";
 import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import fieldTokens from "../../field/Field.tokens.scss?raw";
 import { FieldActions } from "../../fieldActions/FieldActions";
 import { RichTextEditor, type RichTextEditorProps } from "../RichTextEditor";
-import richTextEditorTokens from "../RichTextEditor.tokens.scss?raw";
 import styles from "./RichTextEditor.stories.module.scss";
 
 type RichTextEditorStoryArgs = RichTextEditorProps & FieldStoryArgs;
@@ -65,7 +63,6 @@ const meta = {
     component: RichTextEditor,
     title: "Building blocks/Form fields/RichTextEditor",
     decorators: [themeDecorator],
-    parameters: { tokens: `${richTextEditorTokens}\n${fieldTokens}` },
     render: (args, context) => <ControlledRichTextEditor {...args} storyId={context.id} />,
     args: {
         name: "description",

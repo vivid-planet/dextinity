@@ -21,7 +21,6 @@ import { StatusIndicator } from "../../statusIndicator/StatusIndicator";
 import { Switch } from "../../switch/Switch";
 import { Textarea } from "../../textarea/Textarea";
 import { ListDetailLayout } from "../ListDetailLayout";
-import listDetailLayoutTokens from "../ListDetailLayout.tokens.scss?raw";
 import styles from "./ListDetailLayout.stories.module.scss";
 
 type RedirectType = "301" | "302";
@@ -259,7 +258,6 @@ const meta = {
     title: "Page types/List + side panel",
     decorators: [themeDecorator],
     parameters: {
-        tokens: listDetailLayoutTokens,
         layout: "fullscreen",
         docs: {
             description: {

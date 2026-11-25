@@ -3,13 +3,11 @@ import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Breadcrumbs } from "../Breadcrumbs";
-import breadcrumbsTokens from "../Breadcrumbs.tokens.scss?raw";
 
 const meta = {
     component: Breadcrumbs,
     title: "Building blocks/Page header, breadcrumbs & links/Breadcrumbs",
     decorators: [themeDecorator],
-    parameters: { tokens: breadcrumbsTokens },
     args: {
         items: [{ label: "Page", href: "#page" }, { label: "Teaser grid", href: "#teaser-grid" }, { label: "Teaser 2" }],
         separator: "›",

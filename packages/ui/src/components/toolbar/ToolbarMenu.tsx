@@ -1,6 +1,6 @@
 import { Toolbar as BaseToolbar } from "@base-ui/react/toolbar";
 import { clsx } from "clsx";
-import { type ButtonHTMLAttributes, forwardRef, type PropsWithChildren, type ReactNode } from "react";
+import { type ButtonHTMLAttributes, forwardRef, type ReactNode } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Icon } from "../icon/Icon";
@@ -24,8 +24,7 @@ export interface ToolbarMenuSlotProps {
     menu?: Partial<Omit<MenuProps, "trigger" | "children" | "open" | "onOpenChange" | "placement" | "disabled">>;
 }
 
-export interface ToolbarMenuProps
-    extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "className" | "children" | "disabled" | "aria-label">, PropsWithChildren {
+export interface ToolbarMenuProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "className" | "children" | "disabled" | "aria-label"> {
     /** The trigger's visible text, usually the current choice, e.g. "Paragraph". */
     label?: ReactNode;
     /** An icon before the label, e.g. `<Icon name="plus" />`. */
@@ -48,6 +47,8 @@ export interface ToolbarMenuProps
      * @defaultValue `false`
      */
     disabled?: boolean;
+    /** The entries: `MenuItem`, `MenuRadioGroup`, `MenuGroup`, `MenuSeparator`, and `MenuSubmenu`. */
+    children: ReactNode;
     /** Added alongside the component's own classes, on the trigger. */
     className?: string;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
@@ -56,8 +57,6 @@ export interface ToolbarMenuProps
 
 /**
  * A trigger in a `Toolbar` that opens a menu, e.g. the text style of an editor or an insert menu.
- *
- * `children`: The entries: `MenuItem`, `MenuRadioGroup`, `MenuGroup`, `MenuSeparator`, and `MenuSubmenu`.
  */
 export const ToolbarMenu = forwardRef<HTMLButtonElement, ToolbarMenuProps>(function ToolbarMenu(
     { children, label, icon, "aria-label": ariaLabel, open, onOpenChange, placement, disabled = false, className, slotProps, ...restProps },

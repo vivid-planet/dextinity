@@ -4,7 +4,6 @@ import { expect, fn, userEvent } from "storybook/test";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { Button } from "../Button";
-import buttonTokens from "../Button.tokens.scss?raw";
 import styles from "./Button.stories.module.scss";
 
 const iconOptions = {
@@ -18,13 +17,12 @@ const meta = {
     component: Button,
     title: "Building blocks/Buttons/Button",
     decorators: [themeDecorator],
-    parameters: { tokens: buttonTokens },
     args: {
         children: "Button",
         onClick: fn(),
     },
     argTypes: {
-        onClick: { description: "Called when the button is clicked." },
+        children: { control: "text" },
         variant: {
             control: "radio",
             options: ["contained", "outlined", "text"],

@@ -8,10 +8,8 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Dialog } from "../../dialog/Dialog";
 import { Field } from "../../field/Field";
-import fieldTokens from "../../field/Field.tokens.scss?raw";
 import { Icon } from "../../icon/Icon";
 import { Select, type SelectOption, type SelectProps } from "../Select";
-import selectTokens from "../Select.tokens.scss?raw";
 import styles from "./Select.stories.module.scss";
 
 const locations: SelectOption[] = [
@@ -88,7 +86,6 @@ const meta = {
     component: Select,
     title: "Building blocks/Form fields/Select",
     decorators: [themeDecorator],
-    parameters: { tokens: `${selectTokens}\n${fieldTokens}` },
     render: (args, context) => <ControlledSelect {...(args as SelectStoryArgs<boolean>)} storyId={context.id} />,
     args: {
         name: "location",

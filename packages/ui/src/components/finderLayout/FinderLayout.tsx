@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type PropsWithChildren, type ReactNode } from "react";
+import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import styles from "./FinderLayout.module.scss";
@@ -16,9 +16,14 @@ export interface FinderLayoutSlotProps {
     window?: SlotPropsValue<FinderLayoutOwnerState, "div">;
 }
 
-export interface FinderLayoutProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children">, PropsWithChildren {
+export interface FinderLayoutProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children"> {
     /** The page header with upload and new folder, e.g. a `PageHeader`. */
     header: ReactNode;
+    /**
+     * The finder with its sidebar of places and folders, toolbar, views, and path bar. It fills the window, which takes the height of the
+     * viewport below the header. Let users resize the sidebar, and remember the width per user.
+     */
+    children?: ReactNode;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
@@ -28,9 +33,6 @@ export interface FinderLayoutProps extends Omit<HTMLAttributes<HTMLDivElement>, 
 /**
  * The layout of a finder page for files and folders, e.g. the assets: the page header, then the finder window at the viewport's height,
  * so that its own areas scroll instead of the page.
- *
- * `children`: The finder with its sidebar of places and folders, toolbar, views, and path bar. It fills the window, which takes the height
- * of the viewport below the header. Let users resize the sidebar, and remember the width per user.
  */
 export const FinderLayout = forwardRef<HTMLDivElement, FinderLayoutProps>(function FinderLayout(
     { header, children, className, slotProps, ...restProps },

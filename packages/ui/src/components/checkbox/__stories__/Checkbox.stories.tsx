@@ -6,7 +6,6 @@ import { fieldArgTypes, type FieldStoryArgs, hasFieldArgs, splitFieldArgs, Story
 import { recordArgsUpdates, updateStoryArgs, useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Checkbox, type CheckboxProps } from "../Checkbox";
-import checkboxTokens from "../Checkbox.tokens.scss?raw";
 import styles from "./Checkbox.stories.module.scss";
 
 type CheckboxStoryArgs = CheckboxProps & Pick<FieldStoryArgs, "required" | "description" | "validationMessage" | "state">;
@@ -96,13 +95,13 @@ const meta = {
     component: Checkbox,
     title: "Building blocks/Selection & toggles/Checkbox",
     decorators: [themeDecorator],
-    parameters: { tokens: checkboxTokens },
     args: {
         children: "Show in navigation",
         checked: false,
         onChange: fn(),
     },
     argTypes: {
+        children: { control: "text" },
         required: fieldArgTypes.required,
         description: fieldArgTypes.description,
         validationMessage: fieldArgTypes.validationMessage,

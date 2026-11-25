@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type PropsWithChildren, type ReactNode, useId } from "react";
+import { forwardRef, type HTMLAttributes, type ReactNode, useId } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import styles from "./Card.module.scss";
@@ -33,7 +33,7 @@ export interface CardSlotProps {
     body?: SlotPropsValue<CardOwnerState, "div">;
 }
 
-export interface CardProps extends Omit<HTMLAttributes<HTMLElement>, "className" | "title">, PropsWithChildren {
+export interface CardProps extends Omit<HTMLAttributes<HTMLElement>, "className" | "children" | "title"> {
     /** The heading of the card, which also names it for assistive technology. */
     title: string;
     /** An addition after the title, e.g. the number of entries: "12 pages". */
@@ -44,6 +44,8 @@ export interface CardProps extends Omit<HTMLAttributes<HTMLElement>, "className"
      * menu.
      */
     actions?: ReactNode;
+    /** The content, e.g. rows that bring their own padding. */
+    children?: ReactNode;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Sets which element a named inner part renders as. */
@@ -55,8 +57,6 @@ export interface CardProps extends Omit<HTMLAttributes<HTMLElement>, "className"
 /**
  * A card on an overview: a header with the title and the card's actions, set apart from the content by a line, then a short
  * excerpt of the content.
- *
- * `children`: The content, e.g. rows that bring their own padding.
  */
 export const Card = forwardRef<HTMLElement, CardProps>(function Card(
     { title, children, meta, actions, className, slots, slotProps, ...restProps },

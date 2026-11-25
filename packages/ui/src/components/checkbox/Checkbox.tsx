@@ -1,6 +1,6 @@
 import { Checkbox as BaseCheckbox } from "@base-ui/react/checkbox";
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type PropsWithChildren } from "react";
+import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { type ControlAriaProps, isAriaInvalid, useSingleChoiceFieldWarning } from "../field/ControlFrame";
@@ -32,10 +32,7 @@ export interface CheckboxSlotProps {
 }
 
 export interface CheckboxProps
-    extends
-        ControlAriaProps,
-        Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "onChange" | keyof ControlAriaProps>,
-        PropsWithChildren {
+    extends ControlAriaProps, Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "onChange" | keyof ControlAriaProps> {
     /** Whether the checkbox is checked. */
     checked: boolean;
     /** Called with the new state when the checkbox is toggled. */
@@ -63,6 +60,8 @@ export interface CheckboxProps
     name?: string;
     /** The value submitted with the form while the checkbox is checked. */
     value?: string;
+    /** The label, which names the checkbox even inside a `Field`. Without a visible label, set `aria-label`. */
+    children?: ReactNode;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
@@ -73,8 +72,6 @@ export interface CheckboxProps
  * Selects an item, for multiple selection in lists, the page tree, and assets. For a validation message, e.g. on a consent checkbox, put it
  * in a `Field` with `layout="group"` and without `label`: the checkbox takes the field's message, state, `required`, `disabled`, and
  * `readOnly`, and its own text names it.
- *
- * `children`: The label, which names the checkbox even inside a `Field`. Without a visible label, set `aria-label`.
  */
 export const Checkbox = forwardRef<HTMLDivElement, CheckboxProps>(function Checkbox(
     {

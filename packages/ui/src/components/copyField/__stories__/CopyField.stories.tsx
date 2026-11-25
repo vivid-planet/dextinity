@@ -3,14 +3,12 @@ import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { CopyField } from "../CopyField";
-import copyFieldTokens from "../CopyField.tokens.scss?raw";
 import styles from "./CopyField.stories.module.scss";
 
 const meta = {
     component: CopyField,
     title: "Building blocks/Panels, cards & metrics/CopyField",
     decorators: [themeDecorator],
-    parameters: { tokens: copyFieldTokens },
     // The test browser denies clipboard access, so the stories write to a stub instead
     beforeEach: () => {
         Object.defineProperty(navigator, "clipboard", { value: { writeText: fn(async () => undefined) }, configurable: true });

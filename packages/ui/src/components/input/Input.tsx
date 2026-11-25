@@ -97,6 +97,12 @@ export interface InputProps<
     required?: boolean;
     /** The input's id. Ignored inside a `Field`, which links its label and message to its own id. */
     id?: string;
+    /** Names the input when no `Field` label does. */
+    "aria-label"?: string;
+    /** An example of the expected value, shown while the input is empty. */
+    placeholder?: string;
+    /** Called with the change event on every edit; set `value` from `event.target.value`. */
+    onChange?: BaseInput.Props["onChange"];
     /** Added alongside the component's own classes on the field around the input. Has no visible effect inside a `Field`. */
     className?: string;
     /** Inline styles for the field around the input. Has no visible effect inside a `Field`. */
@@ -105,6 +111,8 @@ export interface InputProps<
     slots?: InputSlots<InputElement, LoadingSpinner>;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
     slotProps?: InputSlotProps<InputElement, LoadingSpinner>;
+    /** Replaces the rendered `<input>` element, e.g. with a masked input, which receives the input's props. */
+    render?: BaseInput.Props["render"];
 }
 
 const interactiveElementSelector = "input, textarea, select, button, a[href], [tabindex]";

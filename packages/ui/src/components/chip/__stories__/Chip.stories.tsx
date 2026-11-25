@@ -5,7 +5,6 @@ import { expect, fn, userEvent } from "storybook/test";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { Chip } from "../Chip";
-import chipTokens from "../Chip.tokens.scss?raw";
 import styles from "./Chip.stories.module.scss";
 
 const iconOptions = {
@@ -17,11 +16,11 @@ const meta = {
     component: Chip,
     title: "Building blocks/Status, tags & badges/Chip",
     decorators: [themeDecorator],
-    parameters: { tokens: chipTokens },
     args: {
         children: "Label",
     },
     argTypes: {
+        children: { control: "text" },
         variant: {
             control: "radio",
             options: ["contained", "outlined"],

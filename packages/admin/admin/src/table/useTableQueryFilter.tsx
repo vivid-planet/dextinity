@@ -1,7 +1,7 @@
 import { deepEqual } from "fast-equals";
 import { createForm, type FormApi } from "final-form";
-import debounce from "lodash.debounce";
 import { useEffect, useRef } from "react";
+import { useDebouncedCallback } from "use-debounce";
 
 import { usePersistedState } from "./usePersistedState";
 import type { IPagingApi } from "./useTableQueryPaging";
@@ -36,28 +36,26 @@ export function useTableQueryFilter<FilterValues>(
         });
     }
 
+    const handleFormStateChange = useDebouncedCallback(
+        (formState: { values: FilterValues }) => {
+            const newValues = formState.values;
+            if (!deepEqual(filters, newValues)) {
+                setFilters(newValues);
+                if (options.pagingApi) {
+                    options.pagingApi.changePage(options.pagingApi.init, 1, { noScrollToTop: true });
+                }
+            }
+        },
+        500,
+        { leading: true, trailing: true },
+    );
+
     useEffect(() => {
         if (!ref.current) {
             return;
         }
-        const unsubscribe = ref.current.subscribe(
-            debounce(
-                (formState) => {
-                    const newValues = formState.values;
-                    if (!deepEqual(filters, newValues)) {
-                        setFilters(newValues);
-                        if (options.pagingApi) {
-                            options.pagingApi.changePage(options.pagingApi.init, 1, { noScrollToTop: true });
-                        }
-                    }
-                },
-                500,
-                { leading: true, trailing: true },
-            ),
-            { values: true },
-        );
-        return unsubscribe;
-    }, [filters, options.pagingApi, setFilters]);
+        return ref.current.subscribe(handleFormStateChange, { values: true });
+    }, [handleFormStateChange]);
 
     return {
         current: filters,

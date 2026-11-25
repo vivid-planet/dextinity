@@ -1,6 +1,6 @@
 import { Progress } from "@base-ui/react/progress";
 import { clsx } from "clsx";
-import { type ChangeEvent, type DragEvent, forwardRef, type HTMLAttributes, type PropsWithChildren, type ReactNode, useRef, useState } from "react";
+import { type ChangeEvent, type DragEvent, forwardRef, type HTMLAttributes, type ReactNode, useRef, useState } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Icon } from "../icon/Icon";
@@ -75,7 +75,7 @@ export interface DropzoneSlotProps {
     uploads?: SlotPropsValue<DropzoneOwnerState, "ul">;
 }
 
-export interface DropzoneProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "onDrop">, PropsWithChildren {
+export interface DropzoneProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "onDrop"> {
     /** Called with the accepted files, dropped or chosen. */
     onFiles: (files: File[]) => void;
     /** Called with the files left out because of `accept` or `maxSize`. Show the reason through `error`. */
@@ -114,6 +114,8 @@ export interface DropzoneProps extends Omit<HTMLAttributes<HTMLDivElement>, "cla
     uploads?: ReadonlyArray<DropzoneUpload>;
     /** The built-in texts. */
     labels?: Partial<DropzoneLabels>;
+    /** The content the overlay lies over. Only used with `overlay`. */
+    children?: ReactNode;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
@@ -142,8 +144,6 @@ function hasFiles(event: DragEvent) {
 /**
  * The place to upload files by dragging them in or choosing them. As an overlay, it lies over a file list and appears while files
  * are dragged over it.
- *
- * `children`: The content the overlay lies over. Only used with `overlay`.
  */
 export const Dropzone = forwardRef<HTMLDivElement, DropzoneProps>(function Dropzone(
     {

@@ -19,9 +19,26 @@ export type PreviewElement = {
     element: HTMLElement;
     adminRoute: string;
     label: string;
-    /** `"element"` measures the element's own box, for a block without a `display: contents` wrapper, such as an element found by its class names. */
-    measurementTarget?: "element" | "children";
+    /**
+     * What the overlay covers:
+     * - `"children"` (default): the children of `element`
+     * - `"element"`: `element` itself
+     * - a list of elements: all of them, for a block without a single root element
+     */
+    measurementTarget?: "element" | "children" | Element[];
 };
+
+function getMeasuredElements({ element, measurementTarget = "children" }: PreviewElement): Element[] {
+    if (measurementTarget === "children") {
+        return getRecursiveChildrenOfPreviewElement(element);
+    }
+
+    if (measurementTarget === "element") {
+        return [element];
+    }
+
+    return measurementTarget;
+}
 
 export type OverlayElementData = {
     adminRoute: string;
@@ -120,31 +137,17 @@ export const IFrameBridgeProvider = ({ children }: PropsWithChildren) => {
 
         const newPreviewElementsData = previewElements
             .map((previewElement) => {
-                const measuredElements =
-                    previewElement.measurementTarget === "element"
-                        ? [previewElement.element]
-                        : getRecursiveChildrenOfPreviewElement(previewElement.element);
-                const positioning = getCombinedPositioningOfElements(measuredElements);
+                const positioning = getCombinedPositioningOfElements(getMeasuredElements(previewElement));
 
-                const isRenderedOutsideOfViewportWidth = positioning.left > childrenWrapperRight;
-
-                if (isRenderedOutsideOfViewportWidth) {
-                    // TODO: Simply return `null` here after updating to typescript 5+
-                    return {
-                        adminRoute: previewElement.adminRoute,
-                        label: previewElement.label,
-                        position: {
-                            top: positioning.top,
-                            left: positioning.left,
-                            width: 0,
-                            height: positioning.height,
-                        },
-                    };
+                if (positioning === null) {
+                    return null;
                 }
 
-                const spaceBetweenRightEdgeOfElementAndRightEdgeOfViewport = positioning.left + positioning.width - childrenWrapperRight;
-                const tooWideForPreviewViewportByPixels =
-                    spaceBetweenRightEdgeOfElementAndRightEdgeOfViewport > 0 ? spaceBetweenRightEdgeOfElementAndRightEdgeOfViewport : 0;
+                const widthInsideOfViewport = Math.min(positioning.width, childrenWrapperRight - positioning.left);
+
+                if (widthInsideOfViewport <= 0) {
+                    return null;
+                }
 
                 return {
                     adminRoute: previewElement.adminRoute,
@@ -152,12 +155,12 @@ export const IFrameBridgeProvider = ({ children }: PropsWithChildren) => {
                     position: {
                         top: positioning.top,
                         left: positioning.left,
-                        width: positioning.width - tooWideForPreviewViewportByPixels,
+                        width: widthInsideOfViewport,
                         height: positioning.height,
                     },
                 };
             })
-            .filter((elementData) => elementData.position.width !== 0) // TODO: Filter out null after updating to typescript 5+ instead of filtering `width !== 0`
+            .filter((elementData) => elementData !== null)
             .sort((previousElementData, nextElementData) => {
                 const previousSize = previousElementData.position.width * previousElementData.position.height;
                 const nextSize = nextElementData.position.width * nextElementData.position.height;

@@ -23,7 +23,6 @@ import { Switch } from "../../switch/Switch";
 import { Tabs } from "../../tabs/Tabs";
 import { Textarea } from "../../textarea/Textarea";
 import { EditLayout, type EditLayoutProps } from "../EditLayout";
-import editLayoutTokens from "../EditLayout.tokens.scss?raw";
 import styles from "./EditLayout.stories.module.scss";
 
 type Variant = NonNullable<EditLayoutProps["variant"]>;
@@ -360,7 +359,6 @@ const meta = {
     title: "Page types/Edit",
     decorators: [themeDecorator],
     parameters: {
-        tokens: editLayoutTokens,
         layout: "fullscreen",
         docs: {
             description: {

@@ -6,7 +6,6 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { getExpandableTreeNodeIds, type TreeNode, TreeView } from "../../treeView/TreeView";
 import { TreeViewExpandButtons } from "../TreeViewExpandButtons";
-import treeViewExpandButtonsTokens from "../TreeViewExpandButtons.tokens.scss?raw";
 import styles from "./TreeViewExpandButtons.stories.module.scss";
 
 const pageTree: TreeNode[] = [
@@ -36,7 +35,6 @@ const meta = {
     component: TreeViewExpandButtons,
     title: "Building blocks/Tree/TreeViewExpandButtons",
     decorators: [themeDecorator],
-    parameters: { tokens: treeViewExpandButtonsTokens },
     args: {
         onExpandAll: fn(),
         onCollapseAll: fn(),

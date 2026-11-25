@@ -336,6 +336,8 @@ A brand is a CSS block on `[data-dextinity-brand="<name>"]` that sets the `--dex
 }
 ```
 
+A built-in brand that changes more than the brand tokens, like `original`, keeps those overrides in its own partial (`_originalBrand.scss`), `@use`d after the component tokens. Its rules add the color scheme attribute to the brand selector, e.g. `[data-dextinity-brand="original"][data-dextinity-color-scheme="light"]`, so they outrank the tokens declared on the theme boundary, and leave the high-contrast color scheme its own values for colors, glass, and lines.
+
 ### Selecting a color scheme, brand, and density
 
 `Theme` selects the color scheme, brand, and density. It stays a pure function of its props — reading no `window`, `localStorage`, or `matchMedia` — so it renders the same on server and client; switching, OS-scheme resolution, and preventing the first-paint flash on SSR stay in consumer code.

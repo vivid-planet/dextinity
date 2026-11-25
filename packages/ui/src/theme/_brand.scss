@@ -62,4 +62,25 @@
         --dextinity-brand-neutral-chroma: 0.018;
         --dextinity-brand-success-hue: 145;
     }
+
+    // The flat look of the MUI-based admin. Its semantic and component tokens are in `_originalBrand.scss`.
+    [data-dextinity-brand="original"] {
+        --dextinity-brand-primary-hue: 235;
+        --dextinity-brand-primary-chroma: 0.145;
+        --dextinity-brand-secondary-hue: 235;
+        --dextinity-brand-secondary-chroma: 0.145;
+        --dextinity-brand-neutral-hue: 0;
+        --dextinity-brand-neutral-chroma: 0;
+        --dextinity-brand-success-hue: 144;
+        --dextinity-brand-danger-hue: 31;
+
+        --dextinity-brand-font-family-text: "Roboto Flex Variable", "Roboto Flex", Helvetica, Arial, sans-serif;
+        --dextinity-brand-font-family-display: "Roboto Flex Variable", "Roboto Flex", Helvetica, Arial, sans-serif;
+        --dextinity-brand-display-font-weight: 200;
+        --dextinity-brand-display-letter-spacing: 0;
+        --dextinity-brand-label-text-transform: none;
+
+        --dextinity-brand-radius-control: 4px;
+        --dextinity-brand-radius-factor: 0.3;
+    }
 }

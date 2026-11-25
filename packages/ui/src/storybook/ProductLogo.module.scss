@@ -15,17 +15,18 @@
 }
 
 :where([data-dextinity-color-scheme="dark"], [data-dextinity-color-scheme="high-contrast"]) .root {
-    .positive {
+    .dextinity.positive {
         display: none;
     }
 
-    .negative {
+    .dextinity.negative {
         display: block;
     }
 }
 
 :where([data-dextinity-brand="groupcms-ai"]) .root {
-    .dextinity {
+    .dextinity,
+    .dextinity.negative {
         display: none;
     }
 

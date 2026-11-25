@@ -8,6 +8,7 @@ import { ContentScope } from "../../user-permissions/interfaces/content-scope.in
 import { WarningStatus } from "../entities/warning-status.enum";
 import { WarningFilter } from "./warning.filter";
 import { WarningSort } from "./warning.sort";
+import { WarningMessageLabelInput } from "./warning-message-label.input";
 
 @ArgsType()
 export class WarningsArgs extends OffsetBasedPaginationArgs {
@@ -19,6 +20,15 @@ export class WarningsArgs extends OffsetBasedPaginationArgs {
     @IsOptional()
     @IsString()
     search?: string;
+
+    @Field(() => [WarningMessageLabelInput], {
+        nullable: true,
+        description: "Translated labels of the warning messages. The search matches them in addition to the stored message keys.",
+    })
+    @ValidateNested({ each: true })
+    @Type(() => WarningMessageLabelInput)
+    @IsOptional()
+    messageLabels?: WarningMessageLabelInput[];
 
     @Field(() => [GraphQLJSONObject])
     @IsOptional()

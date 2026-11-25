@@ -596,7 +596,20 @@ type Query {
   sitePreviewJwt(scope: JSONObject!, path: String!, includeInvisible: Boolean!): String!
   blockPreviewJwt(scope: JSONObject!, url: String!, includeInvisible: Boolean!): String!
   warning(id: ID!): Warning!
-  warnings(offset: Int! = 0, limit: Int! = 25, status: [WarningStatus!]! = [open], search: String, scopes: [JSONObject!]!, filter: WarningFilter, sort: [WarningSort!]): PaginatedWarnings!
+  warnings(
+    offset: Int! = 0
+    limit: Int! = 25
+    status: [WarningStatus!]! = [open]
+    search: String
+
+    """
+    Translated labels of the warning messages. The search matches them in addition to the stored message keys.
+    """
+    messageLabels: [WarningMessageLabelInput!]
+    scopes: [JSONObject!]!
+    filter: WarningFilter
+    sort: [WarningSort!]
+  ): PaginatedWarnings!
   damMediaAlternative(id: ID!): DamMediaAlternative!
   damMediaAlternatives(offset: Int! = 0, limit: Int! = 25, search: String, sort: [DamMediaAlternativeSort!], for: ID, alternative: ID, type: DamMediaAlternativeType): PaginatedDamMediaAlternatives!
   damSettings(scope: DamScopeInput! = {}): DamSettings
@@ -753,6 +766,11 @@ input AzureAiTranslationInput {
 input AzureAiTranslationBatchInput {
   texts: [String!]!
   targetLanguage: String!
+}
+
+input WarningMessageLabelInput {
+  message: String!
+  label: String!
 }
 
 input WarningFilter {

@@ -54,8 +54,16 @@ const warningsFragment = gql`
 `;
 
 const warningsQuery = gql`
-    query WarningsGrid($offset: Int, $limit: Int, $sort: [WarningSort!], $search: String, $filter: WarningFilter, $scopes: [JSONObject!]!) {
-        warnings(offset: $offset, limit: $limit, sort: $sort, search: $search, filter: $filter, scopes: $scopes) {
+    query WarningsGrid(
+        $offset: Int
+        $limit: Int
+        $sort: [WarningSort!]
+        $search: String
+        $messageLabels: [WarningMessageLabelInput!]
+        $filter: WarningFilter
+        $scopes: [JSONObject!]!
+    ) {
+        warnings(offset: $offset, limit: $limit, sort: $sort, search: $search, messageLabels: $messageLabels, filter: $filter, scopes: $scopes) {
             nodes {
                 ...WarningsList
             }
@@ -89,6 +97,10 @@ export function WarningsGrid({ showAllScopes = false }: WarningsGridProps) {
         ...usePersistentColumnState("WarningsGrid"),
     };
     const { messages: warningMessages } = useWarningsConfig();
+    const messageLabels = Object.entries(warningMessages).map(([message, label]) => ({
+        message,
+        label: getDisplayNameString(label, intl, message),
+    }));
     const { entityDependencyMap } = useDependenciesConfig();
     const { scope: currentScope, values: scopeValues } = useContentScope();
     const scopes = showAllScopes ? scopeValues.map((item) => item.scope) : [currentScope];
@@ -174,10 +186,7 @@ export function WarningsGrid({ showAllScopes = false }: WarningsGridProps) {
             field: "message",
             headerName: intl.formatMessage({ id: "dextinity.warning.message", defaultMessage: "Message" }),
             type: "singleSelect",
-            valueOptions: Object.entries(warningMessages).map(([value, message]) => ({
-                value,
-                label: getDisplayNameString(message, intl, value),
-            })),
+            valueOptions: messageLabels.map(({ message, label }) => ({ value: message, label })),
             flex: 1,
             renderCell: (params) => <WarningMessage message={params.value} warningMessages={warningMessages} />,
         },
@@ -251,6 +260,7 @@ export function WarningsGrid({ showAllScopes = false }: WarningsGridProps) {
             scopes,
             filter: gqlFilter,
             search: gqlSearch,
+            messageLabels: gqlSearch ? messageLabels : undefined,
             offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize,
             limit: dataGridProps.paginationModel.pageSize,
             sort: muiGridSortToGql(dataGridProps.sortModel, columns),

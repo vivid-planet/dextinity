@@ -179,8 +179,6 @@ Packages extend `tsconfig.core.json`, directly or through `packages/{admin,api,s
 | `@dextinity/oxlint-config` | Shared oxlint configurations, an alternative to `eslint-config`  |
 | `@dextinity/ui`            | UI-only React component library (Base UI, CSS Modules)           |
 
-`eslint-doc-generator` generates the rules list in `packages/eslint-plugin/README.md` and the header of each `packages/eslint-plugin/docs/rules/*.md` from the rules' `meta`. After changing a rule's `meta`, build the package and run `pnpm --filter @dextinity/eslint-plugin run docs:generate`. Its `lint` script fails when the generated docs are outdated. Edit only the content outside the generator's marker comments.
-
 ### Docs & Storybook
 
 | Package               | Description                                           |

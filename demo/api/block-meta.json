@@ -5116,7 +5116,8 @@
                             "kind": "OneOfBlocks",
                             "blocks": {
                                 "text": "TextCell",
-                                "price": "PriceCell"
+                                "price": "PriceCell",
+                                "image": "DamImage"
                             },
                             "nullable": false
                         }
@@ -5144,7 +5145,8 @@
                             "kind": "OneOfBlocks",
                             "blocks": {
                                 "text": "TextCell",
-                                "price": "PriceCell"
+                                "price": "PriceCell",
+                                "image": "DamImage"
                             },
                             "nullable": false
                         }
@@ -5169,7 +5171,8 @@
                             "kind": "OneOfBlocks",
                             "blocks": {
                                 "text": "TextCell",
-                                "price": "PriceCell"
+                                "price": "PriceCell",
+                                "image": "DamImage"
                             },
                             "nullable": false
                         }

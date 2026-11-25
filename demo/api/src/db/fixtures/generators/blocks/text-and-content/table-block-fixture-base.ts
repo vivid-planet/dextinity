@@ -45,6 +45,7 @@ export interface DescriptionCellContent {
 }
 
 const columnIds = {
+    photo: "photo",
     name: "name",
     email: "email",
     address: "address",
@@ -69,6 +70,7 @@ export abstract class TableBlockFixtureBase<CellInput> {
 
     private async generateTableContentInput(): Promise<TableContentInput<CellInput>> {
         const columns: TableColumnInput[] = [
+            { id: columnIds.photo, size: "small", highlighted: false },
             { id: columnIds.name, size: "standard", highlighted: false },
             { id: columnIds.email, size: "standard", highlighted: false },
             { id: columnIds.address, size: "large", highlighted: false },
@@ -80,6 +82,7 @@ export abstract class TableBlockFixtureBase<CellInput> {
             id: faker.string.uuid(),
             highlighted: true,
             cellValues: [
+                { columnId: columnIds.photo, value: this.createSimpleCellRichText("Photo") },
                 { columnId: columnIds.name, value: this.createSimpleCellRichText("Name") },
                 { columnId: columnIds.email, value: this.createSimpleCellRichText("Email") },
                 { columnId: columnIds.address, value: this.createSimpleCellRichText("Address") },
@@ -100,11 +103,14 @@ export abstract class TableBlockFixtureBase<CellInput> {
 
     protected abstract createPriceCell(amount: number): CellInput;
 
+    protected abstract createImageCell(): Promise<CellInput>;
+
     private async generateDataRow(): Promise<TableRowInput<CellInput>> {
         return {
             id: faker.string.uuid(),
             highlighted: false,
             cellValues: [
+                { columnId: columnIds.photo, value: await this.createImageCell() },
                 { columnId: columnIds.name, value: this.createSimpleCellRichText(faker.person.fullName()) },
                 { columnId: columnIds.email, value: this.createSimpleCellRichText(faker.internet.email()) },
                 { columnId: columnIds.address, value: this.createSimpleCellRichText(faker.location.streetAddress({ useFullAddress: true })) },

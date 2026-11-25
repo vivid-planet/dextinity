@@ -49,7 +49,7 @@ export function TableGrid<CellValue>({ columns, rows, renderCell, headerPosition
                                         hasMinimumColumnWidths && minimumWidthClassByColumnSize[column.size],
                                     )}
                                 >
-                                    {cellValue !== undefined && <div className={styles.cell__content}>{renderCell(cellValue)}</div>}
+                                    {cellValue !== undefined && <div className={styles.cell__content}>{renderCell(cellValue, column)}</div>}
                                 </CellTag>
                             );
                         })}

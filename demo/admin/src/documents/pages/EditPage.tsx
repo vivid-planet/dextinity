@@ -18,7 +18,6 @@ import {
     BlockPreviewWithTabs,
     ContentGenerationConfigProvider,
     ContentScopeIndicator,
-    createUseAiModePageTreeDocumentToolset,
     createUsePage,
     DependenciesList,
     DependentsList,
@@ -26,6 +25,7 @@ import {
     PageName,
     summarizeSeoBlockStateForAiMode,
     TranslateContentMenuItem,
+    useAiModePageTreeDocumentToolset,
     useBlockContext,
     useBlockPreview,
     useContentScope,
@@ -100,14 +100,12 @@ const pageTreeNodeDependenciesQuery = gql`
     }
 `;
 
-const rootBlocks = {
-    content: PageContentBlock,
-    seo: SeoBlock,
-    stage: StageBlock,
-};
-
 const usePage = createUsePage({
-    rootBlocks,
+    rootBlocks: {
+        content: PageContentBlock,
+        seo: SeoBlock,
+        stage: StageBlock,
+    },
     pageType: "Page",
 })<GQLEditPageQuery, GQLEditPageQueryVariables, GQLUpdatePageMutation["savePage"], GQLUpdatePageMutationVariables>({
     getQuery: gql`
@@ -143,22 +141,17 @@ const usePage = createUsePage({
     `,
 });
 
-const useAiModePageToolset = createUseAiModePageTreeDocumentToolset({
-    rootBlocks,
-    summarizeRootBlocks: { seo: summarizeSeoBlockStateForAiMode },
-    editableBlocks: {
-        rootBlockKey: "content",
-        supportedBlocks: pageContentBlocks,
-        additionalItemFields: pageContentAdditionalItemFields,
-        // PageContentBlock's name in block-meta, where the agent resolves the block schemas.
-        schemaBlockName: "PageContent",
-        schemaNameExamples:
-            "'media' is the 'StandaloneMedia' block rather than the 'Media' block that also exists, 'richtext' is the 'StandaloneRichText' block rather than the 'RichText' block, 'heading' is the 'StandaloneHeading' block rather than the 'Heading' block, and 'image' is the 'DamImage' block",
-        restrictions:
-            "Only the page's top-level content blocks can be edited, not the stage or the SEO settings; passing the key of a nested block says so.",
-    },
-    defaultTab: "content",
-});
+const aiModeEditablePageContentBlocks = {
+    rootBlockKey: "content",
+    supportedBlocks: pageContentBlocks,
+    additionalItemFields: pageContentAdditionalItemFields,
+    // PageContentBlock's name in block-meta, where the agent resolves the block schemas.
+    schemaBlockName: "PageContent",
+    schemaNameExamples:
+        "'media' is the 'StandaloneMedia' block rather than the 'Media' block that also exists, 'richtext' is the 'StandaloneRichText' block rather than the 'RichText' block, 'heading' is the 'StandaloneHeading' block rather than the 'Heading' block, and 'image' is the 'DamImage' block",
+    restrictions:
+        "Only the page's top-level content blocks can be edited, not the stage or the SEO settings; passing the key of a nested block says so.",
+} as const;
 
 export const EditPage = ({ id }: Props) => {
     const intl = useIntl();
@@ -178,7 +171,16 @@ export const EditPage = ({ id }: Props) => {
     const tabRouteMatch = matchPath({ path: `${routeUrl}/:tab`, end: false }, pathname);
     const tab = tabRouteMatch?.params.tab;
 
-    useAiModePageToolset({ pageTreeNodeId: id, pageState, setPageState, hasChanges });
+    useAiModePageTreeDocumentToolset({
+        pageTreeNodeId: id,
+        pageState,
+        setPageState,
+        hasChanges,
+        rootBlocks: { content: PageContentBlock, seo: SeoBlock, stage: StageBlock },
+        summarizeRootBlocks: { seo: summarizeSeoBlockStateForAiMode },
+        editableBlocks: aiModeEditablePageContentBlocks,
+        defaultTab: "content",
+    });
 
     if (pageState == null || pageState.document == null) {
         return null;

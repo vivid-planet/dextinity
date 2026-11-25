@@ -12,10 +12,10 @@ export {
 } from "./aiMode/AiModeToolsets";
 export { type AiModeEditableBlocksBlock, createAiModeEditBlocksTool } from "./aiMode/blockEditTool";
 export { summarizeBlockStateForAiMode, summarizeSeoBlockStateForAiMode } from "./aiMode/blockStateSummary";
-export { createUseAiModePageTreeDocumentToolset } from "./aiMode/createUseAiModePageTreeDocumentToolset";
 export type { AiModeFormField } from "./aiMode/formTools";
 export { createAiModePageTreeNavigationTools } from "./aiMode/pageTreeTools";
 export { useAiModeDataGridToolset } from "./aiMode/useAiModeDataGridToolset";
+export { useAiModePageTreeDocumentToolset } from "./aiMode/useAiModePageTreeDocumentToolset";
 export { AnchorBlock } from "./blocks/AnchorBlock";
 export { BlockAdminComponentButton } from "./blocks/common/BlockAdminComponentButton";
 export { BlockAdminComponentNestedButton } from "./blocks/common/BlockAdminComponentNestedButton";

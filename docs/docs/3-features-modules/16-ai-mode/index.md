@@ -134,15 +134,17 @@ createAiModeEditBlocksTool({
 
 ## Page tree documents
 
-`createUseAiModePageTreeDocumentToolset` creates a hook that gives the editor of a page tree document, e.g. a page, the tools `get_page_state` and `edit_blocks`. Like `createUsePage`, it takes the root blocks once, and the hook takes what `usePage` returns:
+`useAiModePageTreeDocumentToolset` gives the editor of a page tree document, e.g. a page, the tools `get_page_state` and `edit_blocks`. Call it in the editor with the root blocks passed to `createUsePage` and what `usePage` returns:
 
 ```tsx
-const rootBlocks = { content: PageContentBlock, seo: SeoBlock, stage: StageBlock };
+const { pageState, setPageState, hasChanges } = usePage({ pageId: id });
 
-const usePage = createUsePage({ rootBlocks, pageType: "Page" })({ getQuery, updateMutation });
-
-const useAiModePageToolset = createUseAiModePageTreeDocumentToolset({
-    rootBlocks,
+useAiModePageTreeDocumentToolset({
+    pageTreeNodeId: id,
+    pageState,
+    setPageState,
+    hasChanges,
+    rootBlocks: { content: PageContentBlock, seo: SeoBlock, stage: StageBlock },
     summarizeRootBlocks: { seo: summarizeSeoBlockStateForAiMode },
     editableBlocks: {
         rootBlockKey: "content",
@@ -152,12 +154,6 @@ const useAiModePageToolset = createUseAiModePageTreeDocumentToolset({
     },
     defaultTab: "content",
 });
-
-export const EditPage = ({ id }: Props) => {
-    const { pageState, setPageState, hasChanges /* ... */ } = usePage({ pageId: id });
-    useAiModePageToolset({ pageTreeNodeId: id, pageState, setPageState, hasChanges });
-    // ...
-};
 ```
 
 - `get_page_state` summarizes every root block with `summarizeBlockStateForAiMode`. `summarizeRootBlocks` replaces the summary of a root block that misses something, e.g. the SEO settings, which `summarizeSeoBlockStateForAiMode` adds.

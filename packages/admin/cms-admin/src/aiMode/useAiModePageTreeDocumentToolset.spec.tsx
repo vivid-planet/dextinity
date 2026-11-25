@@ -6,7 +6,7 @@ import { describe, expect, it, vi } from "vitest";
 import type { BlockInterface } from "../blocks/types";
 import { AiModeToolsetsProvider, type AiModeToolsetsStore, useAiModeToolsetsStore } from "./AiModeToolsets";
 import type { BlocksBlockChild } from "./blockProps";
-import { createUseAiModePageTreeDocumentToolset } from "./createUseAiModePageTreeDocumentToolset";
+import { useAiModePageTreeDocumentToolset } from "./useAiModePageTreeDocumentToolset";
 
 vi.mock("../blocks/context/useBlockContext", () => ({ useBlockContext: () => ({}) }));
 vi.mock("../contentScope/Provider", () => ({ useContentScope: () => ({ scope: {} }) }));
@@ -20,13 +20,6 @@ type PageState = {
     path: string;
     document: { __typename: string; id: string; content: { blocks: BlocksBlockChild[] }; seo: { htmlTitle: string } } | null;
 };
-
-const useToolset = createUseAiModePageTreeDocumentToolset({
-    rootBlocks: { content: ContentBlock, seo: SeoBlock },
-    summarizeRootBlocks: { seo: (_block, state) => ({ seoState: state }) },
-    editableBlocks: { rootBlockKey: "content", supportedBlocks: { richtext: {} as BlockInterface }, schemaBlockName: "PageContent" },
-    defaultTab: "content",
-});
 
 let store: AiModeToolsetsStore;
 let latestPageState: PageState | undefined;
@@ -42,7 +35,16 @@ function EditPage() {
         document: { __typename: "Page", id: "document-id", content: { blocks: [contentBlock("a")] }, seo: { htmlTitle: "About us" } },
     });
     latestPageState = pageState;
-    useToolset({ pageTreeNodeId: "node-id", pageState, setPageState, hasChanges: false });
+    useAiModePageTreeDocumentToolset({
+        pageTreeNodeId: "node-id",
+        pageState,
+        setPageState,
+        hasChanges: false,
+        rootBlocks: { content: ContentBlock, seo: SeoBlock },
+        summarizeRootBlocks: { seo: (_block, state) => ({ seoState: state }) },
+        editableBlocks: { rootBlockKey: "content", supportedBlocks: { richtext: {} as BlockInterface }, schemaBlockName: "PageContent" },
+        defaultTab: "content",
+    });
     return null;
 }
 
@@ -62,7 +64,7 @@ function renderEditPage(path: string) {
 
 const callTool = (name: string, args: Record<string, unknown> = {}) => store.getTool(name)?.handler(args, { clearTextSelection: vi.fn() });
 
-describe("createUseAiModePageTreeDocumentToolset", () => {
+describe("useAiModePageTreeDocumentToolset", () => {
     it("reports the open tab and block from the URL", () => {
         renderEditPage("/pages/node-id/edit/content/a/edit");
 

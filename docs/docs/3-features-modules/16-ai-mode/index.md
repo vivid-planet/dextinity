@@ -132,6 +132,35 @@ createAiModeEditBlocksTool({
 - `insertableBlocks` narrows the blocks an insertion may add, e.g. to those `isBlockSupported` allows in the content scope, and `additionalItemFields` are the blocks block's, whose defaults an inserted block starts with.
 - `schemaNameExamples` names block types whose name in block-meta differs from their type, e.g. `'image' is the 'DamImage' block`, and `restrictions` what the tool can't change.
 
+## Page tree documents
+
+`useAiModePageTreeDocumentToolset` gives the editor of a page tree document, e.g. a page, the tools `get_page_state` and `edit_blocks`. Call it in the editor with the root blocks passed to `createUsePage` and what `usePage` returns:
+
+```tsx
+const { pageState, setPageState, hasChanges } = usePage({ pageId: id });
+
+useAiModePageTreeDocumentToolset({
+    pageTreeNodeId: id,
+    pageState,
+    setPageState,
+    hasChanges,
+    rootBlocks: { content: PageContentBlock, seo: SeoBlock, stage: StageBlock },
+    summarizeRootBlocks: { seo: summarizeSeoBlockStateForAiMode },
+    editableBlocks: {
+        rootBlockKey: "content",
+        supportedBlocks: pageContentBlocks,
+        additionalItemFields: pageContentAdditionalItemFields,
+        schemaBlockName: "PageContent",
+    },
+    defaultTab: "content",
+});
+```
+
+- `get_page_state` summarizes every root block with `summarizeBlockStateForAiMode`. `summarizeRootBlocks` replaces the summary of a root block that misses something, e.g. the SEO settings, which `summarizeSeoBlockStateForAiMode` adds.
+- `edit_blocks` changes the top-level blocks of the blocks block `editableBlocks.rootBlockKey`, as `createAiModeEditBlocksTool` does. The blocks an insertion may add are those `isBlockSupported` of the blocks config allows in the content scope. Leave out `editableBlocks` for a document the agent only reads.
+- `defaultTab` is the tab that is open when the URL names none, for an editor whose root blocks are in tabs. The agent gets the open tab and the route of the open block, so it knows what the user is looking at.
+- The query of `usePage` should fetch the node's `path`, which the agent gets with the state.
+
 ## Page tree
 
 `PagesPage` registers the toolset of the page tree, with its category as the context. `createAiModePageTreeNavigationTools` creates `open_page_tree_node`, which opens the editor of a page tree node. Add it to a toolset that is on every page, such as one around the routes of the master menu, so that the agent opens a page's editor in one step from anywhere:

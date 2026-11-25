@@ -23,19 +23,15 @@ import {
     DependentsList,
     openSitePreviewWindow,
     PageName,
-    summarizeBlockStateForAiMode,
     summarizeSeoBlockStateForAiMode,
     TranslateContentMenuItem,
-    useAiModeToolset,
+    useAiModePageTreeDocumentToolset,
     useBlockContext,
     useBlockPreview,
-    useBlocksConfig,
     useContentScope,
     useSiteConfig,
 } from "@dextinity/cms-admin";
 import { IconButton, Stack } from "@mui/material";
-import { type AiModePageState, createPageTools } from "@src/aiMode/pageTools";
-import { useEffect, useRef } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { matchPath, useLocation } from "react-router";
 
@@ -145,6 +141,18 @@ const usePage = createUsePage({
     `,
 });
 
+const aiModeEditablePageContentBlocks = {
+    rootBlockKey: "content",
+    supportedBlocks: pageContentBlocks,
+    additionalItemFields: pageContentAdditionalItemFields,
+    // PageContentBlock's name in block-meta, where the agent resolves the block schemas.
+    schemaBlockName: "PageContent",
+    schemaNameExamples:
+        "'media' is the 'StandaloneMedia' block rather than the 'Media' block that also exists, 'richtext' is the 'StandaloneRichText' block rather than the 'RichText' block, 'heading' is the 'StandaloneHeading' block rather than the 'Heading' block, and 'image' is the 'DamImage' block",
+    restrictions:
+        "Only the page's top-level content blocks can be edited, not the stage or the SEO settings; passing the key of a nested block says so.",
+} as const;
+
 export const EditPage = ({ id }: Props) => {
     const intl = useIntl();
     const { pageState, setPageState, rootBlocksApi, hasChanges, loading, dialogs, pageSaveButton, handleSavePage, translateContent } = usePage({
@@ -163,79 +171,16 @@ export const EditPage = ({ id }: Props) => {
     const tabRouteMatch = matchPath({ path: `${routeUrl}/:tab`, end: false }, pathname);
     const tab = tabRouteMatch?.params.tab;
 
-    const document = pageState?.document;
-
-    const { isBlockSupported } = useBlocksConfig();
-    const insertablePageContentBlocks = isBlockSupported
-        ? Object.fromEntries(Object.entries(pageContentBlocks).filter(([, block]) => isBlockSupported(block, scope)))
-        : pageContentBlocks;
-
-    // Read by the block editing tool after planning, when the render's document may be outdated.
-    const latestContentBlocksRef = useRef(document?.content.blocks);
-    useEffect(() => {
-        latestContentBlocksRef.current = document?.content.blocks;
+    useAiModePageTreeDocumentToolset({
+        pageTreeNodeId: id,
+        pageState,
+        setPageState,
+        hasChanges,
+        rootBlocks: { content: PageContentBlock, seo: SeoBlock, stage: StageBlock },
+        summarizeRootBlocks: { seo: summarizeSeoBlockStateForAiMode },
+        editableBlocks: aiModeEditablePageContentBlocks,
+        defaultTab: "content",
     });
-
-    const aiModePageState: AiModePageState | null =
-        pageState && document
-            ? {
-                  pageTreeNodeId: id,
-                  documentType: document.__typename,
-                  documentId: document.id,
-                  path: pageState.path,
-                  activeTab: tab ?? "content",
-                  // Nested block editing is URL-driven, so the route below the active tab identifies the selected block.
-                  selectedBlockRoute:
-                      tabRouteMatch && pathname.length > tabRouteMatch.pathname.length ? pathname.slice(tabRouteMatch.pathname.length) : undefined,
-                  hasChanges: hasChanges ?? false,
-              }
-            : null;
-
-    useAiModeToolset(
-        aiModePageState && document
-            ? {
-                  id: "page",
-                  description:
-                      "The editor of the page open in the page tree. It has the page's unsaved changes, which the MCP server's get_page doesn't.",
-                  context: aiModePageState,
-                  tools: createPageTools({
-                      pageState: aiModePageState,
-                      getDocumentSummary: () => ({
-                          content: summarizeBlockStateForAiMode(PageContentBlock, document.content),
-                          stage: summarizeBlockStateForAiMode(StageBlock, document.stage),
-                          seo: summarizeSeoBlockStateForAiMode(SeoBlock, document.seo),
-                      }),
-                      contentBlocks: {
-                          supportedBlocks: pageContentBlocks,
-                          insertableBlocks: insertablePageContentBlocks,
-                          additionalItemFields: pageContentAdditionalItemFields,
-                          blockContext,
-                          getBlocks: () => latestContentBlocksRef.current ?? [],
-                          updateBlocks: (update) => {
-                              setPageState((previous) => {
-                                  if (!previous?.document) {
-                                      return previous;
-                                  }
-
-                                  return {
-                                      ...previous,
-                                      document: {
-                                          ...previous.document,
-                                          content: {
-                                              ...previous.document.content,
-                                              // The update keeps the item fields of every block and gives an inserted one the default values
-                                              // of `pageContentAdditionalItemFields`, which the generic block child type doesn't know about.
-                                              blocks: update(previous.document.content.blocks) as typeof previous.document.content.blocks,
-                                          },
-                                      },
-                                  };
-                              });
-                          },
-                      },
-                  }),
-              }
-            : null,
-    );
 
     if (pageState == null || pageState.document == null) {
         return null;

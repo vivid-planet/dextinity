@@ -15,6 +15,7 @@ export { summarizeBlockStateForAiMode, summarizeSeoBlockStateForAiMode } from ".
 export type { AiModeFormField } from "./aiMode/formTools";
 export { createAiModePageTreeNavigationTools } from "./aiMode/pageTreeTools";
 export { useAiModeDataGridToolset } from "./aiMode/useAiModeDataGridToolset";
+export { useAiModePageTreeDocumentToolset } from "./aiMode/useAiModePageTreeDocumentToolset";
 export { AnchorBlock } from "./blocks/AnchorBlock";
 export { BlockAdminComponentButton } from "./blocks/common/BlockAdminComponentButton";
 export { BlockAdminComponentNestedButton } from "./blocks/common/BlockAdminComponentNestedButton";

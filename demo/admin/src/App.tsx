@@ -70,6 +70,10 @@ declare module "@dextinity/cms-admin" {
     export interface PermissionOverrides {
         permission: GQLPermission;
     }
+
+    interface SiteConfig {
+        currency: string;
+    }
 }
 
 LicenseInfo.setLicenseKey(config.muiLicenseKey);
@@ -150,6 +154,7 @@ export function App() {
                     return {
                         url: siteConfig.url,
                         preloginEnabled: siteConfig.preloginEnabled || false,
+                        currency: siteConfig.currency,
                         blockPreviewBaseUrl: `${config.previewUrl}/block-preview/${scope.domain}/${scope.language}`,
                         sitePreviewApiUrl: `${config.previewUrl}/site-preview`,
                     };

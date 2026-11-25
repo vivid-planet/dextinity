@@ -117,7 +117,10 @@ $brand: '[data-dextinity-brand="original"]';
         --dextinity-top-bar-shadow: inset 0 calc(-1 * var(--dextinity-line-width)) 0 var(--dextinity-color-line);
         --dextinity-side-nav-shadow: inset calc(-1 * var(--dextinity-line-width)) 0 0 var(--dextinity-color-line);
         --dextinity-side-nav-separator-color: var(--dextinity-color-line);
-        --dextinity-edit-layout-header-sticky-shadow: var(--dextinity-shadow-1);
+        // The held header blends into the page with a line below it, so its background doesn't stand out beside the content as a card
+        --dextinity-edit-layout-header-sticky-background: var(--dextinity-color-canvas);
+        --dextinity-edit-layout-header-sticky-shadow: inset 0 calc(-1 * var(--dextinity-line-width)) 0 var(--dextinity-color-line);
+        --dextinity-edit-layout-header-sticky-radius: 0px;
         --dextinity-dialog-shadow: var(--dextinity-shadow-3);
         --dextinity-drawer-shadow: var(--dextinity-shadow-3);
         --dextinity-menu-shadow: var(--dextinity-shadow-3);

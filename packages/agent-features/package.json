@@ -17,6 +17,10 @@
         "build": "node build.ts",
         "clean": "node build.ts --clean"
     },
+    "devDependencies": {
+        "@dextinity/mail-react": "workspace:*",
+        "storybook": "^10.6.8"
+    },
     "publishConfig": {
         "access": "public",
         "registry": "https://registry.npmjs.org"

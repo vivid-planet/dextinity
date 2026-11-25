@@ -4,6 +4,8 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 
+import { generateMailReactSkill } from "./generate-mail-react-skill.ts";
+
 const directories = ["skills", "rules"];
 
 const packageDir = import.meta.dirname;
@@ -32,4 +34,8 @@ for (const directory of directories) {
     }
 
     console.log(`Copied ${files.length} files from ${directory}/ in the repository root`); // eslint-disable-line no-console
+}
+
+if (!cleanOnly) {
+    generateMailReactSkill({ mailReactDir: path.join(repoRoot, "packages/mail-react"), skillsDir: path.join(packageDir, "skills") });
 }

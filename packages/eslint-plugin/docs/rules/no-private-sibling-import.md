@@ -1,6 +1,8 @@
-# `@dextinity/no-private-sibling-import`
+# @dextinity/no-private-sibling-import
 
-Allow a private sibling file to be imported only by the file it belongs to.
+📝 Allow a private sibling file (`Foo.gql.ts`, `Foo.sc.ts`) to be imported only by the file it belongs to.
+
+<!-- end auto-generated rule header -->
 
 A private sibling file has the same name as its owner plus an extra extension. For example, `Foo.gql.ts` holds the GraphQL documents of `Foo.tsx`, and `Foo.sc.ts` holds its styled components. Other files must not import them: when another component needs the same query or style, move it to a shared file instead. This keeps each private sibling safe to change together with its owner.
 

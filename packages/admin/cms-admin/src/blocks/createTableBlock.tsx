@@ -1,5 +1,6 @@
 import { Dialog, OkayButton, useStackApi } from "@dextinity/admin";
 import { DialogActions } from "@mui/material";
+import type { SxProps, Theme } from "@mui/material/styles";
 import { useMemo, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useLocation } from "react-router";
@@ -18,7 +19,12 @@ import {
     type TableCellConversions,
     type TableCellOneOfBlock,
 } from "./table/createTableCellBlock";
-import { createTableSettingsState, type TableSettingsDeclaration, type TableSettingsState } from "./table/createTableSettings";
+import {
+    createTableSettingsState,
+    type TableCellSettings,
+    type TableSettingsDeclaration,
+    type TableSettingsState,
+} from "./table/createTableSettings";
 import { TableBlockContextProvider } from "./table/TableBlockContext";
 import { TableBlockGrid } from "./table/TableBlockGrid";
 import { createCellRoute, parseCellHash } from "./table/utils/cellRoute";
@@ -30,6 +36,11 @@ type TableSettingsFactoryOptions = {
     rowSettings?: TableSettingsDeclaration;
     /** Declared with `createTableSettings`. */
     columnSettings?: TableSettingsDeclaration;
+    /**
+     * Styles a cell in the admin grid depending on the settings of its row and column, e.g. with a background.
+     * The styles take precedence over the default styles of the cell, such as the background of a highlighted row.
+     */
+    getCellStyle?: (cell: TableCellSettings) => SxProps<Theme>;
 };
 
 type RichTextTableBlockFactoryOptions<RichText extends TableCellBlockInterface> = TableSettingsFactoryOptions & {
@@ -121,7 +132,15 @@ export function createTableBlock<RichText extends TableCellBlockInterface = Rich
     override?: (block: TableBlock<RichText>) => TableBlock<RichText>,
 ): TableBlock<RichText>;
 export function createTableBlock(
-    { richText, cellBlocks, convertCell, rowSettings, columnSettings, name = "Table" }: TableBlockFactoryOptions<TableCellBlockInterface>,
+    {
+        richText,
+        cellBlocks,
+        convertCell,
+        rowSettings,
+        columnSettings,
+        getCellStyle,
+        name = "Table",
+    }: TableBlockFactoryOptions<TableCellBlockInterface>,
     override?: (block: TableBlock<TableCellBlockInterface>) => TableBlock<TableCellBlockInterface>,
 ): TableBlock<TableCellBlockInterface> {
     type CellState = BlockState<TableCellBlockInterface>;
@@ -276,7 +295,12 @@ export function createTableBlock(
             };
 
             return (
-                <TableBlockContextProvider CellBlock={CellBlock} rowSettings={rowSettings} columnSettings={columnSettings}>
+                <TableBlockContextProvider
+                    CellBlock={CellBlock}
+                    rowSettings={rowSettings}
+                    columnSettings={columnSettings}
+                    getCellStyle={getCellStyle}
+                >
                     <SelectPreviewComponent>
                         <BlocksFinalForm<TableBlockState<CellState>> onSubmit={updateState} initialValues={state}>
                             <Dialog

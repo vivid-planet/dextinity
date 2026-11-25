@@ -154,6 +154,8 @@ export const TableBlockGrid = ({ state, updateState, clickedCell }: Props) => {
                 return (
                     <CellValue
                         value={value}
+                        rowSettings={rowFromState?.settings ?? {}}
+                        columnSettings={settings}
                         highlighted={rowFromState?.highlighted || highlighted}
                         isTemporarilyHighlighted={rowWasRecentlyPasted || columnWasRecentlyPasted || cellWasRecentlyClicked}
                     />

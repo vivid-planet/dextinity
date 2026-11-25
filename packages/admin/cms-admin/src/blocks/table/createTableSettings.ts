@@ -17,6 +17,11 @@ export type TableSettingsDeclaration = Record<string, TableSettingsField>;
 
 export type TableSettingsState = Record<string, unknown>;
 
+export type TableCellSettings = {
+    rowSettings: TableSettingsState;
+    columnSettings: TableSettingsState;
+};
+
 /**
  * Declares the settings of a table's rows or columns.
  * Pass the result as `rowSettings` or `columnSettings` to `createTableBlock`.

@@ -1,4 +1,4 @@
-import { cleanup, fireEvent } from "test-utils";
+import { cleanup, fireEvent, type RenderResult, within } from "test-utils";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("../../context/useBlockContext", () => ({
@@ -10,7 +10,14 @@ afterEach(cleanup);
 import { createTableBlock, type TableBlockState } from "../../createTableBlock";
 import { createRteInput, createRteState, MockRichTextBlock } from "../__mocks__/TableBlockData.mocks";
 import { createTableSettings } from "../createTableSettings";
-import { clickButtonOfColumnAtIndex, clickButtonOfRowAtIndex, openRowOptionsAtIndex, renderTableBlock } from "./utils";
+import {
+    clickButtonOfColumnAtIndex,
+    clickButtonOfRowAtIndex,
+    getBodyRowgroup,
+    getCellsExcludingTheDragHandleAndActionsCells,
+    openRowOptionsAtIndex,
+    renderTableBlock,
+} from "./utils";
 
 const columnSettings = createTableSettings({
     background: {
@@ -40,7 +47,7 @@ const rowSettings = createTableSettings({
 
 const defaultColumnSettings = { background: "none", badges: [], hidden: false };
 
-const createState = (backgroundOfFirstColumn = "none"): TableBlockState => ({
+const createState = (backgroundOfFirstColumn = "none", boldRow = false): TableBlockState => ({
     columns: [
         { id: "first", size: "standard", highlighted: false, settings: { ...defaultColumnSettings, background: backgroundOfFirstColumn } },
         { id: "second", size: "standard", highlighted: false, settings: defaultColumnSettings },
@@ -49,7 +56,7 @@ const createState = (backgroundOfFirstColumn = "none"): TableBlockState => ({
         {
             id: "row",
             highlighted: false,
-            settings: { bold: false },
+            settings: { bold: boldRow },
             cellValues: [
                 { columnId: "first", value: createRteState("First") },
                 { columnId: "second", value: createRteState("Second") },
@@ -63,6 +70,11 @@ const renderTableWithSettings = (state = createState()) => renderTableBlock(stat
 const chooseColumnSetting = (rendered: ReturnType<typeof renderTableBlock>, setting: RegExp, option: RegExp) => {
     clickButtonOfColumnAtIndex(rendered, 0, setting);
     fireEvent.click(rendered.getByRole("menuitemcheckbox", { name: option }));
+};
+
+const getCellValueStyles = (rendered: RenderResult) => {
+    const [row] = within(getBodyRowgroup(rendered)).getAllByRole("row");
+    return getCellsExcludingTheDragHandleAndActionsCells(row).map((cell) => getComputedStyle(cell.firstElementChild as Element));
 };
 
 describe("TableBlock: Row and column settings", () => {
@@ -103,6 +115,23 @@ describe("TableBlock: Row and column settings", () => {
         const { columns, rows } = rendered.getState();
         expect(columns[1].settings).toEqual(defaultColumnSettings);
         expect(rows[1].settings).toEqual({ bold: false });
+    });
+
+    it("should style each cell with getCellStyle from the settings of its row and column", () => {
+        const rendered = renderTableBlock(createState("grey", true), undefined, {
+            rowSettings,
+            columnSettings,
+            getCellStyle: ({ rowSettings, columnSettings }) => ({
+                backgroundColor: columnSettings.background === "grey" ? "rgb(128, 128, 128)" : undefined,
+                fontWeight: rowSettings.bold ? 700 : undefined,
+            }),
+        });
+
+        const [firstCellStyle, secondCellStyle] = getCellValueStyles(rendered);
+        expect(firstCellStyle.backgroundColor).toBe("rgb(128, 128, 128)");
+        expect(firstCellStyle.fontWeight).toBe("700");
+        expect(secondCellStyle.backgroundColor).not.toBe("rgb(128, 128, 128)");
+        expect(secondCellStyle.fontWeight).toBe("700");
     });
 
     it("should keep the settings of a duplicated column", () => {

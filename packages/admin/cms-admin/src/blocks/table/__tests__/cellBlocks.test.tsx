@@ -216,6 +216,8 @@ describe("cell blocks", () => {
                         activeType: "number",
                     }}
                     highlighted={false}
+                    rowSettings={{}}
+                    columnSettings={{}}
                 />
             </TableBlockContextProvider>,
         );

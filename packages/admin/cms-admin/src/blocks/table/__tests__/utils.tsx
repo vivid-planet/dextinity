@@ -16,7 +16,7 @@ type DataGridConfig = ComponentProps<typeof DextinityConfigProvider>["dataGrid"]
 export const renderTableBlock = (
     initialState: TableBlockState,
     dataGrid: DataGridConfig = { component: DataGridPro },
-    { rowSettings, columnSettings }: Partial<Pick<TableBlockConfig, "rowSettings" | "columnSettings">> = {},
+    { rowSettings, columnSettings, getCellStyle }: Partial<Pick<TableBlockConfig, "rowSettings" | "columnSettings" | "getCellStyle">> = {},
 ): RenderResult & { getState: () => TableBlockState } => {
     let latestState = initialState;
 
@@ -25,7 +25,12 @@ export const renderTableBlock = (
         latestState = state;
         return (
             <DextinityConfigProvider apiUrl="" graphQLApiUrl="" adminUrl="" dataGrid={dataGrid}>
-                <TableBlockContextProvider CellBlock={MockRichTextBlock} rowSettings={rowSettings} columnSettings={columnSettings}>
+                <TableBlockContextProvider
+                    CellBlock={MockRichTextBlock}
+                    rowSettings={rowSettings}
+                    columnSettings={columnSettings}
+                    getCellStyle={getCellStyle}
+                >
                     <TableBlockGrid state={state} updateState={setState} />
                 </TableBlockContextProvider>
             </DextinityConfigProvider>

@@ -81,7 +81,7 @@ export { InternalLinkBlock } from "./blocks/InternalLinkBlock";
 export { PhoneLinkBlock } from "./blocks/PhoneLinkBlock";
 export { PixelImageBlock } from "./blocks/PixelImageBlock";
 export { SvgImageBlock } from "./blocks/SvgImageBlock";
-export { createTableSettings, type TableSettingsDeclaration } from "./blocks/table/createTableSettings";
+export { createTableSettings, type TableCellSettings, type TableSettingsDeclaration } from "./blocks/table/createTableSettings";
 export type {
     TipTapInlineStyle,
     TipTapListOptions,

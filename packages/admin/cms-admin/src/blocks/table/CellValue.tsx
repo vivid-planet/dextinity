@@ -1,18 +1,23 @@
 import { alpha, styled } from "@mui/material/styles";
 
+import type { TableCellSettings } from "./createTableSettings";
 import { useTableBlockContext } from "./TableBlockContext";
 
-type Props = {
+type Props = TableCellSettings & {
     highlighted: boolean;
     isTemporarilyHighlighted?: boolean;
     value: unknown;
 };
 
-export const CellValue = ({ highlighted, isTemporarilyHighlighted, value }: Props) => {
-    const { CellBlock } = useTableBlockContext();
+export const CellValue = ({ highlighted, isTemporarilyHighlighted, value, rowSettings, columnSettings }: Props) => {
+    const { CellBlock, getCellStyle } = useTableBlockContext();
 
     return (
-        <CellValueContainer $highlighted={highlighted} $isTemporarilyHighlighted={isTemporarilyHighlighted}>
+        <CellValueContainer
+            $highlighted={highlighted}
+            $isTemporarilyHighlighted={isTemporarilyHighlighted}
+            sx={getCellStyle?.({ rowSettings, columnSettings })}
+        >
             <RteContentWrapper>
                 <RteContent>
                     <CellBlock.ReadOnlyComponent state={value} />

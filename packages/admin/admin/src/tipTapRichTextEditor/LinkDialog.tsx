@@ -55,12 +55,12 @@ export function LinkDialog({ editor, link, onClose }: LinkDialogProps) {
             <DialogTitle>
                 {isEditing ? (
                     <FormattedMessage
-                        id="dextinity.blocks.tipTapRichText.editLink"
+                        id="dextinity.tipTapRichTextEditor.editLink"
                         defaultMessage='Edit link "{link}"'
                         values={{ link: selectedText }}
                     />
                 ) : (
-                    <FormattedMessage id="dextinity.blocks.tipTapRichText.insertLink" defaultMessage="Insert link" />
+                    <FormattedMessage id="dextinity.tipTapRichTextEditor.insertLink" defaultMessage="Insert link" />
                 )}
             </DialogTitle>
             <DialogContent>
@@ -71,7 +71,7 @@ export function LinkDialog({ editor, link, onClose }: LinkDialogProps) {
                 <ButtonContainer>
                     {isEditing && (
                         <DeleteButton onClick={handleRemove}>
-                            <FormattedMessage id="dextinity.blocks.tipTapRichText.removeLink" defaultMessage="Delete Link" />
+                            <FormattedMessage id="dextinity.tipTapRichTextEditor.removeLink" defaultMessage="Delete Link" />
                         </DeleteButton>
                     )}
                     <OkayButton onClick={handleUpdate} />

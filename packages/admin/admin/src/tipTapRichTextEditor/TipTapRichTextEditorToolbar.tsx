@@ -65,10 +65,10 @@ const ToolbarButton = ({
 );
 
 const textAlignMessages = defineMessages({
-    left: { id: "dextinity.blocks.tipTapRichText.alignLeft.tooltip", defaultMessage: "Align left" },
-    center: { id: "dextinity.blocks.tipTapRichText.alignCenter.tooltip", defaultMessage: "Align center" },
-    right: { id: "dextinity.blocks.tipTapRichText.alignRight.tooltip", defaultMessage: "Align right" },
-    justify: { id: "dextinity.blocks.tipTapRichText.alignJustify.tooltip", defaultMessage: "Justify" },
+    left: { id: "dextinity.tipTapRichTextEditor.alignLeft.tooltip", defaultMessage: "Align left" },
+    center: { id: "dextinity.tipTapRichTextEditor.alignCenter.tooltip", defaultMessage: "Align center" },
+    right: { id: "dextinity.tipTapRichTextEditor.alignRight.tooltip", defaultMessage: "Align right" },
+    justify: { id: "dextinity.tipTapRichTextEditor.alignJustify.tooltip", defaultMessage: "Justify" },
 });
 
 const textAlignIconKeys = {
@@ -229,7 +229,7 @@ export const TipTapRichTextEditorToolbar = ({
                   {
                       key: "superscript",
                       icon: icons.superscript,
-                      label: <FormattedMessage id="dextinity.blocks.tipTapRichText.superscript.label" defaultMessage="Superscript" />,
+                      label: <FormattedMessage id="dextinity.tipTapRichTextEditor.superscript.label" defaultMessage="Superscript" />,
                       isActive: editorState.isSuperscriptActive,
                       onToggle: () => editor.chain().focus().toggleSuperscript().run(),
                   },
@@ -240,7 +240,7 @@ export const TipTapRichTextEditorToolbar = ({
                   {
                       key: "subscript",
                       icon: icons.subscript,
-                      label: <FormattedMessage id="dextinity.blocks.tipTapRichText.subscript.label" defaultMessage="Subscript" />,
+                      label: <FormattedMessage id="dextinity.tipTapRichTextEditor.subscript.label" defaultMessage="Subscript" />,
                       isActive: editorState.isSubscriptActive,
                       onToggle: () => editor.chain().focus().toggleSubscript().run(),
                   },
@@ -311,14 +311,14 @@ export const TipTapRichTextEditorToolbar = ({
                     <ToolbarButton
                         editor={editor}
                         icon={icons.undo}
-                        tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.undo.tooltip" defaultMessage="Undo" />}
+                        tooltip={<FormattedMessage id="dextinity.tipTapRichTextEditor.undo.tooltip" defaultMessage="Undo" />}
                         disabled={!editorState.canUndo}
                         onToggle={() => editor.chain().focus().undo().run()}
                     />
                     <ToolbarButton
                         editor={editor}
                         icon={icons.redo}
-                        tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.redo.tooltip" defaultMessage="Redo" />}
+                        tooltip={<FormattedMessage id="dextinity.tipTapRichTextEditor.redo.tooltip" defaultMessage="Redo" />}
                         disabled={!editorState.canRedo}
                         onToggle={() => editor.chain().focus().redo().run()}
                     />
@@ -356,7 +356,7 @@ export const TipTapRichTextEditorToolbar = ({
                         >
                             {activeDefaultStyle === null && (
                                 <MenuItem value="" dense>
-                                    <FormattedMessage id="dextinity.blocks.tipTapRichText.textBlockStyle.default" defaultMessage="Default" />
+                                    <FormattedMessage id="dextinity.tipTapRichTextEditor.textBlockStyle.default" defaultMessage="Default" />
                                 </MenuItem>
                             )}
                             {applicableTextBlockStyles.map((style) => (
@@ -373,7 +373,7 @@ export const TipTapRichTextEditorToolbar = ({
                     <ToolbarButton
                         editor={editor}
                         icon={icons.translate}
-                        tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.translate.tooltip" defaultMessage="Translate" />}
+                        tooltip={<FormattedMessage id="dextinity.tipTapRichTextEditor.translate.tooltip" defaultMessage="Translate" />}
                         onToggle={() => onTranslateClick?.()}
                     />
                 </ToolbarGroup>
@@ -384,7 +384,7 @@ export const TipTapRichTextEditorToolbar = ({
                         <ToolbarButton
                             editor={editor}
                             icon={icons.bold}
-                            tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.bold.tooltip" defaultMessage="Bold" />}
+                            tooltip={<FormattedMessage id="dextinity.tipTapRichTextEditor.bold.tooltip" defaultMessage="Bold" />}
                             isActive="bold"
                             onToggle={() => editor.chain().focus().toggleBold().run()}
                         />
@@ -393,7 +393,7 @@ export const TipTapRichTextEditorToolbar = ({
                         <ToolbarButton
                             editor={editor}
                             icon={icons.italic}
-                            tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.italic.tooltip" defaultMessage="Italic" />}
+                            tooltip={<FormattedMessage id="dextinity.tipTapRichTextEditor.italic.tooltip" defaultMessage="Italic" />}
                             isActive="italic"
                             onToggle={() => editor.chain().focus().toggleItalic().run()}
                         />
@@ -402,7 +402,7 @@ export const TipTapRichTextEditorToolbar = ({
                         <ToolbarButton
                             editor={editor}
                             icon={icons.underline}
-                            tooltip={<FormattedMessage id="dextintiy.blocks.tipTapRichText.underline.tooltip" defaultMessage="Underline" />}
+                            tooltip={<FormattedMessage id="dextinity.tipTapRichTextEditor.underline.tooltip" defaultMessage="Underline" />}
                             isActive="underline"
                             onToggle={() => editor.chain().focus().toggleUnderline().run()}
                         />
@@ -411,7 +411,7 @@ export const TipTapRichTextEditorToolbar = ({
                         <ToolbarButton
                             editor={editor}
                             icon={icons.strike}
-                            tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.strike.tooltip" defaultMessage="Strikethrough" />}
+                            tooltip={<FormattedMessage id="dextinity.tipTapRichTextEditor.strike.tooltip" defaultMessage="Strikethrough" />}
                             isActive="strike"
                             onToggle={() => editor.chain().focus().toggleStrike().run()}
                         />
@@ -435,10 +435,10 @@ export const TipTapRichTextEditorToolbar = ({
                                 <TipTapRichTextEditorToolbarButton
                                     icon={icons.moreOptions}
                                     tooltip={
-                                        <FormattedMessage id="dextinity.blocks.tipTapRichText.moreOptions.tooltip" defaultMessage="More options" />
+                                        <FormattedMessage id="dextinity.tipTapRichTextEditor.moreOptions.tooltip" defaultMessage="More options" />
                                     }
                                     ariaLabel={intl.formatMessage({
-                                        id: "dextinity.blocks.tipTapRichText.moreOptions.tooltip",
+                                        id: "dextinity.tipTapRichTextEditor.moreOptions.tooltip",
                                         defaultMessage: "More options",
                                     })}
                                     onClick={(e) => setMoreAnchorEl(e.currentTarget)}
@@ -487,7 +487,7 @@ export const TipTapRichTextEditorToolbar = ({
                         <ToolbarButton
                             editor={editor}
                             icon={icons.orderedList}
-                            tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.orderedList.tooltip" defaultMessage="Ordered list" />}
+                            tooltip={<FormattedMessage id="dextinity.tipTapRichTextEditor.orderedList.tooltip" defaultMessage="Ordered list" />}
                             isActive="orderedList"
                             onToggle={() => handleListToggle(resolvedOptions.orderedList as TipTapResolvedList)}
                         />
@@ -496,7 +496,7 @@ export const TipTapRichTextEditorToolbar = ({
                         <ToolbarButton
                             editor={editor}
                             icon={icons.unorderedList}
-                            tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.bulletList.tooltip" defaultMessage="Bullet list" />}
+                            tooltip={<FormattedMessage id="dextinity.tipTapRichTextEditor.bulletList.tooltip" defaultMessage="Bullet list" />}
                             isActive="bulletList"
                             onToggle={() => handleListToggle(resolvedOptions.unorderedList as TipTapResolvedList)}
                         />
@@ -504,14 +504,14 @@ export const TipTapRichTextEditorToolbar = ({
                     <ToolbarButton
                         editor={editor}
                         icon={icons.indent}
-                        tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.indent.tooltip" defaultMessage="Increase indent" />}
+                        tooltip={<FormattedMessage id="dextinity.tipTapRichTextEditor.indent.tooltip" defaultMessage="Increase indent" />}
                         disabled={!editorState.canIndent}
                         onToggle={() => editor.chain().focus().sinkListItem("listItem").run()}
                     />
                     <ToolbarButton
                         editor={editor}
                         icon={icons.dedent}
-                        tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.dedent.tooltip" defaultMessage="Decrease indent" />}
+                        tooltip={<FormattedMessage id="dextinity.tipTapRichTextEditor.dedent.tooltip" defaultMessage="Decrease indent" />}
                         disabled={!editorState.canDedent}
                         onToggle={() => editor.chain().focus().liftListItem("listItem").run()}
                     />
@@ -522,7 +522,7 @@ export const TipTapRichTextEditorToolbar = ({
                     <ToolbarButton
                         editor={editor}
                         icon={icons.link}
-                        tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.link.tooltip" defaultMessage="Link" />}
+                        tooltip={<FormattedMessage id="dextinity.tipTapRichTextEditor.link.tooltip" defaultMessage="Link" />}
                         isActive="link"
                         disabled={editorState.selectionEmpty && !editorState.isLinkActive}
                         onToggle={() => setLinkDialogOpen(true)}
@@ -530,7 +530,7 @@ export const TipTapRichTextEditorToolbar = ({
                     <ToolbarButton
                         editor={editor}
                         icon={icons.removeLink}
-                        tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.removeLink.tooltip" defaultMessage="Remove link" />}
+                        tooltip={<FormattedMessage id="dextinity.tipTapRichTextEditor.removeLink.tooltip" defaultMessage="Remove link" />}
                         disabled={!editorState.isLinkActive}
                         onToggle={() => editor.chain().focus().extendMarkRange("link").unsetLinkData().run()}
                     />
@@ -540,9 +540,9 @@ export const TipTapRichTextEditorToolbar = ({
                 <ToolbarGroup {...slotProps?.toolbarGroup}>
                     <TipTapRichTextEditorToolbarButton
                         icon={icons.placeholder}
-                        tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.placeholder.tooltip" defaultMessage="Insert placeholder" />}
+                        tooltip={<FormattedMessage id="dextinity.tipTapRichTextEditor.placeholder.tooltip" defaultMessage="Insert placeholder" />}
                         ariaLabel={intl.formatMessage({
-                            id: "dextinity.blocks.tipTapRichText.placeholder.tooltip",
+                            id: "dextinity.tipTapRichTextEditor.placeholder.tooltip",
                             defaultMessage: "Insert placeholder",
                         })}
                         onClick={(e) => setPlaceholderAnchorEl(e.currentTarget)}
@@ -571,7 +571,7 @@ export const TipTapRichTextEditorToolbar = ({
                             icon={icons.nonBreakingSpace}
                             tooltip={
                                 <FormattedMessage
-                                    id="dextinity.blocks.tipTapRichText.nonBreakingSpace.tooltip"
+                                    id="dextinity.tipTapRichTextEditor.nonBreakingSpace.tooltip"
                                     defaultMessage="Insert a non-breaking space"
                                 />
                             }
@@ -583,7 +583,7 @@ export const TipTapRichTextEditorToolbar = ({
                             editor={editor}
                             icon={icons.softHyphen}
                             tooltip={
-                                <FormattedMessage id="dextinity.blocks.tipTapRichText.softHyphen.tooltip" defaultMessage="Insert a soft hyphen" />
+                                <FormattedMessage id="dextinity.tipTapRichTextEditor.softHyphen.tooltip" defaultMessage="Insert a soft hyphen" />
                             }
                             onToggle={() => editor.chain().focus().insertSoftHyphen().run()}
                         />

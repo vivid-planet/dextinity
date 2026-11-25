@@ -2168,6 +2168,29 @@ Replace the class name:
 
 To restyle the toolbar everywhere, prefer `styleOverrides` of `DextinityAdminTipTapRichTextEditor` in the theme over a class name selector.
 
+### Rename overridden messages of the TipTap rich text editor
+
+The messages of the editor of `createTipTapRichTextBlock` move from `dextinity.blocks.tipTapRichText.*` to `dextinity.tipTapRichTextEditor.*`.
+The messages of the block itself keep their IDs: `dextinity.blocks.tipTapRichText`, `dextinity.blocks.tipTapRichText.insertBlock`, `dextinity.blocks.tipTapRichText.insertBlock.tooltip`, `dextinity.blocks.tipTapRichText.editBlock` and `dextinity.blocks.tipTapRichText.removeBlock`.
+
+Find the messages your project overrides:
+
+```sh
+grep -rn "dext[a-z]*\.blocks\.tipTapRichText\." src
+```
+
+Also check your project's own translation files, if it keeps overrides there.
+
+Rename each one that isn't a message of the block itself.
+The underline tooltip's ID also loses a typo:
+
+```diff
+-  "dextinity.blocks.tipTapRichText.bold.tooltip": "Fett",
+-  "dextintiy.blocks.tipTapRichText.underline.tooltip": "Unterstrichen",
++  "dextinity.tipTapRichTextEditor.bold.tooltip": "Fett",
++  "dextinity.tipTapRichTextEditor.underline.tooltip": "Unterstrichen",
+```
+
 <!-- "Verify lint passes" must always be the last step for this service. -->
 
 ### Verify lint passes

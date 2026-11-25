@@ -220,12 +220,12 @@ const defaultTextBlocks: TipTapTextBlock[] = [
     {
         name: "paragraph",
         tag: "p",
-        label: <FormattedMessage id="dextinity.blocks.tipTapRichText.textBlock.paragraph" defaultMessage="Paragraph" />,
+        label: <FormattedMessage id="dextinity.tipTapRichTextEditor.textBlock.paragraph" defaultMessage="Paragraph" />,
     },
     ...allHeadingLevels.map((level) => ({
         name: `heading-${level}`,
         tag: `h${level}` as const,
-        label: <FormattedMessage id="dextinity.blocks.tipTapRichText.textBlock.heading" defaultMessage="Heading {level}" values={{ level }} />,
+        label: <FormattedMessage id="dextinity.tipTapRichTextEditor.textBlock.heading" defaultMessage="Heading {level}" values={{ level }} />,
     })),
 ];
 

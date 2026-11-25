@@ -9,7 +9,6 @@ import { DISABLE_DEXTINITY_GUARDS_METADATA_KEY } from "../../auth/decorators/dis
 import { DextinityValidationException } from "../../common/errors/validation.exception.js";
 import type { PageTreeService } from "../../page-tree/page-tree.service.js";
 import { AbstractAccessControlService } from "../access-control.service.js";
-import { ContentScopeService } from "../content-scope.service.js";
 import { AFFECTED_ENTITY_METADATA_KEY, type AffectedEntityMeta } from "../decorators/affected-entity.decorator.js";
 import { AFFECTED_SCOPE_METADATA_KEY, type AffectedScopeMeta } from "../decorators/affected-scope.decorator.js";
 import { REQUIRED_PERMISSION_METADATA_KEY, type RequiredPermissionMetadata } from "../decorators/required-permission.decorator.js";
@@ -49,7 +48,6 @@ describe("UserPermissionsGuard", () => {
     let guard: UserPermissionsGuard;
     let reflector: Reflector;
     let orm: MikroORM;
-    let contentScopeService: ContentScopeService;
     let accessControlService: AccessControlService;
     let moduleRef: ModuleRef;
 
@@ -111,9 +109,8 @@ describe("UserPermissionsGuard", () => {
             }),
         );
         moduleRef = createMock<ModuleRef>();
-        contentScopeService = new ContentScopeService(reflector, orm, moduleRef);
         accessControlService = new AccessControlService();
-        guard = new UserPermissionsGuard(reflector, contentScopeService, accessControlService, {});
+        guard = new UserPermissionsGuard(reflector, orm, moduleRef, accessControlService, {});
     });
 
     it("allows bypassing", async () => {
@@ -548,12 +545,7 @@ describe("UserPermissionsGuard", () => {
                 getNode: (id: string) => ({ id, scope: { a: "a" } }),
             }),
         } as unknown as PageTreeService;
-        const guardWithPageTree = new UserPermissionsGuard(
-            reflector,
-            new ContentScopeService(reflector, orm, moduleRef, pageTreeService),
-            accessControlService,
-            {},
-        );
+        const guardWithPageTree = new UserPermissionsGuard(reflector, orm, moduleRef, accessControlService, {}, pageTreeService);
         mockAnnotations({
             requiredPermission: {
                 requiredPermission: [permissions.p1],
@@ -577,12 +569,7 @@ describe("UserPermissionsGuard", () => {
                 getNode: () => undefined,
             }),
         } as unknown as PageTreeService;
-        const guardWithPageTree = new UserPermissionsGuard(
-            reflector,
-            new ContentScopeService(reflector, orm, moduleRef, pageTreeService),
-            accessControlService,
-            {},
-        );
+        const guardWithPageTree = new UserPermissionsGuard(reflector, orm, moduleRef, accessControlService, {}, pageTreeService);
         mockAnnotations({
             requiredPermission: {
                 requiredPermission: [permissions.p1],

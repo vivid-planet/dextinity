@@ -533,3 +533,8 @@
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
+.mono {
+    font-family: var(--dextinity-font-family-mono);
+    font-size: var(--dextinity-typography-small-size);
+}

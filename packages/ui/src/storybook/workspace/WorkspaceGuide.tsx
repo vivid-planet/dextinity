@@ -5,58 +5,59 @@ import { IconButton } from "../../components/iconButton/IconButton";
 import { Popover } from "../../components/popover/Popover";
 import styles from "./WorkspaceToolbarControls.module.scss";
 
-const tools = [
-    { icon: "file-data", name: "Content", description: "Empty, few, many, long texts, error, or loading, on all pages of the CMS prototype." },
-    { icon: "align-justify", name: "Text length", description: "All texts 40 % longer or twice as long, as translations often are." },
-    { icon: "magic-wand", name: "Tokens", description: "Accent and neutral hues, text size, corner radii, and title weight, live; copied as CSS." },
+const modes = [
+    { key: "1", name: "Prototype", description: "Click through and show it, with as much room as possible. Double click an element to inspect it." },
     {
-        icon: "window",
-        name: "Compare",
-        description: "Phone, tablet, and desktop side by side, two variants side by side, or swiped on top of each other.",
+        key: "2",
+        name: "Inspect",
+        description:
+            "Component opens a component's story, Measure shows spacing and tokens, Accessibility checks tab order, targets, and contrast, Compare shows devices or variants side by side.",
     },
-    { icon: "select", name: "Pick", description: "Click a component in the page to open its story." },
     {
-        icon: "crop-action",
-        name: "Measure",
-        description: "Size, spacing, font, and colors of an element with their tokens; point at another for the distance.",
+        key: "3",
+        name: "Review",
+        description: "Pin comments to the page and edit texts in place; comments copy as a list, text changes as a list or as a request for code.",
     },
-    { icon: "chat-add", name: "Comments", description: "Pin a comment to an element; the list copies all comments of the prototype." },
-    { icon: "pencil-line", name: "Edit texts", description: "Click a text to change it in place; kept across reloads and copied as a list." },
-    { icon: "link-diagonal", name: "Hotspots", description: "Make an element open another page, also one you added." },
     {
-        icon: "contrast",
-        name: "Accessibility",
-        description: "Tab order, controls smaller than 24 × 24 pixels, and low contrast in the visible area.",
+        key: "4",
+        name: "Flow",
+        description: "The flow map of all pages and their links; Link elements makes an element open another page. New pages come from the panel.",
     },
-    { icon: "tune-logic", name: "Flow map", description: "All pages and the links between them; shows pages without a way on." },
-    { icon: "eye", name: "Present", description: "Only the prototype, for walking someone through it; Escape ends it." },
+    { key: "", name: "Library", description: "Storybook with all components and their stories." },
 ] as const;
 
-/** What the workspace's tools do, for finding the right one without trying each icon. */
+/** What the workspace's modes are for, for finding the right one without trying each. */
 export function WorkspaceGuide() {
     const [open, setOpen] = useState(false);
     return (
         <Popover
             open={open}
             onOpenChange={setOpen}
-            title="Tools for prototyping"
+            title="Modes"
             placement="bottom-end"
             trigger={
-                <IconButton variant="text" color="secondary" aria-label="What the tools do">
+                <IconButton variant="text" color="secondary" aria-label="What the modes do">
                     <Icon name="help-circle" />
                 </IconButton>
             }
         >
             <ul className={styles.guide}>
-                {tools.map((tool) => (
-                    <li key={tool.name}>
-                        <Icon name={tool.icon} />
+                {modes.map((mode) => (
+                    <li key={mode.name}>
+                        <kbd className={styles.guideKey}>{mode.key}</kbd>
                         <span>
-                            <strong>{tool.name}</strong> {tool.description}
+                            <strong>{mode.name}</strong> {mode.description}
                         </span>
                     </li>
                 ))}
             </ul>
+            <p className={styles.guideNote}>
+                Keys open a tool in its mode and close it again: I Component, M Measure, A Accessibility, C Comments, E Edit texts, F Flow map, L Link
+                elements. Escape closes the open tool.
+            </p>
+            <p className={styles.guideNote}>
+                View sets the content, text length, color scheme, theme, density, and tokens, and keeps combinations as presets.
+            </p>
             <p className={styles.guideNote}>New pages, comments, text changes, hotspots, and tokens are kept in this browser only.</p>
         </Popover>
     );

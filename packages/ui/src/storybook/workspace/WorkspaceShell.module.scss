@@ -82,8 +82,10 @@
         scrollbar-width: none;
     }
 
-    // Aligned to the end while everything fits; a scrolling bar starts at its first button
-    > :first-child {
+    // Aligned to the end while everything fits; a scrolling bar starts at its first button. A pseudo-element, since an open menu puts
+    // focus guards before its button, which would otherwise take the first place and let the buttons jump to the start
+    &::before {
+        content: "";
         margin-inline-start: auto;
     }
 
@@ -119,11 +121,20 @@
 }
 
 // The row for what the canvas shows: where it is, and the tools for the frame
+// Where the canvas is, how it's shown in the middle, and the mode's tools at the end
 .contextBar {
     display: flex;
     gap: 8px;
     align-items: center;
     justify-content: space-between;
+
+    // The view controls in the middle, where the location and the tools on either side leave them the same room
+    @media (width >= 760px) {
+        &[data-centered] {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+        }
+    }
     min-inline-size: 0;
     min-block-size: var(--workspace-bar-height);
     padding-inline: 16px 8px;
@@ -132,6 +143,21 @@
     @media (width >= 760px) {
         padding-inline-end: 16px;
     }
+}
+
+// Where the canvas is, and the zoom while comparing frames: on the left, so the tools on the right keep their place
+.contextCenter {
+    display: flex;
+    flex: none;
+    gap: 8px;
+    align-items: center;
+}
+
+.contextStart {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    min-inline-size: 0;
 }
 
 .location {
@@ -297,6 +323,16 @@
     min-block-size: 0;
     overflow: auto;
     padding: 0 6px 12px;
+}
+
+// A group of the app's menu or an asset folder opens no page, so it has no icon and a lighter text than the pages
+.panelList :has(> * > .pageGroupMarker) {
+    color: var(--dextinity-color-text-subtle);
+
+    // The name starts where the pages' icons start
+    > :has(> .pageGroupMarker) {
+        display: none;
+    }
 }
 
 .panelFooter {

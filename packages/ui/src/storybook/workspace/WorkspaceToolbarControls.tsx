@@ -1,5 +1,6 @@
 import { type ReactNode, useState } from "react";
 
+import { Button } from "../../components/button/Button";
 import { Field } from "../../components/field/Field";
 import { Icon } from "../../components/icon/Icon";
 import { IconButton } from "../../components/iconButton/IconButton";
@@ -61,6 +62,8 @@ export function ViewportControl({
     zoom,
     onSizeChange,
     onZoomChange,
+    disabled,
+    showLabel,
 }: {
     responsive: boolean;
     onResponsiveChange: () => void;
@@ -69,6 +72,9 @@ export function ViewportControl({
     zoom: WorkspaceZoom;
     onSizeChange: (size: { width?: number; height?: number }) => void;
     onZoomChange: (zoom: WorkspaceZoom) => void;
+    disabled?: boolean;
+    /** Names the setting and its current size on the button, where there's room, e.g. in the middle of the bar. */
+    showLabel?: boolean;
 }) {
     const [open, setOpen] = useState(false);
     const activePreset = responsive ? undefined : getViewportPreset(width, height);
@@ -79,15 +85,29 @@ export function ViewportControl({
             open={open}
             onOpenChange={setOpen}
             title="Viewport"
-            placement="bottom-end"
+            placement={showLabel ? "bottom-start" : "bottom-end"}
             trigger={
-                <IconButton
-                    variant="text"
-                    color="secondary"
-                    aria-label={responsive ? "Viewport · Responsive" : `Viewport · ${triggerLabel}, ${width} × ${height}`}
-                >
-                    <Icon name={activePreset?.icon ?? "devices"} />
-                </IconButton>
+                showLabel ? (
+                    <Button
+                        variant="text"
+                        color="secondary"
+                        size="small"
+                        disabled={disabled}
+                        startIcon={<Icon name={activePreset?.icon ?? "devices"} />}
+                        endIcon={<Icon name="chevron-down" />}
+                    >
+                        Viewport: {responsive ? "Responsive" : `${triggerLabel} ${width} × ${height}`}
+                    </Button>
+                ) : (
+                    <IconButton
+                        variant="text"
+                        color="secondary"
+                        disabled={disabled}
+                        aria-label={responsive ? "Viewport · Responsive" : `Viewport · ${triggerLabel}, ${width} × ${height}`}
+                    >
+                        <Icon name={activePreset?.icon ?? "devices"} />
+                    </IconButton>
+                )
             }
         >
             <div className={styles.popoverBody}>
@@ -153,6 +173,8 @@ interface SettingOption<Value extends string> {
     value: Value;
     icon: ReactNode;
     "aria-label": string;
+    /** The option on a labeled button, where the full name is too long. */
+    shortLabel?: string;
 }
 
 /**
@@ -165,6 +187,7 @@ export function SettingMenu<Value extends string>({
     options,
     value,
     onChange,
+    showLabel,
 }: {
     label: string;
     /** Shown on the button instead of the current option's icon, for options without icons of their own. */
@@ -172,6 +195,8 @@ export function SettingMenu<Value extends string>({
     options: ReadonlyArray<SettingOption<Value>>;
     value: Value;
     onChange: (value: Value) => void;
+    /** Names the setting and its current option on the button, where there's room, e.g. in the middle of the bar. */
+    showLabel?: boolean;
 }) {
     const [open, setOpen] = useState(false);
     const current = options.find((option) => option.value === value);
@@ -180,11 +205,17 @@ export function SettingMenu<Value extends string>({
         <Menu
             open={open}
             onOpenChange={setOpen}
-            placement="bottom-end"
+            placement={showLabel ? "bottom-start" : "bottom-end"}
             trigger={
-                <IconButton variant="text" color="secondary" aria-label={`${label} · ${current?.["aria-label"] ?? value}`}>
-                    {icon ?? current?.icon}
-                </IconButton>
+                showLabel ? (
+                    <Button variant="text" color="secondary" size="small" startIcon={icon ?? current?.icon} endIcon={<Icon name="chevron-down" />}>
+                        {label}: {current?.shortLabel ?? current?.["aria-label"] ?? value}
+                    </Button>
+                ) : (
+                    <IconButton variant="text" color="secondary" aria-label={`${label} · ${current?.["aria-label"] ?? value}`}>
+                        {icon ?? current?.icon}
+                    </IconButton>
+                )
             }
         >
             <MenuRadioGroup aria-label={label} value={value} onChange={(newValue) => onChange(newValue as Value)}>

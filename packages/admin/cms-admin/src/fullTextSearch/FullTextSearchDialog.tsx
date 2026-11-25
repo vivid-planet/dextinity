@@ -6,7 +6,7 @@ import { orange } from "@mui/material/colors";
 // eslint-disable-next-line no-restricted-imports -- the Dextinity Dialog always renders a title bar, the search input replaces it here
 import Dialog from "@mui/material/Dialog";
 import { styled } from "@mui/material/styles";
-import { Fragment, type KeyboardEvent, type RefObject, useRef, useState } from "react";
+import { Fragment, type KeyboardEvent, type RefObject, useEffect, useId, useRef, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useHistory } from "react-router";
 import { useDebounce } from "use-debounce";
@@ -51,6 +51,25 @@ const pageSize = 10;
 const maximumLimit = 50;
 const skeletonRowCount = 4;
 const emptyTypes: FullTextSearchType[] = [];
+
+interface ActiveResult {
+    key: string;
+    scrollIntoView: boolean;
+}
+
+type ArrowStep = 1 | -1;
+
+function getResultKey(result: GQLFullTextSearchResultItemFragment) {
+    return `${result.entityName}:${result.id}`;
+}
+
+function getNextOptionIndex(options: GQLFullTextSearchResultItemFragment[], activeKey: string | undefined, step: ArrowStep) {
+    const activeIndex = options.findIndex((result) => getResultKey(result) === activeKey);
+    if (activeIndex === -1) {
+        return step === 1 ? 0 : options.length - 1;
+    }
+    return (activeIndex + step + options.length) % options.length;
+}
 
 interface FullTextSearchDialogProps {
     open: boolean;
@@ -97,6 +116,10 @@ function FullTextSearchDialogContent({ inputRef, onClose }: FullTextSearchDialog
     const [search, setSearch] = useState("");
     const [activeType, setActiveType] = useState<string>();
     const [showMore, setShowMore] = useState({ resultsKey: "", limit: pageSize });
+    const [activeResult, setActiveResult] = useState<ActiveResult | null>(null);
+    // An arrow key pressed while the results of the current search are loading moves through them once they're loaded
+    const [pendingArrowStep, setPendingArrowStep] = useState<ArrowStep | null>(null);
+    const listboxId = useId();
 
     const [debouncedSearch] = useDebounce(search.trim(), 250);
     const hasSearch = search.trim().length >= minimumSearchLength;
@@ -127,8 +150,34 @@ function FullTextSearchDialogContent({ inputRef, onClose }: FullTextSearchDialog
     const results = hasSearch ? (data ?? previousData)?.fullTextSearch : undefined;
     const isSearchPending = loading || (!loadedTypes && !typesError) || debouncedSearch !== search.trim();
 
+    const loadedResults = data?.fullTextSearch.nodes;
+    useEffect(() => {
+        if (pendingArrowStep === null || isSearchPending || !loadedResults) {
+            return;
+        }
+        const loadedOptions = groupByType(loadedResults).flatMap((group) => group.nodes);
+        if (loadedOptions.length > 0) {
+            setActiveResult((previousActiveResult) => {
+                const nextIndex = getNextOptionIndex(loadedOptions, previousActiveResult?.key, pendingArrowStep);
+                return { key: getResultKey(loadedOptions[nextIndex]), scrollIntoView: true };
+            });
+        }
+        setPendingArrowStep(null);
+    }, [pendingArrowStep, isSearchPending, loadedResults]);
+
+    const changeActiveType = (type: string | undefined) => {
+        setActiveType(type);
+        setActiveResult(null);
+    };
+
+    const changeSearch = (value: string) => {
+        setSearch(value);
+        setActiveResult(null);
+        setPendingArrowStep(null);
+    };
+
     const clearSearch = () => {
-        setSearch("");
+        changeSearch("");
         inputRef.current?.focus();
     };
 
@@ -161,6 +210,60 @@ function FullTextSearchDialogContent({ inputRef, onClose }: FullTextSearchDialog
         count: results ? (results.types.find((typeCount) => typeCount.type === type)?.count ?? 0) : undefined,
     }));
     const totalCountOfEnabledTypes = results ? tabs.reduce((sum, { count = 0 }) => sum + count, 0) : undefined;
+
+    const resultGroups = hasSearch && !error && results ? groupByType(results.nodes) : [];
+    const options = resultGroups.flatMap((group) => group.nodes);
+    const isListboxShown = options.length > 0;
+    // The results shown while the next search is loading belong to the previous search, so none of them can be selected
+    const activeIndex = activeResult && !isSearchPending ? options.findIndex((result) => getResultKey(result) === activeResult.key) : -1;
+    const getOptionId = (index: number) => `${listboxId}-option-${index}`;
+    const canSwitchTabsWithTabKey = tabs.length > 0 && results !== undefined;
+
+    const moveActiveResult = (step: ArrowStep) => {
+        const nextIndex = getNextOptionIndex(options, activeResult?.key, step);
+        setActiveResult({ key: getResultKey(options[nextIndex]), scrollIntoView: true });
+    };
+
+    const switchTab = (step: ArrowStep) => {
+        const tabTypes = [undefined, ...tabs.map(({ type }) => type)];
+        const nextIndex = tabTypes.indexOf(enabledActiveType) + step;
+        if (nextIndex < 0 || nextIndex >= tabTypes.length) {
+            return false;
+        }
+        changeActiveType(tabTypes[nextIndex]);
+        return true;
+    };
+
+    const handleInputKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+        // Safari reports the key that confirms an IME composition only through the key code
+        if (event.nativeEvent.isComposing || event.keyCode === 229) {
+            return;
+        }
+
+        if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+            if (!hasSearch) {
+                return;
+            }
+            event.preventDefault();
+            const step = event.key === "ArrowDown" ? 1 : -1;
+            if (isSearchPending && !error) {
+                setPendingArrowStep(step);
+            } else if (options.length > 0) {
+                moveActiveResult(step);
+            }
+        } else if (event.key === "Enter") {
+            if (activeIndex === -1) {
+                return;
+            }
+            event.preventDefault();
+            navigateToResult(options[activeIndex]);
+        } else if (event.key === "Tab" && !event.altKey && !event.ctrlKey && !event.metaKey && canSwitchTabsWithTabKey) {
+            // Tab moves the focus out of the input only after the last tab (Shift+Tab before the first one), so the other controls stay reachable
+            if (switchTab(event.shiftKey ? -1 : 1)) {
+                event.preventDefault();
+            }
+        }
+    };
 
     const renderBody = () => {
         if (!hasSearch) {
@@ -227,28 +330,50 @@ function FullTextSearchDialogContent({ inputRef, onClose }: FullTextSearchDialog
         return (
             // A new list starts at the top instead of keeping the scroll position of the previous one
             <ResultsContainer key={resultsKey}>
-                {groupByType(results.nodes).map((group) => (
-                    <FullTextSearchResultGroup
-                        key={group.type}
-                        label={getTypeLabel(group.nodes[0])}
-                        count={results.types.find(({ type }) => type === group.type)?.count ?? group.nodes.length}
-                    >
-                        {group.nodes.map((result) => (
-                            <FullTextSearchResultItem
-                                key={`${result.entityName}:${result.id}`}
-                                result={result}
-                                linkable={entityDependencyMap[result.entityName] !== undefined}
-                                onClick={() => navigateToResult(result)}
-                            />
-                        ))}
-                    </FullTextSearchResultGroup>
-                ))}
+                <div
+                    id={listboxId}
+                    role="listbox"
+                    aria-label={intl.formatMessage({ id: "dextinity.fullTextSearch.resultsLabel", defaultMessage: "Search results" })}
+                >
+                    {resultGroups.map((group) => (
+                        <FullTextSearchResultGroup
+                            key={group.type}
+                            label={getTypeLabel(group.nodes[0])}
+                            count={results.types.find(({ type }) => type === group.type)?.count ?? group.nodes.length}
+                        >
+                            {group.nodes.map((result) => {
+                                const resultKey = getResultKey(result);
+                                const index = options.indexOf(result);
+                                return (
+                                    <FullTextSearchResultItem
+                                        key={resultKey}
+                                        id={getOptionId(index)}
+                                        result={result}
+                                        linkable={entityDependencyMap[result.entityName] !== undefined}
+                                        active={index === activeIndex}
+                                        scrollIntoViewWhenActive={activeResult?.scrollIntoView}
+                                        onClick={() => navigateToResult(result)}
+                                        onHover={() => {
+                                            if (activeResult?.key !== resultKey) {
+                                                setActiveResult({ key: resultKey, scrollIntoView: false });
+                                            }
+                                        }}
+                                    />
+                                );
+                            })}
+                        </FullTextSearchResultGroup>
+                    ))}
+                </div>
                 {results.nodes.length < results.totalCount && limit < maximumLimit && (
                     <ShowMoreContainer>
                         <Button
                             variant="textDark"
                             disabled={loading}
-                            onClick={() => setShowMore({ resultsKey, limit: Math.min(limit + pageSize, maximumLimit) })}
+                            onClick={() => {
+                                // Disabling the button while loading, or removing it after the last page, would drop the focus to the body
+                                inputRef.current?.focus();
+                                setShowMore({ resultsKey, limit: Math.min(limit + pageSize, maximumLimit) });
+                            }}
                         >
                             <FormattedMessage id="dextinity.fullTextSearch.showMore" defaultMessage="Show more" />
                         </Button>
@@ -267,11 +392,18 @@ function FullTextSearchDialogContent({ inputRef, onClose }: FullTextSearchDialog
                     autoFocus
                     fullWidth
                     value={search}
-                    onChange={(event) => setSearch(event.target.value)}
+                    onChange={(event) => changeSearch(event.target.value)}
+                    onKeyDown={handleInputKeyDown}
                     placeholder={intl.formatMessage({ id: "dextinity.fullTextSearch.placeholder", defaultMessage: "Search…" })}
+                    autoComplete="off"
                     inputProps={{
                         "aria-label": intl.formatMessage({ id: "dextinity.fullTextSearch.searchLabel", defaultMessage: "Search" }),
                         maxLength: maximumSearchLength,
+                        role: "combobox",
+                        "aria-autocomplete": "list",
+                        "aria-expanded": isListboxShown,
+                        "aria-controls": isListboxShown ? listboxId : undefined,
+                        "aria-activedescendant": activeIndex !== -1 ? getOptionId(activeIndex) : undefined,
                     }}
                 />
                 {search.length > 0 ? (
@@ -285,12 +417,21 @@ function FullTextSearchDialogContent({ inputRef, onClose }: FullTextSearchDialog
                 )}
                 <FullTextSearchTypeSettings types={types} disabledTypes={disabledTypes} onTypeEnabledChange={setTypeEnabled} />
             </SearchRow>
-            <FullTextSearchTypeTabs tabs={tabs} totalCount={totalCountOfEnabledTypes} activeType={enabledActiveType} onChange={setActiveType} />
+            <FullTextSearchTypeTabs tabs={tabs} totalCount={totalCountOfEnabledTypes} activeType={enabledActiveType} onChange={changeActiveType} />
             <Body>
                 {hasSearch && isSearchPending && <LoadingBar />}
                 {renderBody()}
             </Body>
-            <FullTextSearchKeyHints hasSearch={search.length > 0} />
+            <FullTextSearchKeyHints hasSearch={search.length > 0} hasResults={isListboxShown} canSwitchTabs={canSwitchTabsWithTabKey} />
+            <VisuallyHidden role="status">
+                {hasSearch && results && !loading && !error && (
+                    <FormattedMessage
+                        id="dextinity.fullTextSearch.resultCount"
+                        defaultMessage="{count, plural, =0 {No results} one {# result} other {# results}}"
+                        values={{ count: results.totalCount }}
+                    />
+                )}
+            </VisuallyHidden>
         </Root>
     );
 }
@@ -416,6 +557,15 @@ const ShowMoreContainer = styled("div")`
     display: flex;
     justify-content: center;
     padding: ${({ theme }) => theme.spacing(0, 4, 3)};
+`;
+
+const VisuallyHidden = styled("div")`
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
 `;
 
 const StatusContainer = styled("div")`

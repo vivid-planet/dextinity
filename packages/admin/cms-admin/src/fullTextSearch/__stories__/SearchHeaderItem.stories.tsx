@@ -1,6 +1,7 @@
 import { MainContent, MasterLayout } from "@dextinity/admin";
 import { Typography } from "@mui/material";
 import type { Decorator, Meta, StoryContext, StoryObj } from "@storybook/react-vite";
+import { useLocation } from "react-router";
 import { expect, screen, waitFor, within } from "storybook/test";
 
 import { Header } from "../../common/header/Header";
@@ -10,6 +11,11 @@ import { CurrentUserContext, type CurrentUserInterface } from "../../userPermiss
 import { SearchHeaderItem } from "../SearchHeaderItem";
 
 const EmptyMenu = () => null;
+
+function CurrentPath() {
+    const location = useLocation();
+    return <Typography data-testid="current-path">{location.pathname}</Typography>;
+}
 
 function createDependency({ displayName, path }: { displayName: string; path: string }): DependencyInterface {
     return {
@@ -55,6 +61,7 @@ const renderInMasterLayout: Decorator = (Story) => (
     <MasterLayout headerComponent={Story} menuComponent={EmptyMenu}>
         <MainContent>
             <Typography>Page content</Typography>
+            <CurrentPath />
         </MainContent>
     </MasterLayout>
 );
@@ -84,7 +91,7 @@ async function openSearchDialog({ canvas, userEvent }: Pick<StoryContext, "canva
 }
 
 async function search({ dialog, userEvent, text }: { dialog: HTMLElement; userEvent: StoryContext["userEvent"]; text: string }) {
-    await userEvent.type(within(dialog).getByRole("textbox", { name: "Search" }), text);
+    await userEvent.type(within(dialog).getByRole("combobox", { name: "Search" }), text);
 }
 
 /** The empty dialog keeps its height and shows a tab for every type that can be searched, without counts. */
@@ -115,17 +122,15 @@ export const Default: Story = {
 
             await waitFor(
                 () => {
-                    expect(within(dialog).getAllByRole("list")).toHaveLength(4);
+                    expect(within(dialog).getAllByRole("group")).toHaveLength(4);
                 },
                 { timeout: 3000 },
             );
-            const [newsGroup, linkGroup, pageGroup, productGroup] = within(dialog).getAllByRole("list");
-            expect(within(newsGroup).getByText("News")).toBeInTheDocument();
-            expect(within(linkGroup).getByText("Link")).toBeInTheDocument();
-            expect(within(pageGroup).getByText("Page")).toBeInTheDocument();
-            expect(within(pageGroup).getByText("2")).toBeInTheDocument();
-            expect(within(pageGroup).getAllByRole("button")).toHaveLength(2);
-            expect(within(productGroup).getByText("Product")).toBeInTheDocument();
+            const groupsInExpectedOrder = ["News", "Link", "Page", "Product"].map((name) => within(dialog).getByRole("group", { name }));
+            expect(within(dialog).getAllByRole("group")).toEqual(groupsInExpectedOrder);
+            const pageGroup = within(dialog).getByRole("group", { name: "Page" });
+            expect(pageGroup.parentElement).toHaveTextContent(/^Page2/);
+            expect(within(pageGroup).getAllByRole("option")).toHaveLength(2);
             expect(within(pageGroup).getAllByText("able")).toHaveLength(2);
             expect(dialog.querySelectorAll("mark").length).toBeGreaterThan(0);
         });
@@ -136,7 +141,7 @@ export const Default: Story = {
             await userEvent.click(within(dialog).getByRole("tab", { name: /^Link/ }));
 
             await waitFor(() => {
-                expect(within(dialog).getAllByRole("list")).toHaveLength(1);
+                expect(within(dialog).getAllByRole("group")).toHaveLength(1);
             });
             expect(within(dialog).getByText("Absolute")).toBeInTheDocument();
             expect(within(dialog).getByRole("tab", { name: /^Link/ })).toHaveAttribute("aria-selected", "true");
@@ -189,7 +194,7 @@ export const ChooseWhatToSearch: Story = {
                 expect(within(dialog).queryByRole("tab", { name: /^Product/ })).not.toBeInTheDocument();
             });
             await waitFor(() => {
-                expect(within(dialog).getAllByRole("list")).toHaveLength(3);
+                expect(within(dialog).getAllByRole("group")).toHaveLength(3);
             });
             expect(within(dialog).getByRole("tab", { name: /^All/ })).toHaveTextContent("All4");
         });
@@ -217,19 +222,19 @@ export const OnlySwitchedOffTypesOffered: Story = {
     },
 };
 
-/** Ctrl+K opens the dialog with the focus in the search input. Escape clears the search first and closes the dialog when there's nothing left to clear. */
+/** Ctrl+K opens the dialog with the focus in the search input and closes it again. Escape clears the search first and closes the dialog when there's nothing left to clear. */
 export const KeyboardShortcuts: Story = {
     play: async ({ userEvent, step }) => {
         await step("Ctrl+K opens the dialog", async () => {
             await userEvent.keyboard("{Control>}k{/Control}");
             expect(await screen.findByRole("dialog", { name: "Search" })).toBeInTheDocument();
             await waitFor(() => {
-                expect(screen.getByRole("textbox", { name: "Search" })).toHaveFocus();
+                expect(screen.getByRole("combobox", { name: "Search" })).toHaveFocus();
             });
         });
 
         await step("Escape clears the search", async () => {
-            const searchInput = screen.getByRole("textbox", { name: "Search" });
+            const searchInput = screen.getByRole("combobox", { name: "Search" });
             await userEvent.keyboard("ab");
             expect(searchInput).toHaveValue("ab");
             await userEvent.keyboard("{Escape}");
@@ -241,6 +246,216 @@ export const KeyboardShortcuts: Story = {
         await step("Escape closes the empty dialog", async () => {
             await userEvent.keyboard("{Escape}");
 
+            await waitFor(() => {
+                expect(screen.queryByRole("dialog", { name: "Search" })).not.toBeInTheDocument();
+            });
+        });
+
+        await step("Ctrl+K closes the open dialog", async () => {
+            await userEvent.keyboard("{Control>}k{/Control}");
+            expect(await screen.findByRole("dialog", { name: "Search" })).toBeInTheDocument();
+
+            await userEvent.keyboard("{Control>}k{/Control}");
+            await waitFor(() => {
+                expect(screen.queryByRole("dialog", { name: "Search" })).not.toBeInTheDocument();
+            });
+        });
+    },
+};
+
+/**
+ * The search follows the WAI-ARIA combobox pattern: the focus stays in the input, the arrow keys move the active result across the groups,
+ * Enter opens it, and Tab switches the type tab.
+ */
+export const KeyboardNavigation: Story = {
+    play: async ({ canvas, userEvent, step }) => {
+        const currentPath = canvas.getByTestId("current-path");
+        const initialPath = currentPath.textContent ?? "";
+
+        await userEvent.keyboard("{Control>}k{/Control}");
+        const dialog = await screen.findByRole("dialog", { name: "Search" });
+        const searchInput = within(dialog).getByRole("combobox", { name: "Search" });
+        await waitFor(() => {
+            expect(searchInput).toHaveFocus();
+        });
+
+        const expectActiveOption = (option: HTMLElement) => {
+            expect(searchInput).toHaveAttribute("aria-activedescendant", option.id);
+            expect(option).toHaveAttribute("aria-selected", "true");
+            expect(
+                within(dialog)
+                    .getAllByRole("option")
+                    .filter((otherOption) => otherOption.getAttribute("aria-selected") === "true"),
+            ).toEqual([option]);
+            expect(searchInput).toHaveFocus();
+        };
+
+        await step("The input controls the results listbox", async () => {
+            await userEvent.keyboard("ab");
+
+            const listbox = await within(dialog).findByRole("listbox", { name: "Search results" }, { timeout: 3000 });
+            expect(searchInput).toHaveAttribute("aria-expanded", "true");
+            expect(searchInput).toHaveAttribute("aria-controls", listbox.id);
+            expect(searchInput).not.toHaveAttribute("aria-activedescendant");
+            expect(within(listbox).getAllByRole("group")).toHaveLength(4);
+            expect(within(listbox).getByRole("group", { name: "Page" })).toBeInTheDocument();
+            await waitFor(() => {
+                expect(within(dialog).getByRole("status")).toHaveTextContent("5 results");
+            });
+        });
+
+        await step("ArrowDown and ArrowUp move the active result across the groups and wrap around", async () => {
+            const options = within(dialog).getAllByRole("option");
+            expect(options).toHaveLength(5);
+            expect(new Set(options.map((option) => option.id)).size).toBe(options.length);
+
+            await userEvent.keyboard("{ArrowDown}");
+            expectActiveOption(options[0]);
+
+            await userEvent.keyboard("{ArrowDown}{ArrowDown}");
+            expectActiveOption(options[2]);
+            expect(within(dialog).getByRole("group", { name: "Page" })).toContainElement(options[2]);
+
+            await userEvent.keyboard("{ArrowDown}{ArrowDown}");
+            expectActiveOption(options[4]);
+
+            await userEvent.keyboard("{ArrowDown}");
+            expectActiveOption(options[0]);
+
+            await userEvent.keyboard("{ArrowUp}");
+            expectActiveOption(options[4]);
+        });
+
+        await step("Enter on a result that can't be opened does nothing", async () => {
+            const productOption = within(dialog).getAllByRole("option")[4];
+            expect(productOption).toHaveAttribute("aria-disabled", "true");
+
+            await userEvent.keyboard("{Enter}");
+
+            expect(screen.getByRole("dialog", { name: "Search" })).toBeInTheDocument();
+            expect(currentPath).toHaveTextContent(initialPath);
+            expectActiveOption(productOption);
+        });
+
+        await step("Hovering a result makes it the active one", async () => {
+            const options = within(dialog).getAllByRole("option");
+            await userEvent.hover(options[1]);
+            expectActiveOption(options[1]);
+        });
+
+        await step("Tab and Shift+Tab switch the type tab and keep the focus in the input", async () => {
+            await userEvent.tab();
+
+            await waitFor(() => {
+                expect(within(dialog).getByRole("tab", { name: /^Link/ })).toHaveAttribute("aria-selected", "true");
+            });
+            await waitFor(() => {
+                expect(within(dialog).getAllByRole("option")).toHaveLength(1);
+            });
+            expect(searchInput).toHaveFocus();
+            expect(searchInput).not.toHaveAttribute("aria-activedescendant");
+
+            await userEvent.tab();
+            await waitFor(() => {
+                expect(within(dialog).getByRole("tab", { name: /^Page/ })).toHaveAttribute("aria-selected", "true");
+            });
+            expect(searchInput).toHaveFocus();
+
+            await userEvent.tab({ shift: true });
+            await userEvent.tab({ shift: true });
+            await waitFor(() => {
+                expect(within(dialog).getByRole("tab", { name: /^All/ })).toHaveAttribute("aria-selected", "true");
+            });
+            await waitFor(() => {
+                expect(within(dialog).getAllByRole("option")).toHaveLength(5);
+            });
+            expect(searchInput).toHaveFocus();
+        });
+
+        await step("Tab also selects a type without results, where the arrow keys do nothing", async () => {
+            await userEvent.tab();
+            await userEvent.tab();
+            await userEvent.tab();
+            await waitFor(() => {
+                expect(within(dialog).getByRole("tab", { name: /^Predefined page/ })).toHaveAttribute("aria-selected", "true");
+            });
+            expect(await within(dialog).findByText("Check the spelling or try a shorter search term.")).toBeInTheDocument();
+            expect(searchInput).toHaveAttribute("aria-expanded", "false");
+            expect(searchInput).not.toHaveAttribute("aria-controls");
+
+            await userEvent.keyboard("{ArrowDown}{ArrowUp}");
+            expect(searchInput).not.toHaveAttribute("aria-activedescendant");
+            expect(searchInput).toHaveFocus();
+
+            for (let index = 0; index < 3; index++) {
+                await userEvent.tab({ shift: true });
+            }
+            await waitFor(() => {
+                expect(within(dialog).getAllByRole("option")).toHaveLength(5);
+            });
+            expect(within(dialog).getByRole("tab", { name: /^All/ })).toHaveAttribute("aria-selected", "true");
+        });
+
+        await step("Enter opens the active result and closes the dialog", async () => {
+            await userEvent.keyboard("{ArrowDown}{Enter}");
+
+            await waitFor(() => {
+                expect(currentPath).toHaveTextContent(/\/news\/1\/edit$/);
+            });
+            await waitFor(() => {
+                expect(screen.queryByRole("dialog", { name: "Search" })).not.toBeInTheDocument();
+            });
+        });
+
+        await step("An arrow key pressed before the results arrive activates the first result once they're loaded", async () => {
+            await userEvent.keyboard("{Control>}k{/Control}");
+            const reopenedDialog = await screen.findByRole("dialog", { name: "Search" });
+            const reopenedSearchInput = within(reopenedDialog).getByRole("combobox", { name: "Search" });
+            await waitFor(() => {
+                expect(reopenedSearchInput).toHaveFocus();
+            });
+
+            await userEvent.keyboard("ab{ArrowDown}");
+            expect(within(reopenedDialog).queryByRole("option")).not.toBeInTheDocument();
+
+            await waitFor(
+                () => {
+                    expect(reopenedSearchInput).toHaveAttribute("aria-activedescendant", within(reopenedDialog).getAllByRole("option")[0].id);
+                },
+                { timeout: 3000 },
+            );
+        });
+
+        await step("While a changed search loads, the arrow keys and Enter don't act on the results of the previous search", async () => {
+            const reopenedDialog = screen.getByRole("dialog", { name: "Search" });
+            const reopenedSearchInput = within(reopenedDialog).getByRole("combobox", { name: "Search" });
+            expect(within(reopenedDialog).getAllByRole("option")).toHaveLength(5);
+
+            await userEvent.keyboard("b{ArrowUp}");
+            expect(within(reopenedDialog).getAllByRole("option")).toHaveLength(5);
+            expect(reopenedSearchInput).not.toHaveAttribute("aria-activedescendant");
+
+            await userEvent.keyboard("{Enter}");
+            expect(screen.getByRole("dialog", { name: "Search" })).toBeInTheDocument();
+
+            await waitFor(
+                () => {
+                    expect(within(reopenedDialog).getAllByRole("option")).toHaveLength(1);
+                },
+                { timeout: 3000 },
+            );
+            expect(reopenedSearchInput).toHaveAttribute("aria-activedescendant", within(reopenedDialog).getByRole("option").id);
+        });
+
+        await step("Escape clears the search, then closes the dialog", async () => {
+            const reopenedSearchInput = screen.getByRole("combobox", { name: "Search" });
+            await userEvent.keyboard("{Escape}");
+
+            expect(reopenedSearchInput).toHaveValue("");
+            expect(reopenedSearchInput).toHaveAttribute("aria-expanded", "false");
+            expect(reopenedSearchInput).not.toHaveAttribute("aria-activedescendant");
+
+            await userEvent.keyboard("{Escape}");
             await waitFor(() => {
                 expect(screen.queryByRole("dialog", { name: "Search" })).not.toBeInTheDocument();
             });

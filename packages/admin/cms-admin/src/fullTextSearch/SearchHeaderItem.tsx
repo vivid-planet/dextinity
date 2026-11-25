@@ -24,15 +24,15 @@ export function SearchHeaderItem() {
             return;
         }
 
-        const openOnShortcut = (event: KeyboardEvent) => {
+        const toggleOnShortcut = (event: KeyboardEvent) => {
             if ((event.metaKey || event.ctrlKey) && !event.altKey && !event.shiftKey && event.key.toLowerCase() === "k") {
                 event.preventDefault();
-                setOpen(true);
+                setOpen((open) => !open);
             }
         };
 
-        document.addEventListener("keydown", openOnShortcut);
-        return () => document.removeEventListener("keydown", openOnShortcut);
+        document.addEventListener("keydown", toggleOnShortcut);
+        return () => document.removeEventListener("keydown", toggleOnShortcut);
     }, [isSearchAllowed]);
 
     if (!isSearchAllowed) {

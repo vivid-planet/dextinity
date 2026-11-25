@@ -105,7 +105,7 @@ export function ViewMenu() {
         >
             <div className={styles.viewBody}>
                 <Field label="Presets" layout="group">
-                    <div className={styles.presets}>
+                    <div className={styles.viewPresets}>
                         {[...builtInPresets, ...savedPresets].map((preset) => (
                             <span key={preset.id} className={styles.presetChip}>
                                 <Button variant="outlined" color="secondary" size="small" onClick={() => applyPreset(preset)}>

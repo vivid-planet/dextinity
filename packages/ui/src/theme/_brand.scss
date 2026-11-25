@@ -51,4 +51,15 @@
         --dextinity-brand-secondary-hue: 40;
         --dextinity-brand-secondary-chroma: 0.16;
     }
+
+    // Teal from the GroupCMS AI logo, with the blue-gray of its wordmark as the neutral tint
+    [data-dextinity-brand="groupcms-ai"] {
+        --dextinity-brand-primary-hue: 197;
+        --dextinity-brand-primary-chroma: 0.11;
+        --dextinity-brand-secondary-hue: 190;
+        --dextinity-brand-secondary-chroma: 0.13;
+        --dextinity-brand-neutral-hue: 258;
+        --dextinity-brand-neutral-chroma: 0.018;
+        --dextinity-brand-success-hue: 145;
+    }
 }

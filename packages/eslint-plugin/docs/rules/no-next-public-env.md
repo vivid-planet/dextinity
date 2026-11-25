@@ -25,4 +25,4 @@ None.
 
 ## Presets
 
-Enabled as `error` in the `nextjs` preset of `@dextinity/oxlint-config`. The rule also works as an oxlint JS plugin.
+Enabled as `error` in the `nextjs` preset of `@dextinity/oxlint-config`. The rule also works as an Oxlint JS plugin.

@@ -1,6 +1,6 @@
 # @dextinity/eslint-plugin
 
-ESLint rules for Dextinity projects. The rules also work as an oxlint JS plugin.
+ESLint rules for Dextinity projects. The rules also work as an Oxlint JS plugin.
 
 The presets of `@dextinity/eslint-config` and `@dextinity/oxlint-config` enable the rules, so most projects don't need to install this package directly.
 

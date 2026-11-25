@@ -102,7 +102,8 @@ export interface BulkActionBarProps extends Omit<HTMLAttributes<HTMLDivElement>,
 }
 
 /**
- * Appears while items are selected, with their number and the actions that apply to all of them.
+ * Appears while items are selected, with their number and the actions that apply to all of them. It floats centered at the bottom of
+ * the window, above the page, so it stays in reach however far the list scrolls; render it anywhere in the page.
  */
 export const BulkActionBar = forwardRef<HTMLDivElement, BulkActionBarProps>(function BulkActionBar(
     { count, actions, onClear, labels: labelsProp, className, slotProps, onKeyDown, ...restProps },

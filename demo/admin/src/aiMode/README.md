@@ -2,7 +2,7 @@
 
 The AI Mode puts the chat of the Dextinity AI Hub next to the admin. A switch in the header (`AiModeHeaderItem`) opens the chat as a flyout (`AiModeFlyout`), which loads the AI Hub's web component and registers two sets of tools with it:
 
-- the **MCP server** of the API (`AiModeMcpModule` of `@dextinity/cms-api`, at `/api/mcp`), which reads from the API: the page tree, pages as they were last saved, DAM files, and the block schemas,
+- the **MCP server** of the API (`AiModeMcpModule` of `@dextinity/cms-api/ai-mode`, at `/api/mcp`), which reads from the API: the page tree, pages as they were last saved, DAM files, and the block schemas,
 - the **host tools** of the admin (`hostTools.ts`), which act on the page open in the editor: `open_page`, `get_page_state`, and `edit_blocks`.
 
 The AI Mode is ported from vivid-websites. This README explains the decisions the code doesn't show. It is written for developers who maintain the AI Mode in Demo or port it to a project.
@@ -37,7 +37,7 @@ The admin loads the web component without a fixed version, so a new release can 
 
 ## The MCP server
 
-The MCP server is part of the API (`AiModeMcpModule` of `@dextinity/cms-api`, on `@nestjs/mcp`) rather than a service of its own, so it reads with the API's services and checks the API's permissions. The module brings the page tree, DAM, and block tools; Demo adds `get_page` (`demo/api/src/mcp`) as a tool of its own, because it returns Demo's page document. Its route, `/api/mcp`, is a regular route of the app, so the global `DextinityAuthGuard` authenticates every request, and the chat's requests carry the admin session like any other. The route requires the `aiHub` permission without a scope, as the AI Hub proxy does, because a JSON-RPC request carries none. It applies to every request, including `tools/list`; the tools check their own permissions on top. Only the admin may call it from a browser: requests with an `Origin` other than the host of `ADMIN_URL` are refused.
+The MCP server is part of the API (`AiModeMcpModule` of `@dextinity/cms-api/ai-mode`, on `@nestjs/mcp`) rather than a service of its own, so it reads with the API's services and checks the API's permissions. The module brings the page tree, DAM, and block tools; Demo adds `get_page` (`demo/api/src/mcp`) as a tool of its own, because it returns Demo's page document. Its route, `/api/mcp`, is a regular route of the app, so the global `DextinityAuthGuard` authenticates every request, and the chat's requests carry the admin session like any other. The route requires the `aiHub` permission without a scope, as the AI Hub proxy does, because a JSON-RPC request carries none. It applies to every request, including `tools/list`; the tools check their own permissions on top. Only the admin may call it from a browser: requests with an `Origin` other than the host of `ADMIN_URL` are refused.
 
 The tools are methods of providers, and the app's guards, interceptors, and exception filters run around every call, as around a resolver. Each tool therefore declares the permission and the scope it reads with `@RequiredPermission` and `@AffectedEntity` or a `scope` argument, as the corresponding resolver does. A system user authenticated by basic auth is refused (`McpSignedInUserGuard`), because the tools serve the admin, which a person uses.
 

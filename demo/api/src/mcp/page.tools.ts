@@ -1,12 +1,5 @@
-import {
-    AffectedEntity,
-    BlocksTransformerService,
-    McpNotFoundFilter,
-    McpSignedInUserGuard,
-    type PageTreeReadApi,
-    PageTreeService,
-    RequiredPermission,
-} from "@dextinity/cms-api";
+import { AffectedEntity, BlocksTransformerService, type PageTreeReadApi, PageTreeService, RequiredPermission } from "@dextinity/cms-api";
+import { McpNotFoundFilter, McpSignedInUserGuard } from "@dextinity/cms-api/ai-mode";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable, NotFoundException, UseFilters, UseGuards } from "@nestjs/common";
 import { ContextIdFactory, ModuleRef } from "@nestjs/core";

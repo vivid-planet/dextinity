@@ -1,15 +1,34 @@
 import { plainToInstance, Type } from "class-transformer";
 import { IsArray, IsBoolean, IsEnum, IsString, ValidateNested } from "class-validator";
 
-import { type Block, BlockData, type BlockDataInterface, BlockInput, type BlockInputInterface, blockInputToData, type ChildBlockInfo, createBlock } from "../block.js";
+import {
+    type Block,
+    BlockData,
+    type BlockDataInterface,
+    BlockInput,
+    type BlockInputInterface,
+    blockInputToData,
+    type ChildBlockInfo,
+    createBlock,
+} from "../block.js";
 import { ChildBlock } from "../decorators/child-block.js";
 import { ChildBlockInput } from "../decorators/child-block-input.js";
 import { BlockField } from "../decorators/field.js";
+import { createOneOfBlock } from "./createOneOfBlock.js";
 import type { BlockFactoryNameOrOptions } from "./types.js";
 
-type CreateTableBlockOptions = {
-    richText: Block;
-};
+type CreateTableBlockOptions =
+    | {
+          richText: Block;
+          cellBlocks?: never;
+      }
+    | {
+          /**
+           * The first block is the default for new cells.
+           */
+          cellBlocks: Record<string, Block>;
+          richText?: never;
+      };
 
 enum ColumnSize {
     extraSmall = "extraSmall",
@@ -48,12 +67,17 @@ class TableBlockColumnInput extends BlockInput {
     }
 }
 
-export function createTableBlock({ richText: RichTextBlock }: CreateTableBlockOptions, nameOrOptions: BlockFactoryNameOrOptions = "Table"): Block {
+export function createTableBlock(options: CreateTableBlockOptions, nameOrOptions: BlockFactoryNameOrOptions = "Table"): Block {
+    const tableName = typeof nameOrOptions === "string" ? nameOrOptions : nameOrOptions.name;
+    const CellBlock = options.cellBlocks
+        ? createOneOfBlock({ supportedBlocks: options.cellBlocks, allowEmpty: false }, `${tableName}Cell`)
+        : options.richText;
+
     class TableBlockRowColumnValueData extends BlockData {
         @BlockField()
         columnId: string;
 
-        @ChildBlock(RichTextBlock)
+        @ChildBlock(CellBlock)
         value: BlockDataInterface;
     }
 
@@ -62,7 +86,7 @@ export function createTableBlock({ richText: RichTextBlock }: CreateTableBlockOp
         @IsString()
         columnId: string;
 
-        @ChildBlockInput(RichTextBlock)
+        @ChildBlockInput(CellBlock)
         value: BlockInputInterface;
 
         transformToBlockData(): TableBlockRowColumnValueData {
@@ -121,7 +145,7 @@ export function createTableBlock({ richText: RichTextBlock }: CreateTableBlockOp
                     visible: existingColumnIds.has(cellValue.columnId),
                     relJsonPath: ["rows", rowIndex, "cellValues", cellValueIndex, "value"],
                     block: cellValue.value,
-                    name: RichTextBlock.name,
+                    name: CellBlock.name,
                 })),
             );
         }

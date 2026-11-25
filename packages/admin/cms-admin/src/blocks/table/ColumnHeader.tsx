@@ -70,7 +70,7 @@ export const ColumnHeader = ({
     const snackbarApi = useSnackbarApi();
     const blockContext = useBlockContext();
     const intl = useIntl();
-    const { RichTextBlock } = useTableBlockContext();
+    const { CellBlock } = useTableBlockContext();
     const isFirstColumn = columnIndex === 0;
     const isLastColumn = columnIndex === state.columns.length - 1;
 
@@ -79,9 +79,9 @@ export const ColumnHeader = ({
             const newColumnInsertData = {
                 size: "standard" as const,
                 highlighted: false,
-                cellValues: state.rows.map(() => RichTextBlock.defaultValues()),
+                cellValues: state.rows.map(() => CellBlock.defaultValues()),
             };
-            return insertColumnDataAtIndex(state, newColumnInsertData, newColumnIndex, RichTextBlock);
+            return insertColumnDataAtIndex(state, newColumnInsertData, newColumnIndex, CellBlock);
         });
     };
 
@@ -113,7 +113,7 @@ export const ColumnHeader = ({
 
     const handleDuplicateColumn = () => {
         updateState((state) => {
-            const duplicatedColumnInsertData = getDuplicatedColumnInsertData(state, columnIndex, RichTextBlock);
+            const duplicatedColumnInsertData = getDuplicatedColumnInsertData(state, columnIndex, CellBlock);
             if (!duplicatedColumnInsertData) {
                 snackbarApi.showSnackbar(
                     <Snackbar autoHideDuration={5000}>
@@ -127,12 +127,12 @@ export const ColumnHeader = ({
 
             const newColumnId = uuid();
             addToRecentlyPastedIds(newColumnId);
-            return insertColumnDataAtIndex(state, duplicatedColumnInsertData, columnIndex + 1, RichTextBlock, newColumnId);
+            return insertColumnDataAtIndex(state, duplicatedColumnInsertData, columnIndex + 1, CellBlock, newColumnId);
         });
     };
 
     const handleCopyColumnToClipboard = () => {
-        const columnInsertData = getInsertDataFromColumnById(state, columnId, RichTextBlock);
+        const columnInsertData = getInsertDataFromColumnById(state, columnId, CellBlock);
         if (!columnInsertData) {
             snackbarApi.showSnackbar(
                 <Snackbar autoHideDuration={5000}>
@@ -157,7 +157,7 @@ export const ColumnHeader = ({
         let cellValuesToInsert: unknown[] = [];
 
         try {
-            cellValuesToInsert = await Promise.all(clipboardData.cellValues.map((cellValue) => RichTextBlock.output2State(cellValue, blockContext)));
+            cellValuesToInsert = await Promise.all(clipboardData.cellValues.map((cellValue) => CellBlock.output2State(cellValue, blockContext)));
         } catch (error) {
             console.error(error);
             snackbarApi.showSnackbar(<FailedToPasteSnackbar />);
@@ -166,7 +166,7 @@ export const ColumnHeader = ({
         updateState((state) => {
             const newColumnId = uuid();
             addToRecentlyPastedIds(newColumnId);
-            return insertColumnDataAtIndex(state, { ...clipboardData, cellValues: cellValuesToInsert }, columnIndex + 1, RichTextBlock, newColumnId);
+            return insertColumnDataAtIndex(state, { ...clipboardData, cellValues: cellValuesToInsert }, columnIndex + 1, CellBlock, newColumnId);
         });
     };
 

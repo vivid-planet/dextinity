@@ -1,6 +1,10 @@
-import { validate } from "class-validator";
+import type { ContextId, ModuleRef } from "@nestjs/core";
+import { IsString, validate } from "class-validator";
 import { describe, expect, it } from "vitest";
 
+import { BlockData, type BlockIndexData, BlockInput, blockInputToData, createBlock, transformToBlockSave } from "../block.js";
+import { transformToPlain } from "../blocks-transformer.js";
+import { BlockField } from "../decorators/field.js";
 import { ExternalLinkBlock } from "../externalLink/external-link.block.js";
 import { BlockMigration } from "../migrations/BlockMigration.js";
 import type { BlockMigrationInterface } from "../migrations/types.js";
@@ -25,39 +29,62 @@ const RichTextBlock = createRichTextBlock(
 
 const TableBlock = createTableBlock({ richText: RichTextBlock }, "TableMigrationTest");
 
+class PageReferenceBlockData extends BlockData {
+    @BlockField()
+    pageId: string;
+
+    indexData(): BlockIndexData {
+        return { dependencies: [{ targetEntityName: "Page", id: this.pageId }] };
+    }
+}
+
+class PageReferenceBlockInput extends BlockInput {
+    @BlockField()
+    @IsString()
+    pageId: string;
+
+    transformToBlockData(): PageReferenceBlockData {
+        return blockInputToData(PageReferenceBlockData, this);
+    }
+}
+
+const PageReferenceBlock = createBlock(PageReferenceBlockData, PageReferenceBlockInput, "TablePageReference");
+
 const ImageTableBlock = createTableBlock({ richText: ImageBlock }, "ImageTableTest");
+
+const CellBlocksTableBlock = createTableBlock({ cellBlocks: { richText: RichTextBlock, pageReference: PageReferenceBlock } }, "CellBlocksTableTest");
+
+function createRichTextInputWithLink(targetUrl: string) {
+    return {
+        draftContent: {
+            blocks: [
+                {
+                    key: "block",
+                    text: "Link",
+                    type: "unstyled",
+                    depth: 0,
+                    inlineStyleRanges: [],
+                    entityRanges: [{ offset: 0, length: 4, key: 0 }],
+                    data: {},
+                },
+            ],
+            entityMap: {
+                0: { type: "LINK", mutability: "MUTABLE", data: { targetUrl, openInNewWindow: false, noFollow: false } },
+            },
+        },
+    };
+}
 
 function createTableInputWithLink(targetUrl: string) {
     return TableBlock.blockInputFactory({
-        rows: [
-            {
-                id: "row",
-                highlighted: false,
-                cellValues: [
-                    {
-                        columnId: "column",
-                        value: {
-                            draftContent: {
-                                blocks: [
-                                    {
-                                        key: "block",
-                                        text: "Link",
-                                        type: "unstyled",
-                                        depth: 0,
-                                        inlineStyleRanges: [],
-                                        entityRanges: [{ offset: 0, length: 4, key: 0 }],
-                                        data: {},
-                                    },
-                                ],
-                                entityMap: {
-                                    0: { type: "LINK", mutability: "MUTABLE", data: { targetUrl, openInNewWindow: false, noFollow: false } },
-                                },
-                            },
-                        },
-                    },
-                ],
-            },
-        ],
+        rows: [{ id: "row", highlighted: false, cellValues: [{ columnId: "column", value: createRichTextInputWithLink(targetUrl) }] }],
+    });
+}
+
+function createCellBlocksTableInput(cellValues: Array<{ attachedBlocks: Array<{ type: string; props: unknown }>; activeType: string }>) {
+    return CellBlocksTableBlock.blockInputFactory({
+        columns: cellValues.map((_, index) => ({ id: `column${index}`, size: "standard", highlighted: false })),
+        rows: [{ id: "row", highlighted: false, cellValues: cellValues.map((value, index) => ({ columnId: `column${index}`, value })) }],
     });
 }
 
@@ -123,5 +150,108 @@ describe("createTableBlock", () => {
         expect(transformToBlockSaveIndex(ImageTableBlock, data)).toContainEqual(
             expect.objectContaining({ jsonPath: "root.rows.0.cellValues.1.value", visible: false }),
         );
+    });
+
+    describe("with cellBlocks", () => {
+        const pageReferenceCell = { attachedBlocks: [{ type: "pageReference", props: { pageId: "page" } }], activeType: "pageReference" };
+
+        it("converts the input to data without running the migrations of a cell's blocks", () => {
+            const input = createCellBlocksTableInput([
+                {
+                    attachedBlocks: [{ type: "richText", props: { draftContent: { blocks: [], entityMap: {} } } }],
+                    activeType: "richText",
+                },
+            ]);
+
+            expect(() => input.transformToBlockData()).not.toThrow();
+        });
+
+        it("rejects a cell with an invalid block of an inactive type", async () => {
+            const input = createCellBlocksTableInput([
+                {
+                    attachedBlocks: [
+                        { type: "richText", props: createRichTextInputWithLink("javascript:alert(1)") },
+                        { type: "pageReference", props: { pageId: "page" } },
+                    ],
+                    activeType: "pageReference",
+                },
+            ]);
+
+            expect(await validate(input)).not.toHaveLength(0);
+        });
+
+        it("accepts a cell with valid blocks", async () => {
+            const input = createCellBlocksTableInput([
+                {
+                    attachedBlocks: [
+                        { type: "richText", props: createRichTextInputWithLink("https://www.dextinity.com") },
+                        { type: "pageReference", props: { pageId: "page" } },
+                    ],
+                    activeType: "pageReference",
+                },
+            ]);
+
+            expect(await validate(input)).toHaveLength(0);
+        });
+
+        it("rejects a cell without a type", async () => {
+            const input = createCellBlocksTableInput([{ attachedBlocks: [], activeType: "pageReference" }]);
+
+            expect(await validate(input)).not.toHaveLength(0);
+        });
+
+        it("indexes the dependencies of a cell's blocks, with only the active block as visible", () => {
+            const data = createCellBlocksTableInput([
+                pageReferenceCell,
+                {
+                    attachedBlocks: [
+                        { type: "pageReference", props: { pageId: "inactivePage" } },
+                        { type: "richText", props: { draftContent: { blocks: [], entityMap: {} } } },
+                    ],
+                    activeType: "richText",
+                },
+            ]).transformToBlockData();
+
+            const index = transformToBlockSaveIndex(CellBlocksTableBlock, data);
+
+            expect(index).toContainEqual({ blockname: "CellBlocksTableTestCell", jsonPath: "root.rows.0.cellValues.0.value", visible: true });
+            expect(index).toContainEqual({
+                blockname: "TablePageReference",
+                jsonPath: "root.rows.0.cellValues.0.value.attachedBlocks.0.props",
+                visible: true,
+                dependencies: [{ targetEntityName: "Page", id: "page" }],
+            });
+            expect(index).toContainEqual({
+                blockname: "TablePageReference",
+                jsonPath: "root.rows.0.cellValues.1.value.attachedBlocks.0.props",
+                visible: false,
+                dependencies: [{ targetEntityName: "Page", id: "inactivePage" }],
+            });
+        });
+
+        it("loads saved data and returns only the active block of a cell to the site", async () => {
+            const savedData = JSON.parse(
+                JSON.stringify(transformToBlockSave(createCellBlocksTableInput([pageReferenceCell]).transformToBlockData())),
+            );
+
+            const plain = await transformToPlain(CellBlocksTableBlock.blockDataFactory(savedData), {}, {} as ModuleRef, {} as ContextId);
+
+            expect(plain).toMatchObject({
+                rows: [
+                    {
+                        cellValues: [
+                            {
+                                columnId: "column0",
+                                value: {
+                                    attachedBlocks: [],
+                                    activeType: "pageReference",
+                                    block: { type: "pageReference", props: { pageId: "page" } },
+                                },
+                            },
+                        ],
+                    },
+                ],
+            });
+        });
     });
 });

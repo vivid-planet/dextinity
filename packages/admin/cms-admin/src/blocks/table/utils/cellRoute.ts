@@ -10,7 +10,9 @@ export const createCellKey = ({ columnId, rowId }: CellPosition) => `${columnId}
 export const createCellRoute = (tableRoute: string, cell: CellPosition) => `${tableRoute}#${createCellKey(cell)}`;
 
 export const parseCellHash = (hash: string): CellPosition | undefined => {
-    const [columnId, rowId] = hash.replace(/^#/, "").split(cellKeySeparator);
+    // Blocks in a cell append their own route to the cell route, e.g. `#columnId:rowId#text` or `#columnId:rowId/text/text`
+    const [cellKey] = hash.replace(/^#/, "").split(/[#/]/);
+    const [columnId, rowId] = cellKey.split(cellKeySeparator);
     if (!columnId || !rowId) {
         return undefined;
     }

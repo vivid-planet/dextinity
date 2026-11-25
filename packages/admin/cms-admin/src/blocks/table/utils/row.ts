@@ -24,7 +24,7 @@ export const insertRowDataAtIndex = (
     state: TableBlockState,
     insertData: RowInsertData,
     index: number,
-    RichTextBlock: BlockInterface,
+    CellBlock: BlockInterface,
     newRowId: string = uuid(),
 ): TableBlockState => {
     const updatedColumns = [...state.columns];
@@ -41,7 +41,7 @@ export const insertRowDataAtIndex = (
 
     const numberOfColumnsWithoutNewValue = updatedColumns.length - cellValuesToInsert.length;
     Array.from({ length: numberOfColumnsWithoutNewValue }).forEach(() => {
-        cellValuesToInsert.push(RichTextBlock.defaultValues());
+        cellValuesToInsert.push(CellBlock.defaultValues());
     });
 
     const newRow = getNewRow(
@@ -57,11 +57,11 @@ export const insertRowDataAtIndex = (
     newColumnIds.forEach((newColumnId) => {
         rowsBeforeTargetIndex = rowsBeforeTargetIndex.map((row) => ({
             ...row,
-            cellValues: [...row.cellValues, { columnId: newColumnId, value: RichTextBlock.defaultValues() }],
+            cellValues: [...row.cellValues, { columnId: newColumnId, value: CellBlock.defaultValues() }],
         }));
         rowsAfterTargetIndex = rowsAfterTargetIndex.map((row) => ({
             ...row,
-            cellValues: [...row.cellValues, { columnId: newColumnId, value: RichTextBlock.defaultValues() }],
+            cellValues: [...row.cellValues, { columnId: newColumnId, value: CellBlock.defaultValues() }],
         }));
     });
 
@@ -79,14 +79,14 @@ export const deleteRowById = (state: TableBlockState, rowIdToDelete: string): Ta
     };
 };
 
-export const getDuplicatedRowInsertData = (state: TableBlockState, rowId: string, RichTextBlock: BlockInterface): RowInsertData | null => {
+export const getDuplicatedRowInsertData = (state: TableBlockState, rowId: string, CellBlock: BlockInterface): RowInsertData | null => {
     const row = state.rows.find(({ id }) => id === rowId);
     if (!row) {
         return null;
     }
 
     const cellValuesInOrderOfColumns = state.columns.map((column) => {
-        return row.cellValues.find((cellValue) => cellValue.columnId === column.id)?.value ?? RichTextBlock.defaultValues();
+        return row.cellValues.find((cellValue) => cellValue.columnId === column.id)?.value ?? CellBlock.defaultValues();
     });
 
     return {
@@ -95,16 +95,14 @@ export const getDuplicatedRowInsertData = (state: TableBlockState, rowId: string
     };
 };
 
-export const getInsertDataFromRowById = (state: TableBlockState, rowId: string, RichTextBlock: BlockInterface): RowInsertData | null => {
+export const getInsertDataFromRowById = (state: TableBlockState, rowId: string, CellBlock: BlockInterface): RowInsertData | null => {
     const row = state.rows.find(({ id }) => id === rowId);
     if (!row) {
         return null;
     }
 
     const cellValuesInOrderOfColumns = state.columns.map((column) => {
-        return RichTextBlock.state2Output(
-            row.cellValues.find((cellValue) => cellValue.columnId === column.id)?.value ?? RichTextBlock.defaultValues(),
-        );
+        return CellBlock.state2Output(row.cellValues.find((cellValue) => cellValue.columnId === column.id)?.value ?? CellBlock.defaultValues());
     });
 
     return {

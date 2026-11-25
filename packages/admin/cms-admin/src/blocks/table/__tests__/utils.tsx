@@ -18,7 +18,7 @@ export const renderTableBlock = (initialState: TableBlockState, dataGrid: DataGr
         const [state, setState] = useState<TableBlockState>(initialState);
         return (
             <DextinityConfigProvider apiUrl="" graphQLApiUrl="" adminUrl="" dataGrid={dataGrid}>
-                <TableBlockContextProvider RichTextBlock={MockRichTextBlock}>
+                <TableBlockContextProvider CellBlock={MockRichTextBlock}>
                     <TableBlockGrid state={state} updateState={setState} />
                 </TableBlockContextProvider>
             </DextinityConfigProvider>

@@ -26,11 +26,7 @@ export type ColumnInsertData = {
     cellValues: unknown[];
 };
 
-export const getDuplicatedColumnInsertData = (
-    state: TableBlockState,
-    columnIndex: number,
-    RichTextBlock: BlockInterface,
-): ColumnInsertData | null => {
+export const getDuplicatedColumnInsertData = (state: TableBlockState, columnIndex: number, CellBlock: BlockInterface): ColumnInsertData | null => {
     const sourceColumn = state.columns[columnIndex];
 
     if (!sourceColumn) {
@@ -38,7 +34,7 @@ export const getDuplicatedColumnInsertData = (
     }
 
     const sourceCellsValues = state.rows.map(({ cellValues }) => cellValues.find((cellValue) => cellValue.columnId === sourceColumn.id));
-    const newCellValues = sourceCellsValues.map((sourceCellValue) => sourceCellValue?.value ?? RichTextBlock.defaultValues());
+    const newCellValues = sourceCellsValues.map((sourceCellValue) => sourceCellValue?.value ?? CellBlock.defaultValues());
 
     return {
         size: sourceColumn.size,
@@ -47,7 +43,7 @@ export const getDuplicatedColumnInsertData = (
     };
 };
 
-export const getInsertDataFromColumnById = (state: TableBlockState, columnId: string, RichTextBlock: BlockInterface): ColumnInsertData | null => {
+export const getInsertDataFromColumnById = (state: TableBlockState, columnId: string, CellBlock: BlockInterface): ColumnInsertData | null => {
     const column = state.columns.find(({ id }) => id === columnId);
     if (!column) {
         return null;
@@ -58,7 +54,7 @@ export const getInsertDataFromColumnById = (state: TableBlockState, columnId: st
         highlighted: column.highlighted,
         cellValues: state.rows.map((row) => {
             const cellValueOfColumn = row.cellValues.find((cellValue) => cellValue.columnId === columnId);
-            return RichTextBlock.state2Output(cellValueOfColumn?.value ?? RichTextBlock.defaultValues());
+            return CellBlock.state2Output(cellValueOfColumn?.value ?? CellBlock.defaultValues());
         }),
     };
 };
@@ -67,7 +63,7 @@ export const insertColumnDataAtIndex = (
     state: TableBlockState,
     columnInsertData: { size: ColumnSize; highlighted: boolean; cellValues: unknown[] },
     index: number,
-    RichTextBlock: BlockInterface,
+    CellBlock: BlockInterface,
     newColumnId: string = uuid(),
 ): TableBlockState => {
     const numberOfRowsToBeAdded = columnInsertData.cellValues.length - state.rows.length;
@@ -75,9 +71,9 @@ export const insertColumnDataAtIndex = (
     for (let i = 0; i < numberOfRowsToBeAdded; i++) {
         const newRowInsertData: RowInsertData = {
             highlighted: false,
-            cellValues: state.columns.map(() => RichTextBlock.defaultValues()),
+            cellValues: state.columns.map(() => CellBlock.defaultValues()),
         };
-        state = insertRowDataAtIndex(state, newRowInsertData, state.rows.length, RichTextBlock);
+        state = insertRowDataAtIndex(state, newRowInsertData, state.rows.length, CellBlock);
     }
 
     const columnsBeforeIndex = state.columns.slice(0, index);
@@ -92,7 +88,7 @@ export const insertColumnDataAtIndex = (
         ...state,
         columns: [...columnsBeforeIndex, newColumn, ...columnsAfterIndex],
         rows: state.rows.map((row, rowIndex) => {
-            const newCell = { columnId: newColumn.id, value: columnInsertData.cellValues[rowIndex] ?? RichTextBlock.defaultValues() };
+            const newCell = { columnId: newColumn.id, value: columnInsertData.cellValues[rowIndex] ?? CellBlock.defaultValues() };
             return {
                 ...row,
                 cellValues: [...row.cellValues, newCell],

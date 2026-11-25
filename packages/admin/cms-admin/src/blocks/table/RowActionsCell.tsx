@@ -35,7 +35,7 @@ export const RowActionsCell = ({ row, updateState, state, addToRecentlyPastedIds
     const isFirstRow = rowIndex === 0;
     const isLastRow = rowIndex === state.rows.length - 1;
     const intl = useIntl();
-    const { RichTextBlock } = useTableBlockContext();
+    const { CellBlock } = useTableBlockContext();
 
     const handleInsertNewRow = (where: "above" | "below") => {
         updateState((state) => {
@@ -44,9 +44,9 @@ export const RowActionsCell = ({ row, updateState, state, addToRecentlyPastedIds
 
             const insertData: RowInsertData = {
                 highlighted: false,
-                cellValues: state.columns.map(() => RichTextBlock.defaultValues()),
+                cellValues: state.columns.map(() => CellBlock.defaultValues()),
             };
-            return insertRowDataAtIndex(state, insertData, newRowIndex, RichTextBlock);
+            return insertRowDataAtIndex(state, insertData, newRowIndex, CellBlock);
         });
     };
 
@@ -79,7 +79,7 @@ export const RowActionsCell = ({ row, updateState, state, addToRecentlyPastedIds
     };
 
     const handleDuplicateRow = () => {
-        const duplicatedRowInsertData = getDuplicatedRowInsertData(state, row.id, RichTextBlock);
+        const duplicatedRowInsertData = getDuplicatedRowInsertData(state, row.id, CellBlock);
         const currentRowIndex = state.rows.findIndex(({ id }) => id === row.id);
 
         if (!duplicatedRowInsertData) {
@@ -96,12 +96,12 @@ export const RowActionsCell = ({ row, updateState, state, addToRecentlyPastedIds
         updateState((state) => {
             const newRowId = uuid();
             addToRecentlyPastedIds(newRowId);
-            return insertRowDataAtIndex(state, duplicatedRowInsertData, currentRowIndex + 1, RichTextBlock, newRowId);
+            return insertRowDataAtIndex(state, duplicatedRowInsertData, currentRowIndex + 1, CellBlock, newRowId);
         });
     };
 
     const handleCopyRowToClipboard = () => {
-        const rowInsertData = getInsertDataFromRowById(state, row.id, RichTextBlock);
+        const rowInsertData = getInsertDataFromRowById(state, row.id, CellBlock);
         if (!rowInsertData) {
             snackbarApi.showSnackbar(
                 <Snackbar autoHideDuration={5000}>
@@ -127,7 +127,7 @@ export const RowActionsCell = ({ row, updateState, state, addToRecentlyPastedIds
         let cellValuesToInsert: unknown[] = [];
 
         try {
-            cellValuesToInsert = await Promise.all(clipboardData.cellValues.map((cellValue) => RichTextBlock.output2State(cellValue, blockContext)));
+            cellValuesToInsert = await Promise.all(clipboardData.cellValues.map((cellValue) => CellBlock.output2State(cellValue, blockContext)));
         } catch (error) {
             console.error(error);
             snackbarApi.showSnackbar(<FailedToPasteSnackbar />);
@@ -137,7 +137,7 @@ export const RowActionsCell = ({ row, updateState, state, addToRecentlyPastedIds
             const newRowId = uuid();
             addToRecentlyPastedIds(newRowId);
             const currentRowIndex = state.rows.findIndex(({ id }) => id === row.id);
-            return insertRowDataAtIndex(state, { ...clipboardData, cellValues: cellValuesToInsert }, currentRowIndex + 1, RichTextBlock, newRowId);
+            return insertRowDataAtIndex(state, { ...clipboardData, cellValues: cellValuesToInsert }, currentRowIndex + 1, CellBlock, newRowId);
         });
     };
 

@@ -9,13 +9,13 @@ type Props = {
 };
 
 export const CellValue = ({ highlighted, isTemporarilyHighlighted, value }: Props) => {
-    const { RichTextBlock } = useTableBlockContext();
+    const { CellBlock } = useTableBlockContext();
 
     return (
         <CellValueContainer $highlighted={highlighted} $isTemporarilyHighlighted={isTemporarilyHighlighted}>
             <RteContentWrapper>
                 <RteContent>
-                    <RichTextBlock.ReadOnlyComponent state={value} />
+                    <CellBlock.ReadOnlyComponent state={value} />
                 </RteContent>
             </RteContentWrapper>
         </CellValueContainer>

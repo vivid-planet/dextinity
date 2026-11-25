@@ -3,13 +3,13 @@ import { createContext, type ReactNode, useContext } from "react";
 import type { BlockInterface, ReadOnlyBlockRenderInterface } from "../types";
 
 type TableBlockContextValue = {
-    RichTextBlock: BlockInterface & ReadOnlyBlockRenderInterface;
+    CellBlock: BlockInterface & ReadOnlyBlockRenderInterface;
 };
 
 const TableBlockContext = createContext<TableBlockContextValue | undefined>(undefined);
 
-export const TableBlockContextProvider = ({ RichTextBlock, children }: TableBlockContextValue & { children: ReactNode }) => (
-    <TableBlockContext.Provider value={{ RichTextBlock }}>{children}</TableBlockContext.Provider>
+export const TableBlockContextProvider = ({ CellBlock, children }: TableBlockContextValue & { children: ReactNode }) => (
+    <TableBlockContext.Provider value={{ CellBlock }}>{children}</TableBlockContext.Provider>
 );
 
 export const useTableBlockContext = (): TableBlockContextValue => {

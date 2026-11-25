@@ -8,29 +8,34 @@ import { v4 as uuid } from "uuid";
 import type { TableBlockData } from "../blocks.generated";
 import type { BlockContext } from "./context/BlockContext";
 import type { RichTextBlock } from "./createRichTextBlock";
+import type { OneOfBlockState } from "./factories/createOneOfBlock";
 import { BlocksFinalForm } from "./form/BlocksFinalForm";
 import { createBlockSkeleton } from "./helpers/createBlockSkeleton";
 import { SelectPreviewComponent } from "./iframebridge/SelectPreviewComponent";
+import { createTableCellBlock, type TableCellBlockInterface, type TableCellOneOfBlock } from "./table/createTableCellBlock";
 import { TableBlockContextProvider } from "./table/TableBlockContext";
 import { TableBlockGrid } from "./table/TableBlockGrid";
 import { createCellRoute, parseCellHash } from "./table/utils/cellRoute";
 import { createTablePreviewText, getPlainTexts } from "./table/utils/createTablePreviewText";
-import {
-    BlockCategory,
-    type BlockInputApi,
-    type BlockInterface,
-    type BlockOutputApi,
-    type BlockPreviewContext,
-    type BlockState,
-    type ReadOnlyBlockRenderInterface,
-} from "./types";
+import { BlockCategory, type BlockInputApi, type BlockInterface, type BlockOutputApi, type BlockPreviewContext, type BlockState } from "./types";
 
-type RichTextBlockInterface = BlockInterface & ReadOnlyBlockRenderInterface;
-
-export type TableBlockFactoryOptions<RichText extends RichTextBlockInterface = RichTextBlock> = {
+type RichTextTableBlockFactoryOptions<RichText extends TableCellBlockInterface> = {
     richText: RichText;
+    cellBlocks?: never;
     name?: string;
 };
+
+type CellBlocksTableBlockFactoryOptions = {
+    /**
+     * The first block is the default for new cells.
+     */
+    cellBlocks: Record<string, TableCellBlockInterface>;
+    richText?: never;
+    name?: string;
+};
+
+export type TableBlockFactoryOptions<RichText extends TableCellBlockInterface = RichTextBlock> =
+    RichTextTableBlockFactoryOptions<RichText> | CellBlocksTableBlockFactoryOptions;
 
 interface TableBlockCellValueState<
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -73,17 +78,48 @@ interface TableBlockCells<Value> {
     rows: TableBlockRow<Value>[];
 }
 
-type TableBlock<RichText extends RichTextBlockInterface> = BlockInterface<
-    TableBlockCells<BlockInputApi<RichText>>,
-    TableBlockState<BlockState<RichText>>,
-    TableBlockCells<BlockOutputApi<RichText>>
+type TableBlock<CellBlock extends TableCellBlockInterface> = BlockInterface<
+    TableBlockCells<BlockInputApi<CellBlock>>,
+    TableBlockState<BlockState<CellBlock>>,
+    TableBlockCells<BlockOutputApi<CellBlock>>
 >;
 
-export const createTableBlock = <RichText extends RichTextBlockInterface = RichTextBlock>(
-    { richText: RichTextBlock, name = "Table" }: TableBlockFactoryOptions<RichText>,
+export function createTableBlock<RichText extends TableCellBlockInterface = RichTextBlock>(
+    options: RichTextTableBlockFactoryOptions<RichText>,
     override?: (block: TableBlock<RichText>) => TableBlock<RichText>,
-): TableBlock<RichText> => {
-    type CellState = BlockState<RichText>;
+): TableBlock<RichText>;
+export function createTableBlock(
+    options: CellBlocksTableBlockFactoryOptions,
+    override?: (block: TableBlock<TableCellOneOfBlock>) => TableBlock<TableCellOneOfBlock>,
+): TableBlock<TableCellOneOfBlock>;
+export function createTableBlock(
+    { richText, cellBlocks, name = "Table" }: TableBlockFactoryOptions<TableCellBlockInterface>,
+    override?: (block: TableBlock<TableCellBlockInterface>) => TableBlock<TableCellBlockInterface>,
+): TableBlock<TableCellBlockInterface> {
+    type CellState = BlockState<TableCellBlockInterface>;
+
+    const CellBlock: TableCellBlockInterface = cellBlocks ? createTableCellBlock({ name: `${name}Cell`, cellBlocks }) : richText;
+
+    const createCellPreviewState = (cellState: CellState, cellRoute: string, previewCtx: BlockPreviewContext & BlockContext) => {
+        if (!cellBlocks) {
+            return { ...CellBlock.createPreviewState(cellState, previewCtx), adminMeta: { route: cellRoute } };
+        }
+
+        // The one-of's own preview state would link the active block to `${parentUrl}#${type}`, which isn't a cell route
+        const { attachedBlocks, activeType } = cellState as OneOfBlockState;
+        const activeItem = attachedBlocks.find((item) => item.type === activeType);
+        const cellPreviewCtx = { ...previewCtx, parentUrlSubRoute: undefined, parentUrl: cellRoute };
+
+        return {
+            block: activeItem
+                ? {
+                      type: activeItem.type,
+                      props: { ...cellBlocks[activeItem.type].createPreviewState(activeItem.props, cellPreviewCtx), adminMeta: { route: cellRoute } },
+                  }
+                : undefined,
+            adminMeta: { route: cellRoute },
+        };
+    };
 
     const getInitialTableState = (): TableBlockState<CellState> => {
         const columnIdOne = uuid();
@@ -99,23 +135,23 @@ export const createTableBlock = <RichText extends RichTextBlockInterface = RichT
                     id: uuid(),
                     highlighted: false,
                     cellValues: [
-                        { columnId: columnIdOne, value: RichTextBlock.defaultValues() },
-                        { columnId: columnIdTwo, value: RichTextBlock.defaultValues() },
+                        { columnId: columnIdOne, value: CellBlock.defaultValues() },
+                        { columnId: columnIdTwo, value: CellBlock.defaultValues() },
                     ],
                 },
                 {
                     id: uuid(),
                     highlighted: false,
                     cellValues: [
-                        { columnId: columnIdOne, value: RichTextBlock.defaultValues() },
-                        { columnId: columnIdTwo, value: RichTextBlock.defaultValues() },
+                        { columnId: columnIdOne, value: CellBlock.defaultValues() },
+                        { columnId: columnIdTwo, value: CellBlock.defaultValues() },
                     ],
                 },
             ],
         };
     };
 
-    const TableBlock: TableBlock<RichText> = {
+    const TableBlock: TableBlock<TableCellBlockInterface> = {
         ...createBlockSkeleton(),
 
         name,
@@ -124,29 +160,32 @@ export const createTableBlock = <RichText extends RichTextBlockInterface = RichT
 
         defaultValues: getInitialTableState,
 
-        input2State: (input: TableBlockCells<BlockInputApi<RichText>>): TableBlockState<CellState> => ({
+        input2State: (input: TableBlockCells<BlockInputApi<TableCellBlockInterface>>): TableBlockState<CellState> => ({
             columns: input.columns,
             rows: input.rows.map((row) => ({
                 ...row,
                 cellValues: row.cellValues.map((cell) => ({
                     ...cell,
-                    value: RichTextBlock.input2State(cell.value),
+                    value: CellBlock.input2State(cell.value),
                 })),
             })),
         }),
 
-        state2Output: (state: TableBlockState<CellState>): TableBlockCells<BlockOutputApi<RichText>> => ({
+        state2Output: (state: TableBlockState<CellState>): TableBlockCells<BlockOutputApi<TableCellBlockInterface>> => ({
             columns: state.columns,
             rows: state.rows.map((row) => ({
                 ...row,
                 cellValues: row.cellValues.map((cell) => ({
                     ...cell,
-                    value: RichTextBlock.state2Output(cell.value),
+                    value: CellBlock.state2Output(cell.value),
                 })),
             })),
         }),
 
-        output2State: async (output: TableBlockCells<BlockOutputApi<RichText>>, context: BlockContext): Promise<TableBlockState<CellState>> => ({
+        output2State: async (
+            output: TableBlockCells<BlockOutputApi<TableCellBlockInterface>>,
+            context: BlockContext,
+        ): Promise<TableBlockState<CellState>> => ({
             columns: output.columns,
             rows: await Promise.all(
                 output.rows.map(async (row) => ({
@@ -154,7 +193,7 @@ export const createTableBlock = <RichText extends RichTextBlockInterface = RichT
                     cellValues: await Promise.all(
                         row.cellValues.map(async (cell) => ({
                             ...cell,
-                            value: await RichTextBlock.output2State(cell.value, context),
+                            value: await CellBlock.output2State(cell.value, context),
                         })),
                     ),
                 })),
@@ -167,17 +206,18 @@ export const createTableBlock = <RichText extends RichTextBlockInterface = RichT
                 ...row,
                 cellValues: row.cellValues.map((cell) => ({
                     ...cell,
-                    value: {
-                        ...RichTextBlock.createPreviewState(cell.value, previewCtx),
-                        adminMeta: { route: createCellRoute(previewCtx.parentUrl, { columnId: cell.columnId, rowId: row.id }) },
-                    },
+                    value: createCellPreviewState(
+                        cell.value,
+                        createCellRoute(previewCtx.parentUrl, { columnId: cell.columnId, rowId: row.id }),
+                        previewCtx,
+                    ),
                 })),
             })),
             adminMeta: { route: previewCtx.parentUrl },
         }),
 
         previewContent: (state: TableBlockState<CellState>, context: BlockContext) => {
-            const previewText = createTablePreviewText(state, (cellState) => getPlainTexts(RichTextBlock.previewContent(cellState, context)));
+            const previewText = createTablePreviewText(state, (cellState) => getPlainTexts(CellBlock.previewContent(cellState, context)));
 
             return previewText.length > 0 ? [{ type: "text", content: previewText }] : [];
         },
@@ -198,7 +238,7 @@ export const createTableBlock = <RichText extends RichTextBlockInterface = RichT
             };
 
             return (
-                <TableBlockContextProvider RichTextBlock={RichTextBlock}>
+                <TableBlockContextProvider CellBlock={CellBlock}>
                     <SelectPreviewComponent>
                         <BlocksFinalForm<TableBlockState<CellState>> onSubmit={updateState} initialValues={state}>
                             <Dialog
@@ -233,4 +273,4 @@ export const createTableBlock = <RichText extends RichTextBlockInterface = RichT
     }
 
     return TableBlock;
-};
+}

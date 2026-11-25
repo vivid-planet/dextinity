@@ -67,7 +67,7 @@ type Props = {
 };
 
 export const TableBlockGrid = ({ state, updateState, clickedCell }: Props) => {
-    const { RichTextBlock } = useTableBlockContext();
+    const { CellBlock } = useTableBlockContext();
     const { dataGrid: { component: ConfiguredDataGrid } = {} } = useDextinityConfig();
     const hasDragAndDrop = isProOrPremiumDataGrid(ConfiguredDataGrid);
     const apiRef = useRef<GridApiPro | null>(null);
@@ -80,9 +80,9 @@ export const TableBlockGrid = ({ state, updateState, clickedCell }: Props) => {
 
     useEffect(() => {
         if (state.columns.length === 0 || state.rows.length === 0) {
-            updateState((prevState) => ensureMinimumTableState(prevState, RichTextBlock));
+            updateState((prevState) => ensureMinimumTableState(prevState, CellBlock));
         }
-    }, [state.columns.length, state.rows.length, updateState, RichTextBlock]);
+    }, [state.columns.length, state.rows.length, updateState, CellBlock]);
 
     const setRowData: Dispatch<SetStateAction<TableBlockState["rows"]>> = (newRows) => {
         updateState((state) => {

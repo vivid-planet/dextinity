@@ -12,6 +12,8 @@ export interface SiteConfig extends BaseSiteConfig {
             languages: string[];
         };
         recaptchaSiteKey: string;
+        /** ISO 4217 currency code, as `Intl.NumberFormat` expects it, e.g. "EUR" */
+        currency: string;
         organization: {
             name: string;
             url?: string;

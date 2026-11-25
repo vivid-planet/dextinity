@@ -74,7 +74,7 @@
         "react-hotkeys-hook": "^5.4.0",
         "react-image-crop": "^11.1.2",
         "react-split": "^2.0.14",
-        "react-window": "^2.5.3",
+        "react-window": "^2.5.4",
         "rimraf": "^6.1.4",
         "scroll-into-view-if-needed": "^3.2.1",
         "slugify": "^1.6.9",

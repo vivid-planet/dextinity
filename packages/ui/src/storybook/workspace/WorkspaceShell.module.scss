@@ -43,7 +43,8 @@
     grid-template-areas:
         "brand settings"
         "tabs tabs";
-    grid-template-columns: minmax(0, 1fr) auto;
+    // On a phone the settings take the room the logo leaves and scroll sideways, instead of covering the logo
+    grid-template-columns: auto minmax(0, 1fr);
     column-gap: 12px;
     align-items: center;
     min-inline-size: 0;
@@ -65,12 +66,36 @@
     min-block-size: var(--workspace-bar-height);
 }
 
-.settings {
-    grid-area: settings;
+%scrolling-bar {
     display: flex;
     gap: 4px;
     align-items: center;
-    justify-content: flex-end;
+    min-inline-size: 0;
+    // Room for the focus ring, which the scrolling would cut off, without moving the buttons
+    margin: -4px;
+    padding: 4px;
+    overflow-x: auto;
+    // A mouse needs the scrollbar to reach buttons out of view; a finger swipes
+    scrollbar-width: thin;
+
+    @media (pointer: coarse) {
+        scrollbar-width: none;
+    }
+
+    // Aligned to the end while everything fits; a scrolling bar starts at its first button
+    > :first-child {
+        margin-inline-start: auto;
+    }
+
+    > * {
+        flex: none;
+    }
+}
+
+.settings {
+    @extend %scrolling-bar;
+
+    grid-area: settings;
 }
 
 .divider {
@@ -112,7 +137,7 @@
 .location {
     display: flex;
     gap: 6px;
-    align-items: baseline;
+    align-items: center;
     min-inline-size: 0;
     margin: 0;
     white-space: nowrap;
@@ -164,10 +189,7 @@
 }
 
 .toolbarGroup {
-    display: flex;
-    gap: 4px;
-    align-items: center;
-    min-inline-size: 0;
+    @extend %scrolling-bar;
 }
 
 .logo {

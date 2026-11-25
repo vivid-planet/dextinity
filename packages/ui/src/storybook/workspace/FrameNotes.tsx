@@ -1,17 +1,21 @@
-import { type RefObject, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Button } from "../../components/button/Button";
 import { Icon } from "../../components/icon/Icon";
 import { IconButton } from "../../components/iconButton/IconButton";
 import { Textarea } from "../../components/textarea/Textarea";
-import { findElementByPath, getElementPath, getFrameRect, useFrameDocument } from "./frameElements";
+import { readWrittenText } from "../textLength";
+import { findElementByPath, getElementPath, getFrameRect } from "./frameElements";
 import styles from "./FrameTools.module.scss";
+import { hotspotList } from "./hotspots";
 import { commentList, createNoteId, isOnPage, type PinnedComment, type TextChange, textChangeList } from "./workspaceNotes";
 
 /** The page of a prototype the notes belong to, and how to open another one. */
 export interface NotePage {
     prototypeId: string;
     page: string;
+    /** The pages a hotspot can open: the ones with a design and the ones the designer added. */
+    pageIds: string[];
     getPageLabel: (page: string) => string;
     onOpenPage: (page: string) => void;
 }
@@ -316,7 +320,8 @@ export function TextLayer({ frameDocument, notePage }: { frameDocument: Document
             const existing = textChangeList
                 .get()
                 .find((change) => isOnPage(change, notePage.prototypeId, notePage.page) && change.path.join() === path.join());
-            const original = existing?.original ?? readOwnText(editable);
+            // The text as written, not as Text length shows it, which the designer edits and the change keeps
+            const original = existing?.original ?? readWrittenText(editable);
             const before = readOwnText(editable);
             const linesBefore = new Set(editable.querySelectorAll(":scope > br"));
 
@@ -324,8 +329,18 @@ export function TextLayer({ frameDocument, notePage }: { frameDocument: Document
                 editable.removeEventListener("blur", handleBlur);
                 editable.removeEventListener("keydown", handleKey);
                 editable.removeAttribute("contenteditable");
-                // Emptying a text while editing can leave a line break in place of it, and no text node to write to again
-                editable.querySelectorAll(":scope > br").forEach((line) => !linesBefore.has(line) && line.remove());
+                // A line break pasted into the text becomes a space; one left in place of an emptied text goes, and an emptied text
+                // gets a text node to write to again
+                editable.querySelectorAll(":scope > br").forEach((line) => {
+                    if (linesBefore.has(line)) {
+                        return;
+                    }
+                    if (readOwnText(editable).trim() === "") {
+                        line.remove();
+                    } else {
+                        line.replaceWith(editable.ownerDocument.createTextNode(" "));
+                    }
+                });
                 if (getOwnTextNodes(editable).length === 0) {
                     writeOwnText(editable, "");
                 }
@@ -346,7 +361,8 @@ export function TextLayer({ frameDocument, notePage }: { frameDocument: Document
             }
             const handleBlur = () => finish(true);
             const handleKey = (keyEvent: KeyboardEvent) => {
-                if (keyEvent.key === "Enter" && !keyEvent.shiftKey) {
+                // A label is a single line, so Enter with or without Shift keeps the change
+                if (keyEvent.key === "Enter") {
                     keyEvent.preventDefault();
                     editable.blur();
                 } else if (keyEvent.key === "Escape") {
@@ -355,6 +371,7 @@ export function TextLayer({ frameDocument, notePage }: { frameDocument: Document
                 }
             };
             editable.setAttribute("contenteditable", "plaintext-only");
+            writeOwnText(editable, readWrittenText(editable));
             editable.addEventListener("blur", handleBlur);
             editable.addEventListener("keydown", handleKey);
             editable.focus();
@@ -412,41 +429,143 @@ export function TextLayer({ frameDocument, notePage }: { frameDocument: Document
     );
 }
 
-/** Puts the edited texts back on the page whenever it renders them again, e.g. after a reload or when it opens the page again. */
-export function useTextChanges({
-    frameRef,
-    frameLoadCount,
-    prototypeId,
-    page,
-}: {
-    frameRef: RefObject<HTMLIFrameElement | null>;
-    frameLoadCount: number;
-    prototypeId: string;
-    page: string;
-}) {
-    const frameDocument = useFrameDocument(frameRef, frameLoadCount);
+/**
+ * Puts the edited texts back on the page whenever it renders them again, e.g. after a reload or when it opens the page again. The
+ * prototype runs it itself, so that every frame shows them, also the ones of the compare modes.
+ */
+export function usePageTextChanges(prototypeId: string, page: string) {
     const changes = textChangeList.useItems();
     useEffect(() => {
         const pageChanges = changes.filter((change) => isOnPage(change, prototypeId, page));
-        if (!frameDocument?.body || pageChanges.length === 0) {
+        if (pageChanges.length === 0) {
             return;
         }
         const apply = () => {
-            // Until the workspace follows a page change, the frame already shows the next page, which the changes aren't for
-            const shownPage = decodeURIComponent(frameDocument.defaultView?.location.hash.slice(1) ?? "");
+            // Until this effect follows a page change, the document already shows the next page, which the changes aren't for
+            const shownPage = decodeURIComponent(window.location.hash.slice(1));
             if (shownPage !== "" && shownPage !== page) {
                 return;
             }
             for (const change of pageChanges) {
-                const element = findElementByPath(frameDocument, change.path);
-                if (element && !(element as HTMLElement).isContentEditable && readOwnText(element) === change.original) {
+                const element = findElementByPath(document, change.path);
+                if (element && !(element as HTMLElement).isContentEditable && readWrittenText(element) === change.original) {
                     writeOwnText(element, change.text);
                 }
             }
         };
         apply();
         const observer = new MutationObserver(apply);
-        observer.observe(frameDocument.body, { subtree: true, childList: true, characterData: true });
+        observer.observe(document.body, { subtree: true, childList: true, characterData: true });
         return () => observer.disconnect();
-    }, [frameDocument, changes, prototypeId, page]);
+    }, [changes, prototypeId, page]);
+}
+
+/**
+ * Links an element of the page to another page, without code: a click on an element offers the pages, and the prototype then
+ * opens the chosen page on a click there, also outside the tool. Shown as boxes with the page they open.
+ */
+export function HotspotLayer({ frameDocument, scale, notePage }: { frameDocument: Document; scale: number; notePage: NotePage }) {
+    const hotspots = hotspotList.useItems();
+    const [picking, setPicking] = useState<{ path: number[]; top: number; left: number } | null>(null);
+    const prototypeHotspots = hotspots.filter((hotspot) => hotspot.prototypeId === notePage.prototypeId);
+    const pageHotspots = prototypeHotspots.filter((hotspot) => isOnPage(hotspot, notePage.prototypeId, notePage.page));
+
+    useBlockedClicks(frameDocument, (event) => {
+        const element = asElement(event.target);
+        // The page's background would take every click of the page
+        if (!element || element === frameDocument.body || element === frameDocument.documentElement) {
+            return;
+        }
+        const rect = getFrameRect(element);
+        setPicking({ path: getElementPath(element), top: rect.top + rect.height, left: rect.left });
+    });
+
+    function link(target: string) {
+        if (!picking) {
+            return;
+        }
+        const path = picking.path;
+        hotspotList.update((items) => [
+            ...items.filter((item) => !(isOnPage(item, notePage.prototypeId, notePage.page) && item.path.join() === path.join())),
+            { id: createNoteId(), prototypeId: notePage.prototypeId, page: notePage.page, path, target },
+        ]);
+        setPicking(null);
+    }
+
+    return (
+        <>
+            <div className={styles.layer}>
+                {pageHotspots.map((hotspot) => {
+                    const element = findElementByPath(frameDocument, hotspot.path);
+                    if (!element) {
+                        return null;
+                    }
+                    const rect = getFrameRect(element);
+                    return (
+                        <div
+                            key={hotspot.id}
+                            className={styles.hotspot}
+                            style={{ top: rect.top * scale, left: rect.left * scale, width: rect.width * scale, height: rect.height * scale }}
+                        >
+                            <span className={styles.hotspotLabel}>→ {notePage.getPageLabel(hotspot.target)}</span>
+                        </div>
+                    );
+                })}
+                {picking && (
+                    <div className={styles.commentEditor} style={{ top: picking.top * scale + 6, left: picking.left * scale }}>
+                        <p className={styles.cardTitle}>Opens on a click</p>
+                        <ul className={styles.pagePicker}>
+                            {notePage.pageIds
+                                .filter((pageId) => pageId !== notePage.page)
+                                .map((pageId) => (
+                                    <li key={pageId}>
+                                        <button type="button" className={styles.noteLink} onClick={() => link(pageId)}>
+                                            {notePage.getPageLabel(pageId)}
+                                        </button>
+                                    </li>
+                                ))}
+                        </ul>
+                        <div className={styles.editorActions}>
+                            <Button variant="text" color="secondary" size="small" onClick={() => setPicking(null)}>
+                                Cancel
+                            </Button>
+                        </div>
+                    </div>
+                )}
+            </div>
+            <aside className={styles.card} aria-label="Hotspots">
+                <p className={styles.cardTitle}>
+                    Hotspots
+                    <span>
+                        {pageHotspots.length} here · {prototypeHotspots.length} in all
+                    </span>
+                </p>
+                {prototypeHotspots.length === 0 ? (
+                    <p className={styles.hint}>Click an element to choose the page it opens, e.g. a button of a page that isn&apos;t built yet.</p>
+                ) : (
+                    <ul className={styles.noteList}>
+                        {prototypeHotspots.map((hotspot) => (
+                            <li key={hotspot.id}>
+                                <button type="button" className={styles.noteLink} onClick={() => notePage.onOpenPage(hotspot.page)}>
+                                    <span>
+                                        <span className={styles.notePage}>{notePage.getPageLabel(hotspot.page)}</span>
+                                        Opens {notePage.getPageLabel(hotspot.target)}
+                                    </span>
+                                </button>
+                                <IconButton
+                                    variant="text"
+                                    color="secondary"
+                                    size="small"
+                                    aria-label="Remove hotspot"
+                                    onClick={() => hotspotList.update((items) => items.filter((item) => item.id !== hotspot.id))}
+                                >
+                                    <Icon name="trash" />
+                                </IconButton>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+            </aside>
+        </>
+    );
 }

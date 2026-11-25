@@ -25,15 +25,20 @@ import { brandSetting } from "../brand";
 import { colorSchemeSetting, getAppliedColorScheme } from "../colorScheme";
 import { densitySetting } from "../density";
 import { scenarioSetting, useScenario } from "../scenario";
+import { textLengthSetting } from "../textLength";
 import { CompareCanvas } from "./CompareCanvas";
 import { getComponentStoryIds, type IndexedStory } from "./componentStories";
+import { flowEdgeList } from "./flowEdges";
 import { FlowMap } from "./FlowMap";
-import { type NotePage, useTextChanges } from "./FrameNotes";
+import type { NotePage } from "./FrameNotes";
 import { type FrameTool, FrameTools } from "./FrameTools";
+import { hotspotList } from "./hotspots";
 import { customPageList, customPagePrefix, type PageTemplate, pageTemplates } from "./pageTemplates";
 import { workspacePrototypes } from "./prototypes";
+import { TokenPlayground } from "./TokenPlayground";
 import { type InspectedComponent, useCanvasInspector } from "./useCanvasInspector";
 import { useFramePage } from "./useFramePage";
+import { WorkspaceGuide } from "./WorkspaceGuide";
 import { workspaceLogo } from "./workspaceLogo";
 import { commentList, textChangeList } from "./workspaceNotes";
 import styles from "./WorkspaceShell.module.scss";
@@ -47,6 +52,7 @@ const maxPanelWidth = 520;
 const panelKeyboardStep = 20;
 const inspectLabelHeight = 18;
 const prototypesTitle = "Workspace/Prototypes";
+const textLengthOptions = textLengthSetting.options.map(({ value, title }) => ({ value, "aria-label": title, icon: null }));
 const scenarioOptions = scenarioSetting.options.map(({ value, title }) => ({ value, "aria-label": title, icon: null }));
 const brandOptions = brandSetting.options.map(({ value, title }) => ({ value, "aria-label": title, icon: null }));
 
@@ -54,6 +60,7 @@ const compareOptions: Array<{ value: WorkspaceCompare; icon: ReactNode; "aria-la
     { value: "off", icon: <Icon name="window" />, "aria-label": "One frame" },
     { value: "viewports", icon: <Icon name="device-tablet" />, "aria-label": "Phone, tablet, and desktop side by side" },
     { value: "variants", icon: <Icon name="swap-boxes" />, "aria-label": "Two variants side by side" },
+    { value: "swipe", icon: <Icon name="move-vertical" />, "aria-label": "Two variants on top of each other, with a divider" },
 ];
 
 const modeTabs: Array<{ value: WorkspaceMode; label: string }> = [
@@ -177,8 +184,9 @@ export function WorkspaceShell() {
     const [stories, setStories] = useState<IndexedStory[]>([]);
     const [colorScheme, setColorScheme] = useState(getAppliedColorScheme);
     const [brand, setBrand] = useState(brandSetting.get);
-    const [density, setDensity] = useState(densitySetting.get);
+    const density = densitySetting.useValue();
     const scenario = useScenario();
+    const textLength = textLengthSetting.useValue();
     const [canvasElement, setCanvasElement] = useState<HTMLDivElement | null>(null);
     const [resizing, setResizing] = useState<"frame" | "panel" | null>(null);
     const [reloadKey, setReloadKey] = useState(0);
@@ -301,6 +309,13 @@ export function WorkspaceShell() {
                 note.prototypeId === prototypeId && note.page === currentCustomPage.id;
             commentList.update((comments) => comments.filter((comment) => !isOnRemovedPage(comment)));
             textChangeList.update((changes) => changes.filter((change) => !isOnRemovedPage(change)));
+            const removedId = currentCustomPage.id;
+            hotspotList.update((hotspots) =>
+                hotspots.filter((hotspot) => !(hotspot.prototypeId === prototypeId && (hotspot.page === removedId || hotspot.target === removedId))),
+            );
+            flowEdgeList.update((edges) =>
+                edges.filter((edge) => !(edge.prototypeId === prototypeId && (edge.from === removedId || edge.to === removedId))),
+            );
             selectPrototypeNode(getPrototypePageNodeId(prototypeId, currentWorkspacePrototype?.startPageId ?? ""));
         }
     }
@@ -308,6 +323,7 @@ export function WorkspaceShell() {
     const notePage: NotePage = {
         prototypeId: prototypeId ?? "",
         page: currentPrototypePageId ?? "",
+        pageIds: [...(currentWorkspacePrototype?.designedPageIds ?? []), ...prototypeCustomPages.map((page) => page.id)],
         getPageLabel,
         onOpenPage: (page) => {
             const frameWindow = frameRef.current?.contentWindow;
@@ -316,7 +332,6 @@ export function WorkspaceShell() {
             }
         },
     };
-    useTextChanges({ frameRef, frameLoadCount, prototypeId: notePage.prototypeId, page: notePage.page });
     const storiesById = useMemo(() => new Map(componentStories.map((story) => [story.id, story])), [componentStories]);
 
     function rememberCurrentStory() {
@@ -384,7 +399,10 @@ export function WorkspaceShell() {
         if (!presenting) {
             return;
         }
-        const frameDocuments = [document, frameRef.current?.contentDocument].filter((target): target is Document => target != null);
+        // Also the frames of the compare modes, where the focus may be when Escape is pressed
+        const frameDocuments = [document, ...Array.from(document.querySelectorAll("iframe"), (frame) => frame.contentDocument)].filter(
+            (target): target is Document => target != null,
+        );
         const handleKey = (event: KeyboardEvent) => {
             if (event.key === "Escape") {
                 setPresenting(false);
@@ -588,6 +606,16 @@ export function WorkspaceShell() {
                                     onChange={scenarioSetting.store}
                                 />
                             )}
+                            {isPrototypeMode && (
+                                <SettingMenu
+                                    label="Text length"
+                                    icon={<Icon name="align-justify" />}
+                                    options={textLengthOptions}
+                                    value={textLength}
+                                    onChange={textLengthSetting.store}
+                                />
+                            )}
+                            {isPrototypeMode && <TokenPlayground />}
                             <SettingMenu label="Color scheme" options={colorSchemeOptions} value={colorScheme} onChange={changeColorScheme} />
                             <SettingMenu
                                 label="Theme"
@@ -605,10 +633,10 @@ export function WorkspaceShell() {
                                 value={density}
                                 onChange={(value) => {
                                     densitySetting.store(value);
-                                    setDensity(value);
                                 }}
                             />
                             <span className={styles.divider} />
+                            {isPrototypeMode && <WorkspaceGuide />}
                             <IconButton variant="text" color="secondary" aria-label="Reload story" onClick={reloadFrame}>
                                 <Icon name="refresh" />
                             </IconButton>
@@ -622,7 +650,7 @@ export function WorkspaceShell() {
                                         window.open(storybookFrameRef.current?.contentWindow?.location.href ?? storybookSrc ?? undefined, "_blank");
                                     } else if (storyUrl) {
                                         // The link keeps the toolbar's settings, so whoever opens it sees the prototype as it's shown here
-                                        const settings = [colorSchemeSetting, brandSetting, densitySetting, scenarioSetting]
+                                        const settings = [colorSchemeSetting, brandSetting, densitySetting, scenarioSetting, textLengthSetting]
                                             .map((setting) => `&${setting.storageKey}=${encodeURIComponent(setting.get())}`)
                                             .join("");
                                         window.open(`${storyUrl}${settings}${shownPage ? `#${shownPage}` : ""}`, "_blank");
@@ -666,6 +694,16 @@ export function WorkspaceShell() {
                                     ) : (
                                         prototypePageLabel && <span className={styles.locationCurrent}>{prototypePageLabel}</span>
                                     )}
+                                    {isPrototypeMode && currentCustomPage && (
+                                        <IconButton
+                                            variant="text"
+                                            color="secondary"
+                                            aria-label={`Delete “${currentCustomPage.title}”`}
+                                            onClick={removeCurrentPage}
+                                        >
+                                            <Icon name="trash" />
+                                        </IconButton>
+                                    )}
                                 </>
                             ) : (
                                 currentStory && (
@@ -677,32 +715,6 @@ export function WorkspaceShell() {
                             )}
                         </p>
                         <div className={styles.toolbarGroup}>
-                            {isPrototypeMode && (
-                                <IconButton
-                                    variant={showingFlow ? "contained" : "text"}
-                                    color={showingFlow ? "primary" : "secondary"}
-                                    aria-label="Show the flow map"
-                                    aria-pressed={showingFlow}
-                                    onClick={toggleFlow}
-                                >
-                                    <Icon name="tune-logic" />
-                                </IconButton>
-                            )}
-                            {isPrototypeMode && (
-                                <IconButton variant="text" color="secondary" aria-label="Present the prototype" onClick={startPresenting}>
-                                    <Icon name="eye" />
-                                </IconButton>
-                            )}
-                            {isPrototypeMode && currentCustomPage && (
-                                <IconButton
-                                    variant="text"
-                                    color="secondary"
-                                    aria-label={`Delete “${currentCustomPage.title}”`}
-                                    onClick={removeCurrentPage}
-                                >
-                                    <Icon name="trash" />
-                                </IconButton>
-                            )}
                             {isPrototypeMode && (
                                 <IconButton variant="text" color="secondary" aria-label="Restart the prototype" onClick={restartPrototype}>
                                     <Icon name="home" />
@@ -717,6 +729,7 @@ export function WorkspaceShell() {
                             >
                                 <Icon name="back" />
                             </IconButton>
+                            {isPrototypeMode && !isComparing && !showingFlow && <span className={styles.divider} />}
                             {isPrototypeMode && !isComparing && !showingFlow && (
                                 <IconButton
                                     variant={inspecting ? "contained" : "text"}
@@ -766,6 +779,17 @@ export function WorkspaceShell() {
                             )}
                             {isPrototypeMode && !isComparing && !showingFlow && (
                                 <IconButton
+                                    variant={frameTool === "hotspot" ? "contained" : "text"}
+                                    color={frameTool === "hotspot" ? "primary" : "secondary"}
+                                    aria-label="Link elements to pages"
+                                    aria-pressed={frameTool === "hotspot"}
+                                    onClick={() => toggleFrameTool("hotspot")}
+                                >
+                                    <Icon name="link-diagonal" />
+                                </IconButton>
+                            )}
+                            {isPrototypeMode && !isComparing && !showingFlow && (
+                                <IconButton
                                     variant={frameTool === "accessibility" ? "contained" : "text"}
                                     color={frameTool === "accessibility" ? "primary" : "secondary"}
                                     aria-label="Check accessibility"
@@ -773,6 +797,23 @@ export function WorkspaceShell() {
                                     onClick={() => toggleFrameTool("accessibility")}
                                 >
                                     <Icon name="contrast" />
+                                </IconButton>
+                            )}
+                            {isPrototypeMode && <span className={styles.divider} />}
+                            {isPrototypeMode && (
+                                <IconButton
+                                    variant={showingFlow ? "contained" : "text"}
+                                    color={showingFlow ? "primary" : "secondary"}
+                                    aria-label="Show the flow map"
+                                    aria-pressed={showingFlow}
+                                    onClick={toggleFlow}
+                                >
+                                    <Icon name="tune-logic" />
+                                </IconButton>
+                            )}
+                            {isPrototypeMode && (
+                                <IconButton variant="text" color="secondary" aria-label="Present the prototype" onClick={startPresenting}>
+                                    <Icon name="eye" />
                                 </IconButton>
                             )}
                         </div>
@@ -882,7 +923,7 @@ export function WorkspaceShell() {
                             />
                         ) : isComparing && storyUrl ? (
                             <CompareCanvas
-                                mode={state.compare === "variants" ? "variants" : "viewports"}
+                                mode={state.compare === "off" ? "viewports" : state.compare}
                                 storyUrl={storyUrl}
                                 startPage={prototypeStartPage}
                                 density={density}

@@ -83,3 +83,32 @@
 .sizeField {
     min-inline-size: 0;
 }
+
+.popoverActions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.guide {
+    display: grid;
+    gap: 10px;
+    inline-size: min(330px, calc(100vw - 64px));
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+    list-style: none;
+
+    li {
+        display: grid;
+        grid-template-columns: 20px minmax(0, 1fr);
+        gap: 8px;
+        align-items: start;
+    }
+}
+
+.guideNote {
+    margin: 12px 0 0;
+    color: var(--dextinity-color-text-subtle);
+    font-size: 12px;
+}

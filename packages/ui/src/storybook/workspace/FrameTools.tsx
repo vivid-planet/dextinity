@@ -2,11 +2,12 @@ import { type RefObject, useEffect, useMemo, useRef, useState } from "react";
 
 import { composite, contrastRatio, getBackgroundBehind, toRgba } from "./frameColor";
 import { type FrameRect, getFrameRect, useFrameDocument } from "./frameElements";
-import { CommentLayer, type NotePage, TextLayer } from "./FrameNotes";
+import { CommentLayer, HotspotLayer, type NotePage, TextLayer } from "./FrameNotes";
 import { createTokenLookup } from "./frameTokens";
 import styles from "./FrameTools.module.scss";
+import { toolAttribute } from "./hotspots";
 
-export type FrameTool = "measure" | "accessibility" | "comment" | "text";
+export type FrameTool = "measure" | "accessibility" | "comment" | "text" | "hotspot";
 
 // The frame's elements come from another window, so `instanceof Element` of this one doesn't recognize them
 function asElement(target: EventTarget | null): Element | null {
@@ -436,12 +437,25 @@ const checks: Array<{ key: AccessibilityCheck; label: string; description: strin
  */
 function AccessibilityLayer({ frameDocument, scale, tick }: { frameDocument: Document; scale: number; tick: number }) {
     const [shown, setShown] = useState<AccessibilityCheck[]>(["tabOrder", "smallTargets", "lowContrast"]);
-    const [result, setResult] = useState(() => checkAccessibility(frameDocument));
-    // Checked again once the page has settled after a change or scrolling, not on every frame of it
+    const [checked, setChecked] = useState(() => ({ result: checkAccessibility(frameDocument), at: performance.now() }));
+    // Checked again once the page has settled after a change or scrolling, not on every frame of it, but at least every second
+    // while it keeps changing, e.g. during an animation
     useEffect(() => {
-        const timeout = window.setTimeout(() => setResult(checkAccessibility(frameDocument)), 200);
+        const check = () => setChecked({ result: checkAccessibility(frameDocument), at: performance.now() });
+        if (performance.now() - checked.at > 1000) {
+            check();
+        }
+        const timeout = window.setTimeout(check, 200);
         return () => window.clearTimeout(timeout);
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- `checked.at` is read, not followed
     }, [frameDocument, tick]);
+    // Elements the page removed since the check have no place to mark
+    const result = {
+        ...checked.result,
+        tabOrder: checked.result.tabOrder.filter((finding) => finding.element.isConnected),
+        smallTargets: checked.result.smallTargets.filter((finding) => finding.element.isConnected),
+        lowContrast: checked.result.lowContrast.filter((finding) => finding.element.isConnected),
+    };
 
     return (
         <>
@@ -527,6 +541,10 @@ export function FrameTools({
 }) {
     const frameDocument = useFrameDocument(frameRef, frameLoadCount);
     const tick = useFrameTick(frameDocument);
+    useEffect(() => {
+        frameDocument?.documentElement.setAttribute(toolAttribute, tool);
+        return () => frameDocument?.documentElement.removeAttribute(toolAttribute);
+    }, [frameDocument, tool]);
     if (!frameDocument?.body) {
         return null;
     }
@@ -539,5 +557,7 @@ export function FrameTools({
             return <CommentLayer frameDocument={frameDocument} scale={scale} notePage={notePage} />;
         case "text":
             return <TextLayer frameDocument={frameDocument} notePage={notePage} />;
+        case "hotspot":
+            return <HotspotLayer frameDocument={frameDocument} scale={scale} notePage={notePage} />;
     }
 }

@@ -340,3 +340,32 @@ $pin: #f59f00;
     color: var(--dextinity-color-text-subtle);
     font-size: 11px;
 }
+
+$hotspot: #12b886;
+
+.hotspot {
+    position: absolute;
+    box-sizing: border-box;
+    outline: 1.5px solid $hotspot;
+    background: color-mix(in srgb, $hotspot 10%, transparent);
+}
+
+.hotspotLabel {
+    position: absolute;
+    inset-block-start: calc(100% + 2px);
+    inset-inline-start: 0;
+    padding: 2px 4px;
+    border-radius: 3px;
+    background: $hotspot;
+    color: #fff;
+    white-space: nowrap;
+}
+
+.pagePicker {
+    display: grid;
+    max-block-size: 240px;
+    overflow: auto;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}

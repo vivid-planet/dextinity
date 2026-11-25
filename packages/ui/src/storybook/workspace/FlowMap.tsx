@@ -2,8 +2,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { Button } from "../../components/button/Button";
 import { Icon } from "../../components/icon/Icon";
+import { scenarioSetting } from "../scenario";
 import { addFlowEdges, type FlowEdge, flowEdgeList } from "./flowEdges";
 import styles from "./FlowMap.module.scss";
+import { hotspotList } from "./hotspots";
 
 const nodeWidth = 200;
 const nodeHeight = 48;
@@ -11,8 +13,9 @@ const columnGap = 96;
 const rowGap = 14;
 const padding = 24;
 const scanDelay = 700;
-// Each prototype is scanned once per visit of the workspace on opening the map; its pages rarely change in between
-const scannedPrototypes = new Set<string>();
+// Each prototype is scanned once per visit of the workspace on opening the map, its pages rarely change in between; the entries of
+// its navigation stay known for opening the map again
+const navigationByPrototype = new Map<string, string[]>();
 
 interface FlowNode {
     id: string;
@@ -90,15 +93,35 @@ export function FlowMap({
     getPageLabel: (pageId: string) => string;
     onOpenPage: (pageId: string) => void;
 }) {
-    const edges = flowEdgeList.useItems().filter((edge) => edge.prototypeId === prototypeId);
+    const recordedEdges = flowEdgeList.useItems();
+    const hotspots = hotspotList.useItems();
+    // A hotspot is a link too, already before anyone clicked it
+    const edges = useMemo(
+        () => [
+            ...recordedEdges.filter((edge) => edge.prototypeId === prototypeId),
+            ...hotspots
+                .filter((hotspot) => hotspot.prototypeId === prototypeId)
+                .map((hotspot): FlowEdge => ({ prototypeId, from: hotspot.page, to: hotspot.target, kind: "link" })),
+        ],
+        [recordedEdges, hotspots, prototypeId],
+    );
     const [scan, setScan] = useState<{ done: number; total: number } | null>(null);
-    const [navigationIds, setNavigationIds] = useState<string[]>([]);
+    const [navigationIds, setNavigationIds] = useState<string[]>(() => navigationByPrototype.get(prototypeId) ?? []);
+    const [scanFrameLoaded, setScanFrameLoaded] = useState(false);
     const scanFrameRef = useRef<HTMLIFrameElement>(null);
+    // Closing the map ends a scan; the frame it reads is gone then, and what it found so far is incomplete
+    const unmountedRef = useRef(false);
+    useEffect(
+        () => () => {
+            unmountedRef.current = true;
+        },
+        [],
+    );
     const scanStarted = useRef(false);
 
     async function scanPages() {
         const frameWindow = scanFrameRef.current?.contentWindow;
-        if (!frameWindow || scanStarted.current) {
+        if (!frameWindow || !scanFrameLoaded || scanStarted.current) {
             return;
         }
         scanStarted.current = true;
@@ -108,12 +131,15 @@ export function FlowMap({
             setScan({ done: index, total: pageIds.length });
             frameWindow.location.hash = pageId;
             await wait(scanDelay);
+            if (unmountedRef.current) {
+                return;
+            }
             const links = readLinks(frameWindow.document);
             links.content.forEach((to) => found.push({ prototypeId, from: pageId, to, kind: "link" }));
             links.navigation.forEach((id) => navigation.add(id));
         }
         addFlowEdges(found);
-        scannedPrototypes.add(prototypeId);
+        navigationByPrototype.set(prototypeId, [...navigation]);
         setNavigationIds([...navigation]);
         setScan(null);
         scanStarted.current = false;
@@ -125,7 +151,7 @@ export function FlowMap({
             links.set(edge.from, (links.get(edge.from) ?? new Set()).add(edge.to));
         }
         const navigation = new Set([...navigationIds, ...edges.filter((edge) => edge.kind === "navigation").map((edge) => edge.to)]);
-        const allIds = [...new Set([...pageIds, ...[...links.values()].flatMap((targets) => [...targets])])];
+        const allIds = [...new Set([...pageIds, ...links.keys(), ...[...links.values()].flatMap((targets) => [...targets])])];
         const placed = layOut(allIds, startPageId, links, navigation);
         const rows = new Map<number, number>();
         const flowNodes: FlowNode[] = placed
@@ -165,14 +191,11 @@ export function FlowMap({
     }, [edges, navigationIds, pageIds, startPageId, getPageLabel]);
 
     useEffect(() => {
-        if (!scannedPrototypes.has(prototypeId)) {
-            const frame = scanFrameRef.current;
-            const start = () => void scanPages();
-            frame?.addEventListener("load", start, { once: true });
-            return () => frame?.removeEventListener("load", start);
+        if (scanFrameLoaded && !navigationByPrototype.has(prototypeId)) {
+            void scanPages();
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps -- only on opening
-    }, []);
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- once the frame has loaded
+    }, [scanFrameLoaded]);
 
     return (
         <div className={styles.root}>
@@ -190,7 +213,7 @@ export function FlowMap({
                     color="secondary"
                     size="small"
                     startIcon={<Icon name="refresh" />}
-                    disabled={scan != null}
+                    disabled={scan != null || !scanFrameLoaded}
                     onClick={() => void scanPages()}
                 >
                     {scan ? `Scanning ${scan.done + 1} of ${scan.total}` : "Scan pages"}
@@ -244,7 +267,16 @@ export function FlowMap({
                     <p className={styles.hint}>Click through the prototype or scan its pages to see the ways between them.</p>
                 )}
             </div>
-            <iframe ref={scanFrameRef} className={styles.scanFrame} src={storyUrl} title="Scanning the prototype's pages" tabIndex={-1} aria-hidden />
+            <iframe
+                ref={scanFrameRef}
+                className={styles.scanFrame}
+                // The sample content, so that the pages and links are the ones the prototype has, e.g. not the copies of many entries
+                src={`${storyUrl}&${scenarioSetting.storageKey}=default`}
+                onLoad={() => setScanFrameLoaded(true)}
+                title="Scanning the prototype's pages"
+                tabIndex={-1}
+                aria-hidden
+            />
         </div>
     );
 }

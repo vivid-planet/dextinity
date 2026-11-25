@@ -43,8 +43,7 @@ Positional parameters are fine when their meaning is obvious from the function n
 - Use named exports only (Exception: Default exports are allowed only if technically required)  
   **Reason:** They are harder to locate and refactor.
 
-- Use relative imports only for sibling or child files within a module (for anything else, use imports via @src)  
-  This only applies to projects that define the `@src` path alias. Library packages compiled with plain `tsc` can't use it, because `tsc` doesn't rewrite path aliases in its output, so they use relative imports, including for ancestor files.
+- Whether an import may be relative is checked by the ESLint rule `@dextinity/no-other-module-relative-import`; its autofix rewrites a reported import to `@src/…`
 
 - Prefer async/await over callbacks
 

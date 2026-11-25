@@ -20,7 +20,6 @@ import { PageHeader } from "../../pageHeader/PageHeader";
 import { Pagination } from "../../pagination/Pagination";
 import { StatusIndicator } from "../../statusIndicator/StatusIndicator";
 import { ListLayout } from "../ListLayout";
-import listLayoutTokens from "../ListLayout.tokens.scss?raw";
 import styles from "./ListLayout.stories.module.scss";
 
 type JobStatus = "published" | "unpublished" | "archived";
@@ -110,14 +109,8 @@ function JobAdsPage() {
                     eyebrow="Content · Careers"
                     title="Job ads"
                     subtitle={`${jobs.length} job ads in Austria · German`}
-                    actions={
-                        <>
-                            <Button variant="outlined" color="secondary" startIcon={<Icon name="download" />}>
-                                Export
-                            </Button>
-                            <Button startIcon={<Icon name="plus" />}>New job ad</Button>
-                        </>
-                    }
+                    secondaryActions={[{ label: "Export", icon: <Icon name="download" /> }]}
+                    primaryAction={{ label: "New job ad", icon: <Icon name="plus" /> }}
                 />
             }
             toolbar={
@@ -201,7 +194,6 @@ const meta = {
     title: "Page types/List",
     decorators: [themeDecorator],
     parameters: {
-        tokens: listLayoutTokens,
         layout: "fullscreen",
         docs: {
             description: {

@@ -4,7 +4,9 @@ import { type ElementType, forwardRef, type HTMLAttributes, type MouseEvent, typ
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { useAppShellContext } from "../appShell/appShellContext";
 import { Badge } from "../badge/Badge";
+import { EnvironmentLabel } from "../environmentLabel/EnvironmentLabel";
 import { Icon } from "../icon/Icon";
+import { useAriaKeyShortcuts } from "../keyboardShortcut/useAriaKeyShortcuts";
 import { Menu } from "../menu/Menu";
 import { MenuGroup } from "../menu/MenuGroup";
 import { MenuItem } from "../menu/MenuItem";
@@ -82,8 +84,11 @@ export interface SideNavProps extends Omit<HTMLAttributes<HTMLElement>, "classNa
     logo?: ReactNode;
     /** The product's sign, shown instead of the logo while collapsed. */
     logoMark?: ReactNode;
-    /** The app name, shown large below the logo. The app name appears only here, never in the top bar. */
-    title: string;
+    /**
+     * The app name, shown large below the logo. Leave it out when the logo names the product. The app name appears only here, never in
+     * the top bar.
+     */
+    title?: string;
     /** Tenant and environment, shown small below the app name, e.g. "Example Ltd · Production". */
     subtitle?: string;
     /** The groups and their entries. */
@@ -310,7 +315,8 @@ function CollapsedEntry({
 
 /**
  * The main navigation: app header with logo, app name, and tenant, then groups with entries up to three levels deep. Collapses to an
- * icon rail whose sub-entries open as a menu.
+ * icon rail whose sub-entries open as a menu. In an `AppShell` with an `environment`, the header shows the instance's label in its top right
+ * corner, or only its first letter while collapsed.
  */
 export const SideNav = forwardRef<HTMLElement, SideNavProps>(function SideNav(
     {
@@ -334,6 +340,8 @@ export const SideNav = forwardRef<HTMLElement, SideNavProps>(function SideNav(
     ref,
 ) {
     const shell = useAppShellContext();
+    const environment = shell?.environment;
+    const collapseKeyShortcuts = useAriaKeyShortcuts(shell?.navCollapseKeyboardShortcut);
     const labels = { ...defaultLabels, ...labelsProp };
     const ownerState: SideNavOwnerState = { collapsed: collapsedProp ?? shell?.navCollapsed ?? false };
     const onCollapsedChange = onCollapsedChangeProp ?? shell?.onNavCollapsedChange;
@@ -379,9 +387,17 @@ export const SideNav = forwardRef<HTMLElement, SideNavProps>(function SideNav(
                 ) : (
                     <>
                         {logo != null && <span className={styles.logo}>{logo}</span>}
-                        <span className={styles.title}>{title}</span>
+                        {title != null && <span className={styles.title}>{title}</span>}
                         {subtitle != null && <span className={styles.subtitle}>{subtitle}</span>}
                     </>
+                )}
+                {environment != null && (
+                    <EnvironmentLabel
+                        label={environment.label}
+                        color={environment.color}
+                        variant={ownerState.collapsed ? "compact" : "default"}
+                        className={styles.environment}
+                    />
                 )}
             </div>
             <div className={styles.scroll}>
@@ -410,12 +426,19 @@ export const SideNav = forwardRef<HTMLElement, SideNavProps>(function SideNav(
             </div>
             {onCollapsedChange != null && (
                 <div {...footerProps}>
-                    <Tooltip content={labels.expand} placement="right" disabled={!ownerState.collapsed}>
+                    <Tooltip
+                        content={ownerState.collapsed ? labels.expand : labels.collapse}
+                        keyboardShortcut={shell?.navCollapseKeyboardShortcut}
+                        placement="right"
+                        // Expanded, the button shows its label, so a tooltip only adds something when there's a shortcut to name
+                        disabled={!ownerState.collapsed && shell?.navCollapseKeyboardShortcut == null}
+                    >
                         <button
                             type="button"
                             className={styles.collapseButton}
                             aria-label={ownerState.collapsed ? labels.expand : undefined}
                             aria-expanded={!ownerState.collapsed}
+                            aria-keyshortcuts={collapseKeyShortcuts}
                             onClick={() => onCollapsedChange(!ownerState.collapsed)}
                         >
                             <Icon name={ownerState.collapsed ? "pin-right" : "pin-left"} />

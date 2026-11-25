@@ -7,7 +7,6 @@ import { Field } from "../../field/Field";
 import { Input } from "../../input/Input";
 import { Textarea } from "../../textarea/Textarea";
 import { FieldActions, type FieldActionsProps } from "../FieldActions";
-import fieldActionsTokens from "../FieldActions.tokens.scss?raw";
 import styles from "./FieldActions.stories.module.scss";
 
 function MetaTitleField(props: FieldActionsProps) {
@@ -101,7 +100,6 @@ const meta = {
     component: FieldActions,
     title: "Building blocks/Form fields/FieldActions",
     decorators: [themeDecorator],
-    parameters: { tokens: fieldActionsTokens },
     render: (args) => <AltTextField {...args} />,
     args: {
         translate: true,

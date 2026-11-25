@@ -6,7 +6,6 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { MenuItem } from "../../menu/MenuItem";
 import { Toolbar } from "../Toolbar";
-import toolbarTokens from "../Toolbar.tokens.scss?raw";
 import { ToolbarMenu } from "../ToolbarMenu";
 import styles from "./Toolbar.stories.module.scss";
 
@@ -25,7 +24,6 @@ const meta = {
         ),
         themeDecorator,
     ],
-    parameters: { tokens: toolbarTokens },
     args: {
         label: "Insert",
         icon: <Icon name="plus" />,
@@ -40,6 +38,7 @@ const meta = {
         ),
     },
     argTypes: {
+        label: { control: "text" },
         placement: { control: "select", options: ["bottom-start", "bottom-end", "top-start", "top-end"] },
         disabled: { control: "boolean" },
         icon: { control: false },

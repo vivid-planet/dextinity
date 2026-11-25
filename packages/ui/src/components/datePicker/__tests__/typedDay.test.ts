@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { defaultDateInputErrorLabels, invalidTimeMessage, readTypedDay } from "../typedDay";
 
-const options = { locale: "de-AT", min: "2026-11-03", max: "2026-11-20", labels: defaultDateInputErrorLabels };
+const options = { locale: "de-AT", min: "2026-11-03", max: "2026-11-20", isDateDisabled: undefined, labels: defaultDateInputErrorLabels };
 
 describe("readTypedDay", () => {
     it("reads a day within the limits", () => {
@@ -21,6 +21,12 @@ describe("readTypedDay", () => {
         expect(readTypedDay("24.11.2026", options).error).toBe("Choose a date from 03.11.2026 to 20.11.2026.");
         expect(readTypedDay("1.1.2026", { ...options, max: undefined }).error).toBe("Choose 03.11.2026 or later.");
         expect(readTypedDay("1.1.2027", { ...options, min: undefined }).error).toBe("Choose 20.11.2026 or earlier.");
+    });
+
+    it("names a day that isDateDisabled disables", () => {
+        const isWeekend = (date: string) => [0, 6].includes(new Date(date).getUTCDay());
+        expect(readTypedDay("7.11.2026", { ...options, isDateDisabled: isWeekend }).error).toBe("07.11.2026 can't be chosen.");
+        expect(readTypedDay("6.11.2026", { ...options, isDateDisabled: isWeekend })).toStrictEqual({ day: "2026-11-06" });
     });
 });
 

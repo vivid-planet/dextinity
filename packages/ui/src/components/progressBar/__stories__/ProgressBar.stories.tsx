@@ -3,7 +3,6 @@ import { expect, within } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { ProgressBar } from "../ProgressBar";
-import progressBarTokens from "../ProgressBar.tokens.scss?raw";
 import styles from "./ProgressBar.stories.module.scss";
 
 const meta = {
@@ -17,10 +16,8 @@ const meta = {
             </div>
         ),
     ],
-    parameters: { tokens: progressBarTokens },
     args: { value: 42, "aria-label": "Upload" },
     argTypes: {
-        "aria-label": { description: "Names the bar when it has no visible `label`." },
         value: { control: { type: "range", min: 0, max: 100 } },
         color: { control: "select", options: ["accent", "success", "warning", "error"] },
         size: { control: "radio", options: ["default", "small"] },

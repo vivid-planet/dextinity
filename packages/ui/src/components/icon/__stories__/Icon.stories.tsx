@@ -5,7 +5,6 @@ import { expect } from "storybook/test";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Theme } from "../../theme/Theme";
 import { Icon } from "../Icon";
-import iconTokens from "../Icon.tokens.scss?raw";
 import { defaultIconNames } from "../iconRegistry";
 import styles from "./Icon.stories.module.scss";
 import colorStyles from "./iconColor.module.scss";
@@ -15,7 +14,6 @@ const meta = {
     component: Icon,
     title: "Foundations/Icons/Icon",
     decorators: [themeDecorator],
-    parameters: { tokens: iconTokens },
     args: {
         name: "star-fill",
     },
@@ -129,7 +127,7 @@ async function expectColoredMark(
 
 /**
  * Icons inherit the text color. `small` (18px) in buttons, fields, and tables; `default` (20px) in navigation; `large` (24px) in empty
- * states and card headers. Without a size, an icon follows the surrounding component's `--dextinity-icon-size`.
+ * states. Without a size, an icon follows the surrounding component's `--dextinity-icon-size`.
  */
 export const Sizes: Story = {
     render: (args) => (

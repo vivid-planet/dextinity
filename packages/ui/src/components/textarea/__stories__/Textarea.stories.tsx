@@ -4,9 +4,7 @@ import { expect, fn, userEvent, waitFor } from "storybook/test";
 import { fieldArgTypes, type FieldStoryArgs, splitFieldArgs, StoryField } from "../../../storybook/fieldStoryArgs";
 import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import fieldTokens from "../../field/Field.tokens.scss?raw";
 import { Textarea, type TextareaProps } from "../Textarea";
-import textareaTokens from "../Textarea.tokens.scss?raw";
 
 type TextareaStoryArgs = TextareaProps & FieldStoryArgs;
 
@@ -32,7 +30,6 @@ const meta = {
     component: Textarea,
     title: "Building blocks/Form fields/Textarea",
     decorators: [themeDecorator],
-    parameters: { tokens: `${textareaTokens}\n${fieldTokens}` },
     render: (args, context) => <ControlledTextarea {...args} storyId={context.id} />,
     args: {
         name: "tasks",

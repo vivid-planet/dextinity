@@ -3,14 +3,12 @@ import { expect } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { KeyboardShortcut } from "../KeyboardShortcut";
-import keyboardShortcutTokens from "../KeyboardShortcut.tokens.scss?raw";
 import styles from "./KeyboardShortcut.stories.module.scss";
 
 const meta = {
     component: KeyboardShortcut,
     title: "Building blocks/Status, tags & badges/KeyboardShortcut",
     decorators: [themeDecorator],
-    parameters: { tokens: keyboardShortcutTokens },
     args: {
         shortcut: "mod+k",
     },

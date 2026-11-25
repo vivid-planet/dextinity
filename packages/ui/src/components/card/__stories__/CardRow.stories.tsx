@@ -5,7 +5,6 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Avatar } from "../../avatar/Avatar";
 import { StatusIndicator } from "../../statusIndicator/StatusIndicator";
 import { Card } from "../Card";
-import cardTokens from "../Card.tokens.scss?raw";
 import { CardRow } from "../CardRow";
 import styles from "./Card.stories.module.scss";
 
@@ -32,7 +31,7 @@ const meta = {
         ),
         themeDecorator,
     ],
-    parameters: { tokens: cardTokens, layout: "fullscreen" },
+    parameters: { layout: "fullscreen" },
     args: {
         title: "Open positions",
         href: "#open-positions",

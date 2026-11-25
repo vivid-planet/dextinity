@@ -5,7 +5,6 @@ import { ProductLogo, ProductSign } from "../../../storybook/ProductLogo";
 import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { getSideNavAncestorIds, SideNav } from "../SideNav";
-import sideNavTokens from "../SideNav.tokens.scss?raw";
 import styles from "./SideNav.stories.module.scss";
 import { sideNavGroups } from "./sideNavStoryData";
 
@@ -20,7 +19,7 @@ const meta = {
             </div>
         ),
     ],
-    parameters: { tokens: sideNavTokens, layout: "fullscreen" },
+    parameters: { layout: "fullscreen" },
     render: (args, context) => {
         const [currentId, setCurrentId] = useControlledArg(args, "currentId", context);
         const [expandedIds, setExpandedIds] = useControlledArg(args, "expandedIds", context);
@@ -54,8 +53,6 @@ const meta = {
     args: {
         logo: <ProductLogo />,
         logoMark: <ProductSign />,
-        title: "Career portal",
-        subtitle: "Example Ltd · Production",
         groups: sideNavGroups,
         currentId: "job-ads",
         expandedIds: getSideNavAncestorIds(sideNavGroups, "job-ads"),
@@ -101,6 +98,16 @@ export const Default: Story = {
         await userEvent.click(canvas.getByRole("link", { name: "Main navigation" }));
         await waitFor(() => expect(args.onNavigate).toHaveBeenLastCalledWith(expect.objectContaining({ id: "main-navigation" }), expect.anything()));
         await expect(canvas.getByRole("link", { name: "Main navigation" })).toHaveAttribute("aria-current", "page");
+    },
+};
+
+/**
+ * With the app name and the tenant below the logo, for when the logo names only the company, not the app.
+ */
+export const WithAppName: Story = {
+    args: {
+        title: "Career portal",
+        subtitle: "Example Ltd · Production",
     },
 };
 

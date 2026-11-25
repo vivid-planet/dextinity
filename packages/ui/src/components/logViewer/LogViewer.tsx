@@ -104,6 +104,8 @@ export interface LogViewerProps extends Omit<HTMLAttributes<HTMLDivElement>, "cl
     labels?: Partial<LogViewerLabels>;
     /** Added alongside the component's own classes. */
     className?: string;
+    /** Inline styles, e.g. `--dextinity-log-viewer-max-height` to limit the log's height. */
+    style?: CSSProperties;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
     slotProps?: LogViewerSlotProps;
 }

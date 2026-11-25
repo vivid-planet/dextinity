@@ -9,7 +9,6 @@ import { Field } from "../../field/Field";
 import { Icon } from "../../icon/Icon";
 import { Input } from "../../input/Input";
 import { Drawer, type DrawerProps } from "../Drawer";
-import drawerTokens from "../Drawer.tokens.scss?raw";
 import styles from "./Drawer.stories.module.scss";
 
 const redirects = ["/alt-1", "/alt-2", "/alt-3", "/alt-4"];
@@ -62,7 +61,7 @@ const meta = {
     component: Drawer,
     title: "Building blocks/Modals & overlays/Drawer",
     decorators: [themeDecorator],
-    parameters: { tokens: drawerTokens, closedOnDocsPage: true },
+    parameters: { closedOnDocsPage: true },
     render: (args, context) => {
         const [open, setOpen] = useControlledArg(args, "open", context);
         return (

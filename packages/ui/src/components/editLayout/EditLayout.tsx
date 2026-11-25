@@ -1,15 +1,5 @@
 import { clsx } from "clsx";
-import {
-    forwardRef,
-    type HTMLAttributes,
-    type PropsWithChildren,
-    type ReactNode,
-    type RefObject,
-    useEffect,
-    useImperativeHandle,
-    useRef,
-    useState,
-} from "react";
+import { forwardRef, type HTMLAttributes, type ReactNode, type RefObject, useEffect, useImperativeHandle, useRef, useState } from "react";
 
 import { keysByContent } from "../../utils/keysByContent";
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
@@ -57,7 +47,7 @@ export interface EditLayoutSlotProps {
     aside?: SlotPropsValue<EditLayoutOwnerState, "aside">;
 }
 
-export interface EditLayoutProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children">, PropsWithChildren {
+export interface EditLayoutProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children"> {
     /**
      * How the editor and the preview share the page:
      *
@@ -102,6 +92,8 @@ export interface EditLayoutProps extends Omit<HTMLAttributes<HTMLDivElement>, "c
      * @defaultValue `true`
      */
     stickyHeader?: boolean;
+    /** The editor: the panel with the blocks, or the fields in sections. */
+    children?: ReactNode;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
@@ -111,8 +103,6 @@ export interface EditLayoutProps extends Omit<HTMLAttributes<HTMLDivElement>, "c
 /**
  * The layout of an edit page: the header, then the editor next to a preview of the result. Pages always have the preview on the left and
  * the blocks on the right; structured content uses one of the three form variants.
- *
- * `children`: The editor: the panel with the blocks, or the fields in sections.
  */
 export const EditLayout = forwardRef<HTMLDivElement, EditLayoutProps>(function EditLayout(
     {

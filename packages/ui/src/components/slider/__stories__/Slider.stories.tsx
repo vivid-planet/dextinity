@@ -6,7 +6,6 @@ import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { Slider, type SliderProps } from "../Slider";
-import sliderTokens from "../Slider.tokens.scss?raw";
 
 const iconOptions = {
     Image: <Icon name="image" />,
@@ -45,7 +44,6 @@ const meta = {
     component: Slider,
     title: "Building blocks/Media & upload/Slider",
     decorators: [themeDecorator],
-    parameters: { tokens: sliderTokens },
     args: {
         "aria-label": "Icon size",
         value: 40,

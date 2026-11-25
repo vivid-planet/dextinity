@@ -1,6 +1,6 @@
 import { Switch as BaseSwitch } from "@base-ui/react/switch";
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type PropsWithChildren, type ReactNode, useId } from "react";
+import { forwardRef, type HTMLAttributes, type ReactNode, useId } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { type ControlAriaProps, isAriaInvalid, useSingleChoiceFieldWarning } from "../field/ControlFrame";
@@ -37,10 +37,7 @@ export interface SwitchSlotProps {
 }
 
 export interface SwitchProps
-    extends
-        ControlAriaProps,
-        Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "onChange" | keyof ControlAriaProps>,
-        PropsWithChildren {
+    extends ControlAriaProps, Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "onChange" | keyof ControlAriaProps> {
     /**
      * A second line under the label, e.g. what the setting does or why it is disabled. It stays when the `Field` around the switch shows
      * a validation message, which replaces only the field's own `description`.
@@ -70,6 +67,8 @@ export interface SwitchProps
     size?: SwitchSize;
     /** Identifies the field when a form is submitted. */
     name?: string;
+    /** The label, which names the switch even inside a `Field`. Without a visible label, set `aria-label`. */
+    children?: ReactNode;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
@@ -80,8 +79,6 @@ export interface SwitchProps
  * Turns a setting on or off, for settings that take effect immediately or on save. For a validation message, e.g. on a switch that must
  * be on, put it in a `Field` with `layout="group"` and without `label`: the switch takes the field's message, state, `required`,
  * `disabled`, and `readOnly`, and its own text names it.
- *
- * `children`: The label, which names the switch even inside a `Field`. Without a visible label, set `aria-label`.
  */
 export const Switch = forwardRef<HTMLDivElement, SwitchProps>(function Switch(
     {

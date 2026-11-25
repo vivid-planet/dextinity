@@ -9,6 +9,7 @@ const meta = {
     component: Theme,
     title: "Foundations/Theme/Theme",
     argTypes: {
+        children: { control: false },
         colorScheme: { control: "radio", options: ["light", "dark", "high-contrast"] },
         brand: { control: "select", options: ["dextinity", "ai-hub"] },
         density: { control: "radio", options: ["comfortable", "standard", "compact"] },

@@ -14,6 +14,8 @@ interface TimePopoverProps {
     /** The chosen time, marked in the list; without one, the list starts at the time closest to now. */
     value: TimeOfDay | null;
     onSelect: (time: TimeOfDay) => void;
+    /** Marks a time in the list that can't be chosen. */
+    isTimeDisabled: (time: TimeOfDay) => boolean;
     /** Minutes between two times in the list. */
     step: number;
     locale: string | undefined;
@@ -36,13 +38,14 @@ const typeAheadTimeout = 750;
 /**
  * The button after a time input and the list of times it opens, below the end of the field box. Arrow keys move by one time, Page Up and
  * Page Down by an hour, Home and End to the first and last time, typing jumps to the first time that starts with the typed text, and
- * Enter or Space chooses.
+ * Enter or Space chooses. A disabled time can be focused, but not chosen.
  */
 export function TimePopover({
     open,
     onOpenChange,
     value,
     onSelect,
+    isTimeDisabled,
     step,
     locale,
     triggerLabel,
@@ -118,7 +121,9 @@ export function TimePopover({
             focusOption(move());
         } else if ((event.key === "Enter" || (event.key === " " && typeAheadRef.current.text === "")) && focusedTime != null) {
             event.preventDefault();
-            onSelect(focusedTime);
+            if (!isTimeDisabled(focusedTime)) {
+                onSelect(focusedTime);
+            }
         } else if (event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
             event.preventDefault();
             typeAhead(event.key);
@@ -153,17 +158,20 @@ export function TimePopover({
                         <div ref={listRef} role="listbox" aria-labelledby={labelledBy} className={styles.list} onKeyDown={onKeyDown}>
                             {times.map((time, index) => {
                                 const selected = isSameTime(value, time);
+                                const disabled = isTimeDisabled(time);
                                 return (
                                     <div
                                         key={`${time.hours}:${time.minutes}`}
                                         role="option"
                                         aria-selected={selected}
+                                        aria-disabled={disabled || undefined}
                                         tabIndex={index === focusedIndex ? 0 : -1}
                                         className={styles.option}
                                         data-focus-target={index === focusedIndex ? "" : undefined}
                                         data-highlighted={index === focusedIndex ? "" : undefined}
                                         data-selected={selected ? "" : undefined}
-                                        onClick={() => onSelect(time)}
+                                        data-disabled={disabled ? "" : undefined}
+                                        onClick={() => !disabled && onSelect(time)}
                                         onFocus={() => setFocusedIndex(index)}
                                         onMouseMove={() => index !== focusedIndex && focusOption(index)}
                                     >

@@ -6,7 +6,6 @@ import { Icon } from "../../icon/Icon";
 import { IconButton } from "../../iconButton/IconButton";
 import { Link } from "../../link/Link";
 import { Panel } from "../Panel";
-import panelTokens from "../Panel.tokens.scss?raw";
 import styles from "./Panel.stories.module.scss";
 
 const actionOptions = {
@@ -33,12 +32,15 @@ const meta = {
         ),
         themeDecorator,
     ],
-    parameters: { tokens: panelTokens, layout: "fullscreen" },
+    parameters: { layout: "fullscreen" },
     args: {
         title: "Selected",
         children: "Content",
     },
     argTypes: {
+        title: { control: "text" },
+        description: { control: "text" },
+        children: { control: false },
         variant: { control: "radio", options: ["glass", "solid"] },
         padding: { control: "radio", options: ["default", "none"] },
         actions: { control: "select", options: Object.keys(actionOptions), mapping: actionOptions },
@@ -108,7 +110,7 @@ export const Stacked: Story = {
     render: (args) => (
         <div className={styles.stack}>
             <Panel {...args} title="Panel" description="Glass over the light field. Groups one task." />
-            <Panel {...args} title="Card" description="On the overview: orb with an icon, title, and a link." />
+            <Panel {...args} title="Card" description="On the overview: title, a line, and actions such as a period or a menu." />
         </div>
     ),
 };

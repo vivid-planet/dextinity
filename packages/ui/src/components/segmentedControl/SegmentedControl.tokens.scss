@@ -23,26 +23,35 @@
     --dextinity-segmented-control-disabled-opacity: var(--dextinity-opacity-disabled);
 
     // Fill of the track
-    --dextinity-segmented-control-background: var(--dextinity-color-surface-sunken);
+    --dextinity-segmented-control-background: transparent;
     // Outline of the track
-    --dextinity-segmented-control-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line);
+    --dextinity-segmented-control-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-control-line);
     // Text color of an option
     --dextinity-segmented-control-foreground: var(--dextinity-color-text-subtle);
     // Text color of a hovered option
     --dextinity-segmented-control-foreground-hover: var(--dextinity-color-text);
 
     // Fill of the selected option
-    --dextinity-segmented-control-selected-background: var(--dextinity-color-surface);
+    --dextinity-segmented-control-selected-background: var(--dextinity-color-accent-soft);
     // Text color of the selected option
-    --dextinity-segmented-control-selected-foreground: var(--dextinity-color-text);
+    --dextinity-segmented-control-selected-foreground: var(--dextinity-color-accent-text);
     // Font weight of the selected option
     --dextinity-segmented-control-selected-font-weight: var(--dextinity-font-weight-medium);
     // Shadow and outline of the selected option
-    --dextinity-segmented-control-selected-shadow:
-        var(--dextinity-shadow-1), inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line-strong);
+    --dextinity-segmented-control-selected-shadow: none;
 
     // Line around the track in the error state
     --dextinity-segmented-control-line-error: var(--dextinity-color-danger);
+}
+
+// In dark mode, a sunken track with the selected option raised stands out better than the soft accent on the dark surface
+@mixin dark-tokens {
+    --dextinity-segmented-control-background: var(--dextinity-color-surface-sunken);
+    --dextinity-segmented-control-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line);
+    --dextinity-segmented-control-selected-background: var(--dextinity-color-surface);
+    --dextinity-segmented-control-selected-foreground: var(--dextinity-color-text);
+    --dextinity-segmented-control-selected-shadow:
+        var(--dextinity-shadow-1), inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line-strong);
 }
 
 @mixin high-contrast-tokens {

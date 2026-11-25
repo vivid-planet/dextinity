@@ -351,7 +351,7 @@ export function CmsPageTree() {
 }
 
 function PageTreeEditor({ scenario }: { scenario: Scenario }) {
-    const { pages, setPages, setRedirects } = useCmsSite();
+    const { pages, setPages, redirects, setRedirects } = useCmsSite();
     const [moveDialog, setMoveDialog] = useState({ key: 0, open: false, ids: [] as string[] });
     const [search, setSearch] = useState("");
     const [statusFilter, setStatusFilter] = useState<ContentStatus | "all">("all");
@@ -485,20 +485,30 @@ function PageTreeEditor({ scenario }: { scenario: Scenario }) {
             comment: "Created automatically when moving",
             created: "Today",
         }));
-        const createdIds = createdRedirects.map((redirect) => redirect.id);
+        const newPathOf = new Map(pathChanges.map((pathChange) => [pathChange.from, pathChange.to]));
+        const newPaths = new Set(pathChanges.map((pathChange) => pathChange.to));
+        // Automatic redirects from an earlier move lead to the new address, and those from an address the pages have again go away
+        const updatedRedirects = redirects
+            .filter((redirect) => !(redirect.type === "automatic" && newPaths.has(redirect.source)))
+            .map((redirect) =>
+                redirect.type === "automatic" && newPathOf.has(redirect.target)
+                    ? { ...redirect, target: newPathOf.get(redirect.target) ?? redirect.target }
+                    : redirect,
+            );
         const previousPages = pages;
+        const previousRedirects = redirects;
         const redirectCount = createdRedirects.length;
         undoToast.perform({
             run: () => {
                 setPages(nextPages);
-                setRedirects((redirects) => [...createdRedirects, ...redirects]);
+                setRedirects([...createdRedirects, ...updatedRedirects]);
                 if (parent != null) {
                     setExpandedIds((expanded) => (expanded.includes(parent.id) ? expanded : [...expanded, parent.id]));
                 }
             },
             undo: () => {
                 setPages(previousPages);
-                setRedirects((redirects) => redirects.filter((redirect) => !createdIds.includes(redirect.id)));
+                setRedirects(previousRedirects);
             },
             message: `${nameOrCount(movedPages)} moved under “${parent?.label ?? "the top level"}”${
                 redirectCount > 0 ? `, ${redirectCount === 1 ? "1 redirect" : `${redirectCount} redirects`} created` : ""

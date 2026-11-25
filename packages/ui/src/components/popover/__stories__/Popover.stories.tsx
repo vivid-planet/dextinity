@@ -9,7 +9,6 @@ import { Icon } from "../../icon/Icon";
 import { IconButton } from "../../iconButton/IconButton";
 import { Slider } from "../../slider/Slider";
 import { Popover } from "../Popover";
-import popoverTokens from "../Popover.tokens.scss?raw";
 import styles from "./Popover.stories.module.scss";
 
 function TimeOfDay() {
@@ -35,7 +34,6 @@ const meta = {
             </div>
         ),
     ],
-    parameters: { tokens: popoverTokens },
     render: (args, context) => {
         const [open, setOpen] = useControlledArg(args, "open", context);
         return (

@@ -5,7 +5,6 @@ import { storyKeyboardShortcutText } from "../../../storybook/keyboardPlatformDe
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { IconButton } from "../IconButton";
-import iconButtonTokens from "../IconButton.tokens.scss?raw";
 import styles from "./IconButton.stories.module.scss";
 
 const iconOptions = {
@@ -27,7 +26,6 @@ const meta = {
             </div>
         ),
     ],
-    parameters: { tokens: iconButtonTokens },
     args: {
         children: <Icon name="star-fill" />,
         "aria-label": "Add to favorites",

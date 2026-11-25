@@ -5,7 +5,6 @@ import { type FieldStoryArgs, groupFieldArgTypes, splitFieldArgs, StoryField } f
 import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { CheckboxGroup, type CheckboxGroupOption, type CheckboxGroupProps } from "../CheckboxGroup";
-import checkboxGroupTokens from "../CheckboxGroup.tokens.scss?raw";
 
 type CheckboxGroupStoryArgs = CheckboxGroupProps & FieldStoryArgs;
 
@@ -58,7 +57,6 @@ const meta = {
     component: CheckboxGroup,
     title: "Building blocks/Selection & toggles/CheckboxGroup",
     decorators: [themeDecorator],
-    parameters: { tokens: checkboxGroupTokens },
     render: (args, context) => <ControlledCheckboxGroup {...args} storyId={context.id} />,
     args: {
         label: "Channels",

@@ -4,14 +4,12 @@ import { expect, userEvent } from "storybook/test";
 import { documentImage, interiorImage, landscapeImage, portraitImage } from "../../../storybook/sampleImages";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { AssetThumbnail } from "../AssetThumbnail";
-import assetThumbnailTokens from "../AssetThumbnail.tokens.scss?raw";
 import styles from "./AssetThumbnail.stories.module.scss";
 
 const meta = {
     component: AssetThumbnail,
     title: "Building blocks/Media & upload/AssetThumbnail",
     decorators: [themeDecorator],
-    parameters: { tokens: assetThumbnailTokens },
     args: {
         type: "image",
         src: landscapeImage,

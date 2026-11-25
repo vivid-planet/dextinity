@@ -5,7 +5,6 @@ import { ProductLogo, ProductSign } from "../../../storybook/ProductLogo";
 import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { getSideNavAncestorIds, SideNav } from "../SideNav";
-import sideNavTokens from "../SideNav.tokens.scss?raw";
 import styles from "./SideNav.stories.module.scss";
 import { sideNavGroups } from "./sideNavStoryData";
 
@@ -20,7 +19,7 @@ const meta = {
             </div>
         ),
     ],
-    parameters: { tokens: sideNavTokens, layout: "fullscreen" },
+    parameters: { layout: "fullscreen" },
     render: (args, context) => {
         const [currentId, setCurrentId] = useControlledArg(args, "currentId", context);
         const [expandedIds, setExpandedIds] = useControlledArg(args, "expandedIds", context);

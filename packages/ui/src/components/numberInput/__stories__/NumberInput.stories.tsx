@@ -5,9 +5,7 @@ import { expect, fn, userEvent, waitFor } from "storybook/test";
 import { fieldArgTypes, type FieldStoryArgs, splitFieldArgs, StoryField } from "../../../storybook/fieldStoryArgs";
 import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import fieldTokens from "../../field/Field.tokens.scss?raw";
 import { NumberInput, type NumberInputProps } from "../NumberInput";
-import numberInputTokens from "../NumberInput.tokens.scss?raw";
 
 type NumberInputStoryArgs = NumberInputProps & FieldStoryArgs;
 
@@ -51,7 +49,6 @@ const meta = {
     component: NumberInput,
     title: "Building blocks/Form fields/NumberInput",
     decorators: [themeDecorator],
-    parameters: { tokens: `${numberInputTokens}\n${fieldTokens}` },
     render: (args, context) => <ControlledNumberInput {...args} storyId={context.id} />,
     args: {
         name: "quantity",

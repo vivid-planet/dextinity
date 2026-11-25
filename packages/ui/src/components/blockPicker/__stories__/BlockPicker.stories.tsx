@@ -9,7 +9,6 @@ import { Checkbox } from "../../checkbox/Checkbox";
 import { Drawer } from "../../drawer/Drawer";
 import { Icon } from "../../icon/Icon";
 import { BlockPicker, type BlockPickerCategory, type BlockPickerItem, type BlockPickerProps } from "../BlockPicker";
-import blockPickerTokens from "../BlockPicker.tokens.scss?raw";
 import styles from "./BlockPicker.stories.module.scss";
 
 const categories: BlockPickerCategory[] = [
@@ -43,7 +42,6 @@ const meta = {
     component: BlockPicker,
     title: "Building blocks/Blocks & preview/BlockPicker",
     decorators: [themeDecorator],
-    parameters: { tokens: blockPickerTokens },
     args: {
         items,
         categories,

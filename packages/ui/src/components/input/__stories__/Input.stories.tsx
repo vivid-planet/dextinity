@@ -6,7 +6,6 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Field } from "../../field/Field";
 import { Icon } from "../../icon/Icon";
 import { Input } from "../Input";
-import inputTokens from "../Input.tokens.scss?raw";
 
 const adornmentOptions = {
     Euro: "€",
@@ -16,7 +15,6 @@ const adornmentOptions = {
 const meta = {
     component: Input,
     title: "Building blocks/Form fields/Input",
-    parameters: { tokens: inputTokens },
     decorators: [themeDecorator],
     args: {
         "aria-label": "Title",

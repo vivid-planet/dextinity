@@ -6,7 +6,6 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
 import { Menu } from "../Menu";
-import menuTokens from "../Menu.tokens.scss?raw";
 import { MenuLinkItem } from "../MenuLinkItem";
 import styles from "./Menu.stories.module.scss";
 
@@ -46,7 +45,6 @@ const meta = {
             </div>
         ),
     ],
-    parameters: { tokens: menuTokens },
     args: {
         label: "Careers",
         href: "#careers",

@@ -17,7 +17,6 @@ import { getSideNavAncestorIds, SideNav } from "../../sideNav/SideNav";
 import { StoryScopeSwitcher, StoryUserMenu } from "../../topBar/__stories__/topBarStoryParts";
 import { TopBar } from "../../topBar/TopBar";
 import { AppShell } from "../AppShell";
-import appShellTokens from "../AppShell.tokens.scss?raw";
 import styles from "./AppShell.stories.module.scss";
 
 function StoryNav() {
@@ -59,7 +58,7 @@ const meta = {
     component: AppShell,
     title: "Shell/App frame/AppShell",
     decorators: [themeDecorator],
-    parameters: { tokens: appShellTokens, layout: "fullscreen" },
+    parameters: { layout: "fullscreen" },
     render: (args, context) => {
         const [navCollapsed, setNavCollapsed] = useControlledArg(args, "navCollapsed", context);
         const [assistantOpen, setAssistantOpen] = useControlledArg(args, "assistantOpen", context);

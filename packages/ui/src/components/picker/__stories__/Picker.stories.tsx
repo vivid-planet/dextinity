@@ -9,11 +9,9 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Dialog } from "../../dialog/Dialog";
 import { Field } from "../../field/Field";
-import fieldTokens from "../../field/Field.tokens.scss?raw";
 import { Icon } from "../../icon/Icon";
 import { type TreeNode, TreeView } from "../../treeView/TreeView";
 import { Picker, type PickerProps } from "../Picker";
-import pickerTokens from "../Picker.tokens.scss?raw";
 import styles from "./Picker.stories.module.scss";
 
 const pages: TreeNode[] = [
@@ -127,7 +125,6 @@ const meta = {
     component: Picker,
     title: "Building blocks/Form fields/Picker",
     decorators: [themeDecorator],
-    parameters: { tokens: `${pickerTokens}\n${fieldTokens}` },
     args: {
         label: "Link target",
         placeholder: "Choose a page",

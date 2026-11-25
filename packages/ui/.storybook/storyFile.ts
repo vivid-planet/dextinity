@@ -6,6 +6,14 @@ export function parseStoryFile(code: string, fileName: string) {
     return ts.createSourceFile(fileName, code, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
 }
 
+/**
+ * Returns the name of the variable that a story file exports as its default export, the meta.
+ */
+export function metaNameOf(sourceFile: ts.SourceFile) {
+    const defaultExport = sourceFile.statements.find(ts.isExportAssignment)?.expression;
+    return defaultExport && ts.isIdentifier(defaultExport) ? defaultExport.text : undefined;
+}
+
 export function storyExportsOf(sourceFile: ts.SourceFile) {
     return sourceFile.statements
         .filter(isExportedVariableStatement)
@@ -64,7 +72,7 @@ function isStyleImportReference(node: ts.Node, styleImports: StyleImport[]): nod
     );
 }
 
-function findProperty(objectLiteral: ts.ObjectLiteralExpression, name: string) {
+export function findProperty(objectLiteral: ts.ObjectLiteralExpression, name: string) {
     return objectLiteral.properties.find((property) => property.name && ts.isIdentifier(property.name) && property.name.text === name);
 }
 
@@ -77,19 +85,19 @@ function isExportedVariableStatement(statement: ts.Statement): statement is ts.V
 }
 
 function storyExportOf(declaration: ts.VariableDeclaration) {
-    const storyObject = declaration.initializer && unwrapStoryObject(declaration.initializer);
+    const storyObject = declaration.initializer && unwrapObjectLiteral(declaration.initializer);
     if (!ts.isIdentifier(declaration.name) || !storyObject) {
         return undefined;
     }
     return { exportName: declaration.name.text, storyObject };
 }
 
-function unwrapStoryObject(expression: ts.Expression): ts.ObjectLiteralExpression | undefined {
+export function unwrapObjectLiteral(expression: ts.Expression): ts.ObjectLiteralExpression | undefined {
     if (ts.isObjectLiteralExpression(expression)) {
         return expression;
     }
     if (ts.isSatisfiesExpression(expression) || ts.isParenthesizedExpression(expression)) {
-        return unwrapStoryObject(expression.expression);
+        return unwrapObjectLiteral(expression.expression);
     }
     return undefined;
 }

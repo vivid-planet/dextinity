@@ -5,7 +5,6 @@ import { expect, userEvent, waitFor, within } from "storybook/test";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { SaveState, type SaveStateValue } from "../SaveState";
-import saveStateTokens from "../SaveState.tokens.scss?raw";
 import styles from "./SaveState.stories.module.scss";
 
 const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
@@ -14,7 +13,6 @@ const meta = {
     component: SaveState,
     title: "Building blocks/Loading & save state/SaveState",
     decorators: [themeDecorator],
-    parameters: { tokens: saveStateTokens },
     args: {
         state: "saved",
         savedAt: twoMinutesAgo,

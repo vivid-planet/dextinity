@@ -7,7 +7,6 @@ import { Icon } from "../../icon/Icon";
 import { IconButton } from "../../iconButton/IconButton";
 import { Tooltip } from "../../tooltip/Tooltip";
 import { TopBar } from "../TopBar";
-import topBarTokens from "../TopBar.tokens.scss?raw";
 import styles from "./TopBar.stories.module.scss";
 import { StoryScopeSwitcher, StoryUserMenu } from "./topBarStoryParts";
 
@@ -22,7 +21,7 @@ const meta = {
             </div>
         ),
     ],
-    parameters: { tokens: topBarTokens, layout: "fullscreen" },
+    parameters: { layout: "fullscreen" },
     args: {
         onSearchClick: fn(),
         scope: <StoryScopeSwitcher />,

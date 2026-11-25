@@ -17,7 +17,6 @@ import { AssetThumbnail, type AssetThumbnailBadge, type AssetThumbnailType } fro
 import { Icon } from "../../icon/Icon";
 import { PageHeader } from "../../pageHeader/PageHeader";
 import { FinderLayout } from "../FinderLayout";
-import finderLayoutTokens from "../FinderLayout.tokens.scss?raw";
 import styles from "./FinderLayout.stories.module.scss";
 
 interface StoryFolder {
@@ -146,7 +145,6 @@ const meta = {
     title: "Page types/Finder",
     decorators: [themeDecorator],
     parameters: {
-        tokens: finderLayoutTokens,
         layout: "fullscreen",
         docs: {
             description: {

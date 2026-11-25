@@ -5,7 +5,6 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
 import { Banner } from "../Banner";
-import bannerTokens from "../Banner.tokens.scss?raw";
 
 const retry = fn();
 
@@ -13,7 +12,6 @@ const meta = {
     component: Banner,
     title: "Building blocks/Menus & messages/Banner",
     decorators: [themeDecorator],
-    parameters: { tokens: bannerTokens },
     args: {
         children: "No connection. Changes stay here until they are saved.",
         action: (

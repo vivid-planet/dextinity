@@ -82,12 +82,13 @@ export function PrototypeApp({ prototype, navGroups, renderPage }: PrototypeAppP
             const via = intent ? intent.via : performance.now() - lastClickRef.current < clickToHashChange ? "link" : null;
             const leaveGuard = leaveGuardRef.current;
             if (leaveGuard != null && nextPageId !== pageIdRef.current) {
-                // The hash already changed: put the current page back until the guard lets the user leave
-                window.history.replaceState(null, "", `#${pageIdRef.current}`);
+                // The hash already changed: show the current page again on top, keeping the destination's entry behind it for when
+                // the guard lets the user leave
+                window.history.pushState(null, "", `#${pageIdRef.current}`);
                 leaveGuard(() => {
                     leaveGuardRef.current = null;
                     nextIntentRef.current = { to: nextPageId, via };
-                    window.location.hash = nextPageId;
+                    window.history.back();
                 });
                 return;
             }

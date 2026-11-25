@@ -295,11 +295,13 @@ In the API, you defined custom warning messages for your blocks or entities. To 
 ```tsx
 <DextinityConfigProvider
     {...otherConfigs}
-    warnings: {
+    warnings={{
         messages: {
-            missingTitle: <FormattedMessage id="warnings.missingTitle" defaultMessage="Title is missing" />
-        }
-    }
+            missingTitle: (
+                <FormattedMessage id="warnings.missingTitle" defaultMessage="Title is missing" />
+            ),
+        },
+    }}
 />
 ```
 
@@ -310,13 +312,16 @@ The warnings grid uses the text of these messages for the options of the message
 ```tsx
 <DextinityConfigProvider
     {...otherConfigs}
-    warnings: {
+    warnings={{
         messages: {
-            reviewRequired: <ReviewRequiredMessage />
+            reviewRequired: <ReviewRequiredMessage />,
         },
         messageLabels: {
-            reviewRequired: defineMessage({ id: "warnings.reviewRequired", defaultMessage: "Review required" })
-        }
-    }
+            reviewRequired: defineMessage({
+                id: "warnings.reviewRequired",
+                defaultMessage: "Review required",
+            }),
+        },
+    }}
 />
 ```

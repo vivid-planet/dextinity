@@ -1066,6 +1066,29 @@ export function TableBlock({ data }: PropsWithData<TableBlockData>) {
 }
 ```
 
+### Media in cells
+
+The `richText` option accepts any block, so a cell can also hold media.
+To let editors choose per cell between text and an image, pass a `OneOfBlock` in both the API and the admin:
+
+```tsx title="TableCellBlock.tsx"
+import { createOneOfBlock, createTableBlock, DamImageBlock } from "@dextinity/cms-admin";
+
+import { RichTextBlock } from "./RichTextBlock";
+
+export const TableCellBlock = createOneOfBlock({
+    supportedBlocks: { richText: RichTextBlock, image: DamImageBlock },
+    name: "TableCell",
+    allowEmpty: false,
+    variant: "toggle",
+});
+
+export const TableBlock = createTableBlock({ richText: TableCellBlock });
+```
+
+In the admin table, a cell block without a `ReadOnlyComponent` shows its preview content: thumbnails and plain text.
+On the site, render the cell value with `OneOfBlock`.
+
 ## TextImageBlock
 
 The TextImageBlock factory can be used to combine a text and an image block.

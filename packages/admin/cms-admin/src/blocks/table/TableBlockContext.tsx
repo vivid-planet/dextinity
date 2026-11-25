@@ -3,7 +3,7 @@ import { createContext, type ReactNode, useContext } from "react";
 import type { BlockInterface, ReadOnlyBlockRenderInterface } from "../types";
 
 type TableBlockContextValue = {
-    RichTextBlock: BlockInterface & ReadOnlyBlockRenderInterface;
+    RichTextBlock: BlockInterface & Partial<ReadOnlyBlockRenderInterface>;
 };
 
 const TableBlockContext = createContext<TableBlockContextValue | undefined>(undefined);

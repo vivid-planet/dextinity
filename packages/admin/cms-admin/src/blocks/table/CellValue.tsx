@@ -1,5 +1,6 @@
 import { alpha, styled } from "@mui/material/styles";
 
+import { PreviewContentCellValue } from "./PreviewContentCellValue";
 import { useTableBlockContext } from "./TableBlockContext";
 
 type Props = {
@@ -15,7 +16,11 @@ export const CellValue = ({ highlighted, isTemporarilyHighlighted, value }: Prop
         <CellValueContainer $highlighted={highlighted} $isTemporarilyHighlighted={isTemporarilyHighlighted}>
             <RteContentWrapper>
                 <RteContent>
-                    <RichTextBlock.ReadOnlyComponent state={value} />
+                    {RichTextBlock.ReadOnlyComponent ? (
+                        <RichTextBlock.ReadOnlyComponent state={value} />
+                    ) : (
+                        <PreviewContentCellValue block={RichTextBlock} state={value} />
+                    )}
                 </RteContent>
             </RteContentWrapper>
         </CellValueContainer>

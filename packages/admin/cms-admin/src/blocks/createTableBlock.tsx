@@ -25,9 +25,14 @@ import {
     type ReadOnlyBlockRenderInterface,
 } from "./types";
 
-type RichTextBlockInterface = BlockInterface & ReadOnlyBlockRenderInterface;
+type RichTextBlockInterface = BlockInterface & Partial<ReadOnlyBlockRenderInterface>;
 
 export type TableBlockFactoryOptions<RichText extends RichTextBlockInterface = RichTextBlock> = {
+    /**
+     * The block used for the content of each cell, usually a rich text block.
+     * Any other block, e.g. a one-of block of rich text and image, works too.
+     * A block without `ReadOnlyComponent` is shown in the table through its `previewContent`.
+     */
     richText: RichText;
     name?: string;
 };

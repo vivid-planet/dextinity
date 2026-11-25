@@ -1,3 +1,4 @@
+import { createElement } from "react";
 import { expect, it } from "vitest";
 
 import { storyCodesOf } from "../../../.storybook/storyCodePlugin";
@@ -18,7 +19,88 @@ export const Outlined: Story = { args: { variant: "outlined" } };
         ),
     );
 
-    const source = renderSourceWithArgs("", { parameters: storyCode, args: { variant: "outlined", children: "Save" }, argTypes: {} });
+    const args = { variant: "outlined", children: "Save" };
+
+    const source = renderSourceWithArgs("", { parameters: storyCode, args, initialArgs: args, argTypes: {} });
 
     expect(source).toBe('<Button variant="outlined">Save</Button>');
+});
+
+it("writes the args as written in the story file, without the `fn()` handlers, and the args that the reader changes as their values", () => {
+    const [storyCode] = storyCodesOf(
+        parseStoryFile(
+            `
+const iconOptions = { None: undefined, Trash: <Icon name="trash" /> };
+
+const meta = {
+    component: Banner,
+    args: { action: <Button>Undo</Button>, items: [{ label: "Page", onClick: openPage }], onClick: fn(), size: "small" },
+    argTypes: { icon: { options: Object.keys(iconOptions), mapping: iconOptions } },
+} satisfies Meta<typeof Banner>;
+
+export default meta;
+
+export const Default: Story = {};
+`,
+            "Banner.stories.tsx",
+        ),
+    );
+    const initialArgs = { action: createElement("button"), items: [{ label: "Page", onClick: () => {} }], onClick: () => {}, size: "small" };
+    const args = { ...initialArgs, size: "large", icon: "Trash" };
+    const argTypes = { icon: { mapping: { None: undefined, Trash: createElement("svg") } } };
+
+    const source = renderSourceWithArgs("", { parameters: storyCode, args, initialArgs, argTypes });
+
+    expect(source).toBe(
+        '<Banner action={<Button>Undo</Button>} items={[{ label: "Page", onClick: openPage }]} size="large" icon={<Icon name="trash" />} />',
+    );
+});
+
+it("takes the args and the `render` function of the story that a story spreads or names", () => {
+    const [outlined, error, large] = storyCodesOf(
+        parseStoryFile(
+            `
+const meta = { component: Button } satisfies Meta<typeof Button>;
+
+export default meta;
+
+export const Outlined: Story = {
+    args: { variant: "outlined", size: "small" },
+    render: (args) => <Button {...args}>Save</Button>,
+};
+
+export const Error: Story = { ...Outlined, args: { color: "error" } };
+
+export const Large: Story = { args: { ...Outlined.args, size: "large" }, render: Outlined.render };
+`,
+            "Button.stories.tsx",
+        ),
+    );
+
+    expect([outlined.writtenArgs, error.writtenArgs, large.writtenArgs]).toEqual([
+        { variant: { value: "outlined" }, size: { value: "small" } },
+        { color: { value: "error" } },
+        { variant: { value: "outlined" }, size: { value: "large" } },
+    ]);
+    expect([error.renderSource, large.renderSource]).toEqual([outlined.renderSource, outlined.renderSource]);
+});
+
+it("shows the stylesheets that the args use, and no other", () => {
+    const [storyCode] = storyCodesOf(
+        parseStoryFile(
+            `
+import cardStyles from "./Card.stories.module.scss";
+import pageStyles from "./Page.stories.module.scss";
+
+const meta = { component: Card, args: { className: cardStyles.card } } satisfies Meta<typeof Card>;
+
+export default meta;
+
+export const Default: Story = {};
+`,
+            "Card.stories.tsx",
+        ),
+    );
+
+    expect(storyCode.usedStyleImports).toEqual([{ importName: "cardStyles", modulePath: "./Card.stories.module.scss" }]);
 });

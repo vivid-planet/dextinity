@@ -56,7 +56,7 @@ async function readStyleSource({ importPath, exportName }: StoryEntry) {
     if (!renderBody) {
         return undefined;
     }
-    const usedStyleImports = styleImportsUsedIn(renderBody, styleImportsOf(storyFile));
+    const usedStyleImports = styleImportsUsedIn([renderBody], styleImportsOf(storyFile));
     if (usedStyleImports.length === 0) {
         return undefined;
     }

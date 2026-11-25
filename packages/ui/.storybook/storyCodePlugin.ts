@@ -2,8 +2,13 @@ import ts from "typescript";
 import type { Plugin } from "vite";
 
 import { childrenPlaceholder } from "../src/storybook/childrenPlaceholder";
+import type { ShownArg } from "../src/storybook/renderSourceWithArgs";
 import {
+    findProperty,
+    localStoryObjectOf,
     metaComponentNameOf,
+    metaObjectOf,
+    objectLiteralOf,
     parseStoryFile,
     renderBodyOf,
     rendersWithDefaultRender,
@@ -21,7 +26,8 @@ type TextEdit = { start: number; end: number; text: string };
  *
  * - `renderSource`: the body of the `render` function that the story renders with, with `useState` in place of the story-only
  *   `useControlledArg`. For a story without one: `meta.component` with `{...args}`.
- * - `styleSource`: the `.module.scss` files that the body uses.
+ * - `writtenArgs` and `writtenMappingOptions`: the args and the `mapping` options as written in the meta and the story.
+ * - `styleSource`: the `.module.scss` files that the body, the args and the `mapping` options use.
  */
 export function storyCodePlugin(): Plugin {
     return {
@@ -42,7 +48,13 @@ export function storyCodePlugin(): Plugin {
     };
 }
 
-type StoryCode = { exportName: string; renderSource: string; usedStyleImports: StyleImport[] };
+type StoryCode = {
+    exportName: string;
+    renderSource: string;
+    writtenArgs: Record<string, ShownArg>;
+    writtenMappingOptions: Record<string, Record<string, ShownArg>>;
+    usedStyleImports: StyleImport[];
+};
 
 export function storyCodesOf(storyFile: ts.SourceFile): StoryCode[] {
     const styleImports = styleImportsOf(storyFile);
@@ -56,8 +68,125 @@ export function storyCodesOf(storyFile: ts.SourceFile): StoryCode[] {
         if (renderSource === undefined) {
             return [];
         }
-        return [{ exportName, renderSource, usedStyleImports: renderBody ? styleImportsUsedIn(renderBody, styleImports) : [] }];
+        const argNodes = argNodesOf(storyObject, storyFile);
+        const mappingNodes = mappingNodesOf(storyObject, storyFile);
+        const shownNodes = [...(renderBody ? [renderBody] : []), ...Object.values(argNodes), ...Object.values(mappingNodes).flatMap(Object.values)];
+        const writtenArgOf = (node: ts.Expression) => writtenValueOf(node, storyFile);
+        return [
+            {
+                exportName,
+                renderSource,
+                writtenArgs: mapValues(argNodes, writtenArgOf),
+                writtenMappingOptions: mapValues(mappingNodes, (optionNodes) => mapValues(optionNodes, writtenArgOf)),
+                usedStyleImports: styleImportsUsedIn(shownNodes, styleImports),
+            },
+        ];
     });
+}
+
+function writtenValueOf(node: ts.Expression, storyFile: ts.SourceFile): ShownArg {
+    if (isActionsPanelSpyCall(node)) {
+        return { value: undefined };
+    }
+    if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) {
+        return { value: node.text };
+    }
+    if (ts.isNumericLiteral(node)) {
+        return { value: Number(node.text) };
+    }
+    if (node.kind === ts.SyntaxKind.TrueKeyword || node.kind === ts.SyntaxKind.FalseKeyword) {
+        return { value: node.kind === ts.SyntaxKind.TrueKeyword };
+    }
+    if (node.kind === ts.SyntaxKind.NullKeyword) {
+        return { value: null };
+    }
+    return ts.isIdentifier(node) && node.text === "undefined" ? { value: undefined } : { source: dedentedSourceOf(node, storyFile) };
+}
+
+function mapValues<Value, MappedValue>(record: Record<string, Value>, mapValue: (value: Value) => MappedValue) {
+    return Object.fromEntries(Object.entries(record).map(([key, value]) => [key, mapValue(value)]));
+}
+
+function argNodesOf(storyObject: ts.ObjectLiteralExpression, storyFile: ts.SourceFile) {
+    const meta = metaObjectOf(storyFile);
+    return { ...(meta && ownArgNodesOf(meta, storyFile)), ...ownArgNodesOf(storyObject, storyFile) };
+}
+
+/**
+ * A later `args` replaces the args of a story spread before it, as in JavaScript.
+ */
+function ownArgNodesOf(storyObject: ts.ObjectLiteralExpression, storyFile: ts.SourceFile): Record<string, ts.Expression> | undefined {
+    let argNodes: Record<string, ts.Expression> | undefined;
+    for (const property of storyObject.properties) {
+        if (ts.isSpreadAssignment(property)) {
+            const spreadStory = localStoryObjectOf(property.expression, storyFile);
+            argNodes = (spreadStory && ownArgNodesOf(spreadStory, storyFile)) ?? argNodes;
+        } else if (propertyNameOf(property) === "args" && ts.isPropertyAssignment(property)) {
+            argNodes = argObjectNodesOf(property.initializer, storyFile);
+        }
+    }
+    return argNodes;
+}
+
+function argObjectNodesOf(expression: ts.Expression, storyFile: ts.SourceFile) {
+    if (isArgsAccess(expression)) {
+        const argsStory = localStoryObjectOf(expression.expression, storyFile);
+        return (argsStory && ownArgNodesOf(argsStory, storyFile)) ?? {};
+    }
+    const argObject = objectLiteralOf(expression, storyFile);
+    return argObject ? propertyNodesOf(argObject, storyFile) : {};
+}
+
+function propertyNodesOf(objectLiteral: ts.ObjectLiteralExpression, storyFile: ts.SourceFile): Record<string, ts.Expression> {
+    return Object.fromEntries(
+        objectLiteral.properties.flatMap((property): Array<[string, ts.Expression]> => {
+            if (ts.isSpreadAssignment(property)) {
+                return Object.entries(argObjectNodesOf(property.expression, storyFile));
+            }
+            const name = propertyNameOf(property);
+            if (ts.isShorthandPropertyAssignment(property)) {
+                return [[property.name.text, property.name]];
+            }
+            if (name === undefined || !ts.isPropertyAssignment(property)) {
+                return [];
+            }
+            return [[name, unwrapParentheses(property.initializer)]];
+        }),
+    );
+}
+
+function isActionsPanelSpyCall(expression: ts.Expression) {
+    return ts.isCallExpression(expression) && ts.isIdentifier(expression.expression) && expression.expression.text === "fn";
+}
+
+function isArgsAccess(expression: ts.Expression): expression is ts.PropertyAccessExpression {
+    return ts.isPropertyAccessExpression(expression) && expression.name.text === "args";
+}
+
+function mappingNodesOf(storyObject: ts.ObjectLiteralExpression, storyFile: ts.SourceFile) {
+    const meta = metaObjectOf(storyFile);
+    return { ...(meta && ownMappingNodesOf(meta, storyFile)), ...ownMappingNodesOf(storyObject, storyFile) };
+}
+
+function ownMappingNodesOf(storyObject: ts.ObjectLiteralExpression, storyFile: ts.SourceFile): Record<string, Record<string, ts.Expression>> {
+    const argTypes = objectLiteralPropertyOf(storyObject, "argTypes", storyFile);
+    return Object.fromEntries(
+        (argTypes?.properties ?? []).flatMap((argType) => {
+            const name = propertyNameOf(argType);
+            const argTypeObject = ts.isPropertyAssignment(argType) ? objectLiteralOf(argType.initializer, storyFile) : undefined;
+            const mapping = argTypeObject && objectLiteralPropertyOf(argTypeObject, "mapping", storyFile);
+            return name !== undefined && mapping ? [[name, propertyNodesOf(mapping, storyFile)]] : [];
+        }),
+    );
+}
+
+function objectLiteralPropertyOf(objectLiteral: ts.ObjectLiteralExpression, name: string, storyFile: ts.SourceFile) {
+    const property = findProperty(objectLiteral, name);
+    return property && ts.isPropertyAssignment(property) ? objectLiteralOf(property.initializer, storyFile) : undefined;
+}
+
+function propertyNameOf(property: ts.ObjectLiteralElementLike) {
+    return property.name && (ts.isIdentifier(property.name) || ts.isStringLiteral(property.name)) ? property.name.text : undefined;
 }
 
 function defaultRenderSourceOf(storyObject: ts.ObjectLiteralExpression, storyFile: ts.SourceFile) {
@@ -163,11 +292,11 @@ function rawStyleSourceName(importName: string) {
     return `rawStyleSourceOf_${importName}`;
 }
 
-function storyParametersAssignment({ exportName, renderSource, usedStyleImports }: StoryCode) {
+function storyParametersAssignment({ exportName, usedStyleImports, ...sources }: StoryCode) {
     const parameters = `${exportName}.parameters`;
-    const renderSourceParameter = `renderSource: ${JSON.stringify(renderSource)}`;
+    const sourceParameters = Object.entries(sources).map(([name, source]) => `${name}: ${JSON.stringify(source)}`);
     const styleSourceNames = usedStyleImports.map(({ importName }) => rawStyleSourceName(importName));
     const styleSourceParameter = styleSourceNames.length > 0 ? `styleSource: [${styleSourceNames.join(", ")}].join("\\n\\n")` : undefined;
-    const assignedParameters = [`...${parameters}`, renderSourceParameter, styleSourceParameter].filter((parameter) => parameter !== undefined);
+    const assignedParameters = [`...${parameters}`, ...sourceParameters, styleSourceParameter].filter((parameter) => parameter !== undefined);
     return `${parameters} = { ${assignedParameters.join(", ")} };`;
 }

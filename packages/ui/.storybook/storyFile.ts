@@ -16,18 +16,21 @@ export function metaNameOf(sourceFile: ts.SourceFile) {
 
 export function metaObjectOf(sourceFile: ts.SourceFile) {
     const defaultExport = sourceFile.statements.find(ts.isExportAssignment)?.expression;
-    if (!defaultExport) {
-        return undefined;
+    return defaultExport && objectLiteralOf(defaultExport, sourceFile);
+}
+
+/**
+ * Returns the object literal that an expression is, or that a variable at the top level of the file holds.
+ */
+export function objectLiteralOf(expression: ts.Expression, sourceFile: ts.SourceFile) {
+    if (!ts.isIdentifier(expression)) {
+        return unwrapObjectLiteral(expression);
     }
-    const metaName = metaNameOf(sourceFile);
-    if (metaName === undefined) {
-        return unwrapObjectLiteral(defaultExport);
-    }
-    const metaDeclaration = sourceFile.statements
+    const declaration = sourceFile.statements
         .filter(ts.isVariableStatement)
         .flatMap((statement) => statement.declarationList.declarations)
-        .find((declaration) => ts.isIdentifier(declaration.name) && declaration.name.text === metaName);
-    return metaDeclaration?.initializer && unwrapObjectLiteral(metaDeclaration.initializer);
+        .find((candidate) => ts.isIdentifier(candidate.name) && candidate.name.text === expression.text);
+    return declaration?.initializer && unwrapObjectLiteral(declaration.initializer);
 }
 
 export function metaComponentNameOf(storyFile: ts.SourceFile) {
@@ -98,7 +101,7 @@ function ownRenderBodyOf(renderProperty: ts.ObjectLiteralElementLike, sourceFile
     return referencedStory ? declaredRenderBodyOf(referencedStory, sourceFile) : "unknown";
 }
 
-function localStoryObjectOf(expression: ts.Expression, sourceFile: ts.SourceFile) {
+export function localStoryObjectOf(expression: ts.Expression, sourceFile: ts.SourceFile) {
     if (!ts.isIdentifier(expression)) {
         return undefined;
     }
@@ -125,10 +128,10 @@ export function styleImportReferencesIn(node: ts.Node, styleImports: StyleImport
 }
 
 /**
- * Returns the style imports that a node reads class names from.
+ * Returns the style imports that the nodes read class names from.
  */
-export function styleImportsUsedIn(node: ts.Node, styleImports: StyleImport[]) {
-    const usedImportNames = new Set(styleImportReferencesIn(node, styleImports).map((reference) => reference.text));
+export function styleImportsUsedIn(nodes: ts.Node[], styleImports: StyleImport[]) {
+    const usedImportNames = new Set(nodes.flatMap((node) => styleImportReferencesIn(node, styleImports)).map((reference) => reference.text));
     return styleImports.filter((styleImport) => usedImportNames.has(styleImport.importName));
 }
 

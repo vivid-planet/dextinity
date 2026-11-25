@@ -5,7 +5,6 @@ import {
     type ForwardedRef,
     forwardRef,
     type LabelHTMLAttributes,
-    type PropsWithChildren,
     type ReactNode,
     type Ref,
     type RefAttributes,
@@ -75,8 +74,7 @@ export interface FieldLabelProps<
     Label extends LabelElement = "label",
     RequiredMarker extends ElementType = "span",
     InfoIcon extends ElementType = typeof Icon,
->
-    extends Omit<LabelHTMLAttributes<HTMLLabelElement>, "className" | "style">, PropsWithChildren {
+> extends Omit<LabelHTMLAttributes<HTMLLabelElement>, "className" | "children" | "style"> {
     /**
      * Marks the field as required with an asterisk.
      *
@@ -111,12 +109,12 @@ export interface FieldLabelProps<
     slots?: FieldLabelSlots<Label, RequiredMarker, InfoIcon>;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
     slotProps?: FieldLabelSlotProps<Label, RequiredMarker, InfoIcon>;
+    /** The label text. */
+    children: ReactNode;
 }
 
 /**
  * Names a form field. For a control without a `Field`; `Field` renders its own label with the same look.
- *
- * `children`: The label text.
  */
 export const FieldLabel: <
     Label extends LabelElement = "label",

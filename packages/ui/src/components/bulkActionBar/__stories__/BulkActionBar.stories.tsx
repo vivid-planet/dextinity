@@ -9,7 +9,6 @@ import { Icon } from "../../icon/Icon";
 import { MenuItem } from "../../menu/MenuItem";
 import { MenuSeparator } from "../../menu/MenuSeparator";
 import { BulkActionBar, type BulkActionBarProps } from "../BulkActionBar";
-import bulkActionBarTokens from "../BulkActionBar.tokens.scss?raw";
 import styles from "./BulkActionBar.stories.module.scss";
 
 /** Binds the count to the story's `count` arg: clearing sets it to 0, "Select 3" brings the bar back. */
@@ -38,7 +37,6 @@ const meta = {
     component: BulkActionBar,
     title: "Building blocks/Tables & paging/BulkActionBar",
     decorators: [themeDecorator],
-    parameters: { tokens: bulkActionBarTokens },
     args: {
         count: 3,
         actions: [

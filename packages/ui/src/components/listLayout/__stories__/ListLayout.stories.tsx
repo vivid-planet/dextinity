@@ -20,7 +20,6 @@ import { PageHeader } from "../../pageHeader/PageHeader";
 import { Pagination } from "../../pagination/Pagination";
 import { StatusIndicator } from "../../statusIndicator/StatusIndicator";
 import { ListLayout } from "../ListLayout";
-import listLayoutTokens from "../ListLayout.tokens.scss?raw";
 import styles from "./ListLayout.stories.module.scss";
 
 type JobStatus = "published" | "unpublished" | "archived";
@@ -194,7 +193,6 @@ const meta = {
     title: "Page types/List",
     decorators: [themeDecorator],
     parameters: {
-        tokens: listLayoutTokens,
         layout: "fullscreen",
         docs: {
             description: {

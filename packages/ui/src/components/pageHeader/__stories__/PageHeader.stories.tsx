@@ -8,14 +8,12 @@ import { Icon } from "../../icon/Icon";
 import { SaveState } from "../../saveState/SaveState";
 import { StatusIndicator } from "../../statusIndicator/StatusIndicator";
 import { PageHeader } from "../PageHeader";
-import pageHeaderTokens from "../PageHeader.tokens.scss?raw";
 import styles from "./PageHeader.stories.module.scss";
 
 const meta = {
     component: PageHeader,
     title: "Building blocks/Page header, breadcrumbs & links/PageHeader",
     decorators: [themeDecorator],
-    parameters: { tokens: pageHeaderTokens },
     args: {
         title: "Page tree",
         eyebrow: "Austria · German · 23 pages",

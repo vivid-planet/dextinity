@@ -19,7 +19,6 @@ import { MenuRadioItem } from "../../menu/MenuRadioItem";
 import { MiniChart } from "../../miniChart/MiniChart";
 import { StatusIndicator } from "../../statusIndicator/StatusIndicator";
 import { OverviewLayout } from "../OverviewLayout";
-import overviewLayoutTokens from "../OverviewLayout.tokens.scss?raw";
 import styles from "./OverviewLayout.stories.module.scss";
 
 const recentlyEdited = [
@@ -197,7 +196,6 @@ const meta = {
     title: "Page types/Overview",
     decorators: [themeDecorator],
     parameters: {
-        tokens: overviewLayoutTokens,
         layout: "fullscreen",
         docs: {
             description: {

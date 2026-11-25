@@ -3,7 +3,6 @@ import { expect, screen, userEvent } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { StatusIndicator, type StatusIndicatorStatus } from "../StatusIndicator";
-import statusIndicatorTokens from "../StatusIndicator.tokens.scss?raw";
 import styles from "./StatusIndicator.stories.module.scss";
 
 const statuses: StatusIndicatorStatus[] = ["published", "unpublished", "archived", "warning", "critical", "info", "running"];
@@ -12,7 +11,6 @@ const meta = {
     component: StatusIndicator,
     title: "Building blocks/Status, tags & badges/StatusIndicator",
     decorators: [themeDecorator],
-    parameters: { tokens: statusIndicatorTokens },
     args: {
         status: "published",
     },

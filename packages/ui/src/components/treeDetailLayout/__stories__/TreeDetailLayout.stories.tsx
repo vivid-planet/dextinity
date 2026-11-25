@@ -23,7 +23,6 @@ import { getExpandableTreeNodeIds, type TreeNode, TreeView } from "../../treeVie
 import { TreeViewExpandButtons } from "../../treeViewExpandButtons/TreeViewExpandButtons";
 import { Typography } from "../../typography/Typography";
 import { TreeDetailLayout, type TreeDetailLayoutProps } from "../TreeDetailLayout";
-import treeDetailLayoutTokens from "../TreeDetailLayout.tokens.scss?raw";
 import styles from "./TreeDetailLayout.stories.module.scss";
 
 type PageStatus = "published" | "unpublished" | "archived";
@@ -267,7 +266,6 @@ const meta = {
     title: "Page types/Tree + detail",
     decorators: [themeDecorator],
     parameters: {
-        tokens: treeDetailLayoutTokens,
         layout: "fullscreen",
         docs: {
             description: {

@@ -67,6 +67,8 @@ export interface ButtonProps {
      * @defaultValue `"contained"`
      */
     variant?: "contained" | "outlined" | "text";
+    /** The label: a verb for the action, e.g. "Save". */
+    children?: ReactNode;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Sets which element a named inner part renders as. */
@@ -75,6 +77,8 @@ export interface ButtonProps {
     slotProps?: ButtonSlotProps;
 }
 ```
+
+An exported component that takes `children` declares the prop in its props interface with TSDoc, as `Button` does above, so the props table shows its description. The interface omits `children` from the props it extends and doesn't use `PropsWithChildren`, and the component comment doesn't describe `children`. The prop is required when the component shows nothing useful without it.
 
 A change that makes a comment inaccurate updates it in the same change.
 
@@ -110,7 +114,7 @@ Component source contains no literal text (`react/jsx-no-literals`): every visib
 
 ### Root and primary element props
 
-A component's primary element is the native element that does its job — the `<button>` of a button, the `<input>` of a text field, the `<img>` of an image. A component extends the props of its primary element and passes the ones it doesn't handle itself to that element, so a consumer can set any attribute or event handler it accepts without us maintaining a dedicated prop for each. By default it doesn't re-declare or document them; they stay as the element defines them. It may still re-declare one to support it as a documented feature.
+A component's primary element is the native element that does its job — the `<button>` of a button, the `<input>` of a text field, the `<img>` of an image. A component extends the props of its primary element and passes the ones it doesn't handle itself to that element, so a consumer can set any attribute or event handler it accepts without us maintaining a dedicated prop for each. By default it doesn't re-declare or document them; they stay as the element defines them. It re-declares one with TSDoc when the component depends on it: the `aria-label` that names a component without visible text, the `onClick` of an action, `href`, `render`, `placeholder`, or a `style` for a documented custom property. A story never describes a prop through `argTypes.description`.
 
 Usually the primary element is the root. When a component wraps it, for example to place adornments next to it, `className` and `style` go to the root, where they place and size the component, and `slotProps.root` sets the root's other props. The primary element is then a slot, so `slotProps` also reaches it like any other part.
 
@@ -158,7 +162,7 @@ The contract has two parts: **structural class names** for a component's element
 
 ### Stories
 
-The Storybook sidebar mirrors the design system's areas — Foundations, Building blocks, Shell, Patterns, Page types — and each area's pages: a story title is `<Area>/<Page>/<Component>`, e.g. `Building blocks/Buttons/IconButton`. Each consumer-facing component has its own story file in an `__stories__/` directory next to its source; story-only helpers such as decorators live in [`src/storybook/`](src/storybook). The component's TSDoc and prop table (see [TSDoc](#tsdoc)) drive its autodocs page, so stories don't restate it. `parameters.tokens`, set to the component's `<ComponentName>.tokens.scss` imported with `?raw`, adds its token table with live values to the page.
+The Storybook sidebar mirrors the design system's areas — Foundations, Building blocks, Shell, Patterns, Page types — and each area's pages: a story title is `<Area>/<Page>/<Component>`, e.g. `Building blocks/Buttons/IconButton`. Each consumer-facing component has its own story file in an `__stories__/` directory next to its source; story-only helpers such as decorators live in [`src/storybook/`](src/storybook). The component's TSDoc and prop table (see [TSDoc](#tsdoc)) drive its autodocs page, so stories don't restate it. The page ends with a table of the tokens that `meta.component` reads, with their live values (see [Component tokens](#component-tokens)); a page without `meta.component` has no table.
 
 The docs show only the body of a story's `render` function, so everything the example needs goes inside it. A `render` function names its parameter `args`. To show a story's full source instead of its `render` body, set `parameters.docs.source.type` to `"code"`.
 
@@ -212,6 +216,7 @@ Stories use [Component Story Format 3](https://storybook.js.org/docs/api/csf), t
 const meta = {
     component: Button,
     args: { children: "Button", onClick: fn() },
+    argTypes: { children: { control: "text" } },
 } satisfies Meta<typeof Button>;
 
 export default meta;
@@ -227,9 +232,13 @@ Each declared prop is exposed as a control through `argTypes`, by kind:
 
 - **Boolean** — a toggle.
 - **Enum** — `radio` for three options or fewer, `select` for more.
-- **`ReactNode`** — a `select` whose `options` are labels and whose `mapping` resolves each to the node. The built-in empty choice covers the unset case.
+- **Text** — a `ReactNode` prop that holds text, such as a label, a title, a description, or the text `children` of a `Button` — `control: "text"`.
+- **Elements** — a `ReactNode` prop that holds an icon, an adornment, or an action — a `select` whose `options` are labels and whose `mapping` resolves each to the element. The built-in empty choice covers the unset case.
+- **Regions and other content** — a prop that holds composed content, such as a layout region, a footer, or `children` that are other components; a prop that takes only an element, such as `Tooltip`'s `children`; and a union with a render function, such as `Field`'s `children` — `control: false`.
 - **Override-API props** (`className`, `slots`, `slotProps`, `ref`, `render`) — `control: false`, keeping the prop-table row without an unusable control.
 - **Event handlers** — `fn()` from `storybook/test`, so calls show in the Actions panel and an interaction test can verify the handler ran.
+
+A unit test fails when a story on a docs page has no control for a `ReactNode` or `ReactElement` prop of `meta.component`.
 
 #### Dev story
 
@@ -308,6 +317,8 @@ Every derived token is declared on each theme boundary (`[data-dextinity-color-s
 ### Component tokens
 
 Each component declares the decisions a theme may override — colors, radius, heights, paddings, shadows — in a `tokens` mixin in `src/components/<feature>/<ComponentName>.tokens.scss`, next to its `<ComponentName>.module.scss`, named `--dextinity-<component>-<property>`, and its module stylesheet reads only those plus generic tokens such as the focus ring and motion. [`src/theme/_components.scss`](src/theme/_components.scss) `@use`s each tokens file and includes its mixin in the `scope.component-tokens` block. A token is defined in the folder of the component its name starts with, and other components can read it: `IconButton` uses the `--dextinity-button-…` colors from `Button.tokens.scss`. A `//` comment directly above a token becomes its description in the docs.
+
+The docs page lists the tokens of the component's stylesheet and of the internal parts it imports, and the tokens that their values read. [`.storybook/componentTokens.ts`](.storybook/componentTokens.ts) reads them from the compiled stylesheets. It follows the component's imports of modules that [`src/index.ts`](src/index.ts) doesn't export a value from, such as `Calendar`, and stops at exported components, which list their tokens on their own page. The MCP server gives agents the same list in the component's description. A page whose tokens no component tokens file declares, such as the theme's font tokens on the Typography page, lists them in `parameters.tokens` instead. An internal part holds only what all its users need; an extra that only some components use is its own part, which only those components import.
 
 A component token whose value is a shared decision points at the semantic token instead of repeating its value, e.g. `var(--dextinity-opacity-disabled)`, `var(--dextinity-color-fill-hover)`, or `var(--dextinity-material-edge-shadow)`, so a theme that changes the decision changes it everywhere. Styles that several module stylesheets share are mixins: the eyebrow label in [`src/theme/_textStyles.scss`](src/theme/_textStyles.scss) and shared animations in [`src/theme/_keyframes.scss`](src/theme/_keyframes.scss).
 

@@ -7,7 +7,6 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
 import { Menu } from "../Menu";
-import menuTokens from "../Menu.tokens.scss?raw";
 import { MenuItem } from "../MenuItem";
 import { MenuSubmenu } from "../MenuSubmenu";
 import styles from "./Menu.stories.module.scss";
@@ -45,7 +44,6 @@ const meta = {
             </div>
         ),
     ],
-    parameters: { tokens: menuTokens },
     render: (args, context) => {
         const [open, setOpen] = useControlledArg(args, "open", context);
         return (

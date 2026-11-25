@@ -4,13 +4,11 @@ import { expect } from "storybook/test";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { KeyboardShortcutProvider } from "../../keyboardShortcut/keyboardShortcutPlatform";
 import { KeyboardShortcutList } from "../KeyboardShortcutList";
-import keyboardShortcutListTokens from "../KeyboardShortcutList.tokens.scss?raw";
 
 const meta = {
     component: KeyboardShortcutList,
     title: "Patterns/Keyboard shortcuts/KeyboardShortcutList",
     decorators: [themeDecorator],
-    parameters: { tokens: keyboardShortcutListTokens },
     args: {
         keyboardShortcuts: [
             { keyboardShortcut: "mod+k", description: "Command palette" },

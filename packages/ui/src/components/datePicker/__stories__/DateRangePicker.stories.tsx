@@ -4,8 +4,6 @@ import { expect, fn, screen, userEvent, waitFor, within } from "storybook/test";
 import { fieldArgTypes, type FieldStoryArgs, splitFieldArgs, StoryField } from "../../../storybook/fieldStoryArgs";
 import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import fieldTokens from "../../field/Field.tokens.scss?raw";
-import datePickerTokens from "../DatePicker.tokens.scss?raw";
 import type { DateRangePosition } from "../dateRange";
 import { DateRangePicker, type DateRangePickerProps } from "../DateRangePicker";
 import styles from "./DatePicker.stories.module.scss";
@@ -36,7 +34,6 @@ const meta = {
     component: DateRangePicker,
     title: "Building blocks/Form fields/DateRangePicker",
     decorators: [themeDecorator],
-    parameters: { tokens: `${datePickerTokens}\n${fieldTokens}` },
     render: (args, context) => <ControlledDateRangePicker {...args} storyId={context.id} />,
     args: {
         name: "period",

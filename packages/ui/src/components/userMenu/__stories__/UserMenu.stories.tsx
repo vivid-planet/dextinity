@@ -11,7 +11,6 @@ import { MenuRadioGroup } from "../../menu/MenuRadioGroup";
 import { MenuRadioItem } from "../../menu/MenuRadioItem";
 import { MenuSeparator } from "../../menu/MenuSeparator";
 import { UserMenu } from "../UserMenu";
-import userMenuTokens from "../UserMenu.tokens.scss?raw";
 import styles from "./UserMenu.stories.module.scss";
 
 function UserSettings() {
@@ -52,7 +51,6 @@ const meta = {
             </div>
         ),
     ],
-    parameters: { tokens: userMenuTokens },
     render: (args, context) => {
         const [open, setOpen] = useControlledArg(args, "open", context);
         return (

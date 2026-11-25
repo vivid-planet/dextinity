@@ -5,9 +5,7 @@ import { expect, fn, screen, userEvent, waitFor, within } from "storybook/test";
 import { fieldArgTypes, type FieldStoryArgs, splitFieldArgs, StoryField } from "../../../storybook/fieldStoryArgs";
 import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import fieldTokens from "../../field/Field.tokens.scss?raw";
 import { DatePicker, type DatePickerProps } from "../DatePicker";
-import datePickerTokens from "../DatePicker.tokens.scss?raw";
 import styles from "./DatePicker.stories.module.scss";
 
 type DatePickerStoryArgs = DatePickerProps & FieldStoryArgs;
@@ -56,7 +54,6 @@ const meta = {
     component: DatePicker,
     title: "Building blocks/Form fields/DatePicker",
     decorators: [themeDecorator],
-    parameters: { tokens: `${datePickerTokens}\n${fieldTokens}` },
     render: (args, context) => <ControlledDatePicker {...args} storyId={context.id} />,
     args: {
         name: "publishedOn",

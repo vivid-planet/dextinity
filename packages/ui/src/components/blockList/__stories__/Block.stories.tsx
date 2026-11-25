@@ -10,7 +10,6 @@ import { IconButton } from "../../iconButton/IconButton";
 import { Input } from "../../input/Input";
 import { Block } from "../Block";
 import { BlockList } from "../BlockList";
-import blockListTokens from "../BlockList.tokens.scss?raw";
 import styles from "./BlockList.stories.module.scss";
 
 function HeroFields() {
@@ -32,7 +31,6 @@ const meta = {
     component: Block,
     title: "Building blocks/Blocks & preview/Block",
     decorators: [themeDecorator],
-    parameters: { tokens: blockListTokens },
     args: {
         title: "Shape what's next",
         summary: "Hero · Image · Title · Text",
@@ -42,6 +40,8 @@ const meta = {
         onExpandedChange: fn(),
     },
     argTypes: {
+        title: { control: "text" },
+        summary: { control: "text" },
         selected: { control: "boolean" },
         expanded: { control: "boolean" },
         invalid: { control: "boolean" },

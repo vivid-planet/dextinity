@@ -13,7 +13,6 @@ import { MenuItem } from "../../menu/MenuItem";
 import { MenuRadioGroup } from "../../menu/MenuRadioGroup";
 import { MenuRadioItem } from "../../menu/MenuRadioItem";
 import { Card } from "../Card";
-import cardTokens from "../Card.tokens.scss?raw";
 import styles from "./Card.stories.module.scss";
 
 function PeriodMenu() {
@@ -103,13 +102,14 @@ const meta = {
         ),
         themeDecorator,
     ],
-    parameters: { tokens: cardTokens, layout: "fullscreen" },
+    parameters: { layout: "fullscreen" },
     args: {
         title: "Recently edited",
         children: <RecentRow />,
         className: styles.card,
     },
     argTypes: {
+        meta: { control: "text" },
         actions: { control: "select", options: Object.keys(actionsOptions), mapping: actionsOptions },
         children: { control: false },
         className: { control: false },

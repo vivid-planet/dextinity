@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type PropsWithChildren } from "react";
+import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 
 import { Avatar } from "../avatar/Avatar";
 import { Icon } from "../icon/Icon";
@@ -27,7 +27,7 @@ export type UserMenuOwnerState = {
     placement: MenuPlacement;
 };
 
-export interface UserMenuProps extends Omit<HTMLAttributes<HTMLButtonElement>, "className" | "children">, PropsWithChildren {
+export interface UserMenuProps extends Omit<HTMLAttributes<HTMLButtonElement>, "className" | "children"> {
     /** The signed-in person's name, shown in the menu header and as initials on the avatar. */
     name: string;
     /** The person's role or e-mail address, shown below the name. */
@@ -48,14 +48,14 @@ export interface UserMenuProps extends Omit<HTMLAttributes<HTMLButtonElement>, "
     placement?: MenuPlacement;
     /** The built-in texts. */
     labels?: Partial<UserMenuLabels>;
+    /** The user settings, e.g. theme, density, and interface language as `MenuRadioGroup`s, or a link to the keyboard shortcuts. */
+    children?: ReactNode;
     /** Added alongside the component's own classes. */
     className?: string;
 }
 
 /**
  * The menu at the person's avatar in the top bar: who is signed in, the user settings, and logout.
- *
- * `children`: The user settings, e.g. theme, density, and interface language as `MenuRadioGroup`s, or a link to the keyboard shortcuts.
  */
 export const UserMenu = forwardRef<HTMLButtonElement, UserMenuProps>(function UserMenu(
     { name, role, avatarSrc, open, onOpenChange, children, onLogout, placement = "bottom-end", labels: labelsProp, className, ...restProps },

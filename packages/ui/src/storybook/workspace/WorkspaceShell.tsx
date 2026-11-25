@@ -111,9 +111,15 @@ type ResizeEdge = "inline" | "block" | "both";
 function useStorybookPage() {
     const [page, setPage] = useState<string | null>(null);
     useEffect(() => {
-        void fetch(new URL("storybook.html", document.baseURI), { method: "HEAD" })
-            .then((response) => setPage(response.ok ? "storybook.html" : "./"))
-            .catch(() => setPage("./"));
+        async function findPage() {
+            try {
+                const response = await fetch(new URL("storybook.html", document.baseURI), { method: "HEAD" });
+                setPage(response.ok ? "storybook.html" : "./");
+            } catch {
+                setPage("./");
+            }
+        }
+        void findPage();
     }, []);
     return page;
 }
@@ -224,7 +230,10 @@ export function WorkspaceShell() {
     }
 
     useEffect(() => {
-        void fetchStories().then(setStories);
+        async function loadStories() {
+            setStories(await fetchStories());
+        }
+        void loadStories();
     }, []);
 
     const componentStories = useMemo(() => stories.filter((story) => !isPrototype(story)), [stories]);
@@ -450,8 +459,16 @@ export function WorkspaceShell() {
     }
 
     function openInStorybook(nextStoryId: string) {
-        if (storybookPage != null) {
-            setStorybookSrc(`${storybookPage}?path=/story/${encodeURIComponent(nextStoryId)}`);
+        if (storybookPage == null) {
+            return;
+        }
+        const url = `${storybookPage}?path=/story/${encodeURIComponent(nextStoryId)}`;
+        // The loaded frame may have moved on from its first address, so it navigates itself instead of getting a new one
+        const frameWindow = storybookFrameRef.current?.contentWindow;
+        if (frameWindow) {
+            frameWindow.location.href = new URL(url, document.baseURI).href;
+        } else {
+            setStorybookSrc(url);
         }
     }
 
@@ -503,7 +520,8 @@ export function WorkspaceShell() {
     // Storybook's own UI keeps its place in its address; the workspace only sets it when it opens a story, e.g. a picked component
     const storybookUrl = storybookPage == null ? null : storyId ? `${storybookPage}?path=/story/${encodeURIComponent(storyId)}` : storybookPage;
     const [storybookSrc, setStorybookSrc] = useState<string | null>(null);
-    if (storybookUrl != null && storybookSrc == null) {
+    // Loaded the first time the Storybook tab opens, and kept from then on
+    if (storybookUrl != null && storybookSrc == null && !isPrototypeMode) {
         setStorybookSrc(storybookUrl);
     }
     const storybookStoryId = useStorybookStoryId(storybookFrameRef, !isPrototypeMode);
@@ -820,19 +838,20 @@ export function WorkspaceShell() {
                     </div>
                 </header>
 
-                {!isPrototypeMode ? (
-                    <div className={styles.body}>
-                        {storybookSrc != null && (
-                            <iframe
-                                key={`storybook-${reloadKey}`}
-                                ref={storybookFrameRef}
-                                className={styles.storybookFrame}
-                                src={storybookSrc}
-                                title="Storybook"
-                            />
-                        )}
-                    </div>
-                ) : (
+                {/* Storybook's own UI stays loaded while a prototype shows, so it keeps the page it was on */}
+                <div className={styles.body} hidden={isPrototypeMode}>
+                    {storybookSrc != null && (
+                        <iframe
+                            key={`storybook-${reloadKey}`}
+                            ref={storybookFrameRef}
+                            className={styles.storybookFrame}
+                            src={storybookSrc}
+                            title="Storybook"
+                        />
+                    )}
+                </div>
+
+                {isPrototypeMode && (
                     <div className={styles.body}>
                         {presenting && (
                             <Button

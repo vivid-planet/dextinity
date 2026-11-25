@@ -7,6 +7,7 @@ import * as listStories from "../../../components/listLayout/__stories__/ListLay
 import * as overviewStories from "../../../components/overviewLayout/__stories__/OverviewLayout.stories";
 import * as treeDetailStories from "../../../components/treeDetailLayout/__stories__/TreeDetailLayout.stories";
 import { CmsPrototype } from "../cmsPrototype/CmsPrototype";
+import { KpiPrototype } from "../kpiPrototype/KpiPrototype";
 import { PrototypeApp } from "../PrototypeApp";
 import { careerPortalPrototype } from "../prototypes";
 
@@ -50,4 +51,10 @@ export const CareerPortal: Story = {
 export const Cms: Story = {
     name: "CMS",
     render: () => <CmsPrototype />,
+};
+
+/** An overview of three business KPIs: revenue, new customers, and churn, each with its trend. */
+export const BusinessKpis: Story = {
+    name: "Business KPIs",
+    render: () => <KpiPrototype />,
 };

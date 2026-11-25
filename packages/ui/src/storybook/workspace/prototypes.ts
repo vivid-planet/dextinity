@@ -1,6 +1,7 @@
 import { sideNavGroups } from "../../components/sideNav/__stories__/sideNavStoryData";
 import type { SideNavGroup, SideNavItem } from "../../components/sideNav/SideNav";
 import { cmsNavGroups, getCmsAssetFolderTrail, getCmsPageLabel } from "./cmsPrototype/cmsData";
+import { getKpiPageLabel, kpiNavGroups } from "./kpiPrototype/kpiNavigation";
 
 /** A step above a page, as the app's menu and breadcrumbs show it; a step that isn't a page, e.g. a menu group or an asset folder, has no `pageId`. */
 export interface PageAncestor {
@@ -118,5 +119,14 @@ export const cmsPrototype: WorkspacePrototype = {
     getPageAncestors: createGetPageAncestors(cmsNavGroups, getCmsPageLabel, getCmsAssetFolderTrail),
 };
 
+export const kpiPrototype: WorkspacePrototype = {
+    storyId: "workspace-prototypes--business-kpis",
+    appName: "Business KPIs",
+    startPageId: "overview",
+    designedPageIds: ["overview"],
+    getPageLabel: getKpiPageLabel,
+    getPageAncestors: createGetPageAncestors(kpiNavGroups, getKpiPageLabel),
+};
+
 /** The prototypes by their story's id, for the workspace to list their pages. */
-export const workspacePrototypes = new Map([careerPortalPrototype, cmsPrototype].map((prototype) => [prototype.storyId, prototype]));
+export const workspacePrototypes = new Map([careerPortalPrototype, cmsPrototype, kpiPrototype].map((prototype) => [prototype.storyId, prototype]));

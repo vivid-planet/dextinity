@@ -82,6 +82,7 @@ export function ViewMenu() {
     const savedPresets = savedPresetList.useItems();
     const changed = useViewChanged();
     const values = useViewValues();
+    const brand = brandSetting.useValue();
 
     return (
         <Popover
@@ -160,7 +161,7 @@ export function ViewMenu() {
                     </Field>
                 ))}
                 <p className={styles.viewSection}>Tokens</p>
-                <TokenSliders />
+                <TokenSliders brand={brand} />
             </div>
         </Popover>
     );

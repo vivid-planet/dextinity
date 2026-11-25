@@ -62,7 +62,7 @@ export function useLibraryActions() {
     function canMove(items: LibraryItem[], targetFolderId: string | null) {
         return items.every((item) => {
             if (item.type === "file") {
-                return item.asset.folderId !== targetFolderId;
+                return targetFolderId != null && item.asset.folderId !== targetFolderId;
             }
             const { id, parentId } = item.folder;
             return id !== targetFolderId && parentId !== targetFolderId && !getDescendantFolderIds(folders, id).includes(targetFolderId ?? "");
@@ -73,20 +73,30 @@ export function useLibraryActions() {
         if (!canMove(items, targetFolderId)) {
             return;
         }
-        const previousAssets = assets;
-        const previousFolders = folders;
-        const fileIds = items.flatMap((item) => (item.type === "file" ? [item.asset.id] : []));
-        const folderIds = items.flatMap((item) => (item.type === "folder" ? [item.folder.id] : []));
+        const previousFolderIds = new Map(items.flatMap((item) => (item.type === "file" ? [[item.asset.id, item.asset.folderId]] : [])));
+        const previousParentIds = new Map(items.flatMap((item) => (item.type === "folder" ? [[item.folder.id, item.folder.parentId]] : [])));
         undoToast.perform({
             run: () => {
-                setAssets((current) =>
-                    current.map((asset) => (fileIds.includes(asset.id) ? { ...asset, folderId: targetFolderId ?? asset.folderId } : asset)),
+                if (targetFolderId != null) {
+                    setAssets((current) =>
+                        current.map((asset) => (previousFolderIds.has(asset.id) ? { ...asset, folderId: targetFolderId } : asset)),
+                    );
+                }
+                setFolders((current) =>
+                    current.map((folder) => (previousParentIds.has(folder.id) ? { ...folder, parentId: targetFolderId } : folder)),
                 );
-                setFolders((current) => current.map((folder) => (folderIds.includes(folder.id) ? { ...folder, parentId: targetFolderId } : folder)));
             },
             undo: () => {
-                setAssets(previousAssets);
-                setFolders(previousFolders);
+                setAssets((current) =>
+                    current.map((asset) =>
+                        previousFolderIds.has(asset.id) ? { ...asset, folderId: previousFolderIds.get(asset.id) ?? asset.folderId } : asset,
+                    ),
+                );
+                setFolders((current) =>
+                    current.map((folder) =>
+                        previousParentIds.has(folder.id) ? { ...folder, parentId: previousParentIds.get(folder.id) ?? null } : folder,
+                    ),
+                );
             },
             message: `${describeCount(items, "moved")} to “${targetName}”`,
         });
@@ -97,36 +107,41 @@ export function useLibraryActions() {
     }
 
     function setArchived(items: LibraryItem[], archived: boolean) {
-        const ids = items.flatMap((item) => (item.type === "file" ? [item.asset.id] : []));
-        const previous = assets;
+        const previousArchived = new Map(items.flatMap((item) => (item.type === "file" ? [[item.asset.id, item.asset.archived]] : [])));
         undoToast.perform({
-            run: () => setAssets((current) => current.map((asset) => (ids.includes(asset.id) ? { ...asset, archived } : asset))),
-            undo: () => setAssets(previous),
+            run: () => setAssets((current) => current.map((asset) => (previousArchived.has(asset.id) ? { ...asset, archived } : asset))),
+            undo: () =>
+                setAssets((current) =>
+                    current.map((asset) =>
+                        previousArchived.has(asset.id) ? { ...asset, archived: previousArchived.get(asset.id) ?? asset.archived } : asset,
+                    ),
+                ),
             message: describeCount(items, archived ? "archived" : "restored"),
         });
     }
 
     function remove(items: LibraryItem[], onRemoved?: () => void) {
-        const used = items.find((item) => item.type === "file" && item.asset.usages.length > 0);
-        if (used?.type === "file") {
-            undoToast.block(`“${used.asset.name}” is still used ${used.asset.usages.length}× and was not deleted`);
-            return;
-        }
         const fileIds = items.flatMap((item) => (item.type === "file" ? [item.asset.id] : []));
         const folderIds = items.flatMap((item) =>
             item.type === "folder" ? [item.folder.id, ...getDescendantFolderIds(folders, item.folder.id)] : [],
         );
-        const previousAssets = assets;
-        const previousFolders = folders;
+        const removedAssets = assets.filter((asset) => fileIds.includes(asset.id) || folderIds.includes(asset.folderId));
+        const removedFolders = folders.filter((folder) => folderIds.includes(folder.id));
+        const removedAssetIds = removedAssets.map((asset) => asset.id);
+        const used = removedAssets.find((asset) => asset.usages.length > 0);
+        if (used) {
+            undoToast.block(`“${used.name}” is still used ${used.usages.length}× and was not deleted`);
+            return;
+        }
         undoToast.perform({
             run: () => {
-                setAssets((current) => current.filter((asset) => !fileIds.includes(asset.id) && !folderIds.includes(asset.folderId)));
+                setAssets((current) => current.filter((asset) => !removedAssetIds.includes(asset.id)));
                 setFolders((current) => current.filter((folder) => !folderIds.includes(folder.id)));
                 onRemoved?.();
             },
             undo: () => {
-                setAssets(previousAssets);
-                setFolders(previousFolders);
+                setAssets((current) => [...current, ...removedAssets]);
+                setFolders((current) => [...current, ...removedFolders]);
             },
             message: describeCount(items, "deleted"),
         });

@@ -331,6 +331,16 @@ function collectVisibleIds(pages: SitePage[], expandedIds: string[], matches: ((
     ]);
 }
 
+function withCounts(nodes: SitePage[]): TreeNode[] {
+    // The status shows as text with its menu at the end of the row instead of the tree's dot
+    return nodes.map((page) => ({
+        ...page,
+        status: undefined,
+        count: page.children != null && page.children.length > 0 ? countDescendants(page) : undefined,
+        children: page.children && withCounts(page.children),
+    }));
+}
+
 export function CmsPageTree() {
     const scenario = useScenario();
     return <PageTreeEditor key={scenario} scenario={scenario} />;
@@ -369,16 +379,6 @@ function PageTreeEditor({ scenario }: { scenario: Scenario }) {
         : undefined;
     const visibleIds = collectVisibleIds(pages, expandedIds, matchesFilter);
     const checkedVisibleCount = visibleIds.filter((id) => checkedIds.includes(id)).length;
-
-    function withCounts(nodes: SitePage[]): TreeNode[] {
-        // The status shows as text with its menu at the end of the row instead of the tree's dot
-        return nodes.map((page) => ({
-            ...page,
-            status: undefined,
-            count: page.children != null && page.children.length > 0 ? countDescendants(page) : undefined,
-            children: page.children && withCounts(page.children),
-        }));
-    }
 
     /** Changes the tree, with Undo in the toast that reports it. */
     function change(nextPages: SitePage[], message: string, afterRun?: () => void) {

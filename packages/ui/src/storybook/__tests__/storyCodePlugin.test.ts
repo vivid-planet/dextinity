@@ -3,7 +3,7 @@ import { expect, it } from "vitest";
 
 import { storyCodesOf } from "../../../.storybook/storyCodePlugin";
 import { parseStoryFile } from "../../../.storybook/storyFile";
-import { renderSourceWithArgs } from "../renderSourceWithArgs";
+import { renderSourceWithArgs, renderSourceWithWrittenArgs } from "../renderSourceWithArgs";
 
 it("shows `meta.component` with the args for a story without a `render` function", () => {
     const [storyCode] = storyCodesOf(
@@ -161,4 +161,25 @@ export const Default: Story = {};
     expect(source).toBe(`<Menu onSelect={(id) => select(id)}>
     <MenuItem label="Duplicate" onClick={() => {}} />
 </Menu>`);
+});
+
+it("writes a picked `mapping` option and no `null` children into the code for the components manifest", () => {
+    const [storyCode] = storyCodesOf(
+        parseStoryFile(
+            `
+const meta = {
+    component: Toolbar,
+    args: { children: null, icon: "Undo" },
+    argTypes: { icon: { mapping: { Undo: <Icon name="history" /> } } },
+} satisfies Meta<typeof Toolbar>;
+
+export default meta;
+
+export const Default: Story = {};
+`,
+            "Toolbar.stories.tsx",
+        ),
+    );
+
+    expect(renderSourceWithWrittenArgs(storyCode)).toBe('<Toolbar icon={<Icon name="history" />} />');
 });

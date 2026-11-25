@@ -49,7 +49,7 @@ export function storyCodePlugin(): Plugin {
     };
 }
 
-type StoryCode = {
+export type StoryCode = {
     exportName: string;
     renderSource: string;
     writtenArgs: Record<string, ShownArg>;

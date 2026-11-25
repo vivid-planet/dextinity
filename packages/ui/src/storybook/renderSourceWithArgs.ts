@@ -60,6 +60,27 @@ function containsElement(value: unknown): boolean {
     return typeof value === "object" && value !== null && Object.values(value).some(containsElement);
 }
 
+/**
+ * Writes the args into a story's `renderSource` as written in the story file, for the components manifest.
+ */
+export function renderSourceWithWrittenArgs({
+    renderSource,
+    writtenArgs,
+    writtenMappingOptions,
+}: {
+    renderSource: string;
+    writtenArgs: Record<string, ShownArg>;
+    writtenMappingOptions: Record<string, Record<string, ShownArg>>;
+}) {
+    const shownArgs = Object.fromEntries(
+        Object.entries(writtenArgs).map(([name, writtenArg]) => {
+            const pickedOption = "value" in writtenArg && typeof writtenArg.value === "string" ? writtenArg.value : undefined;
+            return [name, (pickedOption !== undefined && writtenMappingOptions[name]?.[pickedOption]) || writtenArg];
+        }),
+    );
+    return renderSourceWithShownArgs(renderSource, shownArgs);
+}
+
 function renderSourceWithShownArgs(renderSource: string, { children, ...attributeArgs }: Record<string, ShownArg>) {
     const withAttributes = renderSource.replace(argsSpreadMarkerPattern, (_, overriddenArgNames: string) => {
         const leftOutNames = overriddenArgNames.trim().split(" ");

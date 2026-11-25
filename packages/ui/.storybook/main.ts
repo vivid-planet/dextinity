@@ -2,7 +2,7 @@ import type { StorybookConfig } from "@storybook/react-vite";
 import { mergeConfig } from "vite";
 
 import { addComponentTokensToManifests } from "./addComponentTokensToManifests";
-import { addStyleSourcesToManifests } from "./addStyleSourcesToManifests";
+import { addStoryCodeToManifests } from "./addStoryCodeToManifests";
 import { componentTokensPlugin } from "./componentTokensPlugin";
 import { storyCodePlugin } from "./storyCodePlugin";
 
@@ -15,7 +15,7 @@ const config: StorybookConfig = {
         development: { defaultFilterSelection: "exclude" },
     },
     features: { componentsManifest: true },
-    experimental_manifests: async (manifests, options) => addComponentTokensToManifests(await addStyleSourcesToManifests(manifests, options)),
+    experimental_manifests: async (manifests, options) => addComponentTokensToManifests(await addStoryCodeToManifests(manifests, options)),
     viteFinal: (viteConfig) =>
         mergeConfig(viteConfig, {
             plugins: [storyCodePlugin(), componentTokensPlugin()],

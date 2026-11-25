@@ -989,6 +989,39 @@ The `ExceptionFilter` returns `validationErrors` of a `DextinityValidationExcept
 
 Read `path` and `message` instead of walking `property`, `constraints` and `children`. The path contains the whole way to the invalid value, for instance `content.blocks[3].props.height`.
 
+### Remove the `BuildsModule`
+
+The `BuildsModule` and everything else for static site generation are removed, including the `check-changes` console command, the `@SkipBuild()` decorator and the `builds` permission.
+
+Find the usages:
+
+```sh
+grep -rnE "BuildsModule|BuildsService|BuildsResolver|AutoBuildStatus|ChangesSinceLastBuild|SkipBuild|SKIP_BUILD_METADATA_KEY|BUILDS_CONFIG|BUILDS_MODULE_OPTIONS|\"builds\"" src
+```
+
+Remove the module from the `AppModule`, and remove the `@SkipBuild()` decorators:
+
+```diff title="api/src/app.module.ts"
+  KubernetesModule.register({
+      helmRelease: config.helmRelease,
+  }),
+- BuildsModule,
+```
+
+```diff
+  @Mutation(() => Boolean)
+- @SkipBuild()
+  async updateProduct(/* … */) {
+```
+
+Remove `builds` wherever the project assigns or checks permissions, for instance in its `AccessControlService` or user permission fixtures.
+
+The cron jobs and jobs check the content scope of a Kubernetes CronJob against the `cronJobs` permission instead of the `builds` permission now. Users who see the CronJobs of a content scope need the `cronJobs` permission for that scope.
+
+Remove the `check-changes` CronJob and the builder CronJobs (labeled `dextinity.com/builder: "true"`) from the deployment, for instance from the Helm chart. The cron jobs page lists the builder CronJobs otherwise.
+
+The `ChangesSinceLastBuild` table is dropped by a migration of `@dextinity/cms-api`.
+
 ### Verify the API still starts
 
 Type checks don't catch a broken NestJS module graph or entity metadata that fails discovery. Verify the AppModule still resolves and the generated artifacts are up to date:
@@ -2167,6 +2200,40 @@ Import its components and types from `@dextinity/admin` instead:
 - import { ColorField } from "@dextinity/admin-color-picker";
 + import { ColorField } from "@dextinity/admin";
 ```
+
+### Remove the publisher and the builds UI
+
+`BuildEntry`, `PublisherPage` and `LatestBuildsDashboardWidget` are removed together with the API for builds. The `SsgRunning` and `SsgStandby` icons are removed from `@dextinity/admin-icons`.
+
+Find the usages:
+
+```sh
+grep -rnE "BuildEntry|PublisherPage|LatestBuildsDashboardWidget|SsgRunning|SsgStandby|\"builds\"" src
+```
+
+Remove `BuildEntry` from the header:
+
+```diff title="admin/src/common/MasterHeader.tsx"
+  <ContentScopeControls />
+- <BuildEntry />
+  <UserHeaderItem />
+```
+
+Remove the publisher route from the master menu:
+
+```diff title="admin/src/common/MasterMenu.tsx"
+- {
+-     type: "route",
+-     primary: <FormattedMessage id="menu.publisher" defaultMessage="Publisher" />,
+-     route: {
+-         path: "/system/publisher",
+-         element: <PublisherPage />,
+-     },
+-     requiredPermission: "builds",
+- },
+```
+
+Remove `LatestBuildsDashboardWidget` from the dashboard, and remove every other check for the `builds` permission, for instance `isAllowed("builds")`.
 
 <!-- "Verify lint passes" must always be the last step for this service. -->
 

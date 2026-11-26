@@ -28,7 +28,7 @@ function getSystemColorScheme(): ThemeColorScheme {
 }
 
 /** The color scheme the stories show: the toolbar's choice, or the system's when the toolbar follows it. */
-export function getAppliedColorScheme(): ThemeColorScheme {
+function getAppliedColorScheme(): ThemeColorScheme {
     const toolbarColorScheme = colorSchemeSetting.get();
     return toolbarColorScheme === "system" ? getSystemColorScheme() : toolbarColorScheme;
 }

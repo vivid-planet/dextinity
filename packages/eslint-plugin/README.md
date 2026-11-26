@@ -6,11 +6,18 @@ The presets of `@dextinity/eslint-config` and `@dextinity/oxlint-config` enable 
 
 ## Rules
 
-| Rule                                                                                                                                                          | Description                                                                                            |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| [`no-private-sibling-import`](https://github.com/vivid-planet/dextinity/blob/main/packages/eslint-plugin/docs/rules/no-private-sibling-import.md)             | Allow a private sibling file (`Foo.gql.ts`, `Foo.sc.ts`) to be imported only by the file it belongs to |
-| [`no-other-module-relative-import`](https://github.com/vivid-planet/dextinity/blob/main/packages/eslint-plugin/docs/rules/no-other-module-relative-import.md) | Require the source root alias instead of a relative path when importing from another module            |
-| [`no-next-public-env`](https://github.com/vivid-planet/dextinity/blob/main/packages/eslint-plugin/docs/rules/no-next-public-env.md)                           | Disallow reading `NEXT_PUBLIC_*` environment variables                                                 |
+<!-- begin auto-generated rules list -->
+
+🔧 Automatically fixable by the [`--fix` CLI option](https://eslint.org/docs/user-guide/command-line-interface#--fix).\
+⚙️ Has configuration options.
+
+| Name                                                                                                                                                        | Description                                                                                            | 🔧  | ⚙️  |
+| :---------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------- | :-- | :-- |
+| [no-next-public-env](https://github.com/vivid-planet/dextinity/blob/main/packages/eslint-plugin/docs/rules/no-next-public-env.md)                           | Disallow reading `NEXT_PUBLIC_*` environment variables                                                 |     |     |
+| [no-other-module-relative-import](https://github.com/vivid-planet/dextinity/blob/main/packages/eslint-plugin/docs/rules/no-other-module-relative-import.md) | Require the source root alias instead of a relative path when importing from another module            | 🔧  | ⚙️  |
+| [no-private-sibling-import](https://github.com/vivid-planet/dextinity/blob/main/packages/eslint-plugin/docs/rules/no-private-sibling-import.md)             | Allow a private sibling file (`Foo.gql.ts`, `Foo.sc.ts`) to be imported only by the file it belongs to |     | ⚙️  |
+
+<!-- end auto-generated rules list -->
 
 ## Usage
 

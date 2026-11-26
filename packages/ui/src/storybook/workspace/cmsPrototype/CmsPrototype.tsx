@@ -48,7 +48,7 @@ function renderPage(pageId: string) {
 export function CmsPrototype() {
     const scenario = useScenario();
     return (
-        <CmsSiteProvider>
+        <CmsSiteProvider key={scenario} scenario={scenario}>
             <AssetLibraryProvider key={scenario} scenario={scenario}>
                 <PrototypeApp prototype={cmsPrototype} navGroups={cmsNavGroups} renderPage={renderPage} />
             </AssetLibraryProvider>

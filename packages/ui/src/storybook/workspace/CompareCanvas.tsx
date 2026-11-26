@@ -192,6 +192,7 @@ export function CompareCanvas({
     zoom,
     reloadKey,
     onPageChange,
+    onFrameDocumentsChange,
 }: {
     mode: CompareMode;
     storyUrl: string;
@@ -202,6 +203,7 @@ export function CompareCanvas({
     zoom: WorkspaceZoom;
     reloadKey: number;
     onPageChange: (page: string) => void;
+    onFrameDocumentsChange: (documents: Document[]) => void;
 }) {
     const [variants, setVariants] = useState(readVariants);
     // Where variant B starts when swiping, in percent of the width
@@ -303,6 +305,11 @@ export function CompareCanvas({
                     onLoad={(event) => {
                         applyDensity(frame, event.currentTarget);
                         setLoadCount((count) => count + 1);
+                        onFrameDocumentsChange(
+                            frameRefs.current
+                                .slice(0, frames.length)
+                                .flatMap((element) => (element?.contentDocument != null ? [element.contentDocument] : [])),
+                        );
                     }}
                 />
             </div>

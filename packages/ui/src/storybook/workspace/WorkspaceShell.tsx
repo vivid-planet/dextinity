@@ -81,7 +81,6 @@ const modeTabs: Array<{ value: ModeTab; label: string }> = [
 
 const intentKeys: Record<string, WorkspaceIntent> = { "1": "prototype", "2": "inspect", "3": "review", "4": "flow" };
 
-/** The tools of each mode, which the bar under the modes shows as labeled buttons. */
 /** The tools of each mode, which the bar under the modes shows as labeled buttons; the key opens the tool from any mode. */
 const intentToolButtons: Record<WorkspaceIntent, Array<{ tool: WorkspaceTool; label: string; icon: IconName; description: string; key: string }>> = {
     prototype: [],
@@ -163,9 +162,15 @@ type ResizeEdge = "inline" | "block" | "both";
 function useStorybookPage() {
     const [page, setPage] = useState<string | null>(null);
     useEffect(() => {
-        void fetch(new URL("storybook.html", document.baseURI), { method: "HEAD" })
-            .then((response) => setPage(response.ok ? "storybook.html" : "./"))
-            .catch(() => setPage("./"));
+        async function findPage() {
+            try {
+                const response = await fetch(new URL("storybook.html", document.baseURI), { method: "HEAD" });
+                setPage(response.ok ? "storybook.html" : "./");
+            } catch {
+                setPage("./");
+            }
+        }
+        void findPage();
     }, []);
     return page;
 }
@@ -244,6 +249,7 @@ export function WorkspaceShell() {
     // The prototype's page to open the frame on; the prototype keeps the page it navigates to in the frame's hash
     const [prototypeStartPage, setPrototypeStartPage] = useState("");
     const frameRef = useRef<HTMLIFrameElement>(null);
+    const [compareFrameDocuments, setCompareFrameDocuments] = useState<Document[]>([]);
     const storybookFrameRef = useRef<HTMLIFrameElement>(null);
     const storybookPage = useStorybookPage();
     const framePage = useFramePage(frameRef, frameLoadCount);
@@ -264,7 +270,10 @@ export function WorkspaceShell() {
     }
 
     useEffect(() => {
-        void fetchStories().then(setStories);
+        async function loadStories() {
+            setStories(await fetchStories());
+        }
+        void loadStories();
     }, []);
 
     const componentStories = useMemo(() => stories.filter((story) => !isPrototype(story)), [stories]);
@@ -349,8 +358,8 @@ export function WorkspaceShell() {
     // Until the tree is first changed, the prototypes and the groups of their menus are open, the pages with detail pages closed
     const [prototypeExpandedIds, setPrototypeExpandedIds] = useState<string[] | null>(null);
     const visiblePrototypeExpandedIds = prototypeExpandedIds ?? prototypeTrees.flatMap((tree) => [tree.node.id, ...(tree.pageTree?.groupIds ?? [])]);
-    // While comparing, the frames report their page to the start page, which the single frame then opens on again
-    const shownPage = isComparing ? prototypeStartPage : framePage.hash;
+    // While comparing or showing the flow map, the start page holds the page, which the single frame then opens on again
+    const shownPage = isPrototypeMode && !isSingleFrame ? prototypeStartPage : framePage.hash;
     const currentPrototypePageId = shownPage || workspacePrototypes.get(prototypeId ?? "")?.startPageId;
     const currentWorkspacePrototype = workspacePrototypes.get(prototypeId ?? "");
     const selectedPrototypeNodeId = prototypeId && currentPrototypePageId ? getPrototypePageNodeId(prototypeId, currentPrototypePageId) : undefined;
@@ -474,6 +483,15 @@ export function WorkspaceShell() {
         setPresenting(true);
     }
 
+    // Comparing and the flow map come back after the presentation and open on the page it ended on
+    function stopPresenting() {
+        const frameWindow = frameRef.current?.contentWindow;
+        if (frameWindow) {
+            setPrototypeStartPage(frameWindow.location.hash.slice(1));
+        }
+        setPresenting(false);
+    }
+
     useEffect(() => {
         if (!presenting) {
             return;
@@ -484,7 +502,7 @@ export function WorkspaceShell() {
         );
         const handleKey = (event: KeyboardEvent) => {
             if (event.key === "Escape") {
-                setPresenting(false);
+                stopPresenting();
             }
         };
         frameDocuments.forEach((target) => target.addEventListener("keydown", handleKey));
@@ -566,7 +584,9 @@ export function WorkspaceShell() {
                 toggleToolOfMode(toolKey.intent, toolKey.tool);
             }
         };
-        const documents = [document, frameRef.current?.contentDocument].filter((target): target is Document => target != null);
+        const documents = [document, frameRef.current?.contentDocument, ...(isComparing ? compareFrameDocuments : [])].filter(
+            (target): target is Document => target != null,
+        );
         documents.forEach((target) => target.addEventListener("keydown", handleKey));
         return () => documents.forEach((target) => target.removeEventListener("keydown", handleKey));
     });
@@ -607,8 +627,16 @@ export function WorkspaceShell() {
     }
 
     function openInStorybook(nextStoryId: string) {
-        if (storybookPage != null) {
-            setStorybookSrc(`${storybookPage}?path=/story/${encodeURIComponent(nextStoryId)}`);
+        if (storybookPage == null) {
+            return;
+        }
+        const url = `${storybookPage}?path=/story/${encodeURIComponent(nextStoryId)}`;
+        // The loaded frame may have moved on from its first address, so it navigates itself instead of getting a new one
+        const frameWindow = storybookFrameRef.current?.contentWindow;
+        if (frameWindow) {
+            frameWindow.location.href = new URL(url, document.baseURI).href;
+        } else {
+            setStorybookSrc(url);
         }
     }
 
@@ -659,7 +687,8 @@ export function WorkspaceShell() {
     // Storybook's own UI keeps its place in its address; the workspace only sets it when it opens a story, e.g. a picked component
     const storybookUrl = storybookPage == null ? null : storyId ? `${storybookPage}?path=/story/${encodeURIComponent(storyId)}` : storybookPage;
     const [storybookSrc, setStorybookSrc] = useState<string | null>(null);
-    if (storybookUrl != null && storybookSrc == null) {
+    // Loaded the first time the Storybook tab opens, and kept from then on
+    if (storybookUrl != null && storybookSrc == null && !isPrototypeMode) {
         setStorybookSrc(storybookUrl);
     }
     const storybookStoryId = useStorybookStoryId(storybookFrameRef, !isPrototypeMode);
@@ -898,19 +927,20 @@ export function WorkspaceShell() {
                     </div>
                 </header>
 
-                {!isPrototypeMode ? (
-                    <div className={styles.body}>
-                        {storybookSrc != null && (
-                            <iframe
-                                key={`storybook-${reloadKey}`}
-                                ref={storybookFrameRef}
-                                className={styles.storybookFrame}
-                                src={storybookSrc}
-                                title="Storybook"
-                            />
-                        )}
-                    </div>
-                ) : (
+                {/* Storybook's own UI stays loaded while a prototype shows, so it keeps the page it was on */}
+                <div className={styles.body} hidden={isPrototypeMode}>
+                    {storybookSrc != null && (
+                        <iframe
+                            key={`storybook-${reloadKey}`}
+                            ref={storybookFrameRef}
+                            className={styles.storybookFrame}
+                            src={storybookSrc}
+                            title="Storybook"
+                        />
+                    )}
+                </div>
+
+                {isPrototypeMode && (
                     <div className={styles.body}>
                         {presenting && (
                             <Button
@@ -919,7 +949,7 @@ export function WorkspaceShell() {
                                 color="secondary"
                                 size="small"
                                 startIcon={<Icon name="close" />}
-                                onClick={() => setPresenting(false)}
+                                onClick={stopPresenting}
                             >
                                 Exit presentation · Esc
                             </Button>
@@ -1004,6 +1034,7 @@ export function WorkspaceShell() {
                                 zoom={state.zoom}
                                 reloadKey={reloadKey}
                                 onPageChange={setPrototypeStartPage}
+                                onFrameDocumentsChange={setCompareFrameDocuments}
                             />
                         ) : (
                             <div ref={setCanvasElement} className={styles.canvas} data-responsive={state.responsive || undefined}>

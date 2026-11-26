@@ -1,4 +1,4 @@
-import type { ContentStatus, SitePage } from "./cmsData";
+import { type ContentStatus, flattenPages, type SitePage } from "./cmsData";
 
 export function slugify(name: string) {
     return name
@@ -72,17 +72,32 @@ export function withDescendantIds(pages: SitePage[], ids: string[]): string[] {
 
 let copyCounter = 0;
 
-function copyPage(page: SitePage, isTopLevel: boolean): SitePage {
+/** A copy of the page with the pages below it, at the path, with the paths below it rebuilt from it. */
+function copyTree(page: SitePage, path: string | undefined): SitePage {
     copyCounter += 1;
+    const childBasePath = path == null || path === "/" ? "" : path;
     return {
         ...page,
         id: `${page.id}-copy-${copyCounter}`,
-        label: isTopLevel ? `${page.label} (copy)` : page.label,
-        path: isTopLevel && page.path != null ? `${page.path}-copy` : page.path,
+        path,
         status: "unpublished",
         icon: undefined,
-        children: page.children?.map((child) => copyPage(child, false)),
+        children: page.children?.map((child) =>
+            copyTree(child, child.type === "link" ? child.path : `${childBasePath}/${child.path?.split("/").pop() ?? "page"}`),
+        ),
     };
+}
+
+function getUnusedPath(page: SitePage, path: string | undefined, usedPaths: Set<string | undefined>) {
+    if (page.type === "link" || path == null) {
+        return path;
+    }
+    let unusedPath = path;
+    for (let number = 1; usedPaths.has(unusedPath); number++) {
+        unusedPath = number === 1 ? `${path}-copy` : `${path}-copy-${number}`;
+    }
+    usedPaths.add(unusedPath);
+    return unusedPath;
 }
 
 /**
@@ -91,10 +106,11 @@ function copyPage(page: SitePage, isTopLevel: boolean): SitePage {
  */
 export function duplicatePages(pages: SitePage[], ids: string[]): { pages: SitePage[]; copyIds: string[] } {
     const copyIds: string[] = [];
+    const usedPaths = new Set(flattenPages(pages).map((page) => page.path));
     const duplicate = (siblings: SitePage[]): SitePage[] =>
         siblings.flatMap((page) => {
             if (ids.includes(page.id)) {
-                const copy = copyPage(page, true);
+                const copy = { ...copyTree(page, getUnusedPath(page, page.path, usedPaths)), label: `${page.label} (copy)` };
                 copyIds.push(copy.id);
                 return [page, copy];
             }
@@ -117,19 +133,6 @@ export function findTrail(pages: SitePage[], id: string): SitePage[] | undefined
     return undefined;
 }
 
-function copyBelow(page: SitePage, parentPath: string): SitePage {
-    copyCounter += 1;
-    const path = page.type === "link" ? page.path : `${parentPath}/${page.path?.split("/").pop() ?? "page"}`;
-    return {
-        ...page,
-        id: `${page.id}-copy-${copyCounter}`,
-        path,
-        status: "unpublished",
-        icon: undefined,
-        children: page.children?.map((child) => copyBelow(child, path ?? parentPath)),
-    };
-}
-
 /**
  * Inserts copies of the pages, with the pages below them, as the last children of the target. A page below another copied page comes
  * along with that one. Copies start unpublished; their paths follow the target's.
@@ -141,9 +144,14 @@ export function pastePages(pages: SitePage[], ids: string[], targetId: string): 
     }
     const topLevelIds = ids.filter((id) => !(findTrail(pages, id) ?? []).some((ancestor) => ids.includes(ancestor.id)));
     const targetPath = target.path == null || target.path === "/" ? "" : target.path;
+    const usedPaths = new Set(flattenPages(pages).map((page) => page.path));
     const copies = topLevelIds.flatMap((id) => {
         const page = findInTree(pages, id);
-        return page != null ? [copyBelow(page, targetPath)] : [];
+        if (page == null) {
+            return [];
+        }
+        const path = page.type === "link" ? page.path : `${targetPath}/${page.path?.split("/").pop() ?? "page"}`;
+        return [copyTree(page, getUnusedPath(page, path, usedPaths))];
     });
     return {
         pages: updatePages(pages, [targetId], (page) => ({ ...page, children: [...(page.children ?? []), ...copies] })),
@@ -173,24 +181,32 @@ function pathOf(page: SitePage | undefined) {
 
 /**
  * Moves the pages, with the pages below them, before or after the target or inside it as its last children, and builds their paths
- * anew below their new parent. Link pages keep their URL. Returns the old and new path of every page whose path changed, for the
- * redirects.
+ * anew below their new parent, or below the nearest page above it with a local path when the parent is a link page. Link pages keep
+ * their URL. Returns the old and new path of every page whose path changed, for the redirects, and the new paths that other pages
+ * already have, in which case the move must not happen.
  */
 export function movePages(
     pages: SitePage[],
     ids: string[],
     targetId: string,
     position: "before" | "after" | "inside",
-): { pages: SitePage[]; parent: SitePage | undefined; pathChanges: PathChange[] } {
+): { pages: SitePage[]; parent: SitePage | undefined; pathChanges: PathChange[]; takenPaths: string[] } {
     const topLevelIds = ids.filter((id) => !(findTrail(pages, id) ?? []).some((ancestor) => ids.includes(ancestor.id)));
     const moved = topLevelIds.flatMap((id) => {
         const page = findInTree(pages, id);
         return page != null ? [page] : [];
     });
     const remaining = removePages(pages, topLevelIds);
-    const parent = position === "inside" ? findInTree(remaining, targetId) : (findTrail(remaining, targetId) ?? []).at(-1);
+    const targetTrail = findTrail(remaining, targetId) ?? [];
+    const target = findInTree(remaining, targetId);
+    const parentTrail = position === "inside" && target != null ? [...targetTrail, target] : targetTrail;
+    const parent = parentTrail.at(-1);
+    // A link page's URL is on another host, so the pages below it take the path of the nearest page above it with a local path
+    const pathParent = parentTrail.findLast((page) => page.type !== "link");
     const pathChanges: PathChange[] = [];
-    const rebased = moved.map((page) => rebasePaths(page, pathOf(parent), pathChanges));
+    const rebased = moved.map((page) => rebasePaths(page, pathOf(pathParent), pathChanges));
+    const remainingPaths = new Set(flattenPages(remaining).map((page) => page.path));
+    const takenPaths = pathChanges.map((pathChange) => pathChange.to).filter((path) => remainingPaths.has(path));
 
     const insert = (siblings: SitePage[]): SitePage[] =>
         siblings.flatMap((page) => {
@@ -203,5 +219,5 @@ export function movePages(
             return [page.children ? { ...page, children: insert(page.children) } : page];
         });
 
-    return { pages: insert(remaining), parent, pathChanges };
+    return { pages: insert(remaining), parent, pathChanges, takenPaths };
 }

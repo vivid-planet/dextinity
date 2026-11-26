@@ -43,9 +43,14 @@
 
     // Distance of the toast stack from the bottom of the viewport
     --dextinity-toast-viewport-offset: 24px;
-    // Distance from the bottom while a bulk action bar is open, so the toasts don't cover it
+    // Distance from the bottom while a bulk action bar is open, so the toasts don't cover it. The bar sets its height while open, which
+    // grows when its actions wrap on a narrow window; until then, the height of one row
     --dextinity-toast-viewport-offset-above-bulk-action-bar: calc(
-        var(--dextinity-bulk-action-bar-offset) + var(--dextinity-bulk-action-bar-action-height) + 2 * var(--dextinity-bulk-action-bar-padding) +
+        var(--dextinity-bulk-action-bar-offset) + env(safe-area-inset-bottom, 0px) +
+            var(
+                --dextinity-bulk-action-bar-height,
+                calc(var(--dextinity-bulk-action-bar-action-height) + 2 * var(--dextinity-bulk-action-bar-padding))
+            ) +
             var(--dextinity-space-2)
     );
 }

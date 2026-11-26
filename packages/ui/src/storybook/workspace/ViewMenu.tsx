@@ -10,8 +10,8 @@ import { colorSchemeSetting } from "../colorScheme";
 import { densitySetting } from "../density";
 import { scenarioSetting } from "../scenario";
 import { textLengthSetting } from "../textLength";
-import { TokenSliders } from "./TokenPlayground";
 import { type TokenOverride, tokenOverrideList } from "./tokenPlayground";
+import { TokenSliders } from "./TokenSliders";
 import { createStoredList } from "./workspaceNotes";
 import styles from "./WorkspaceToolbarControls.module.scss";
 
@@ -82,6 +82,7 @@ export function ViewMenu() {
     const savedPresets = savedPresetList.useItems();
     const changed = useViewChanged();
     const values = useViewValues();
+    const brand = brandSetting.useValue();
 
     return (
         <Popover
@@ -104,7 +105,7 @@ export function ViewMenu() {
         >
             <div className={styles.viewBody}>
                 <Field label="Presets" layout="group">
-                    <div className={styles.presets}>
+                    <div className={styles.viewPresets}>
                         {[...builtInPresets, ...savedPresets].map((preset) => (
                             <span key={preset.id} className={styles.presetChip}>
                                 <Button variant="outlined" color="secondary" size="small" onClick={() => applyPreset(preset)}>
@@ -160,7 +161,7 @@ export function ViewMenu() {
                     </Field>
                 ))}
                 <p className={styles.viewSection}>Tokens</p>
-                <TokenSliders />
+                <TokenSliders brand={brand} />
             </div>
         </Popover>
     );

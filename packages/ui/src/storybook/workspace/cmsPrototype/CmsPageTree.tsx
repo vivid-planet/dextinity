@@ -35,8 +35,8 @@ import { TreeViewExpandButtons } from "../../../components/treeViewExpandButtons
 import { Typography } from "../../../components/typography/Typography";
 import { useUndoToast } from "../../../components/undoToast/useUndoToast";
 import { PageTypeShell } from "../../pageTypes/PageTypeShell";
-import { applyScenario, getCopyId, lengthen, type Scenario, ScenarioContent, useScenario } from "../../scenario";
-import { type ContentStatus, flattenPages, newsArticles, type SitePage, siteTree } from "./cmsData";
+import { type Scenario, ScenarioContent, useScenario } from "../../scenario";
+import { type ContentStatus, flattenPages, newsArticles, type SitePage } from "./cmsData";
 import styles from "./cmsPrototype.module.scss";
 import { useCmsSite } from "./CmsSiteContext";
 import { MovePageDialog } from "./MovePageDialog";
@@ -319,35 +319,30 @@ function SelectionDetail({
 }
 
 /** The rows a person sees: all pages of expanded parents, or, while filtering, the pages that match. */
+function hasMatch(page: SitePage, matches: (page: SitePage) => boolean): boolean {
+    return matches(page) || (page.children ?? []).some((child) => hasMatch(child, matches));
+}
+
+/** The pages the tree shows, by its rules: while filtering, a matching page shows its children only when it's expanded. */
 function collectVisibleIds(pages: SitePage[], expandedIds: string[], matches: ((page: SitePage) => boolean) | undefined): string[] {
-    if (matches != null) {
-        return flattenPages(pages)
-            .filter(matches)
-            .map((page) => page.id);
-    }
-    return pages.flatMap((page) => [
-        page.id,
-        ...(expandedIds.includes(page.id) ? collectVisibleIds(page.children ?? [], expandedIds, undefined) : []),
-    ]);
-}
-
-function copyPages(pages: SitePage[], round: number): SitePage[] {
-    return pages.map((page) => ({ ...page, id: getCopyId(page.id, round), children: page.children && copyPages(page.children, round) }));
-}
-
-function stretchPages(pages: SitePage[]): SitePage[] {
-    return pages.map((page) => ({ ...page, label: lengthen(page.label), children: page.children && stretchPages(page.children) }));
-}
-
-function scenarioPages(scenario: Scenario) {
-    // The tree has a single root, so a few pages are a few below it
-    if (scenario === "few") {
-        return siteTree.map((root) => ({ ...root, children: root.children?.slice(0, 2).map((page) => ({ ...page, children: undefined })) }));
-    }
-    return applyScenario(siteTree, scenario, {
-        copy: (page, round) => ({ ...copyPages([page], round)[0], label: `${page.label} (${round + 1})` }),
-        stretch: (page) => stretchPages([page])[0],
+    return pages.flatMap((page) => {
+        if (matches != null && !hasMatch(page, matches)) {
+            return [];
+        }
+        const isMatch = matches == null || matches(page);
+        const isExpanded = expandedIds.includes(page.id) || !isMatch;
+        return [...(isMatch ? [page.id] : []), ...(isExpanded ? collectVisibleIds(page.children ?? [], expandedIds, matches) : [])];
     });
+}
+
+function withCounts(nodes: SitePage[]): TreeNode[] {
+    // The status shows as text with its menu at the end of the row instead of the tree's dot
+    return nodes.map((page) => ({
+        ...page,
+        status: undefined,
+        count: page.children != null && page.children.length > 0 ? countDescendants(page) : undefined,
+        children: page.children && withCounts(page.children),
+    }));
 }
 
 export function CmsPageTree() {
@@ -356,8 +351,7 @@ export function CmsPageTree() {
 }
 
 function PageTreeEditor({ scenario }: { scenario: Scenario }) {
-    const [pages, setPages] = useState<SitePage[]>(() => scenarioPages(scenario));
-    const { setRedirects } = useCmsSite();
+    const { pages, setPages, redirects, setRedirects } = useCmsSite();
     const [moveDialog, setMoveDialog] = useState({ key: 0, open: false, ids: [] as string[] });
     const [search, setSearch] = useState("");
     const [statusFilter, setStatusFilter] = useState<ContentStatus | "all">("all");
@@ -389,16 +383,6 @@ function PageTreeEditor({ scenario }: { scenario: Scenario }) {
         : undefined;
     const visibleIds = collectVisibleIds(pages, expandedIds, matchesFilter);
     const checkedVisibleCount = visibleIds.filter((id) => checkedIds.includes(id)).length;
-
-    function withCounts(nodes: SitePage[]): TreeNode[] {
-        // The status shows as text with its menu at the end of the row instead of the tree's dot
-        return nodes.map((page) => ({
-            ...page,
-            status: undefined,
-            count: page.children != null && page.children.length > 0 ? countDescendants(page) : undefined,
-            children: page.children && withCounts(page.children),
-        }));
-    }
 
     /** Changes the tree, with Undo in the toast that reports it. */
     function change(nextPages: SitePage[], message: string, afterRun?: () => void) {
@@ -487,7 +471,12 @@ function PageTreeEditor({ scenario }: { scenario: Scenario }) {
     /** Moves the pages, builds their paths anew, and creates a redirect from every old path, all undone together. */
     function moveTo(ids: string[], targetId: string, position: TreeViewMove["position"]) {
         const movedPages = allPages.filter((page) => ids.includes(page.id));
-        const { pages: nextPages, parent, pathChanges } = movePages(pages, ids, targetId, position);
+        const { pages: nextPages, parent, pathChanges, takenPaths } = movePages(pages, ids, targetId, position);
+        // An address must lead to one page, as when creating a page
+        if (takenPaths.length > 0) {
+            addToast({ message: `Not moved: ${takenPaths.map((path) => `“${path}”`).join(", ")} already exists`, color: "error" });
+            return;
+        }
         const createdRedirects = pathChanges.map((pathChange) => ({
             id: `redirect-${pathChange.pageId}-${Date.now()}`,
             source: pathChange.from,
@@ -496,20 +485,30 @@ function PageTreeEditor({ scenario }: { scenario: Scenario }) {
             comment: "Created automatically when moving",
             created: "Today",
         }));
-        const createdIds = createdRedirects.map((redirect) => redirect.id);
+        const newPathOf = new Map(pathChanges.map((pathChange) => [pathChange.from, pathChange.to]));
+        const newPaths = new Set(pathChanges.map((pathChange) => pathChange.to));
+        // Automatic redirects from an earlier move lead to the new address, and those from an address the pages have again go away
+        const updatedRedirects = redirects
+            .filter((redirect) => !(redirect.type === "automatic" && newPaths.has(redirect.source)))
+            .map((redirect) =>
+                redirect.type === "automatic" && newPathOf.has(redirect.target)
+                    ? { ...redirect, target: newPathOf.get(redirect.target) ?? redirect.target }
+                    : redirect,
+            );
         const previousPages = pages;
+        const previousRedirects = redirects;
         const redirectCount = createdRedirects.length;
         undoToast.perform({
             run: () => {
                 setPages(nextPages);
-                setRedirects((redirects) => [...createdRedirects, ...redirects]);
+                setRedirects([...createdRedirects, ...updatedRedirects]);
                 if (parent != null) {
                     setExpandedIds((expanded) => (expanded.includes(parent.id) ? expanded : [...expanded, parent.id]));
                 }
             },
             undo: () => {
                 setPages(previousPages);
-                setRedirects((redirects) => redirects.filter((redirect) => !createdIds.includes(redirect.id)));
+                setRedirects(previousRedirects);
             },
             message: `${nameOrCount(movedPages)} moved under “${parent?.label ?? "the top level"}”${
                 redirectCount > 0 ? `, ${redirectCount === 1 ? "1 redirect" : `${redirectCount} redirects`} created` : ""

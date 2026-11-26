@@ -107,6 +107,7 @@ const ProductsPage = () => {
                                                             <ToolbarAutomaticTitleItem />
                                                             <FillSpace />
                                                             <ToolbarActions>
+                                                                <ActionLogButton entityId={selectedProductVariantId} entity="ProductVariant" />
                                                                 <SaveBoundarySaveButton />
                                                             </ToolbarActions>
                                                         </StackToolbar>

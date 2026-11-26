@@ -1,4 +1,12 @@
-import { type BlockDataInterface, DamImageBlock, RootBlock, RootBlockEntity, RootBlockType } from "@dextinity/cms-api";
+import {
+    ActionLogs,
+    type BlockDataInterface,
+    DamImageBlock,
+    RequiredPermission,
+    RootBlock,
+    RootBlockEntity,
+    RootBlockType,
+} from "@dextinity/cms-api";
 import { Entity, ManyToOne, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
 import { BaseEntity, OptionalProps, type Ref } from "@mikro-orm/postgresql";
 import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
@@ -7,9 +15,11 @@ import { randomUUID } from "crypto";
 
 import { Product } from "./product.entity.js";
 
+@RequiredPermission("products", { skipScopeCheck: true })
 @ObjectType()
 @Entity()
 @RootBlockEntity()
+@ActionLogs()
 export class ProductVariant extends BaseEntity {
     [OptionalProps]?: "createdAt" | "updatedAt";
 

@@ -1,4 +1,12 @@
-import { type BlockDataInterface, RootBlock, RootBlockDataScalar, RootBlockEntity, RootBlockType } from "@dextinity/cms-api";
+import {
+    ActionLogs,
+    type BlockDataInterface,
+    RequiredPermission,
+    RootBlock,
+    RootBlockDataScalar,
+    RootBlockEntity,
+    RootBlockType,
+} from "@dextinity/cms-api";
 import { Embedded, Entity, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
 import { BaseEntity, OptionalProps } from "@mikro-orm/postgresql";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
@@ -10,6 +18,8 @@ import { FooterScope } from "../dto/footer-scope.js";
 @Entity()
 @ObjectType()
 @RootBlockEntity()
+@RequiredPermission("pageTree")
+@ActionLogs()
 export class Footer extends BaseEntity {
     [OptionalProps]?: "createdAt" | "updatedAt";
 

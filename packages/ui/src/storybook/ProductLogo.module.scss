@@ -1,6 +1,15 @@
+// The brands with a logo of their own; any other brand shows the Dextinity logo
+$brands: "ai-hub", "groupcms-ai", "vivid-planet";
+$dark: '[data-dextinity-color-scheme="dark"], [data-dextinity-color-scheme="high-contrast"]';
+
 .root {
     display: inline-flex;
     block-size: 100%;
+    align-items: center;
+
+    img {
+        display: none;
+    }
 }
 
 .positive,
@@ -8,20 +17,46 @@
     block-size: 100%;
 }
 
-.negative {
-    display: none;
+.sign {
+    block-size: 28px;
 }
 
-:where([data-dextinity-color-scheme="dark"], [data-dextinity-color-scheme="high-contrast"]) .root {
-    .positive {
+.root > [data-logo-brand="dextinity"]:is(.positive, .sign) {
+    display: block;
+}
+
+:where(#{$dark}) .root > [data-logo-brand="dextinity"] {
+    &.positive {
         display: none;
     }
 
-    .negative {
+    &.negative {
         display: block;
     }
 }
 
-.sign {
-    block-size: 28px;
+@each $brand in $brands {
+    :where([data-dextinity-brand="#{$brand}"]) .root {
+        > [data-logo-brand="dextinity"] {
+            &.positive,
+            &.negative,
+            &.sign {
+                display: none;
+            }
+        }
+
+        > [data-logo-brand="#{$brand}"]:is(.positive, .sign) {
+            display: block;
+        }
+    }
+
+    :where([data-dextinity-brand="#{$brand}"]):where(#{$dark}) .root > [data-logo-brand="#{$brand}"] {
+        &.positive {
+            display: none;
+        }
+
+        &.negative {
+            display: block;
+        }
+    }
 }

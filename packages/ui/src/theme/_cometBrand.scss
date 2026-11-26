@@ -1,0 +1,206 @@
+// The `comet` brand: the flat look of the MUI-based admin. It replaces semantic and component tokens, not only brand tokens, so its
+// rules repeat the color scheme attribute to outrank the theme boundaries, and come after the component tokens.
+$brand: '[data-dextinity-brand="comet"]';
+
+@layer dextinity {
+    // Shape and type, in every color scheme
+    #{$brand}[data-dextinity-color-scheme] {
+        --dextinity-radius-small: 2px;
+        --dextinity-radius-item: 2px;
+        --dextinity-radius-field: 4px;
+        --dextinity-radius-row: 0px;
+        --dextinity-radius-panel: 4px;
+        --dextinity-radius-overlay: 4px;
+        --dextinity-radius-frame: 0px;
+
+        --dextinity-font-weight-regular: 300;
+        --dextinity-font-weight-medium: 500;
+        --dextinity-font-weight-semibold: 600;
+        --dextinity-typography-display-xl-size: clamp(36px, 4.4vw, 55px);
+        --dextinity-typography-display-xl-line-height: 1.17;
+        --dextinity-typography-display-l-size: clamp(30px, 3.2vw, 44px);
+        --dextinity-typography-display-l-line-height: 1.18;
+        --dextinity-typography-title-size: 19px;
+        --dextinity-typography-title-font-weight: var(--dextinity-font-weight-regular);
+        --dextinity-typography-title-letter-spacing: 0;
+        --dextinity-typography-section-letter-spacing: 0;
+        --dextinity-typography-ui-size: 14px;
+        --dextinity-typography-small-size: 13px;
+
+        --dextinity-focus-halo-width: 0px;
+
+        --dextinity-app-shell-gap: 0px;
+        --dextinity-side-nav-radius: 0px;
+        --dextinity-side-nav-title-letter-spacing: 0;
+        --dextinity-top-bar-radius: 0px;
+        --dextinity-drawer-radius: 0px;
+        --dextinity-dialog-title-letter-spacing: 0;
+        --dextinity-drawer-title-letter-spacing: 0;
+        --dextinity-menu-item-radius: 0px;
+        --dextinity-select-item-radius: 0px;
+        --dextinity-date-picker-day-radius: 50%;
+        --dextinity-icon-button-radius: 50%;
+        --dextinity-chip-radius: 12px;
+        --dextinity-filter-chip-radius: 12px;
+        --dextinity-environment-label-radius: 2px;
+        --dextinity-tabs-radius: 0px;
+        --dextinity-tabs-indicator-inset: 0px;
+        --dextinity-field-adornment-font-family: var(--dextinity-font-family-text);
+
+        // Tall, square entries with the full text color, like the admin's main navigation
+        --dextinity-side-nav-item-height: calc(var(--dextinity-density-nav-item-height) * 1.2);
+        --dextinity-side-nav-item-radius: 0px;
+        --dextinity-side-nav-item-font-size: var(--dextinity-typography-body-size);
+        --dextinity-side-nav-item-foreground: var(--dextinity-color-text);
+        --dextinity-side-nav-item-icon-color: var(--dextinity-color-text);
+        --dextinity-side-nav-item-icon-size: 20px;
+        --dextinity-side-nav-item-indent-level-2: 46px;
+        --dextinity-side-nav-item-indent-level-3: 64px;
+        --dextinity-side-nav-collapsed-item-height: calc(var(--dextinity-density-nav-item-height) * 1.2);
+        --dextinity-side-nav-title-font-size: 20px;
+
+        // Square fields with the label above in the text color, like the admin's forms
+        --dextinity-field-radius: 2px;
+        --dextinity-field-radius-stacked: 2px;
+        --dextinity-field-label-font-size: var(--dextinity-typography-body-size);
+        --dextinity-field-label-font-weight: var(--dextinity-font-weight-semibold);
+        --dextinity-field-label-color: var(--dextinity-color-text);
+        --dextinity-checkbox-radius: 2px;
+        --dextinity-checkbox-line-width: var(--dextinity-line-width);
+
+        --dextinity-button-font-weight: var(--dextinity-font-weight-regular);
+        --dextinity-card-row-title-font-weight: var(--dextinity-font-weight-regular);
+        --dextinity-card-header-min-height: 60px;
+    }
+
+    // Opaque surfaces, solid accent, and plain shadows instead of glass, gradients, and glows. High contrast keeps its own values.
+    #{$brand}:is([data-dextinity-color-scheme="light"], [data-dextinity-color-scheme="dark"]) {
+        --dextinity-line-width: 1px;
+        --dextinity-line-width-strong: 2px;
+        --dextinity-gradient-brand: var(--dextinity-color-accent);
+
+        --dextinity-material-saturation: 1;
+        --dextinity-material-blur: 0px;
+        --dextinity-material-grain: 0;
+        --dextinity-material-field-1: transparent;
+        --dextinity-material-field-2: transparent;
+        --dextinity-material-field-3: transparent;
+        --dextinity-material-glass: var(--dextinity-color-surface);
+        --dextinity-material-glass-strong: var(--dextinity-color-surface);
+        --dextinity-material-glass-overlay: var(--dextinity-color-surface);
+        --dextinity-material-highlight: transparent;
+        --dextinity-material-edge: var(--dextinity-color-line);
+        --dextinity-material-edge-shadow: var(--dextinity-shadow-1);
+
+        --dextinity-color-accent-glow: transparent;
+        --dextinity-color-accent-secondary: var(--dextinity-color-accent);
+
+        --dextinity-app-shell-field-blur: 0px;
+        --dextinity-app-shell-backdrop: oklch(0 0 0 / 0.5);
+        --dextinity-dialog-backdrop: oklch(0 0 0 / 0.5);
+        --dextinity-drawer-backdrop: oklch(0 0 0 / 0.5);
+        --dextinity-command-palette-backdrop: oklch(0 0 0 / 0.5);
+        --dextinity-command-palette-backdrop-blur: 0px;
+        --dextinity-quick-look-backdrop-blur: 0px;
+
+        --dextinity-button-primary-background-hover: var(--dextinity-color-accent-strong);
+        --dextinity-button-primary-shadow: 0 0 transparent;
+        --dextinity-button-primary-shadow-hover: 0 0 transparent;
+        --dextinity-button-secondary-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line);
+        --dextinity-button-secondary-shadow-hover: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-text);
+
+        --dextinity-card-shadow: var(--dextinity-shadow-1);
+        --dextinity-panel-glass-shadow: var(--dextinity-shadow-1);
+        --dextinity-panel-solid-shadow: var(--dextinity-shadow-1);
+        --dextinity-tree-detail-layout-card-glass-shadow: var(--dextinity-shadow-1);
+        --dextinity-tree-detail-layout-card-solid-shadow: var(--dextinity-shadow-1);
+        --dextinity-top-bar-shadow: inset 0 calc(-1 * var(--dextinity-line-width)) 0 var(--dextinity-color-line);
+        --dextinity-side-nav-shadow: inset calc(-1 * var(--dextinity-line-width)) 0 0 var(--dextinity-color-line);
+        --dextinity-side-nav-separator-color: var(--dextinity-color-line);
+        // The held header blends into the page with a line below it, so its background doesn't stand out beside the content as a card
+        --dextinity-edit-layout-header-sticky-background: var(--dextinity-color-canvas);
+        --dextinity-edit-layout-header-sticky-shadow: inset 0 calc(-1 * var(--dextinity-line-width)) 0 var(--dextinity-color-line);
+        --dextinity-edit-layout-header-sticky-radius: 0px;
+        --dextinity-dialog-shadow: var(--dextinity-shadow-3);
+        --dextinity-drawer-shadow: var(--dextinity-shadow-3);
+        --dextinity-menu-shadow: var(--dextinity-shadow-3);
+        --dextinity-popover-shadow: var(--dextinity-shadow-2);
+        --dextinity-select-popup-shadow: var(--dextinity-shadow-3);
+        --dextinity-date-picker-popup-shadow: var(--dextinity-shadow-3);
+        --dextinity-command-palette-shadow: var(--dextinity-shadow-3);
+        --dextinity-tooltip-shadow: 0 0 transparent;
+        --dextinity-pagination-page-shadow-current: 0 0 transparent;
+        --dextinity-tree-view-row-background-selected: var(--dextinity-color-accent-soft);
+        --dextinity-tree-view-row-shadow-selected: 0 0 transparent;
+        --dextinity-asset-thumbnail-selected-shadow: 0 0 0 2px var(--dextinity-color-accent);
+        --dextinity-field-background: var(--dextinity-color-surface);
+
+        // The current navigation entry: accent text on the plain surface, marked by a bar at its end
+        --dextinity-side-nav-item-current-background: transparent;
+        --dextinity-side-nav-item-current-shadow: inset calc(-1 * var(--dextinity-indicator-width)) 0 0 var(--dextinity-color-accent);
+    }
+
+    // The palette of the MUI-based admin
+    #{$brand}[data-dextinity-color-scheme="light"] {
+        --dextinity-color-canvas: oklch(0.961 0 0);
+        --dextinity-color-surface: oklch(1 0 0);
+        --dextinity-color-surface-raised: oklch(1 0 0);
+        --dextinity-color-surface-sunken: oklch(0.961 0 0);
+
+        --dextinity-color-text: oklch(0.26 0 0);
+        // Darker than the admin's #828282, which is below 4.5:1 on white
+        --dextinity-color-text-subtle: oklch(0.514 0 0);
+        --dextinity-color-text-disabled: oklch(0.767 0 0);
+
+        --dextinity-color-line: oklch(0.885 0 0);
+        --dextinity-color-line-strong: oklch(0.767 0 0);
+        --dextinity-color-control-line: oklch(0.607 0 0);
+
+        --dextinity-color-accent: oklch(0.734 0.145 234.6);
+        // The admin's dark primary, for the hovered primary button
+        --dextinity-color-accent-strong: oklch(0.564 0.11 234.3);
+        --dextinity-color-accent-foreground: oklch(0 0 0);
+        --dextinity-color-accent-text: oklch(0.564 0.11 234.3);
+        --dextinity-color-accent-soft: oklch(0.734 0.145 234.6 / 0.12);
+        --dextinity-color-focus: oklch(0.564 0.11 234.3);
+
+        --dextinity-color-success: oklch(0.735 0.233 144.2);
+        --dextinity-color-success-text: oklch(0.5 0.16 144.3);
+        --dextinity-color-warning: oklch(0.818 0.167 77);
+        --dextinity-color-danger: oklch(0.547 0.216 30.6);
+        --dextinity-color-danger-text: oklch(0.547 0.216 30.6);
+        --dextinity-color-info: oklch(0.734 0.145 234.6);
+        --dextinity-color-info-text: oklch(0.564 0.11 234.3);
+
+        --dextinity-shadow-1: 0 0 4px oklch(0 0 0 / 0.08);
+        --dextinity-shadow-2: 0 0 8px oklch(0 0 0 / 0.1);
+        --dextinity-shadow-3: 0 0 20px oklch(0 0 0 / 0.1);
+    }
+
+    // The admin had no dark mode: the same palette on flat dark grays
+    #{$brand}[data-dextinity-color-scheme="dark"] {
+        --dextinity-color-canvas: oklch(0.18 0 0);
+        --dextinity-color-surface: oklch(0.235 0 0);
+        --dextinity-color-surface-raised: oklch(0.235 0 0);
+        --dextinity-color-surface-sunken: oklch(0.18 0 0);
+
+        --dextinity-color-text: oklch(0.961 0 0);
+        --dextinity-color-text-subtle: oklch(0.767 0 0);
+        --dextinity-color-text-disabled: oklch(0.514 0 0);
+
+        --dextinity-color-line: oklch(0.36 0 0);
+        --dextinity-color-line-strong: oklch(0.45 0 0);
+        --dextinity-color-control-line: oklch(0.607 0 0);
+
+        --dextinity-color-accent: oklch(0.734 0.145 234.6);
+        --dextinity-color-accent-strong: oklch(0.776 0.125 231);
+        --dextinity-color-accent-foreground: oklch(0 0 0);
+        --dextinity-color-accent-text: oklch(0.776 0.125 231);
+        --dextinity-color-accent-soft: oklch(0.734 0.145 234.6 / 0.16);
+        --dextinity-color-focus: oklch(0.776 0.125 231);
+
+        --dextinity-shadow-1: 0 0 4px oklch(0 0 0 / 0.4);
+        --dextinity-shadow-2: 0 0 8px oklch(0 0 0 / 0.5);
+        --dextinity-shadow-3: 0 0 20px oklch(0 0 0 / 0.6);
+    }
+}

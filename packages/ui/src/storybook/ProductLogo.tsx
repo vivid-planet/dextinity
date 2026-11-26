@@ -1,21 +1,50 @@
 import styles from "./ProductLogo.module.scss";
-import { dextinityLogo, dextinityLogoNegative, dextinitySign } from "./productLogos";
+import {
+    aiHubLogo,
+    aiHubLogoNegative,
+    aiHubSign,
+    dextinityLogo,
+    dextinityLogoNegative,
+    dextinitySign,
+    groupCmsAiLogo,
+    groupCmsAiLogoNegative,
+    groupCmsSign,
+    vividPlanetLogo,
+    vividPlanetLogoNegative,
+    vividPlanetSign,
+} from "./productLogos";
+
+const logos = [
+    { brand: "dextinity", name: "Dextinity", positive: dextinityLogo, negative: dextinityLogoNegative, sign: dextinitySign },
+    { brand: "ai-hub", name: "Dextinity AI Hub", positive: aiHubLogo, negative: aiHubLogoNegative, sign: aiHubSign },
+    { brand: "groupcms-ai", name: "GroupCMS AI", positive: groupCmsAiLogo, negative: groupCmsAiLogoNegative, sign: groupCmsSign },
+    { brand: "vivid-planet", name: "Vivid Planet", positive: vividPlanetLogo, negative: vividPlanetLogoNegative, sign: vividPlanetSign },
+];
 
 /**
- * The Dextinity logo for shell stories, switching to the negative version in dark color schemes.
+ * The product logo for shell stories: the logo of the surrounding brand, the Dextinity logo for a brand without one of its own,
+ * each switching to the negative version in dark color schemes.
  */
 export function ProductLogo() {
     return (
         <span className={styles.root}>
-            <img src={dextinityLogo} alt="Dextinity" className={styles.positive} />
-            <img src={dextinityLogoNegative} alt="Dextinity" className={styles.negative} />
+            {logos.map(({ brand, name, positive, negative }) => [
+                <img key={`${brand}-positive`} src={positive} alt={name} data-logo-brand={brand} className={styles.positive} />,
+                <img key={`${brand}-negative`} src={negative} alt={name} data-logo-brand={brand} className={styles.negative} />,
+            ])}
         </span>
     );
 }
 
 /**
- * The Dextinity sign for the collapsed navigation in shell stories.
+ * The product sign of the surrounding brand, for the collapsed navigation in shell stories.
  */
 export function ProductSign() {
-    return <img src={dextinitySign} alt="Dextinity" className={styles.sign} />;
+    return (
+        <span className={styles.root}>
+            {logos.map(({ brand, name, sign }) => (
+                <img key={brand} src={sign} alt={name} data-logo-brand={brand} className={styles.sign} />
+            ))}
+        </span>
+    );
 }

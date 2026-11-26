@@ -1,41 +1,46 @@
 import type { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
-import { type HeadingBlock, HeadlineTag } from "@src/common/blocks/heading.block.js";
+import type { HeadingBlock } from "@src/common/blocks/heading.block.js";
 import { faker } from "@src/db/fixtures/faker.js";
 
-import { RichTextBlockFixtureService } from "./rich-text-block-fixture.service.js";
+const headlineTextBlocks = ["heading-1", "heading-2", "heading-3", "heading-4", "heading-5", "heading-6"];
+
+const headlineSizes = ["size600", "size550", "size500", "size450", "size400", "size350"];
 
 @Injectable()
 export class HeadingBlockFixtureService {
-    constructor(private readonly richTextBlockFixtureService: RichTextBlockFixtureService) {}
-
     async generateBlockInput(): Promise<ExtractBlockInputFactoryProps<typeof HeadingBlock>> {
-        const possibleTypes = ["h1", "h2", "h3", "h4", "subHeadlineMedium", "subHeadlineSmall"];
-
-        const eyebrowBlock = {
-            key: faker.string.uuid(),
-            text: faker.lorem.words({ min: 3, max: 9 }),
-            type: faker.helpers.arrayElement(possibleTypes),
-            depth: 0,
-            inlineStyleRanges: [],
-            entityRanges: [],
-            data: {},
-        };
-
-        const headingBlock = {
-            key: faker.string.uuid(),
-            text: faker.lorem.words({ min: 3, max: 9 }),
-            type: faker.helpers.arrayElement(possibleTypes),
-            depth: 0,
-            inlineStyleRanges: [],
-            entityRanges: [],
-            data: {},
-        };
+        const textAlign = faker.helpers.arrayElement(["left", "center"]);
 
         return {
-            eyebrow: await this.richTextBlockFixtureService.generateBlockInput(1, [eyebrowBlock]),
-            headline: await this.richTextBlockFixtureService.generateBlockInput(1, [headingBlock]),
-            htmlTag: faker.helpers.arrayElement(Object.values(HeadlineTag)),
+            eyebrow: {
+                tipTapContent: {
+                    type: "doc",
+                    content: [
+                        {
+                            type: "textBlock",
+                            attrs: { textBlock: "paragraph", textAlign },
+                            content: [{ type: "text", text: faker.lorem.words({ min: 3, max: 9 }) }],
+                        },
+                    ],
+                },
+            },
+            headline: {
+                tipTapContent: {
+                    type: "doc",
+                    content: [
+                        {
+                            type: "textBlock",
+                            attrs: {
+                                textBlock: faker.helpers.arrayElement(headlineTextBlocks),
+                                textBlockStyle: faker.helpers.arrayElement(headlineSizes),
+                                textAlign,
+                            },
+                            content: [{ type: "text", text: faker.lorem.words({ min: 3, max: 9 }) }],
+                        },
+                    ],
+                },
+            },
         };
     }
 }

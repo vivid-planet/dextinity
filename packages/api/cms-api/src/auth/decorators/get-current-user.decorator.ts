@@ -1,13 +1,9 @@
 import { createParamDecorator, type ExecutionContext } from "@nestjs/common";
-import { GqlExecutionContext } from "@nestjs/graphql";
 
+import { getRequestFromExecutionContext } from "../../common/decorators/utils.js";
 import type { CurrentUser } from "../../user-permissions/dto/current-user.js";
 
 // Allows injecting Current User into resolvers via `@GetCurrentUser() user: CurrentUser`
-export const GetCurrentUser = createParamDecorator((data: unknown, context: ExecutionContext): CurrentUser => {
-    if (context.getType().toString() === "graphql") {
-        return GqlExecutionContext.create(context).getContext().req.user;
-    } else {
-        return context.switchToHttp().getRequest().user;
-    }
+export const GetCurrentUser = createParamDecorator((data: unknown, context: ExecutionContext): CurrentUser | undefined => {
+    return getRequestFromExecutionContext(context)?.user;
 });

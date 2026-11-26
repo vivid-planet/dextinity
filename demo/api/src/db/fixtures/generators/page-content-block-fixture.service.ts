@@ -1,7 +1,6 @@
 import type { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
 import { faker } from "@src/db/fixtures/faker.js";
-import { StandaloneRichTextBlockFixtureService } from "@src/db/fixtures/generators/blocks/text-and-content/standalone-rich-text-block-fixture.service.js";
 import type { PageContentBlock } from "@src/documents/pages/blocks/page-content.block.js";
 import { UserGroup } from "@src/user-groups/user-group.js";
 
@@ -23,12 +22,11 @@ import { StandaloneCallToActionListBlockFixtureService } from "./blocks/navigati
 import { SliderBlockFixtureService } from "./blocks/slider-fixture.service.js";
 import { BillboardTeaserBlockFixtureService } from "./blocks/teaser/billboard-teaser-block-fixture.service.js";
 import { TeaserBlockFixtureService } from "./blocks/teaser/teaser-block-fixture.service.js";
+import { HeadingBlockFixtureService } from "./blocks/text-and-content/heading-block-fixture.service.js";
 import { KeyFactsBlockFixtureService } from "./blocks/text-and-content/key-facts-block-fixture.service.js";
-import { StandaloneHeadingBlockFixtureService } from "./blocks/text-and-content/standalone-heading-block-fixture.service.js";
+import { RichTextBlockFixtureService } from "./blocks/text-and-content/rich-text-block-fixture.service.js";
 import { TableBlockFixtureService } from "./blocks/text-and-content/table-block-fixture.service.js";
 import { TextImageBlockFixtureService } from "./blocks/text-and-content/text-image-block-fixture.service.js";
-import { TipTapRichTextBlockFixtureService } from "./blocks/text-and-content/tip-tap-rich-text-block-fixture.service.js";
-import { TipTapTableBlockFixtureService } from "./blocks/text-and-content/tip-tap-table-block-fixture.service.js";
 
 export type BlockCategory = "layout" | "media" | "navigation" | "teaser" | "textAndContent" | "form";
 
@@ -42,7 +40,7 @@ export class PageContentBlockFixtureService {
         private readonly columnsBlockFixtureService: ColumnsBlockFixtureService,
         private readonly contentGroupBlockFixtureService: ContentGroupBlockFixtureService,
         private readonly fullWidthImageBlockFixtureService: FullWidthImageBlockFixtureService,
-        private readonly headingBlockFixtureService: StandaloneHeadingBlockFixtureService,
+        private readonly headingBlockFixtureService: HeadingBlockFixtureService,
         private readonly imageBlockFixtureService: DamImageBlockFixtureService,
         private readonly keyFactsBlockFixtureService: KeyFactsBlockFixtureService,
         private readonly layoutBlockFixtureService: LayoutBlockFixtureService,
@@ -53,12 +51,10 @@ export class PageContentBlockFixtureService {
         private readonly teaserBlockFixtureService: TeaserBlockFixtureService,
         private readonly textImageBlockFixtureService: TextImageBlockFixtureService,
         private readonly sliderBlockFixtureService: SliderBlockFixtureService,
-        private readonly standaloneRichTextBlockFixtureService: StandaloneRichTextBlockFixtureService,
+        private readonly richTextBlockFixtureService: RichTextBlockFixtureService,
         private readonly pageTreeIndexBlockFixtureService: PageTreeIndexBlockFixtureService,
         private readonly contactFormBlockFixtureService: ContactFormBlockFixtureService,
         private readonly tableBlockFixtureService: TableBlockFixtureService,
-        private readonly tipTapRichTextBlockFixtureService: TipTapRichTextBlockFixtureService,
-        private readonly tipTapTableBlockFixtureService: TipTapTableBlockFixtureService,
     ) {}
 
     async generateBlockInput(blockCategory?: BlockCategory): Promise<ExtractBlockInputFactoryProps<typeof PageContentBlock>> {
@@ -85,12 +81,10 @@ export class PageContentBlockFixtureService {
             teaser: ["teaser", this.teaserBlockFixtureService],
             heading: ["textAndContent", this.headingBlockFixtureService],
             keyFacts: ["textAndContent", this.keyFactsBlockFixtureService],
-            richtext: ["textAndContent", this.standaloneRichTextBlockFixtureService],
+            richtext: ["textAndContent", this.richTextBlockFixtureService],
             textImage: ["textAndContent", this.textImageBlockFixtureService],
             contactForm: ["form", this.contactFormBlockFixtureService],
             table: ["textAndContent", this.tableBlockFixtureService],
-            tipTapRichText: ["textAndContent", this.tipTapRichTextBlockFixtureService],
-            tipTapTable: ["textAndContent", this.tipTapTableBlockFixtureService],
         };
 
         const supportedBlocksFixtureGenerators = Object.entries(fixtures)

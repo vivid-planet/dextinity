@@ -13,11 +13,10 @@ import { StandaloneMediaBlockFixtureService } from "../media/standalone-media-bl
 import { AnchorBlockFixtureService } from "../navigation/anchor-block-fixture.service.js";
 import { StandaloneCallToActionListBlockFixtureService } from "../navigation/standalone-call-to-action-list-block-fixture.service.js";
 import { TeaserBlockFixtureService } from "../teaser/teaser-block-fixture.service.js";
+import { HeadingBlockFixtureService } from "../text-and-content/heading-block-fixture.service.js";
 import { KeyFactsBlockFixtureService } from "../text-and-content/key-facts-block-fixture.service.js";
-import { StandaloneHeadingBlockFixtureService } from "../text-and-content/standalone-heading-block-fixture.service.js";
-import { StandaloneRichTextBlockFixtureService } from "../text-and-content/standalone-rich-text-block-fixture.service.js";
+import { RichTextBlockFixtureService } from "../text-and-content/rich-text-block-fixture.service.js";
 import { TableBlockFixtureService } from "../text-and-content/table-block-fixture.service.js";
-import { TipTapTableBlockFixtureService } from "../text-and-content/tip-tap-table-block-fixture.service.js";
 import { AccordionBlockFixtureService } from "./accordion-block-fixture.service.js";
 import { ColumnsBlockFixtureService } from "./columns-block-fixture.service.js";
 import { SpaceBlockFixtureService } from "./space-block-fixture.service.js";
@@ -32,12 +31,11 @@ export class ContentGroupBlockFixtureService {
         private readonly mediaGalleryBlockFixtureService: MediaGalleryBlockFixtureService,
         private readonly spaceBlockFixtureService: SpaceBlockFixtureService,
         private readonly standaloneMediaBlockFixtureService: StandaloneMediaBlockFixtureService,
-        private readonly standaloneHeadingBlockFixtureService: StandaloneHeadingBlockFixtureService,
+        private readonly headingBlockFixtureService: HeadingBlockFixtureService,
         private readonly standaloneCallToActionListBlockFixtureService: StandaloneCallToActionListBlockFixtureService,
-        private readonly standaloneRichTextBlockFixtureService: StandaloneRichTextBlockFixtureService,
+        private readonly richTextBlockFixtureService: RichTextBlockFixtureService,
         private readonly tableBlockFixtureService: TableBlockFixtureService,
         private readonly teaserBlockFixtureService: TeaserBlockFixtureService,
-        private readonly tipTapTableBlockFixtureService: TipTapTableBlockFixtureService,
     ) {}
 
     async generateContentGroupContentBlock(): Promise<ExtractBlockInputFactoryProps<typeof ContentBlock>> {
@@ -48,15 +46,14 @@ export class ContentGroupBlockFixtureService {
             anchor: this.anchorBlockFixtureService,
             callToActionList: this.standaloneCallToActionListBlockFixtureService,
             columns: this.columnsBlockFixtureService,
-            heading: this.standaloneHeadingBlockFixtureService,
+            heading: this.headingBlockFixtureService,
             keyFacts: this.keyFactsBlockFixtureService,
             media: this.standaloneMediaBlockFixtureService,
             mediaGallery: this.mediaGalleryBlockFixtureService,
-            richtext: this.standaloneRichTextBlockFixtureService,
+            richtext: this.richTextBlockFixtureService,
             space: this.spaceBlockFixtureService,
             table: this.tableBlockFixtureService,
             teaser: this.teaserBlockFixtureService,
-            tipTapTable: this.tipTapTableBlockFixtureService,
         };
 
         for (const block of Object.entries(blockCfg)) {

@@ -369,6 +369,15 @@ importers:
       '@swc/plugin-emotion':
         specifier: ^20.0.3
         version: 20.0.3
+      '@testing-library/dom':
+        specifier: ^10.4.2
+        version: 10.4.2
+      '@testing-library/jest-dom':
+        specifier: ^7.0.1
+        version: 7.0.1(@testing-library/dom@10.4.2)(@vitest/browser-playwright@5.1.1)(@vitest/ui@5.1.1)(msw@3.0.7(@types/node@24.19.2)(graphql@16.15.0)(supports-color@8.1.1)(typescript@6.0.3)(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.107.1)(terser@5.51.2)(yaml@2.9.1)))(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.107.1)(terser@5.51.2)(yaml@2.9.1))(vitest@5.1.1)
+      '@testing-library/react':
+        specifier: ^16.3.3
+        version: 16.3.3(@testing-library/dom@10.4.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@types/node':
         specifier: ^24.19.2
         version: 24.19.2
@@ -396,6 +405,9 @@ importers:
       eslint:
         specifier: ^9.39.5
         version: 9.39.5(jiti@2.7.0)(supports-color@8.1.1)
+      jsdom:
+        specifier: ^31.0.0
+        version: 31.0.0(@noble/hashes@1.8.0)
       npm-run-all2:
         specifier: ^9.1.0
         version: 9.1.0
@@ -417,6 +429,9 @@ importers:
       vite-plugin-compression2:
         specifier: ^2.5.4
         version: 2.5.4(rollup@4.68.8)
+      vitest:
+        specifier: ^5.1.0
+        version: 5.1.1(@opentelemetry/api@1.10.0)(@types/node@24.19.2)(@vitest/browser-playwright@5.1.1)(@vitest/ui@5.1.1)(jsdom@31.0.0(@noble/hashes@1.8.0))(msw@3.0.7(@types/node@24.19.2)(graphql@16.15.0)(supports-color@8.1.1)(typescript@6.0.3)(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.107.1)(terser@5.51.2)(yaml@2.9.1)))(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.107.1)(terser@5.51.2)(yaml@2.9.1))
 
   demo/admin/server:
     dependencies:
@@ -481,6 +496,9 @@ importers:
       '@mikro-orm/postgresql':
         specifier: ^7.2.0
         version: 7.2.5(@mikro-orm/core@7.2.5(dataloader@2.2.3))
+      '@modelcontextprotocol/server':
+        specifier: ^2.4.0
+        version: 2.4.0
       '@nestjs/apollo':
         specifier: ^14.0.1
         version: 14.0.3(@apollo/server@5.5.2(graphql@16.15.0)(supports-color@8.1.1))(@as-integrations/express5@1.1.2(@apollo/server@5.5.2(graphql@16.15.0)(supports-color@8.1.1))(express@5.3.0(supports-color@8.1.1)))(@nestjs/common@12.2.0(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1))(@nestjs/core@12.2.0)(@nestjs/graphql@14.0.3(@nestjs/common@12.2.0(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1))(@nestjs/core@12.2.0)(class-transformer@0.5.1)(class-validator@0.15.1)(graphql@16.15.0)(reflect-metadata@0.2.2)(ts-morph@28.0.0)(typescript@6.0.3))(graphql@16.15.0)
@@ -496,6 +514,9 @@ importers:
       '@nestjs/jwt':
         specifier: ^12.0.2
         version: 12.0.3(@nestjs/common@12.2.0(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1))
+      '@nestjs/mcp':
+        specifier: ^0.0.4
+        version: 0.0.4(@modelcontextprotocol/client@2.4.0)(@modelcontextprotocol/server@2.4.0)(@nestjs/common@12.2.0(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1))(@nestjs/core@12.2.0)(reflect-metadata@0.2.2)(rxjs@7.8.2)
       '@nestjs/platform-express':
         specifier: ^12.0.4
         version: 12.2.0(@nestjs/common@12.2.0(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1))(@nestjs/core@12.2.0)(supports-color@8.1.1)
@@ -577,6 +598,9 @@ importers:
       slugify:
         specifier: ^1.6.9
         version: 1.6.9
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
     devDependencies:
       '@dextinity/cli':
         specifier: workspace:*
@@ -590,6 +614,9 @@ importers:
       '@formatjs/cli':
         specifier: ^6.20.0
         version: 6.22.0(@vue/compiler-core@3.5.43)
+      '@modelcontextprotocol/client':
+        specifier: ^2.4.0
+        version: 2.4.0
       '@nestjs/cli':
         specifier: ^12.0.3
         version: 12.0.10(@swc/core@1.16.22(@swc/helpers@0.5.23))(@types/node@24.19.2)(fork-ts-checker-webpack-plugin@9.1.0(typescript@6.0.3)(webpack@5.113.0(@swc/core@1.16.22(@swc/helpers@0.5.23))(clean-css@5.3.3)(cssnano@6.1.2(postcss@8.5.32))(csso@5.0.5)(esbuild@0.28.2)(html-minifier-terser@7.2.0)(lightningcss@1.33.0)(postcss@8.5.32)(sharp@0.35.5(@types/node@24.19.2))(svgo@3.3.5)(uglify-js@3.19.3)))(prettier@3.10.1)(tsconfig-paths-webpack-plugin@4.2.0)(webpack-node-externals@3.0.0)(webpack@5.113.0(@swc/core@1.16.22(@swc/helpers@0.5.23))(clean-css@5.3.3)(cssnano@6.1.2(postcss@8.5.32))(csso@5.0.5)(esbuild@0.28.2)(html-minifier-terser@7.2.0)(lightningcss@1.33.0)(postcss@8.5.32)(sharp@0.35.5(@types/node@24.19.2))(svgo@3.3.5)(uglify-js@3.19.3))
@@ -770,9 +797,6 @@ importers:
       react-intl:
         specifier: ^12.1.4
         version: 12.1.5(@types/react@19.3.0)(react@19.3.1)
-      redraft:
-        specifier: ^0.10.2
-        version: 0.10.2
       usehooks-ts:
         specifier: ^3.1.1
         version: 3.1.1(react@19.3.1)
@@ -6851,6 +6875,18 @@ packages:
     peerDependencies:
       '@mikro-orm/core': 7.2.5
 
+  '@modelcontextprotocol/client@2.4.0':
+    resolution: {integrity: sha512-LgrD2OphHuG12vfKFKz6SOnq7bKHQmhGJIAYdD+MZBn2npHEyry6uD8zvktodtl5CQM85MO0anUyD9JwmUmxww==}
+    engines: {node: '>=20'}
+
+  '@modelcontextprotocol/core@2.4.0':
+    resolution: {integrity: sha512-z8QBKqdfXLPzkLQuG4xp8hrVEMm1PZ1IgxMN2sMbJiFiAKOWXnAzogXn2W4aqIBlP1ea6U5yiqVquvUNM1Cj6Q==}
+    engines: {node: '>=20'}
+
+  '@modelcontextprotocol/server@2.4.0':
+    resolution: {integrity: sha512-rgR9yxSaAJ+bcsi/XroT/S2AfPiIWloXAnrdfYSCms9ivVju0ishu/wW0J21Ho6+ZOR1r7RyeRbjiRuF87ix5Q==}
+    engines: {node: '>=20'}
+
   '@msw/url@0.1.3':
     resolution: {integrity: sha512-IvN0kCVRFtr12gBS3Nk8PRqjWjE/80ydze2DNQ0Z74ZjnMDWibVoaYFqGv9vR2LoiUfcVgEVaBWLFyp15M5YJg==}
 
@@ -7223,6 +7259,20 @@ packages:
       class-transformer:
         optional: true
       class-validator:
+        optional: true
+
+  '@nestjs/mcp@0.0.4':
+    resolution: {integrity: sha512-f3oc2kcZmgy1tOFS/pzhKWrINWUIJqwxAuxGFeAXLqxzqIBSPsbK6XXX3EKErDKq68zGPejp+Jx7l538guSoSw==}
+    engines: {node: '>=20.19.0'}
+    peerDependencies:
+      '@modelcontextprotocol/client': ^2.4.0
+      '@modelcontextprotocol/server': ^2.4.0
+      '@nestjs/common': ^12.0.0
+      '@nestjs/core': ^12.0.0
+      reflect-metadata: ^0.1.13 || ^0.2.0
+      rxjs: ^7.1.0
+    peerDependenciesMeta:
+      '@modelcontextprotocol/client':
         optional: true
 
   '@nestjs/platform-express@12.2.0':
@@ -12875,10 +12925,6 @@ packages:
   end-of-stream@1.4.5:
     resolution: {integrity: sha512-ooEGc6HP26xXq/N+GCGOT0JKCLDGrq2bQUZrQ7gyrJiZANJ/8YDTxTpQBXGMn+WbIQXNVpyWymm7KYVICQnyOg==}
 
-  enhanced-resolve@5.26.0:
-    resolution: {integrity: sha512-9vhedylFonb2YGogzUKX6+Ja72gOJbN1QHAqdrvqLwhdl/QWbKopzoUC9EbQNVsAns/bx/4uyqalrQAoy1IByw==}
-    engines: {node: '>=10.13.0'}
-
   enhanced-resolve@5.27.0:
     resolution: {integrity: sha512-Do6BB2xzlcc/odFg+XEYyneAx4T/WfywO71yw9ePS2tVfRsf7JVR4mUeELadIeHzixkzbG5DpluiEFPi2WGfYQ==}
     engines: {node: '>=10.13.0'}
@@ -13260,6 +13306,14 @@ packages:
   events@3.3.0:
     resolution: {integrity: sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==}
     engines: {node: '>=0.8.x'}
+
+  eventsource-parser@3.1.1:
+    resolution: {integrity: sha512-EKN1vKAMcZ8MlYMpaNuxN6R9yakzH6uajHcHVTqWJzvu5pWw9DyhbP35HH8MVBQ+dZjAfDxk+A8NiR9KWaXiyQ==}
+    engines: {node: '>=18.0.0'}
+
+  eventsource@3.0.7:
+    resolution: {integrity: sha512-CRT1WTyuQoD771GW56XEZFQ/ZoSfWid1alKGDYMmkt2yl8UXrVR4pspqWNEcqKvVIzg6PAltWjxcSSPrboA4iA==}
+    engines: {node: '>=18.0.0'}
 
   exceljs@4.4.0:
     resolution: {integrity: sha512-XctvKaEMaj1Ii9oDOqbW/6e1gXknSY4g/aLCDicOXqBE4M0nRWkUu0PTp++UPNzoFY12BNHMfs/VadKIS6llvg==}
@@ -16377,6 +16431,10 @@ packages:
   pirates@4.0.7:
     resolution: {integrity: sha512-TfySrs/5nm8fQJDcBDuUng3VOUKsd7S+zqvbOTiGXHfxX4wK31ard+hoNuvkicM/2YFzlpDgABOevKSsB4G/FA==}
     engines: {node: '>= 6'}
+
+  pkce-challenge@5.0.2:
+    resolution: {integrity: sha512-vCc54+qyIfKC5e2UN28AZKElwqjLINgiIV3RKI8pDu93TjaAJoB3QrgMzEBouy8yOKsXVXdAinO1QArJf9x5WA==}
+    engines: {node: '>=16.20.0'}
 
   pkg-dir@7.0.0:
     resolution: {integrity: sha512-Ie9z/WINcxxLp27BKOCHGde4ITq9UklYKDzVo1nhk5sqGEXU3FpkwP5GM2voTGJkGd9B3Otl+Q4uwSOeSUtOBA==}
@@ -25182,6 +25240,25 @@ snapshots:
       '@mikro-orm/core': 7.2.5(dataloader@2.2.3)
       kysely: 0.29.6
 
+  '@modelcontextprotocol/client@2.4.0':
+    dependencies:
+      '@modelcontextprotocol/core': 2.4.0
+      cross-spawn: 7.0.6
+      eventsource: 3.0.7
+      eventsource-parser: 3.1.1
+      jose: 6.2.18
+      pkce-challenge: 5.0.2
+      zod: 4.6.7
+
+  '@modelcontextprotocol/core@2.4.0':
+    dependencies:
+      zod: 4.6.7
+
+  '@modelcontextprotocol/server@2.4.0':
+    dependencies:
+      '@modelcontextprotocol/core': 2.4.0
+      zod: 4.6.7
+
   '@msw/url@0.1.3': {}
 
   '@mswjs/interceptors@0.45.12(supports-color@8.1.1)':
@@ -25577,6 +25654,16 @@ snapshots:
     optionalDependencies:
       class-transformer: 0.5.1
       class-validator: 0.15.1
+
+  '@nestjs/mcp@0.0.4(@modelcontextprotocol/client@2.4.0)(@modelcontextprotocol/server@2.4.0)(@nestjs/common@12.2.0(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1))(@nestjs/core@12.2.0)(reflect-metadata@0.2.2)(rxjs@7.8.2)':
+    dependencies:
+      '@modelcontextprotocol/server': 2.4.0
+      '@nestjs/common': 12.2.0(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1)
+      '@nestjs/core': 12.2.0(@nestjs/common@12.2.0(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1))(@nestjs/platform-express@12.2.0)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      reflect-metadata: 0.2.2
+      rxjs: 7.8.2
+    optionalDependencies:
+      '@modelcontextprotocol/client': 2.4.0
 
   '@nestjs/platform-express@12.2.0(@nestjs/common@12.2.0(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1))(@nestjs/core@12.2.0)(supports-color@8.1.1)':
     dependencies:
@@ -27838,6 +27925,23 @@ snapshots:
       redent: 3.0.0
     optionalDependencies:
       vitest: 5.1.0(@opentelemetry/api@1.10.0)(@types/node@24.19.2)(@vitest/browser-playwright@5.1.0)(@vitest/ui@5.1.0)(jsdom@31.0.0(@noble/hashes@1.8.0))(msw@3.0.7(@types/node@24.19.2)(graphql@16.15.0)(supports-color@8.1.1)(typescript@6.0.3)(vite@8.3.5(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.107.1)(terser@5.51.2)(yaml@2.9.1)))(vite@8.3.5(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.107.1)(terser@5.51.2)(yaml@2.9.1))
+    transitivePeerDependencies:
+      - '@vitest/browser-playwright'
+      - '@vitest/ui'
+      - msw
+      - vite
+
+  '@testing-library/jest-dom@7.0.1(@testing-library/dom@10.4.2)(@vitest/browser-playwright@5.1.1)(@vitest/ui@5.1.1)(msw@3.0.7(@types/node@24.19.2)(graphql@16.15.0)(supports-color@8.1.1)(typescript@6.0.3)(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.107.1)(terser@5.51.2)(yaml@2.9.1)))(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.107.1)(terser@5.51.2)(yaml@2.9.1))(vitest@5.1.1)':
+    dependencies:
+      '@adobe/css-tools': 4.5.0
+      '@testing-library/dom': 10.4.2
+      aria-query: 5.3.2
+      css.escape: 1.5.1
+      dom-accessibility-api: 0.6.3
+      picocolors: 1.1.1
+      redent: 3.0.0
+    optionalDependencies:
+      vitest: 5.1.1(@opentelemetry/api@1.10.0)(@types/node@24.19.2)(@vitest/browser-playwright@5.1.1)(@vitest/ui@5.1.1)(jsdom@31.0.0(@noble/hashes@1.8.0))(msw@3.0.7(@types/node@24.19.2)(graphql@16.15.0)(supports-color@8.1.1)(typescript@6.0.3)(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.107.1)(terser@5.51.2)(yaml@2.9.1)))(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.107.1)(terser@5.51.2)(yaml@2.9.1))
     transitivePeerDependencies:
       - '@vitest/browser-playwright'
       - '@vitest/ui'
@@ -31571,12 +31675,6 @@ snapshots:
     dependencies:
       once: 1.4.0
 
-  enhanced-resolve@5.26.0:
-    dependencies:
-      graceful-fs: 4.2.11
-      tapable: 2.3.3
-    optional: true
-
   enhanced-resolve@5.27.0:
     dependencies:
       graceful-fs: 4.2.11
@@ -32143,6 +32241,12 @@ snapshots:
 
   events@3.3.0: {}
 
+  eventsource-parser@3.1.1: {}
+
+  eventsource@3.0.7:
+    dependencies:
+      eventsource-parser: 3.1.1
+
   exceljs@4.4.0:
     dependencies:
       archiver: 5.3.2
@@ -32531,7 +32635,7 @@ snapshots:
       node-abort-controller: 3.1.1
       schema-utils: 3.3.0
       semver: 7.8.5
-      tapable: 2.3.3
+      tapable: 2.3.4
       typescript: 6.0.3
       webpack: 5.113.0(@swc/core@1.16.22(@swc/helpers@0.5.23))(clean-css@5.3.3)(cssnano@6.1.2(postcss@8.5.32))(csso@5.0.5)(esbuild@0.28.2)(html-minifier-terser@7.2.0)(lightningcss@1.33.0)(postcss@8.5.32)(sharp@0.35.5(@types/node@24.19.2))(svgo@3.3.5)(uglify-js@3.19.3)
     optional: true
@@ -36325,6 +36429,8 @@ snapshots:
 
   pirates@4.0.7: {}
 
+  pkce-challenge@5.0.2: {}
+
   pkg-dir@7.0.0:
     dependencies:
       find-up: 6.3.0
@@ -39158,8 +39264,8 @@ snapshots:
   tsconfig-paths-webpack-plugin@4.2.0:
     dependencies:
       chalk: 4.1.2
-      enhanced-resolve: 5.26.0
-      tapable: 2.3.3
+      enhanced-resolve: 5.27.0
+      tapable: 2.3.4
       tsconfig-paths: 4.2.0
     optional: true
 

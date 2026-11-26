@@ -1,5 +1,14 @@
-import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
-import { createExternalLink, createRichText, emptyRichText, loremIpsum } from "@src/storybook/blockFixtures";
+import { PageContentRichTextBlock, RichTextBlock } from "@src/common/blocks/RichTextBlock";
+import {
+    createBulletList,
+    createExternalLink,
+    createOrderedList,
+    createParagraph,
+    createRichText,
+    createRichTextHeading,
+    emptyRichText,
+    loremIpsum,
+} from "@src/storybook/blockFixtures";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 
 const meta: Meta<typeof RichTextBlock> = {
@@ -7,23 +16,32 @@ const meta: Meta<typeof RichTextBlock> = {
     component: RichTextBlock,
     args: {
         data: createRichText(
-            { text: "Rich text", type: "header-two" },
+            createRichTextHeading("Rich text", 2),
             loremIpsum,
             {
-                text: "Bold, italic and struck through text.",
-                inlineStyleRanges: [
-                    { offset: 0, length: 4, style: "BOLD" },
-                    { offset: 6, length: 6, style: "ITALIC" },
-                    { offset: 17, length: 14, style: "STRIKETHROUGH" },
+                type: "textBlock",
+                attrs: { textBlock: "paragraph" },
+                content: [
+                    { type: "text", text: "Bold", marks: [{ type: "bold" }] },
+                    { type: "text", text: ", " },
+                    { type: "text", text: "italic", marks: [{ type: "italic" }] },
+                    { type: "text", text: " and " },
+                    { type: "text", text: "struck through", marks: [{ type: "strike" }] },
+                    { type: "text", text: " text." },
                 ],
             },
-            { text: "A paragraph with a link to dextinity.com.", link: { offset: 27, length: 13, data: createExternalLink() } },
-            { text: "A small paragraph.", type: "paragraph-small" },
-            { text: "Unordered list item", type: "unordered-list-item" },
-            { text: "Another unordered list item", type: "unordered-list-item" },
-            { text: "Ordered list item", type: "ordered-list-item" },
-            { text: "Nested ordered list item", type: "ordered-list-item", depth: 1 },
-            { text: "Another ordered list item", type: "ordered-list-item" },
+            {
+                type: "textBlock",
+                attrs: { textBlock: "paragraph" },
+                content: [
+                    { type: "text", text: "A paragraph with a link to " },
+                    { type: "text", text: "dextinity.com", marks: [{ type: "link", attrs: { data: createExternalLink() } }] },
+                    { type: "text", text: "." },
+                ],
+            },
+            createParagraph("A small paragraph.", "paragraph200"),
+            createBulletList("Unordered list item", "Another unordered list item"),
+            createOrderedList("Ordered list item", "Another ordered list item"),
         ),
     },
 };
@@ -36,13 +54,42 @@ export const Default: Story = {};
 export const Headings: Story = {
     args: {
         data: createRichText(
-            { text: "Header one", type: "header-one" },
-            { text: "Header two", type: "header-two" },
-            { text: "Header three", type: "header-three" },
-            { text: "Header four", type: "header-four" },
-            { text: "Header five", type: "header-five" },
-            { text: "Header six", type: "header-six" },
+            { type: "textBlock", attrs: { textBlock: "display" }, content: [{ type: "text", text: "Display" }] },
+            createRichTextHeading("Heading 1", 1),
+            createRichTextHeading("Heading 2", 2),
+            createRichTextHeading("Heading 3", 3),
+            createRichTextHeading("Heading 4", 4),
+            createRichTextHeading("Heading 5", 5),
         ),
+    },
+};
+
+export const TextAlignment: Story = {
+    args: {
+        data: createRichText(
+            ...(["left", "center", "right", "justify"] as const).map((textAlign) => ({
+                type: "textBlock",
+                attrs: { textBlock: "paragraph", textAlign },
+                content: [{ type: "text", text: `${textAlign}: ${loremIpsum}` }],
+            })),
+        ),
+    },
+};
+
+export const WithProductPrice: Story = {
+    args: {
+        data: createRichText({
+            type: "textBlock",
+            attrs: { textBlock: "paragraph" },
+            content: [
+                { type: "text", text: "Product A costs " },
+                {
+                    type: "cmsInlineBlock",
+                    attrs: { blockType: "productPrice", data: { product: { id: "product-a", title: "Product A", price: 19.99 } } },
+                },
+                { type: "text", text: "." },
+            ],
+        }),
     },
 };
 
@@ -52,4 +99,8 @@ export const WithoutLastBottomSpacing: Story = {
 
 export const Empty: Story = {
     args: { data: emptyRichText },
+};
+
+export const InPageContent: Story = {
+    render: (args) => <PageContentRichTextBlock {...args} />,
 };

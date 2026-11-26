@@ -28,6 +28,7 @@ import { ApolloDriver, type ApolloDriverConfig, ValidationError } from "@nestjs/
 import { type DynamicModule, Module } from "@nestjs/common";
 import { ModuleRef } from "@nestjs/core";
 import { type Enhancer, GraphQLModule } from "@nestjs/graphql";
+import { AiHubModule } from "@src/ai-hub/ai-hub.module.js";
 import { AppPermission } from "@src/auth/app-permission.enum.js";
 import { BlacklistedContacts } from "@src/brevo/blacklisted-contacts/entity/blacklisted-contacts.entity.js";
 import { BrevoContactSubscribeModule } from "@src/brevo/brevo-contact/brevo-contact-subscribe.module.js";
@@ -44,6 +45,7 @@ import { ContentGenerationService } from "@src/content-generation/content-genera
 import { DbModule } from "@src/db/db.module.js";
 import { LinksModule } from "@src/documents/links/links.module.js";
 import { PagesModule } from "@src/documents/pages/pages.module.js";
+import { AiModeMcpModule } from "@src/mcp/mcp.module.js";
 import { TranslationModule } from "@src/translation/translation.module.js";
 import type { Request } from "express";
 
@@ -230,6 +232,7 @@ export class AppModule {
                 MailTemplatesModule,
                 ProductsModule,
                 ...(config.azureAiTranslator ? [AzureAiTranslatorModule.register(config.azureAiTranslator)] : []),
+                ...(config.aiHub ? [AiHubModule.register(config.aiHub), AiModeMcpModule.forRoot({ adminUrl: config.adminUrl })] : []),
                 ...(!config.debug
                     ? [
                           AccessLogModule.forRoot({

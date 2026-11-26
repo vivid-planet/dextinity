@@ -75,6 +75,10 @@ async function bootstrap(): Promise<void> {
             },
         }),
     );
+    // The AI Hub chat sends the whole conversation with every message, including the results of the host tools, so a
+    // long chat outgrows the limit below. The AI Hub itself accepts 10 MB. This parser has to come first: the one below
+    // skips a body that is already parsed.
+    app.use("/api/ai-hub", json({ limit: "10mb" }));
     app.use(json({ limit: "1mb" })); // increase default limit of 100kb for saving large pages
     app.use(compression());
     app.use(cookieParser());

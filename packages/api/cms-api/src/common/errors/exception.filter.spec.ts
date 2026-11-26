@@ -78,6 +78,31 @@ describe("ExceptionFilter", () => {
             });
         });
 
+        describe("mcp", () => {
+            const mcpHost = {
+                getType: () => "mcp",
+            } as ArgumentsHost;
+
+            it("throws BadRequestException for DextinityException", () => {
+                const exceptionFilter = new ExceptionFilter(false);
+
+                expect(() => exceptionFilter.catch(new DextinityEntityNotFoundException("Not found"), mcpHost)).toThrow(BadRequestException);
+            });
+
+            it("throws HttpException as it is", () => {
+                const exceptionFilter = new ExceptionFilter(false);
+                const exception = new HttpException("Unauthorized", 401);
+
+                expect(() => exceptionFilter.catch(exception, mcpHost)).toThrow(exception);
+            });
+
+            it("throws InternalServerErrorException for normal Error in non-debug mode", () => {
+                const exceptionFilter = new ExceptionFilter(false);
+
+                expect(() => exceptionFilter.catch(new Error("Other error"), mcpHost)).toThrow(InternalServerErrorException);
+            });
+        });
+
         describe("http", () => {
             let httpHost: ArgumentsHost;
             let statusMock: Mock;

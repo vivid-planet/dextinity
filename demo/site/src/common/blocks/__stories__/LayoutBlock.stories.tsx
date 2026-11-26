@@ -1,15 +1,15 @@
 import type { LayoutBlockData } from "@src/blocks.generated";
 import { LayoutBlock } from "@src/common/blocks/LayoutBlock";
-import { createImageMedia, createRichText, loremIpsum } from "@src/storybook/blockFixtures";
+import { createImageMedia, createRichText, createRichTextHeading, loremIpsum } from "@src/storybook/blockFixtures";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 
 function createLayout(layout: LayoutBlockData["layout"]): LayoutBlockData {
     return {
         layout,
         media1: createImageMedia({ seed: "layout-1" }),
-        text1: createRichText({ text: "First text", type: "header-three" }, loremIpsum),
+        text1: createRichText(createRichTextHeading("First text", 3), loremIpsum),
         media2: createImageMedia({ seed: "layout-2" }),
-        text2: createRichText({ text: "Second text", type: "header-three" }, loremIpsum),
+        text2: createRichText(createRichTextHeading("Second text", 3), loremIpsum),
     };
 }
 

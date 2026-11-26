@@ -47,10 +47,14 @@ export class ExceptionFilter implements NestExceptionFilter {
             this.logger.error(exception, exception.stack); // Log for debugging
         }
 
-        const ctxType = host.getType<"http" | "graphql">(); // Check if it's an HTTP or GraphQL request
+        const ctxType = host.getType<"http" | "graphql" | "mcp">();
 
         if (ctxType === "graphql") {
             return returnedError;
+        } else if (ctxType === "mcp") {
+            // `@nestjs/mcp` answers a tool call with the message of the exception it throws. What a filter returns would
+            // become the tool's result instead, and an MCP call has no response to write to.
+            throw returnedError;
         } else {
             const ctx = host.switchToHttp();
             const response = ctx.getResponse<Response>();

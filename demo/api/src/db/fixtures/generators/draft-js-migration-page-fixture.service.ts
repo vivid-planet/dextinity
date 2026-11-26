@@ -212,7 +212,7 @@ export class DraftJsMigrationPageFixtureService {
             .flush();
 
         // Bypass the RootBlockType custom column so the legacy DraftJS-shaped JSON lands in the DB
-        // unchanged. The on-read DraftJS→TipTap migration in TipTapRichTextBlock.blockDataFactory
+        // unchanged. The on-read DraftJS→TipTap migration in RichTextBlock.blockDataFactory
         // is what we want this fixture to exercise.
         const legacyPageContent = {
             data: {
@@ -220,7 +220,7 @@ export class DraftJsMigrationPageFixtureService {
                     {
                         key: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
                         visible: true,
-                        type: "tipTapRichText",
+                        type: "richtext",
                         props: { draftContent: legacyDraftJsContent },
                         userGroup: UserGroup.all,
                     },

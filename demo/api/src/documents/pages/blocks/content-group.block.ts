@@ -12,14 +12,13 @@ import {
     type ExtractBlockInput,
 } from "@dextinity/cms-api";
 import { AccordionBlock } from "@src/common/blocks/accordion.block.js";
+import { HeadingBlock } from "@src/common/blocks/heading.block.js";
 import { MediaGalleryBlock } from "@src/common/blocks/media-gallery.block.js";
+import { RichTextBlock } from "@src/common/blocks/rich-text.block.js";
 import { SpaceBlock } from "@src/common/blocks/space.block.js";
 import { StandaloneCallToActionListBlock } from "@src/common/blocks/standalone-call-to-action-list.block.js";
-import { StandaloneHeadingBlock } from "@src/common/blocks/standalone-heading.block.js";
 import { StandaloneMediaBlock } from "@src/common/blocks/standalone-media.block.js";
-import { StandaloneRichTextBlock } from "@src/common/blocks/standalone-rich-text.block.js";
 import { TableBlock } from "@src/common/blocks/table.block.js";
-import { TipTapTableBlock } from "@src/common/blocks/tip-tap-table.block.js";
 import { ColumnsBlock } from "@src/documents/pages/blocks/columns.block.js";
 import { KeyFactsBlock } from "@src/documents/pages/blocks/key-facts.block.js";
 import { TeaserBlock } from "@src/documents/pages/blocks/teaser.block.js";
@@ -32,15 +31,14 @@ export const ContentBlock = createBlocksBlock(
             anchor: AnchorBlock,
             callToActionList: StandaloneCallToActionListBlock,
             columns: ColumnsBlock,
-            heading: StandaloneHeadingBlock,
+            heading: HeadingBlock,
             keyFacts: KeyFactsBlock,
             media: StandaloneMediaBlock,
             mediaGallery: MediaGalleryBlock,
-            richtext: StandaloneRichTextBlock,
+            richtext: RichTextBlock,
             space: SpaceBlock,
             teaser: TeaserBlock,
             table: TableBlock,
-            tipTapTable: TipTapTableBlock,
         },
     },
     "ContentGroupContent",

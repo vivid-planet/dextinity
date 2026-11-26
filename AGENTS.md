@@ -103,6 +103,7 @@ Demo admin app (Vite, React, Apollo)
 - Start using `pnpm exec dev-pm start @demo-admin`
 - access at: http://localhost:8000/
 - Usually Login as "Admin" in the IDP Login Page
+- run the unit tests (Vitest, jsdom) with `pnpm --filter dextinity-demo-admin run test:unit`; render a component with `renderAdmin` from `src/testing/`
 
 **Site:**
 Demo frontend site (Next.js)
@@ -117,6 +118,9 @@ Storybook for the demo site components (Vite, `@storybook/nextjs-vite`)
 - access at: http://localhost:26648/
 - stories live in `__stories__` folders next to the component
 - run the story tests with `pnpm --filter dextinity-demo-site run test:storybook`
+
+**AI Mode:**
+The admin's AI Mode puts the chat of the Dextinity AI Hub next to the admin's pages. It is off unless `AI_HUB_API_KEY` (secret key of type Widget, for the API) and `AI_HUB_WIDGET_ID` (for the admin) are set in `.env.local`. The API then serves the AI Hub proxy at `/api/ai-hub` and the MCP server at `/api/mcp`. See [the AI Mode's README](demo/admin/src/aiMode/README.md) for its design decisions and how to test it.
 
 ### dev-pm
 

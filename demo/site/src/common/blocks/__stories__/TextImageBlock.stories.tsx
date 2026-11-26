@@ -1,8 +1,8 @@
 import { PageContentTextImageBlock, TextImageBlock } from "@src/common/blocks/TextImageBlock";
-import { createDamImage, createRichText, loremIpsum } from "@src/storybook/blockFixtures";
+import { createDamImage, createRichText, createRichTextHeading, loremIpsum } from "@src/storybook/blockFixtures";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 
-const text = createRichText({ text: "Text and image", type: "header-three" }, loremIpsum, loremIpsum);
+const text = createRichText(createRichTextHeading("Text and image", 3), loremIpsum, loremIpsum);
 
 const meta: Meta<typeof TextImageBlock> = {
     title: "Blocks/Common/TextImageBlock",

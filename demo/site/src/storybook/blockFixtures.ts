@@ -11,82 +11,35 @@ import type {
     SvgImageBlockData,
     TextLinkBlockData,
     TipTapNode,
-    TipTapRichTextBlockData,
 } from "@src/blocks.generated";
-
-interface DraftInlineStyleRange {
-    offset: number;
-    length: number;
-    style: "BOLD" | "ITALIC" | "SUB" | "SUP" | "STRIKETHROUGH";
-}
-
-interface DraftParagraph {
-    text: string;
-    type?:
-        | "unstyled"
-        | "paragraph-standard"
-        | "paragraph-small"
-        | "header-one"
-        | "header-two"
-        | "header-three"
-        | "header-four"
-        | "header-five"
-        | "header-six"
-        | "unordered-list-item"
-        | "ordered-list-item";
-    depth?: number;
-    inlineStyleRanges?: DraftInlineStyleRange[];
-    link?: { offset: number; length: number; data: LinkBlockData };
-}
 
 export const loremIpsum =
     "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.";
 
-export function createRichText(...paragraphs: Array<string | DraftParagraph>): RichTextBlockData {
-    const entityMap: Record<string, { type: "LINK"; mutability: "MUTABLE"; data: LinkBlockData }> = {};
-
-    const blocks = paragraphs.map((paragraph, index) => {
-        const {
-            text,
-            type = "paragraph-standard",
-            depth = 0,
-            inlineStyleRanges = [],
-            link,
-        } = typeof paragraph === "string" ? { text: paragraph } : paragraph;
-
-        const entityRanges = [];
-        if (link) {
-            const entityKey = Object.keys(entityMap).length;
-            entityMap[entityKey] = { type: "LINK", mutability: "MUTABLE", data: link.data };
-            entityRanges.push({ offset: link.offset, length: link.length, key: entityKey });
-        }
-
-        return { key: `block${index}`, text, type, depth, inlineStyleRanges, entityRanges, data: {} };
-    });
-
-    return { draftContent: { blocks, entityMap } };
-}
-
-export const emptyRichText: RichTextBlockData = createRichText();
-
-export function createTipTapRichText(...content: TipTapNode[]): TipTapRichTextBlockData {
-    return { tipTapContent: { type: "doc", content } };
-}
-
-export function createTipTapParagraph(text: string, textBlockStyle?: string): TipTapNode {
+export function createParagraph(text: string, textBlockStyle?: string): TipTapNode {
     return { type: "textBlock", attrs: { textBlock: "paragraph", textBlockStyle }, content: [{ type: "text", text }] };
 }
 
-export function createTipTapHeading(text: string, level: 1 | 2 | 3 | 4 | 5 = 2): TipTapNode {
-    return { type: "textBlock", attrs: { textBlock: `heading-${level}` }, content: [{ type: "text", text }] };
+export function createRichTextHeading(text: string, level: 1 | 2 | 3 | 4 | 5 | 6 = 2, textBlockStyle?: string): TipTapNode {
+    return { type: "textBlock", attrs: { textBlock: `heading-${level}`, textBlockStyle }, content: [{ type: "text", text }] };
 }
 
-export function createTipTapBulletList(...items: string[]): TipTapNode {
+export function createBulletList(...items: string[]): TipTapNode {
+    return { type: "bulletList", content: items.map((text) => ({ type: "listItem", content: [createParagraph(text)] })) };
+}
+
+export function createOrderedList(...items: Array<string | TipTapNode>): TipTapNode {
     return {
-        type: "bulletList",
-        content: items.map((text) => ({ type: "listItem", content: [createTipTapParagraph(text)] })),
+        type: "orderedList",
+        content: items.map((item) => ({ type: "listItem", content: [typeof item === "string" ? createParagraph(item) : item] })),
     };
 }
+
+export function createRichText(...content: Array<string | TipTapNode>): RichTextBlockData {
+    return { tipTapContent: { type: "doc", content: content.map((node) => (typeof node === "string" ? createParagraph(node) : node)) } };
+}
+
+export const emptyRichText: RichTextBlockData = createRichText();
 
 export function createExternalLink(targetUrl = "https://www.dextinity.com"): LinkBlockData {
     const props = { targetUrl, openInNewWindow: false, noFollow: false };
@@ -178,16 +131,15 @@ export const emptyMedia: MediaBlockData = { attachedBlocks: [] };
 export function createHeading({
     headline,
     eyebrow,
-    htmlTag = "h2",
+    level = 2,
 }: {
     headline: string;
     eyebrow?: string;
-    htmlTag?: HeadingBlockData["htmlTag"];
+    level?: 1 | 2 | 3 | 4 | 5 | 6;
 }): HeadingBlockData {
     return {
-        eyebrow: eyebrow ? createRichText({ text: eyebrow, type: "unstyled" }) : emptyRichText,
-        headline: createRichText({ text: headline, type: "header-two" }),
-        htmlTag,
+        eyebrow: eyebrow ? createRichText(eyebrow) : emptyRichText,
+        headline: createRichText(createRichTextHeading(headline, level)),
     };
 }
 

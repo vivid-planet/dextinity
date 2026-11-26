@@ -1,6 +1,6 @@
 import type { BlockContext, BlockInterface } from "@dextinity/cms-admin";
 
-import { asBlockProps, type BlocksBlockChild, mergeBlockProps, toBlockState } from "./blockProps";
+import { asBlockProps, type BlocksBlockChild, mergeBlockProps, toBlockState, updateBlockState } from "./blockProps";
 
 /** The `additionalItemFields` of a blocks block, e.g. the user group of each block on a page. */
 export type AdditionalItemFields = Record<string, { defaultValue: unknown }>;
@@ -24,6 +24,7 @@ export async function createBlockChild({
     blockContext,
     type,
     props,
+    visible,
 }: {
     supportedBlocks: Record<string, BlockInterface>;
     additionalItemFields: AdditionalItemFields;
@@ -37,6 +38,8 @@ export async function createBlockChild({
     blockContext: BlockContext;
     type: string;
     props: unknown;
+    /** False when the block list allows no further visible block, as in the Admin's own "add block". */
+    visible: boolean;
 }): Promise<{ child: BlocksBlockChild; warnings: string[] }> {
     const block = supportedBlocks[type];
     if (!block) {
@@ -59,7 +62,7 @@ export async function createBlockChild({
         child: {
             key: crypto.randomUUID(),
             type,
-            visible: true,
+            visible,
             selected: false,
             slideIn: true,
             props: state,
@@ -91,12 +94,7 @@ export function insertChildAt({
     return [...blocks.slice(0, at), child, ...blocks.slice(at)];
 }
 
-/**
- * Starting the round trip from the editor state — rather than from what the page was last saved as —
- * keeps the user's unsaved changes to the fields the agent does not touch. It is confined to the
- * block being updated so it cannot disturb the rest of the page, and it still drops the states of a
- * one-of block's inactive variants inside it, as those are not part of the saved shape.
- */
+/** Confined to the block being updated, so it cannot disturb the rest of the page; see `updateBlockState`. */
 export async function createUpdatedBlockChild({
     supportedBlocks,
     schemaRootBlockName,
@@ -116,18 +114,7 @@ export async function createUpdatedBlockChild({
         throw new Error(`The block "${child.key}" is of type "${child.type}", which the page's content does not support. It cannot be updated.`);
     }
 
-    const patch = asBlockProps(props);
-    const merged = mergeBlockProps(block.state2Output(child.props), patch);
-    // The merged props hold the block's current fields as well, so only the agent's are checked
-    // against the ones the block has — see `toBlockState`.
-    const { state, warnings } = await toBlockState({
-        block,
-        type: child.type,
-        schemaRootBlockName,
-        props: merged,
-        givenFields: Object.keys(patch),
-        blockContext,
-    });
+    const { state, warnings } = await updateBlockState({ block, type: child.type, schemaRootBlockName, state: child.props, props, blockContext });
 
     return { child: { ...child, props: state }, warnings };
 }
@@ -175,4 +162,19 @@ export function moveChildToIndex({ blocks, key, index }: { blocks: readonly Bloc
     const to = clampMoveIndex(index, blocks.length);
     const remaining = [...blocks.slice(0, from), ...blocks.slice(from + 1)];
     return [...remaining.slice(0, to), blocks[from], ...remaining.slice(to)];
+}
+
+/**
+ * The items of a list block, such as the stage, have no type, because they are all of the one block the list
+ * holds. Giving them that block's type lets them be edited like the children of a blocks block.
+ */
+export function withListItemType<Item extends { key: string; visible: boolean; props: unknown }>(
+    items: readonly Item[],
+    type: string,
+): BlocksBlockChild[] {
+    return items.map((item) => ({ selected: false, slideIn: false, ...item, type }));
+}
+
+export function withoutListItemType(blocks: readonly BlocksBlockChild[]): Omit<BlocksBlockChild, "type">[] {
+    return blocks.map(({ type: _type, ...item }) => item);
 }

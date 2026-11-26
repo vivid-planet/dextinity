@@ -3,7 +3,7 @@
 The AI Mode puts the chat of the Dextinity AI Hub next to the admin. A switch in the header (`AiModeHeaderItem`) opens the chat as a flyout (`AiModeFlyout`), which loads the AI Hub's web component and registers two sets of tools with it:
 
 - the **MCP server** of the API (`demo/api/src/mcp`, at `/api/mcp`), which reads from the API: the page tree, pages as they were last saved, DAM files, and the block schemas,
-- the **host tools** of the admin, which act on what is open in the admin. The pages that are open offer them through AI Mode toolsets (see below): the page tree offers `open_page_tree_node`, the page editor `get_page_state` and `edit_blocks` (`pageTreeTools.ts`, `pageTools.ts`).
+- the **host tools** of the admin, which act on what is open in the admin. The pages that are open offer them through AI Mode toolsets (see below): the page tree offers `open_page_tree_node`, the page editor `get_page_state`, `edit_blocks`, and `update_seo` (`pageTreeTools.ts`, `pageTools.ts`).
 
 The AI Mode is ported from vivid-websites. This README explains the decisions the code doesn't show. It is written for developers who maintain the AI Mode in Demo or port it to a project.
 
@@ -97,7 +97,8 @@ The host tools are tools of the admin rather than of the MCP server, because the
 
 - `open_page_tree_node` opens a page tree node's document in the editor. It takes the node's category as well as its ID, because the category is part of the URL. Unsaved changes of the page that is open aren't lost silently: the admin asks the user, as on any navigation. Because the user may stay on the page, `open_page_tree_node` reports only that it asked to open the page, and tells the agent to check with `get_page_state` (`pageTreeNodeId`) which page is open before referring to it. vivid-websites also has tools to list and navigate to any admin page; they are left out because the AI Mode is limited to the page tree.
 - `get_page_state` returns the page's metadata and the summary described above.
-- `edit_blocks` changes the content blocks, see below.
+- `edit_blocks` changes the blocks of the content and the stage, see below.
+- `update_seo` changes the SEO settings, see [The SEO settings](#the-seo-settings).
 
 ### AI Mode toolsets
 
@@ -120,13 +121,13 @@ The descriptions are where the agent learns how to use the tools, so they say mo
 
 ### Approval
 
-The user approves every edit. The chat runs a host tool without asking only if its `readOnlyHint` is `true`, and shows the call with an approve and a reject button otherwise; `edit_blocks` sets `readOnlyHint: false`. The description tells the agent about the approval, so that it calls the tool instead of first asking for permission in the chat, which would ask the user twice.
+The user approves every edit. The chat runs a host tool without asking only if its `readOnlyHint` is `true`, and shows the call with an approve and a reject button otherwise; `edit_blocks` and `update_seo` set `readOnlyHint: false`. The description tells the agent about the approval, so that it calls the tool instead of first asking for permission in the chat, which would ask the user twice.
 
 A tool that only navigates or changes what a page shows, such as `open_page_tree_node`, sets `readOnlyHint: true` although it changes the admin: it changes no data, and an approval for every step would slow the agent down without protecting anything. Unsaved changes aren't lost by it either, because the admin asks the user before it leaves a page with unsaved changes.
 
 ## Editing blocks
 
-`edit_blocks` inserts, updates, removes, moves, hides, and shows the content blocks of the open page. It is a host tool because it changes the state of the edit page, which the MCP server can't see. The changes are unsaved, like changes the user made by hand, and the user still saves the page.
+`edit_blocks` inserts, updates, removes, moves, hides, and shows the blocks of the open page's content or stage. It is a host tool because it changes the state of the edit page, which the MCP server can't see. The changes are unsaved, like changes the user made by hand, and the user still saves the page.
 
 The agent passes a block's fields in the shape the block is **saved** in (`inputFields` in `block-meta.json`), the shape `get_page` returns and `get_block_schema` describes. `output2State` converts it into editor state; it is async and needs a `BlockContext`, because it also resolves references, e.g. it loads the DAM file for a `damFileId`.
 
@@ -176,9 +177,21 @@ A move to the current position, a `show` of a visible block, and a `hide` of a h
 
 A removal has no undo, unlike the admin's own deletion with its snackbar; leaving the page without saving still discards it.
 
+### The stage
+
+A call acts on the content unless its `target` is `stage`. One call acts on one of them, so that a batch is still planned against a single list and applied in a single update.
+
+The stage is a list block rather than a blocks block: its items are all `BasicStage` blocks and carry no `type`. The edit page gives them that type for planning and removes it again before applying the batch (`withListItemType`, `withoutListItemType`), so the planner handles both the same way. An insertion into the stage therefore needs no `type`.
+
+The stage shows at most one visible item (`maxVisibleBlocks`). As in the admin's own "add item", an item inserted while another one is visible is inserted hidden, and the result warns about it. Showing an item while another one is visible fails instead: the agent hides the visible one in a preceding operation of the same batch, which switches the stage in one approved call.
+
 ### Scope
 
-Only the top-level blocks of the page's content can be edited. The stage is a one-of block, where a variant is switched rather than appended, and the SEO block is a composite. Blocks inside a nested blocks block, such as a columns or content group block, can't be edited either: that would need block routes instead of keys, and the block definition of a nested block is known only to its parent. `get_page_state` reports nested keys too, so `findBlockByKey` says that a key is nested instead of saying it doesn't exist.
+Only the top-level blocks of the content and the stage can be edited. Blocks inside a nested blocks block, such as a columns or content group block, can't be edited: that would need block routes instead of keys, and the block definition of a nested block is known only to its parent. `get_page_state` reports nested keys too, so `findBlockByKey` says that a key is nested instead of saying it doesn't exist.
+
+## The SEO settings
+
+The SEO block is a single composite block rather than a list, so it has a tool of its own, `update_seo`, instead of a target of `edit_blocks`, whose operations other than `update` would mean nothing for it. It merges the fields the agent passes into the current settings, as an update of a block does (see [Partial updates](#partial-updates)), and checks them against the fields of the `Seo` block. Like `edit_blocks`, it is rejected when the SEO settings changed while the change was converted, and it clears the selected text.
 
 ## How to test locally
 

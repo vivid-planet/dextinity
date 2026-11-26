@@ -12,7 +12,7 @@ import {
     replaceChild,
     setChildVisibility,
 } from "./blockChildren";
-import { type BlocksBlockChild, describeType, findBlockByKey } from "./blockProps";
+import { type BlockListName, type BlocksBlockChild, describeType, findBlockByKey } from "./blockProps";
 
 type BlockEditOperation =
     | {
@@ -95,6 +95,7 @@ export const isBlockEditChange = (result: BlockEditResult): boolean => {
 };
 
 type EditBlocksRequest = {
+    target: BlockListName;
     /** Applied in the order given; see `planBlockEdits`. */
     operations: BlockEditOperation[];
 };
@@ -146,7 +147,15 @@ const requireField = ({
  * whether the props fit are questions for the page's actual content, answered while the batch is
  * planned.
  */
-export function asBlockEditOperations(value: unknown): BlockEditOperation[] {
+export function asBlockEditOperations(
+    value: unknown,
+    {
+        defaultInsertType,
+    }: {
+        /** The type an insertion gets when it names none, for a block list that holds a single block type. */
+        defaultInsertType?: string;
+    } = {},
+): BlockEditOperation[] {
     if (!Array.isArray(value)) {
         throw new Error(`"operations" must be an array of the changes to apply, but was ${describeType(value)}.`);
     }
@@ -168,7 +177,13 @@ export function asBlockEditOperations(value: unknown): BlockEditOperation[] {
             case "insert":
                 return {
                     operation,
-                    type: requireField({ value: type, field: "type", purpose: "the type of block to insert", position, operation }),
+                    type: requireField({
+                        value: type ?? defaultInsertType,
+                        field: "type",
+                        purpose: "the type of block to insert",
+                        position,
+                        operation,
+                    }),
                     props,
                     index: typeof index === "number" ? index : undefined,
                 };
@@ -209,6 +224,8 @@ export function asBlockEditOperations(value: unknown): BlockEditOperation[] {
  */
 export async function planBlockEdits({
     blocks,
+    blockListName,
+    maxVisibleBlocks,
     operations,
     supportedBlocks,
     insertableBlocks = supportedBlocks,
@@ -217,6 +234,9 @@ export async function planBlockEdits({
     blockContext,
 }: {
     blocks: readonly BlocksBlockChild[];
+    blockListName: BlockListName;
+    /** The `maxVisibleBlocks` of a list block, such as the stage, which shows a single one of its items. */
+    maxVisibleBlocks?: number;
     operations: BlockEditOperation[];
     supportedBlocks: Record<string, BlockInterface>;
     /**
@@ -242,6 +262,8 @@ export async function planBlockEdits({
         try {
             const { result, step } = await planOperation({
                 blocks: planned,
+                blockListName,
+                maxVisibleBlocks,
                 edit,
                 supportedBlocks,
                 insertableBlocks,
@@ -268,8 +290,12 @@ export async function planBlockEdits({
     return { apply: steps.length > 0 ? apply : null, results };
 }
 
+const describeKeys = (blocks: readonly BlocksBlockChild[]) => blocks.map((block) => `"${block.key}"`).join(", ");
+
 async function planOperation({
     blocks,
+    blockListName,
+    maxVisibleBlocks,
     edit,
     supportedBlocks,
     insertableBlocks,
@@ -278,6 +304,8 @@ async function planOperation({
     blockContext,
 }: {
     blocks: readonly BlocksBlockChild[];
+    blockListName: BlockListName;
+    maxVisibleBlocks?: number;
     edit: BlockEditOperation;
     supportedBlocks: Record<string, BlockInterface>;
     insertableBlocks: Record<string, BlockInterface>;
@@ -285,6 +313,9 @@ async function planOperation({
     schemaRootBlockName: string;
     blockContext: BlockContext;
 }): Promise<{ result: BlockEditResult; step: BlockEditStep | null }> {
+    const visibleBlocks = blocks.filter((block) => block.visible !== false);
+    const isMaxVisibleBlocksReached = maxVisibleBlocks !== undefined && visibleBlocks.length >= maxVisibleBlocks;
+
     switch (edit.operation) {
         case "insert": {
             const { child, warnings } = await createBlockChild({
@@ -294,8 +325,14 @@ async function planOperation({
                 blockContext,
                 type: edit.type,
                 props: edit.props,
+                visible: !isMaxVisibleBlocksReached,
             });
             const index = clampInsertIndex(edit.index, blocks.length);
+            if (isMaxVisibleBlocksReached) {
+                warnings.push(
+                    `The block was inserted hidden, because the page's ${blockListName} shows at most ${maxVisibleBlocks} visible ${maxVisibleBlocks === 1 ? "block" : "blocks"}. To insert it visible, hide ${describeKeys(visibleBlocks)} in a preceding operation of the same batch.`,
+                );
+            }
 
             return {
                 result: { operation: "insert", key: child.key, type: child.type, index, ...(warnings.length > 0 ? { warnings } : {}) },
@@ -303,7 +340,7 @@ async function planOperation({
             };
         }
         case "update": {
-            const { child: currentChild, index } = findBlockByKey({ blocks, key: edit.key, action: "updated" });
+            const { child: currentChild, index } = findBlockByKey({ blocks, blockListName, key: edit.key, action: "updated" });
             const { child, warnings } = await createUpdatedBlockChild({
                 supportedBlocks,
                 schemaRootBlockName,
@@ -318,7 +355,7 @@ async function planOperation({
             };
         }
         case "remove": {
-            const { child, index } = findBlockByKey({ blocks, key: edit.key, action: "removed" });
+            const { child, index } = findBlockByKey({ blocks, blockListName, key: edit.key, action: "removed" });
 
             return {
                 result: { operation: "remove", key: child.key, type: child.type, index },
@@ -326,7 +363,7 @@ async function planOperation({
             };
         }
         case "move": {
-            const { child, index: from } = findBlockByKey({ blocks, key: edit.key, action: "moved" });
+            const { child, index: from } = findBlockByKey({ blocks, blockListName, key: edit.key, action: "moved" });
             const index = clampMoveIndex(edit.index, blocks.length);
 
             return {
@@ -339,9 +376,14 @@ async function planOperation({
         case "show":
         case "hide": {
             const visible = edit.operation === "show";
-            const { child, index } = findBlockByKey({ blocks, key: edit.key, action: visible ? "shown" : "hidden" });
+            const { child, index } = findBlockByKey({ blocks, blockListName, key: edit.key, action: visible ? "shown" : "hidden" });
             // Visible unless the state says otherwise: an older block state may not carry the flag.
             const wasVisible = child.visible !== false;
+            if (visible && !wasVisible && isMaxVisibleBlocksReached) {
+                throw new Error(
+                    `The page's ${blockListName} shows at most ${maxVisibleBlocks} visible ${maxVisibleBlocks === 1 ? "block" : "blocks"}, so "${child.key}" can only be shown once ${describeKeys(visibleBlocks)} ${visibleBlocks.length === 1 ? "is" : "are"} hidden. Hide ${visibleBlocks.length === 1 ? "it" : "them"} in a preceding operation of the same batch.`,
+                );
+            }
 
             return {
                 result: { operation: edit.operation, key: child.key, type: child.type, index, wasVisible },

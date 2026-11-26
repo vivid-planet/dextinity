@@ -28,6 +28,7 @@ const child = (key: string, props: unknown = { text: key, alignment: "left" }, v
 const plan = (blocks: BlocksBlockChild[], operations: Parameters<typeof planBlockEdits>[0]["operations"]) =>
     planBlockEdits({
         blocks,
+        blockListName: "content",
         operations,
         supportedBlocks,
         additionalItemFields: { userGroup: { defaultValue: "all" } },
@@ -81,6 +82,7 @@ describe("planBlockEdits", () => {
         const planWithNews = (operations: Parameters<typeof planBlockEdits>[0]["operations"]) =>
             planBlockEdits({
                 blocks,
+                blockListName: "content",
                 operations,
                 supportedBlocks: { text: textBlock, news: textBlock },
                 insertableBlocks: { text: textBlock },
@@ -133,7 +135,46 @@ describe("planBlockEdits", () => {
         const blocks = [child("group", { content: { blocks: [child("nested")] } })];
 
         await expect(plan(blocks, [{ operation: "remove", key: "nested" }])).rejects.toThrow(
-            "is nested inside another block, and only the page's top-level content blocks can be removed.",
+            "is nested inside another block, and only the top-level blocks of the page's content can be removed.",
         );
+    });
+
+    describe("in a list that shows a single visible block, like the stage", () => {
+        const planStage = (blocks: BlocksBlockChild[], operations: Parameters<typeof planBlockEdits>[0]["operations"]) =>
+            planBlockEdits({
+                blocks,
+                blockListName: "stage",
+                maxVisibleBlocks: 1,
+                operations,
+                supportedBlocks,
+                schemaRootBlockName: "Stage",
+                blockContext,
+            });
+
+        it("inserts a block hidden while another one is visible, and says so", async () => {
+            const blocks = [child("a")];
+
+            const { apply, results } = await planStage(blocks, [{ operation: "insert", type: "text", props: { text: "New" } }]);
+
+            expect(apply?.(blocks)[1].visible).toBe(false);
+            expect(results[0]).toMatchObject({ warnings: [expect.stringContaining("was inserted hidden")] });
+        });
+
+        it("refuses to show a block while another one is visible", async () => {
+            await expect(planStage([child("a"), child("b", undefined, false)], [{ operation: "show", key: "b" }])).rejects.toThrow(
+                'so "b" can only be shown once "a" is hidden',
+            );
+        });
+
+        it("switches the visible block when the visible one is hidden first", async () => {
+            const blocks = [child("a"), child("b", undefined, false)];
+
+            const { apply } = await planStage(blocks, [
+                { operation: "hide", key: "a" },
+                { operation: "show", key: "b" },
+            ]);
+
+            expect(apply?.(blocks).map((block) => block.visible)).toEqual([false, true]);
+        });
     });
 });

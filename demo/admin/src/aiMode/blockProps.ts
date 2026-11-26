@@ -4,17 +4,24 @@ import { collectBlockKeys } from "./blockStateSummary";
 
 export type BlocksBlockChild = BlocksBlockState["blocks"][number];
 
-const describeBlocks = (blocks: readonly BlocksBlockChild[]): string => {
-    return blocks.length > 0 ? blocks.map((block) => `"${block.key}" (${block.type})`).join(", ") : "none, the page has no content blocks yet";
+/** The root block a batch of block edits acts on, named as get_page_state reports it. */
+export type BlockListName = "content" | "stage";
+
+const describeBlocks = (blocks: readonly BlocksBlockChild[], blockListName: BlockListName): string => {
+    return blocks.length > 0
+        ? blocks.map((block) => `"${block.key}" (${block.type})`).join(", ")
+        : `none, the page's ${blockListName} has no blocks yet`;
 };
 
 /** `action` is named for the error messages only — resolving a key is the same question either way. */
 export function findBlockByKey({
     blocks,
+    blockListName,
     key,
     action,
 }: {
     blocks: readonly BlocksBlockChild[];
+    blockListName: BlockListName;
     key: string;
     action: "updated" | "removed" | "moved" | "shown" | "hidden";
 }): { child: BlocksBlockChild; index: number } {
@@ -26,10 +33,14 @@ export function findBlockByKey({
     // The block state summary reports the keys of nested blocks as well, so the agent can plausibly
     // address one. Say why it cannot be acted on rather than claiming the key does not exist.
     if (blocks.some((block) => collectBlockKeys(block.props).includes(key))) {
-        throw new Error(`The block "${key}" is nested inside another block, and only the page's top-level content blocks can be ${action}.`);
+        throw new Error(
+            `The block "${key}" is nested inside another block, and only the top-level blocks of the page's ${blockListName} can be ${action}.`,
+        );
     }
 
-    throw new Error(`No block with the key "${key}" is in the page's content. Blocks that can be ${action}: ${describeBlocks(blocks)}.`);
+    throw new Error(
+        `No block with the key "${key}" is in the page's ${blockListName}. Blocks that can be ${action}: ${describeBlocks(blocks, blockListName)}.`,
+    );
 }
 
 export const describeType = (value: unknown): string => {
@@ -126,6 +137,7 @@ export async function toBlockState({
     props,
     givenFields,
     blockContext,
+    schemaLookup,
 }: {
     block: BlockInterface;
     type: string;
@@ -140,22 +152,26 @@ export async function toBlockState({
     /** The fields the agent supplied, which an update merges into more than it passes on. */
     givenFields: readonly string[];
     blockContext: BlockContext;
+    /** How the agent finds the block's fields, for a block that is not reached through the mapping of a blocks or list block. */
+    schemaLookup?: string;
 }): Promise<{ state: unknown; warnings: string[] }> {
+    const lookup =
+        schemaLookup ??
+        `call get_block_schema for "${schemaRootBlockName}" and follow its inputFields -> blocks -> props mapping for "${type}" to get the block name — a name that exists is not proof that it is the right one — then call get_block_schema for that name to get the fields`;
+
     let state: unknown;
     try {
         state = await block.output2State(props, blockContext);
     } catch (error) {
         const reason = error instanceof Error ? error.message : String(error);
-        throw new Error(
-            `The given props are not valid for the "${type}" block: ${reason}. Call get_block_schema for "${schemaRootBlockName}" and follow its inputFields -> blocks -> props mapping for "${type}" to get the block name, then call get_block_schema for that name to get the fields.`,
-        );
+        throw new Error(`The given props are not valid for the "${type}" block: ${reason}. To get its fields, ${lookup}.`);
     }
 
     const unknownFields = findUnknownFields({ block, state, givenFields });
     if (unknownFields && unknownFields.unknown.length > 0) {
         throw new Error(
             `The "${type}" block has no ${unknownFields.unknown.length === 1 ? "field" : "fields"} ${listFields(unknownFields.unknown)}, so what was passed for ${unknownFields.unknown.length === 1 ? "it" : "them"} would be dropped and the block would keep the content it has. Its fields are ${listFields(unknownFields.fields)}. ` +
-                `Props built from another block's schema look like this: call get_block_schema for "${schemaRootBlockName}" and follow its inputFields -> blocks -> props mapping for "${type}" to get the block name — a name that exists is not proof that it is the right one — then call get_block_schema for that name to get the fields.`,
+                `Props built from another block's schema look like this: ${lookup}.`,
         );
     }
 
@@ -165,4 +181,42 @@ export async function toBlockState({
     }
 
     return { state, warnings };
+}
+
+/**
+ * Starting the round trip from the editor state — rather than from what the page was last saved as —
+ * keeps the user's unsaved changes to the fields the agent does not touch. It still drops the states of
+ * a one-of block's inactive variants inside the block, as those are not part of the saved shape.
+ */
+export async function updateBlockState({
+    block,
+    type,
+    schemaRootBlockName,
+    state,
+    props,
+    blockContext,
+    schemaLookup,
+}: {
+    block: BlockInterface;
+    type: string;
+    /** See `toBlockState`. */
+    schemaRootBlockName: string;
+    state: unknown;
+    props: unknown;
+    blockContext: BlockContext;
+    /** See `toBlockState`. */
+    schemaLookup?: string;
+}): Promise<{ state: unknown; warnings: string[] }> {
+    const patch = asBlockProps(props);
+    // The merged props hold the block's current fields as well, so only the agent's are checked
+    // against the ones the block has — see `toBlockState`.
+    return toBlockState({
+        block,
+        type,
+        schemaRootBlockName,
+        props: mergeBlockProps(block.state2Output(state), patch),
+        givenFields: Object.keys(patch),
+        blockContext,
+        schemaLookup,
+    });
 }

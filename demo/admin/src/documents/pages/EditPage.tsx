@@ -32,14 +32,16 @@ import {
 } from "@dextinity/cms-admin";
 import { IconButton, Stack } from "@mui/material";
 import { useAiModeToolset } from "@src/aiMode/AiModeToolsets";
-import type { BlocksBlockChild } from "@src/aiMode/blockProps";
+import { withListItemType, withoutListItemType } from "@src/aiMode/blockChildren";
+import { updateBlockState } from "@src/aiMode/blockProps";
 import { summarizeBlockState, summarizeSeoBlockState } from "@src/aiMode/blockStateSummary";
 import { type EditBlocks, planBlockEdits } from "@src/aiMode/editBlocks";
-import { type AiModePageState, createPageTools } from "@src/aiMode/pageTools";
+import { type AiModePageState, createPageTools, stageItemType, type UpdateSeo } from "@src/aiMode/pageTools";
 import { useEffect, useRef } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { matchPath, useLocation } from "react-router";
 
+import { BasicStageBlock } from "./blocks/BasicStageBlock";
 import { pageContentAdditionalItemFields, PageContentBlock, pageContentBlocks } from "./blocks/PageContentBlock";
 import { SeoBlock } from "./blocks/SeoBlock";
 import { StageBlock } from "./blocks/StageBlock";
@@ -166,43 +168,67 @@ export const EditPage = ({ id }: Props) => {
 
     const document = pageState?.document;
 
-    const updateContentBlocks = (update: (blocks: BlocksBlockChild[]) => BlocksBlockChild[]) => {
-        setPageState((previous) => {
-            if (!previous?.document) {
-                return previous;
-            }
-
-            return {
-                ...previous,
-                document: {
-                    ...previous.document,
-                    content: {
-                        ...previous.document.content,
-                        // The steps keep the item fields of every block and give an inserted one the default values of
-                        // `pageContentAdditionalItemFields`, which the generic block child type doesn't know about.
-                        blocks: update(previous.document.content.blocks) as typeof previous.document.content.blocks,
-                    },
-                },
-            };
-        });
-    };
-
     const { isBlockSupported } = useBlocksConfig();
     const insertablePageContentBlocks = isBlockSupported
         ? Object.fromEntries(Object.entries(pageContentBlocks).filter(([, block]) => isBlockSupported(block, scope)))
         : pageContentBlocks;
 
-    const latestContentBlocksRef = useRef(document?.content.blocks);
+    const latestDocumentRef = useRef(document);
     useEffect(() => {
-        latestContentBlocksRef.current = document?.content.blocks;
+        latestDocumentRef.current = document;
     });
+
+    // Planning awaits conversions that can query the API. Applying the result to a root block that changed
+    // meanwhile, by the user or because another page was opened, would undo those changes or edit the wrong
+    // page, so the whole change is rejected instead.
+    const assertUnchangedSincePlanning = (hasChanged: boolean) => {
+        if (hasChanged) {
+            throw new Error("The page changed while the edits were prepared, so none of them were applied. Read the page state again and retry.");
+        }
+    };
 
     // Deliberately not memoized: useAiModeToolset registers it again on every render, so the agent always reaches the
     // callback of the latest one.
-    const editBlocks: EditBlocks = async ({ operations }) => {
+    const editBlocks: EditBlocks = async ({ target, operations }) => {
+        if (target === "stage") {
+            const plannedStageBlocks = document?.stage.blocks ?? [];
+            const { apply, results } = await planBlockEdits({
+                blocks: withListItemType(plannedStageBlocks, stageItemType),
+                blockListName: "stage",
+                maxVisibleBlocks: 1,
+                operations,
+                supportedBlocks: { [stageItemType]: BasicStageBlock },
+                schemaRootBlockName: "Stage",
+                blockContext,
+            });
+
+            if (apply) {
+                assertUnchangedSincePlanning(latestDocumentRef.current?.stage.blocks !== plannedStageBlocks);
+                setPageState((previous) =>
+                    previous?.document
+                        ? {
+                              ...previous,
+                              document: {
+                                  ...previous.document,
+                                  stage: {
+                                      ...previous.document.stage,
+                                      blocks: withoutListItemType(
+                                          apply(withListItemType(previous.document.stage.blocks, stageItemType)),
+                                      ) as typeof previous.document.stage.blocks,
+                                  },
+                              },
+                          }
+                        : previous,
+                );
+            }
+
+            return { results };
+        }
+
         const plannedContentBlocks = document?.content.blocks ?? [];
         const { apply, results } = await planBlockEdits({
             blocks: plannedContentBlocks,
+            blockListName: "content",
             operations,
             supportedBlocks: pageContentBlocks,
             insertableBlocks: insertablePageContentBlocks,
@@ -213,20 +239,47 @@ export const EditPage = ({ id }: Props) => {
         });
 
         if (apply) {
-            // Planning awaits conversions that can query the API. Applying the batch to content that changed
-            // meanwhile, by the user or because another page was opened, would undo those changes or edit the
-            // wrong page, so the batch is rejected as a whole instead.
-            if (latestContentBlocksRef.current !== plannedContentBlocks) {
-                throw new Error(
-                    "The page's content changed while the edits were prepared, so none of the operations were applied. Read the page state again and retry.",
-                );
-            }
-
+            assertUnchangedSincePlanning(latestDocumentRef.current?.content.blocks !== plannedContentBlocks);
             // One update for the whole batch, so the page is marked as changed once rather than per operation.
-            updateContentBlocks(apply);
+            setPageState((previous) =>
+                previous?.document
+                    ? {
+                          ...previous,
+                          document: {
+                              ...previous.document,
+                              content: {
+                                  ...previous.document.content,
+                                  // The steps keep the item fields of every block and give an inserted one the default values of
+                                  // `pageContentAdditionalItemFields`, which the generic block child type doesn't know about.
+                                  blocks: apply(previous.document.content.blocks) as typeof previous.document.content.blocks,
+                              },
+                          },
+                      }
+                    : previous,
+            );
         }
 
         return { results };
+    };
+
+    const updateSeo: UpdateSeo = async ({ props }) => {
+        const plannedSeo = document?.seo;
+        const { state, warnings } = await updateBlockState({
+            block: SeoBlock,
+            type: "Seo",
+            schemaRootBlockName: "Seo",
+            state: plannedSeo ?? SeoBlock.defaultValues(),
+            props,
+            blockContext,
+            schemaLookup: 'call get_block_schema for "Seo"',
+        });
+
+        assertUnchangedSincePlanning(latestDocumentRef.current?.seo !== plannedSeo);
+        setPageState((previous) =>
+            previous?.document ? { ...previous, document: { ...previous.document, seo: state as typeof previous.document.seo } } : previous,
+        );
+
+        return { warnings };
     };
 
     const aiModePageState: AiModePageState | null =
@@ -259,6 +312,7 @@ export const EditPage = ({ id }: Props) => {
                           seo: summarizeSeoBlockState(SeoBlock, document.seo),
                       }),
                       editBlocks,
+                      updateSeo,
                   }),
               }
             : null,

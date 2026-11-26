@@ -11,7 +11,7 @@ const meta = {
     argTypes: {
         children: { control: false },
         colorScheme: { control: "radio", options: ["light", "dark", "high-contrast"] },
-        brand: { control: "select", options: ["dextinity", "ai-hub", "groupcms-ai", "original"] },
+        brand: { control: "select", options: ["dextinity", "ai-hub", "groupcms-ai", "original", "vivid-planet"] },
         density: { control: "radio", options: ["comfortable", "standard", "compact"] },
         className: { control: false },
     },
@@ -56,6 +56,13 @@ export const GroupCmsAi: Story = {
  */
 export const Original: Story = {
     args: { brand: "original" },
+};
+
+/**
+ * Vivid Planet: the sky blue and gray of Vivid Planet with Montserrat, and an aurora gradient from blue into violet.
+ */
+export const VividPlanet: Story = {
+    args: { brand: "vivid-planet" },
 };
 
 export const Compact: Story = {

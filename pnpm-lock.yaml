@@ -214,7 +214,7 @@ importers:
         specifier: ^9.1.7
         version: 9.1.7
       knip:
-        specifier: ^6.47.0
+        specifier: ^6.48.0
         version: 6.48.0
       lint-staged:
         specifier: ^17.6.2

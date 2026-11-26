@@ -304,7 +304,7 @@ Components read their colors, metrics, and font family from CSS custom propertie
 
 The tokens live in SCSS partials under [`src/theme/`](src/theme), composed into the `Theme` module with `@use` and wrapped in a single `@layer dextinity`. Each layer references only the layers before it:
 
-1. **Brand** (`_brand.scss`) — hues and chromas (primary, secondary, neutral tint, success, danger), font families, display weight and tracking, label case, control radius, and the radius factor. The brands `dextinity`, `ai-hub`, `groupcms-ai`, `original`, and `vivid-planet` are built in; `original` and `vivid-planet` also override semantic and component tokens (see [Brands](#brands)).
+1. **Brand** (`_brand.scss`) — hues and chromas (primary, secondary, neutral tint, success, danger), font families, display weight and tracking, label case, control radius, and the radius factor. The brands `dextinity`, `ai-hub`, `comet`, `groupcms-ai`, and `vivid-planet` are built in; `comet` and `vivid-planet` also override semantic and component tokens (see [Brands](#brands)).
 2. **Primitives** (`_primitives.scss`) — 11-stop OKLCH scales on a fixed lightness curve, computed from the brand's hue and chroma; spacing and radii.
 3. **Semantic** (`_semantic.scss`) — surfaces, text, lines, accent, status, material (glass, blur, grain, light fields), and shadows, per color scheme (light, dark, high contrast). High contrast turns light and glass off and lines on.
 4. **Typography, motion, density, layout, layers** (`_typography.scss`, `_motion.scss`, `_density.scss`, `_layout.scss`, `_layers.scss`) — text styles and the font-weight scale, one easing with three durations (reduced motion keeps only short fades), fixed metrics per density level, the page layout rhythm, and the stacking order of overlays.
@@ -346,7 +346,7 @@ A brand is a CSS block on `[data-dextinity-brand="<name>"]` that sets the `--dex
 }
 ```
 
-A built-in brand that changes more than the brand tokens, like `original` or `vivid-planet`, keeps those overrides in its own partial (e.g. `_originalBrand.scss`), `@use`d after the component tokens. Its rules add the color scheme attribute to the brand selector, e.g. `[data-dextinity-brand="original"][data-dextinity-color-scheme="light"]`, so they outrank the tokens declared on the theme boundary, and leave the high-contrast color scheme its own values for colors, glass, and lines.
+A built-in brand that changes more than the brand tokens, like `comet` or `vivid-planet`, keeps those overrides in its own partial (e.g. `_cometBrand.scss`), `@use`d after the component tokens. Its rules add the color scheme attribute to the brand selector, e.g. `[data-dextinity-brand="comet"][data-dextinity-color-scheme="light"]`, so they outrank the tokens declared on the theme boundary, and leave the high-contrast color scheme its own values for colors, glass, and lines.
 
 ### Selecting a color scheme, brand, and density
 

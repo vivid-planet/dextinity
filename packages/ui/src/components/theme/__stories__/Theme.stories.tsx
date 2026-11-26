@@ -11,7 +11,7 @@ const meta = {
     argTypes: {
         children: { control: false },
         colorScheme: { control: "radio", options: ["light", "dark", "high-contrast"] },
-        brand: { control: "select", options: ["dextinity", "ai-hub", "groupcms-ai", "original", "vivid-planet"] },
+        brand: { control: "select", options: ["dextinity", "ai-hub", "comet", "groupcms-ai", "vivid-planet"] },
         density: { control: "radio", options: ["comfortable", "standard", "compact"] },
         className: { control: false },
     },
@@ -51,11 +51,11 @@ export const GroupCmsAi: Story = {
 };
 
 /**
- * Original Style: the flat look of the MUI-based admin, with its light blue, gray neutrals, Roboto, small corner radii, and
+ * Comet: the flat look of the MUI-based admin, with its light blue, gray neutrals, Roboto, small corner radii, and
  * opaque surfaces instead of glass.
  */
-export const Original: Story = {
-    args: { brand: "original" },
+export const Comet: Story = {
+    args: { brand: "comet" },
 };
 
 /**

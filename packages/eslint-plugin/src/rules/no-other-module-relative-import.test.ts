@@ -34,5 +34,19 @@ ruleTester.run("no-other-module-relative-import", noOtherModuleRelativeImport, {
             errors,
             output: `import Bar from "@src/Bar";`,
         },
+        {
+            code: `import Bar from "../moduleb/Bar";`,
+            filename: `${process.cwd()}/src/modulea/Foo.ts`,
+            options: [{ sourceRootAlias: "@app" }],
+            errors,
+            output: `import Bar from "@app/moduleb/Bar";`,
+        },
+        {
+            code: `import Bar from "../moduleb/Bar";`,
+            filename: `${process.cwd()}/app/modulea/Foo.ts`,
+            options: [{ sourceRoot: "./app" }],
+            errors,
+            output: `import Bar from "@src/moduleb/Bar";`,
+        },
     ],
 });

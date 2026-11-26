@@ -1,6 +1,7 @@
 import { BrevoModule } from "@dextinity/brevo-api";
 import {
     AccessLogModule,
+    AiHubModule,
     AzureAiTranslatorModule,
     AzureOpenAiContentGenerationModule,
     BlobStorageModule,
@@ -28,7 +29,6 @@ import { ApolloDriver, type ApolloDriverConfig, ValidationError } from "@nestjs/
 import { type DynamicModule, Module } from "@nestjs/common";
 import { ModuleRef } from "@nestjs/core";
 import { type Enhancer, GraphQLModule } from "@nestjs/graphql";
-import { AiHubModule } from "@src/ai-hub/ai-hub.module.js";
 import { AppPermission } from "@src/auth/app-permission.enum.js";
 import { BlacklistedContacts } from "@src/brevo/blacklisted-contacts/entity/blacklisted-contacts.entity.js";
 import { BrevoContactSubscribeModule } from "@src/brevo/brevo-contact/brevo-contact-subscribe.module.js";

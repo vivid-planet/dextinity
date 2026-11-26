@@ -24,6 +24,7 @@ enum Permission {
   sitePreview
   blockPreview
   fullTextSearch
+  aiHub
   brevoNewsletterConfig
   brevoNewsletter
 }

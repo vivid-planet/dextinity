@@ -150,6 +150,14 @@ services:
             scope: RUN_TIME
             type: SECRET
             value: ${S3_SECRET_ACCESS_KEY}
+          # The staging AI Hub, as in local development
+          - key: AI_HUB_API_URL
+            scope: RUN_TIME
+            value: https://staging-ai-hub-api.dextinity.com
+          - key: AI_HUB_API_KEY
+            scope: RUN_TIME
+            type: SECRET
+            value: ${AI_HUB_API_KEY}
           # The API requires these, but no mail server is deployed, so sending mails fails
           - key: MAILER_HOST
             scope: RUN_TIME
@@ -303,6 +311,12 @@ services:
             scope: RUN_TIME
             type: SECRET
             value: ${MUI_LICENSE_KEY}
+          - key: AI_HUB_WEB_COMPONENT_SCRIPT_SRC
+            scope: RUN_TIME
+            value: https://staging-ai-hub-webcomponent.dextinity.com/webcomponent/ai-hub-chat.mjs
+          - key: AI_HUB_WIDGET_ID
+            scope: RUN_TIME
+            value: ${AI_HUB_WIDGET_ID}
       http_port: 3000
       instance_count: 1
       instance_size_slug: apps-s-1vcpu-0.5gb

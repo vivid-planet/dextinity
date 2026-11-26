@@ -967,6 +967,27 @@ importers:
       '@mui/utils':
         specifier: ^9.5.0
         version: 9.5.0(@types/react@19.3.0)(react@19.3.1)
+      '@tiptap/core':
+        specifier: ^3.35.0
+        version: 3.35.0(@tiptap/pm@3.35.0)
+      '@tiptap/extension-subscript':
+        specifier: ^3.35.0
+        version: 3.35.0(@tiptap/core@3.35.0(@tiptap/pm@3.35.0))(@tiptap/pm@3.35.0)
+      '@tiptap/extension-superscript':
+        specifier: ^3.35.0
+        version: 3.35.0(@tiptap/core@3.35.0(@tiptap/pm@3.35.0))(@tiptap/pm@3.35.0)
+      '@tiptap/extensions':
+        specifier: ^3.35.0
+        version: 3.35.0(@tiptap/core@3.35.0(@tiptap/pm@3.35.0))(@tiptap/pm@3.35.0)
+      '@tiptap/pm':
+        specifier: ^3.35.0
+        version: 3.35.0
+      '@tiptap/react':
+        specifier: ^3.35.0
+        version: 3.35.0(@floating-ui/dom@1.8.0)(@tiptap/core@3.35.0(@tiptap/pm@3.35.0))(@tiptap/pm@3.35.0)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      '@tiptap/starter-kit':
+        specifier: ^3.35.0
+        version: 3.35.0
       date-fns:
         specifier: ^4.4.0
         version: 4.4.0
@@ -1555,24 +1576,12 @@ importers:
       '@tiptap/core':
         specifier: ^3.35.0
         version: 3.35.0(@tiptap/pm@3.35.0)
-      '@tiptap/extension-subscript':
-        specifier: ^3.35.0
-        version: 3.35.0(@tiptap/core@3.35.0(@tiptap/pm@3.35.0))(@tiptap/pm@3.35.0)
-      '@tiptap/extension-superscript':
-        specifier: ^3.35.0
-        version: 3.35.0(@tiptap/core@3.35.0(@tiptap/pm@3.35.0))(@tiptap/pm@3.35.0)
-      '@tiptap/extensions':
-        specifier: ^3.35.0
-        version: 3.35.0(@tiptap/core@3.35.0(@tiptap/pm@3.35.0))(@tiptap/pm@3.35.0)
       '@tiptap/pm':
         specifier: ^3.35.0
         version: 3.35.0
       '@tiptap/react':
         specifier: ^3.35.0
         version: 3.35.0(@floating-ui/dom@1.8.0)(@tiptap/core@3.35.0(@tiptap/pm@3.35.0))(@tiptap/pm@3.35.0)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
-      '@tiptap/starter-kit':
-        specifier: ^3.35.0
-        version: 3.35.0
       change-case:
         specifier: ^5.4.4
         version: 5.4.4
@@ -12874,10 +12883,6 @@ packages:
 
   end-of-stream@1.4.5:
     resolution: {integrity: sha512-ooEGc6HP26xXq/N+GCGOT0JKCLDGrq2bQUZrQ7gyrJiZANJ/8YDTxTpQBXGMn+WbIQXNVpyWymm7KYVICQnyOg==}
-
-  enhanced-resolve@5.26.0:
-    resolution: {integrity: sha512-9vhedylFonb2YGogzUKX6+Ja72gOJbN1QHAqdrvqLwhdl/QWbKopzoUC9EbQNVsAns/bx/4uyqalrQAoy1IByw==}
-    engines: {node: '>=10.13.0'}
 
   enhanced-resolve@5.27.0:
     resolution: {integrity: sha512-Do6BB2xzlcc/odFg+XEYyneAx4T/WfywO71yw9ePS2tVfRsf7JVR4mUeELadIeHzixkzbG5DpluiEFPi2WGfYQ==}
@@ -31571,12 +31576,6 @@ snapshots:
     dependencies:
       once: 1.4.0
 
-  enhanced-resolve@5.26.0:
-    dependencies:
-      graceful-fs: 4.2.11
-      tapable: 2.3.3
-    optional: true
-
   enhanced-resolve@5.27.0:
     dependencies:
       graceful-fs: 4.2.11
@@ -32531,7 +32530,7 @@ snapshots:
       node-abort-controller: 3.1.1
       schema-utils: 3.3.0
       semver: 7.8.5
-      tapable: 2.3.3
+      tapable: 2.3.4
       typescript: 6.0.3
       webpack: 5.113.0(@swc/core@1.16.22(@swc/helpers@0.5.23))(clean-css@5.3.3)(cssnano@6.1.2(postcss@8.5.32))(csso@5.0.5)(esbuild@0.28.2)(html-minifier-terser@7.2.0)(lightningcss@1.33.0)(postcss@8.5.32)(sharp@0.35.5(@types/node@24.19.2))(svgo@3.3.5)(uglify-js@3.19.3)
     optional: true
@@ -39158,8 +39157,8 @@ snapshots:
   tsconfig-paths-webpack-plugin@4.2.0:
     dependencies:
       chalk: 4.1.2
-      enhanced-resolve: 5.26.0
-      tapable: 2.3.3
+      enhanced-resolve: 5.27.0
+      tapable: 2.3.4
       tsconfig-paths: 4.2.0
     optional: true
 

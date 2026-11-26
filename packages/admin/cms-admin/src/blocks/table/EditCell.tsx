@@ -89,7 +89,7 @@ const EditorWrapper = styled(Box)(({ theme }) => ({
     position: "relative",
     boxShadow: theme.shadows[1],
 
-    "& :has(> .DextinityAdminRteToolbar-root, > .DextinityAdminTipTapToolbar-root)": {
+    "& :has(> .DextinityAdminRteToolbar-root, > .DextinityAdminTipTapRichTextEditor-toolbar)": {
         maxHeight: "60vh",
         overflowY: "auto",
     },

@@ -26,7 +26,7 @@ We recommend planning the switch to the TipTap Rich Text Block early. New conten
 
 :::note
 
-The TipTap Rich Text Block only replaces the Draft.js-based `RichTextBlock`. It does **not** replace `@dextinity/admin-rte`, which remains available for using the rich text editor directly (non-block usage), for instance as a standalone form field.
+The TipTap Rich Text Block only replaces the Draft.js-based `RichTextBlock`. To use the TipTap editor outside of blocks, for instance as a form field, see [Rich text outside of blocks](#rich-text-outside-of-blocks). `@dextinity/admin-rte` remains available for the Draft.js editor.
 
 :::
 
@@ -594,3 +594,41 @@ const nodeMapping: Record<string, TipTapNodeHandler> = {
     cmsInlineBlock: renderCmsBlock, // inline child blocks
 };
 ```
+
+## Rich text outside of blocks
+
+The editor of the block is available as `TipTapRichTextEditor` and `TipTapRichTextEditorField` from `@dextinity/admin`, for instance for an entity's description. They take the same options as `createTipTapRichTextBlock`, except for child blocks, and store the TipTap JSON in the field's value. A link stores the data of a form you pass instead of a link block:
+
+```tsx title="ManufacturerForm.tsx (Admin)"
+import { TipTapRichTextEditorField, type TipTapRichTextEditorOptions } from "@dextinity/admin";
+
+const descriptionOptions: TipTapRichTextEditorOptions = {
+    textBlocks: [{ name: "paragraph", tag: "p", label: "Paragraph" }],
+    link: {
+        createInitialData: () => ({ url: "" }),
+        Form: ({ data, onChange }) => (
+            <TextField
+                label="URL"
+                value={data.url}
+                onChange={(event) => onChange({ url: event.target.value })}
+            />
+        ),
+    },
+};
+
+<TipTapRichTextEditorField name="description" label="Description" options={descriptionOptions} />;
+```
+
+On the API, store the content in a JSON property and validate it in the input with `IsTipTapRichText` from `@dextinity/cms-api`, using the same options. `link` takes a class that validates a link's data:
+
+```ts title="manufacturer.input.ts (API)"
+@InputType()
+export class ManufacturerInput {
+    @IsNullable()
+    @IsTipTapRichText({ textBlocks: [{ name: "paragraph", tag: "p" }] })
+    @Field(() => GraphQLJSONObject, { nullable: true })
+    description?: TipTapRichTextContent;
+}
+```
+
+On the site, render the content with `renderTipTapRichText` from `@dextinity/site-react`, the same way as the block's content.

@@ -1,4 +1,3 @@
-import { CancelButton, DeleteButton, OkayButton } from "@dextinity/admin";
 // eslint-disable-next-line no-restricted-imports
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -9,39 +8,42 @@ import type { Editor } from "@tiptap/react";
 import { type MouseEvent, useMemo, useState } from "react";
 import { FormattedMessage } from "react-intl";
 
-import type { BlockInterface, BlockState, LinkBlockInterface } from "../types";
+import { CancelButton } from "../common/buttons/cancel/CancelButton";
+import { DeleteButton } from "../common/buttons/delete/DeleteButton";
+import { OkayButton } from "../common/buttons/okay/OkayButton";
+import type { TipTapRichTextEditorLink } from "./options";
 
-interface TipTapLinkDialogProps {
+interface LinkDialogProps {
     editor: Editor;
-    linkBlock: BlockInterface & LinkBlockInterface;
+    link: TipTapRichTextEditorLink;
     onClose: () => void;
 }
 
-export function TipTapLinkDialog({ editor, linkBlock: LinkBlock, onClose }: TipTapLinkDialogProps) {
+export function LinkDialog({ editor, link, onClose }: LinkDialogProps) {
     const isEditing = editor.isActive("link");
-    const existingLinkData = isEditing ? (editor.getAttributes("link").data as BlockState<typeof LinkBlock> | undefined) : undefined;
+    const existingLinkData: unknown = isEditing ? editor.getAttributes("link").data : undefined;
 
-    const linkState: BlockState<typeof LinkBlock> = useMemo(() => {
+    const linkData = useMemo(() => {
         if (existingLinkData) {
             return existingLinkData;
         }
-        return LinkBlock.defaultValues();
-    }, [existingLinkData, LinkBlock]);
+        return link.createInitialData();
+    }, [existingLinkData, link]);
 
-    const [newLinkState, setNewLinkState] = useState<BlockState<typeof LinkBlock>>(linkState);
+    const [newLinkData, setNewLinkData] = useState(linkData);
 
     const handleRemove = (e: MouseEvent) => {
         e.preventDefault();
-        editor.chain().focus().extendMarkRange("link").unsetCmsLink().run();
+        editor.chain().focus().extendMarkRange("link").unsetLinkData().run();
         onClose();
     };
 
     const handleUpdate = (e: MouseEvent) => {
         e.preventDefault();
         if (isEditing) {
-            editor.chain().focus().extendMarkRange("link").unsetCmsLink().setCmsLink({ data: newLinkState }).run();
+            editor.chain().focus().extendMarkRange("link").unsetLinkData().setLinkData({ data: newLinkData }).run();
         } else {
-            editor.chain().focus().setCmsLink({ data: newLinkState }).run();
+            editor.chain().focus().setLinkData({ data: newLinkData }).run();
         }
         onClose();
     };
@@ -53,23 +55,23 @@ export function TipTapLinkDialog({ editor, linkBlock: LinkBlock, onClose }: TipT
             <DialogTitle>
                 {isEditing ? (
                     <FormattedMessage
-                        id="dextinity.blocks.tipTapRichText.editLink"
+                        id="dextinity.tipTapRichTextEditor.editLink"
                         defaultMessage='Edit link "{link}"'
                         values={{ link: selectedText }}
                     />
                 ) : (
-                    <FormattedMessage id="dextinity.blocks.tipTapRichText.insertLink" defaultMessage="Insert link" />
+                    <FormattedMessage id="dextinity.tipTapRichTextEditor.insertLink" defaultMessage="Insert link" />
                 )}
             </DialogTitle>
             <DialogContent>
-                <LinkBlock.AdminComponent state={newLinkState} updateState={setNewLinkState} />
+                <link.Form data={newLinkData} onChange={setNewLinkData} />
             </DialogContent>
             <StyledDialogActions>
                 <CancelButton onClick={onClose} />
                 <ButtonContainer>
                     {isEditing && (
                         <DeleteButton onClick={handleRemove}>
-                            <FormattedMessage id="dextinity.blocks.tipTapRichText.removeLink" defaultMessage="Delete Link" />
+                            <FormattedMessage id="dextinity.tipTapRichTextEditor.removeLink" defaultMessage="Delete Link" />
                         </DeleteButton>
                     )}
                     <OkayButton onClick={handleUpdate} />

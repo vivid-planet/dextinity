@@ -92,7 +92,7 @@ export interface TipTapRichTextBlockInputInterface extends BlockInputInterface<T
     tipTapContent: JSONContent;
 }
 
-interface TipTapInlineStyle {
+export interface TipTapInlineStyle {
     name: string;
     /**
      * Limits the inline style to the named text blocks, `"ordered-list"` and `"unordered-list"`.
@@ -136,7 +136,7 @@ export interface CreateTipTapRichTextBlockOptions {
      *
      * Content using a tag no text block is configured for, or naming a text block that isn't
      * configured for the tag it is stored as, is rejected during validation. Leave the `p` text
-     * block out for a heading-only block (e.g. a headline); that also disables lists, because a
+     * block out for heading-only content (e.g. a headline); that also disables lists, because a
      * list item's content starts with a paragraph.
      *
      * Must match the Admin's `textBlocks`, otherwise the API rejects content the editor produces.
@@ -539,11 +539,25 @@ function containsInvalidInlineStyleMarks(
     return false;
 }
 
-function IsTipTapContent(
+export type TipTapContentValidationOptions = {
+    inlineStyles: TipTapInlineStyle[];
+    isValidLinkData?: (data: unknown) => Promise<boolean>;
+    childBlocks?: Record<string, Block>;
+    maxTextBlocks?: number;
+    allowedPlaceholderNames?: string[];
+    listLevelMax?: number;
+    textBlocks: TipTapResolvedTextBlock[];
+    defaultTextBlock: TipTapResolvedTextBlock;
+    orderedList: false | TipTapResolvedList;
+    unorderedList: false | TipTapResolvedList;
+    textAlign: TipTapTextAlign[];
+};
+
+export function createTipTapContentValidator(
     schema: Schema,
     {
         inlineStyles,
-        linkBlock,
+        isValidLinkData,
         childBlocks,
         maxTextBlocks,
         allowedPlaceholderNames,
@@ -553,21 +567,106 @@ function IsTipTapContent(
         orderedList,
         unorderedList,
         textAlign,
-    }: {
-        inlineStyles: TipTapInlineStyle[];
-        linkBlock?: Block;
-        childBlocks?: Record<string, Block>;
-        maxTextBlocks?: number;
-        allowedPlaceholderNames?: string[];
-        listLevelMax?: number;
-        textBlocks: TipTapResolvedTextBlock[];
-        defaultTextBlock: TipTapResolvedTextBlock;
-        orderedList: false | TipTapResolvedList;
-        unorderedList: false | TipTapResolvedList;
-        textAlign: TipTapTextAlign[];
-    },
-    validationOptions?: ValidationOptions,
-) {
+    }: TipTapContentValidationOptions,
+): (value: unknown) => Promise<boolean> {
+    return async (value: unknown) => {
+        if (typeof value !== "object" || value === null) {
+            return false;
+        }
+        try {
+            // Check for unknown marks before parsing (ProseMirror silently drops them)
+            if (containsUnknownMarks(value, schema)) {
+                return false;
+            }
+            const node = ProseMirrorNode.fromJSON(schema, value);
+            node.check();
+
+            // Validate inline style appliesTo constraints
+            if (containsInvalidInlineStyleMarks(value as JSONContent, { inlineStyles, textBlocks })) {
+                return false;
+            }
+
+            // Enforce maxTextBlocks limit on top-level content nodes
+            if (maxTextBlocks !== undefined) {
+                const content = (value as JSONContent).content;
+                if (Array.isArray(content) && content.length > maxTextBlocks) {
+                    return false;
+                }
+            }
+
+            // Enforce listLevelMax limit on list nesting depth
+            if (listLevelMax !== undefined) {
+                const depth = getListNestingDepth(value as JSONContent);
+                if (depth > listLevelMax) {
+                    return false;
+                }
+            }
+
+            // Enforce the configured text blocks
+            if (
+                containsInvalidTextBlock({
+                    content: value as JSONContent,
+                    textBlocks,
+                    defaultTextBlock,
+                    orderedList,
+                    unorderedList,
+                    textAlign,
+                })
+            ) {
+                return false;
+            }
+
+            // Validate link mark data
+            if (isValidLinkData) {
+                const linkMarks = collectLinkMarks(value as JSONContent);
+                for (const { data } of linkMarks) {
+                    if (!(await isValidLinkData(data))) {
+                        return false;
+                    }
+                }
+            }
+
+            // Validate child block nodes
+            if (childBlocks) {
+                const blockNodes = collectCmsBlockNodes(value as JSONContent);
+                for (const { blockType, data } of blockNodes) {
+                    const childBlock = childBlocks[blockType];
+                    if (!childBlock) {
+                        return false;
+                    }
+                    const validationErrors = await validate(
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        childBlock.blockInputFactory(data as any),
+                        {
+                            forbidNonWhitelisted: true,
+                            whitelist: true,
+                        },
+                    );
+                    if (validationErrors.length > 0) {
+                        return false;
+                    }
+                }
+            }
+
+            // Validate placeholder names
+            if (allowedPlaceholderNames) {
+                const usedNames = collectPlaceholderNames(value as JSONContent);
+                for (const name of usedNames) {
+                    if (!allowedPlaceholderNames.includes(name)) {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        } catch {
+            return false;
+        }
+    };
+}
+
+function IsTipTapContent(schema: Schema, options: TipTapContentValidationOptions, validationOptions?: ValidationOptions) {
+    const isValidTipTapContent = createTipTapContentValidator(schema, options);
     // eslint-disable-next-line @typescript-eslint/no-wrapper-object-types
     return function (object: Object, propertyName: string) {
         registerDecorator({
@@ -575,107 +674,7 @@ function IsTipTapContent(
             target: object.constructor,
             propertyName,
             options: { message: "tipTapContent must be valid TipTap JSON content", ...validationOptions },
-            validator: {
-                async validate(value: unknown) {
-                    if (typeof value !== "object" || value === null) {
-                        return false;
-                    }
-                    try {
-                        // Check for unknown marks before parsing (ProseMirror silently drops them)
-                        if (containsUnknownMarks(value, schema)) {
-                            return false;
-                        }
-                        const node = ProseMirrorNode.fromJSON(schema, value);
-                        node.check();
-
-                        // Validate inline style appliesTo constraints
-                        if (containsInvalidInlineStyleMarks(value as JSONContent, { inlineStyles, textBlocks })) {
-                            return false;
-                        }
-
-                        // Enforce maxTextBlocks limit on top-level content nodes
-                        if (maxTextBlocks !== undefined) {
-                            const content = (value as JSONContent).content;
-                            if (Array.isArray(content) && content.length > maxTextBlocks) {
-                                return false;
-                            }
-                        }
-
-                        // Enforce listLevelMax limit on list nesting depth
-                        if (listLevelMax !== undefined) {
-                            const depth = getListNestingDepth(value as JSONContent);
-                            if (depth > listLevelMax) {
-                                return false;
-                            }
-                        }
-
-                        // Enforce the configured text blocks
-                        if (
-                            containsInvalidTextBlock({
-                                content: value as JSONContent,
-                                textBlocks,
-                                defaultTextBlock,
-                                orderedList,
-                                unorderedList,
-                                textAlign,
-                            })
-                        ) {
-                            return false;
-                        }
-
-                        // Validate link mark data
-                        if (linkBlock) {
-                            const linkMarks = collectLinkMarks(value as JSONContent);
-                            for (const { data } of linkMarks) {
-                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                const validationErrors = await validate(linkBlock.blockInputFactory(data as any), {
-                                    forbidNonWhitelisted: true,
-                                    whitelist: true,
-                                });
-                                if (validationErrors.length > 0) {
-                                    return false;
-                                }
-                            }
-                        }
-
-                        // Validate child block nodes
-                        if (childBlocks) {
-                            const blockNodes = collectCmsBlockNodes(value as JSONContent);
-                            for (const { blockType, data } of blockNodes) {
-                                const childBlock = childBlocks[blockType];
-                                if (!childBlock) {
-                                    return false;
-                                }
-                                const validationErrors = await validate(
-                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                    childBlock.blockInputFactory(data as any),
-                                    {
-                                        forbidNonWhitelisted: true,
-                                        whitelist: true,
-                                    },
-                                );
-                                if (validationErrors.length > 0) {
-                                    return false;
-                                }
-                            }
-                        }
-
-                        // Validate placeholder names
-                        if (allowedPlaceholderNames) {
-                            const usedNames = collectPlaceholderNames(value as JSONContent);
-                            for (const name of usedNames) {
-                                if (!allowedPlaceholderNames.includes(name)) {
-                                    return false;
-                                }
-                            }
-                        }
-
-                        return true;
-                    } catch {
-                        return false;
-                    }
-                },
-            },
+            validator: { validate: isValidTipTapContent },
         });
     };
 }
@@ -853,7 +852,16 @@ export function createTipTapRichTextBlock(
     class TipTapRichTextBlockInput implements TipTapRichTextBlockInputInterface {
         @IsTipTapContent(schema, {
             inlineStyles,
-            linkBlock: LinkBlock,
+            isValidLinkData: LinkBlock
+                ? async (data) => {
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      const validationErrors = await validate(LinkBlock.blockInputFactory(data as any), {
+                          forbidNonWhitelisted: true,
+                          whitelist: true,
+                      });
+                      return validationErrors.length === 0;
+                  }
+                : undefined,
             childBlocks: hasChildBlocks ? childBlocks : undefined,
             maxTextBlocks,
             allowedPlaceholderNames,

@@ -4,15 +4,14 @@ import { createJsonDataAttribute, parseJsonData } from "./jsonDataAttribute";
 
 declare module "@tiptap/core" {
     interface Commands<ReturnType> {
-        cmsLink: {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            setCmsLink: (attrs: { data: any }) => ReturnType;
-            unsetCmsLink: () => ReturnType;
+        richTextEditorLink: {
+            setLinkData: (attrs: { data: any }) => ReturnType;
+            unsetLinkData: () => ReturnType;
         };
     }
 }
 
-export const CmsLink = Mark.create({
+export const Link = Mark.create({
     name: "link",
     inclusive: false,
     excludes: "",
@@ -39,11 +38,11 @@ export const CmsLink = Mark.create({
 
     addCommands() {
         return {
-            setCmsLink:
+            setLinkData:
                 (attrs) =>
                 ({ commands }) =>
                     commands.setMark(this.name, attrs),
-            unsetCmsLink:
+            unsetLinkData:
                 () =>
                 ({ commands }) =>
                     commands.unsetMark(this.name),

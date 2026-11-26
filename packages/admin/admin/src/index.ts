@@ -219,6 +219,13 @@ export { MasterLayout, type MasterLayoutClassKey, type MasterLayoutProps } from 
 export { MasterLayoutContext } from "./mui/MasterLayoutContext";
 export { MuiThemeProvider } from "./mui/ThemeProvider";
 export { renderFinalFormChildren } from "./renderFinalFormChildren";
+// Keeps the editor's TipTap commands typed for an `Editor` created with `getTipTapRichTextExtensions`, since the declaration files don't import the extensions otherwise.
+import "./tipTapRichTextEditor/extensions/InlineStyleMark";
+import "./tipTapRichTextEditor/extensions/Link";
+import "./tipTapRichTextEditor/extensions/NonBreakingSpace";
+import "./tipTapRichTextEditor/extensions/Placeholder";
+import "./tipTapRichTextEditor/extensions/SoftHyphen";
+
 export { RouterBrowserRouter, type RouterBrowserRouterProps } from "./router/BrowserRouter";
 export { RouterConfirmationDialog, type RouterConfirmationDialogClassKey, type RouterConfirmationDialogProps } from "./router/ConfirmationDialog";
 export { RouterContext } from "./router/Context";
@@ -332,6 +339,45 @@ export { createDextinityTheme } from "./theme/createDextinityTheme";
 export { paletteOptions } from "./theme/paletteOptions";
 export { shadows } from "./theme/shadows";
 export { createTypographyOptions } from "./theme/typographyOptions";
+export { getTipTapRichTextExtensions } from "./tipTapRichTextEditor/buildExtensions";
+export { createEmptyTipTapRichTextContent, isTipTapRichTextEmpty } from "./tipTapRichTextEditor/content";
+export { translateTipTapRichTextContent } from "./tipTapRichTextEditor/contentTranslation";
+export { createJsonDataAttribute as createTipTapRichTextDataAttribute } from "./tipTapRichTextEditor/extensions/jsonDataAttribute";
+export type { TipTapTextAlign } from "./tipTapRichTextEditor/extensions/textBlockAttributes";
+export type {
+    TipTapInlineStyle,
+    TipTapPlaceholder,
+    TipTapRichTextEditorLink,
+    TipTapRichTextEditorLinkFormProps,
+    TipTapRichTextEditorOptions,
+    TipTapRichTextEditorToolbarItemsProps,
+} from "./tipTapRichTextEditor/options";
+export type {
+    TipTapListOptions,
+    TipTapTextBlock,
+    TipTapTextBlockElement,
+    TipTapTextBlockElementProps,
+    TipTapTextBlockStyle,
+    TipTapTextBlockTag,
+} from "./tipTapRichTextEditor/textBlocks";
+export {
+    TipTapRichTextEditor,
+    type TipTapRichTextEditorClassKey,
+    type TipTapRichTextEditorIconMapping,
+    type TipTapRichTextEditorProps,
+} from "./tipTapRichTextEditor/TipTapRichTextEditor";
+export {
+    FinalFormTipTapRichTextEditor,
+    type FinalFormTipTapRichTextEditorProps,
+    TipTapRichTextEditorField,
+    type TipTapRichTextEditorFieldProps,
+} from "./tipTapRichTextEditor/TipTapRichTextEditorField";
+export {
+    TipTapRichTextEditorToolbarButton,
+    type TipTapRichTextEditorToolbarButtonClassKey,
+    type TipTapRichTextEditorToolbarButtonProps,
+} from "./tipTapRichTextEditor/TipTapRichTextEditorToolbarButton";
 export { BaseTranslationDialog } from "./translator/BaseTranslationDialog";
 export { ContentTranslationServiceProvider } from "./translator/ContentTranslationServiceProvider";
 export { useContentTranslationService } from "./translator/useContentTranslationService";
+export type { JSONContent as TipTapRichTextContent } from "@tiptap/core";

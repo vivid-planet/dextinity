@@ -34,7 +34,7 @@ const StickyBreadcrumbs = styled("div")(
 
 const ChildrenContainer = styled("div")`
     .DextinityAdminRte-root > .DextinityAdminRteToolbar-root,
-    .DextinityAdminTipTapToolbar-root {
+    .DextinityAdminTipTapRichTextEditor-toolbar {
         top: 70px;
     }
 `;

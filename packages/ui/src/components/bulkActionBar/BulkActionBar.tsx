@@ -1,6 +1,6 @@
 import { Toolbar } from "@base-ui/react/toolbar";
 import { clsx } from "clsx";
-import { forwardRef, Fragment, type HTMLAttributes, type KeyboardEvent, type ReactNode, useId, useState } from "react";
+import { forwardRef, Fragment, type HTMLAttributes, type KeyboardEvent, type ReactNode, useCallback, useEffect, useId, useState } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Icon } from "../icon/Icon";
@@ -118,6 +118,44 @@ export const BulkActionBar = forwardRef<HTMLDivElement, BulkActionBarProps>(func
         setShownCount(count);
     }
 
+    const [element, setElement] = useState<HTMLDivElement | null>(null);
+    const setRefs = useCallback(
+        (node: HTMLDivElement | null) => {
+            setElement(node);
+            if (typeof ref === "function") {
+                // React 19 callback refs may return a cleanup, which `ForwardedRef` doesn't type
+                const refCleanup: unknown = ref(node);
+                // React 19 runs this cleanup instead of calling the ref with `null`, so a ref without its own cleanup gets the `null` here;
+                // React 18 ignores it and calls the ref with `null` itself
+                return () => {
+                    setElement(null);
+                    if (typeof refCleanup === "function") {
+                        refCleanup();
+                    } else {
+                        ref(null);
+                    }
+                };
+            }
+            if (ref) {
+                ref.current = node;
+            }
+        },
+        [ref],
+    );
+    // The toasts move up by the bar's height, which grows when its actions wrap on a narrow window
+    useEffect(() => {
+        if (element == null || !ownerState.open || typeof ResizeObserver === "undefined") {
+            return;
+        }
+        const rootStyle = element.ownerDocument.documentElement.style;
+        const observer = new ResizeObserver(() => rootStyle.setProperty("--dextinity-bulk-action-bar-height", `${element.offsetHeight}px`));
+        observer.observe(element);
+        return () => {
+            observer.disconnect();
+            rootStyle.removeProperty("--dextinity-bulk-action-bar-height");
+        };
+    }, [element, ownerState.open]);
+
     const countProps = resolveSlotProps<BulkActionBarOwnerState, "span", "span">({
         ownProps: { className: styles.count, role: "status" },
         slotProps: slotProps?.count,
@@ -132,7 +170,7 @@ export const BulkActionBar = forwardRef<HTMLDivElement, BulkActionBarProps>(func
     return (
         <Toolbar.Root
             {...restProps}
-            ref={ref}
+            ref={setRefs}
             aria-label={restProps["aria-label"] ?? labels.toolbar}
             data-open={ownerState.open ? "" : undefined}
             inert={!ownerState.open}

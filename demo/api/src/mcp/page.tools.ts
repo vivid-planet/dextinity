@@ -188,7 +188,6 @@ An invalid input is refused with the path and reason of each invalid value.`,
         const savedPage = await this.pagesService.savePage({
             pageId: page?.id ?? randomUUID(),
             input: pageInput,
-            lastUpdatedAt: page?.updatedAt,
             attachedPageTreeNodeId: node.id,
         });
         await this.buildsService.setChangesSinceLastBuild(node.scope as ContentScope);

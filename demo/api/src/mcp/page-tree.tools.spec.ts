@@ -23,6 +23,7 @@ const otherScopeNode = {
 };
 const aboutNode = {
     id: "0190a5f4-0000-7000-8000-000000000003",
+    name: "About",
     slug: "about",
     visibility: "Published",
     documentType: "Page",
@@ -235,6 +236,24 @@ describe("PageTreeTools that change the page tree", () => {
 
         expect(isError).toBe(true);
         expect(text).toContain("is archived and can't be changed");
+        expect(pageTreeService.updateNode).not.toHaveBeenCalled();
+    });
+
+    it("refuses to change the slug of a node to one that is taken", async () => {
+        pageTreeService.getSlugAvailability.mockResolvedValueOnce(PageTreeSlugAvailability.Taken);
+
+        const { text, isError } = await mcpTestApp.callTool("update_page_tree_node", { id: aboutNode.id, slug: "team" });
+
+        expect(isError).toBe(true);
+        expect(text).toContain('The slug "team" is taken.');
+        expect(pageTreeService.updateNode).not.toHaveBeenCalled();
+    });
+
+    it('refuses to change the slug of the node "home"', async () => {
+        const { text, isError } = await mcpTestApp.callTool("update_page_tree_node", { id: homeNode.id, slug: "other" });
+
+        expect(isError).toBe(true);
+        expect(text).toBe('The slug of the page tree node "home" can\'t be changed.');
         expect(pageTreeService.updateNode).not.toHaveBeenCalled();
     });
 

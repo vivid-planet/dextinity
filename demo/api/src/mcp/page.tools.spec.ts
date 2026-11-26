@@ -292,7 +292,7 @@ describe("PageTools that save pages", () => {
         const { isError } = await mcpTestApp.callTool("save_page", { pageTreeNodeId: newNode.id, lastUpdatedAt: null, ...validPage });
 
         expect(isError).toBe(false);
-        expect(pagesService.savePage).toHaveBeenCalledWith(expect.objectContaining({ attachedPageTreeNodeId: newNode.id, lastUpdatedAt: undefined }));
+        expect(pagesService.savePage).toHaveBeenCalledWith(expect.objectContaining({ attachedPageTreeNodeId: newNode.id }));
         expect(pagesService.savePage.mock.calls[0][0].pageId).not.toBe(aboutPageId);
         expect(buildsService.setChangesSinceLastBuild).toHaveBeenCalledWith(allowedScope);
     });

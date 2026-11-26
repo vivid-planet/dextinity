@@ -177,12 +177,13 @@
     }
 }
 
+// The page's panels line up with the top bar above them
 .content {
     min-inline-size: 0;
-    padding: var(--dextinity-app-shell-content-offset) var(--dextinity-space-3) 0;
+    padding-block-start: var(--dextinity-app-shell-content-offset);
 
     .root[data-layout="narrow"] & {
-        padding: var(--dextinity-app-shell-content-offset-narrow) var(--dextinity-space-1) 0;
+        padding-block-start: var(--dextinity-app-shell-content-offset-narrow);
     }
 }
 

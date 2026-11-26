@@ -30,6 +30,7 @@ import {
     useFormSaveConflict,
 } from "@dextinity/cms-admin";
 import { InputAdornment, MenuItem } from "@mui/material";
+import { AiModeFormToolset } from "@src/aiMode/AiModeFormToolset";
 import type { GQLProductMutationErrorCode, GQLProductType } from "@src/graphql.generated";
 import type {
     GQLManufacturerCountriesQuery,
@@ -40,7 +41,7 @@ import type {
 import { deepEqual } from "fast-equals";
 import { FORM_ERROR, type FormApi } from "final-form";
 import { type ReactNode, useMemo } from "react";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 
 import { FutureProductNotice } from "./helpers/FutureProductNotice";
 import type {
@@ -99,6 +100,7 @@ const submissionErrorMessages: { [K in GQLProductMutationErrorCode]: ReactNode }
 
 export function ProductForm({ id, width, onCreate }: FormProps) {
     const client = useApolloClient();
+    const intl = useIntl();
     const mode = id ? "edit" : "add";
     const formApiRef = useFormApiRef<FormValues, InitialFormValues>();
 
@@ -205,6 +207,81 @@ export function ProductForm({ id, width, onCreate }: FormProps) {
         }
     };
 
+    const loadManufacturerCountries = async () => {
+        const { data } = await client.query<GQLManufacturerCountriesQuery, GQLManufacturerCountriesQueryVariables>({
+            query: gql`
+                query ManufacturerCountries {
+                    manufacturerCountries {
+                        nodes {
+                            id
+                            label
+                        }
+                    }
+                }
+            `,
+        });
+
+        return data?.manufacturerCountries.nodes ?? [];
+    };
+
+    const loadManufacturers = async (values: Partial<FormValues>) => {
+        const { data } = await client.query<GQLManufacturersQuery, GQLManufacturersQueryVariables>({
+            query: gql`
+                query Manufacturers($filter: ManufacturerFilter) {
+                    manufacturers(filter: $filter) {
+                        nodes {
+                            id
+                            name
+                        }
+                    }
+                }
+            `,
+            variables: {
+                filter: {
+                    addressAsEmbeddable_country: {
+                        equal: values.manufacturerCountry?.id,
+                    },
+                },
+            },
+        });
+
+        return data?.manufacturers.nodes ?? [];
+    };
+
+    const loadProductCategories = async () => {
+        const { data } = await client.query<GQLProductCategoriesSelectQuery, GQLProductCategoriesSelectQueryVariables>({
+            query: gql`
+                query ProductCategoriesSelect {
+                    productCategories {
+                        nodes {
+                            id
+                            title
+                        }
+                    }
+                }
+            `,
+        });
+
+        return data?.productCategories.nodes ?? [];
+    };
+
+    const loadProductTags = async () => {
+        const { data } = await client.query<GQLProductTagsSelectQuery, GQLProductTagsSelectQueryVariables>({
+            query: gql`
+                query ProductTagsSelect {
+                    productTags {
+                        nodes {
+                            id
+                            title
+                        }
+                    }
+                }
+            `,
+        });
+
+        return data?.productTags.nodes ?? [];
+    };
+
     if (error) {
         throw error;
     }
@@ -225,6 +302,85 @@ export function ProductForm({ id, width, onCreate }: FormProps) {
             {({ values, form }) => (
                 <>
                     {saveConflict.dialogs}
+                    <AiModeFormToolset
+                        entityName="product"
+                        entityLabel="product"
+                        id={id}
+                        fields={[
+                            { name: "title", label: intl.formatMessage({ id: "product.title", defaultMessage: "Title" }), type: "text" },
+                            { name: "slug", label: intl.formatMessage({ id: "product.slug", defaultMessage: "Slug" }), type: "text" },
+                            {
+                                name: "description",
+                                label: intl.formatMessage({ id: "product.description", defaultMessage: "Description" }),
+                                type: "text",
+                            },
+                            {
+                                name: "availableSince",
+                                label: intl.formatMessage({ id: "product.availableSince", defaultMessage: "Available Since" }),
+                                type: "date",
+                            },
+                            {
+                                name: "manufacturerCountry",
+                                label: intl.formatMessage({ id: "product.manufacturerCountry", defaultMessage: "Manufacturer Country" }),
+                                description:
+                                    "Changing it clears the manufacturer, also one set in the same call, so set the manufacturer in a call of its own afterwards.",
+                                type: "reference",
+                                loadOptions: loadManufacturerCountries,
+                                getOptionLabel: (option) => String(option.label),
+                            },
+                            {
+                                name: "manufacturer",
+                                label: intl.formatMessage({ id: "product.manufacturer", defaultMessage: "Manufacturer" }),
+                                description:
+                                    "Only the manufacturers of the manufacturer country can be selected. To change both, set the country first, in a call of its own.",
+                                type: "reference",
+                                loadOptions: (formValues) => loadManufacturers(formValues as Partial<FormValues>),
+                                getOptionLabel: (option) => String(option.name),
+                            },
+                            {
+                                name: "type",
+                                label: intl.formatMessage({ id: "product.type", defaultMessage: "Type" }),
+                                type: "select",
+                                options: [
+                                    { value: "cap", label: intl.formatMessage({ id: "product.type.cap", defaultMessage: "Cap" }) },
+                                    { value: "shirt", label: intl.formatMessage({ id: "product.type.shirt", defaultMessage: "Shirt" }) },
+                                    { value: "tie", label: intl.formatMessage({ id: "product.type.tie", defaultMessage: "Tie" }) },
+                                ],
+                            },
+                            {
+                                name: "additionalTypes",
+                                label: intl.formatMessage({ id: "product.additionalTypes", defaultMessage: "Additional Types" }),
+                                type: "multiSelect",
+                                options: [
+                                    { value: "cap", label: intl.formatMessage({ id: "product.type.cap", defaultMessage: "Cap" }) },
+                                    { value: "shirt", label: intl.formatMessage({ id: "product.type.shirt", defaultMessage: "Shirt" }) },
+                                    { value: "tie", label: intl.formatMessage({ id: "product.type.tie", defaultMessage: "Tie" }) },
+                                ],
+                            },
+                            {
+                                name: "category",
+                                label: intl.formatMessage({ id: "product.category", defaultMessage: "Category" }),
+                                type: "reference",
+                                loadOptions: loadProductCategories,
+                                getOptionLabel: (option) => String(option.title),
+                            },
+                            {
+                                name: "tags",
+                                label: intl.formatMessage({ id: "product.tags", defaultMessage: "Tags" }),
+                                type: "reference",
+                                multiple: true,
+                                loadOptions: loadProductTags,
+                                getOptionLabel: (option) => String(option.title),
+                            },
+                            { name: "inStock", label: intl.formatMessage({ id: "product.inStock", defaultMessage: "In stock" }), type: "boolean" },
+                            {
+                                name: "image",
+                                label: intl.formatMessage({ id: "product.image", defaultMessage: "Image" }),
+                                type: "block",
+                                block: rootBlocks.image,
+                            },
+                        ]}
+                    />
                     <TextField required fullWidth name="title" label={<FormattedMessage id="product.title" defaultMessage="Title" />} />
                     <TextField required fullWidth name="slug" label={<FormattedMessage id="product.slug" defaultMessage="Slug" />} />
 
@@ -248,51 +404,14 @@ export function ProductForm({ id, width, onCreate }: FormProps) {
                     <FutureProductNotice />
                     <AsyncSelectField
                         name="manufacturerCountry"
-                        loadOptions={async () => {
-                            const { data } = await client.query<GQLManufacturerCountriesQuery, GQLManufacturerCountriesQueryVariables>({
-                                query: gql`
-                                    query ManufacturerCountries {
-                                        manufacturerCountries {
-                                            nodes {
-                                                id
-                                                label
-                                            }
-                                        }
-                                    }
-                                `,
-                            });
-
-                            return data?.manufacturerCountries.nodes ?? [];
-                        }}
+                        loadOptions={loadManufacturerCountries}
                         getOptionLabel={(option) => option.label}
                         label={<FormattedMessage id="product.manufacturerCountry" defaultMessage="Manufacturer Country" />}
                         fullWidth
                     />
                     <AsyncSelectField
                         name="manufacturer"
-                        loadOptions={async () => {
-                            const { data } = await client.query<GQLManufacturersQuery, GQLManufacturersQueryVariables>({
-                                query: gql`
-                                    query Manufacturers($filter: ManufacturerFilter) {
-                                        manufacturers(filter: $filter) {
-                                            nodes {
-                                                id
-                                                name
-                                            }
-                                        }
-                                    }
-                                `,
-                                variables: {
-                                    filter: {
-                                        addressAsEmbeddable_country: {
-                                            equal: values.manufacturerCountry?.id,
-                                        },
-                                    },
-                                },
-                            });
-
-                            return data?.manufacturers.nodes ?? [];
-                        }}
+                        loadOptions={() => loadManufacturers(values)}
                         getOptionLabel={(option) => option.name}
                         label={<FormattedMessage id="product.manufacturer" defaultMessage="Manufacturer" />}
                         fullWidth
@@ -336,22 +455,7 @@ export function ProductForm({ id, width, onCreate }: FormProps) {
                         fullWidth
                         name="category"
                         label={<FormattedMessage id="product.category" defaultMessage="Category" />}
-                        loadOptions={async () => {
-                            const { data } = await client.query<GQLProductCategoriesSelectQuery, GQLProductCategoriesSelectQueryVariables>({
-                                query: gql`
-                                    query ProductCategoriesSelect {
-                                        productCategories {
-                                            nodes {
-                                                id
-                                                title
-                                            }
-                                        }
-                                    }
-                                `,
-                            });
-
-                            return data?.productCategories.nodes ?? [];
-                        }}
+                        loadOptions={loadProductCategories}
                         getOptionLabel={(option) => option.title}
                     />
                     <AsyncSelectField
@@ -359,22 +463,7 @@ export function ProductForm({ id, width, onCreate }: FormProps) {
                         name="tags"
                         label={<FormattedMessage id="product.tags" defaultMessage="Tags" />}
                         multiple
-                        loadOptions={async () => {
-                            const { data } = await client.query<GQLProductTagsSelectQuery, GQLProductTagsSelectQueryVariables>({
-                                query: gql`
-                                    query ProductTagsSelect {
-                                        productTags {
-                                            nodes {
-                                                id
-                                                title
-                                            }
-                                        }
-                                    }
-                                `,
-                            });
-
-                            return data?.productTags.nodes ?? [];
-                        }}
+                        loadOptions={loadProductTags}
                         getOptionLabel={(option) => option.title}
                     />
                     <CheckboxField name="inStock" label={<FormattedMessage id="product.inStock" defaultMessage="In stock" />} fullWidth />

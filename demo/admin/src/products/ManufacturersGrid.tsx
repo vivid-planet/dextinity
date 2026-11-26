@@ -16,10 +16,12 @@ import {
     useBufferedRowCount,
     useDataGridRemote,
     usePersistentColumnState,
+    useStackSwitchApi,
 } from "@dextinity/admin";
 import { Add as AddIcon, Edit, Info } from "@dextinity/admin-icons";
 import { IconButton } from "@mui/material";
 import { DataGridPro, GridColumnHeaderTitle } from "@mui/x-data-grid-pro";
+import { useAiModeDataGridToolset } from "@src/aiMode/useAiModeDataGridToolset";
 import type {
     GQLDeleteManufacturerMutation,
     GQLDeleteManufacturerMutationVariables,
@@ -71,42 +73,58 @@ export function ManufacturersGrid() {
             },
             {
                 field: "address.street",
+                filterable: false,
+                sortable: false,
                 headerName: intl.formatMessage({ id: "manufacturers.street", defaultMessage: "Street" }),
                 valueGetter: (params, row) => `${row.address?.street} ${row.address?.streetNumber}`,
             },
             {
                 field: "address.zip",
+                filterable: false,
+                sortable: false,
                 headerName: intl.formatMessage({ id: "manufacturers.zip", defaultMessage: "ZIP" }),
                 valueGetter: (params, row) => row.address?.zip,
             },
             {
                 field: "address.alternativeAddress.street",
+                filterable: false,
+                sortable: false,
                 headerName: intl.formatMessage({ id: "manufacturers.alternativeAddressStreet", defaultMessage: "alt. Street" }),
                 valueGetter: (params, row) => `${row.address?.alternativeAddress?.street} ${row.address?.alternativeAddress?.streetNumber}`,
             },
             {
                 field: "address.alternativeAddress.zip",
+                filterable: false,
+                sortable: false,
                 headerName: intl.formatMessage({ id: "manufacturers.alternativeAddressZip", defaultMessage: "alt. ZIP" }),
                 valueGetter: (params, row) => row.address?.alternativeAddress?.zip,
             },
             {
                 field: "addressAsEmbeddable.street",
+                filterable: false,
+                sortable: false,
                 headerName: intl.formatMessage({ id: "manufacturers.street2", defaultMessage: "Street2" }),
                 valueGetter: (params, row) => `${row.addressAsEmbeddable?.street} ${row.addressAsEmbeddable?.streetNumber}`,
             },
             {
                 field: "addressAsEmbeddable.zip",
+                filterable: false,
+                sortable: false,
                 headerName: intl.formatMessage({ id: "manufacturers.zip2", defaultMessage: "ZIP2" }),
                 valueGetter: (params, row) => row.addressAsEmbeddable?.zip,
             },
             {
                 field: "addressAsEmbeddable.alternativeAddress.street",
+                filterable: false,
+                sortable: false,
                 headerName: intl.formatMessage({ id: "manufacturers.alternativeAddressStreet2", defaultMessage: "alt. Street2" }),
                 valueGetter: (params, row) =>
                     `${row.addressAsEmbeddable?.alternativeAddress?.street} ${row.addressAsEmbeddable?.alternativeAddress?.streetNumber}`,
             },
             {
                 field: "addressAsEmbeddable.alternativeAddress.zip",
+                filterable: false,
+                sortable: false,
                 headerName: intl.formatMessage({ id: "manufacturers.alternativeAddressZip2", defaultMessage: "alt. ZIP2" }),
                 valueGetter: (params, row) => row.addressAsEmbeddable?.alternativeAddress?.zip,
             },
@@ -148,6 +166,18 @@ export function ManufacturersGrid() {
             sort: muiGridSortToGql(sortModel),
         },
         notifyOnNetworkStatusChange: false,
+    });
+    const stackSwitchApi = useStackSwitchApi();
+    useAiModeDataGridToolset({
+        entityName: "manufacturer",
+        entityLabel: "manufacturers",
+        columns,
+        dataGridProps,
+        rows: data?.manufacturers.nodes ?? [],
+        totalCount: data?.manufacturers.totalCount,
+        isLoading: loading,
+        openEditForm: (id) => stackSwitchApi.activatePage("edit", id),
+        openAddForm: () => stackSwitchApi.activatePage("add", "add"),
     });
     if (error) {
         throw error;

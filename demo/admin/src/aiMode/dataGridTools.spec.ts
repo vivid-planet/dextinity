@@ -36,17 +36,21 @@ function createGridState() {
 function createTools({
     isLoading = false,
     forms = { openEditForm: vi.fn(), openAddForm: vi.fn() },
+    gridColumns = columns,
+    gridRows = rows,
 }: {
     isLoading?: boolean;
     forms?: { openEditForm?: (id: string) => void; openAddForm?: () => void };
+    gridColumns?: GridColDef[];
+    gridRows?: Array<Record<string, unknown>>;
 } = {}) {
     const grid = createGridState();
     const tools = createDataGridTools({
         entityName: "news",
         entityLabel: "news articles",
-        columns,
+        columns: gridColumns,
         getState: grid.getState,
-        rows,
+        rows: gridRows,
         totalCount: 1,
         isLoading,
         ...forms,
@@ -78,6 +82,18 @@ describe("get_<entity>_grid_rows", () => {
             page: 3,
             pageSize: 25,
         });
+    });
+
+    it("reads a column of a nested field, such as an address", () => {
+        const { call } = createTools({
+            gridColumns: [{ field: "address.zip", headerName: "ZIP" }],
+            gridRows: [
+                { id: "1", address: { zip: "1010" } },
+                { id: "2", address: null },
+            ],
+        });
+
+        expect(call("get_news_grid_rows")).toMatchObject({ rows: [{ id: "1", "address.zip": "1010" }, { id: "2" }] });
     });
 
     it("says that the rows are still loading rather than returning those of the previous view", () => {

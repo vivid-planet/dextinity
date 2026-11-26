@@ -21,7 +21,14 @@ const otherScopeNode = {
     documentType: "Page",
     scope: otherScope,
 };
-const aboutNode = { id: "0190a5f4-0000-7000-8000-000000000003", slug: "about", visibility: "Published", documentType: "Page", scope: allowedScope };
+const aboutNode = {
+    id: "0190a5f4-0000-7000-8000-000000000003",
+    slug: "about",
+    visibility: "Published",
+    documentType: "Page",
+    category: "topMenu",
+    scope: allowedScope,
+};
 const archivedNode = { id: "0190a5f4-0000-7000-8000-000000000004", slug: "old", visibility: "Archived", documentType: "Page", scope: allowedScope };
 const newNode = { id: "0190a5f4-0000-7000-8000-000000000005", slug: "new", visibility: "Unpublished", documentType: "Page", scope: allowedScope };
 const nodes = [homeNode, otherScopeNode, aboutNode, archivedNode, newNode];
@@ -199,6 +206,18 @@ describe("PageTreeTools that change the page tree", () => {
             allowedScope,
         );
         expect(buildsService.setChangesSinceLastBuild).toHaveBeenCalledWith(allowedScope);
+    });
+
+    it("adds a child node to the page tree of its parent", async () => {
+        const { isError } = await mcpTestApp.callTool("create_page_tree_node", {
+            scope: allowedScope,
+            parentId: aboutNode.id,
+            name: "Team",
+            slug: "team",
+        });
+
+        expect(isError).toBe(false);
+        expect(pageTreeService.createNode).toHaveBeenCalledWith(expect.objectContaining({ parentId: aboutNode.id }), "topMenu", allowedScope);
     });
 
     it.each(["update_page_tree_node", "update_page_tree_node_visibility", "delete_page_tree_node"])(

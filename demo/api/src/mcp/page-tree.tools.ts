@@ -57,7 +57,10 @@ const checkSlugAvailabilityParameters = z.object({
 
 const createPageTreeNodeParameters = z.object({
     scope: pageTreeScopeSchema,
-    category: z.enum(PageTreeNodeCategory).default(PageTreeNodeCategory.mainNavigation).describe("The page tree the node is added to"),
+    category: z
+        .enum(PageTreeNodeCategory)
+        .default(PageTreeNodeCategory.mainNavigation)
+        .describe("The page tree a node at the root is added to. A child node is added to the page tree of its parent."),
     name: z.string().describe("Name of the node, shown in the menus of the site"),
     slug: slugSchema,
     documentType: z.enum(["Page", "Link", "PredefinedPage"]).default("Page").describe("Type of the document the node shows"),
@@ -187,13 +190,13 @@ The node has no document yet: for a node of document type "Page", save its first
         annotations: { readOnlyHint: false },
     })
     @UseFilters(new RefusalReasonFilter(refusedChangeReason))
-    async createPageTreeNode({ scope, category, documentType, ...parameters }: z.infer<typeof createPageTreeNodeParameters>) {
-        if (parameters.parentId) {
-            const parentNode = await this.getParentNodeInScope(parameters.parentId, scope);
-            if (parentNode.visibility === PageTreeNodeVisibility.Archived) {
-                throw new BadRequestException("An archived page tree node can't get child nodes.");
-            }
+    async createPageTreeNode({ scope, category: rootCategory, documentType, ...parameters }: z.infer<typeof createPageTreeNodeParameters>) {
+        const parentNode = parameters.parentId ? await this.getParentNodeInScope(parameters.parentId, scope) : undefined;
+        if (parentNode?.visibility === PageTreeNodeVisibility.Archived) {
+            throw new BadRequestException("An archived page tree node can't get child nodes.");
         }
+        // The admin shows each category as a tree of its own, which would miss a child of another category than its parent.
+        const category = (parentNode?.category as PageTreeNodeCategory | undefined) ?? rootCategory;
 
         const input = await validateInput({ ...parameters, attachedDocument: { type: documentType } }, PageTreeNodeCreateInput);
         const slugAvailability = await this.pageTreeService.getSlugAvailability({ scope, parentId: input.parentId ?? null, slug: input.slug });

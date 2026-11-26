@@ -49,7 +49,11 @@ The server is stateless, so any replica of the API can answer a call.
 
 ### Write tools
 
-_Coming with #7293._ The MCP server will also change the page tree and pages: `check_slug_availability`, `create_page_tree_node`, `update_page_tree_node`, `update_page_tree_node_visibility`, `delete_page_tree_node`, and `save_page`. They check the `pageTree` permission of the scope they change, as the page tree resolver's guards do. `save_page` takes the `updatedAt` of the page as `get_page` returned it and is refused when the page was saved since, so that the agent doesn't overwrite changes made after it read the page. Unlike `edit_blocks`, these tools write to the database directly, without the user saving anything.
+The MCP server also changes the page tree and pages: `check_slug_availability`, `create_page_tree_node`, `update_page_tree_node`, `update_page_tree_node_visibility`, `delete_page_tree_node`, and `save_page`. Unlike `edit_blocks`, these tools write to the database directly, without the user saving anything, so each is annotated `readOnlyHint: false` and the chat asks the user to approve every call; `delete_page_tree_node` is also `destructiveHint: true`. They declare the `pageTree` permission and the scope they change as the page tree resolver does, and refuse to change archived nodes and pages, as the resolver does in its methods. `ChangesCheckerInterceptor` marks the scope of a change for the next build only for GraphQL mutations, so the tools mark it themselves (`BuildsService.setChangesSinceLastBuild`).
+
+`save_page` saves with `PagesService`, as the `savePage` mutation does. It takes the `updatedAt` of the page as the agent read it and is refused when the page was saved since, so that the agent doesn't overwrite changes made after it read the page. It finds the page through its page tree node, so the scope check of the node also covers the page. Invalid block input is refused with the path of each invalid value in the error's message, the only part of an error the agent gets.
+
+`get_page` returns the blocks as the site reads them, with link targets and DAM files resolved, which the input validation of `save_page` rejects. `get_page_input` returns a page as it is saved instead, which is the shape `save_page` takes, so the agent doesn't have to convert the page itself. Saved data isn't validated when it is read, so data that no longer matches a block's definition, e.g. a field the block no longer has, comes back as it is, and `save_page` refuses it with its path.
 
 ## Loading the chat
 
@@ -146,7 +150,7 @@ A tool that only navigates or changes what a page shows, such as `open_page_tree
 
 `edit_blocks` inserts, updates, removes, moves, hides, and shows the content blocks of the open page. It is a host tool because it changes the state of the edit page, which the MCP server can't see. The changes are unsaved, like changes the user made by hand, and the user still saves the page.
 
-The agent passes a block's fields in the shape the block is **saved** in (`inputFields` in `block-meta.json`), the shape `get_page` returns and `get_block_schema` describes. `output2State` converts it into editor state; it is async and needs a `BlockContext`, because it also resolves references, e.g. it loads the DAM file for a `damFileId`.
+The agent passes a block's fields in the shape the block is **saved** in (`inputFields` in `block-meta.json`), the shape `get_page_input` returns and `get_block_schema` describes. `output2State` converts it into editor state; it is async and needs a `BlockContext`, because it also resolves references, e.g. it loads the DAM file for a `damFileId`.
 
 Blocks already on the page are addressed by the **key** `get_page_state` reports, not by index: an index from an earlier summary goes stale as soon as anything else changes the list, and updating, removing, or moving by it would silently pick a block the agent didn't mean. A key that doesn't resolve fails and names the blocks that can be acted on.
 

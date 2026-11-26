@@ -7,7 +7,7 @@ import { type DamFileDownloadLinkBlockData, OpenFileTypeMethod } from "./dam-fil
 import { DamFileDownloadLinkBlockTransformerService } from "./dam-file-download-link-block-transformer.service";
 import type { SvgImageBlockData } from "./svg-image.block";
 import { SvgImageBlockTransformerService } from "./svg-image-block-transformer.service";
-import type { DamVideoBlockData } from "./video/dam-video.block";
+import type { DamVideoBlockDataInterface } from "./video/createDamVideoBlock";
 import { DamVideoBlockTransformerService } from "./video/dam-video-block-transformer.service";
 
 const context = { includeInvisibleContent: false, previewDamUrls: false } as BlockContext;
@@ -76,7 +76,7 @@ describe("DamFileDownloadLinkBlockTransformerService", () => {
 });
 
 describe("DamVideoBlockTransformerService", () => {
-    const block = { damFileId: "video" } as DamVideoBlockData;
+    const block = { damFileId: "video" } as DamVideoBlockDataInterface;
     const video = createFile("video", [
         { id: "caption-en", language: "en", type: "captions", alternative: createFile("captions-en") },
         { id: "caption-de", language: "de", type: "captions", alternative: createFile("captions-de") },

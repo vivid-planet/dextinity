@@ -1,5 +1,66 @@
 # @comet/site-react
 
+## 10.16.0
+
+### Minor Changes
+
+- 0b43115: Mark the TipTap Rich Text Block as stable
+
+    `createTipTapRichTextBlock` and `renderTipTapRichText` are no longer experimental and now follow the regular semantic-versioning guarantees.
+
+### Patch Changes
+
+- 14b88ea: Only send the `X-Block-Preview` header to the preview's own host when `fetch` gets a `Request`
+
+    `BlockPreviewProvider` wraps `window.fetch` to add the `X-Block-Preview` header to requests to the preview's own host.
+    When `fetch` was called with a `Request` object, the wrapper didn't read the URL from the `Request` and added the header to every request, including requests to other hosts.
+    This exposed the content scope JWT to other hosts and made CORS preflights fail on hosts that don't allow the header, for instance when MapLibre loads its map style.
+
+## 10.15.0
+
+No changes in this release.
+
+## 10.14.0
+
+### Minor Changes
+
+- 1000778: Allow rendering `PreviewSkeleton` as a server component
+
+    `PreviewSkeleton` is no longer a client component. When `hasContent` is `true`, it renders its children directly, so no client reference carrying `title` and `children` is added to the RSC payload. The placeholder shown for empty content is still rendered on the client, and its behavior in the block and site preview is unchanged.
+
+- 1595266: Add a `textAlign` option to `createTipTapRichTextBlock`
+
+    Editors can align paragraphs and headings left, center, right, or justified, using the toolbar or the shortcuts `Mod-Shift-L`, `Mod-Shift-E`, `Mod-Shift-R`, and `Mod-Shift-J`.
+    The alignment is stored in the text block's `textAlign` attribute.
+    The option is disabled by default and must be enabled in both the API and the Admin:
+
+    ```ts
+    createTipTapRichTextBlock({ textAlign: true });
+    ```
+
+    To enable only some of the alignments, pass an object:
+
+    ```ts
+    createTipTapRichTextBlock({ textAlign: { left: true, center: true } });
+    ```
+
+    `renderTipTapRichText` renders the alignment as the text block's `text-align` style.
+    A custom `textBlock` handler has to apply `node.attrs.textAlign` itself.
+
+### Patch Changes
+
+- 9ed0039: Treat a document with only empty lists as empty in `hasTipTapRichTextContent`
+
+    An empty list renders nothing but a bullet or a number, so a TipTap rich text that contains only empty lists, list items and text blocks no longer counts as content.
+
+## 10.13.1
+
+### Patch Changes
+
+- 94991f8: Update `jose` to v6
+
+## 10.13.0
+
 ## 10.12.0
 
 ### Patch Changes

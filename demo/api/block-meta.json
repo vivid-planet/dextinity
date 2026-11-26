@@ -1,6 +1,7 @@
 [
     {
         "name": "Accordion",
+        "description": "A list of blocks of one type. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site) and the `props` of the block. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -58,6 +59,7 @@
     },
     {
         "name": "AccordionContent",
+        "description": "A list of blocks of several types. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site), a `type` and the `props` of the block that type names in the `blocks` of the `props` field. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -406,6 +408,7 @@
     },
     {
         "name": "CallToActionList",
+        "description": "A list of blocks of one type. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site) and the `props` of the block. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -530,6 +533,7 @@
     },
     {
         "name": "ColumnsContent",
+        "description": "A list of blocks of several types. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site), a `type` and the `props` of the block that type names in the `blocks` of the `props` field. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -662,6 +666,7 @@
     },
     {
         "name": "ContentGroupContent",
+        "description": "A list of blocks of several types. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site), a `type` and the `props` of the block that type names in the `blocks` of the `props` field. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -836,6 +841,7 @@
     },
     {
         "name": "DamImage",
+        "description": "One of several blocks. `attachedBlocks` lists entries of a `type` and the `props` of the block that type names in the `blocks` of the `props` field. `activeType` names the entry in use, so an entry with that `type` must be in the list. Entries of other types may stay in the list and aren't shown. The block can't be empty, so `activeType` must be set.",
         "fields": [
             {
                 "name": "attachedBlocks",
@@ -1068,6 +1074,7 @@
     },
     {
         "name": "EmailCampaignContent",
+        "description": "A list of blocks of several types. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site), a `type` and the `props` of the block that type names in the `blocks` of the `props` field. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -1093,10 +1100,8 @@
                             "name": "props",
                             "kind": "OneOfBlocks",
                             "blocks": {
-                                "text": "RichText",
-                                "twoListSizesText": "MailTwoListSizesRichText",
-                                "twoListSizesTipTapText": "MailTwoListSizesTipTapRichText",
-                                "tipTapText": "EmailCampaignTipTapRichText",
+                                "heading": "MailHeading",
+                                "text": "EmailCampaignRichText",
                                 "image": "MailImage",
                                 "button": "MailButton",
                                 "divider": "MailDivider",
@@ -1135,10 +1140,8 @@
                             "name": "props",
                             "kind": "OneOfBlocks",
                             "blocks": {
-                                "text": "RichText",
-                                "twoListSizesText": "MailTwoListSizesRichText",
-                                "twoListSizesTipTapText": "MailTwoListSizesTipTapRichText",
-                                "tipTapText": "EmailCampaignTipTapRichText",
+                                "heading": "MailHeading",
+                                "text": "EmailCampaignRichText",
                                 "image": "MailImage",
                                 "button": "MailButton",
                                 "divider": "MailDivider",
@@ -1154,13 +1157,7 @@
         ]
     },
     {
-        "name": "EmailCampaignSalutation",
-        "description": "The salutation of an email campaign, filled with the name of the recipient.",
-        "fields": [],
-        "inputFields": []
-    },
-    {
-        "name": "EmailCampaignTipTapRichText",
+        "name": "EmailCampaignRichText",
         "description": "Formatted text, edited in the TipTap based rich text editor. `tipTapContent` is a TipTap JSON document. Build it from the field's `tipTap` entry, not from TipTap's defaults, otherwise the content is rejected: use only the node and mark types in `nodes` and `marks`. Store every paragraph and heading as a `textBlock` node whose `textBlock` attribute names one of `textBlocks`, and whose optional `textBlockStyle` attribute names one of that text block's `styles`. Without a `textBlock` attribute, a node becomes the `defaultTextBlock`. Use an ordered (`orderedList`) or unordered (`bulletList`) list only if `orderedList` or `unorderedList` isn't `null`. A list item holds text blocks with the tag `p`, which may also use the list's `styles`. An `inlineStyle` mark's `type` names one of `inlineStyles`, and is only allowed in the text blocks and lists of its `appliesTo`. A `placeholder` node's `name` names one of `placeholders`. A `link` mark is only allowed if `link` isn't `null`, and its `data` attribute holds that block's input (its `inputFields` in the block meta). A `cmsBlock` or `cmsInlineBlock` node's `blockType` attribute is one of the field's `childBlocks` keys, and its `data` attribute holds that block's input (its `inputFields` in the block meta). Stay within `maxTextBlocks` top-level nodes and `listLevelMax` list levels, if set.",
         "fields": [
             {
@@ -1203,11 +1200,15 @@
                     ],
                     "defaultTextBlock": "paragraph",
                     "orderedList": {
-                        "styles": [],
+                        "styles": [
+                            "small"
+                        ],
                         "defaultStyle": null
                     },
                     "unorderedList": {
-                        "styles": [],
+                        "styles": [
+                            "small"
+                        ],
                         "defaultStyle": null
                     },
                     "inlineStyles": [],
@@ -1261,11 +1262,15 @@
                     ],
                     "defaultTextBlock": "paragraph",
                     "orderedList": {
-                        "styles": [],
+                        "styles": [
+                            "small"
+                        ],
                         "defaultStyle": null
                     },
                     "unorderedList": {
-                        "styles": [],
+                        "styles": [
+                            "small"
+                        ],
                         "defaultStyle": null
                     },
                     "inlineStyles": [],
@@ -1278,6 +1283,12 @@
                 }
             }
         ]
+    },
+    {
+        "name": "EmailCampaignSalutation",
+        "description": "The salutation of an email campaign, filled with the name of the recipient.",
+        "fields": [],
+        "inputFields": []
     },
     {
         "name": "EmailLink",
@@ -1542,6 +1553,7 @@
     },
     {
         "name": "KeyFacts",
+        "description": "A list of blocks of one type. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site) and the `props` of the block. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -1733,6 +1745,7 @@
     },
     {
         "name": "Link",
+        "description": "A link to one of several targets. `attachedBlocks` lists entries of a `type` and the `props` of the block that type names in the `blocks` of the `props` field. `activeType` names the entry in use, so an entry with that `type` must be in the list. Entries of other types may stay in the list and aren't shown. The block can't be empty, so `activeType` must be set.",
         "fields": [
             {
                 "name": "title",
@@ -1841,6 +1854,7 @@
     },
     {
         "name": "LinkList",
+        "description": "A list of blocks of one type. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site) and the `props` of the block. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -1989,6 +2003,104 @@
         "inputFields": []
     },
     {
+        "name": "MailHeading",
+        "description": "Formatted text, edited in the TipTap based rich text editor. `tipTapContent` is a TipTap JSON document. Build it from the field's `tipTap` entry, not from TipTap's defaults, otherwise the content is rejected: use only the node and mark types in `nodes` and `marks`. Store every paragraph and heading as a `textBlock` node whose `textBlock` attribute names one of `textBlocks`, and whose optional `textBlockStyle` attribute names one of that text block's `styles`. Without a `textBlock` attribute, a node becomes the `defaultTextBlock`. Use an ordered (`orderedList`) or unordered (`bulletList`) list only if `orderedList` or `unorderedList` isn't `null`. A list item holds text blocks with the tag `p`, which may also use the list's `styles`. An `inlineStyle` mark's `type` names one of `inlineStyles`, and is only allowed in the text blocks and lists of its `appliesTo`. A `placeholder` node's `name` names one of `placeholders`. A `link` mark is only allowed if `link` isn't `null`, and its `data` attribute holds that block's input (its `inputFields` in the block meta). A `cmsBlock` or `cmsInlineBlock` node's `blockType` attribute is one of the field's `childBlocks` keys, and its `data` attribute holds that block's input (its `inputFields` in the block meta). Stay within `maxTextBlocks` top-level nodes and `listLevelMax` list levels, if set.",
+        "fields": [
+            {
+                "name": "tipTapContent",
+                "kind": "TipTapRichTextBlock",
+                "nullable": false,
+                "childBlocks": {},
+                "tipTap": {
+                    "nodes": [
+                        "textBlock",
+                        "doc",
+                        "hardBreak",
+                        "text",
+                        "nonBreakingSpace",
+                        "softHyphen"
+                    ],
+                    "marks": [
+                        "bold",
+                        "italic",
+                        "strike",
+                        "superscript",
+                        "subscript"
+                    ],
+                    "textBlocks": [
+                        {
+                            "name": "title",
+                            "tag": "h1",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "header",
+                            "tag": "h2",
+                            "styles": [],
+                            "defaultStyle": null
+                        }
+                    ],
+                    "defaultTextBlock": "title",
+                    "orderedList": null,
+                    "unorderedList": null,
+                    "inlineStyles": [],
+                    "placeholders": [],
+                    "link": null,
+                    "maxTextBlocks": null,
+                    "listLevelMax": null
+                }
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "tipTapContent",
+                "kind": "TipTapRichTextBlock",
+                "nullable": false,
+                "childBlocks": {},
+                "tipTap": {
+                    "nodes": [
+                        "textBlock",
+                        "doc",
+                        "hardBreak",
+                        "text",
+                        "nonBreakingSpace",
+                        "softHyphen"
+                    ],
+                    "marks": [
+                        "bold",
+                        "italic",
+                        "strike",
+                        "superscript",
+                        "subscript"
+                    ],
+                    "textBlocks": [
+                        {
+                            "name": "title",
+                            "tag": "h1",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "header",
+                            "tag": "h2",
+                            "styles": [],
+                            "defaultStyle": null
+                        }
+                    ],
+                    "defaultTextBlock": "title",
+                    "orderedList": null,
+                    "unorderedList": null,
+                    "inlineStyles": [],
+                    "placeholders": [],
+                    "link": null,
+                    "maxTextBlocks": null,
+                    "listLevelMax": null
+                }
+            }
+        ]
+    },
+    {
         "name": "MailImage",
         "fields": [
             {
@@ -2043,6 +2155,7 @@
     },
     {
         "name": "MailLink",
+        "description": "A link to one of several targets. `attachedBlocks` lists entries of a `type` and the `props` of the block that type names in the `blocks` of the `props` field. `activeType` names the entry in use, so an entry with that `type` must be in the list. Entries of other types may stay in the list and aren't shown. The block can't be empty, so `activeType` must be set.",
         "fields": [
             {
                 "name": "title",
@@ -2138,6 +2251,128 @@
         ]
     },
     {
+        "name": "MailRichText",
+        "description": "Formatted text, edited in the TipTap based rich text editor. `tipTapContent` is a TipTap JSON document. Build it from the field's `tipTap` entry, not from TipTap's defaults, otherwise the content is rejected: use only the node and mark types in `nodes` and `marks`. Store every paragraph and heading as a `textBlock` node whose `textBlock` attribute names one of `textBlocks`, and whose optional `textBlockStyle` attribute names one of that text block's `styles`. Without a `textBlock` attribute, a node becomes the `defaultTextBlock`. Use an ordered (`orderedList`) or unordered (`bulletList`) list only if `orderedList` or `unorderedList` isn't `null`. A list item holds text blocks with the tag `p`, which may also use the list's `styles`. An `inlineStyle` mark's `type` names one of `inlineStyles`, and is only allowed in the text blocks and lists of its `appliesTo`. A `placeholder` node's `name` names one of `placeholders`. A `link` mark is only allowed if `link` isn't `null`, and its `data` attribute holds that block's input (its `inputFields` in the block meta). A `cmsBlock` or `cmsInlineBlock` node's `blockType` attribute is one of the field's `childBlocks` keys, and its `data` attribute holds that block's input (its `inputFields` in the block meta). Stay within `maxTextBlocks` top-level nodes and `listLevelMax` list levels, if set.",
+        "fields": [
+            {
+                "name": "tipTapContent",
+                "kind": "TipTapRichTextBlock",
+                "nullable": false,
+                "childBlocks": {},
+                "tipTap": {
+                    "nodes": [
+                        "textBlock",
+                        "bulletList",
+                        "doc",
+                        "hardBreak",
+                        "orderedList",
+                        "text",
+                        "listItem",
+                        "nonBreakingSpace",
+                        "softHyphen"
+                    ],
+                    "marks": [
+                        "bold",
+                        "italic",
+                        "strike",
+                        "superscript",
+                        "subscript",
+                        "link"
+                    ],
+                    "textBlocks": [
+                        {
+                            "name": "paragraph",
+                            "tag": "p",
+                            "styles": [
+                                "title",
+                                "header",
+                                "small"
+                            ],
+                            "defaultStyle": null
+                        }
+                    ],
+                    "defaultTextBlock": "paragraph",
+                    "orderedList": {
+                        "styles": [
+                            "small"
+                        ],
+                        "defaultStyle": null
+                    },
+                    "unorderedList": {
+                        "styles": [
+                            "small"
+                        ],
+                        "defaultStyle": null
+                    },
+                    "inlineStyles": [],
+                    "placeholders": [],
+                    "link": "MailLink",
+                    "maxTextBlocks": null,
+                    "listLevelMax": null
+                }
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "tipTapContent",
+                "kind": "TipTapRichTextBlock",
+                "nullable": false,
+                "childBlocks": {},
+                "tipTap": {
+                    "nodes": [
+                        "textBlock",
+                        "bulletList",
+                        "doc",
+                        "hardBreak",
+                        "orderedList",
+                        "text",
+                        "listItem",
+                        "nonBreakingSpace",
+                        "softHyphen"
+                    ],
+                    "marks": [
+                        "bold",
+                        "italic",
+                        "strike",
+                        "superscript",
+                        "subscript",
+                        "link"
+                    ],
+                    "textBlocks": [
+                        {
+                            "name": "paragraph",
+                            "tag": "p",
+                            "styles": [
+                                "title",
+                                "header",
+                                "small"
+                            ],
+                            "defaultStyle": null
+                        }
+                    ],
+                    "defaultTextBlock": "paragraph",
+                    "orderedList": {
+                        "styles": [
+                            "small"
+                        ],
+                        "defaultStyle": null
+                    },
+                    "unorderedList": {
+                        "styles": [
+                            "small"
+                        ],
+                        "defaultStyle": null
+                    },
+                    "inlineStyles": [],
+                    "placeholders": [],
+                    "link": "MailLink",
+                    "maxTextBlocks": null,
+                    "listLevelMax": null
+                }
+            }
+        ]
+    },
+    {
         "name": "MailSpacer",
         "fields": [
             {
@@ -2165,257 +2400,155 @@
         ]
     },
     {
-        "name": "MailTipTapRichText",
-        "description": "Formatted text, edited in the TipTap based rich text editor. `tipTapContent` is a TipTap JSON document. Build it from the field's `tipTap` entry, not from TipTap's defaults, otherwise the content is rejected: use only the node and mark types in `nodes` and `marks`. Store every paragraph and heading as a `textBlock` node whose `textBlock` attribute names one of `textBlocks`, and whose optional `textBlockStyle` attribute names one of that text block's `styles`. Without a `textBlock` attribute, a node becomes the `defaultTextBlock`. Use an ordered (`orderedList`) or unordered (`bulletList`) list only if `orderedList` or `unorderedList` isn't `null`. A list item holds text blocks with the tag `p`, which may also use the list's `styles`. An `inlineStyle` mark's `type` names one of `inlineStyles`, and is only allowed in the text blocks and lists of its `appliesTo`. A `placeholder` node's `name` names one of `placeholders`. A `link` mark is only allowed if `link` isn't `null`, and its `data` attribute holds that block's input (its `inputFields` in the block meta). A `cmsBlock` or `cmsInlineBlock` node's `blockType` attribute is one of the field's `childBlocks` keys, and its `data` attribute holds that block's input (its `inputFields` in the block meta). Stay within `maxTextBlocks` top-level nodes and `listLevelMax` list levels, if set.",
+        "name": "MailTwoColumns",
         "fields": [
             {
-                "name": "tipTapContent",
-                "kind": "TipTapRichTextBlock",
-                "nullable": false,
-                "childBlocks": {},
-                "tipTap": {
-                    "nodes": [
-                        "textBlock",
-                        "bulletList",
-                        "doc",
-                        "hardBreak",
-                        "orderedList",
-                        "text",
-                        "listItem",
-                        "nonBreakingSpace",
-                        "softHyphen"
-                    ],
-                    "marks": [
-                        "bold",
-                        "italic",
-                        "strike",
-                        "superscript",
-                        "subscript",
-                        "link"
-                    ],
-                    "textBlocks": [
-                        {
-                            "name": "paragraph",
-                            "tag": "p",
-                            "styles": [
-                                "title",
-                                "header",
-                                "small"
-                            ],
-                            "defaultStyle": null
-                        }
-                    ],
-                    "defaultTextBlock": "paragraph",
-                    "orderedList": {
-                        "styles": [],
-                        "defaultStyle": null
-                    },
-                    "unorderedList": {
-                        "styles": [],
-                        "defaultStyle": null
-                    },
-                    "inlineStyles": [],
-                    "placeholders": [],
-                    "link": "MailLink",
-                    "maxTextBlocks": null,
-                    "listLevelMax": null
-                }
-            }
-        ],
-        "inputFields": [
+                "name": "layout",
+                "kind": "String",
+                "nullable": false
+            },
             {
-                "name": "tipTapContent",
-                "kind": "TipTapRichTextBlock",
-                "nullable": false,
-                "childBlocks": {},
-                "tipTap": {
-                    "nodes": [
-                        "textBlock",
-                        "bulletList",
-                        "doc",
-                        "hardBreak",
-                        "orderedList",
-                        "text",
-                        "listItem",
-                        "nonBreakingSpace",
-                        "softHyphen"
-                    ],
-                    "marks": [
-                        "bold",
-                        "italic",
-                        "strike",
-                        "superscript",
-                        "subscript",
-                        "link"
-                    ],
-                    "textBlocks": [
+                "name": "columns",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
                         {
-                            "name": "paragraph",
-                            "tag": "p",
-                            "styles": [
-                                "title",
-                                "header",
-                                "small"
-                            ],
-                            "defaultStyle": null
+                            "name": "key",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "visible",
+                            "kind": "Boolean",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "Block",
+                            "block": "MailTwoColumnsContent",
+                            "nullable": false
                         }
-                    ],
-                    "defaultTextBlock": "paragraph",
-                    "orderedList": {
-                        "styles": [],
-                        "defaultStyle": null
-                    },
-                    "unorderedList": {
-                        "styles": [],
-                        "defaultStyle": null
-                    },
-                    "inlineStyles": [],
-                    "placeholders": [],
-                    "link": "MailLink",
-                    "maxTextBlocks": null,
-                    "listLevelMax": null
-                }
-            }
-        ]
-    },
-    {
-        "name": "MailTwoListSizesRichText",
-        "description": "Formatted text, edited in the Draft.js based rich text editor.",
-        "fields": [
-            {
-                "name": "draftContent",
-                "kind": "Json",
+                    ]
+                },
                 "nullable": false
             }
         ],
         "inputFields": [
             {
-                "name": "draftContent",
-                "kind": "Json",
+                "name": "layout",
+                "kind": "String",
+                "nullable": false
+            },
+            {
+                "name": "columns",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "key",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "visible",
+                            "kind": "Boolean",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "Block",
+                            "block": "MailTwoColumnsContent",
+                            "nullable": false
+                        }
+                    ]
+                },
                 "nullable": false
             }
         ]
     },
     {
-        "name": "MailTwoListSizesTipTapRichText",
-        "description": "Formatted text, edited in the TipTap based rich text editor. `tipTapContent` is a TipTap JSON document. Build it from the field's `tipTap` entry, not from TipTap's defaults, otherwise the content is rejected: use only the node and mark types in `nodes` and `marks`. Store every paragraph and heading as a `textBlock` node whose `textBlock` attribute names one of `textBlocks`, and whose optional `textBlockStyle` attribute names one of that text block's `styles`. Without a `textBlock` attribute, a node becomes the `defaultTextBlock`. Use an ordered (`orderedList`) or unordered (`bulletList`) list only if `orderedList` or `unorderedList` isn't `null`. A list item holds text blocks with the tag `p`, which may also use the list's `styles`. An `inlineStyle` mark's `type` names one of `inlineStyles`, and is only allowed in the text blocks and lists of its `appliesTo`. A `placeholder` node's `name` names one of `placeholders`. A `link` mark is only allowed if `link` isn't `null`, and its `data` attribute holds that block's input (its `inputFields` in the block meta). A `cmsBlock` or `cmsInlineBlock` node's `blockType` attribute is one of the field's `childBlocks` keys, and its `data` attribute holds that block's input (its `inputFields` in the block meta). Stay within `maxTextBlocks` top-level nodes and `listLevelMax` list levels, if set.",
+        "name": "MailTwoColumnsContent",
+        "description": "A list of blocks of several types. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site), a `type` and the `props` of the block that type names in the `blocks` of the `props` field. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
-                "name": "tipTapContent",
-                "kind": "TipTapRichTextBlock",
-                "nullable": false,
-                "childBlocks": {},
-                "tipTap": {
-                    "nodes": [
-                        "textBlock",
-                        "bulletList",
-                        "doc",
-                        "hardBreak",
-                        "orderedList",
-                        "text",
-                        "listItem",
-                        "nonBreakingSpace",
-                        "softHyphen"
-                    ],
-                    "marks": [
-                        "bold",
-                        "italic",
-                        "strike",
-                        "superscript",
-                        "subscript",
-                        "link"
-                    ],
-                    "textBlocks": [
+                "name": "blocks",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
                         {
-                            "name": "paragraph",
-                            "tag": "p",
-                            "styles": [
-                                "small"
-                            ],
-                            "defaultStyle": null
+                            "name": "key",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "visible",
+                            "kind": "Boolean",
+                            "nullable": false
+                        },
+                        {
+                            "name": "type",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "OneOfBlocks",
+                            "blocks": {
+                                "heading": "MailHeading",
+                                "text": "MailRichText",
+                                "image": "PixelImage",
+                                "button": "MailButton",
+                                "spacer": "MailSpacer"
+                            },
+                            "nullable": false
                         }
-                    ],
-                    "defaultTextBlock": "paragraph",
-                    "orderedList": {
-                        "styles": [
-                            "small"
-                        ],
-                        "defaultStyle": null
-                    },
-                    "unorderedList": {
-                        "styles": [
-                            "small"
-                        ],
-                        "defaultStyle": null
-                    },
-                    "inlineStyles": [],
-                    "placeholders": [],
-                    "link": "MailLink",
-                    "maxTextBlocks": null,
-                    "listLevelMax": null
-                }
+                    ]
+                },
+                "nullable": false
             }
         ],
         "inputFields": [
             {
-                "name": "tipTapContent",
-                "kind": "TipTapRichTextBlock",
-                "nullable": false,
-                "childBlocks": {},
-                "tipTap": {
-                    "nodes": [
-                        "textBlock",
-                        "bulletList",
-                        "doc",
-                        "hardBreak",
-                        "orderedList",
-                        "text",
-                        "listItem",
-                        "nonBreakingSpace",
-                        "softHyphen"
-                    ],
-                    "marks": [
-                        "bold",
-                        "italic",
-                        "strike",
-                        "superscript",
-                        "subscript",
-                        "link"
-                    ],
-                    "textBlocks": [
+                "name": "blocks",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
                         {
-                            "name": "paragraph",
-                            "tag": "p",
-                            "styles": [
-                                "small"
-                            ],
-                            "defaultStyle": null
+                            "name": "key",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "visible",
+                            "kind": "Boolean",
+                            "nullable": false
+                        },
+                        {
+                            "name": "type",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "OneOfBlocks",
+                            "blocks": {
+                                "heading": "MailHeading",
+                                "text": "MailRichText",
+                                "image": "PixelImage",
+                                "button": "MailButton",
+                                "spacer": "MailSpacer"
+                            },
+                            "nullable": false
                         }
-                    ],
-                    "defaultTextBlock": "paragraph",
-                    "orderedList": {
-                        "styles": [
-                            "small"
-                        ],
-                        "defaultStyle": null
-                    },
-                    "unorderedList": {
-                        "styles": [
-                            "small"
-                        ],
-                        "defaultStyle": null
-                    },
-                    "inlineStyles": [],
-                    "placeholders": [],
-                    "link": "MailLink",
-                    "maxTextBlocks": null,
-                    "listLevelMax": null
-                }
+                    ]
+                },
+                "nullable": false
             }
         ]
     },
     {
         "name": "Media",
+        "description": "One of several blocks. `attachedBlocks` lists entries of a `type` and the `props` of the block that type names in the `blocks` of the `props` field. `activeType` names the entry in use, so an entry with that `type` must be in the list. Entries of other types may stay in the list and aren't shown. `activeType` `null` means the block is empty, e.g. `{\"attachedBlocks\":[],\"activeType\":null}`.",
         "fields": [
             {
                 "name": "attachedBlocks",
@@ -2592,6 +2725,7 @@
     },
     {
         "name": "MediaGalleryList",
+        "description": "A list of blocks of one type. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site) and the `props` of the block. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -2649,6 +2783,7 @@
     },
     {
         "name": "NewsContent",
+        "description": "A list of blocks of several types. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site), a `type` and the `props` of the block that type names in the `blocks` of the `props` field. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -2674,7 +2809,7 @@
                             "name": "props",
                             "kind": "OneOfBlocks",
                             "blocks": {
-                                "headline": "Heading",
+                                "heading": "Heading",
                                 "richText": "RichText",
                                 "image": "DamImage",
                                 "textImage": "TextImage"
@@ -2711,7 +2846,7 @@
                             "name": "props",
                             "kind": "OneOfBlocks",
                             "blocks": {
-                                "headline": "Heading",
+                                "heading": "Heading",
                                 "richText": "RichText",
                                 "image": "DamImage",
                                 "textImage": "TextImage"
@@ -2838,6 +2973,7 @@
     },
     {
         "name": "OptionalPixelImage",
+        "description": "A block that can be turned off. `block` holds the props of the wrapped block, `visible` `false` hides it on the site. An empty block is `{\"visible\":false}` without `block`.",
         "fields": [
             {
                 "name": "block",
@@ -2867,6 +3003,7 @@
     },
     {
         "name": "OptionalRichText",
+        "description": "A block that can be turned off. `block` holds the props of the wrapped block, `visible` `false` hides it on the site. An empty block is `{\"visible\":false}` without `block`.",
         "fields": [
             {
                 "name": "block",
@@ -2896,6 +3033,7 @@
     },
     {
         "name": "PageContent",
+        "description": "A list of blocks of several types. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site), a `type` and the `props` of the block that type names in the `blocks` of the `props` field. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -3352,6 +3490,23 @@
         ]
     },
     {
+        "name": "RedirectsExternalLink",
+        "fields": [
+            {
+                "name": "targetUrl",
+                "kind": "String",
+                "nullable": true
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "targetUrl",
+                "kind": "String",
+                "nullable": true
+            }
+        ]
+    },
+    {
         "name": "RedirectsLink",
         "description": "The target a redirect points to, for instance a page of the page tree or an external URL.",
         "fields": [
@@ -3370,7 +3525,7 @@
                             "kind": "OneOfBlocks",
                             "blocks": {
                                 "internal": "InternalLink",
-                                "external": "ExternalLink",
+                                "external": "RedirectsExternalLink",
                                 "news": "NewsLink"
                             },
                             "nullable": false
@@ -3399,7 +3554,7 @@
                             "kind": "OneOfBlocks",
                             "blocks": {
                                 "internal": "InternalLink",
-                                "external": "ExternalLink",
+                                "external": "RedirectsExternalLink",
                                 "news": "NewsLink"
                             },
                             "nullable": false
@@ -3425,7 +3580,7 @@
                             "kind": "OneOfBlocks",
                             "blocks": {
                                 "internal": "InternalLink",
-                                "external": "ExternalLink",
+                                "external": "RedirectsExternalLink",
                                 "news": "NewsLink"
                             },
                             "nullable": false
@@ -3437,24 +3592,6 @@
             {
                 "name": "activeType",
                 "kind": "String",
-                "nullable": false
-            }
-        ]
-    },
-    {
-        "name": "RichText",
-        "description": "Formatted text, edited in the Draft.js based rich text editor.",
-        "fields": [
-            {
-                "name": "draftContent",
-                "kind": "Json",
-                "nullable": false
-            }
-        ],
-        "inputFields": [
-            {
-                "name": "draftContent",
-                "kind": "Json",
                 "nullable": false
             }
         ]
@@ -3671,19 +3808,58 @@
     },
     {
         "name": "Slider",
+        "description": "A list of blocks of one type. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site) and the `props` of the block. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
-                "name": "sliderList",
-                "kind": "Block",
-                "block": "SliderList",
+                "name": "blocks",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "key",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "visible",
+                            "kind": "Boolean",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "Block",
+                            "block": "SliderItem",
+                            "nullable": false
+                        }
+                    ]
+                },
                 "nullable": false
             }
         ],
         "inputFields": [
             {
-                "name": "sliderList",
-                "kind": "Block",
-                "block": "SliderList",
+                "name": "blocks",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "key",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "visible",
+                            "kind": "Boolean",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "Block",
+                            "block": "SliderItem",
+                            "nullable": false
+                        }
+                    ]
+                },
                 "nullable": false
             }
         ]
@@ -3715,63 +3891,6 @@
                 "name": "text",
                 "kind": "Block",
                 "block": "RichText",
-                "nullable": false
-            }
-        ]
-    },
-    {
-        "name": "SliderList",
-        "fields": [
-            {
-                "name": "blocks",
-                "kind": "NestedObjectList",
-                "object": {
-                    "fields": [
-                        {
-                            "name": "key",
-                            "kind": "String",
-                            "nullable": false
-                        },
-                        {
-                            "name": "visible",
-                            "kind": "Boolean",
-                            "nullable": false
-                        },
-                        {
-                            "name": "props",
-                            "kind": "Block",
-                            "block": "SliderItem",
-                            "nullable": false
-                        }
-                    ]
-                },
-                "nullable": false
-            }
-        ],
-        "inputFields": [
-            {
-                "name": "blocks",
-                "kind": "NestedObjectList",
-                "object": {
-                    "fields": [
-                        {
-                            "name": "key",
-                            "kind": "String",
-                            "nullable": false
-                        },
-                        {
-                            "name": "visible",
-                            "kind": "Boolean",
-                            "nullable": false
-                        },
-                        {
-                            "name": "props",
-                            "kind": "Block",
-                            "block": "SliderItem",
-                            "nullable": false
-                        }
-                    ]
-                },
                 "nullable": false
             }
         ]
@@ -3836,6 +3955,7 @@
     },
     {
         "name": "Stage",
+        "description": "A list of blocks of one type. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site) and the `props` of the block. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -4324,6 +4444,7 @@
     },
     {
         "name": "Teaser",
+        "description": "A list of blocks of one type. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site) and the `props` of the block. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -5033,6 +5154,7 @@
     },
     {
         "name": "WelcomeEmailContent",
+        "description": "A list of blocks of several types. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site), a `type` and the `props` of the block that type names in the `blocks` of the `props` field. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -5058,14 +5180,13 @@
                             "name": "props",
                             "kind": "OneOfBlocks",
                             "blocks": {
-                                "text": "RichText",
-                                "twoListSizesText": "MailTwoListSizesRichText",
-                                "twoListSizesTipTapText": "MailTwoListSizesTipTapRichText",
-                                "tipTapText": "MailTipTapRichText",
+                                "heading": "MailHeading",
+                                "text": "MailRichText",
                                 "image": "MailImage",
                                 "button": "MailButton",
                                 "divider": "MailDivider",
-                                "spacer": "MailSpacer"
+                                "spacer": "MailSpacer",
+                                "twoColumns": "MailTwoColumns"
                             },
                             "nullable": false
                         }
@@ -5099,14 +5220,13 @@
                             "name": "props",
                             "kind": "OneOfBlocks",
                             "blocks": {
-                                "text": "RichText",
-                                "twoListSizesText": "MailTwoListSizesRichText",
-                                "twoListSizesTipTapText": "MailTwoListSizesTipTapRichText",
-                                "tipTapText": "MailTipTapRichText",
+                                "heading": "MailHeading",
+                                "text": "MailRichText",
                                 "image": "MailImage",
                                 "button": "MailButton",
                                 "divider": "MailDivider",
-                                "spacer": "MailSpacer"
+                                "spacer": "MailSpacer",
+                                "twoColumns": "MailTwoColumns"
                             },
                             "nullable": false
                         }

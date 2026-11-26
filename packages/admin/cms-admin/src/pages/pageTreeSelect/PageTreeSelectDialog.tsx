@@ -156,7 +156,7 @@ export default function PageTreeSelectDialog({ value, onChange, open, onClose, d
         // When the selected page is expanded we scroll to the selected page
         if (selectedPageId) {
             const index = pagesToRender.findIndex((c) => c.id === selectedPageId);
-            if (index) {
+            if (index !== -1) {
                 refList.current?.scrollToRow({ index, align: "smart" });
             }
         }

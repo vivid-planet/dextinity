@@ -120,7 +120,7 @@ query MySearch($search: String!, $scope: JSONObject) {
 }
 ```
 
-The optional `scope` parameter restricts results to a specific content scope.
+The last word of `search` matches as a prefix, so `Navig` finds `Navigation`. The optional `scope` parameter restricts results to a specific content scope.
 
 ### How to index blocks
 

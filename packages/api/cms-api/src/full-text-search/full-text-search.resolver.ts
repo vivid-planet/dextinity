@@ -10,6 +10,7 @@ import { CurrentUser } from "../user-permissions/dto/current-user";
 import { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
 import { PaginatedEntityInfo } from "./dto/paginated-entity-info";
 import { EntityInfoFullTextObject } from "./entities/entity-info-full-text.object";
+import { prefixFullTextCondition } from "./prefix-full-text-query";
 
 @Resolver(() => EntityInfoObject)
 @RequiredPermission("fullTextSearch", { skipScopeCheck: true })
@@ -32,7 +33,7 @@ export class FullTextSearchResolver {
         }
 
         const where: FilterQuery<EntityInfoFullTextObject> = {
-            fullText: { $fulltext: search },
+            ...prefixFullTextCondition(search),
             requiredPermission: { $overlap: allowedPermissions },
             ...(includeInvisiblePages?.length ? {} : { entityInfo: { visible: true } }),
         };

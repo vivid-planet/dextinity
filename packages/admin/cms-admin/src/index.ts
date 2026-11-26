@@ -16,6 +16,7 @@ export { type BlockContext } from "./blocks/context/BlockContext";
 export { BlockContextProvider } from "./blocks/context/BlockContextProvider";
 export { useBlockContext } from "./blocks/context/useBlockContext";
 export { createDamVideoBlock } from "./blocks/createDamVideoBlock";
+export { createExternalLinkBlock } from "./blocks/createExternalLinkBlock";
 export { createImageLinkBlock } from "./blocks/createImageLinkBlock";
 export { createLinkBlock } from "./blocks/createLinkBlock";
 export type { RichTextBlockFactoryOptions } from "./blocks/createRichTextBlock";
@@ -86,6 +87,7 @@ export type {
     TipTapListOptions,
     TipTapPlaceholder,
     TipTapRichTextBlockContent,
+    TipTapRichTextBlockInterface,
     TipTapTextBlock,
     TipTapTextBlockElement,
     TipTapTextBlockElementProps,

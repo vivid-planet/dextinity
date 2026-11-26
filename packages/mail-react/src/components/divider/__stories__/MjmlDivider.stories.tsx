@@ -1,7 +1,7 @@
-import { MjmlColumn, MjmlSpacer } from "@faire/mjml-react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect } from "storybook/test";
 
+import { MjmlColumn, MjmlSpacer } from "../../../index.js";
 import { createTheme } from "../../../theme/createTheme.js";
 import { MjmlSection } from "../../section/MjmlSection.js";
 import { MjmlText } from "../../text/MjmlText.js";

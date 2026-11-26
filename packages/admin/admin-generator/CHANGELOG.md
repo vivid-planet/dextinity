@@ -1,5 +1,74 @@
 # @comet/admin-generator
 
+## 10.16.0
+
+### Patch Changes
+
+- Updated dependencies [e91490a]
+- Updated dependencies [e91490a]
+- Updated dependencies [681bc57]
+- Updated dependencies [bf7ec52]
+- Updated dependencies [4a1d83d]
+- Updated dependencies [0dcec9b]
+- Updated dependencies [2b61fef]
+- Updated dependencies [495ec2e]
+- Updated dependencies [f4cbd70]
+- Updated dependencies [0b43115]
+- Updated dependencies [25a2c8e]
+    - @dextinity/cms-admin@10.16.0
+    - @dextinity/admin@10.16.0
+    - @dextinity/admin-icons@10.16.0
+
+## 10.15.0
+
+### Patch Changes
+
+- Updated dependencies [c6ce8a8]
+- Updated dependencies [41492ce]
+- Updated dependencies [d9c1a9b]
+    - @dextinity/cms-admin@10.15.0
+    - @dextinity/admin@10.15.0
+    - @dextinity/admin-icons@10.15.0
+
+## 10.14.0
+
+### Patch Changes
+
+- Updated dependencies [de4cc90]
+- Updated dependencies [de4cc90]
+- Updated dependencies [c586a3d]
+- Updated dependencies [def6e3e]
+- Updated dependencies [e6909e2]
+- Updated dependencies [e131e00]
+- Updated dependencies [da2f8e6]
+- Updated dependencies [5db7734]
+- Updated dependencies [1595266]
+- Updated dependencies [1595266]
+- Updated dependencies [45cb8e2]
+    - @dextinity/cms-admin@10.14.0
+    - @dextinity/admin-icons@10.14.0
+    - @dextinity/admin@10.14.0
+
+## 10.13.1
+
+### Patch Changes
+
+- Updated dependencies [b6fde8f]
+    - @dextinity/admin@10.13.1
+    - @dextinity/cms-admin@10.13.1
+    - @dextinity/admin-icons@10.13.1
+
+## 10.13.0
+
+### Patch Changes
+
+- Updated dependencies [ad3f6d5]
+- Updated dependencies [46a1a08]
+- Updated dependencies [b16df0b]
+    - @dextinity/cms-admin@10.13.0
+    - @dextinity/admin@10.13.0
+    - @dextinity/admin-icons@10.13.0
+
 ## 10.12.0
 
 ### Patch Changes

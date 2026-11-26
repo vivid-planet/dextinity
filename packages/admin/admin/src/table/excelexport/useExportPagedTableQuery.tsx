@@ -58,7 +58,7 @@ export function useExportPagedTableQuery<IVariables extends OperationVariables>(
                     const progressInPercent = (i / (toPage - fromPage)) * 100;
                     setProgress(progressInPercent);
                 }
-                createExcelExportDownload<any>(tableRef.props.columns, exportData, excelOptions);
+                await createExcelExportDownload<any>(tableRef.props.columns, exportData, excelOptions);
             } catch {
                 throw new Error("Error happend while exporting data");
             } finally {

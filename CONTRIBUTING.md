@@ -16,7 +16,7 @@ Pull requests with minor or patch changes should target the [`main`](https://git
 ## Pull requests
 
 > [!WARNING]
-> Please make sure to keep the pull request size at a minium!
+> Please make sure to keep the pull request size at a minimum!
 > Smaller pull requests are easier to review and tend to get merged faster.
 > Unrelated changes, refactorings, fixes etc. should be made in follow-up pull requests.
 
@@ -135,6 +135,28 @@ export function ErrorHandler({ children }: PropsWithChildren) {
 }
 ```
 ````
+
+### Migration guide
+
+Every breaking change needs an entry in the migration guide in the same pull request, so projects can upgrade to the next major.
+The migration guides are executed by AI coding agents (see the [migration guide overview](docs/docs/7-migration-guide/index.md)), so write each entry as instructions an agent can follow.
+
+- The guide for the upcoming major is `docs/docs/7-migration-guide/migration-from-v<current>-to-v<next>.md`, where `<current>` is the major version of the packages on `main` (e.g. `migration-from-v10-to-v11.md`). It only exists on `next`.
+- If the guide exists, extend it. If it doesn't, start it, copying the front matter (`sidebar_position: -<next>`) and the "AI-Assisted Migration" info box with its sample prompt from the latest existing guide. Add this caution below the info box until the major is released:
+
+    ```md
+    :::caution Work in progress
+
+    v<next> hasn't been released yet.
+    This guide grows with every breaking change that lands on [`next`](https://github.com/vivid-planet/dextinity/tree/next), so check it again once v<next> is released.
+
+    :::
+    ```
+
+- Add the entry to the section of the affected part of a project (`Root`, `Linting`, `API`, `Admin`, `Site`, `Mails`, `Agent features`, …), before that section's verification steps. Create the section if it doesn't exist yet.
+- Write the entry as an instruction, not as a changelog entry: an imperative heading (e.g. "Rename `createCometTheme`"), a command to find the affected code (e.g. `grep -rn "createCometTheme" src`), and the change as a `diff` code block. If the change can't be done mechanically, say what the project needs to check or decide.
+- Describe the change from the project's perspective. Don't reference the Dextinity repository's internals, such as demo files or package source paths.
+- Keep the changeset for the breaking change as well. The changeset says what changed, the migration guide says how to update a project.
 
 ### Open TODOs/questions
 

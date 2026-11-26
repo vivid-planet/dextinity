@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import type { ComponentType, ReactNode } from "react";
 
 import { HtmlInlineLink } from "../../../components/inlineLink/HtmlInlineLink.js";
@@ -58,6 +59,7 @@ interface RenderContext {
     marks: Record<string, RichTextInlineRenderer>;
     inlineStyles: Record<string, RichTextInlineRenderer>;
     blockTextComponent: ComponentType<BlockTextProps>;
+    textClassName: string | undefined;
 }
 
 function getTextBlockName(node: TipTapNode): string | undefined {
@@ -273,6 +275,7 @@ function renderList({ node, path, isLast, context }: { node: TipTapNode; path: s
                 key={groupPath}
                 bottomSpacing={false} // The list holds this space itself — applying it here too would double it.
                 {...blockTypeProps}
+                className={clsx(blockTypeProps.className, context.textClassName)}
             >
                 <RichTextList
                     ordered={ordered}
@@ -293,7 +296,7 @@ function renderTextBlock({ node, path, isLast, context }: { node: TipTapNode; pa
     const blockTypeProps = resolveBlockTypeProps({ textBlockStyle: node.attrs?.textBlockStyle, textBlock: getTextBlockName(node), context });
 
     return (
-        <BlockText key={path} bottomSpacing={!isLast} {...blockTypeProps}>
+        <BlockText key={path} bottomSpacing={!isLast} {...blockTypeProps} className={clsx(blockTypeProps.className, context.textClassName)}>
             {renderInlineNodes({ nodes: node.content ?? [], path, context })}
         </BlockText>
     );

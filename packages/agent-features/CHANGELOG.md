@@ -1,5 +1,37 @@
 # @comet/agent-features
 
+## 10.16.0
+
+### Minor Changes
+
+- aa7c8fc: Add skills for generating CRUD features
+
+    `dextinity-crud` generates the API and admin UI for an entity from a short description. It shows a plan first, then uses the other new skills, which also work on their own:
+
+    - `dextinity-api-graphql`: GraphQL resolver, DTOs and permission for a MikroORM entity, in the style of `api-generator`
+    - `dextinity-admin-enum`: translated labels, chips and form fields for GraphQL enums
+    - `dextinity-admin-datagrid`: server-side DataGrid with filtering, sorting, search and pagination
+    - `dextinity-admin-form`: Final Form edit form with create and edit modes and save conflict detection
+    - `dextinity-admin-pages`: page navigation with `Stack`, `StackSwitch`, `RouterTabs` and `EditDialog`
+
+### Patch Changes
+
+- 9be7f9d: Point the `dextinity-mail-react` skill to the `@dextinity/mail-react` Storybook
+
+    The usage guide for building emails moved into the Storybook of `@dextinity/mail-react`. The skill now tells the agent to read it through the Storybook's MCP server, and how to connect the server.
+
+## 10.15.0
+
+No changes in this release.
+
+## 10.14.0
+
+No changes in this release.
+
+## 10.13.1
+
+## 10.13.0
+
 ## 10.12.0
 
 ## 10.11.0

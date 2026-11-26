@@ -1,5 +1,96 @@
 # @comet/brevo-api
 
+## 10.16.0
+
+### Patch Changes
+
+- 9fa4ef1: Cache Brevo campaigns by scope and Brevo ID
+
+    `loadBrevoCampaignById` cached the campaign under the email campaign's ID instead of its Brevo ID, so it requested campaigns from Brevo that were already cached by `loadBrevoCampaignsByIds`.
+    Both now include the scope in the cache key, since scopes can use different Brevo accounts whose campaign IDs overlap. Before, `loadBrevoCampaignsByIds` could return a campaign cached for another scope.
+
+- ec25940: Fix `BrevoApiCampaignsService.loadBrevoCampaignsByIds` not returning campaigns that aren't on the first page of Brevo's campaign list
+
+    Previously, paging stopped at the first page that contained none of the requested campaigns, so older campaigns were skipped, for instance when syncing the sending states of email campaigns.
+    Now, paging continues until all requested campaigns are found or Brevo returns the last page.
+
+- 9825b41: Mark Brevo email campaigns as `FAILED` if sending them in the background was interrupted
+
+    If the API restarted while `sendBrevoEmailCampaignNow` was sending a campaign in the background, the campaign stayed `SCHEDULED` forever and couldn't be edited or sent again. A campaign that is still a draft in Brevo (or wasn't created in Brevo at all) one hour after it was scheduled is now set to `FAILED`, so it can be edited and sent again. A background send that takes longer than that is aborted before the campaign is sent, so the campaign isn't sent twice. Note that this limits campaigns to target groups that can be checked against the ECG RTR list within an hour, which is roughly 100,000 contacts.
+
+- Updated dependencies [e91490a]
+- Updated dependencies [edf91ce]
+- Updated dependencies [e67962d]
+- Updated dependencies [8f21cbf]
+- Updated dependencies [0b43115]
+    - @dextinity/cms-api@10.16.0
+
+## 10.15.0
+
+### Minor Changes
+
+- 9918560: Send Brevo email campaigns in the background and add a `FAILED` sending state
+
+    Sending a large campaign with `sendBrevoEmailCampaignNow` could exceed the gateway timeout. The mutation now returns right after setting the campaign to `SCHEDULED`, and the campaign is sent in the background. If sending fails, or the campaign has no target group to send to, the campaign is set to `FAILED`.
+
+    The admin shows failed campaigns with a red indicator, and they can be edited and sent again.
+
+### Patch Changes
+
+- a63e95d: Allow contacts that already exist in Brevo to subscribe in another scope
+
+    Previously, subscribing failed with `ERROR_CONTACT_ALREADY_EXISTS` as soon as the email address existed in Brevo, for example because the contact had subscribed in another scope.
+    Now, `ERROR_CONTACT_ALREADY_EXISTS` is only returned when the contact is already in the scope's main list.
+    With double opt-in, the confirmation mail is sent again and the contact is added to the scope's lists after confirmation.
+    Without double opt-in (admin contact creation), the existing contact is added to the scope's lists and its attributes are updated.
+    Because the attributes are shared by all scopes, the contact's target groups in the other scopes it subscribed to are updated to the new attributes as well.
+    Contacts that unsubscribed from the scope's main list or are blacklisted in Brevo are rejected with `ERROR_CONTACT_IS_BLACKLISTED`.
+
+    `BrevoContactsService.subscribeBrevoContact` now returns the `SubscribeResponse` from `createContact` instead of `SUCCESSFUL` for every non-empty response.
+    An already subscribed contact is still reported as `SUCCESSFUL`, so the public subscribe endpoint does not reveal which email addresses are subscribed.
+
+- Updated dependencies [41492ce]
+- Updated dependencies [d9c1a9b]
+- Updated dependencies [ba7823c]
+- Updated dependencies [db525c0]
+- Updated dependencies [aabf937]
+    - @dextinity/cms-api@10.15.0
+
+## 10.14.0
+
+### Patch Changes
+
+- Updated dependencies [bbd5b81]
+- Updated dependencies [5db7734]
+- Updated dependencies [a5e4799]
+- Updated dependencies [1595266]
+    - @dextinity/cms-api@10.14.0
+
+## 10.13.1
+
+### Patch Changes
+
+- 7342211: Add migration to fix Brevo table constraints and column types
+
+    - Rename constraints of `BrevoEmailCampaign`, `BrevoTargetGroup` and `BrevoEmailCampaign_targetGroups` to match the `Brevo`-prefixed table names
+    - Add nullable to `BrevoEmailImportLog.importId` Property and Field
+    - Remove Property decorator from `BrevoEmailImportLog.contactSource` since it already has Enum decorator
+    - Change `BrevoTargetGroup.isMainList` column to not null
+    - Add missing primary keys to `BrevoEmailImportLog` and `BrevoBlacklistedContacts`
+
+- Updated dependencies [795901f]
+- Updated dependencies [94991f8]
+    - @dextinity/cms-api@10.13.1
+
+## 10.13.0
+
+### Patch Changes
+
+- Updated dependencies [7d8cbff]
+- Updated dependencies [ad3f6d5]
+- Updated dependencies [a476170]
+    - @dextinity/cms-api@10.13.0
+
 ## 10.12.0
 
 ### Patch Changes

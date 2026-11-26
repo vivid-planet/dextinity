@@ -7,7 +7,7 @@ import type { RedirectInterface } from "./entities/redirect-entity.factory";
 
 export type FilterableRedirect = Pick<
     RedirectInterface,
-    "generationType" | "source" | "sourceType" | "active" | "createdAt" | "updatedAt" | "activatedAt"
+    "generationType" | "source" | "sourceType" | "redirectType" | "active" | "createdAt" | "updatedAt" | "activatedAt"
 > & {
     target?: string;
 };
@@ -44,6 +44,10 @@ export function redirectMatchesFilter(redirect: FilterableRedirect, filter: Redi
 
     if (filter.sourceType) {
         matches = (matches ?? true) && enumMatchesFilter(redirect.sourceType, filter.sourceType);
+    }
+
+    if (filter.redirectType) {
+        matches = (matches ?? true) && enumMatchesFilter(redirect.redirectType, filter.redirectType);
     }
 
     if (filter.createdAt) {

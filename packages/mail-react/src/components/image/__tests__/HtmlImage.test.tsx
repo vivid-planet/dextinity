@@ -1,6 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
+import { ConfigProvider } from "../../../config/ConfigProvider.js";
 import { HtmlImage } from "../HtmlImage.js";
 
 describe("HtmlImage", () => {
@@ -38,5 +39,42 @@ describe("HtmlImage", () => {
         );
 
         expect(html).toContain('arcsize="10%"');
+    });
+
+    it("renders the src that config.rewriteImageSrc returns, in the image and in the Outlook VML", () => {
+        const html = renderToStaticMarkup(
+            <ConfigProvider config={{ rewriteImageSrc: ({ src }) => `cid:${src}` }}>
+                <HtmlImage src="image.jpg" alt="A photo" width={100} height={100} borderRadius={10} />
+            </ConfigProvider>,
+        );
+
+        expect(html).toMatch(/<img[^>]*src="cid:image.jpg"/);
+        expect(html).toContain('<v:fill type="frame" src="cid:image.jpg"');
+        expect(html).not.toContain('"image.jpg"');
+    });
+
+    it("passes the image's src, width and height to config.rewriteImageSrc", () => {
+        const rewriteImageSrc = vi.fn(({ src }: { src: string }) => src);
+
+        renderToStaticMarkup(
+            <ConfigProvider config={{ rewriteImageSrc }}>
+                <HtmlImage src="image.jpg" alt="" width={100} height="50" />
+            </ConfigProvider>,
+        );
+
+        expect(rewriteImageSrc).toHaveBeenCalledWith({ src: "image.jpg", width: 100, height: "50" });
+    });
+
+    it("does not call config.rewriteImageSrc for an image without a src", () => {
+        const rewriteImageSrc = vi.fn(({ src }: { src: string }) => src);
+
+        const html = renderToStaticMarkup(
+            <ConfigProvider config={{ rewriteImageSrc }}>
+                <HtmlImage alt="" />
+            </ConfigProvider>,
+        );
+
+        expect(rewriteImageSrc).not.toHaveBeenCalled();
+        expect(html).not.toContain("src=");
     });
 });

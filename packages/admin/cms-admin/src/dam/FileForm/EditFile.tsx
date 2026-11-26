@@ -24,6 +24,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { Link as RouterLink } from "react-router";
 import ReactSplit from "react-split";
 
+import { ActionLogButton } from "../../actionLog/actionLog/actionLogButton/ActionLogButton";
 import { fullCropArea } from "../../common/image/cropArea";
 import { useContentScope } from "../../contentScope/Provider";
 import { useDependenciesConfig } from "../../dependencies/dependenciesConfig";
@@ -32,6 +33,7 @@ import type { GQLDamFileAiContentType, GQLFocalPoint, GQLImageCropAreaInput, GQL
 import { useUserPermissionCheck } from "../../userPermissions/hooks/currentUser";
 import { useDamConfig, useVideoPerformanceWarning } from "../config/damConfig";
 import { useDamAcceptedMimeTypes } from "../config/useDamAcceptedMimeTypes";
+import { useDamScope } from "../config/useDamScope";
 import { ArchivedTag } from "../DataGrid/tags/ArchivedTag";
 import { LicenseValidityTags } from "../DataGrid/tags/LicenseValidityTags";
 import { MediaAlternativesGrid } from "../mediaAlternatives/MediaAlternativesGrid";
@@ -122,6 +124,7 @@ const EditFileInner = ({ file, id, contentScopeIndicator }: EditFileInnerProps) 
     const { isVideoTooLarge } = useVideoPerformanceWarning();
     const apolloClient = useApolloClient();
     const isAllowed = useUserPermissionCheck();
+    const damScope = useDamScope();
 
     const onSubmit = useCallback(
         async (values: EditFileFormValues) => {
@@ -223,6 +226,7 @@ const EditFileInner = ({ file, id, contentScopeIndicator }: EditFileInnerProps) 
                             )}
                         <FillSpace />
                         <ToolbarActions>
+                            <ActionLogButton entityId={file.id} entity="DamFile" name={file.name} scope={damScope} />
                             <FinalFormSaveButton />
                         </ToolbarActions>
                     </Toolbar>

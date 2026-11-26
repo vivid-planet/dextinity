@@ -16,6 +16,7 @@ import {
 import type { ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
 
+import { ActionLogButton } from "../../actionLog/actionLog/actionLogButton/ActionLogButton";
 import { FileField, type GQLDamFileFieldFileFragment } from "../../form/file/FileField";
 import { useDamConfig } from "../config/damConfig";
 import { useDamAcceptedMimeTypes } from "../config/useDamAcceptedMimeTypes";
@@ -77,6 +78,7 @@ export const DamSettings = ({ contentScopeIndicator }: DamSettingsProps) => {
                         </ToolbarTitleItem>
                         <FillSpace />
                         <ToolbarActions>
+                            {data.damSettings && <ActionLogButton entityId={data.damSettings.id} entity="DamSettings" scope={scope} />}
                             <FinalFormSaveButton />
                         </ToolbarActions>
                     </Toolbar>

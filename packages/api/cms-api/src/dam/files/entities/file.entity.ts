@@ -5,6 +5,7 @@ import { Field, ID, ObjectType } from "@nestjs/graphql";
 import { randomUUID } from "crypto";
 import { GraphQLBigInt } from "graphql-scalars";
 
+import { ActionLogs } from "../../../action-logs/action-logs.decorator.js";
 import { EntityInfo } from "../../../entity-info/entity-info.decorator.js";
 import { RequiredPermission } from "../../../user-permissions/decorators/required-permission.decorator.js";
 import { CreateWarnings } from "../../../warnings/decorators/create-warnings.decorator.js";
@@ -164,6 +165,7 @@ export function createFileEntity({ Scope, Folder }: { Scope?: Type<DamScopeInter
         @RequiredPermission("dam")
         @Entity({ tableName: FILE_TABLE_NAME })
         @ObjectType("DamFile")
+        @ActionLogs()
         class DamFile extends FileBase {
             @Embedded(() => Scope)
             @Field(() => Scope)
@@ -177,6 +179,7 @@ export function createFileEntity({ Scope, Folder }: { Scope?: Type<DamScopeInter
         @RequiredPermission("dam", { skipScopeCheck: true })
         @Entity({ tableName: FILE_TABLE_NAME })
         @ObjectType("DamFile")
+        @ActionLogs()
         class DamFile extends FileBase {}
         return DamFile;
     }

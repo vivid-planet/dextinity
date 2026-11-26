@@ -4,6 +4,8 @@ import type { Type } from "@nestjs/common";
 import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
 import { randomUUID } from "crypto";
 
+import { ActionLogs } from "../../../action-logs/action-logs.decorator.js";
+import { RequiredPermission } from "../../../user-permissions/decorators/required-permission.decorator.js";
 import type { DamScopeInterface } from "../../types.js";
 import type { FileInterface } from "./file.entity.js";
 import { resolveFileEntity, resolveFolderEntity } from "./resolve-dam-entity.js";
@@ -92,6 +94,8 @@ export function createFolderEntity({ Scope }: { Scope?: Type<DamScopeInterface> 
     if (Scope) {
         @Entity({ tableName: FOLDER_TABLE_NAME })
         @ObjectType("DamFolder")
+        @RequiredPermission("dam")
+        @ActionLogs()
         class DamFolder extends FolderBase {
             @Embedded(() => Scope)
             @Field(() => Scope)
@@ -104,6 +108,8 @@ export function createFolderEntity({ Scope }: { Scope?: Type<DamScopeInterface> 
     } else {
         @Entity({ tableName: FOLDER_TABLE_NAME })
         @ObjectType("DamFolder")
+        @RequiredPermission("dam", { skipScopeCheck: true })
+        @ActionLogs()
         class DamFolder extends FolderBase {
             @Field(() => DamFolder, { nullable: true })
             parent: DamFolder | null;

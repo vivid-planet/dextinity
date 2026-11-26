@@ -27,6 +27,8 @@ Entities: Always singular starting with a capital letter (e.g., Product)
 - test (optional)
 - staging
 
+**Feature branches:** `feature/…`, protected and long-lived, see [Feature Branches](./04-git-guidelines.md#feature-branches). The prefix is reserved for them. Never use it for a normal branch.
+
 ## File/Folder Naming Conventions
 
 |        | API (TLDR: like Nest)                                                                            | ADMIN (TLDR: like MUI/React)                                                                                   | SITE (TLDR: like Next)                                                                                                                                    |

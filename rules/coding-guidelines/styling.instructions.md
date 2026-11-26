@@ -28,7 +28,7 @@ alwaysApply: false
 - Inline `style` is fine for passing a runtime value (from props or state) to the stylesheet as a CSS custom property, e.g. `style={{ "--aspect-ratio": aspectRatio }}`. Keep the actual styling in the stylesheet and only set the variable inline.
 - Inline `style` is fine in Storybook stories and tests (e.g. story decorators, demo wrappers): the inline-style rule targets production code, so don't flag or rewrite inline styles there.
 - Keep list-level layout (flex/grid/wrap) on the list container, not on item blocks. When the item needs sizing, wrap it in an `Item` inside the list rather than styling the block itself.
-- When a component gets complex, extract styles to a `*.sc.ts` sibling file (and GraphQL to `*.gql.ts`). Those files are **private** to the component — do not import them elsewhere.
+- When a component gets complex, extract styles to a `*.sc.ts` sibling file (and GraphQL to `*.gql.ts`).
 
 ## CSS layout
 
@@ -45,7 +45,6 @@ alwaysApply: false
 ## Responsive
 
 - Mobile-first. Write the mobile layout first, then add breakpoint overrides upward.
-- For readability, put a blank line before every nested selector / media query inside a styled block.
 
 ## SVGs
 

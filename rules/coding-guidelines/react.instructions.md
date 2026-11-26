@@ -12,8 +12,6 @@ alwaysApply: false
 
 ## General
 
-- Function components only — no class components.
-- Always write JSX. `React.createElement` is only for rendering a component taken from a prop or variable.
 - Children are typed via `PropsWithChildren`, not an explicit `children: ReactNode` field.
 - Folder structure: group by **feature/module**, not by type. Move things until it feels right; avoid top-level `components/`, `hooks/`, `utils/` dumping grounds.
 - One "logical component" per file. Multiple sub-components in the same file are fine for structure/styling when they support the main export.
@@ -23,7 +21,7 @@ alwaysApply: false
 - Components: **PascalCase**. Instances: **camelCase**. Import name must match the component name.
 - File name must match the component name (`Footer.tsx` exports `Footer`). Exception: a file exporting multiple components.
 - Prefer **meaningful file names** even inside a descriptive folder: `clients/ClientsTable.tsx`, not `clients/Table.tsx`.
-- Private sibling files use the documented suffixes: `ClientsTable.sc.ts` (styled components), `ClientsTable.gql.ts` (GraphQL). **Never import `.sc.ts` / `.gql.ts` from another component.**
+- Private sibling files use the documented suffixes: `ClientsTable.sc.ts` (styled components), `ClientsTable.gql.ts` (GraphQL).
 
 ## Props
 
@@ -61,10 +59,6 @@ alwaysApply: false
 
 - Do **not** use `cond && <X />` when `cond` is a number — React renders `0`. Compare explicitly (`arr.length > 0 && …`) or use a ternary (`arr.length ? <X /> : null`).
 
-## SVGs
-
-- Use `<svg><use href="/icon.svg#id" /></svg>` over importing SVGs as components. See [styling.instructions.md](styling.instructions.md#svgs).
-
 ## GraphQL — colocate fragments
 
 A component that consumes GraphQL data must define its own fragment and be typed by that fragment. The parent query spreads the fragment. This way the child isn't coupled to the parent's query shape.
@@ -96,7 +90,3 @@ const userDetailQuery = gql`
     ${displayNameFragment}
 `;
 ```
-
-## General style
-
-- Follow the official [React docs](https://react.dev/) for everything not covered here.

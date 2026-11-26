@@ -308,6 +308,17 @@ export function CommentLayer({ frameDocument, scale, notePage }: { frameDocument
     );
 }
 
+// A request to paste into the chat with Claude, which changes the texts in the prototype's code, where they then stay for everyone
+function formatCodeRequest(changes: TextChange[], notePage: NotePage) {
+    return [
+        `Please change these texts in the code of the workspace prototype \`${notePage.prototypeId}\` (packages/ui/src/storybook/workspace):`,
+        ...changes.map(
+            (change) => `- Page “${notePage.getPageLabel(change.page)}” (\`${change.page}\`): “${change.original.trim()}” → “${change.text.trim()}”`,
+        ),
+        "Then remove them from the text changes in the workspace, since the prototype shows them itself.",
+    ].join("\n");
+}
+
 function formatTextChanges(changes: TextChange[], getPageLabel: (page: string) => string) {
     return changes.map((change) => `- [${getPageLabel(change.page)}] “${change.original.trim()}” → “${change.text.trim()}”`).join("\n");
 }
@@ -429,6 +440,7 @@ export function TextLayer({ frameDocument, notePage }: { frameDocument: Document
                     </ul>
                     <div className={styles.cardActions}>
                         <CopyButton label="Copy as list" getText={() => formatTextChanges(prototypeChanges, notePage.getPageLabel)} />
+                        <CopyButton label="Copy as code request" getText={() => formatCodeRequest(prototypeChanges, notePage)} />
                     </div>
                 </>
             )}

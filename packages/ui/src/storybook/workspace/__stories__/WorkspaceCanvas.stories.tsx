@@ -10,7 +10,9 @@ import { SegmentedControlStyles } from "./SegmentedControlStyles";
  * What's currently being designed in the workspace. Replace the stories freely; each one shows up in the workspace's story list.
  */
 const meta = {
-    title: "Workspace/Canvas",
+    title: "Workbench/Canvas",
+    // The story ids stay as before the rename, so that links and what the browser stored for them keep working
+    id: "workspace-canvas",
     tags: ["!autodocs", "!manifest"],
     decorators: [themeDecorator],
     parameters: { layout: "fullscreen" },
@@ -26,7 +28,7 @@ export const Current: Story = {
             <PageHeader
                 eyebrow="Content · Careers"
                 title="Job ads"
-                subtitle="Start here: this page is the workspace's canvas"
+                subtitle="Start here: this page is the Workbench's canvas"
                 primaryAction={{ label: "New job ad", icon: <Icon name="plus" /> }}
             />
         </PageTypeShell>

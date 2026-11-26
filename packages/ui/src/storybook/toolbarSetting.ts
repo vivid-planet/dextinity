@@ -66,6 +66,7 @@ export function createToolbarSetting<Value extends string>({
 
     return {
         storageKey,
+        defaultValue,
         options: Object.entries<string>(titles).map(([value, title]) => ({ value, title })),
         get,
         store,

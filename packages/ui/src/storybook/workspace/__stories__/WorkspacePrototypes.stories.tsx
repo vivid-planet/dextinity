@@ -28,7 +28,9 @@ function renderCareerPortalPage(pageId: string) {
  * examples of the page types. Open them in the workspace's Prototype tab.
  */
 const meta = {
-    title: "Workspace/Prototypes",
+    title: "Workbench/Prototypes",
+    // The story ids stay as before the rename, so that links and what the browser stored for them keep working
+    id: "workspace-prototypes",
     tags: ["!autodocs", "!manifest"],
     parameters: { layout: "fullscreen" },
 } satisfies Meta;

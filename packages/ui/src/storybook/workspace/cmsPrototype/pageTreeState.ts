@@ -158,3 +158,66 @@ export function pastePages(pages: SitePage[], ids: string[], targetId: string): 
         copyIds: copies.map((copy) => copy.id),
     };
 }
+
+export interface PathChange {
+    pageId: string;
+    from: string;
+    to: string;
+}
+
+function rebasePaths(page: SitePage, parentPath: string, changes: PathChange[]): SitePage {
+    const isLink = page.type === "link";
+    const path = isLink ? page.path : `${parentPath}/${page.path?.split("/").pop() ?? page.id}`;
+    if (!isLink && page.path != null && path != null && path !== page.path) {
+        changes.push({ pageId: page.id, from: page.path, to: path });
+    }
+    const childParentPath = isLink ? parentPath : (path ?? parentPath);
+    return { ...page, path, children: page.children?.map((child) => rebasePaths(child, childParentPath, changes)) };
+}
+
+function pathOf(page: SitePage | undefined) {
+    return page?.path == null || page.path === "/" ? "" : page.path;
+}
+
+/**
+ * Moves the pages, with the pages below them, before or after the target or inside it as its last children, and builds their paths
+ * anew below their new parent, or below the nearest page above it with a local path when the parent is a link page. Link pages keep
+ * their URL. Returns the old and new path of every page whose path changed, for the redirects, and the new paths that other pages
+ * already have, in which case the move must not happen.
+ */
+export function movePages(
+    pages: SitePage[],
+    ids: string[],
+    targetId: string,
+    position: "before" | "after" | "inside",
+): { pages: SitePage[]; parent: SitePage | undefined; pathChanges: PathChange[]; takenPaths: string[] } {
+    const topLevelIds = ids.filter((id) => !(findTrail(pages, id) ?? []).some((ancestor) => ids.includes(ancestor.id)));
+    const moved = topLevelIds.flatMap((id) => {
+        const page = findInTree(pages, id);
+        return page != null ? [page] : [];
+    });
+    const remaining = removePages(pages, topLevelIds);
+    const targetTrail = findTrail(remaining, targetId) ?? [];
+    const target = findInTree(remaining, targetId);
+    const parentTrail = position === "inside" && target != null ? [...targetTrail, target] : targetTrail;
+    const parent = parentTrail.at(-1);
+    // A link page's URL is on another host, so the pages below it take the path of the nearest page above it with a local path
+    const pathParent = parentTrail.findLast((page) => page.type !== "link");
+    const pathChanges: PathChange[] = [];
+    const rebased = moved.map((page) => rebasePaths(page, pathOf(pathParent), pathChanges));
+    const remainingPaths = new Set(flattenPages(remaining).map((page) => page.path));
+    const takenPaths = pathChanges.map((pathChange) => pathChange.to).filter((path) => remainingPaths.has(path));
+
+    const insert = (siblings: SitePage[]): SitePage[] =>
+        siblings.flatMap((page) => {
+            if (page.id === targetId) {
+                if (position === "inside") {
+                    return [{ ...page, children: [...(page.children ?? []), ...rebased] }];
+                }
+                return position === "before" ? [...rebased, page] : [page, ...rebased];
+            }
+            return [page.children ? { ...page, children: insert(page.children) } : page];
+        });
+
+    return { pages: insert(remaining), parent, pathChanges, takenPaths };
+}

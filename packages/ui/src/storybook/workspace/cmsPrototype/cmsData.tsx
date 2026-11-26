@@ -4,7 +4,7 @@ import type { SideNavGroup, SideNavItem } from "../../../components/sideNav/Side
 import type { TreeNode } from "../../../components/treeView/TreeView";
 import { documentImage, interiorImage, landscapeImage, portraitImage } from "../../sampleImages";
 import { getOriginalId } from "../../scenario";
-import { libraryAssets } from "./assetLibrary/assetLibraryData";
+import { getFolderTrail, libraryAssets, libraryFolders } from "./assetLibrary/assetLibraryData";
 
 export const cmsNavGroups: SideNavGroup[] = [
     {
@@ -349,4 +349,11 @@ export function getCmsPageLabel(pageId: string): string | undefined {
         return libraryAssets.find((asset) => asset.id === getOriginalId(id))?.name ?? "Asset";
     }
     return undefined;
+}
+
+/** The folders of an asset's detail page (`assets/<id>`), as its breadcrumbs show them. */
+export function getCmsAssetFolderTrail(pageId: string) {
+    const [section, id] = pageId.split("/");
+    const asset = section === "assets" && id != null ? libraryAssets.find((candidate) => candidate.id === getOriginalId(id)) : undefined;
+    return asset ? getFolderTrail(libraryFolders, asset.folderId).map((folder) => ({ id: `asset-folder:${folder.id}`, label: folder.name })) : [];
 }

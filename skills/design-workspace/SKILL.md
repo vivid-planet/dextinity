@@ -1,13 +1,13 @@
 ---
 name: design-workspace
-description: Work with the design workspace of @dextinity/ui — the `Workspace/Shell` story that shows any story or clickable prototype like the app in the browser, with theme, color scheme, density, and viewport switchable around it. Use when a designer wants to see a change, look at a component or page in the workspace, get a shareable link to it, update that link after `next` moved, add or extend a clickable prototype, or put work in progress on the workspace's canvas. Also use when changing the workspace itself (`packages/ui/src/storybook/workspace/`).
+description: Work with the Workbench, the design workspace of @dextinity/ui — the `Workbench/Shell` story that shows any story or clickable prototype like the app in the browser, with theme, color scheme, density, and viewport switchable around it. Use when a designer wants to see a change, look at a component or page in the workspace, get a shareable link to it, update that link after `next` moved, add or extend a clickable prototype, or put work in progress on the workspace's canvas. Also use when changing the workspace itself (`packages/ui/src/storybook/workspace/`).
 metadata:
     internal: true
 ---
 
-# Design workspace
+# Workbench (design workspace)
 
-The workspace is a story of the `@dextinity/ui` Storybook: `Workspace/Shell` (`packages/ui/src/storybook/workspace/WorkspaceShell.tsx`). The [Design workspace](../../packages/ui/README.md#design-workspace) section of the package README describes what it does. Paths below are relative to `packages/ui`. This skill covers how to work with it, mostly for a designer who reviews the result in a browser and doesn't run the repository.
+The Workbench is a story of the `@dextinity/ui` Storybook: `Workbench/Shell` (`packages/ui/src/storybook/workspace/WorkspaceShell.tsx`). The [Workbench](../../packages/ui/README.md#workbench) section of the package README describes what it does. Paths below are relative to `packages/ui`. This skill covers how to work with it, mostly for a designer who reviews the result in a browser and doesn't run the repository.
 
 ## Where the work goes
 
@@ -28,7 +28,7 @@ A prototype is one story whose pages are the live examples of the page types, so
 - `PrototypeNavigationContext` connects `PageTypeShell`'s navigation to the prototype.
 - Navigation entries without a page show `PageNotInPrototype`.
 
-To add a page, add it to `pages` and to `designedPageIds` in `prototypes.ts` — the workspace lists exactly those under the prototype. To add a prototype, add a story to `Workspace/Prototypes` and its `WorkspacePrototype` to `workspacePrototypes`; its `storyId` is the id in the story index (`workspace-prototypes--<story-name-in-kebab-case>`).
+To add a page, add it to `pages` and to `designedPageIds` in `prototypes.ts` — the workspace lists exactly those under the prototype. To add a prototype, add a story to `Workbench/Prototypes` and its `WorkspacePrototype` to `workspacePrototypes`; its `storyId` is the id in the story index (`workspace-prototypes--<story-name-in-kebab-case>`; the stories keep the ids from before the rename to Workbench).
 
 ## The link
 

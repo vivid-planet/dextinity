@@ -1,5 +1,6 @@
 import { type ReactNode, useState } from "react";
 
+import { Button } from "../../components/button/Button";
 import { Field } from "../../components/field/Field";
 import { Icon } from "../../components/icon/Icon";
 import { IconButton } from "../../components/iconButton/IconButton";
@@ -9,7 +10,6 @@ import { MenuRadioItem } from "../../components/menu/MenuRadioItem";
 import { NumberInput } from "../../components/numberInput/NumberInput";
 import { Popover } from "../../components/popover/Popover";
 import { SegmentedControl } from "../../components/segmentedControl/SegmentedControl";
-import type { ThemeColorScheme, ThemeDensity } from "../../theme/types";
 import type { WorkspaceZoom } from "./workspaceState";
 import styles from "./WorkspaceToolbarControls.module.scss";
 
@@ -33,18 +33,6 @@ export const zoomOptions: { value: WorkspaceZoom; label: string }[] = [
     { value: "1.5", label: "150 %" },
 ];
 
-export const colorSchemeOptions: { value: ThemeColorScheme; icon: ReactNode; "aria-label": string }[] = [
-    { value: "light", icon: <Icon name="sun" />, "aria-label": "Light" },
-    { value: "dark", icon: <Icon name="moon" />, "aria-label": "Dark" },
-    { value: "high-contrast", icon: <Icon name="contrast" />, "aria-label": "High contrast" },
-];
-
-export const densityOptions: { value: ThemeDensity; icon: ReactNode; "aria-label": string }[] = [
-    { value: "comfortable", icon: <Icon name="density-comfortable" />, "aria-label": "Comfortable" },
-    { value: "standard", icon: <Icon name="density-standard" />, "aria-label": "Standard" },
-    { value: "compact", icon: <Icon name="density-compact" />, "aria-label": "Compact" },
-];
-
 /** The preset the frame size matches, if any. */
 function getViewportPreset(width: number, height: number) {
     return viewportPresets.find((preset) => preset.width === width && preset.height === height);
@@ -61,6 +49,8 @@ export function ViewportControl({
     zoom,
     onSizeChange,
     onZoomChange,
+    disabled,
+    showLabel,
 }: {
     responsive: boolean;
     onResponsiveChange: () => void;
@@ -69,6 +59,9 @@ export function ViewportControl({
     zoom: WorkspaceZoom;
     onSizeChange: (size: { width?: number; height?: number }) => void;
     onZoomChange: (zoom: WorkspaceZoom) => void;
+    disabled?: boolean;
+    /** Names the setting and its current size on the button, where there's room, e.g. in the middle of the bar. */
+    showLabel?: boolean;
 }) {
     const [open, setOpen] = useState(false);
     const activePreset = responsive ? undefined : getViewportPreset(width, height);
@@ -79,15 +72,29 @@ export function ViewportControl({
             open={open}
             onOpenChange={setOpen}
             title="Viewport"
-            placement="bottom-end"
+            placement={showLabel ? "bottom-start" : "bottom-end"}
             trigger={
-                <IconButton
-                    variant="text"
-                    color="secondary"
-                    aria-label={responsive ? "Viewport · Responsive" : `Viewport · ${triggerLabel}, ${width} × ${height}`}
-                >
-                    <Icon name={activePreset?.icon ?? "devices"} />
-                </IconButton>
+                showLabel ? (
+                    <Button
+                        variant="text"
+                        color="secondary"
+                        size="small"
+                        disabled={disabled}
+                        startIcon={<Icon name={activePreset?.icon ?? "devices"} />}
+                        endIcon={<Icon name="chevron-down" />}
+                    >
+                        Viewport: {responsive ? "Responsive" : `${triggerLabel} ${width} × ${height}`}
+                    </Button>
+                ) : (
+                    <IconButton
+                        variant="text"
+                        color="secondary"
+                        disabled={disabled}
+                        aria-label={responsive ? "Viewport · Responsive" : `Viewport · ${triggerLabel}, ${width} × ${height}`}
+                    >
+                        <Icon name={activePreset?.icon ?? "devices"} />
+                    </IconButton>
+                )
             }
         >
             <div className={styles.popoverBody}>
@@ -153,6 +160,8 @@ interface SettingOption<Value extends string> {
     value: Value;
     icon: ReactNode;
     "aria-label": string;
+    /** The option on a labeled button, where the full name is too long. */
+    shortLabel?: string;
 }
 
 /**
@@ -165,6 +174,7 @@ export function SettingMenu<Value extends string>({
     options,
     value,
     onChange,
+    showLabel,
 }: {
     label: string;
     /** Shown on the button instead of the current option's icon, for options without icons of their own. */
@@ -172,6 +182,8 @@ export function SettingMenu<Value extends string>({
     options: ReadonlyArray<SettingOption<Value>>;
     value: Value;
     onChange: (value: Value) => void;
+    /** Names the setting and its current option on the button, where there's room, e.g. in the middle of the bar. */
+    showLabel?: boolean;
 }) {
     const [open, setOpen] = useState(false);
     const current = options.find((option) => option.value === value);
@@ -180,11 +192,17 @@ export function SettingMenu<Value extends string>({
         <Menu
             open={open}
             onOpenChange={setOpen}
-            placement="bottom-end"
+            placement={showLabel ? "bottom-start" : "bottom-end"}
             trigger={
-                <IconButton variant="text" color="secondary" aria-label={`${label} · ${current?.["aria-label"] ?? value}`}>
-                    {icon ?? current?.icon}
-                </IconButton>
+                showLabel ? (
+                    <Button variant="text" color="secondary" size="small" startIcon={icon ?? current?.icon} endIcon={<Icon name="chevron-down" />}>
+                        {label}: {current?.shortLabel ?? current?.["aria-label"] ?? value}
+                    </Button>
+                ) : (
+                    <IconButton variant="text" color="secondary" aria-label={`${label} · ${current?.["aria-label"] ?? value}`}>
+                        {icon ?? current?.icon}
+                    </IconButton>
+                )
             }
         >
             <MenuRadioGroup aria-label={label} value={value} onChange={(newValue) => onChange(newValue as Value)}>

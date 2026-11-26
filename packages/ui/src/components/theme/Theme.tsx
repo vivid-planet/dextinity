@@ -12,7 +12,7 @@ export interface ThemeProps extends Omit<ComponentPropsWithoutRef<"div">, "class
      */
     colorScheme?: ThemeColorScheme | (string & {});
     /**
-     * The brand: hues, fonts, shape, and icons. Built in are `dextinity`, `ai-hub`, `groupcms-ai`, and `original`; a custom brand is a CSS block on
+     * The brand: hues, fonts, shape, and icons. Built in are `dextinity`, `ai-hub`, `groupcms-ai`, `original`, and `vivid-planet`; a custom brand is a CSS block on
      * `[data-dextinity-brand="<name>"]` that sets the `--dextinity-brand-*` tokens and, optionally, `--dextinity-icon-*` overrides.
      *
      * @defaultValue `"dextinity"`

@@ -19,6 +19,12 @@ const globalActionLogGridFragment = gql`
     ${actionLogShowVersionDialogFragment}
 `;
 
+export const globalActionLogEntityNamesQuery = gql`
+    query GlobalActionLogEntityNames {
+        myActionLogEntityNames
+    }
+`;
+
 export const globalActionLogGridQuery = gql`
     query GlobalActionLogGrid($offset: Int!, $limit: Int!, $sort: [ActionLogSort!], $filter: ActionLogFilter) {
         myActionLogs(offset: $offset, limit: $limit, sort: $sort, filter: $filter) {

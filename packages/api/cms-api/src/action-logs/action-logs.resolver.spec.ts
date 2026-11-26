@@ -85,6 +85,7 @@ describe("ActionLogsResolver", () => {
     let resolver: ActionLogsResolver;
     let findAndCount: ReturnType<typeof vi.fn>;
     let loadPreviousVersion: ReturnType<typeof vi.fn>;
+    let queryBuilder: Record<"select" | "where" | "orderBy" | "execute", ReturnType<typeof vi.fn>>;
 
     const getScopeCondition = () => (findAndCount.mock.calls[0][1] as { $and: Array<Record<string, unknown>> }).$and[1];
 
@@ -100,8 +101,14 @@ describe("ActionLogsResolver", () => {
         const actionLogsService = createActionLogsService([LoggedEntity, UnscopedLoggedEntity]);
         findAndCount = vi.fn(async () => [[], 0] as [never[], number]);
         loadPreviousVersion = vi.fn();
+        queryBuilder = {
+            select: vi.fn(() => queryBuilder),
+            where: vi.fn(() => queryBuilder),
+            orderBy: vi.fn(() => queryBuilder),
+            execute: vi.fn(async () => [{ entityName: UnscopedLoggedEntity.name }]),
+        };
         resolver = new ActionLogsResolver(
-            createMock<EntityManager<PostgreSqlDriver>>({ findAndCount: findAndCount as never }),
+            createMock<EntityManager<PostgreSqlDriver>>({ findAndCount: findAndCount as never, createQueryBuilder: (() => queryBuilder) as never }),
             userPermissionsService,
             createMock<PreviousActionLogLoaderService>({ load: loadPreviousVersion as never }),
             createMock<ActionLogsUserLoaderService>(),
@@ -187,6 +194,17 @@ describe("ActionLogsResolver", () => {
         await expect(
             resolver.myActionLogs({ offset: 0, limit: 25 }, user("actionLog" as Permission, [{ domain: "main", language: "en" }])),
         ).resolves.toMatchObject({ nodes: [], totalCount: 0 });
+    });
+
+    it("returns no entity names when the user can read no entity", async () => {
+        await expect(resolver.myActionLogEntityNames(user("actionLog" as Permission, [{ domain: "main", language: "en" }]))).resolves.toEqual([]);
+        expect(queryBuilder.execute).not.toHaveBeenCalled();
+    });
+
+    it("returns the distinct entity names of the entries the user can read", async () => {
+        await expect(resolver.myActionLogEntityNames(user("products" as Permission, []))).resolves.toEqual([UnscopedLoggedEntity.name]);
+        expect(queryBuilder.select).toHaveBeenCalledWith("entityName", true);
+        expect(queryBuilder.where).toHaveBeenCalledWith({ $or: [{ entityName: UnscopedLoggedEntity.name }] });
     });
 
     it("fails on init when a logged entity declares no permission", () => {

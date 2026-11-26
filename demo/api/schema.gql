@@ -2102,6 +2102,11 @@ type Query {
   manufacturers(filter: ManufacturerFilter, limit: Int! = 25, offset: Int! = 0, search: String, sort: [ManufacturerSort!]! = [{direction: ASC, field: id}]): PaginatedManufacturers!
 
   """
+  Returns the names of the entities that occur in the entries of `myActionLogs`, for instance to offer them as a filter.
+  """
+  myActionLogEntityNames: [String!]!
+
+  """
   Returns the action log of all entities, restricted to the entries the current user could read in the action log of each entity.
   """
   myActionLogs(filter: ActionLogFilter, limit: Int! = 25, offset: Int! = 0, sort: [ActionLogSort!]): PaginatedActionLogs!

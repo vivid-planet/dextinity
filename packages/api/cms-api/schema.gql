@@ -47,6 +47,11 @@ type ContentScopeWithLabel {
   label: JSONObject!
 }
 
+type UserAssignedContentScopes {
+  byRule: [JSONObject!]!
+  manual: [JSONObject!]!
+}
+
 type ContentScopeDimension {
   name: String!
   label: String!
@@ -517,7 +522,8 @@ type Query {
   userPermissionsPermissionList(userId: String!): [UserPermission!]!
   userPermissionsPermission(id: ID!, userId: String): UserPermission!
   userPermissionsAvailablePermissions: [String!]!
-  userPermissionsContentScopes(userId: String!, skipManual: Boolean): [JSONObject!]!
+  userPermissionsContentScopes(userId: String!, skipManual: Boolean): [JSONObject!]! @deprecated(reason: "Use userPermissionsAssignedContentScopes instead.")
+  userPermissionsAssignedContentScopes(userId: String!): UserAssignedContentScopes!
   userPermissionsAvailableContentScopes: [ContentScopeWithLabel!]!
   userPermissionsAvailableContentScopeDimensions: [ContentScopeDimension!]!
   fileUploadForTypesGenerationDoNotUse: FileUpload!

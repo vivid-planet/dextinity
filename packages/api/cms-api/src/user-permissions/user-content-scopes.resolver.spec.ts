@@ -28,6 +28,27 @@ describe("UserContentScopesResolver", () => {
         });
     });
 
+    describe("userPermissionsAssignedContentScopes", () => {
+        it("returns the rule-based and the manually assigned content scopes separately", async () => {
+            const byRule: ContentScope[] = [{ domain: "main" }, { domain: "news" }];
+            const manual: ContentScope[] = [{ domain: "main" }];
+            const filterContentScopesForUser = jest.fn(async () => byRule);
+            const userService = createMock<UserPermissionsService>({
+                getUser: async () => ({ id: "1", name: "User", email: "user@example.com" }) satisfies User,
+                filterContentScopesForUser,
+                getManualContentScopesForUser: async () => manual,
+            });
+            const resolver = new UserContentScopesResolver(
+                createMock<EntityRepository<UserContentScopes>>(),
+                userService,
+                createMock<EntityManager>(),
+            );
+
+            expect(await resolver.userPermissionsAssignedContentScopes("1")).toEqual({ byRule, manual });
+            expect(filterContentScopesForUser).toHaveBeenCalledWith(expect.objectContaining({ includeContentScopesManual: false }));
+        });
+    });
+
     describe("userPermissionsAvailableContentScopeDimensions", () => {
         it("returns the dimensions from the service", async () => {
             const dimensions = [

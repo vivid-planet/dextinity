@@ -27,12 +27,12 @@ export function AiModeAdminNavigationToolset({
     const { pageTree } = useDextinityConfig();
 
     const pages = useMemo(() => getAdminPages(menu, { isAllowed, intl }), [menu, isAllowed, intl]);
-    const getNodeEditPath = pageTree?.getNodeEditPath;
+    const getBasePath = pageTree?.getBasePath;
     const pageTreeNavigationTools =
-        pageTree && getNodeEditPath && isAllowed("pageTree")
+        pageTree && getBasePath && isAllowed("pageTree")
             ? createPageTreeNavigationTools({
                   categories: pageTree.categories.map(({ category }) => category),
-                  getEditPath: (node) => `${routeUrl}${getNodeEditPath(node)}`,
+                  getEditPath: ({ id, category }) => `${routeUrl}${getBasePath(category)}/${id}/edit`,
                   navigate: (path) => void navigate(path),
               })
             : [];

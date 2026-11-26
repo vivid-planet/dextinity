@@ -138,14 +138,14 @@ createAiModeEditBlocksTool({
 
 ## Page tree
 
-`PagesPage` registers the toolset of the page tree, with its category as the context. The admin's navigation toolset offers `open_page_tree_node`, which opens the editor of a page tree node from any page, to users who may open the page tree. It needs the path of the editor below the content scope, which depends on where the project mounts `PagesPage`. Set it in the page tree config:
+`PagesPage` registers the toolset of the page tree, with its category as the context. The admin's navigation toolset offers `open_page_tree_node`, which opens the editor of a page tree node from any page, to users who may open the page tree. It needs the path of a category's page tree below the content scope, where the project mounts `PagesPage`, and adds the node's `/<id>/edit` itself. Set the path in the page tree config:
 
 ```tsx
 <DextinityConfigProvider
     pageTree={{
         categories: pageTreeCategories,
         documentTypes: pageTreeDocumentTypes,
-        getNodeEditPath: ({ id, category }) => `/pages/pagetree/${categoryToUrlParam(category)}/${id}/edit`,
+        getBasePath: (category) => `/pages/pagetree/${categoryToUrlParam(category)}`,
     }}
 >
 ```

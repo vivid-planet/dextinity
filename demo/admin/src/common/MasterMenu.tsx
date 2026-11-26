@@ -32,10 +32,9 @@ import { Link } from "@src/documents/links/Link";
 import { Page } from "@src/documents/pages/Page";
 import { PredefinedPage } from "@src/documents/predefinedPages/PredefinedPage";
 import { EditFooterPage } from "@src/footer/EditFooterPage";
-import type { GQLPageTreeNodeCategory } from "@src/graphql.generated";
 import MainMenu from "@src/mainMenu/MainMenu";
 import { NewsPage } from "@src/news/NewsPage";
-import { categoryToUrlParam, pageTreeCategories, urlParamToCategory } from "@src/pageTree/pageTreeCategories";
+import { getPageTreeBasePath, pageTreeCategories, urlParamToCategory } from "@src/pageTree/pageTreeCategories";
 import { ProductHighlightsPage } from "@src/products/highlights/ProductHighlightsPage";
 import { ManufacturersPage } from "@src/products/ManufacturersPage";
 import { ProductCategoriesPage } from "@src/products/ProductCategoriesPage";
@@ -67,7 +66,7 @@ function PageTreePage() {
 
     return (
         <PagesPage
-            path={`/pages/pagetree/${categoryParam}`}
+            path={getPageTreeBasePath(category)}
             documentTypes={(category): Record<DocumentType, DocumentInterface> => {
                 if (category === "TopMenu") {
                     return {
@@ -135,7 +134,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
             items: pageTreeCategories.map((category) => ({
                 type: "route",
                 primary: category.label,
-                to: `/pages/pagetree/${categoryToUrlParam(category.category as GQLPageTreeNodeCategory)}`,
+                to: getPageTreeBasePath(category.category),
             })),
             route: {
                 path: "/pages/pagetree/:category",

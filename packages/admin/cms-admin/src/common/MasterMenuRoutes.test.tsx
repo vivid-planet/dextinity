@@ -316,12 +316,12 @@ describe("MasterMenuRoutes", () => {
         expect(toolset?.tools?.map(({ name }) => name)).toEqual(["open_admin_page"]);
     });
 
-    it("should let the AI Mode open the editor of a page tree node if the page tree config has its path", async () => {
+    it("should let the AI Mode open the editor of a page tree node if the page tree config has the path of the page tree", async () => {
         renderInScope("/main/en/dashboard", {
             pageTree: {
                 categories: [{ category: "mainNavigation", label: "Main navigation" }],
                 documentTypes: {},
-                getNodeEditPath: ({ id }) => `/pages/pagetree/main-navigation/${id}/edit`,
+                getBasePath: () => "/pages/pagetree/main-navigation",
             },
         });
 

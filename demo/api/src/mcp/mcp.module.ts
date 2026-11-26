@@ -4,6 +4,7 @@ import { McpModule } from "@nestjs/mcp";
 
 import { BlockTools } from "./block.tools.js";
 import { DamTools } from "./dam.tools.js";
+import { PageTools } from "./page.tools.js";
 import { PageTreeTools } from "./page-tree.tools.js";
 
 /**
@@ -28,7 +29,7 @@ export class AiModeMcpModule {
                     http: { allowedOrigins: [new URL(adminUrl).hostname] },
                 }),
             ],
-            providers: [BlockTools, DamTools, PageTreeTools],
+            providers: [BlockTools, DamTools, PageTools, PageTreeTools],
         };
     }
 }

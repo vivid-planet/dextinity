@@ -4,7 +4,6 @@ import { writeFile } from "fs/promises";
 import { printSchema } from "graphql";
 
 import {
-    BuildsResolver,
     type CorePermission,
     createAuthResolver,
     createOneOfBlock,

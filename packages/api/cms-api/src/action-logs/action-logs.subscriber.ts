@@ -4,10 +4,14 @@ import {
     ChangeSetType,
     type EntityClass,
     EntityManager,
+    type EntityProperty,
     type EventSubscriber,
     type FlushEventArgs,
     PostgreSqlDriver,
     raw,
+    Reference,
+    ReferenceKind,
+    Utils,
     wrap,
 } from "@mikro-orm/postgresql";
 import { Injectable, Logger } from "@nestjs/common";
@@ -16,6 +20,26 @@ import { UserPermissionsStorageService } from "../user-permissions/user-permissi
 import { ACTION_LOGS_METADATA_KEY, type ActionLogMetadata } from "./action-logs.decorator.js";
 import { ActionLogsService } from "./action-logs.service.js";
 import { ActionLog } from "./entities/action-log.entity.js";
+
+// The snapshot holds the primary key of a referenced entity instead of the entity itself, so that a change of the
+// reference is visible without copying the referenced entity. Collections are left out.
+function getReferencedPrimaryKeys(entity: AnyEntity, relations: EntityProperty[]): Record<string, unknown> {
+    const referencedPrimaryKeys: Record<string, unknown> = {};
+    for (const relation of relations) {
+        if (relation.kind === ReferenceKind.MANY_TO_ONE || (relation.kind === ReferenceKind.ONE_TO_ONE && relation.owner)) {
+            const referencedValue = Reference.unwrapReference(entity[relation.name]);
+            if (Utils.isEntity(referencedValue)) {
+                referencedPrimaryKeys[relation.name] = wrap(referencedValue, true).getPrimaryKey(true);
+            } else if (typeof referencedValue === "bigint") {
+                // With `mapToPk`, the property holds the primary key itself. A native BigInt can't be written to jsonb.
+                referencedPrimaryKeys[relation.name] = referencedValue.toString();
+            } else {
+                referencedPrimaryKeys[relation.name] = referencedValue ?? null;
+            }
+        }
+    }
+    return referencedPrimaryKeys;
+}
 
 @Injectable()
 export class ActionLogsSubscriber implements EventSubscriber {
@@ -69,7 +93,10 @@ export class ActionLogsSubscriber implements EventSubscriber {
         let snapshot: AnyEntity | undefined = undefined;
         if (changeSet.type !== ChangeSetType.DELETE) {
             const ignoreFields = entityMetadata.relations.map((entityProperty) => entityProperty.name);
-            snapshot = wrap(changeSet.entity, true).toObject(ignoreFields);
+            snapshot = {
+                ...wrap(changeSet.entity, true).toObject(ignoreFields),
+                ...getReferencedPrimaryKeys(changeSet.entity, entityMetadata.relations),
+            };
         }
 
         return this.entityManager.create(

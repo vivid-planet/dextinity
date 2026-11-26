@@ -1,6 +1,6 @@
-// The `original` brand: the flat look of the MUI-based admin. It replaces semantic and component tokens, not only brand tokens, so its
+// The `comet` brand: the flat look of the MUI-based admin. It replaces semantic and component tokens, not only brand tokens, so its
 // rules repeat the color scheme attribute to outrank the theme boundaries, and come after the component tokens.
-$brand: '[data-dextinity-brand="original"]';
+$brand: '[data-dextinity-brand="comet"]';
 
 @layer dextinity {
     // Shape and type, in every color scheme

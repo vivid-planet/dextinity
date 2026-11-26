@@ -84,8 +84,8 @@
         --dextinity-brand-radius-factor: 1.15;
     }
 
-    // The flat look of the MUI-based admin. Its semantic and component tokens are in `_originalBrand.scss`.
-    [data-dextinity-brand="original"] {
+    // The flat look of the MUI-based admin. Its semantic and component tokens are in `_cometBrand.scss`.
+    [data-dextinity-brand="comet"] {
         --dextinity-brand-primary-hue: 235;
         --dextinity-brand-primary-chroma: 0.145;
         --dextinity-brand-secondary-hue: 235;

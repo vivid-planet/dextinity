@@ -1,4 +1,4 @@
-import { DocumentInterface, resolveEntityClass } from "@dextinity/cms-api";
+import { ActionLogs, DocumentInterface, RequiredPermission, resolveEntityClass } from "@dextinity/cms-api";
 import { Embedded, Entity, ManyToMany, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
 import { Collection, OptionalProps } from "@mikro-orm/postgresql";
 import type { Type } from "@nestjs/common";
@@ -86,6 +86,8 @@ export function createTargetGroupEntity({
     }
     if (BrevoFilterAttributes) {
         @Entity()
+        @RequiredPermission("brevoNewsletter")
+        @ActionLogs()
         @ObjectType({
             implements: () => [DocumentInterface],
         })
@@ -99,6 +101,8 @@ export function createTargetGroupEntity({
     }
 
     @Entity()
+    @RequiredPermission("brevoNewsletter")
+    @ActionLogs()
     @ObjectType({
         implements: () => [DocumentInterface],
     })

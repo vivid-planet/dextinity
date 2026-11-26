@@ -1,8 +1,10 @@
 import {
+    ActionLogs,
     type Block,
     type BlockDataInterface,
     DocumentInterface,
     EntityInfo,
+    RequiredPermission,
     RootBlock,
     RootBlockDataScalar,
     RootBlockEntity,
@@ -46,6 +48,8 @@ export function createEmailCampaignEntity({
     @EntityInfo<EmailCampaignInterface>({ name: "title", secondaryInformation: "subject" })
     @RootBlockEntity()
     @Entity()
+    @RequiredPermission("brevoNewsletter")
+    @ActionLogs()
     @ObjectType({
         implements: () => [DocumentInterface],
     })

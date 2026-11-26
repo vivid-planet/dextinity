@@ -8,6 +8,10 @@ $brand: '[data-dextinity-brand="vivid-planet"]';
         --dextinity-typography-title-letter-spacing: -0.015em;
 
         --dextinity-button-font-weight: var(--dextinity-font-weight-semibold);
+        // Primary buttons in the brand's sky blue #29b6f6, with dark text: white on it is below 4.5:1
+        --dextinity-button-primary-background: linear-gradient(120deg, oklch(0.734 0.145 234.6) 20%, oklch(0.8 0.12 222) 100%);
+        --dextinity-button-primary-background-hover: oklch(0.734 0.145 234.6);
+        --dextinity-button-primary-foreground: oklch(0.22 0.05 250);
         --dextinity-button-primary-shadow:
             inset 0 1px 0 oklch(1 0 0 / 0.25), 0 10px 24px -10px var(--dextinity-color-accent-glow),
             0 4px 14px -8px var(--dextinity-color-accent-secondary);

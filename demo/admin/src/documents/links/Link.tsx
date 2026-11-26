@@ -14,7 +14,7 @@ import { Chip } from "@mui/material";
 import { LinkBlock } from "@src/common/blocks/LinkBlock";
 import type { GQLPageTreeNodeAdditionalFieldsFragment } from "@src/common/EditPageNode";
 import type { GQLLink, GQLLinkInput } from "@src/graphql.generated";
-import { categoryToUrlParam } from "@src/pageTree/pageTreeCategories";
+import { getPageTreeNodeEditPath } from "@src/pageTree/pageTreeCategories";
 import { FormattedMessage } from "react-intl";
 
 import { EditLink } from "./EditLink";
@@ -70,6 +70,6 @@ export const Link: DocumentInterface<Pick<GQLLink, "content">, GQLLinkInput> &
     ...createDocumentDependencyMethods({
         rootQueryName: "link",
         rootBlocks,
-        basePath: ({ pageTreeNode }) => `/pages/pagetree/${categoryToUrlParam(pageTreeNode.category)}/${pageTreeNode.id}/edit`,
+        basePath: ({ pageTreeNode }) => getPageTreeNodeEditPath(pageTreeNode),
     }),
 };

@@ -26,3 +26,7 @@ export function urlParamToCategory(param: string): GQLPageTreeNodeCategory | und
     const category = camelCase(param);
     return isCategory(category) ? category : undefined;
 }
+
+export function getPageTreeNodeEditPath({ id, category }: { id: string; category: string }): string {
+    return `/pages/pagetree/${categoryToUrlParam(category)}/${id}/edit`;
+}

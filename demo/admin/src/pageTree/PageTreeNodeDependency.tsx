@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 import type { DependencyInterface } from "@dextinity/cms-admin";
-import { categoryToUrlParam } from "@src/pageTree/pageTreeCategories";
+import { getPageTreeNodeEditPath } from "@src/pageTree/pageTreeCategories";
 import type { GQLpageTreeNodeDependencyQuery, GQLpageTreeNodeDependencyQueryVariables } from "@src/pageTree/PageTreeNodeDependency.generated";
 import { FormattedMessage } from "react-intl";
 
@@ -25,6 +25,6 @@ export const PageTreeNodeDependency: DependencyInterface = {
             throw new Error(`Error for PageTreeNode ${id}: ${error?.message ?? "PageTreeNode is undefined"}`);
         }
 
-        return `/pages/pagetree/${categoryToUrlParam(data.pageTreeNode.category)}/${data.pageTreeNode.id}/edit`;
+        return getPageTreeNodeEditPath(data.pageTreeNode);
     },
 };

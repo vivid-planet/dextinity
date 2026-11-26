@@ -13,7 +13,7 @@ import {
 import { Chip } from "@mui/material";
 import type { GQLPageTreeNodeAdditionalFieldsFragment } from "@src/common/EditPageNode";
 import type { GQLPage, GQLPageInput } from "@src/graphql.generated";
-import { categoryToUrlParam } from "@src/pageTree/pageTreeCategories";
+import { getPageTreeNodeEditPath } from "@src/pageTree/pageTreeCategories";
 import { FormattedMessage } from "react-intl";
 
 import { PageContentBlock } from "./blocks/PageContentBlock";
@@ -81,6 +81,6 @@ export const Page: DocumentInterface<Pick<GQLPage, "content" | "seo">, GQLPageIn
             seo: { block: SeoBlock, path: "/config" },
             stage: { block: StageBlock, path: "/stage" },
         },
-        basePath: ({ pageTreeNode }) => `/pages/pagetree/${categoryToUrlParam(pageTreeNode.category)}/${pageTreeNode.id}/edit`,
+        basePath: ({ pageTreeNode }) => getPageTreeNodeEditPath(pageTreeNode),
     }),
 };

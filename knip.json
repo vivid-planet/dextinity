@@ -8,6 +8,9 @@
             "ignoreDependencies": ["open-cli"],
             "ignoreBinaries": ["oauth2-proxy", "peers", "playwright"]
         },
+        "packages/agent-features": {
+            "ignoreDependencies": ["@dextinity/mail-react"]
+        },
         "packages/cli": {
             "project": ["./src/**/*.{ts,tsx}"],
             "ignoreBinaries": ["op"]

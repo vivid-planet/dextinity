@@ -331,7 +331,8 @@ export function ProductForm({ id, width, onCreate }: FormProps) {
                             {
                                 name: "manufacturer",
                                 label: intl.formatMessage({ id: "product.manufacturer", defaultMessage: "Manufacturer" }),
-                                description: "Only the manufacturers of the manufacturer country can be selected.",
+                                description:
+                                    "Only the manufacturers of the manufacturer country can be selected. To change both, set the country first, in a call of its own.",
                                 type: "reference",
                                 loadOptions: (formValues) => loadManufacturers(formValues as Partial<FormValues>),
                                 getOptionLabel: (option) => String(option.name),

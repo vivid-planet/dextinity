@@ -307,12 +307,26 @@ describe("fields beyond text", () => {
         expect(await call("get_product_form_options", { field: "manufacturer" })).toEqual([{ id: "m1", label: "Alpine" }]);
     });
 
-    it("sets references by ID, loading the options with the other values of the same call", async () => {
+    it("sets references by ID", async () => {
         const { form, call } = createProductTools();
 
-        await call("set_product_form_values", { values: { manufacturerCountry: "de", manufacturer: "m2", tags: ["t2", "t1"] } });
+        await call("set_product_form_values", { values: { manufacturer: "m1", tags: ["t2", "t1"] } });
 
-        expect(form.getState().values).toMatchObject({ manufacturerCountry: countries[1], manufacturer: manufacturers[1], tags: [tags[1], tags[0]] });
+        expect(form.getState().values).toMatchObject({ manufacturer: manufacturers[0], tags: [tags[1], tags[0]] });
+    });
+
+    it("loads the options for the form's current values, not for the other values of the same call", async () => {
+        const { form, call } = createProductTools();
+
+        await expect(async () => call("set_product_form_values", { values: { manufacturerCountry: "de", manufacturer: "m2" } })).rejects.toThrow(
+            '"m2" is no option of "manufacturer"',
+        );
+        expect(form.getState().values).toMatchObject({ manufacturerCountry: countries[0], manufacturer: null });
+
+        await call("set_product_form_values", { values: { manufacturerCountry: "de" } });
+        await call("set_product_form_values", { values: { manufacturer: "m2" } });
+
+        expect(form.getState().values).toMatchObject({ manufacturerCountry: countries[1], manufacturer: manufacturers[1] });
     });
 
     it("refuses the values when the user changed the form while the options were loaded", async () => {

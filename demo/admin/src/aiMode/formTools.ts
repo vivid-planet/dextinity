@@ -1,5 +1,5 @@
 import type { BlockContext, BlockInterface } from "@dextinity/cms-admin";
-import { type FormApi, getIn, setIn } from "final-form";
+import { type FormApi, getIn } from "final-form";
 
 import type { AiModeTool } from "./AiModeToolsets";
 import {
@@ -131,7 +131,9 @@ async function toFormValue(
             const selected = ids.map((id) => loadedOptions.find((option) => option.id === id));
             const unknownIndex = selected.findIndex((option) => option === undefined);
             if (unknownIndex !== -1) {
-                return { problem: `"${ids[unknownIndex]}" is no option of "${field.name}". List the options with get_${entityName}_form_options.` };
+                return {
+                    problem: `"${ids[unknownIndex]}" is no option of "${field.name}". List the options with get_${entityName}_form_options; they depend on the form's current values, not on other values of this call.`,
+                };
             }
             return { value: field.multiple ? selected : selected[0] };
         }
@@ -276,22 +278,16 @@ export function createFormTools({
                     );
                 }
 
-                // The options of a reference field may depend on other fields of the same call, e.g. the manufacturers on
-                // the country. The values are therefore converted in the order of the fields, and each reference loads its
-                // options with the values converted before it.
+                // A reference loads its options for the form's current values, not for other values of the same call: the
+                // form may reset a reference when a field it depends on changes, e.g. the manufacturer when the country does.
                 const valuesBeforeLoading = form.getState().values;
-                let proposedValues = valuesBeforeLoading;
                 const formValues: Array<[string, unknown]> = [];
-                for (const field of settableFields) {
-                    if (!(field.name in values)) {
-                        continue;
-                    }
-                    const result = await toFormValue(field, (values as FormValues)[field.name], proposedValues, entityName);
+                for (const field of settableFields.filter(({ name }) => name in values)) {
+                    const result = await toFormValue(field, (values as FormValues)[field.name], valuesBeforeLoading, entityName);
                     if ("problem" in result) {
                         throw new Error(`${result.problem} No field was changed.`);
                     }
                     formValues.push([field.name, result.value]);
-                    proposedValues = setIn(proposedValues, field.name, result.value) as FormValues;
                 }
 
                 // The options were loaded for the values before the call, e.g. the manufacturers of the country then selected.

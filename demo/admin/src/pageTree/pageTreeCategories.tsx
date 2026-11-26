@@ -18,11 +18,19 @@ const isCategory = (category: string): category is GQLPageTreeNodeCategory => {
     return pageTreeCategories.some((c) => c.category === category);
 };
 
-export function categoryToUrlParam(category: GQLPageTreeNodeCategory | string): string {
+function categoryToUrlParam(category: GQLPageTreeNodeCategory | string): string {
     return kebabCase(category);
 }
 
 export function urlParamToCategory(param: string): GQLPageTreeNodeCategory | undefined {
     const category = camelCase(param);
     return isCategory(category) ? category : undefined;
+}
+
+export function getPageTreeBasePath(category: string): string {
+    return `/pages/pagetree/${categoryToUrlParam(category)}`;
+}
+
+export function getPageTreeNodeEditPath({ id, category }: { id: string; category: string }): string {
+    return `${getPageTreeBasePath(category)}/${id}/edit`;
 }

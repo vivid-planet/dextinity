@@ -17,6 +17,11 @@ export interface PageTreeConfig {
      * Defaults to `true` when not set.
      */
     allowPageDelete?: boolean;
+    /**
+     * The path of the page tree of a category below the content scope, where the project mounts `PagesPage`, e.g. `/pages/pagetree/main-navigation`.
+     * The AI Mode needs it to open a page's editor from any page.
+     */
+    getBasePath?: (category: string) => string;
 }
 
 export function usePageTreeConfig(): PageTreeConfig {

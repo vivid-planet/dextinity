@@ -132,16 +132,20 @@ createAiModeEditBlocksTool({
 - `insertableBlocks` narrows the blocks an insertion may add, e.g. to those `isBlockSupported` allows in the content scope, and `additionalItemFields` are the blocks block's, whose defaults an inserted block starts with.
 - `schemaNameExamples` names block types whose name in block-meta differs from their type, e.g. `'image' is the 'DamImage' block`, and `restrictions` what the tool can't change.
 
+## Admin navigation
+
+`MasterMenuRoutes` registers the toolset of the admin's navigation, which is on every page. Its `open_admin_page` opens a page of the master menu, e.g. the assets or the redirects. The pages are those of the menu the user may open, and their labels are in the tool's description, so the agent needs no call to list them. A route with a parameter in its path is left out unless its menu entry links to it with `to`. The toolset's context is the page of the menu that is open, also when the user is below it, e.g. on an edit page.
+
 ## Page tree
 
-`PagesPage` registers the toolset of the page tree, with its category as the context. `createAiModePageTreeNavigationTools` creates `open_page_tree_node`, which opens the editor of a page tree node. Add it to a toolset that is on every page, such as one around the routes of the master menu, so that the agent opens a page's editor in one step from anywhere:
+`PagesPage` registers the toolset of the page tree, with its category as the context. The admin's navigation toolset offers `open_page_tree_node`, which opens the editor of a page tree node from any page, to users who may open the page tree. It needs the path of a category's page tree below the content scope, where the project mounts `PagesPage`, and adds the node's `/<id>/edit` itself. Set the path in the page tree config:
 
 ```tsx
-createAiModePageTreeNavigationTools({
-    categories: pageTreeCategories.map(({ category }) => category),
-    getEditPath: ({ id, category }) => `${match.url}/pages/pagetree/${categoryToUrlParam(category)}/${id}/edit`,
-    navigate: (path) => void navigate(path),
-});
+<DextinityConfigProvider
+    pageTree={{
+        categories: pageTreeCategories,
+        documentTypes: pageTreeDocumentTypes,
+        getBasePath: (category) => `/pages/pagetree/${categoryToUrlParam(category)}`,
+    }}
+>
 ```
-
-Offer it only to users who may open the page tree.

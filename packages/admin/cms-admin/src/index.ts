@@ -13,7 +13,6 @@ export {
 export { type AiModeEditableBlocksBlock, createAiModeEditBlocksTool } from "./aiMode/blockEditTool";
 export { summarizeBlockStateForAiMode, summarizeSeoBlockStateForAiMode } from "./aiMode/blockStateSummary";
 export type { AiModeFormField } from "./aiMode/formTools";
-export { createAiModePageTreeNavigationTools } from "./aiMode/pageTreeTools";
 export { useAiModeDataGridToolset } from "./aiMode/useAiModeDataGridToolset";
 export { AnchorBlock } from "./blocks/AnchorBlock";
 export { BlockAdminComponentButton } from "./blocks/common/BlockAdminComponentButton";

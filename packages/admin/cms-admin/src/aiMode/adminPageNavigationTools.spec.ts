@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { createAdminTools } from "./adminTools";
+import { createAdminPageNavigationTools } from "./adminPageNavigationTools";
 
-const scopeUrl = "/main/en";
+const routeUrl = "/main/en";
 
 const pages = [
     { path: "/assets", label: "Assets" },
@@ -11,7 +11,7 @@ const pages = [
 
 function getAdminTool(name: string) {
     const navigate = vi.fn();
-    const tool = createAdminTools({ pages, navigate, scopeUrl }).find((candidate) => candidate.name === name);
+    const tool = createAdminPageNavigationTools({ pages, navigate, routeUrl }).find((candidate) => candidate.name === name);
     if (!tool) {
         throw new Error(`No admin tool "${name}"`);
     }
@@ -19,7 +19,7 @@ function getAdminTool(name: string) {
 }
 
 it("keeps every description within 4096 characters, the limit for a tool description", () => {
-    for (const tool of createAdminTools({ pages: [], navigate: vi.fn(), scopeUrl })) {
+    for (const tool of createAdminPageNavigationTools({ pages: [], navigate: vi.fn(), routeUrl })) {
         expect(tool.description.length, tool.name).toBeLessThanOrEqual(4096);
     }
 });
@@ -39,7 +39,7 @@ describe("open_admin_page", () => {
         const { call, navigate } = getAdminTool("open_admin_page");
 
         expect(call({ path: "/system/redirects" })).toContain('Asked the admin to open "System › Redirects"');
-        expect(navigate).toHaveBeenCalledWith(`${scopeUrl}/system/redirects`);
+        expect(navigate).toHaveBeenCalledWith(`${routeUrl}/system/redirects`);
     });
 
     it("refuses a path that isn't a page of the list, so it cannot reach any other route", () => {

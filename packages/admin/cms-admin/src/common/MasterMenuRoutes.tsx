@@ -2,6 +2,7 @@ import { RouteWithErrorBoundary, useCurrentRouteMatch } from "@dextinity/admin";
 import type { ReactNode } from "react";
 import { Navigate, Route, Routes } from "react-router";
 
+import { AiModeAdminNavigationToolset } from "../aiMode/AiModeAdminNavigationToolset";
 import { type Permission, useUserPermissionCheck } from "../userPermissions/hooks/currentUser";
 import type { MasterMenuData, MasterMenuItem, MasterMenuRoute } from "./MasterMenu";
 
@@ -60,21 +61,24 @@ export interface MasterMenuRoutesProps {
 
 /**
  * Renders the routes of the menu relative to the current route, which is usually the content scope, and redirects from it to the first route.
+ * Registers the AI Mode toolset of the admin's navigation, which opens the pages of the menu.
  */
 export const MasterMenuRoutes = ({ menu }: MasterMenuRoutesProps) => {
     const routes = useRoutePropsFromMasterMenuData(menu);
     const routeUrl = (useCurrentRouteMatch()?.url ?? "").replace(/\/$/, "");
 
     return (
-        <Routes>
-            {routes.length > 0 && <Route index element={<Navigate to={`${routeUrl}${routes[0].path}`} replace />} />}
-            {routes.map((route) => (
-                <Route
-                    key={route.path}
-                    path={`${route.path.replace(/^\/+/, "")}/*`}
-                    element={<RouteWithErrorBoundary>{route.element}</RouteWithErrorBoundary>}
-                />
-            ))}
-        </Routes>
+        <AiModeAdminNavigationToolset menu={menu} routeUrl={routeUrl}>
+            <Routes>
+                {routes.length > 0 && <Route index element={<Navigate to={`${routeUrl}${routes[0].path}`} replace />} />}
+                {routes.map((route) => (
+                    <Route
+                        key={route.path}
+                        path={`${route.path.replace(/^\/+/, "")}/*`}
+                        element={<RouteWithErrorBoundary>{route.element}</RouteWithErrorBoundary>}
+                    />
+                ))}
+            </Routes>
+        </AiModeAdminNavigationToolset>
     );
 };

@@ -2,7 +2,7 @@ import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import { LatestContentUpdatesDashboardWidget, useContentScope } from "@dextinity/cms-admin";
 import type { GQLLatestContentUpdatesQueryVariables } from "@src/dashboard/LatestContentUpdates.generated";
-import { categoryToUrlParam } from "@src/pageTree/pageTreeCategories";
+import { getPageTreeNodeEditPath } from "@src/pageTree/pageTreeCategories";
 
 import type { GQLLatestContentUpdatesQuery } from "./LatestContentUpdates.generated";
 
@@ -21,7 +21,7 @@ export const LatestContentUpdates = () => {
     const rows =
         data?.paginatedPageTreeNodes.nodes.map((node) => ({
             ...node,
-            editUrl: `${contentScope.match.url}/pages/pagetree/${categoryToUrlParam(node.category)}/${node.id}/edit`,
+            editUrl: `${contentScope.match.url}${getPageTreeNodeEditPath(node)}`,
         })) ?? [];
 
     return <LatestContentUpdatesDashboardWidget rows={rows} loading={loading} />;

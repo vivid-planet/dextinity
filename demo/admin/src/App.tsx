@@ -48,7 +48,7 @@ import { NewsDetailBlock } from "./news/blocks/NewsDetailBlock";
 import { NewsLinkBlock } from "./news/blocks/NewsLinkBlock";
 import { NewsListBlock } from "./news/blocks/NewsListBlock";
 import { NewsDependency } from "./news/dependencies/NewsDependency";
-import { pageTreeCategories } from "./pageTree/pageTreeCategories";
+import { getPageTreeBasePath, pageTreeCategories } from "./pageTree/pageTreeCategories";
 import { RedirectDependency } from "./redirects/RedirectsDependency";
 
 const GlobalStyle = () => (
@@ -105,6 +105,7 @@ export function App() {
                 documentTypes: pageTreeDocumentTypes,
                 additionalPageTreeNodeFragment: additionalPageTreeNodeFieldsFragment,
                 scopeParts: ["domain", "language"],
+                getBasePath: getPageTreeBasePath,
             }}
             redirects={{
                 scopeParts: ["domain"],

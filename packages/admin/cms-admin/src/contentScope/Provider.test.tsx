@@ -6,13 +6,14 @@ import { act, cleanup, fireEvent, LocationSpy, render, screen, waitFor } from "t
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { MasterMenuRoutes } from "../common/MasterMenuRoutes";
+import { DextinityConfigProvider } from "../config/DextinityConfigContext";
 import { CurrentUserContext } from "../userPermissions/hooks/currentUser";
 import { contentScopeLocalStorageKey } from "./ContentScopeSelect";
 import { type ContentScopeLocation, ContentScopeProvider, useContentScope, type UseContentScopeApi } from "./Provider";
 import { useContentScopeConfig } from "./useContentScopeConfig";
 import { useRoutePathBelowContentScope } from "./useRoutePathBelowContentScope";
 
-function CurrentUserProvider({ children }: PropsWithChildren) {
+function Providers({ children }: PropsWithChildren) {
     return (
         <MockedProvider>
             <CurrentUserContext.Provider
@@ -29,7 +30,9 @@ function CurrentUserProvider({ children }: PropsWithChildren) {
                     isAllowed: () => true,
                 }}
             >
-                {children}
+                <DextinityConfigProvider apiUrl="" graphQLApiUrl="" adminUrl="">
+                    {children}
+                </DextinityConfigProvider>
             </CurrentUserContext.Provider>
         </MockedProvider>
     );
@@ -77,12 +80,12 @@ describe("ContentScopeProvider", () => {
 
     function Wrapper({ children, initialEntries }: { children: ReactNode; initialEntries?: string[] }) {
         return (
-            <CurrentUserProvider>
+            <Providers>
                 <RouterMemoryRouter initialEntries={initialEntries}>
                     <LocationSpy onChange={handleLocationChange} />
                     {children}
                 </RouterMemoryRouter>
-            </CurrentUserProvider>
+            </Providers>
         );
     }
 
@@ -538,7 +541,7 @@ describe("ContentScopeProvider in browser history", () => {
         window.history.replaceState(null, "", url);
 
         render(
-            <CurrentUserProvider>
+            <Providers>
                 <RouterBrowserRouter>
                     <ContentScopeProvider values={scopesWithSpecialCharacters} defaultValue={scopesWithSpecialCharacters[1].scope}>
                         {() => (
@@ -549,7 +552,7 @@ describe("ContentScopeProvider in browser history", () => {
                         )}
                     </ContentScopeProvider>
                 </RouterBrowserRouter>
-            </CurrentUserProvider>,
+            </Providers>,
         );
         expect(await screen.findByText("Route path: /page")).toBeTruthy();
         // Browser history re-encodes the URLs of routes

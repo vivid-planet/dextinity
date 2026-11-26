@@ -31,8 +31,7 @@ describe("TableBlock: Paste a column with different values", () => {
 
         const insertTexts = ["Value 1", "Value 2"];
         const insertData = {
-            size: "standard",
-            highlighted: false,
+            settings: {},
             cellValues: insertTexts.map(createRteInput),
         };
 
@@ -84,8 +83,7 @@ describe("TableBlock: Paste a column with different values", () => {
 
         const insertTexts = ["Value 1", "Value 2", "Value 3", "Value 4", "Value 5", "Value 6", "Value 7", "Value 8"];
         const insertData = {
-            size: "standard",
-            highlighted: false,
+            settings: {},
             cellValues: insertTexts.map(createRteInput),
         };
 

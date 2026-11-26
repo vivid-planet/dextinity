@@ -26,11 +26,10 @@ const numberedParagraphs = Array.from({ length: 50 }, (_, index) => ({
 }));
 
 const tableWithOneTallCell = TableBlock.input2State({
-    columns: [{ id: "column", size: "standard", highlighted: false }],
+    columns: [{ id: "column" }],
     rows: [
         {
             id: "row",
-            highlighted: false,
             cellValues: [{ columnId: "column", value: { tipTapContent: { type: "doc", content: numberedParagraphs } } }],
         },
     ],

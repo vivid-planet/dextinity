@@ -1,30 +1,28 @@
 import { Alert, RowActionsItem, RowActionsMenu, useSnackbarApi, writeClipboardText } from "@dextinity/admin";
 import {
-    Add,
     ColumnInsertLeft,
     ColumnInsertRight,
     ColumnMoveLeft,
     ColumnMoveRight,
     Copy,
     Delete,
-    DensityStandard,
     DragIndicator,
     Duplicate,
     Paste,
-    Remove,
 } from "@dextinity/admin-icons";
 import { ButtonBase, Divider, Snackbar } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import type { GridColumnHeaderParams } from "@mui/x-data-grid";
-import type { Dispatch, ReactNode, SetStateAction } from "react";
+import type { Dispatch, SetStateAction } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { v4 as uuid } from "uuid";
 
-import type { TableBlockData } from "../../blocks.generated";
 import { useBlockContext } from "../context/useBlockContext";
 import type { TableBlockState } from "../createTableBlock";
+import type { TableSettingsState } from "./createTableSettings";
 import { FailedToPasteSnackbar } from "./FailedToPasteSnackbar";
 import { useTableBlockContext } from "./TableBlockContext";
+import { hasTableSettings, TableSettingsMenuItems } from "./TableSettingsMenuItems";
 import {
     columnInsertSchema,
     getDuplicatedColumnInsertData,
@@ -32,16 +30,12 @@ import {
     insertColumnDataAtIndex,
     moveColumnToIndex,
     removeColumnFromState,
-    setColumnSize,
-    toggleColumnHighlight,
+    setColumnSetting,
 } from "./utils/column";
 import { getClipboardValueForSchema } from "./utils/getClipboardValueForSchema";
 
-type ColumnSize = TableBlockData["columns"][number]["size"];
-
 type Props = GridColumnHeaderParams & {
-    columnSize: ColumnSize;
-    highlighted: boolean;
+    settings: TableSettingsState;
     state: TableBlockState;
     updateState: Dispatch<SetStateAction<TableBlockState>>;
     columnIndex: number;
@@ -49,39 +43,21 @@ type Props = GridColumnHeaderParams & {
     addToRecentlyPastedIds: (id: string) => void;
 };
 
-const columnSizes: Record<ColumnSize, ReactNode> = {
-    extraSmall: <FormattedMessage id="dextinity.tableBlock.columnSize.extraSmall" defaultMessage="Extra small" />,
-    small: <FormattedMessage id="dextinity.tableBlock.columnSize.small" defaultMessage="Small" />,
-    standard: <FormattedMessage id="dextinity.tableBlock.columnSize.standard" defaultMessage="Standard" />,
-    large: <FormattedMessage id="dextinity.tableBlock.columnSize.large" defaultMessage="Large" />,
-    extraLarge: <FormattedMessage id="dextinity.tableBlock.columnSize.extraLarge" defaultMessage="Extra large" />,
-};
-
-export const ColumnHeader = ({
-    columnSize,
-    highlighted,
-    state,
-    updateState,
-    columnIndex,
-    isDraggable,
-    field: columnId,
-    addToRecentlyPastedIds,
-}: Props) => {
+export const ColumnHeader = ({ settings, state, updateState, columnIndex, isDraggable, field: columnId, addToRecentlyPastedIds }: Props) => {
     const snackbarApi = useSnackbarApi();
     const blockContext = useBlockContext();
     const intl = useIntl();
-    const { RichTextBlock } = useTableBlockContext();
+    const table = useTableBlockContext();
+    const { CellBlock, columnSettings } = table;
     const isFirstColumn = columnIndex === 0;
     const isLastColumn = columnIndex === state.columns.length - 1;
 
     const handleInsertColumnAtIndex = (newColumnIndex: number) => {
         updateState((state) => {
             const newColumnInsertData = {
-                size: "standard" as const,
-                highlighted: false,
-                cellValues: state.rows.map(() => RichTextBlock.defaultValues()),
+                cellValues: state.rows.map(() => CellBlock.defaultValues()),
             };
-            return insertColumnDataAtIndex(state, newColumnInsertData, newColumnIndex, RichTextBlock);
+            return insertColumnDataAtIndex(state, newColumnInsertData, newColumnIndex, table);
         });
     };
 
@@ -99,21 +75,15 @@ export const ColumnHeader = ({
         });
     };
 
-    const handleToggleColumnHighlight = () => {
+    const handleSetColumnSetting = (key: string, value: unknown) => {
         updateState((state) => {
-            return toggleColumnHighlight(state, columnId);
-        });
-    };
-
-    const handleSetColumnSize = (size: ColumnSize) => {
-        updateState((state) => {
-            return setColumnSize(state, columnId, size);
+            return setColumnSetting(state, columnId, key, value);
         });
     };
 
     const handleDuplicateColumn = () => {
         updateState((state) => {
-            const duplicatedColumnInsertData = getDuplicatedColumnInsertData(state, columnIndex, RichTextBlock);
+            const duplicatedColumnInsertData = getDuplicatedColumnInsertData(state, columnIndex, table);
             if (!duplicatedColumnInsertData) {
                 snackbarApi.showSnackbar(
                     <Snackbar autoHideDuration={5000}>
@@ -127,12 +97,12 @@ export const ColumnHeader = ({
 
             const newColumnId = uuid();
             addToRecentlyPastedIds(newColumnId);
-            return insertColumnDataAtIndex(state, duplicatedColumnInsertData, columnIndex + 1, RichTextBlock, newColumnId);
+            return insertColumnDataAtIndex(state, duplicatedColumnInsertData, columnIndex + 1, table, newColumnId);
         });
     };
 
     const handleCopyColumnToClipboard = () => {
-        const columnInsertData = getInsertDataFromColumnById(state, columnId, RichTextBlock);
+        const columnInsertData = getInsertDataFromColumnById(state, columnId, table);
         if (!columnInsertData) {
             snackbarApi.showSnackbar(
                 <Snackbar autoHideDuration={5000}>
@@ -157,7 +127,7 @@ export const ColumnHeader = ({
         let cellValuesToInsert: unknown[] = [];
 
         try {
-            cellValuesToInsert = await Promise.all(clipboardData.cellValues.map((cellValue) => RichTextBlock.output2State(cellValue, blockContext)));
+            cellValuesToInsert = await Promise.all(clipboardData.cellValues.map((cellValue) => CellBlock.output2State(cellValue, blockContext)));
         } catch (error) {
             console.error(error);
             snackbarApi.showSnackbar(<FailedToPasteSnackbar />);
@@ -166,7 +136,7 @@ export const ColumnHeader = ({
         updateState((state) => {
             const newColumnId = uuid();
             addToRecentlyPastedIds(newColumnId);
-            return insertColumnDataAtIndex(state, { ...clipboardData, cellValues: cellValuesToInsert }, columnIndex + 1, RichTextBlock, newColumnId);
+            return insertColumnDataAtIndex(state, { ...clipboardData, cellValues: cellValuesToInsert }, columnIndex + 1, table, newColumnId);
         });
     };
 
@@ -192,30 +162,8 @@ export const ColumnHeader = ({
                         },
                     }}
                 >
-                    <RowActionsMenu
-                        text={<FormattedMessage id="dextinity.tableBlock.columnWidth" defaultMessage="Column width" />}
-                        icon={<DensityStandard />}
-                    >
-                        {Object.entries(columnSizes).map(([size, label]) => (
-                            <RowActionsItem
-                                key={size}
-                                onClick={() => {
-                                    handleSetColumnSize(size as ColumnSize);
-                                }}
-                                componentsProps={{ menuItem: { selected: columnSize === size } }}
-                            >
-                                {label}
-                            </RowActionsItem>
-                        ))}
-                    </RowActionsMenu>
-                    <RowActionsItem icon={highlighted ? <Remove /> : <Add />} onClick={handleToggleColumnHighlight}>
-                        {highlighted ? (
-                            <FormattedMessage id="dextinity.tableBlock.removeHighlighting" defaultMessage="Remove highlighting" />
-                        ) : (
-                            <FormattedMessage id="dextinity.tableBlock.highlightColumn" defaultMessage="Highlight column" />
-                        )}
-                    </RowActionsItem>
-                    <Divider />
+                    <TableSettingsMenuItems settings={columnSettings} values={settings} onChange={handleSetColumnSetting} />
+                    {hasTableSettings(columnSettings) && <Divider />}
                     <RowActionsItem
                         icon={<ColumnInsertLeft />}
                         onClick={() => {

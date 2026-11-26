@@ -2,6 +2,7 @@ import { findCellValue, type TableColumn, type TableHeaderPosition, type TableRo
 
 type TableRecordCell<CellValue> = {
     value: CellValue | undefined;
+    column: TableColumn;
     isHighlighted: boolean;
 };
 
@@ -19,7 +20,8 @@ type TableRecord<CellValue> = {
 function toRecordCell<CellValue>(row: TableRow<CellValue>, column: TableColumn): TableRecordCell<CellValue> {
     return {
         value: findCellValue(row, column),
-        isHighlighted: row.highlighted || column.highlighted,
+        column,
+        isHighlighted: row.settings.highlighted || column.settings.highlighted,
     };
 }
 

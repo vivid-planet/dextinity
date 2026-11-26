@@ -4,19 +4,18 @@ export type TableColumnSize = "extraSmall" | "small" | "standard" | "large" | "e
 
 export type TableColumn = {
     id: string;
-    size: TableColumnSize;
-    highlighted: boolean;
+    settings: { size: TableColumnSize; highlighted: boolean };
 };
 
 export type TableRow<CellValue> = {
     id: string;
-    highlighted: boolean;
+    settings: { highlighted: boolean };
     cellValues: Array<{ columnId: string; value: CellValue }>;
 };
 
 export type TableHeaderPosition = "firstRow" | "firstColumn";
 
-export type RenderTableCell<CellValue> = (value: CellValue) => ReactNode;
+export type RenderTableCell<CellValue> = (value: CellValue, column: TableColumn) => ReactNode;
 
 export function findCellValue<CellValue>(row: TableRow<CellValue>, column: TableColumn): CellValue | undefined {
     return row.cellValues.find((cellValue) => cellValue.columnId === column.id)?.value;

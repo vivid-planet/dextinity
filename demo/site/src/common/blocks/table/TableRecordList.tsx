@@ -37,14 +37,16 @@ export function TableRecordList<CellValue>({ columns, rows, headerPosition, rend
                                     scope="row"
                                     className={clsx(styles.cell, styles["cell--label"], entry.label.isHighlighted && styles["cell--highlighted"])}
                                 >
-                                    <div className={styles.cell__content}>{renderCell(entry.label.value)}</div>
+                                    <div className={styles.cell__content}>{renderCell(entry.label.value, entry.label.column)}</div>
                                 </th>
                             )}
                             <td
                                 colSpan={hasContent(entry.label.value) ? undefined : 2}
                                 className={clsx(styles.cell, entry.value.isHighlighted && styles["cell--highlighted"])}
                             >
-                                {hasContent(entry.value.value) && <div className={styles.cell__content}>{renderCell(entry.value.value)}</div>}
+                                {hasContent(entry.value.value) && (
+                                    <div className={styles.cell__content}>{renderCell(entry.value.value, entry.value.column)}</div>
+                                )}
                             </td>
                         </tr>
                     ))}

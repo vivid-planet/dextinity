@@ -9,12 +9,12 @@ import { FormattedMessage } from "react-intl";
 import { LinkBlock } from "./LinkBlock";
 
 // Typography resets the margins; keep the browser's default paragraph spacing the editor had with a plain <p>.
-function textStyleSx(fontSize: number, lineHeight: number) {
+export function textStyleSx(fontSize: number, lineHeight: number) {
     return { fontSize, lineHeight: `${lineHeight}px`, marginBlock: "1em" };
 }
 
 // Shared by both list types, so a list item's content offers the same styles either way.
-const listStyles: TipTapTextBlockStyle[] = [
+export const listStyles: TipTapTextBlockStyle[] = [
     {
         name: "list300",
         label: <FormattedMessage id="richTextBlock.list300" defaultMessage="List" />,

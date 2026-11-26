@@ -34,7 +34,7 @@ export function TableGrid<CellValue>({ columns, rows, renderCell, headerPosition
                     <tr key={row.id} className={styles.row}>
                         {columns.map((column, columnIndex) => {
                             const cellValue = findCellValue(row, column);
-                            const isCellHighlighted = row.highlighted || column.highlighted;
+                            const isCellHighlighted = row.settings.highlighted || column.settings.highlighted;
                             const isHeaderCell =
                                 (headerPosition === "firstRow" && rowIndex === 0) || (headerPosition === "firstColumn" && columnIndex === 0);
                             const CellTag = isHeaderCell ? "th" : "td";
@@ -46,10 +46,10 @@ export function TableGrid<CellValue>({ columns, rows, renderCell, headerPosition
                                     className={clsx(
                                         styles.cell,
                                         isCellHighlighted && styles["cell--highlighted"],
-                                        hasMinimumColumnWidths && minimumWidthClassByColumnSize[column.size],
+                                        hasMinimumColumnWidths && minimumWidthClassByColumnSize[column.settings.size],
                                     )}
                                 >
-                                    {cellValue !== undefined && <div className={styles.cell__content}>{renderCell(cellValue)}</div>}
+                                    {cellValue !== undefined && <div className={styles.cell__content}>{renderCell(cellValue, column)}</div>}
                                 </CellTag>
                             );
                         })}

@@ -7,7 +7,7 @@ import { resolveNewState } from "../utils";
 import { useTableBlockContext } from "./TableBlockContext";
 
 export const EditCell = ({ id, field, value }: GridRenderEditCellParams) => {
-    const { RichTextBlock } = useTableBlockContext();
+    const { CellBlock } = useTableBlockContext();
     const [valueState, setValueState] = useState(value);
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>();
     const [editorWrapper, setEditorWrapper] = useState<HTMLElement | null>(null);
@@ -41,7 +41,7 @@ export const EditCell = ({ id, field, value }: GridRenderEditCellParams) => {
                         event.stopPropagation();
                     }}
                 >
-                    <RichTextBlock.AdminComponent
+                    <CellBlock.AdminComponent
                         state={valueState}
                         updateState={(setStateAction) => {
                             const newContent = resolveNewState({ prevState: valueState, setStateAction });
@@ -87,6 +87,7 @@ const EditPopper = styled(Popper)(({ theme }) => ({
 
 const EditorWrapper = styled(Box)(({ theme }) => ({
     position: "relative",
+    backgroundColor: theme.palette.background.paper,
     boxShadow: theme.shadows[1],
 
     "& :has(> .DextinityAdminRteToolbar-root, > .DextinityAdminTipTapToolbar-root)": {

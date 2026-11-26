@@ -1013,7 +1013,7 @@ export const TableBlock = createTableBlock({ richText: RichTextBlock });
 
 Manually render the table, use `RichTextBlock` for the cell content.
 
-Both rows and columns have a `highlighted` flag that can be toggled in the admin, typically used to designate a header row or column.
+By default, both rows and columns have a `highlighted` setting that can be toggled in the admin, typically used to designate a header row or column.
 Apply a distinct style when either the row or the column is highlighted.
 
 ```tsx title="TableBlock.tsx"
@@ -1035,7 +1035,7 @@ export function TableBlock({ data }: PropsWithData<TableBlockData>) {
                             const cellValue = row.cellValues.find(
                                 (cellValue) => cellValue.columnId === column.id,
                             );
-                            const isHighlighted = row.highlighted || column.highlighted;
+                            const isHighlighted = row.settings.highlighted || column.settings.highlighted;
 
                             return (
                                 <td

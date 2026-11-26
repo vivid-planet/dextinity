@@ -1,0 +1,31 @@
+.root {
+    display: flex;
+    flex-grow: 1;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-s200);
+}
+
+.fullWidthContent {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-s100);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.badge {
+    padding: 2px var(--spacing-s200);
+    border-radius: 4px;
+    background-color: var(--brand-primary-main);
+    color: var(--brand-primary-contrast);
+    font-size: 12px;
+    line-height: 16px;
+}

@@ -6,17 +6,17 @@ import { createOneOfBlock } from "../../blocks/factories/createOneOfBlock";
 import { BlocksFinalForm } from "../../blocks/form/BlocksFinalForm";
 import { PixelImageBlock } from "../../blocks/PixelImageBlock";
 import { SvgImageBlock } from "../../blocks/SvgImageBlock";
-import { BlockCategory, type BlockInterface } from "../../blocks/types";
+import { BlockCategory, type BlockInterface, type BlockState, type ReadOnlyBlockRenderInterface } from "../../blocks/types";
 import { resolveNewState } from "../../blocks/utils";
 import { FileField, type GQLDamFileFieldFileFragment } from "../../form/file/FileField";
 import { useDamAcceptedMimeTypes } from "../config/useDamAcceptedMimeTypes";
 
-const supportedBlocks: Record<string, BlockInterface> = {
+const supportedBlocks: Record<string, BlockInterface & ReadOnlyBlockRenderInterface> = {
     pixelImage: PixelImageBlock,
     svgImage: SvgImageBlock,
 };
 
-const DamImageBlock = createOneOfBlock({
+const OneOfDamImageBlock = createOneOfBlock({
     name: "DamImage",
     displayName: <FormattedMessage id="dextinity.blocks.damImage" defaultMessage="Image" />,
     category: BlockCategory.Media,
@@ -24,6 +24,22 @@ const DamImageBlock = createOneOfBlock({
     allowEmpty: false,
     tags: [defineMessage({ id: "dextinity.damImageBlock.tag.image", defaultMessage: "Image" })],
 });
+
+const DamImageBlock: typeof OneOfDamImageBlock & ReadOnlyBlockRenderInterface<BlockState<typeof OneOfDamImageBlock>> = {
+    ...OneOfDamImageBlock,
+
+    ReadOnlyComponent: ({ state }) => {
+        const activeBlock = state.attachedBlocks.find((block) => block.type === state.activeType);
+
+        if (activeBlock === undefined) {
+            return null;
+        }
+
+        const { ReadOnlyComponent } = supportedBlocks[activeBlock.type];
+
+        return <ReadOnlyComponent state={activeBlock.props} />;
+    },
+};
 
 // Custom Admin component to improve the image selection UX.
 // Allows selecting both pixel and SVG images and "chooses" the correct supported block.

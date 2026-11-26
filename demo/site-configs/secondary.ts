@@ -21,6 +21,7 @@ export default ((env) => {
                 languages: ["en", "de"],
             },
             recaptchaSiteKey: process.env.RECAPTCHA_SITE_KEY ?? "",
+            currency: "EUR",
             organization: {
                 name: "Dextinity Site Secondary",
             },

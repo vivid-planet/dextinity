@@ -8,23 +8,35 @@ import { expect } from "vitest";
 import { DextinityConfigProvider } from "../../../config/DextinityConfigContext";
 import type { TableBlockState } from "../../createTableBlock";
 import { MockRichTextBlock } from "../__mocks__/TableBlockData.mocks";
-import { TableBlockContextProvider } from "../TableBlockContext";
+import { type TableBlockConfig, TableBlockContextProvider } from "../TableBlockContext";
 import { TableBlockGrid } from "../TableBlockGrid";
 
 type DataGridConfig = ComponentProps<typeof DextinityConfigProvider>["dataGrid"];
 
-export const renderTableBlock = (initialState: TableBlockState, dataGrid: DataGridConfig = { component: DataGridPro }) => {
+export const renderTableBlock = (
+    initialState: TableBlockState,
+    dataGrid: DataGridConfig = { component: DataGridPro },
+    { rowSettings, columnSettings, getCellStyle }: Partial<Pick<TableBlockConfig, "rowSettings" | "columnSettings" | "getCellStyle">> = {},
+): RenderResult & { getState: () => TableBlockState } => {
+    let latestState = initialState;
+
     const Component = () => {
         const [state, setState] = useState<TableBlockState>(initialState);
+        latestState = state;
         return (
             <DextinityConfigProvider apiUrl="" graphQLApiUrl="" adminUrl="" dataGrid={dataGrid}>
-                <TableBlockContextProvider RichTextBlock={MockRichTextBlock}>
+                <TableBlockContextProvider
+                    CellBlock={MockRichTextBlock}
+                    rowSettings={rowSettings}
+                    columnSettings={columnSettings}
+                    getCellStyle={getCellStyle}
+                >
                     <TableBlockGrid state={state} updateState={setState} />
                 </TableBlockContextProvider>
             </DextinityConfigProvider>
         );
     };
-    return render(<Component />);
+    return Object.assign(render(<Component />), { getState: () => latestState });
 };
 
 export const openRowOptionsAtIndex = (rendered: RenderResult, index: number) => {

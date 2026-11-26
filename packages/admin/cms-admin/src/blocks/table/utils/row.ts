@@ -2,21 +2,22 @@ import { v4 as uuid } from "uuid";
 import { z } from "zod";
 
 import type { TableBlockRowState, TableBlockState } from "../../createTableBlock";
-import type { BlockInterface } from "../../types";
+import { createTableSettingsState, type TableSettingsState } from "../createTableSettings";
+import type { TableBlockConfig } from "../TableBlockContext";
 import { getNewColumn } from "./column";
 import { rteSchema } from "./rteSchema";
 
-const getNewRow = (cellValues: TableBlockRowState["cellValues"], newRowId: string = uuid()): TableBlockRowState => {
-    return { id: newRowId, highlighted: false, cellValues };
+const getNewRow = (cellValues: TableBlockRowState["cellValues"], settings: TableSettingsState, newRowId: string = uuid()): TableBlockRowState => {
+    return { id: newRowId, settings, cellValues };
 };
 
 export const rowInsertSchema = z.object({
-    highlighted: z.boolean(),
+    settings: z.record(z.string(), z.unknown()).optional(),
     cellValues: z.array(rteSchema),
 });
 
 export type RowInsertData = {
-    highlighted: boolean;
+    settings?: TableSettingsState;
     cellValues: unknown[];
 };
 
@@ -24,9 +25,10 @@ export const insertRowDataAtIndex = (
     state: TableBlockState,
     insertData: RowInsertData,
     index: number,
-    RichTextBlock: BlockInterface,
+    table: TableBlockConfig,
     newRowId: string = uuid(),
 ): TableBlockState => {
+    const { CellBlock } = table;
     const updatedColumns = [...state.columns];
     const newColumnIds: string[] = [];
 
@@ -34,20 +36,21 @@ export const insertRowDataAtIndex = (
 
     const numberOfValuesWithoutColumns = cellValuesToInsert.length - updatedColumns.length;
     Array.from({ length: numberOfValuesWithoutColumns }).forEach(() => {
-        const newColumn = getNewColumn();
+        const newColumn = getNewColumn(table.columnSettings);
         updatedColumns.push(newColumn);
         newColumnIds.push(newColumn.id);
     });
 
     const numberOfColumnsWithoutNewValue = updatedColumns.length - cellValuesToInsert.length;
     Array.from({ length: numberOfColumnsWithoutNewValue }).forEach(() => {
-        cellValuesToInsert.push(RichTextBlock.defaultValues());
+        cellValuesToInsert.push(CellBlock.defaultValues());
     });
 
     const newRow = getNewRow(
         cellValuesToInsert.map((value, index) => {
             return { columnId: updatedColumns[index].id, value };
         }),
+        createTableSettingsState(table.rowSettings, insertData.settings),
         newRowId,
     );
 
@@ -57,11 +60,11 @@ export const insertRowDataAtIndex = (
     newColumnIds.forEach((newColumnId) => {
         rowsBeforeTargetIndex = rowsBeforeTargetIndex.map((row) => ({
             ...row,
-            cellValues: [...row.cellValues, { columnId: newColumnId, value: RichTextBlock.defaultValues() }],
+            cellValues: [...row.cellValues, { columnId: newColumnId, value: CellBlock.defaultValues() }],
         }));
         rowsAfterTargetIndex = rowsAfterTargetIndex.map((row) => ({
             ...row,
-            cellValues: [...row.cellValues, { columnId: newColumnId, value: RichTextBlock.defaultValues() }],
+            cellValues: [...row.cellValues, { columnId: newColumnId, value: CellBlock.defaultValues() }],
         }));
     });
 
@@ -79,37 +82,42 @@ export const deleteRowById = (state: TableBlockState, rowIdToDelete: string): Ta
     };
 };
 
-export const getDuplicatedRowInsertData = (state: TableBlockState, rowId: string, RichTextBlock: BlockInterface): RowInsertData | null => {
+export const getDuplicatedRowInsertData = (state: TableBlockState, rowId: string, { CellBlock }: TableBlockConfig): RowInsertData | null => {
     const row = state.rows.find(({ id }) => id === rowId);
     if (!row) {
         return null;
     }
 
     const cellValuesInOrderOfColumns = state.columns.map((column) => {
-        return row.cellValues.find((cellValue) => cellValue.columnId === column.id)?.value ?? RichTextBlock.defaultValues();
+        return row.cellValues.find((cellValue) => cellValue.columnId === column.id)?.value ?? CellBlock.defaultValues();
     });
 
     return {
-        highlighted: row.highlighted,
+        settings: row.settings,
         cellValues: cellValuesInOrderOfColumns,
     };
 };
 
-export const getInsertDataFromRowById = (state: TableBlockState, rowId: string, RichTextBlock: BlockInterface): RowInsertData | null => {
+export const getInsertDataFromRowById = (state: TableBlockState, rowId: string, { CellBlock }: TableBlockConfig): RowInsertData | null => {
     const row = state.rows.find(({ id }) => id === rowId);
     if (!row) {
         return null;
     }
 
     const cellValuesInOrderOfColumns = state.columns.map((column) => {
-        return RichTextBlock.state2Output(
-            row.cellValues.find((cellValue) => cellValue.columnId === column.id)?.value ?? RichTextBlock.defaultValues(),
-        );
+        return CellBlock.state2Output(row.cellValues.find((cellValue) => cellValue.columnId === column.id)?.value ?? CellBlock.defaultValues());
     });
 
     return {
-        highlighted: row.highlighted,
+        settings: row.settings,
         cellValues: cellValuesInOrderOfColumns,
+    };
+};
+
+export const setRowSetting = (state: TableBlockState, rowId: string, key: string, value: unknown): TableBlockState => {
+    return {
+        ...state,
+        rows: state.rows.map((row) => (row.id === rowId ? { ...row, settings: { ...row.settings, [key]: value } } : row)),
     };
 };
 

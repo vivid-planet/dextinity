@@ -1,59 +1,92 @@
 import { plainToInstance, Type } from "class-transformer";
-import { IsArray, IsBoolean, IsEnum, IsString, ValidateNested } from "class-validator";
+import { IsArray, IsString, ValidateNested } from "class-validator";
 
-import { type Block, BlockData, type BlockDataInterface, BlockInput, type BlockInputInterface, blockInputToData, createBlock } from "../block.js";
+import {
+    type Block,
+    BlockData,
+    type BlockDataInterface,
+    BlockInput,
+    type BlockInputInterface,
+    blockInputToData,
+    type ChildBlockInfo,
+    createBlock,
+} from "../block.js";
 import { ChildBlock } from "../decorators/child-block.js";
 import { ChildBlockInput } from "../decorators/child-block-input.js";
 import { BlockField } from "../decorators/field.js";
+import type { MigrateVendorOptions } from "../migrations/types.js";
+import { typeSafeBlockMigrationPipe } from "../migrations/typeSafeBlockMigrationPipe.js";
+import { createOneOfBlock } from "./createOneOfBlock.js";
+import {
+    createTableSettingsDecorators,
+    defaultTableColumnSettings,
+    defaultTableRowSettings,
+    type TableSettingsDeclaration,
+} from "./createTableSettings.js";
+import { buildMoveSizeAndHighlightingIntoSettingsMigration } from "./table-migrations/1-move-size-and-highlighting-into-settings.migration.js";
 import type { BlockFactoryNameOrOptions } from "./types.js";
 
-type CreateTableBlockOptions = {
-    richText: Block;
+type CreateTableBlockOptions = (
+    | {
+          richText: Block;
+          cellBlocks?: never;
+      }
+    | {
+          /**
+           * The first block is the default for new cells.
+           */
+          cellBlocks: Record<string, Block>;
+          richText?: never;
+      }
+) & {
+    /** Declared with `createTableSettings`. Defaults to `defaultTableRowSettings`. */
+    rowSettings?: TableSettingsDeclaration;
+    /** Declared with `createTableSettings`. Defaults to `defaultTableColumnSettings`. */
+    columnSettings?: TableSettingsDeclaration;
 };
 
-enum ColumnSize {
-    extraSmall = "extraSmall",
-    small = "small",
-    standard = "standard",
-    large = "large",
-    extraLarge = "extraLarge",
-}
+export function createTableBlock(
+    { rowSettings = defaultTableRowSettings, columnSettings = defaultTableColumnSettings, ...options }: CreateTableBlockOptions,
+    nameOrOptions: BlockFactoryNameOrOptions = "Table",
+): Block {
+    const { name: tableName, ...blockOptions } = typeof nameOrOptions === "string" ? { name: nameOrOptions } : nameOrOptions;
+    const CellBlock = options.cellBlocks
+        ? createOneOfBlock({ supportedBlocks: options.cellBlocks, allowEmpty: false }, `${tableName}Cell`)
+        : options.richText;
+    const rowSettingsDecorators = createTableSettingsDecorators(rowSettings);
+    const columnSettingsDecorators = createTableSettingsDecorators(columnSettings);
 
-class TableBlockColumnData extends BlockData {
-    @BlockField()
-    id: string;
+    const migrateVendor: MigrateVendorOptions = {
+        version: 1,
+        migrations: typeSafeBlockMigrationPipe([buildMoveSizeAndHighlightingIntoSettingsMigration({ columnSettings, rowSettings })]),
+    };
 
-    @BlockField({ type: "enum", enum: ColumnSize })
-    size: ColumnSize;
+    class TableBlockColumnData extends BlockData {
+        @BlockField()
+        id: string;
 
-    @BlockField()
-    highlighted: boolean;
-}
-
-class TableBlockColumnInput extends BlockInput {
-    @BlockField()
-    @IsString()
-    id: string;
-
-    @BlockField({ type: "enum", enum: ColumnSize })
-    @IsEnum(ColumnSize)
-    size: ColumnSize;
-
-    @BlockField()
-    @IsBoolean()
-    highlighted: boolean;
-
-    transformToBlockData(): TableBlockColumnData {
-        return blockInputToData(TableBlockColumnData, this);
+        @columnSettingsDecorators.dataField
+        settings: BlockDataInterface;
     }
-}
 
-export function createTableBlock({ richText: RichTextBlock }: CreateTableBlockOptions, nameOrOptions: BlockFactoryNameOrOptions = "Table"): Block {
+    class TableBlockColumnInput extends BlockInput {
+        @BlockField()
+        @IsString()
+        id: string;
+
+        @columnSettingsDecorators.inputField
+        settings?: BlockInputInterface;
+
+        transformToBlockData(): TableBlockColumnData {
+            return blockInputToData(TableBlockColumnData, this);
+        }
+    }
+
     class TableBlockRowColumnValueData extends BlockData {
         @BlockField()
         columnId: string;
 
-        @ChildBlock(RichTextBlock)
+        @ChildBlock(CellBlock)
         value: BlockDataInterface;
     }
 
@@ -62,7 +95,7 @@ export function createTableBlock({ richText: RichTextBlock }: CreateTableBlockOp
         @IsString()
         columnId: string;
 
-        @ChildBlockInput(RichTextBlock)
+        @ChildBlockInput(CellBlock)
         value: BlockInputInterface;
 
         transformToBlockData(): TableBlockRowColumnValueData {
@@ -74,8 +107,8 @@ export function createTableBlock({ richText: RichTextBlock }: CreateTableBlockOp
         @BlockField()
         id: string;
 
-        @BlockField()
-        highlighted: boolean;
+        @rowSettingsDecorators.dataField
+        settings: BlockDataInterface;
 
         @BlockField(TableBlockRowColumnValueData)
         @Type(() => TableBlockRowColumnValueData)
@@ -87,9 +120,8 @@ export function createTableBlock({ richText: RichTextBlock }: CreateTableBlockOp
         @IsString()
         id: string;
 
-        @BlockField()
-        @IsBoolean()
-        highlighted: boolean;
+        @rowSettingsDecorators.inputField
+        settings?: BlockInputInterface;
 
         @BlockField(TableBlockRowColumnValueInput)
         @ValidateNested({ each: true })
@@ -99,6 +131,7 @@ export function createTableBlock({ richText: RichTextBlock }: CreateTableBlockOp
         transformToBlockData(): TableBlockRowData {
             return plainToInstance(TableBlockRowData, {
                 ...this,
+                settings: this.settings?.transformToBlockData(),
                 cellValues: this.cellValues.map((cellValue) => cellValue.transformToBlockData()),
             });
         }
@@ -112,6 +145,19 @@ export function createTableBlock({ richText: RichTextBlock }: CreateTableBlockOp
         @BlockField(TableBlockRowData)
         @Type(() => TableBlockRowData)
         rows: TableBlockRowData[] = [];
+
+        childBlocksInfo(): ChildBlockInfo[] {
+            const existingColumnIds = new Set(this.columns.map((column) => column.id));
+
+            return this.rows.flatMap((row, rowIndex) =>
+                row.cellValues.map((cellValue, cellValueIndex) => ({
+                    visible: existingColumnIds.has(cellValue.columnId),
+                    relJsonPath: ["rows", rowIndex, "cellValues", cellValueIndex, "value"],
+                    block: cellValue.value,
+                    name: CellBlock.name,
+                })),
+            );
+        }
     }
 
     class TableBlockInput extends BlockInput {
@@ -136,5 +182,5 @@ export function createTableBlock({ richText: RichTextBlock }: CreateTableBlockOp
         }
     }
 
-    return createBlock(TableBlockData, TableBlockInput, nameOrOptions);
+    return createBlock(TableBlockData, TableBlockInput, { name: tableName, ...blockOptions, migrateVendor });
 }

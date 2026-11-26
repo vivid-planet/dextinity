@@ -10,28 +10,27 @@ type ColumnSize = "extraSmall" | "small" | "standard" | "large" | "extraLarge";
 
 interface TableColumnInput {
     id: string;
-    size: ColumnSize;
-    highlighted: boolean;
+    settings: { size: ColumnSize; highlighted: boolean };
 }
 
-interface TableCellValueInput<RichTextInput> {
+interface TableCellValueInput<CellInput> {
     columnId: string;
-    value: RichTextInput;
+    value: CellInput;
 }
 
-interface TableRowInput<RichTextInput> {
+interface TableRowInput<CellInput> {
     id: string;
-    highlighted: boolean;
-    cellValues: TableCellValueInput<RichTextInput>[];
+    settings: { highlighted: boolean };
+    cellValues: TableCellValueInput<CellInput>[];
 }
 
-interface TableContentInput<RichTextInput> {
+interface TableContentInput<CellInput> {
     columns: TableColumnInput[];
-    rows: TableRowInput<RichTextInput>[];
+    rows: TableRowInput<CellInput>[];
 }
 
-interface TableBlockInput<RichTextInput> {
-    table: TableContentInput<RichTextInput>;
+interface TableBlockInput<CellInput> {
+    table: TableContentInput<CellInput>;
     responsiveBehavior: ResponsiveBehavior;
 }
 
@@ -45,43 +44,49 @@ export interface DescriptionCellContent {
 }
 
 const columnIds = {
+    photo: "photo",
     name: "name",
     email: "email",
     address: "address",
     description: "description",
+    hourlyRate: "hourlyRate",
 } as const;
 
 /**
- * Generates the columns and rows of a table block, leaving the rich text of the cells to the subclass.
+ * Generates the columns and rows of a table block, leaving the cell blocks to the subclass.
  *
  * `createTableBlock` returns a plain `Block`, so the input types can't be derived from it and are declared here.
  */
-export abstract class TableBlockFixtureBase<RichTextInput> {
+export abstract class TableBlockFixtureBase<CellInput> {
     constructor(private readonly linkBlockFixtureService: LinkBlockFixtureService) {}
 
-    async generateBlockInput(): Promise<TableBlockInput<RichTextInput>> {
+    async generateBlockInput(): Promise<TableBlockInput<CellInput>> {
         return {
             table: await this.generateTableContentInput(),
             responsiveBehavior: faker.helpers.arrayElement(Object.values(ResponsiveBehavior)),
         };
     }
 
-    private async generateTableContentInput(): Promise<TableContentInput<RichTextInput>> {
+    private async generateTableContentInput(): Promise<TableContentInput<CellInput>> {
         const columns: TableColumnInput[] = [
-            { id: columnIds.name, size: "standard", highlighted: false },
-            { id: columnIds.email, size: "standard", highlighted: false },
-            { id: columnIds.address, size: "large", highlighted: false },
-            { id: columnIds.description, size: "extraLarge", highlighted: false },
+            { id: columnIds.photo, settings: { size: "small", highlighted: false } },
+            { id: columnIds.name, settings: { size: "standard", highlighted: false } },
+            { id: columnIds.email, settings: { size: "standard", highlighted: false } },
+            { id: columnIds.address, settings: { size: "large", highlighted: false } },
+            { id: columnIds.description, settings: { size: "extraLarge", highlighted: false } },
+            { id: columnIds.hourlyRate, settings: { size: "small", highlighted: false } },
         ];
 
-        const headerRow: TableRowInput<RichTextInput> = {
+        const headerRow: TableRowInput<CellInput> = {
             id: faker.string.uuid(),
-            highlighted: true,
+            settings: { highlighted: true },
             cellValues: [
+                { columnId: columnIds.photo, value: this.createSimpleCellRichText("Photo") },
                 { columnId: columnIds.name, value: this.createSimpleCellRichText("Name") },
                 { columnId: columnIds.email, value: this.createSimpleCellRichText("Email") },
                 { columnId: columnIds.address, value: this.createSimpleCellRichText("Address") },
                 { columnId: columnIds.description, value: this.createSimpleCellRichText("Description") },
+                { columnId: columnIds.hourlyRate, value: this.createSimpleCellRichText("Hourly rate") },
             ],
         };
 
@@ -91,19 +96,25 @@ export abstract class TableBlockFixtureBase<RichTextInput> {
         return { columns, rows: [headerRow, ...dataRows] };
     }
 
-    protected abstract createSimpleCellRichText(text: string): RichTextInput;
+    protected abstract createSimpleCellRichText(text: string): CellInput;
 
-    protected abstract createDescriptionCellRichText(content: DescriptionCellContent): RichTextInput;
+    protected abstract createDescriptionCellRichText(content: DescriptionCellContent): CellInput;
 
-    private async generateDataRow(): Promise<TableRowInput<RichTextInput>> {
+    protected abstract createPriceCell(amount: number): CellInput;
+
+    protected abstract createImageCell(): Promise<CellInput>;
+
+    private async generateDataRow(): Promise<TableRowInput<CellInput>> {
         return {
             id: faker.string.uuid(),
-            highlighted: false,
+            settings: { highlighted: false },
             cellValues: [
+                { columnId: columnIds.photo, value: await this.createImageCell() },
                 { columnId: columnIds.name, value: this.createSimpleCellRichText(faker.person.fullName()) },
                 { columnId: columnIds.email, value: this.createSimpleCellRichText(faker.internet.email()) },
                 { columnId: columnIds.address, value: this.createSimpleCellRichText(faker.location.streetAddress({ useFullAddress: true })) },
                 { columnId: columnIds.description, value: this.createDescriptionCellRichText(await this.generateDescriptionCellContent()) },
+                { columnId: columnIds.hourlyRate, value: this.createPriceCell(faker.number.float({ min: 40, max: 200, fractionDigits: 2 })) },
             ],
         };
     }

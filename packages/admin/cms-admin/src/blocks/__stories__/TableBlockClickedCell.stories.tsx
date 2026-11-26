@@ -24,10 +24,9 @@ const createCellText = (text: string) => ({
 });
 
 const tableLargerThanTheDialog = TableBlock.input2State({
-    columns: columnNames.map((columnName) => ({ id: columnName, size: "standard", highlighted: false })),
+    columns: columnNames.map((columnName) => ({ id: columnName })),
     rows: rowNumbers.map((rowNumber) => ({
         id: `${rowNumber}`,
-        highlighted: false,
         cellValues: columnNames.map((columnName) => ({ columnId: columnName, value: createCellText(`${columnName}${rowNumber}`) })),
     })),
 });

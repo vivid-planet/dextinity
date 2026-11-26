@@ -14,7 +14,6 @@ import {
 import type { DataGridProProps, GridApiPro } from "@mui/x-data-grid-pro";
 import { type ComponentType, type Dispatch, type SetStateAction, useCallback, useEffect, useRef } from "react";
 
-import type { TableBlockData } from "../../blocks.generated";
 import { type DextinityConfig, useDextinityConfig } from "../../config/DextinityConfigContext";
 import type { TableBlockState } from "../createTableBlock";
 import { CellValue } from "./CellValue";
@@ -30,9 +29,6 @@ import { ensureMinimumTableState } from "./utils/ensureMinimumTableState";
 import { moveRowToIndex } from "./utils/row";
 import { useTemporarilyHighlightedIds } from "./utils/useTemporarilyHighlightedIds";
 
-type ColumnSize = TableBlockData["columns"][number]["size"];
-type TableBlockColumn = TableBlockData["columns"][number];
-
 type ConfiguredDataGrid = NonNullable<DextinityConfig["dataGrid"]>["component"];
 
 const reorderColumnField = "__reorder__";
@@ -44,22 +40,6 @@ const isProOrPremiumDataGrid = (dataGrid: ConfiguredDataGrid): dataGrid is Compo
 const getLastContentColumnClassName = (columnIndex: number, numberOfColumns: number) =>
     columnIndex === numberOfColumns - 1 ? lastContentColumnClassName : undefined;
 
-const widthForColumnSize: Record<ColumnSize, number> = {
-    extraSmall: 100,
-    small: 200,
-    standard: 300,
-    large: 400,
-    extraLarge: 500,
-};
-
-const flexForColumnSize: Record<ColumnSize, number> = {
-    extraSmall: 1,
-    small: 2,
-    standard: 3,
-    large: 4,
-    extraLarge: 5,
-};
-
 type Props = {
     state: TableBlockState;
     updateState: Dispatch<SetStateAction<TableBlockState>>;
@@ -67,7 +47,7 @@ type Props = {
 };
 
 export const TableBlockGrid = ({ state, updateState, clickedCell }: Props) => {
-    const { RichTextBlock } = useTableBlockContext();
+    const table = useTableBlockContext();
     const { dataGrid: { component: ConfiguredDataGrid } = {} } = useDextinityConfig();
     const hasDragAndDrop = isProOrPremiumDataGrid(ConfiguredDataGrid);
     const apiRef = useRef<GridApiPro | null>(null);
@@ -80,9 +60,9 @@ export const TableBlockGrid = ({ state, updateState, clickedCell }: Props) => {
 
     useEffect(() => {
         if (state.columns.length === 0 || state.rows.length === 0) {
-            updateState((prevState) => ensureMinimumTableState(prevState, RichTextBlock));
+            updateState((prevState) => ensureMinimumTableState(prevState, table));
         }
-    }, [state.columns.length, state.rows.length, updateState, RichTextBlock]);
+    }, [state.columns.length, state.rows.length, updateState, table]);
 
     const setRowData: Dispatch<SetStateAction<TableBlockState["rows"]>> = (newRows) => {
         updateState((state) => {
@@ -125,20 +105,18 @@ export const TableBlockGrid = ({ state, updateState, clickedCell }: Props) => {
     }, [apiRef, updateState]);
 
     const dataGridColumns: GridColDef[] = [
-        ...state.columns.map(({ id: columnId, highlighted, size }: TableBlockColumn, index: number) => ({
+        ...state.columns.map(({ id: columnId, settings }, index) => ({
             field: columnId,
             editable: true,
             sortable: false,
-            flex: flexForColumnSize[size],
-            minWidth: widthForColumnSize[size],
+            ...table.getColumnWidth(settings),
             headerClassName: getLastContentColumnClassName(index, state.columns.length),
             cellClassName: getLastContentColumnClassName(index, state.columns.length),
             renderHeader: (params: GridColumnHeaderParams) => (
                 <ColumnHeader
                     {...params}
                     state={state}
-                    columnSize={size}
-                    highlighted={highlighted}
+                    settings={settings}
                     updateState={updateState}
                     columnIndex={index}
                     isDraggable={hasDragAndDrop}
@@ -154,7 +132,8 @@ export const TableBlockGrid = ({ state, updateState, clickedCell }: Props) => {
                 return (
                     <CellValue
                         value={value}
-                        highlighted={rowFromState?.highlighted || highlighted}
+                        rowSettings={rowFromState?.settings ?? {}}
+                        columnSettings={settings}
                         isTemporarilyHighlighted={rowWasRecentlyPasted || columnWasRecentlyPasted || cellWasRecentlyClicked}
                     />
                 );

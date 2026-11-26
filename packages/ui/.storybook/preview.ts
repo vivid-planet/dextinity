@@ -85,6 +85,8 @@ const preview: Preview = {
                     ],
                     "Page types",
                     ["Overview", "List", "Tree + detail", "Edit", "Finder", "List + side panel"],
+                    "Workspace",
+                    ["Shell", "Canvas"],
                 ],
             },
         },

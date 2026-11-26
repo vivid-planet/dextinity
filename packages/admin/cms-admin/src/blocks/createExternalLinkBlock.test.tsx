@@ -10,21 +10,21 @@ describe("createExternalLinkBlock", () => {
     it("should have all options by default", () => {
         const block = createExternalLinkBlock({ name: "ExternalLink" });
 
-        expect(block.defaultValues()).toEqual({ targetUrl: undefined, openInNewWindow: false, noFollow: false });
-        expect(block.state2Output(block.defaultValues())).toEqual({ targetUrl: undefined, openInNewWindow: false, noFollow: false });
+        expect(block.defaultValues()).toEqual({ targetUrl: null, openInNewWindow: false, noFollow: false });
+        expect(block.state2Output(block.defaultValues())).toEqual({ targetUrl: null, openInNewWindow: false, noFollow: false });
     });
 
     it("should leave a disabled option out of the block's data", () => {
         const block = createExternalLinkBlock({ name: "UrlLink", openInNewWindow: false, noFollow: false });
 
-        expect(block.defaultValues()).toEqual({ targetUrl: undefined });
-        expect(block.state2Output(block.defaultValues())).toEqual({ targetUrl: undefined });
+        expect(block.defaultValues()).toEqual({ targetUrl: null });
+        expect(block.state2Output(block.defaultValues())).toEqual({ targetUrl: null });
         expect(block.url2State?.("https://www.example.com")).toEqual({ targetUrl: "https://www.example.com" });
     });
 
     it("should leave out only the options it was told to", () => {
         expect(createExternalLinkBlock({ name: "NoFollowLink", openInNewWindow: false }).defaultValues()).toEqual({
-            targetUrl: undefined,
+            targetUrl: null,
             noFollow: false,
         });
     });

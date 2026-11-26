@@ -70,14 +70,22 @@ describe("PixelImageBlockTransformerService", () => {
         expect(filesService.findImageToDeliver).toHaveBeenCalledWith({ file: originalImage, cropArea: blockCropArea }, { previewDamUrls: false });
         expect(result.damFile?.id).toBe(fallbackImage.id);
         expect(result.damFile?.image?.cropArea).toEqual(fallbackImage.image?.cropArea);
-        expect(result.cropArea).toBeUndefined();
+        expect(result.cropArea).toBeNull();
         expect(result.urlTemplate).toBe(imagesService.createUrlTemplate({ file: fallbackImage }, {}));
+    });
+
+    it("returns null for the dimensions of a crop area without them", async () => {
+        const { transformer } = createTransformer({ hasInvalidLicense: false, fallback: null });
+
+        const result = await transformer.transformToPlain(block, context);
+
+        expect(result.damFile?.image?.cropArea).toEqual({ focalPoint: FocalPoint.SMART, width: null, height: null, x: null, y: null });
     });
 
     it("renders no image when the license is invalid and no fallback image is set", async () => {
         const { transformer } = createTransformer({ hasInvalidLicense: true, fallback: null });
 
-        await expect(transformer.transformToPlain(block, context)).resolves.toEqual({});
+        await expect(transformer.transformToPlain(block, context)).resolves.toEqual({ damFile: null, cropArea: null });
     });
 
     it("keeps the original image and the block's crop area for the Admin, which saves the block back", async () => {

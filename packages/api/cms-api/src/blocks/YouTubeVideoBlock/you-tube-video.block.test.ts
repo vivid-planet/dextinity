@@ -3,14 +3,19 @@ import { describe, expect, it } from "vitest";
 import { transformToBlockSave } from "../block.js";
 import { YouTubeVideoBlock } from "./you-tube-video.block.js";
 
+const emptyVideoSettings = { autoplay: null, showControls: null, loop: null };
+const emptyPreviewImage = { damFileId: null, cropArea: null, $$coreVersion: 1 };
+
 describe("YouTubeVideoBlock migrations", () => {
     it("migrates block instances that were never migrated", () => {
         const data = YouTubeVideoBlock.blockDataFactory({ youtubeIdentifier: "dQw4w9WgXcQ", aspectRatio: "16x9" });
 
         expect(transformToBlockSave(data)).toEqual({
             youtubeIdentifier: "dQw4w9WgXcQ",
-            previewImage: {},
+            ...emptyVideoSettings,
+            previewImage: emptyPreviewImage,
             $$vendorVersion: 2,
+            $$coreVersion: 1,
         });
     });
 
@@ -20,8 +25,10 @@ describe("YouTubeVideoBlock migrations", () => {
 
             expect(transformToBlockSave(data)).toEqual({
                 youtubeIdentifier: "dQw4w9WgXcQ",
-                previewImage: {},
+                ...emptyVideoSettings,
+                previewImage: emptyPreviewImage,
                 $$vendorVersion: 2,
+                $$coreVersion: 1,
             });
         });
 
@@ -31,8 +38,10 @@ describe("YouTubeVideoBlock migrations", () => {
 
             expect(transformToBlockSave(data)).toEqual({
                 youtubeIdentifier: "dQw4w9WgXcQ",
-                previewImage,
+                ...emptyVideoSettings,
+                previewImage: { ...previewImage, ...emptyPreviewImage },
                 $$vendorVersion: 2,
+                $$coreVersion: 1,
             });
         });
     });

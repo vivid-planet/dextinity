@@ -71,7 +71,7 @@ export default async function Page({ params }: PageProps<"/[visibility]/[domain]
         if (data.redirectBySource?.target) {
             const target = data.redirectBySource?.target as RedirectsLinkBlockData;
             let destination: string | undefined;
-            if (target.block !== undefined) {
+            if (target.block) {
                 switch (target.block.type) {
                     case "internal": {
                         const internalLink = target.block.props as InternalLinkBlockData;
@@ -84,7 +84,7 @@ export default async function Page({ params }: PageProps<"/[visibility]/[domain]
                         break;
                     }
                     case "external":
-                        destination = (target.block.props as ExternalLinkBlockData).targetUrl;
+                        destination = (target.block.props as ExternalLinkBlockData).targetUrl ?? undefined;
                         break;
                     case "news": {
                         const newsLink = target.block.props as NewsLinkBlockData;

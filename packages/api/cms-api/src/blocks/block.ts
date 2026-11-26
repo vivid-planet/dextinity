@@ -7,6 +7,7 @@ import { AnnotationBlockMeta, getBlockFieldData, getFieldKeys } from "./decorato
 import { strictBlockDataFactoryDecorator } from "./helpers/strictBlockDataFactoryDecorator.js";
 import { strictBlockInputFactoryDecorator } from "./helpers/strictBlockInputFactoryDecorator.js";
 import { getBlockDataMigrateVendor, setBlockDataMigrateVendor } from "./migrations/blockDataMigrateVendor.js";
+import { applyCoreMigrations, CORE_MIGRATIONS_VERSION } from "./migrations/coreMigrations.js";
 import { createAppliedMigrationsBlockDataFactoryDecorator } from "./migrations/createAppliedMigrationsBlockDataFactoryDecorator.js";
 import { BlockDataMigrationVersion } from "./migrations/decorators/BlockDataMigrationVersion.js";
 import type { MigrateOptions, MigrateVendorOptions } from "./migrations/types.js";
@@ -161,10 +162,10 @@ type Unpacked<T> = T extends (infer U)[] ? U : T extends (...args: any[]) => inf
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type NestedToPlainReturn<T extends Record<string, any>> = WithoutBlockInputMethods<{
     [Key in keyof T]: T[Key] extends
-        BlockInputInterface | undefined // value is a BlockInputInterface
-        ? ReturnType<NonNullable<T[Key]>["toPlain"]>
+        BlockInputInterface | null | undefined // value is a BlockInputInterface
+        ? ReturnType<NonNullable<T[Key]>["toPlain"]> | Extract<T[Key], null>
         : T[Key] extends
-                BlockInputInterface[] | undefined // value is an array of BlockInputInterfaces
+                BlockInputInterface[] | null | undefined // value is an array of BlockInputInterfaces
           ? ReturnType<NonNullable<Unpacked<T[Key]>>["toPlain"]>[]
           : T[Key];
 }>;
@@ -353,13 +354,12 @@ export function createBlock<BlockType extends BlockDataInterface, BlockInputType
     }
     const migrateVendor = options.migrateVendor ?? inheritedMigrateVendor;
 
-    if (options.migrate || migrateVendor) {
-        // Overwrite the transformToSave of BlockDate to append the version numbers
-        BlockDataMigrationVersion(options.migrate?.version, migrateVendor?.version)(BlockData);
-    }
+    // Overwrite the transformToSave of BlockDate to append the version numbers
+    BlockDataMigrationVersion(options.migrate?.version, migrateVendor?.version, CORE_MIGRATIONS_VERSION)(BlockData);
 
+    // The core migrations run after the block's own migrations, which wrap this factory
     const blockDataFactory: BlockDataFactory<BlockType> = (o) => {
-        return plainToInstance(BlockData, o);
+        return plainToInstance(BlockData, applyCoreMigrations(o, BlockData));
     };
 
     const blockInputFactory: BlockInputFactory<BlockInputType> = (o) => plainToInstance(BlockInput, o);

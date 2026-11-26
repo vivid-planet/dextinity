@@ -46,7 +46,7 @@ export const DamVideoBlock = withPreview(
         aiContentDisclosure,
         aiContentAltTextPrefixLabels,
     }: DamVideoBlockProps) => {
-        if (damFile === undefined) {
+        if (!damFile) {
             return <PreviewSkeleton type="media" hasContent={false} aspectRatio={aspectRatio} />;
         }
 
@@ -126,11 +126,11 @@ export const DamVideoBlock = withPreview(
                 ) : (
                     <div className={styles.root}>
                         <video
-                            autoPlay={autoplay}
-                            controls={showControls}
-                            loop={loop}
+                            autoPlay={autoplay ?? undefined}
+                            controls={showControls ?? undefined}
+                            loop={loop ?? undefined}
                             playsInline
-                            muted={autoplay && !hasPreviewImageBeenHidden}
+                            muted={!!autoplay && !hasPreviewImageBeenHidden}
                             ref={videoRef}
                             aria-label={damFile.aiContentType ? ariaLabel : undefined}
                             className={clsx(styles.video, fill && styles.fill)}

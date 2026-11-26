@@ -65,4 +65,27 @@ describe("BlocksFinalForm", () => {
         expect(latestOnSubmit).toHaveBeenCalledTimes(2);
         expect(latestOnSubmit).toHaveBeenLastCalledWith({ text: "ab" }, expect.anything());
     });
+
+    it("submits cleared fields as null, also in nested objects", () => {
+        const onSubmit = vi.fn();
+        render(
+            <BlocksFinalForm<{ title: string | null; settings: { caption: string | null; alt: string | null } }>
+                onSubmit={onSubmit}
+                initialValues={{ title: "Title", settings: { caption: "Caption", alt: "Alt" } }}
+            >
+                <Field name="title" component="input" aria-label="Title" />
+                <Field name="settings.caption" component="input" aria-label="Caption" />
+            </BlocksFinalForm>,
+        );
+
+        act(() => {
+            fireEvent.change(screen.getByLabelText("Title"), { target: { value: "" } });
+            fireEvent.change(screen.getByLabelText("Caption"), { target: { value: "" } });
+        });
+        act(() => {
+            vi.runAllTimers();
+        });
+
+        expect(onSubmit).toHaveBeenLastCalledWith({ title: null, settings: { caption: null, alt: "Alt" } }, expect.anything());
+    });
 });

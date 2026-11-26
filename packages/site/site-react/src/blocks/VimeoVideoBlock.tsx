@@ -103,11 +103,11 @@ export const VimeoVideoBlock = withPreview(
             searchParams.append("muted", "1");
         }
 
-        if (loop !== undefined) {
+        if (loop != null) {
             searchParams.append("loop", Number(loop).toString());
         }
 
-        if (showControls !== undefined) {
+        if (showControls != null) {
             searchParams.append("controls", Number(showControls).toString());
         }
 

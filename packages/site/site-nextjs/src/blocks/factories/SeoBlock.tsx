@@ -60,7 +60,9 @@ export const SeoBlock = <T = PixelImageBlockData,>({
             {/* Alternate Hreflang */}
             {alternativeLinks &&
                 alternativeLinks.length > 0 &&
-                alternativeLinks.map((item) => <link key={item.code} rel="alternate" hrefLang={item.code} href={item.url} />)}
+                alternativeLinks.map((item) => (
+                    <link key={item.code} rel="alternate" hrefLang={item.code ?? undefined} href={item.url ?? undefined} />
+                ))}
         </Head>
     );
 };

@@ -1,5 +1,6 @@
-import { IsOptional, IsString } from "class-validator";
+import { IsString } from "class-validator";
 
+import { IsNullable } from "../../common/validators/is-nullable.js";
 import type { Block, BlockDataInterface, BlockInputInterface } from "../block.js";
 import { BlockField } from "../decorators/field.js";
 import {
@@ -23,8 +24,8 @@ function createLinkBlock<BlockMap extends Record<string, Block<BlockDataInterfac
     class LinkBlockItemInput extends BaseOneOfBlockItemInput({ supportedBlocks, OneOfBlockItemData: LinkBlockItemData }) {}
 
     class LinkBlockData extends BaseOneOfBlockData({ supportedBlocks, OneOfBlockItemData: LinkBlockItemData }) {
-        @BlockField({ nullable: true })
-        title?: string;
+        @BlockField({ type: "string", nullable: true })
+        title: string | null;
     }
 
     class LinkBlockInput extends BaseOneOfBlockInput({
@@ -33,10 +34,10 @@ function createLinkBlock<BlockMap extends Record<string, Block<BlockDataInterfac
         OneOfBlockData: LinkBlockData,
         OneOfBlockItemInput: LinkBlockItemInput,
     }) {
-        @BlockField({ nullable: true })
-        @IsOptional()
+        @BlockField({ type: "string", nullable: true })
+        @IsNullable()
         @IsString()
-        title?: string;
+        title: string | null;
     }
 
     return createOneOfBlock(

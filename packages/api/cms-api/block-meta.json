@@ -543,7 +543,7 @@
     },
     {
         "name": "OptionalPixelImage",
-        "description": "A block that can be turned off. `block` holds the props of the wrapped block, `visible` `false` hides it on the site. An empty block is `{\"visible\":false}` without `block`.",
+        "description": "A block that can be turned off. `block` holds the props of the wrapped block, `visible` `false` hides it on the site. An empty block is `{\"block\":null,\"visible\":false}`.",
         "fields": [
             {
                 "name": "block",

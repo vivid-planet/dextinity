@@ -57,6 +57,6 @@ describe("createExternalLinkBlock", () => {
             UrlLinkBlock.blockInputFactory({ targetUrl: "https://www.example.com", openInNewWindow: true } as never)
                 .transformToBlockData()
                 .transformToSave(),
-        ).toEqual({ targetUrl: "https://www.example.com", $$vendorVersion: 1 });
+        ).toEqual({ targetUrl: "https://www.example.com", $$vendorVersion: 1, $$coreVersion: 1 });
     });
 });

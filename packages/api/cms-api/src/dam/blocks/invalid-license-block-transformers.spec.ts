@@ -45,7 +45,7 @@ describe("SvgImageBlockTransformerService", () => {
     it("renders no file when its license is invalid", async () => {
         const transformer = new SvgImageBlockTransformerService(createFilesService({ file: createFile("svg"), invalidLicenseFileIds: ["svg"] }));
 
-        await expect(transformer.transformToPlain(block, context)).resolves.toEqual({});
+        await expect(transformer.transformToPlain(block, context)).resolves.toEqual({ damFile: null });
     });
 
     it("keeps the file with an invalid license for the Admin", async () => {
@@ -71,7 +71,7 @@ describe("DamFileDownloadLinkBlockTransformerService", () => {
             createFilesService({ file: createFile("pdf"), invalidLicenseFileIds: ["pdf"] }),
         );
 
-        await expect(transformer.transformToPlain(block, context)).resolves.toEqual({ openFileType: OpenFileTypeMethod.Download });
+        await expect(transformer.transformToPlain(block, context)).resolves.toEqual({ file: null, openFileType: OpenFileTypeMethod.Download });
     });
 });
 
@@ -85,7 +85,7 @@ describe("DamVideoBlockTransformerService", () => {
     it("renders no video when its license is invalid", async () => {
         const transformer = new DamVideoBlockTransformerService(createFilesService({ file: video, invalidLicenseFileIds: ["video"] }));
 
-        expect((await transformer.transformToPlain(block, context)).damFile).toBeUndefined();
+        expect((await transformer.transformToPlain(block, context)).damFile).toBeNull();
     });
 
     it("leaves out captions whose license is invalid", async () => {

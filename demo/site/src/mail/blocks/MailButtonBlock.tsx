@@ -6,7 +6,7 @@ export const MailButtonBlock = withPreview<PropsWithData<MailButtonBlockData>>(
         return (
             <MjmlSection indent className={className}>
                 <MjmlColumn>
-                    <MjmlButton href={data.link.targetUrl} variant={data.variant} align={data.align}>
+                    <MjmlButton href={data.link.targetUrl ?? undefined} variant={data.variant} align={data.align}>
                         {data.text}
                     </MjmlButton>
                 </MjmlColumn>

@@ -15,7 +15,7 @@ export const EmailLinkBlock: BlockInterface<EmailLinkBlockData, EmailLinkBlockDa
 
     displayName: <FormattedMessage id="dextinity.blocks.link.email" defaultMessage="Email" />,
 
-    defaultValues: () => ({ email: undefined }),
+    defaultValues: () => ({ email: null }),
 
     category: BlockCategory.Navigation,
 

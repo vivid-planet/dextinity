@@ -19,7 +19,11 @@ import { PixelImageBlock } from "./PixelImageBlock";
 import { BlockCategory, type BlockDependency, type BlockInterface, type BlockPreviewStateInterface, type BlockState } from "./types";
 import { resolveNewState } from "./utils";
 
-export type DamVideoBlockState = Omit<DamVideoBlockData, "previewImage"> & { previewImage?: BlockState<typeof PixelImageBlock> };
+type DamVideoBlockControls = "autoplay" | "showControls" | "loop";
+
+// The controls and the preview image are missing when they're disabled
+export type DamVideoBlockState = Omit<DamVideoBlockData, "previewImage" | DamVideoBlockControls> &
+    Partial<Pick<DamVideoBlockData, DamVideoBlockControls>> & { previewImage?: BlockState<typeof PixelImageBlock> };
 
 /**
  * What the editor can set besides the video file itself. Disable anything the site implementation doesn't use.
@@ -65,7 +69,11 @@ export const createDamVideoBlock = (
 
         displayName: <FormattedMessage id="dextinity.blocks.damVideo" defaultMessage="Video (CMS Asset)" />,
 
-        defaultValues: () => ({ showControls: true, ...(supportsPreviewImage ? { previewImage: PixelImageBlock.defaultValues() } : {}) }),
+        defaultValues: () => ({
+            damFile: null,
+            ...(supportsControls ? { autoplay: null, loop: null, showControls: true } : {}),
+            ...(supportsPreviewImage ? { previewImage: PixelImageBlock.defaultValues() } : {}),
+        }),
 
         category: BlockCategory.Media,
 
@@ -76,7 +84,7 @@ export const createDamVideoBlock = (
 
         state2Output: (state) => {
             const output = {
-                damFileId: state.damFile?.id,
+                damFileId: state.damFile?.id ?? null,
                 ...(supportsPreviewImage && state.previewImage ? { previewImage: PixelImageBlock.state2Output(state.previewImage) } : {}),
                 ...(supportsControls ? { autoplay: state.autoplay, loop: state.loop, showControls: state.showControls } : {}),
             };
@@ -88,6 +96,7 @@ export const createDamVideoBlock = (
         output2State: async (output, context) => {
             if (!output.damFileId) {
                 return {
+                    damFile: null,
                     autoplay: output.autoplay,
                     loop: output.loop,
                     showControls: output.showControls,
@@ -116,7 +125,7 @@ export const createDamVideoBlock = (
 
             // TODO consider throwing an error
             // TODO fix typing: generated GraphQL files use null, we use undefined, e.g. title: string | null vs title?: string
-            const damFile = data?.damFile as unknown as DamVideoBlockData["damFile"];
+            const damFile = (data?.damFile ?? null) as unknown as DamVideoBlockData["damFile"];
 
             return {
                 damFile,
@@ -165,7 +174,7 @@ export const createDamVideoBlock = (
             const replacement = replacements.find((replacement) => replacement.type === "DamFile" && replacement.originalId === output.damFileId);
 
             if (replacement) {
-                clonedOutput.damFileId = replacement.replaceWithId;
+                clonedOutput.damFileId = replacement.replaceWithId ?? null;
             }
 
             if (supportsPreviewImage) {

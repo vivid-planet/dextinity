@@ -22,9 +22,11 @@ export class SeoBlockFixtureService {
             openGraphTitle: faker.word.words(2),
             openGraphDescription: faker.word.words(20),
             openGraphImage: { block: await this.pixelImageBlockFixtureService.generateBlockInput(), visible: faker.datatype.boolean() },
+            structuredData: null,
             noIndex: faker.datatype.boolean(),
             priority: faker.helpers.arrayElement(Object.values(SitemapPagePriority)),
             changeFrequency: faker.helpers.arrayElement(Object.values(SitemapPageChangeFrequency)),
+            canonicalUrl: null,
             alternativeLinks,
         };
     }

@@ -1,5 +1,5 @@
 import { Expose, Transform } from "class-transformer";
-import { IsBoolean, IsOptional, IsUUID } from "class-validator";
+import { IsBoolean, IsUUID } from "class-validator";
 
 import {
     type Block,
@@ -20,6 +20,7 @@ import { AnnotationBlockMeta, BlockField } from "../../../blocks/decorators/fiel
 import type { BlockFactoryNameOrOptions } from "../../../blocks/factories/types.js";
 import type { MigrateVendorOptions } from "../../../blocks/migrations/types.js";
 import { typeSafeBlockMigrationPipe } from "../../../blocks/migrations/typeSafeBlockMigrationPipe.js";
+import { IsNullable } from "../../../common/validators/is-nullable.js";
 import { DamFileAiContentType } from "../../files/entities/ai-content-type.enum.js";
 import { FILE_ENTITY } from "../../files/entities/file.entity.js";
 import { PixelImageBlock } from "../pixel-image.block.js";
@@ -45,18 +46,18 @@ interface CreateDamVideoBlockOptions {
 }
 
 export interface DamVideoBlockDataInterface extends BlockDataInterface {
-    damFileId?: string;
-    autoplay?: boolean;
-    showControls?: boolean;
-    loop?: boolean;
+    damFileId: string | null;
+    autoplay?: boolean | null;
+    showControls?: boolean | null;
+    loop?: boolean | null;
     previewImage?: BlockDataInterface;
 }
 
 interface DamVideoBlockInputInterface extends SimpleBlockInputInterface {
-    damFileId?: string;
-    autoplay?: boolean;
-    showControls?: boolean;
-    loop?: boolean;
+    damFileId: string | null;
+    autoplay?: boolean | null;
+    showControls?: boolean | null;
+    loop?: boolean | null;
     previewImage?: ExtractBlockInput<typeof PixelImageBlock>;
 }
 
@@ -75,13 +76,13 @@ export function createDamVideoBlock(
     const migrate = typeof nameOrOptions === "string" ? undefined : nameOrOptions.migrate;
 
     class DamVideoBlockData extends BlockData {
-        damFileId?: string;
+        damFileId: string | null = null;
 
-        autoplay?: boolean;
+        autoplay?: boolean | null;
 
-        showControls?: boolean;
+        showControls?: boolean | null;
 
-        loop?: boolean;
+        loop?: boolean | null;
 
         previewImage?: BlockDataInterface;
 
@@ -90,7 +91,7 @@ export function createDamVideoBlock(
         }
 
         indexData(): BlockIndexData {
-            if (this.damFileId === undefined) {
+            if (!this.damFileId) {
                 return {};
             }
 
@@ -106,17 +107,17 @@ export function createDamVideoBlock(
     }
 
     class DamVideoBlockInput extends BlockInput {
-        autoplay?: boolean;
+        autoplay?: boolean | null;
 
-        showControls?: boolean;
+        showControls?: boolean | null;
 
-        loop?: boolean;
+        loop?: boolean | null;
 
         previewImage?: ExtractBlockInput<typeof PixelImageBlock>;
 
-        @IsOptional()
+        @IsNullable()
         @IsUUID()
-        damFileId?: string;
+        damFileId: string | null;
 
         transformToBlockData(): BlockDataInterface {
             const data = new DamVideoBlockData();
@@ -145,7 +146,7 @@ export function createDamVideoBlock(
 
             BlockField({ type: "boolean", nullable: true })(DamVideoBlockInput.prototype, field);
             IsBoolean()(DamVideoBlockInput.prototype, field);
-            IsOptional()(DamVideoBlockInput.prototype, field);
+            IsNullable()(DamVideoBlockInput.prototype, field);
         }
     }
 

@@ -19,7 +19,7 @@ export function ChildBlock(block: Block, options?: ChildBlockOptions): PropertyD
         BlockField({ type: "block", block, nullable })(target, key);
         Transform(
             ({ value }) =>
-                isBlockDataInterface(value) ? value : nullable && (value === undefined || value === null) ? undefined : block.blockDataFactory(value),
+                isBlockDataInterface(value) ? value : nullable && (value === undefined || value === null) ? null : block.blockDataFactory(value),
             {
                 toClassOnly: true,
             },

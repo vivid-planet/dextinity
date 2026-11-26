@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsUUID } from "class-validator";
+import { IsString, IsUUID } from "class-validator";
 
 import {
     BlockData,
@@ -10,23 +10,24 @@ import {
     createBlock,
 } from "../../blocks/block.js";
 import { AnnotationBlockMeta, BlockField } from "../../blocks/decorators/field.js";
+import { IsNullable } from "../../common/validators/is-nullable.js";
 import { PAGE_TREE_ENTITY } from "../page-tree.constants.js";
 import { PageExists } from "../validators/page-exists.validator.js";
 import { InternalLinkBlockTransformerService } from "./internal-link-block-transformer.service.js";
 import { InternalLinkBlockWarningsService } from "./internal-link-block-warnings.service.js";
 
 class InternalLinkBlockData extends BlockData {
-    targetPageId?: string;
+    targetPageId: string | null = null;
 
-    @BlockField({ nullable: true })
-    targetPageAnchor?: string;
+    @BlockField({ type: "string", nullable: true })
+    targetPageAnchor: string | null;
 
     async transformToPlain() {
         return InternalLinkBlockTransformerService;
     }
 
     indexData(): BlockIndexData {
-        if (this.targetPageId === undefined) {
+        if (!this.targetPageId) {
             return {};
         }
 
@@ -46,16 +47,16 @@ class InternalLinkBlockData extends BlockData {
 }
 
 class InternalLinkBlockInput extends BlockInput {
-    @BlockField({ nullable: true })
-    @IsOptional()
+    @BlockField({ type: "string", nullable: true })
+    @IsNullable()
     @IsUUID()
     @PageExists()
-    targetPageId?: string;
+    targetPageId: string | null;
 
-    @BlockField({ nullable: true })
-    @IsOptional()
+    @BlockField({ type: "string", nullable: true })
+    @IsNullable()
     @IsString()
-    targetPageAnchor?: string;
+    targetPageAnchor: string | null;
 
     transformToBlockData(): InternalLinkBlockData {
         return blockInputToData(InternalLinkBlockData, this);

@@ -20,7 +20,7 @@ Use this table to determine whether a migration is needed for a given change.
 | ------------------------------------------------------------------------------------------------------------- | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Add a required field** (string, number, enum, boolean)                                                      | Yes               | Existing data lacks the field; the API validator rejects it. A default value must be injected.                                                                                                |
 | **Add a required child block**                                                                                | Yes               | Existing data lacks the field; the block expects a structural object (e.g., empty RichTextBlock).                                                                                             |
-| **Add an optional/nullable field**                                                                            | No                | `@IsUndefinable()` + `@BlockField({ nullable: true })` allows `undefined`. Existing data is valid.                                                                                            |
+| **Add an optional/nullable field**                                                                            | Yes               | Existing data lacks the field, but an optional field is always present with `null`. Inject `null`.                                                                                            |
 | **Remove a field or child block**                                                                             | Recommended       | Old data still contains the field. A migration keeps persisted data clean (not strictly required).                                                                                            |
 | **Change a field's type** (e.g., string → RichText)                                                           | Yes               | Existing data has the old type; the new block definition rejects it.                                                                                                                          |
 | **Rename a field**                                                                                            | Yes               | Existing data uses the old key name; the new key would be empty.                                                                                                                              |
@@ -137,6 +137,7 @@ Use these defaults when a migration injects a new field into existing data.
 | Enum                        | The default enum value as a plain string (e.g., `"primary"`)                                                                                                    |
 | Number                      | The logical default (e.g., `50`)                                                                                                                                |
 | Boolean                     | `false`                                                                                                                                                         |
+| Optional field (any type)   | `null`                                                                                                                                                          |
 | RichTextBlock (empty)       | `{ draftContent: { blocks: [], entityMap: {} } }`                                                                                                               |
 | RichTextBlock (from string) | `{ draftContent: { blocks: [{ key: uuid(), text: oldValue, type: "unstyled", depth: 0, inlineStyleRanges: [], entityRanges: [], data: {} }], entityMap: {} } }` |
 | Child block (empty)         | `{}` -- an empty object representing the block's default state                                                                                                  |
@@ -302,6 +303,8 @@ export const HeadlineBlock = createBlock(HeadlineBlockData, HeadlineBlockInput, 
     },
 });
 ```
+
+An **optional** field is added the same way, with `null` instead of a default value: `return { ...from, subtitle: null };`.
 
 ---
 

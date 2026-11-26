@@ -1,20 +1,21 @@
-import { IsOptional, IsString, Matches } from "class-validator";
+import { IsString, Matches } from "class-validator";
 
+import { IsNullable } from "../common/validators/is-nullable.js";
 import { BaseVideoBlockData, BaseVideoBlockInput } from "./base-video-block.js";
 import { type BlockDataInterface, blockInputToData, createBlock } from "./block.js";
 import { BlockField } from "./decorators/field.js";
 
 class VimeoVideoBlockData extends BaseVideoBlockData {
-    @BlockField({ nullable: true })
-    vimeoIdentifier?: string;
+    @BlockField({ type: "string", nullable: true })
+    vimeoIdentifier: string | null;
 }
 
 class VimeoVideoBlockInput extends BaseVideoBlockInput {
-    @IsOptional()
+    @IsNullable()
     @IsString()
     @Matches(/^(https?:\/\/)?((www\.|player\.)?vimeo\.com\/?(showcase\/)*([0-9a-z]*\/)*([0-9]{6,11})[?]?.*)$|^([0-9]{6,11})$/)
-    @BlockField({ nullable: true })
-    vimeoIdentifier?: string;
+    @BlockField({ type: "string", nullable: true })
+    vimeoIdentifier: string | null;
 
     transformToBlockData(): BlockDataInterface {
         return blockInputToData(VimeoVideoBlockData, this);

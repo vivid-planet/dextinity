@@ -1,10 +1,7 @@
 import { CurrentUserContext, type CurrentUserInterface } from "@dextinity/cms-admin";
 import { renderAdmin } from "@src/testing/renderAdmin";
 import { fireEvent, screen } from "@testing-library/react";
-import { HTML5toTouch } from "rdndmb-html5-to-touch";
 import { type ReactNode, useState } from "react";
-import { useDragDropManager } from "react-dnd";
-import { DndProvider } from "react-dnd-multi-backend";
 import { useLocation, useNavigate } from "react-router";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -44,21 +41,6 @@ const topMenuPath = "/main/en/pages/pagetree/top-menu";
 function OpenTopMenuButton() {
     const navigate = useNavigate();
     return <button onClick={() => navigate(topMenuPath)}>Open top menu</button>;
-}
-
-type DragDropManager = ReturnType<typeof useDragDropManager>;
-
-const reactDndGlobalInstanceKey = Symbol.for("__REACT_DND_CONTEXT_INSTANCE__");
-
-function getReactDndGlobalInstance() {
-    return (window as unknown as Record<symbol, { dragDropManager: DragDropManager } | null | undefined>)[reactDndGlobalInstanceKey];
-}
-
-let adminDragDropManager: DragDropManager | undefined;
-
-function CaptureDragDropManager() {
-    adminDragDropManager = useDragDropManager();
-    return null;
 }
 
 function createTool(name: string, handler: AiModeTool["handler"] = () => name): AiModeTool {
@@ -104,34 +86,19 @@ function getRegisteredTools() {
     return bridge.registerHostTools.mock.lastCall?.[0] as Array<{ name: string; handler: (args: Record<string, unknown>) => unknown }>;
 }
 
-// Unmounts the flyout alone, as closing it does, while the admin's DndProvider stays.
-function RemovableFlyout() {
-    const [isMounted, setIsMounted] = useState(true);
-
-    return (
-        <>
-            {isMounted && <AiModeFlyout />}
-            <button onClick={() => setIsMounted(false)}>Remove flyout</button>
-        </>
-    );
-}
-
-function renderFlyout({ isStrictMode = false, beforeFlyout }: { isStrictMode?: boolean; beforeFlyout?: ReactNode } = {}) {
+function renderFlyout({ beforeFlyout }: { beforeFlyout?: ReactNode } = {}) {
     return renderAdmin(
         <CurrentUserContext.Provider value={{ currentUser, isAllowed: () => true }}>
-            <DndProvider options={HTML5toTouch}>
-                <CaptureDragDropManager />
-                <AiModeProvider isEnabled isAvailable>
-                    <AiModeToolset id="pageTree" description="The page tree" tools={[createTool("open_page_tree_node")]}>
-                        {beforeFlyout}
-                        <RemovableFlyout />
-                        <OpenTopMenuButton />
-                        <OpenablePage />
-                    </AiModeToolset>
-                </AiModeProvider>
-            </DndProvider>
+            <AiModeProvider isEnabled isAvailable>
+                <AiModeToolset id="pageTree" description="The page tree" tools={[createTool("open_page_tree_node")]}>
+                    {beforeFlyout}
+                    <AiModeFlyout />
+                    <OpenTopMenuButton />
+                    <OpenablePage />
+                </AiModeToolset>
+            </AiModeProvider>
         </CurrentUserContext.Provider>,
-        { route: "/main/en/pages/pagetree/main-navigation", isStrictMode },
+        { route: "/main/en/pages/pagetree/main-navigation" },
     );
 }
 
@@ -170,7 +137,6 @@ describe("AiModeFlyout", () => {
         localStorage.clear();
         document.getElementById(scriptSrc)?.remove();
         vi.useRealTimers();
-        delete (window as unknown as Record<symbol, unknown>)[reactDndGlobalInstanceKey];
     });
 
     it("points the chat at the AI Hub proxy of the API, with the widget and the current user", () => {
@@ -296,28 +262,6 @@ describe("AiModeFlyout", () => {
 
         expect(bridge.setContext).toHaveBeenLastCalledWith(expect.objectContaining({ selection: null }));
         input.remove();
-    });
-
-    // The chat's own react-dnd reuses the manager it finds on the window, and the admin's DndProvider takes it away again
-    // when StrictMode runs its effects twice.
-    it("shares the admin's drag and drop manager with the chat while it is open, also in StrictMode", () => {
-        renderFlyout({ isStrictMode: true });
-
-        expect(getReactDndGlobalInstance()?.dragDropManager).toBe(adminDragDropManager);
-
-        fireEvent.click(screen.getByRole("button", { name: "Remove flyout" }));
-
-        expect(getReactDndGlobalInstance()).toBeFalsy();
-    });
-
-    it("leaves a drag and drop manager on the window that something else put there", () => {
-        renderFlyout({ isStrictMode: true });
-        const otherInstance = { dragDropManager: {} as DragDropManager };
-        (window as unknown as Record<symbol, unknown>)[reactDndGlobalInstanceKey] = otherInstance;
-
-        fireEvent.click(screen.getByRole("button", { name: "Remove flyout" }));
-
-        expect(getReactDndGlobalInstance()).toBe(otherInstance);
     });
 
     it("tells the user that the chat couldn't be loaded when its script fails", () => {

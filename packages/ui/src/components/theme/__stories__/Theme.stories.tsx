@@ -59,7 +59,7 @@ export const Original: Story = {
 };
 
 /**
- * Vivid Planet: the sky blue and gray of Vivid Planet with Montserrat, and an aurora gradient from blue into violet.
+ * Vivid Planet: the sky blue and gray of Vivid Planet with Montserrat, and an aurora of blues.
  */
 export const VividPlanet: Story = {
     args: { brand: "vivid-planet" },

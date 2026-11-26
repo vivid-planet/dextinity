@@ -121,70 +121,18 @@
     background: var(--dextinity-color-accent);
 }
 
-// Scrolls on a low window: the view has more settings than fit beside the canvas
+// Only the popover scrolls, on a low window
 .viewBody {
-    display: grid;
-    gap: 14px;
     // The popover is at most 360px wide including its padding, as with the viewport's
     inline-size: min(330px, calc(100vw - 64px));
-    max-block-size: min(70vh, 640px);
-    overflow-y: auto;
-    padding-inline-end: 4px;
+    // The segmented controls keep their options measurable beside them, out of view
+    overflow-x: clip;
 }
 
-.viewPresets {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-}
-
-.presetChip {
-    position: relative;
-    display: inline-flex;
-}
-
-.presetRemove {
-    position: absolute;
-    inset-block-start: -6px;
-    inset-inline-end: -6px;
+.viewPanel {
     display: grid;
-    place-items: center;
-    inline-size: 16px;
-    block-size: 16px;
-    padding: 0;
-    border: 0;
-    border-radius: 50%;
-    background: var(--dextinity-color-text-subtle);
-    color: var(--dextinity-color-surface);
-    font-size: 11px;
-    line-height: 1;
-    cursor: pointer;
-}
-
-.savePreset {
-    display: flex;
-    gap: 6px;
-}
-
-.presetInput {
-    flex: 1;
-    min-inline-size: 0;
-    padding: 4px 8px;
-    border: var(--dextinity-line-width) solid var(--dextinity-color-line-strong);
-    border-radius: 6px;
-    background: var(--dextinity-color-surface);
-    color: inherit;
-    font: inherit;
-    font-size: 12px;
-}
-
-.viewSection {
-    margin: 4px 0 0;
-    color: var(--dextinity-color-text-subtle);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    gap: 14px;
+    padding-block-start: 14px;
 }
 
 .guideKey {

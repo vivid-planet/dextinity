@@ -15,16 +15,23 @@ export const textLengthSetting = createToolbarSetting<TextLength>({
 });
 
 const growth: Record<TextLength, number> = { normal: 0, longer: 0.4, longest: 1 };
-const accented: Record<string, string> = { a: "á", e: "é", i: "í", o: "ö", u: "ü", A: "Á", E: "É", O: "Ö", U: "Ü", n: "ñ", c: "ç", s: "š" };
+const loremIpsum =
+    "lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat".split(
+        " ",
+    );
 
-// Accented letters show at a glance that a text was lengthened, the dots how much was added
+// Placeholder words rather than repeated characters, so the lengthened text wraps and breaks like a real translation
 function lengthen(text: string, factor: number) {
     const trimmed = text.trim();
     if (trimmed.length < 2 || !/[A-Za-z]/.test(trimmed)) {
         return text;
     }
     const added = Math.ceil(trimmed.length * factor);
-    return `${text.replace(/[aeiouAEOUncs]/g, (letter) => accented[letter] ?? letter).trimEnd()} ${"·".repeat(Math.max(1, added - 1))}${text.endsWith(" ") ? " " : ""}`;
+    let filler = loremIpsum[0];
+    for (let index = 1; filler.length + 1 < added; index++) {
+        filler += ` ${loremIpsum[index % loremIpsum.length]}`;
+    }
+    return `${text.trimEnd()} ${filler}${text.endsWith(" ") ? " " : ""}`;
 }
 
 type LengthenedTexts = WeakMap<Text, { original: string; lengthened: string }>;

@@ -45,7 +45,7 @@ useAiModeDataGridToolset({
 
 A page that edits a blocks block outside a form, such as the content of a page, offers the same block editing with `createAiModeEditBlocksTool`, and reports the blocks with `summarizeBlockStateForAiMode`.
 
-The page tree registers its own toolset. `MasterMenuRoutes` registers the toolset of the admin, which lets the agent open the pages of the master menu the user may open from any page, and the editor of a page tree node if the page tree config has its path:
+The page tree registers its own toolset. `MasterMenuRoutes` registers the toolset of the admin's navigation, which lets the agent open the pages of the master menu the user may open from any page, and the editor of a page tree node if the page tree config has its path:
 
 ```tsx
 <DextinityConfigProvider

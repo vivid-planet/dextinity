@@ -307,11 +307,11 @@ describe("MasterMenuRoutes", () => {
         consoleError.mockRestore();
     });
 
-    it("should register the AI Mode toolset of the admin, which opens the pages of the menu", async () => {
+    it("should register the AI Mode toolset of the admin's navigation, which opens the pages of the menu", async () => {
         renderInScope("/main/en/products/5/edit");
 
         await screen.findByText(/^Products:/);
-        const toolset = aiModeToolsetsStore?.getToolsets().find(({ id }) => id === "admin");
+        const toolset = aiModeToolsetsStore?.getToolsets().find(({ id }) => id === "adminNavigation");
         expect(toolset?.context).toEqual({ openPage: { path: "/products", label: "Products › Products" } });
         expect(toolset?.tools?.map(({ name }) => name)).toEqual(["open_admin_page"]);
     });

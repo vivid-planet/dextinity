@@ -2,7 +2,7 @@ import type { AiModeTool } from "./AiModeToolsets";
 
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-/** The tools that open a node of the page tree, for the admin's toolset on every page, so that the agent opens a page's editor in one step. */
+/** The tools that open a node of the page tree, for the admin's navigation toolset on every page, so that the agent opens a page's editor in one step. */
 export const createPageTreeNavigationTools = ({
     categories,
     getEditPath,

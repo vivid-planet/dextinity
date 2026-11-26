@@ -1,7 +1,15 @@
+// The brands with a logo of their own; any other brand shows the Dextinity logo
+$brands: "ai-hub", "groupcms-ai", "vivid-planet";
+$dark: '[data-dextinity-color-scheme="dark"], [data-dextinity-color-scheme="high-contrast"]';
+
 .root {
     display: inline-flex;
     block-size: 100%;
     align-items: center;
+
+    img {
+        display: none;
+    }
 }
 
 .positive,
@@ -9,43 +17,46 @@
     block-size: 100%;
 }
 
-.negative,
-.groupCmsAi {
-    display: none;
-}
-
-:where([data-dextinity-color-scheme="dark"], [data-dextinity-color-scheme="high-contrast"]) .root {
-    .dextinity.positive {
-        display: none;
-    }
-
-    .dextinity.negative {
-        display: block;
-    }
-}
-
-:where([data-dextinity-brand="groupcms-ai"]) .root {
-    .dextinity,
-    .dextinity.negative {
-        display: none;
-    }
-
-    .groupCmsAi.positive,
-    .groupCmsAi.sign {
-        display: block;
-    }
-}
-
-:where([data-dextinity-brand="groupcms-ai"]):where([data-dextinity-color-scheme="dark"], [data-dextinity-color-scheme="high-contrast"]) .root {
-    .groupCmsAi.positive {
-        display: none;
-    }
-
-    .groupCmsAi.negative {
-        display: block;
-    }
-}
-
 .sign {
     block-size: 28px;
+}
+
+.root > [data-logo-brand="dextinity"]:is(.positive, .sign) {
+    display: block;
+}
+
+:where(#{$dark}) .root > [data-logo-brand="dextinity"] {
+    &.positive {
+        display: none;
+    }
+
+    &.negative {
+        display: block;
+    }
+}
+
+@each $brand in $brands {
+    :where([data-dextinity-brand="#{$brand}"]) .root {
+        > [data-logo-brand="dextinity"] {
+            &.positive,
+            &.negative,
+            &.sign {
+                display: none;
+            }
+        }
+
+        > [data-logo-brand="#{$brand}"]:is(.positive, .sign) {
+            display: block;
+        }
+    }
+
+    :where([data-dextinity-brand="#{$brand}"]):where(#{$dark}) .root > [data-logo-brand="#{$brand}"] {
+        &.positive {
+            display: none;
+        }
+
+        &.negative {
+            display: block;
+        }
+    }
 }

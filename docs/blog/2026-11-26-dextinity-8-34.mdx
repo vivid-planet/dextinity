@@ -1,0 +1,56 @@
+---
+slug: dextinity-8-34
+title: "Dextinity 8.34: Manually assigned content scopes stay manual"
+description: Dextinity 8.34 keeps a manually assigned content scope that a rule also grants, so it stays removable and survives the next edit, and adds a query that returns both lists.
+authors: [dextinity]
+tags: [release]
+image: /img/blog/release-8-34/dextinity-8-34-poster.jpg
+---
+
+<video
+    src="/img/blog/release-8-34/dextinity-8-34.mp4"
+    poster="/img/blog/release-8-34/dextinity-8-34-poster.jpg"
+    autoPlay
+    muted
+    loop
+    playsInline
+    controls
+    style={{ width: "100%", borderRadius: 12 }}
+/>
+
+Dextinity 8.34 is a maintenance release for projects on version 8, whose packages are still published as `@comet/*`. It fixes how the user permissions admin handles a content scope that was assigned manually and is also granted by a rule: the scope now stays manual, can be removed, and is no longer lost when you edit other scopes.
+
+<!-- truncate -->
+
+## Highlights
+
+### Manually assigned content scopes stay manual
+
+You'll find this under **User Permissions** → a user → **Permissions** → **Assigned scopes**. A user's content scopes come from two sources: rules in your `AccessControlService` and scopes an admin assigns manually in this grid.
+
+When a scope was both assigned manually and granted by a rule, the grid showed it as "By rule" without a delete button. Worse, the scope was silently dropped from the manual assignments as soon as an admin added or removed another scope. If the rule was removed later, the user lost the scope entirely. The admin derived the manual scopes by subtracting the rule-based scopes from all scopes, and that loses a scope that is in both lists.
+
+Such a scope now shows as "Manual", can be removed, and stays assigned when you edit other scopes. There's nothing to configure: update `@comet/cms-api` and `@comet/cms-admin`.
+
+<video src="/img/blog/release-8-34/content-scopes.mp4" autoPlay muted loop playsInline controls style={{ width: "100%", borderRadius: 12 }} />
+
+![Before: Comet Site Main was added manually but still says "By rule" and has no delete button. After: it shows as "Manual" with a delete button and stays assigned after another scope is added.](/img/blog/release-8-34/content-scopes.webp)
+
+Behind the fix, the API returns both lists directly. If your own code reads a user's content scopes, use the new query `userPermissionsAssignedContentScopes`:
+
+```graphql
+query AssignedContentScopes($userId: String!) {
+    userPermissionsAssignedContentScopes(userId: $userId) {
+        byRule
+        manual
+    }
+}
+```
+
+`userPermissionsContentScopes` is deprecated and will be removed in a future major version. [#7551](https://github.com/vivid-planet/dextinity/pull/7551)
+
+## Dependency updates
+
+This release contains no dependency updates.
+
+All changes are in the [release notes on GitHub](https://github.com/vivid-planet/dextinity/releases/tag/v8.34.0).

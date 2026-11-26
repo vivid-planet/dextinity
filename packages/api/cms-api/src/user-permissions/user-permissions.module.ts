@@ -5,6 +5,7 @@ import { APP_GUARD } from "@nestjs/core";
 import { registerEnumType } from "@nestjs/graphql";
 
 import { UserPermissionsGuard } from "./auth/user-permissions.guard.js";
+import { ContentScopeService } from "./content-scope.service.js";
 import { UserContentScopes } from "./entities/user-content-scopes.entity.js";
 import { UserPermission } from "./entities/user-permission.entity.js";
 import { UserResolver } from "./user.resolver.js";
@@ -31,12 +32,13 @@ import {
         UserResolver,
         UserPermissionResolver,
         UserContentScopesResolver,
+        ContentScopeService,
         {
             provide: APP_GUARD,
             useClass: UserPermissionsGuard,
         },
     ],
-    exports: [ACCESS_CONTROL_SERVICE, UserPermissionsService, UserPermissionsPublicService],
+    exports: [ContentScopeService, ACCESS_CONTROL_SERVICE, UserPermissionsService, UserPermissionsPublicService],
 })
 export class UserPermissionsModule {
     static forRoot({ AppPermission, ...options }: UserPermissionsModuleSyncOptions): DynamicModule {

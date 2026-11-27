@@ -39,6 +39,7 @@ import { buildPageTree, getPrototypePageNodeId } from "./prototypePageTree";
 import { workspacePrototypes } from "./prototypes";
 import { type InspectedComponent, useCanvasInspector } from "./useCanvasInspector";
 import { useFramePage } from "./useFramePage";
+import { usePopupOpen } from "./usePopupOpen";
 import { ViewMenu } from "./ViewMenu";
 import { WorkspaceGuide } from "./WorkspaceGuide";
 import { workspaceLogo } from "./workspaceLogo";
@@ -320,7 +321,7 @@ export function WorkspaceShell() {
     const currentPrototype = prototypes.find((story) => story.id === prototypeId);
 
     const customPages = customPageList.useItems();
-    const [newPageMenuOpen, setNewPageMenuOpen] = useState(false);
+    const [newPageMenuOpen, setNewPageMenuOpen] = usePopupOpen();
     const prototypeTrees = useMemo(
         () =>
             prototypes.map((story) => {

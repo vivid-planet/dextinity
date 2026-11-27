@@ -13,6 +13,7 @@ import { scenarioSetting } from "../scenario";
 import { textLengthSetting } from "../textLength";
 import { tokenOverrideList } from "./tokenPlayground";
 import { TokenSliders } from "./TokenSliders";
+import { usePopupOpen } from "./usePopupOpen";
 import styles from "./WorkspaceToolbarControls.module.scss";
 
 const viewSettings = [
@@ -45,7 +46,7 @@ function useViewChanged() {
 
 /** How the prototype is shown: its theme, color scheme, density, content, and text length, and the theme's tokens. */
 export function ViewMenu() {
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = usePopupOpen();
     const [tab, setTab] = useState<ViewTab>("settings");
     const changed = useViewChanged();
     const values = useViewValues();

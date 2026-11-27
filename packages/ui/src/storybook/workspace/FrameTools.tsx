@@ -1,7 +1,7 @@
 import { type RefObject, useEffect, useMemo, useRef, useState } from "react";
 
 import { composite, contrastRatio, getBackgroundBehind, toRgba } from "./frameColor";
-import { findElementByPath, type FrameRect, getFrameRect, useFrameDocument } from "./frameElements";
+import { type FrameRect, getFrameRect, useFrameDocument } from "./frameElements";
 import { HotspotLayer, type NoteFocusRequest, NoteLayer, type NotePage, TextLayer } from "./FrameNotes";
 import { createTokenLookup } from "./frameTokens";
 import styles from "./FrameTools.module.scss";
@@ -193,20 +193,9 @@ const blockedEvents = ["click", "pointerdown", "mousedown", "pointerup", "mouseu
  * Measures the page in the frame: the element under the pointer shows its size, a click selects it and lists its spacing,
  * font, and colors with the matching theme tokens, and pointing at another element then shows the distances between both.
  */
-function MeasureLayer({
-    frameDocument,
-    scale,
-    initialPath,
-    onExit,
-}: {
-    frameDocument: Document;
-    scale: number;
-    /** An element to start with, e.g. the one double clicked while clicking through. */
-    initialPath?: number[];
-    onExit: () => void;
-}) {
+function MeasureLayer({ frameDocument, scale, onExit }: { frameDocument: Document; scale: number; onExit: () => void }) {
     const [hovered, setHovered] = useState<Element | null>(null);
-    const [selected, setSelected] = useState<Element | null>(() => (initialPath ? findElementByPath(frameDocument, initialPath) : null));
+    const [selected, setSelected] = useState<Element | null>(null);
     const exitRef = useRef(onExit);
     exitRef.current = onExit;
 
@@ -541,14 +530,12 @@ export function FrameTools({
     frameLoadCount,
     scale,
     notePage,
-    measuredPath,
     focusRequest,
     onFocusHandled,
     onExit,
 }: {
     tool: FrameTool;
     notePage: NotePage;
-    measuredPath?: number[];
     /** A note or text change the sidebar asked to show, for the `comment` and `text` tools. */
     focusRequest: NoteFocusRequest | null;
     onFocusHandled: () => void;
@@ -568,7 +555,7 @@ export function FrameTools({
     }
     switch (tool) {
         case "measure":
-            return <MeasureLayer frameDocument={frameDocument} scale={scale} initialPath={measuredPath} onExit={onExit} />;
+            return <MeasureLayer frameDocument={frameDocument} scale={scale} onExit={onExit} />;
         case "accessibility":
             return <AccessibilityLayer frameDocument={frameDocument} scale={scale} tick={tick} />;
         case "comment":

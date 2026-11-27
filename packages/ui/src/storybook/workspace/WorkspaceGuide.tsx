@@ -6,7 +6,7 @@ import { Popover } from "../../components/popover/Popover";
 import styles from "./WorkspaceToolbarControls.module.scss";
 
 const modes = [
-    { key: "1", name: "Prototype", description: "Click through and show it, with as much room as possible. Double click an element to inspect it." },
+    { key: "1", name: "Prototype", description: "Click through and show it, with as much room as possible." },
     {
         key: "2",
         name: "Inspect",

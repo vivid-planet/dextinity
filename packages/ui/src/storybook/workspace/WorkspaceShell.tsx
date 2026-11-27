@@ -30,7 +30,6 @@ import { CompareCanvas } from "./CompareCanvas";
 import { getComponentStoryIds, type IndexedStory } from "./componentStories";
 import { flowEdgeList } from "./flowEdges";
 import { FlowMap } from "./FlowMap";
-import { getElementPath } from "./frameElements";
 import type { NotePage } from "./FrameNotes";
 import { type FrameTool, FrameTools } from "./FrameTools";
 import { hotspotList } from "./hotspots";
@@ -242,8 +241,6 @@ export function WorkspaceShell() {
     const [frameLoadCount, setFrameLoadCount] = useState(0);
     // Shows only the prototype, without the workspace around it, e.g. to walk stakeholders through it
     const [presenting, setPresenting] = useState(false);
-    // An element to measure right away, chosen with a double click while clicking through
-    const [measuredPath, setMeasuredPath] = useState<number[] | null>(null);
     // The stories opened before the current one, most recent last, to go back to the page a component was picked on
     const [storyHistory, setStoryHistory] = useState<HistoryEntry[]>([]);
     // The prototype's page to open the frame on; the prototype keeps the page it navigates to in the frame's hash
@@ -253,8 +250,6 @@ export function WorkspaceShell() {
     const storybookFrameRef = useRef<HTMLIFrameElement>(null);
     const storybookPage = useStorybookPage();
     const framePage = useFramePage(frameRef, frameLoadCount);
-    // The element's path belongs to the page it was double clicked on
-    useEffect(() => setMeasuredPath(null), [framePage.hash]);
     const canvasSize = useElementSize(canvasElement);
     const narrow = useMediaQuery(narrowQuery);
     // On a narrow screen, the prototypes cover the canvas, so they start closed and close again once a page is picked
@@ -292,7 +287,6 @@ export function WorkspaceShell() {
         isPrototypeMode && !isComparing && activeTool && activeTool !== "component" && activeTool !== "map" ? activeTool : null;
 
     function setTool(tool: WorkspaceTool | null) {
-        setMeasuredPath(null);
         // The flow map takes the single frame's place; the frame opens again on the page it was left on
         if (tool === "map" && isSingleFrame) {
             setPrototypeStartPage(framePage.hash);
@@ -303,7 +297,6 @@ export function WorkspaceShell() {
     }
 
     function changeIntent(next: WorkspaceIntent) {
-        setMeasuredPath(null);
         // Only the single frame knows its page; the flow map, comparing, and Library keep it in the start page already
         if (isSingleFrame) {
             setPrototypeStartPage(framePage.hash);
@@ -461,7 +454,6 @@ export function WorkspaceShell() {
             return;
         }
         setOverlayPanelOpen(false);
-        setMeasuredPath(null);
         // A page picked in the list opens in the frame, also from the flow map
         if (showingFlow) {
             setTool(null);
@@ -534,7 +526,6 @@ export function WorkspaceShell() {
             setTool(activeTool === tool ? null : tool);
             return;
         }
-        setMeasuredPath(null);
         // Only the single frame knows its page; the next mode's view opens on it
         if (isSingleFrame) {
             setPrototypeStartPage(framePage.hash);
@@ -589,27 +580,6 @@ export function WorkspaceShell() {
         );
         documents.forEach((target) => target.addEventListener("keydown", handleKey));
         return () => documents.forEach((target) => target.removeEventListener("keydown", handleKey));
-    });
-
-    // A double click on an element while clicking through opens it in Inspect, measured
-    useEffect(() => {
-        const frameDocument = frameRef.current?.contentDocument;
-        if (!isPrototypeMode || intent !== "prototype" || presenting || !frameDocument) {
-            return;
-        }
-        const handleDoubleClick = (event: MouseEvent) => {
-            const target = event.target as Element | null;
-            // A double click in a field selects a word, one on a control uses it twice; neither asks to inspect
-            if (target?.nodeType !== Node.ELEMENT_NODE || isTyping(target) || target.closest('a, button, [role="button"], [role="link"], label')) {
-                return;
-            }
-            setMeasuredPath(getElementPath(target));
-            setPrototypeStartPage(framePage.hash);
-            // Measured in the single frame, also when comparing was on in Inspect before
-            updateState({ intent: "inspect", compare: "off", intentTools: { ...state.intentTools, inspect: "measure" } });
-        };
-        frameDocument.addEventListener("dblclick", handleDoubleClick);
-        return () => frameDocument.removeEventListener("dblclick", handleDoubleClick);
     });
 
     function goBack() {
@@ -1094,7 +1064,6 @@ export function WorkspaceShell() {
                                             frameLoadCount={frameLoadCount}
                                             scale={scale}
                                             notePage={notePage}
-                                            measuredPath={measuredPath ?? undefined}
                                             onExit={() => setTool(null)}
                                         />
                                     )}

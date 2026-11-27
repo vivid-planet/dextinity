@@ -15,7 +15,8 @@ const modes = [
     {
         key: "3",
         name: "Review",
-        description: "Pin comments to the page and edit texts in place; comments copy as a list, text changes as a list or as a request for code.",
+        description:
+            "Designer Notes pins notes to the page and lists them in a sidebar, to copy as Markdown, post as comments, or send to Claude. Edit texts changes texts in place; its sidebar copies them as a list, or the chosen ones as a request for code.",
     },
     {
         key: "4",
@@ -51,8 +52,8 @@ export function WorkspaceGuide() {
                 ))}
             </ul>
             <p className={styles.guideNote}>
-                Keys open a tool in its mode and close it again: I Component, M Measure, A Accessibility, C Comments, E Edit texts, F Flow map, L Link
-                elements. Escape closes the open tool.
+                Keys open a tool in its mode and close it again: I Component, M Measure, A Accessibility, N Designer Notes, E Edit texts, F Flow map,
+                L Link elements. Escape closes the open tool.
             </p>
             <p className={styles.guideNote}>
                 Component highlights the innermost component under the pointer; ↑ or [ moves to the component around it, ↓ or ] back in, and a click
@@ -61,7 +62,7 @@ export function WorkspaceGuide() {
             <p className={styles.guideNote}>
                 View sets the content, text length, color scheme, theme, density, and tokens, and keeps combinations as presets.
             </p>
-            <p className={styles.guideNote}>New pages, comments, text changes, hotspots, and tokens are kept in this browser only.</p>
+            <p className={styles.guideNote}>New pages, designer notes, text changes, hotspots, and tokens are kept in this browser only.</p>
         </Popover>
     );
 }

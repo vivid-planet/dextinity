@@ -34,7 +34,9 @@
         line-height: 1.4;
     }
     /* The flex layout above would otherwise keep the banner visible while it's hidden */
-    .notice[hidden] { display: none; }
+    .notice[hidden] {
+        display: none;
+    }
     .notice strong {
         font-weight: 600;
     }
@@ -84,7 +86,54 @@
     </details>
     <button type="button" id="notice-dismiss">Dismiss</button>
 </div>
-<iframe src="iframe.html?id=workspace-shell--shell&amp;viewMode=story" title="Dextinity design workspace"></iframe>
+<iframe id="workbench-frame" src="iframe.html?id=workspace-shell--shell&amp;viewMode=story" title="Dextinity design workspace"></iframe>
+
+<script>
+    // The Workbench inside the frame turns a Designer Note into a comment on this artifact through this bridge
+    (() => {
+        const frame = document.getElementById("workbench-frame");
+        let commentsPromise;
+        function getComments() {
+            commentsPromise ??= Promise.resolve(window.claude?.use ? window.claude.use("comments") : null).catch(() => null);
+            return commentsPromise;
+        }
+        async function requireComments() {
+            const comments = await getComments();
+            if (!comments) throw new Error("Comments aren't available in this view.");
+            return comments;
+        }
+        async function run(action) {
+            try {
+                return await action();
+            } catch (error) {
+                throw new Error(error?.message || error?.code || "The comment couldn't be posted.");
+            }
+        }
+        window.dextinityWorkbenchHost = {
+            comments: {
+                async canSendToClaude() {
+                    const comments = await getComments();
+                    if (!comments) return "off";
+                    try {
+                        return await comments.canSendToClaude();
+                    } catch {
+                        return "off";
+                    }
+                },
+                post: ({ text }) =>
+                    run(async () => {
+                        const comments = await requireComments();
+                        await comments.create({ anchor: await comments.anchorFor(frame), text });
+                    }),
+                sendToClaude: ({ text }) =>
+                    run(async () => {
+                        const comments = await requireComments();
+                        await comments.sendToClaude({ anchor: await comments.anchorFor(frame), text });
+                    }),
+            },
+        };
+    })();
+</script>
 
 <script>
     (async () => {

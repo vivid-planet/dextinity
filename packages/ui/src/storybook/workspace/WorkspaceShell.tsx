@@ -29,22 +29,24 @@ import { scenarioSetting } from "../scenario";
 import { textLengthSetting } from "../textLength";
 import { CompareCanvas } from "./CompareCanvas";
 import { getComponentStoryIds, type IndexedStory } from "./componentStories";
+import type { DescribeNotePlace, PrototypePage } from "./designerNotes";
 import { flowEdgeList } from "./flowEdges";
 import { FlowMap } from "./FlowMap";
 import { getElementPath } from "./frameElements";
-import type { NotePage } from "./FrameNotes";
+import type { NoteFocusRequest, NotePage } from "./FrameNotes";
 import { type FrameTool, FrameTools } from "./FrameTools";
 import { hotspotList } from "./hotspots";
 import { customPageList, customPagePrefix, type PageTemplate, pageTemplates } from "./pageTemplates";
 import { buildPageTree, getPrototypePageNodeId } from "./prototypePageTree";
 import { workspacePrototypes } from "./prototypes";
+import { NotesSidebar, TextChangesSidebar } from "./ReviewSidebar";
 import { type InspectedChain, type InspectedComponent, useCanvasInspector } from "./useCanvasInspector";
 import { useFramePage } from "./useFramePage";
 import { usePopupOpen } from "./usePopupOpen";
 import { ViewMenu } from "./ViewMenu";
 import { WorkspaceGuide } from "./WorkspaceGuide";
 import { workspaceLogo } from "./workspaceLogo";
-import { commentList, textChangeList } from "./workspaceNotes";
+import { designerNoteList, textChangeList } from "./workspaceNotes";
 import styles from "./WorkspaceShell.module.scss";
 import {
     defaultWorkspaceState,
@@ -104,8 +106,8 @@ const intentToolButtons: Record<WorkspaceIntent, Array<{ tool: WorkspaceTool; la
         { tool: "accessibility", label: "Accessibility", icon: "contrast", description: "Tab order, small targets, and contrast", key: "A" },
     ],
     review: [
-        { tool: "comment", label: "Comments", icon: "chat-add", description: "Pin comments to the page", key: "C" },
-        { tool: "text", label: "Edit texts", icon: "pencil-line", description: "Click a text to change it", key: "E" },
+        { tool: "comment", label: "Designer Notes", icon: "chat-add", description: "Pin notes to the page; the sidebar lists them", key: "N" },
+        { tool: "text", label: "Edit texts", icon: "pencil-line", description: "Click a text to change it; the sidebar lists the changes", key: "E" },
     ],
     flow: [
         { tool: "map", label: "Flow map", icon: "tune-logic", description: "All pages and the links between them", key: "F" },
@@ -427,10 +429,10 @@ export function WorkspaceShell() {
     function removeCurrentPage() {
         if (currentCustomPage && prototypeId) {
             customPageList.update((pages) => pages.filter((page) => page !== currentCustomPage));
-            // Its comments and text changes would otherwise stay in the lists, pointing to a page that's gone
+            // Its notes and text changes would otherwise stay in the lists, pointing to a page that's gone
             const isOnRemovedPage = (note: { prototypeId: string; page: string }) =>
                 note.prototypeId === prototypeId && note.page === currentCustomPage.id;
-            commentList.update((comments) => comments.filter((comment) => !isOnRemovedPage(comment)));
+            designerNoteList.update((notes) => notes.filter((note) => !isOnRemovedPage(note)));
             textChangeList.update((changes) => changes.filter((change) => !isOnRemovedPage(change)));
             const removedId = currentCustomPage.id;
             hotspotList.update((hotspots) =>
@@ -455,6 +457,31 @@ export function WorkspaceShell() {
             }
         },
     };
+    const describePlace: DescribeNotePlace = (anchor) => {
+        const customPage = customPages.find((page) => page.prototypeId === anchor.prototypeId && page.id === anchor.page);
+        return {
+            prototypeName: prototypes.find((story) => story.id === anchor.prototypeId)?.name ?? anchor.prototypeId,
+            pageLabel: customPage?.title ?? workspacePrototypes.get(anchor.prototypeId)?.getPageLabel(anchor.page) ?? anchor.page,
+        };
+    };
+    const sidebarTool = frameTool === "comment" || frameTool === "text" ? frameTool : null;
+    // Closing the sidebar lasts until its tool closes; the tool opens with its sidebar again
+    const [sidebarClosedFor, setSidebarClosedFor] = useState<FrameTool | null>(null);
+    if (sidebarClosedFor !== null && sidebarClosedFor !== sidebarTool) {
+        setSidebarClosedFor(null);
+    }
+    const sidebarOpen = sidebarTool !== null && sidebarClosedFor !== sidebarTool;
+    const [noteFocusRequest, setNoteFocusRequest] = useState<NoteFocusRequest | null>(null);
+    const [shownNoteId, setShownNoteId] = useState<string | null>(null);
+
+    function showNote(note: PrototypePage & { id: string }) {
+        setShownNoteId(note.id);
+        setNoteFocusRequest({ id: note.id, requestedAt: Date.now() });
+        if (note.prototypeId !== prototypeId || note.page !== currentPrototypePageId) {
+            selectPrototypeNode(getPrototypePageNodeId(note.prototypeId, note.page));
+        }
+    }
+
     const storiesById = useMemo(() => new Map(componentStories.map((story) => [story.id, story])), [componentStories]);
 
     function rememberCurrentStory() {
@@ -947,6 +974,18 @@ export function WorkspaceShell() {
                                             {label}
                                         </Button>
                                     ))}
+                                {sidebarTool && (
+                                    <IconButton
+                                        variant="text"
+                                        color="secondary"
+                                        size="small"
+                                        aria-label={`${sidebarOpen ? "Hide" : "Show"} the ${sidebarTool === "comment" ? "notes" : "text changes"}`}
+                                        aria-expanded={sidebarOpen}
+                                        onClick={() => setSidebarClosedFor(sidebarOpen ? sidebarTool : null)}
+                                    >
+                                        <Icon name={sidebarOpen ? "sidebar-close" : "sidebar-open"} />
+                                    </IconButton>
+                                )}
                             </div>
                         )}
                     </div>
@@ -1122,6 +1161,8 @@ export function WorkspaceShell() {
                                             scale={scale}
                                             notePage={notePage}
                                             measuredPath={measuredPath ?? undefined}
+                                            focusRequest={noteFocusRequest}
+                                            onFocusHandled={() => setNoteFocusRequest(null)}
                                             onExit={() => setTool(null)}
                                         />
                                     )}
@@ -1135,6 +1176,27 @@ export function WorkspaceShell() {
                                 </div>
                             </div>
                         )}
+                        {sidebarOpen &&
+                            prototypeId &&
+                            (sidebarTool === "comment" ? (
+                                <NotesSidebar
+                                    current={{ prototypeId, page: currentPrototypePageId ?? "" }}
+                                    describePlace={describePlace}
+                                    onShow={showNote}
+                                    shownId={shownNoteId}
+                                    overlay={narrow}
+                                    onClose={() => setSidebarClosedFor(sidebarTool)}
+                                />
+                            ) : (
+                                <TextChangesSidebar
+                                    current={{ prototypeId, page: currentPrototypePageId ?? "" }}
+                                    describePlace={describePlace}
+                                    onShow={showNote}
+                                    shownId={shownNoteId}
+                                    overlay={narrow}
+                                    onClose={() => setSidebarClosedFor(sidebarTool)}
+                                />
+                            ))}
                     </div>
                 )}
             </div>

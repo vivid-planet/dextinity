@@ -1,0 +1,238 @@
+// Matches the pins in the frame, see `FrameTools.module.scss`
+$pin: #f59f00;
+
+// Laid out like the prototypes panel at the start of the body, see `.panel` in `WorkspaceShell.module.scss`
+.root {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    box-sizing: border-box;
+    inline-size: 360px;
+    min-block-size: 0;
+    border-inline-start: var(--dextinity-line-width) solid var(--dextinity-color-line);
+    background: var(--dextinity-color-surface);
+    font-size: 12px;
+
+    &[data-overlay] {
+        position: absolute;
+        z-index: 2;
+        inset-block: 0;
+        inset-inline-end: 0;
+        inline-size: min(360px, calc(100% - 48px));
+        box-shadow: 0 8px 32px color-mix(in oklch, var(--dextinity-color-text) 18%, transparent);
+    }
+}
+
+.header {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding: 8px 8px 4px 12px;
+}
+
+.title {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.count {
+    flex: 1;
+    color: var(--dextinity-color-text-subtle);
+    font-family: var(--dextinity-font-family-mono);
+    font-size: 11px;
+}
+
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 4px 12px 8px;
+    border-block-end: var(--dextinity-line-width) solid var(--dextinity-color-line);
+}
+
+.body {
+    flex: 1;
+    min-block-size: 0;
+    overflow: auto;
+    padding: 4px 6px 12px;
+}
+
+.footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    align-items: center;
+    padding: 8px 12px 12px;
+    border-block-start: var(--dextinity-line-width) solid var(--dextinity-color-line);
+}
+
+.footerNote {
+    flex-basis: 100%;
+    margin: 0;
+    color: var(--dextinity-color-text-subtle);
+}
+
+.storageNote {
+    display: flex;
+    flex-basis: 100%;
+    gap: 6px;
+    align-items: flex-start;
+    margin: 4px 0 0;
+    color: var(--dextinity-color-text-subtle);
+    font-size: 12px;
+
+    > :first-child {
+        flex-shrink: 0;
+        margin-block-start: 1px;
+    }
+}
+
+.hint {
+    margin: 8px 6px;
+    color: var(--dextinity-color-text-subtle);
+}
+
+.group {
+    margin-block-start: 8px;
+}
+
+.groupTitle {
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+    justify-content: space-between;
+    margin: 0;
+    padding: 4px 6px;
+    font-size: 12px;
+    font-weight: 600;
+
+    span {
+        overflow: hidden;
+        color: var(--dextinity-color-text-subtle);
+        font-weight: 400;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+.list {
+    display: grid;
+    gap: 2px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.entry {
+    display: grid;
+    gap: 2px;
+    padding: 2px;
+    border-radius: 6px;
+
+    &[data-shown] {
+        background: color-mix(in oklch, $pin 14%, transparent);
+    }
+
+    &[data-done] .entryText {
+        color: var(--dextinity-color-text-subtle);
+        text-decoration: line-through;
+    }
+
+    del {
+        color: var(--dextinity-color-text-subtle);
+    }
+}
+
+.entryMain {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    min-inline-size: 0;
+    padding: 4px;
+    border: 0;
+    border-radius: 4px;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+
+    &:hover {
+        background: color-mix(in oklch, var(--dextinity-color-text) 6%, transparent);
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--dextinity-color-accent);
+        outline-offset: -2px;
+    }
+}
+
+.number {
+    display: grid;
+    flex: none;
+    place-items: center;
+    inline-size: 18px;
+    block-size: 18px;
+    border-radius: 50%;
+    background: $pin;
+    color: #1d1f24;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.entryBody {
+    display: grid;
+    gap: 2px;
+    min-inline-size: 0;
+}
+
+.entryText {
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+}
+
+.meta {
+    overflow-wrap: anywhere;
+    color: var(--dextinity-color-text-subtle);
+    font-size: 11px;
+}
+
+.shared {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    color: var(--dextinity-color-text-subtle);
+    font-size: 11px;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    align-items: center;
+    padding-inline-start: 4px;
+
+    // Under the text, past the note's number
+    .entry:has(.number) > & {
+        padding-inline-start: 30px;
+    }
+}
+
+.actionsEnd {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    margin-inline-start: auto;
+}
+
+.editor {
+    display: grid;
+    gap: 4px;
+    padding: 0 4px 4px 30px;
+
+    .actions {
+        justify-content: flex-end;
+        padding: 0;
+    }
+}

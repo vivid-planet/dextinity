@@ -250,7 +250,25 @@ $pin: #f59f00;
     }
 }
 
-.commentEditor {
+.highlightBox {
+    @extend %box;
+
+    outline: 2px solid $pin;
+    background: color-mix(in srgb, $pin 16%, transparent);
+    animation: highlight-fade 1.6s ease-out forwards;
+}
+
+@keyframes highlight-fade {
+    70% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+.noteEditor {
     position: absolute;
     display: grid;
     box-sizing: border-box;
@@ -268,16 +286,10 @@ $pin: #f59f00;
     pointer-events: auto;
 }
 
-.editorActions,
-.cardActions {
+.editorActions {
     display: flex;
     gap: 4px;
     justify-content: flex-end;
-}
-
-.cardActions {
-    flex-wrap: wrap;
-    margin-block-start: 8px;
 }
 
 .noteList {
@@ -323,19 +335,6 @@ $pin: #f59f00;
     &:is(button):hover {
         background: color-mix(in oklch, var(--dextinity-color-text) 6%, transparent);
     }
-}
-
-.noteNumber {
-    display: grid;
-    flex: none;
-    place-items: center;
-    inline-size: 18px;
-    block-size: 18px;
-    border-radius: 50%;
-    background: $pin;
-    color: #1d1f24;
-    font-size: 10px;
-    font-weight: 600;
 }
 
 .notePage {

@@ -2,7 +2,7 @@ import { type RefObject, useEffect, useMemo, useRef, useState } from "react";
 
 import { composite, contrastRatio, getBackgroundBehind, toRgba } from "./frameColor";
 import { findElementByPath, type FrameRect, getFrameRect, useFrameDocument } from "./frameElements";
-import { CommentLayer, HotspotLayer, type NotePage, TextLayer } from "./FrameNotes";
+import { HotspotLayer, type NoteFocusRequest, NoteLayer, type NotePage, TextLayer } from "./FrameNotes";
 import { createTokenLookup } from "./frameTokens";
 import styles from "./FrameTools.module.scss";
 import { toolAttribute } from "./hotspots";
@@ -542,11 +542,16 @@ export function FrameTools({
     scale,
     notePage,
     measuredPath,
+    focusRequest,
+    onFocusHandled,
     onExit,
 }: {
     tool: FrameTool;
     notePage: NotePage;
     measuredPath?: number[];
+    /** A note or text change the sidebar asked to show, for the `comment` and `text` tools. */
+    focusRequest: NoteFocusRequest | null;
+    onFocusHandled: () => void;
     frameRef: RefObject<HTMLIFrameElement | null>;
     frameLoadCount: number;
     scale: number;
@@ -567,9 +572,25 @@ export function FrameTools({
         case "accessibility":
             return <AccessibilityLayer frameDocument={frameDocument} scale={scale} tick={tick} />;
         case "comment":
-            return <CommentLayer frameDocument={frameDocument} scale={scale} notePage={notePage} />;
+            return (
+                <NoteLayer
+                    frameDocument={frameDocument}
+                    scale={scale}
+                    notePage={notePage}
+                    focusRequest={focusRequest}
+                    onFocusHandled={onFocusHandled}
+                />
+            );
         case "text":
-            return <TextLayer frameDocument={frameDocument} notePage={notePage} />;
+            return (
+                <TextLayer
+                    frameDocument={frameDocument}
+                    scale={scale}
+                    notePage={notePage}
+                    focusRequest={focusRequest}
+                    onFocusHandled={onFocusHandled}
+                />
+            );
         case "hotspot":
             return <HotspotLayer frameDocument={frameDocument} scale={scale} notePage={notePage} />;
     }

@@ -7,6 +7,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { useUserPermissionCheck } from "../userPermissions/hooks/currentUser";
 import { FullTextSearchDialog } from "./FullTextSearchDialog";
 import { KeyboardKey } from "./KeyboardKey";
+import { useFullTextSearchTypes } from "./useFullTextSearchTypes";
 import { shortcutKey, useShortcutModifierKey } from "./useShortcutModifierKey";
 
 export function SearchHeaderItem() {
@@ -15,6 +16,8 @@ export function SearchHeaderItem() {
     const modifierKey = useShortcutModifierKey();
     const [open, setOpen] = useState(false);
     const isSearchAllowed = isAllowed("fullTextSearch");
+    // Loaded before the dialog opens, so its tabs and settings are complete when it shows
+    useFullTextSearchTypes({ skip: !isSearchAllowed });
 
     useEffect(() => {
         if (!isSearchAllowed) {

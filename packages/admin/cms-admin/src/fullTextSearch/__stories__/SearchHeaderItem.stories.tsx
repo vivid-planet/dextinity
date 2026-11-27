@@ -37,6 +37,7 @@ const withSearchPermissionAndDependencies: Decorator = (Story) => (
             entityDependencyMap: {
                 Page: createDependency({ displayName: "Page", path: "/pages" }),
                 Link: createDependency({ displayName: "Link", path: "/pages" }),
+                PredefinedPage: createDependency({ displayName: "Predefined page", path: "/pages" }),
                 PageTreeNode: createDependency({ displayName: "Page tree node", path: "/pages" }),
                 News: createDependency({ displayName: "News", path: "/news" }),
             },
@@ -86,6 +87,21 @@ async function search({ dialog, userEvent, text }: { dialog: HTMLElement; userEv
     await userEvent.type(within(dialog).getByRole("textbox", { name: "Search" }), text);
 }
 
+/** The empty dialog keeps its height and shows a tab for every type that can be searched, without counts. */
+export const EmptySearch: Story = {
+    play: async ({ canvas, userEvent }) => {
+        const dialog = await openSearchDialog({ canvas, userEvent });
+
+        expect(await within(dialog).findByText("Search Link, Page and more")).toBeInTheDocument();
+        expect(within(dialog).getByText("The last word also matches the beginning of a word.")).toBeInTheDocument();
+        expect(
+            within(dialog)
+                .getAllByRole("tab")
+                .map((tab) => tab.textContent),
+        ).toEqual(["All", "Link", "Page", "Predefined page", "News", "Product"]);
+    },
+};
+
 /**
  * Search for "ab" to see the results grouped by type, with highlighted titles and snippets and a tab per type.
  * The product result has no `entityDependencyMap` entry, so it can't be opened.
@@ -127,13 +143,37 @@ export const Default: Story = {
             expect(within(dialog).getByRole("tab", { name: /^All/ })).toHaveTextContent("All5");
             expect(within(dialog).getByRole("tab", { name: /^Page/ })).toHaveTextContent("Page2");
         });
+
+        await step("A type without results has a tab with 0 results", async () => {
+            const predefinedPageTab = within(dialog).getByRole("tab", { name: /^Predefined page/ });
+            expect(predefinedPageTab).toHaveTextContent("Predefined page0");
+
+            await userEvent.click(predefinedPageTab);
+
+            expect(await within(dialog).findByText("Check the spelling or try a shorter search term.")).toBeInTheDocument();
+            expect(predefinedPageTab).toHaveAttribute("aria-selected", "true");
+        });
     },
 };
 
-/** Types switched off in the settings are neither searched nor shown as a tab. */
+/** Types switched off in the settings are neither searched nor shown as a tab. The settings list every type before the first search. */
 export const ChooseWhatToSearch: Story = {
     play: async ({ canvas, userEvent, step }) => {
         const dialog = await openSearchDialog({ canvas, userEvent });
+
+        await step("The settings list all types before the first search", async () => {
+            await within(dialog).findByRole("tab", { name: /^Product/ });
+            await userEvent.click(within(dialog).getByRole("button", { name: "Choose what to search" }));
+            const settings = await screen.findByRole("dialog", { name: "Choose what to search" });
+            const typeSwitches = within(settings).getAllByRole("switch");
+            expect(typeSwitches).toHaveLength(5);
+            for (const typeSwitch of typeSwitches) {
+                expect(typeSwitch).toBeChecked();
+            }
+            expect(within(settings).getByRole("switch", { name: "Predefined page" })).toBeInTheDocument();
+            await userEvent.keyboard("{Escape}");
+        });
+
         await search({ dialog, userEvent, text: "ab" });
         await within(dialog).findByRole("tab", { name: /^Product/ }, { timeout: 3000 });
 
@@ -153,6 +193,27 @@ export const ChooseWhatToSearch: Story = {
             });
             expect(within(dialog).getByRole("tab", { name: /^All/ })).toHaveTextContent("All4");
         });
+    },
+};
+
+/** When none of the switched on types is offered anymore, e.g., after a permission was removed, all offered types are searched. */
+export const OnlySwitchedOffTypesOffered: Story = {
+    beforeEach: () => {
+        window.localStorage.setItem(
+            `dextinity.fullTextSearch.disabledTypes.${currentUser.id}`,
+            JSON.stringify(["Link", "News", "Page", "PredefinedPage", "Product"]),
+        );
+    },
+    play: async ({ canvas, userEvent }) => {
+        const dialog = await openSearchDialog({ canvas, userEvent });
+
+        await within(dialog).findByRole("tab", { name: /^Product/ });
+        expect(within(dialog).getAllByRole("tab")).toHaveLength(6);
+        await userEvent.click(within(dialog).getByRole("button", { name: "Choose what to search" }));
+        const settings = await screen.findByRole("dialog", { name: "Choose what to search" });
+        for (const typeSwitch of within(settings).getAllByRole("switch")) {
+            expect(typeSwitch).toBeChecked();
+        }
     },
 };
 
@@ -194,6 +255,7 @@ export const NoResults: Story = {
 
         expect(await within(dialog).findByText("Check the spelling or try a shorter search term.", {}, { timeout: 3000 })).toBeInTheDocument();
         expect(within(dialog).getByText("nothing")).toBeInTheDocument();
+        expect(within(dialog).getByRole("tab", { name: /^News/ })).toHaveTextContent("News0");
     },
 };
 

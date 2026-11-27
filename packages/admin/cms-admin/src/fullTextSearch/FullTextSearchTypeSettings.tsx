@@ -9,19 +9,19 @@ import { useFullTextSearchTypeLabel } from "./useFullTextSearchTypeLabel";
 import type { FullTextSearchType } from "./useFullTextSearchTypeSettings";
 
 interface FullTextSearchTypeSettingsProps {
-    knownTypes: FullTextSearchType[];
+    types: FullTextSearchType[];
     disabledTypes: string[];
     onTypeEnabledChange: (type: string, enabled: boolean) => void;
 }
 
-export function FullTextSearchTypeSettings({ knownTypes, disabledTypes, onTypeEnabledChange }: FullTextSearchTypeSettingsProps) {
+export function FullTextSearchTypeSettings({ types, disabledTypes, onTypeEnabledChange }: FullTextSearchTypeSettingsProps) {
     const intl = useIntl();
     const getTypeLabel = useFullTextSearchTypeLabel();
     const [open, setOpen] = useState(false);
     const buttonRef = useRef<HTMLButtonElement>(null);
     const titleId = useId();
 
-    const enabledTypeCount = knownTypes.filter(({ type }) => !disabledTypes.includes(type)).length;
+    const enabledTypeCount = types.filter(({ type }) => !disabledTypes.includes(type)).length;
 
     return (
         <>
@@ -45,37 +45,29 @@ export function FullTextSearchTypeSettings({ knownTypes, disabledTypes, onTypeEn
                 <SettingsTitle id={titleId} variant="subtitle2" color="text.secondary">
                     <FormattedMessage id="dextinity.fullTextSearch.typeSettings" defaultMessage="Choose what to search" />
                 </SettingsTitle>
-                {knownTypes.length === 0 && (
-                    <SettingsHint variant="body2" color="text.secondary">
-                        <FormattedMessage
-                            id="dextinity.fullTextSearch.typeSettings.noKnownTypes"
-                            defaultMessage="The types you can search appear here after your first search."
-                        />
-                    </SettingsHint>
-                )}
                 <SettingsList dense>
-                    {knownTypes.map((knownType) => {
-                        const enabled = !disabledTypes.includes(knownType.type);
-                        const labelId = `${titleId}-${knownType.type}`;
+                    {types.map((searchType) => {
+                        const enabled = !disabledTypes.includes(searchType.type);
+                        const labelId = `${titleId}-${searchType.type}`;
 
                         return (
                             <ListItem
-                                key={knownType.type}
+                                key={searchType.type}
                                 secondaryAction={
                                     <Switch
                                         edge="end"
                                         checked={enabled}
                                         // At least one type must stay enabled, an empty type list would search all types
                                         disabled={enabled && enabledTypeCount === 1}
-                                        onChange={(event) => onTypeEnabledChange(knownType.type, event.target.checked)}
+                                        onChange={(event) => onTypeEnabledChange(searchType.type, event.target.checked)}
                                         slotProps={{ input: { "aria-labelledby": labelId } }}
                                     />
                                 }
                             >
                                 <ListItemIcon>
-                                    <FullTextSearchTypeIcon searchType={knownType} />
+                                    <FullTextSearchTypeIcon searchType={searchType} />
                                 </ListItemIcon>
-                                <ListItemText id={labelId} primary={getTypeLabel(knownType)} />
+                                <ListItemText id={labelId} primary={getTypeLabel(searchType)} />
                             </ListItem>
                         );
                     })}
@@ -92,11 +84,6 @@ const SettingsButton = styled(IconButton)`
 
 const SettingsTitle = styled(Typography)`
     padding: ${({ theme }) => theme.spacing(3, 4, 1)};
-`;
-
-const SettingsHint = styled(Typography)`
-    max-width: 280px;
-    padding: ${({ theme }) => theme.spacing(0, 4, 3)};
 `;
 
 const SettingsList = styled(List)`

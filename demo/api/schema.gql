@@ -808,6 +808,15 @@ type FullTextSearchResults {
   types: [FullTextSearchTypeCount!]!
 }
 
+type FullTextSearchType {
+  entityName: String!
+
+  """
+  The document type for page tree nodes (e.g. Page, Link), the entity name otherwise
+  """
+  type: String!
+}
+
 type FullTextSearchTypeCount {
   count: Int!
   entityName: String!
@@ -2067,6 +2076,11 @@ type Query {
   findCopiesOfFileInScope(id: ID!, imageCropArea: ImageCropAreaInput, scope: DamScopeInput!): [DamFile!]!
   footer(scope: FooterScopeInput!): Footer
   fullTextSearch(limit: Int! = 25, offset: Int! = 0, scope: JSONObject, search: String!, types: [String!]): FullTextSearchResults!
+
+  """
+  All types the current user may search, whether they have results or not
+  """
+  fullTextSearchTypes: [FullTextSearchType!]!
   isBrevoConfigDefined(scope: EmailCampaignContentScopeInput!): Boolean!
   kubernetesCronJob(name: String!): KubernetesCronJob!
   kubernetesCronJobs: [KubernetesCronJob!]!

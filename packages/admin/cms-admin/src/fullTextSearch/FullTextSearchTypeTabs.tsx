@@ -28,7 +28,8 @@ export function FullTextSearchTypeTabs({ tabs, totalCount, activeType, onChange 
             value={activeType ?? allTypesValue}
             onChange={(_, value: string) => onChange(value === allTypesValue ? undefined : value)}
             variant="scrollable"
-            scrollButtons={false}
+            scrollButtons="auto"
+            allowScrollButtonsMobile
         >
             <Tab
                 value={allTypesValue}
@@ -51,7 +52,7 @@ function TabLabel({ label, count }: { label: ReactNode; count?: number }) {
     return (
         <Stack direction="row" spacing={1} alignItems="center">
             <span>{label}</span>
-            {count !== undefined && <Chip size="small" label={<FormattedNumber value={count} />} />}
+            {count !== undefined && <Chip size="small" variant={count === 0 ? "outlined" : "filled"} label={<FormattedNumber value={count} />} />}
         </Stack>
     );
 }

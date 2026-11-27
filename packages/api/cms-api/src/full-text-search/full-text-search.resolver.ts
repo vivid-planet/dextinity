@@ -9,7 +9,10 @@ import { CurrentUser } from "../user-permissions/dto/current-user";
 import { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
 import { FullTextSearchArgs } from "./dto/full-text-search.args";
 import { FullTextSearchResults } from "./dto/full-text-search-results.object";
+import { FullTextSearchType } from "./dto/full-text-search-type.object";
 import { PaginatedEntityInfo } from "./dto/paginated-entity-info";
+import { filterAllowedFullTextSearchTypes } from "./filter-allowed-full-text-search-types";
+import { FullTextSearchService } from "./full-text-search.service";
 import { FullTextSearchQueryService } from "./full-text-search-query.service";
 import { FullTextSnippetService } from "./full-text-snippet.service";
 
@@ -19,7 +22,15 @@ export class FullTextSearchResolver {
     constructor(
         private readonly fullTextSearchQueryService: FullTextSearchQueryService,
         private readonly fullTextSnippetService: FullTextSnippetService,
+        private readonly fullTextSearchService: FullTextSearchService,
     ) {}
+
+    @Query(() => [FullTextSearchType], { description: "All types the current user may search, whether they have results or not" })
+    fullTextSearchTypes(@GetCurrentUser() user: CurrentUser): FullTextSearchType[] {
+        return filterAllowedFullTextSearchTypes(this.fullTextSearchService.getFullTextSearchTypes(), user.permissions).map(
+            ({ type, entityName }) => ({ type, entityName }),
+        );
+    }
 
     @Query(() => FullTextSearchResults)
     async fullTextSearch(

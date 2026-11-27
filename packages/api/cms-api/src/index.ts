@@ -232,6 +232,7 @@ export { FullTextSearchPermission, FullTextSearchWhereOptions } from "./full-tex
 export { FullTextSearchArgs } from "./full-text-search/dto/full-text-search.args";
 export { FullTextSearchHighlight, FullTextSearchHighlightedText, FullTextSearchResult } from "./full-text-search/dto/full-text-search-result.object";
 export { FullTextSearchResults, FullTextSearchTypeCount } from "./full-text-search/dto/full-text-search-results.object";
+export { FullTextSearchType } from "./full-text-search/dto/full-text-search-type.object";
 export { PaginatedEntityInfo } from "./full-text-search/dto/paginated-entity-info";
 export { EntityInfoFullTextObject } from "./full-text-search/entities/entity-info-full-text.object";
 export { prefixFullTextCondition } from "./full-text-search/full-text-query";

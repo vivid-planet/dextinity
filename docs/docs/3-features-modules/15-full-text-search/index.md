@@ -140,6 +140,7 @@ query Search($search: String!, $scope: JSONObject, $types: [String!]) {
 - The last word of `search` matches as a prefix, so `Navig` finds `Navigation`.
 - The optional `scope` parameter restricts results to a specific content scope.
 - `types` filters the results. The `types` field returns counts per type, ignoring the filter.
+- The `fullTextSearchTypes` query returns every type the user may search, including types without results.
 - `limit` is at most 50.
 - Highlights are UTF-16 offsets into plain text. Render the text as text, never as HTML.
 - Ids are only unique per entity. With Apollo Client, use `fetchPolicy: "no-cache"` or `keyFields: ["entityName", "id"]` for `FullTextSearchResult`.

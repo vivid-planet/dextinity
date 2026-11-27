@@ -88,6 +88,20 @@ const results = [
     },
 ];
 
+const searchTypes = [
+    { type: "Link", entityName: "PageTreeNode" },
+    { type: "News", entityName: "News" },
+    { type: "Page", entityName: "PageTreeNode" },
+    { type: "PredefinedPage", entityName: "PageTreeNode" },
+    { type: "Product", entityName: "Product" },
+];
+
+export const fullTextSearchTypesHandler = graphqlApi.query("FullTextSearchTypes", () =>
+    HttpResponse.json({
+        data: { fullTextSearchTypes: searchTypes.map((searchType) => ({ __typename: "FullTextSearchType", ...searchType })) },
+    }),
+);
+
 function matchingResults(search: string) {
     if (search.startsWith("nothing")) {
         return [];

@@ -8,48 +8,26 @@ export interface FullTextSearchType {
     entityName: string;
 }
 
-interface FullTextSearchTypeSettings {
-    knownTypes: FullTextSearchType[];
-    disabledTypes: string[];
-}
-
-export function useFullTextSearchTypeSettings() {
+export function useFullTextSearchTypeSettings(types: FullTextSearchType[]) {
     const currentUser = useCurrentUser();
-    // The API only returns the types that have results, so the types seen in earlier searches are stored to offer them in the settings
-    const [settings, setSettings] = useStoredState<FullTextSearchTypeSettings>(`dextinity.fullTextSearch.typeSettings.${currentUser.id}`, {
-        knownTypes: [],
-        disabledTypes: [],
-    });
+    // The switched off types are stored instead of the switched on ones, so types added later are searched by default
+    const [storedDisabledTypes, setStoredDisabledTypes] = useStoredState<string[]>(`dextinity.fullTextSearch.disabledTypes.${currentUser.id}`, []);
 
-    const addKnownTypes = useCallback(
-        (types: FullTextSearchType[]) => {
-            setSettings((previousSettings) => {
-                const newTypes = types
-                    .filter(({ type }) => !previousSettings.knownTypes.some((knownType) => knownType.type === type))
-                    .map(({ type, entityName }) => ({ type, entityName }));
-
-                return newTypes.length > 0 ? { ...previousSettings, knownTypes: [...previousSettings.knownTypes, ...newTypes] } : previousSettings;
-            });
-        },
-        [setSettings],
-    );
+    const { disabledTypes, enabledTypes } = useMemo(() => {
+        const disabledTypes = types.filter(({ type }) => storedDisabledTypes.includes(type)).map(({ type }) => type);
+        // The switched on types may no longer be offered, e.g., after a permission was removed. An empty type list would search all types anyway.
+        if (disabledTypes.length === types.length) {
+            return { disabledTypes: [], enabledTypes: types };
+        }
+        return { disabledTypes, enabledTypes: types.filter(({ type }) => !disabledTypes.includes(type)) };
+    }, [types, storedDisabledTypes]);
 
     const setTypeEnabled = useCallback(
         (type: string, enabled: boolean) => {
-            setSettings((previousSettings) => ({
-                ...previousSettings,
-                disabledTypes: enabled
-                    ? previousSettings.disabledTypes.filter((disabledType) => disabledType !== type)
-                    : [...previousSettings.disabledTypes, type],
-            }));
+            setStoredDisabledTypes(enabled ? disabledTypes.filter((disabledType) => disabledType !== type) : [...disabledTypes, type]);
         },
-        [setSettings],
+        [disabledTypes, setStoredDisabledTypes],
     );
 
-    const enabledTypes = useMemo(
-        () => settings.knownTypes.filter(({ type }) => !settings.disabledTypes.includes(type)),
-        [settings.knownTypes, settings.disabledTypes],
-    );
-
-    return { knownTypes: settings.knownTypes, disabledTypes: settings.disabledTypes, enabledTypes, addKnownTypes, setTypeEnabled };
+    return { disabledTypes, enabledTypes, setTypeEnabled };
 }

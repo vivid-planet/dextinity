@@ -1,12 +1,12 @@
 import { gql, useApolloClient, useQuery } from "@apollo/client";
 import { Alert, Button } from "@dextinity/admin";
 import { Search } from "@dextinity/admin-icons";
-import { InputBase, inputBaseClasses, LinearProgress, Link, Skeleton, Stack, Typography } from "@mui/material";
+import { InputBase, inputBaseClasses, LinearProgress, Link, Skeleton, Stack } from "@mui/material";
 import { orange } from "@mui/material/colors";
 // eslint-disable-next-line no-restricted-imports -- the Dextinity Dialog always renders a title bar, the search input replaces it here
 import Dialog from "@mui/material/Dialog";
 import { styled } from "@mui/material/styles";
-import { type KeyboardEvent, type RefObject, useEffect, useRef, useState } from "react";
+import { Fragment, type KeyboardEvent, type RefObject, useRef, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useHistory } from "react-router";
 import { useDebounce } from "use-debounce";
@@ -16,6 +16,7 @@ import { useDependenciesConfig } from "../dependencies/dependenciesConfig";
 import type { DependencyInterface } from "../dependencies/types";
 import type { GQLFullTextSearchDialogQuery, GQLFullTextSearchDialogQueryVariables } from "./FullTextSearchDialog.generated";
 import { FullTextSearchKeyHints } from "./FullTextSearchKeyHints";
+import { FullTextSearchMessage } from "./FullTextSearchMessage";
 import { FullTextSearchResultGroup } from "./FullTextSearchResultGroup";
 import { FullTextSearchResultItem, fullTextSearchResultItemFragment } from "./FullTextSearchResultItem";
 import type { GQLFullTextSearchResultItemFragment } from "./FullTextSearchResultItem.generated";
@@ -23,7 +24,8 @@ import { FullTextSearchTypeSettings } from "./FullTextSearchTypeSettings";
 import { type FullTextSearchTypeTab, FullTextSearchTypeTabs } from "./FullTextSearchTypeTabs";
 import { KeyboardKey } from "./KeyboardKey";
 import { useFullTextSearchTypeLabel } from "./useFullTextSearchTypeLabel";
-import { useFullTextSearchTypeSettings } from "./useFullTextSearchTypeSettings";
+import { useFullTextSearchTypes } from "./useFullTextSearchTypes";
+import { type FullTextSearchType, useFullTextSearchTypeSettings } from "./useFullTextSearchTypeSettings";
 
 const searchQuery = gql`
     query FullTextSearchDialog($search: String!, $scope: JSONObject, $types: [String!], $limit: Int!) {
@@ -48,6 +50,7 @@ const maximumSearchLength = 200;
 const pageSize = 10;
 const maximumLimit = 50;
 const skeletonRowCount = 4;
+const emptyTypes: FullTextSearchType[] = [];
 
 interface FullTextSearchDialogProps {
     open: boolean;
@@ -87,7 +90,9 @@ function FullTextSearchDialogContent({ inputRef, onClose }: FullTextSearchDialog
     const contentScope = useContentScope();
     const { entityDependencyMap } = useDependenciesConfig();
     const getTypeLabel = useFullTextSearchTypeLabel();
-    const { knownTypes, disabledTypes, enabledTypes, addKnownTypes, setTypeEnabled } = useFullTextSearchTypeSettings();
+    const { types: loadedTypes, error: typesError } = useFullTextSearchTypes();
+    const types = loadedTypes ?? emptyTypes;
+    const { disabledTypes, enabledTypes, setTypeEnabled } = useFullTextSearchTypeSettings(types);
 
     const [search, setSearch] = useState("");
     const [activeType, setActiveType] = useState<string>();
@@ -96,20 +101,12 @@ function FullTextSearchDialogContent({ inputRef, onClose }: FullTextSearchDialog
     const [debouncedSearch] = useDebounce(search.trim(), 250);
     const hasSearch = search.trim().length >= minimumSearchLength;
     // A tab whose type was disabled in the settings falls back to all types
-    const enabledActiveType = activeType !== undefined && !disabledTypes.includes(activeType) ? activeType : undefined;
-
-    const getSearchedTypes = () => {
-        if (enabledActiveType) {
-            return [enabledActiveType];
-        }
-
-        if (disabledTypes.length > 0) {
-            return enabledTypes.map(({ type }) => type);
-        }
-
-        return undefined;
-    };
-    const searchedTypes = getSearchedTypes();
+    const enabledActiveType = enabledTypes.some(({ type }) => type === activeType) ? activeType : undefined;
+    const searchedTypes = enabledActiveType
+        ? [enabledActiveType]
+        : enabledTypes.length < types.length
+          ? enabledTypes.map(({ type }) => type)
+          : undefined;
     const resultsKey = `${debouncedSearch}:${enabledActiveType}:${disabledTypes.join(",")}`;
     // Stored together with the results it belongs to, so a new search starts with one page without an extra request for the previous search
     const limit = showMore.resultsKey === resultsKey ? showMore.limit : pageSize;
@@ -121,24 +118,14 @@ function FullTextSearchDialogContent({ inputRef, onClose }: FullTextSearchDialog
             types: searchedTypes,
             limit,
         },
-        skip: debouncedSearch.length < minimumSearchLength,
+        // Without the types, the switched off types can't be excluded from the search
+        skip: debouncedSearch.length < minimumSearchLength || !loadedTypes,
         // Search results are never reused, and ids of different entities may collide in the cache
         fetchPolicy: "no-cache",
     });
 
     const results = hasSearch ? (data ?? previousData)?.fullTextSearch : undefined;
-    // Only types seen in earlier searches can be passed to the API, so the results may lack a type the user has never switched off
-    const lacksEnabledType =
-        searchedTypes !== undefined &&
-        enabledActiveType === undefined &&
-        results?.types.some(({ type, count }) => count > 0 && !disabledTypes.includes(type) && !searchedTypes.includes(type));
-    const isSearchPending = loading || debouncedSearch !== search.trim() || Boolean(lacksEnabledType);
-
-    useEffect(() => {
-        if (data) {
-            addKnownTypes(data.fullTextSearch.types);
-        }
-    }, [data, addKnownTypes]);
+    const isSearchPending = loading || (!loadedTypes && !typesError) || debouncedSearch !== search.trim();
 
     const clearSearch = () => {
         setSearch("");
@@ -168,22 +155,29 @@ function FullTextSearchDialogContent({ inputRef, onClose }: FullTextSearchDialog
         }
     };
 
-    const tabs: FullTextSearchTypeTab[] = results
-        ? results.types.filter(({ type, count }) => !disabledTypes.includes(type) && (count > 0 || type === enabledActiveType))
-        : enabledTypes;
-    if (results && enabledActiveType && !tabs.some(({ type }) => type === enabledActiveType)) {
-        // The active tab must stay visible when it has no results
-        const activeKnownType = knownTypes.find(({ type }) => type === enabledActiveType);
-        tabs.push({ type: enabledActiveType, entityName: activeKnownType?.entityName ?? enabledActiveType, count: 0 });
-    }
-    const totalCountOfEnabledTypes = results?.types.filter(({ type }) => !disabledTypes.includes(type)).reduce((sum, { count }) => sum + count, 0);
+    const tabs: FullTextSearchTypeTab[] = enabledTypes.map(({ type, entityName }) => ({
+        type,
+        entityName,
+        count: results ? (results.types.find((typeCount) => typeCount.type === type)?.count ?? 0) : undefined,
+    }));
+    const totalCountOfEnabledTypes = results ? tabs.reduce((sum, { count = 0 }) => sum + count, 0) : undefined;
 
     const renderBody = () => {
         if (!hasSearch) {
-            return null;
+            return (
+                <FullTextSearchMessage
+                    title={<SearchableTypesTitle types={enabledTypes} />}
+                    hint={
+                        <FormattedMessage
+                            id="dextinity.fullTextSearch.prefixMatchHint"
+                            defaultMessage="The last word also matches the beginning of a word."
+                        />
+                    }
+                />
+            );
         }
 
-        if (error) {
+        if (error || typesError) {
             return (
                 <StatusContainer>
                     <Alert severity="error">
@@ -212,22 +206,21 @@ function FullTextSearchDialogContent({ inputRef, onClose }: FullTextSearchDialog
 
         if (results.nodes.length === 0) {
             return (
-                <EmptyState spacing={1} alignItems="center">
-                    <Search color="disabled" fontSize="large" />
-                    <Typography variant="body1">
+                <FullTextSearchMessage
+                    title={
                         <FormattedMessage
                             id="dextinity.fullTextSearch.noResultsFor"
                             defaultMessage="No results for “{search}”"
                             values={{ search: <strong key="search">{search.trim()}</strong> }}
                         />
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    }
+                    hint={
                         <FormattedMessage
                             id="dextinity.fullTextSearch.noResultsHint"
                             defaultMessage="Check the spelling or try a shorter search term."
                         />
-                    </Typography>
-                </EmptyState>
+                    }
+                />
             );
         }
 
@@ -265,8 +258,6 @@ function FullTextSearchDialogContent({ inputRef, onClose }: FullTextSearchDialog
         );
     };
 
-    const body = renderBody();
-
     return (
         <Root onKeyDown={handleKeyDown}>
             <SearchRow direction="row" spacing={3} alignItems="center">
@@ -292,19 +283,33 @@ function FullTextSearchDialogContent({ inputRef, onClose }: FullTextSearchDialog
                         <FormattedMessage id="dextinity.fullTextSearch.escapeKey" defaultMessage="Esc" />
                     </KeyboardKey>
                 )}
-                <FullTextSearchTypeSettings knownTypes={knownTypes} disabledTypes={disabledTypes} onTypeEnabledChange={setTypeEnabled} />
+                <FullTextSearchTypeSettings types={types} disabledTypes={disabledTypes} onTypeEnabledChange={setTypeEnabled} />
             </SearchRow>
-            {(tabs.length > 0 || hasSearch) && (
-                <FullTextSearchTypeTabs tabs={tabs} totalCount={totalCountOfEnabledTypes} activeType={enabledActiveType} onChange={setActiveType} />
-            )}
-            {body && (
-                <Body>
-                    {isSearchPending && <LoadingBar />}
-                    {body}
-                </Body>
-            )}
+            <FullTextSearchTypeTabs tabs={tabs} totalCount={totalCountOfEnabledTypes} activeType={enabledActiveType} onChange={setActiveType} />
+            <Body>
+                {hasSearch && isSearchPending && <LoadingBar />}
+                {renderBody()}
+            </Body>
             <FullTextSearchKeyHints hasSearch={search.length > 0} />
         </Root>
+    );
+}
+
+function SearchableTypesTitle({ types }: { types: FullTextSearchType[] }) {
+    const getTypeLabel = useFullTextSearchTypeLabel();
+
+    if (types.length === 0) {
+        return <FormattedMessage id="dextinity.fullTextSearch.searchLabel" defaultMessage="Search" />;
+    }
+
+    const [first, second, third] = types.map((type) => <Fragment key={type.type}>{getTypeLabel(type)}</Fragment>);
+
+    return (
+        <FormattedMessage
+            id="dextinity.fullTextSearch.searchTypes"
+            defaultMessage="{count, plural, =1 {Search {first}} =2 {Search {first} and {second}} =3 {Search {first}, {second} and {third}} other {Search {first}, {second} and more}}"
+            values={{ count: types.length, first, second, third }}
+        />
     );
 }
 
@@ -379,12 +384,13 @@ const ClearButton = styled(Link)`
     flex-shrink: 0;
 ` as typeof Link;
 
+// The same height for the empty state, the placeholder rows and the no results state, so the dialog doesn't jump between them
 const Body = styled("div")`
     position: relative;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    min-height: 0;
+    min-height: ${({ theme }) => theme.spacing(56)};
 `;
 
 const LoadingBar = styled(LinearProgress)`
@@ -410,11 +416,6 @@ const ShowMoreContainer = styled("div")`
     display: flex;
     justify-content: center;
     padding: ${({ theme }) => theme.spacing(0, 4, 3)};
-`;
-
-const EmptyState = styled(Stack)`
-    padding: ${({ theme }) => theme.spacing(8, 4)};
-    text-align: center;
 `;
 
 const StatusContainer = styled("div")`

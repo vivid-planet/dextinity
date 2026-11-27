@@ -340,6 +340,14 @@ type FullTextSearchResults {
   types: [FullTextSearchTypeCount!]!
 }
 
+type FullTextSearchType {
+  """
+  The document type for page tree nodes (e.g. Page, Link), the entity name otherwise
+  """
+  type: String!
+  entityName: String!
+}
+
 type PaginatedEntityInfo {
   nodes: [EntityInfo!]!
   totalCount: Int!
@@ -661,6 +669,11 @@ type Query {
   damMediaAlternative(id: ID!): DamMediaAlternative!
   damMediaAlternatives(offset: Int! = 0, limit: Int! = 25, search: String, sort: [DamMediaAlternativeSort!], for: ID, alternative: ID, type: DamMediaAlternativeType): PaginatedDamMediaAlternatives!
   damSettings(scope: DamScopeInput! = {}): DamSettings
+
+  """
+  All types the current user may search, whether they have results or not
+  """
+  fullTextSearchTypes: [FullTextSearchType!]!
   fullTextSearch(offset: Int! = 0, limit: Int! = 25, search: String!, scope: JSONObject, types: [String!]): FullTextSearchResults!
   myFullTextSearch(search: String!, offset: Int! = 0, limit: Int! = 25, scope: JSONObject): PaginatedEntityInfo! @deprecated(reason: "Use fullTextSearch instead. Will be removed in version 11.")
 }

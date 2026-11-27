@@ -301,6 +301,9 @@ export interface TipTapRichTextBlockFactoryOptions {
 }
 
 function getPlainTextFromContent(content: JSONContent): string {
+    if (content.type === "nonBreakingSpace") {
+        return "\u00a0";
+    }
     let text = "";
     if (content.text) {
         text += content.text;

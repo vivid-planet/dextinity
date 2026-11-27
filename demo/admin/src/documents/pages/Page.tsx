@@ -2,11 +2,11 @@ import { gql } from "@apollo/client";
 import { messages } from "@dextinity/admin";
 import { File, FileNotMenu } from "@dextinity/admin-icons";
 import {
-    createDocumentDependencyMethods,
+    createDocumentEntityMethods,
     createDocumentRootBlocksMethods,
     createDocumentTranslationMethods,
-    type DependencyInterface,
     type DocumentInterface,
+    type EntityInterface,
     type InfoTagProps,
     type TranslatableInterface,
 } from "@dextinity/cms-admin";
@@ -29,7 +29,7 @@ const rootBlocks = {
 
 export const Page: DocumentInterface<Pick<GQLPage, "content" | "seo">, GQLPageInput> &
     TranslatableInterface<Pick<GQLPage, "content" | "seo">, GQLPageInput> &
-    DependencyInterface = {
+    EntityInterface = {
     displayName: <FormattedMessage {...messages.page} />,
     editComponent: EditPage,
     menuIcon: File,
@@ -74,7 +74,7 @@ export const Page: DocumentInterface<Pick<GQLPage, "content" | "seo">, GQLPageIn
     },
     ...createDocumentRootBlocksMethods(rootBlocks),
     ...createDocumentTranslationMethods(rootBlocks),
-    ...createDocumentDependencyMethods({
+    ...createDocumentEntityMethods({
         rootQueryName: "page",
         rootBlocks: {
             content: PageContentBlock,

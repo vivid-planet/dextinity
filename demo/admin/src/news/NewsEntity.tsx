@@ -1,10 +1,10 @@
-import { createDependencyMethods, DamImageBlock, type DependencyInterface } from "@dextinity/cms-admin";
+import { createEntityMethods, DamImageBlock, type EntityInterface } from "@dextinity/cms-admin";
 import { NewsContentBlock } from "@src/news/blocks/NewsContentBlock";
 import { FormattedMessage } from "react-intl";
 
-export const NewsDependency: DependencyInterface = {
+export const NewsEntity: EntityInterface = {
     displayName: <FormattedMessage id="news.displayName" defaultMessage="News" />,
-    ...createDependencyMethods({
+    ...createEntityMethods({
         rootQueryName: "news",
         rootBlocks: { content: { block: NewsContentBlock, path: "/form" }, image: DamImageBlock },
         basePath: ({ id }) => `/structured-content/news/${id}/edit`,

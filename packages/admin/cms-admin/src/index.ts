@@ -165,11 +165,11 @@ export { damDefaultAcceptedMimeTypes } from "./dam/config/damDefaultAcceptedMime
 export { type DamFileCategory, getDamFileCategory } from "./dam/config/damFileCategory";
 export { useDamAcceptedMimeTypes } from "./dam/config/useDamAcceptedMimeTypes";
 export { useDamScope } from "./dam/config/useDamScope";
+export { createDamFileDependency, createDamFileEntity } from "./dam/createDamFileEntity";
 export { useCurrentDamFolder } from "./dam/CurrentDamFolderProvider";
 export { DamPage } from "./dam/DamPage";
 export type { FileWithDamUploadMetadata } from "./dam/DataGrid/fileUpload/useDamFileUpload";
 export { useDamFileUpload } from "./dam/DataGrid/fileUpload/useDamFileUpload";
-export { createDamFileDependency } from "./dam/dependencies/createDamFileDependency";
 export { DashboardHeader, type DashboardHeaderProps } from "./dashboard/DashboardHeader";
 export { DashboardWidgetRoot, type DashboardWidgetRootProps } from "./dashboard/widgets/DashboardWidgetRoot";
 export { LatestBuildsDashboardWidget } from "./dashboard/widgets/LatestBuildsDashboardWidget";
@@ -177,8 +177,6 @@ export {
     LatestContentUpdatesDashboardWidget,
     type LatestContentUpdatesDashboardWidgetProps,
 } from "./dashboard/widgets/LatestContentUpdatesDashboardWidget";
-export { createDependencyMethods } from "./dependencies/createDependencyMethods";
-export { createDocumentDependencyMethods } from "./dependencies/createDocumentDependencyMethods";
 export { DependenciesList, type DependenciesListProps } from "./dependencies/DependenciesList";
 export { DependentsList, type DependentsListProps } from "./dependencies/DependentsList";
 export type { DependencyInterface } from "./dependencies/types";
@@ -189,6 +187,10 @@ export {
 } from "./documents/ContentGenerationConfigContext";
 export { createDocumentRootBlocksMethods } from "./documents/createDocumentRootBlocksMethods";
 export type { DocumentInterface, DocumentType, InfoTagProps, SitePreviewActionProps } from "./documents/types";
+export { createDocumentDependencyMethods, createDocumentEntityMethods } from "./entities/createDocumentEntityMethods";
+export { createDependencyMethods, createEntityMethods } from "./entities/createEntityMethods";
+export { type EntitiesConfig, useEntitiesConfig, useEntity } from "./entities/entitiesConfig";
+export type { EntityInterface } from "./entities/types";
 export { ChooseDamFileDialog } from "./form/file/chooseFile/ChooseDamFileDialog";
 export { SearchHeaderItem } from "./fullTextSearch/SearchHeaderItem";
 /** @deprecated Use `ChooseDamFileDialog` instead. */

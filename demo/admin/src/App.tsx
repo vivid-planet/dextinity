@@ -7,7 +7,7 @@ import {
     AzureAiTranslatorProvider,
     type ContentScope,
     ContentScopeProvider,
-    createDamFileDependency,
+    createDamFileEntity,
     CurrentUserProvider,
     DextinityConfigProvider,
     SitePreview,
@@ -19,7 +19,7 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LicenseInfo } from "@mui/x-license";
 import { createApolloClient } from "@src/common/apollo/createApolloClient";
 import { createConfig } from "@src/config";
-import { PageTreeNodeDependency } from "@src/pageTree/PageTreeNodeDependency";
+import { PageTreeNodeEntity } from "@src/pageTree/PageTreeNodeEntity";
 import type { ContentScope as BaseContentScope } from "@src/site-configs";
 import { createTheme } from "@src/theme";
 import { HTML5toTouch } from "rdndmb-html5-to-touch";
@@ -46,9 +46,9 @@ import {
 import { NewsDetailBlock } from "./news/blocks/NewsDetailBlock";
 import { NewsLinkBlock } from "./news/blocks/NewsLinkBlock";
 import { NewsListBlock } from "./news/blocks/NewsListBlock";
-import { NewsDependency } from "./news/dependencies/NewsDependency";
+import { NewsEntity } from "./news/NewsEntity";
 import { pageTreeCategories } from "./pageTree/pageTreeCategories";
-import { RedirectDependency } from "./redirects/RedirectsDependency";
+import { RedirectEntity } from "./redirects/RedirectEntity";
 
 const GlobalStyle = () => (
     <Global
@@ -126,15 +126,13 @@ export function App() {
                     generateImageTitle: true,
                 },
             }}
-            dependencies={{
-                entityDependencyMap: {
-                    Page,
-                    Link,
-                    News: NewsDependency,
-                    Redirect: RedirectDependency,
-                    PageTreeNode: PageTreeNodeDependency,
-                    DamFile: createDamFileDependency(),
-                },
+            entities={{
+                Page,
+                Link,
+                News: NewsEntity,
+                Redirect: RedirectEntity,
+                PageTreeNode: PageTreeNodeEntity,
+                DamFile: createDamFileEntity(),
             }}
             siteConfigs={{
                 configs: config.siteConfigs,

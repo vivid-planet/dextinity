@@ -24,8 +24,8 @@ import { FormattedMessage, useIntl } from "react-intl";
 
 import { useContentScope } from "../contentScope/Provider";
 import { DataGrid } from "../dataGrid/DataGrid";
-import { useDependenciesConfig } from "../dependencies/dependenciesConfig";
-import { getDisplayNameString } from "../dependencies/getDisplayNameString";
+import { useEntitiesConfig } from "../entities/entitiesConfig";
+import { getDisplayNameString } from "../entities/getDisplayNameString";
 import { WarningActions } from "./WarningActions";
 import { WarningMessage } from "./WarningMessage";
 import { useWarningsConfig } from "./warningsConfig";
@@ -90,7 +90,7 @@ export function WarningsGrid({ showAllScopes = false }: WarningsGridProps) {
         ...usePersistentColumnState("WarningsGrid"),
     };
     const { messages: warningMessages } = useWarningsConfig();
-    const { entityDependencyMap } = useDependenciesConfig();
+    const entities = useEntitiesConfig();
     const { scope: currentScope, values: scopeValues } = useContentScope();
     const scopes = showAllScopes ? scopeValues.map((item) => item.scope) : [currentScope];
 
@@ -161,15 +161,13 @@ export function WarningsGrid({ showAllScopes = false }: WarningsGridProps) {
             field: "type",
             headerName: intl.formatMessage({ id: "dextinity.warning.type", defaultMessage: "Type" }),
             type: "singleSelect",
-            valueOptions: Object.entries(entityDependencyMap).map(([value, dependency]) => ({
+            valueOptions: Object.entries(entities).map(([value, entity]) => ({
                 value,
-                label: getDisplayNameString(dependency.displayName, intl, value),
+                label: getDisplayNameString(entity.displayName, intl, value),
             })),
             width: 100,
             valueGetter: (params, row) => row.sourceInfo.rootEntityName,
-            renderCell: ({ row }) => (
-                <Chip label={entityDependencyMap[row.sourceInfo.rootEntityName]?.displayName ?? row.sourceInfo.rootEntityName} />
-            ),
+            renderCell: ({ row }) => <Chip label={entities[row.sourceInfo.rootEntityName]?.displayName ?? row.sourceInfo.rootEntityName} />,
         },
         {
             field: "message",

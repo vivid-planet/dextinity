@@ -8,8 +8,8 @@ import { useNavigate } from "react-router";
 import { useDebounce } from "use-debounce";
 
 import { useContentScope } from "../contentScope/Provider";
-import { useDependenciesConfig } from "../dependencies/dependenciesConfig";
-import type { DependencyInterface } from "../dependencies/types";
+import { useEntitiesConfig } from "../entities/entitiesConfig";
+import type { EntityInterface } from "../entities/types";
 import { useUserPermissionCheck } from "../userPermissions/hooks/currentUser";
 import type { GQLSearchHeaderItemQuery, GQLSearchHeaderItemQueryVariables } from "./SearchHeaderItem.generated";
 
@@ -31,7 +31,7 @@ export function SearchHeaderItem() {
     const navigate = useNavigate();
     const apolloClient = useApolloClient();
     const contentScope = useContentScope();
-    const { entityDependencyMap } = useDependenciesConfig();
+    const entities = useEntitiesConfig();
     const isAllowed = useUserPermissionCheck();
 
     const [search, setSearch] = useState("");
@@ -52,11 +52,11 @@ export function SearchHeaderItem() {
     const results = data?.myFullTextSearch.nodes ?? [];
 
     const navigateToResult = async (result: { id: string; entityName: string }) => {
-        const dependency = entityDependencyMap[result.entityName] as DependencyInterface | undefined;
-        if (!dependency) {
+        const entity = entities[result.entityName] as EntityInterface | undefined;
+        if (!entity) {
             return;
         }
-        const path = await dependency.resolvePath({ apolloClient, id: result.id });
+        const path = await entity.resolvePath({ apolloClient, id: result.id });
         setOpen(false);
         navigate(contentScope.match.url + path);
     };
@@ -101,7 +101,7 @@ export function SearchHeaderItem() {
                         ) : (
                             <List disablePadding>
                                 {results.map((result) => {
-                                    const isLinkable = entityDependencyMap[result.entityName] !== undefined;
+                                    const isLinkable = entities[result.entityName] !== undefined;
                                     return (
                                         <ListItemButton
                                             key={`${result.entityName}:${result.id}`}

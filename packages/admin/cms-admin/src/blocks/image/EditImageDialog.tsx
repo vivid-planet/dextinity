@@ -29,7 +29,7 @@ import { ImageCrop } from "../../common/image/ImageCrop";
 import { useContentScope } from "../../contentScope/Provider";
 import { CropSettingsFields } from "../../dam/FileForm/CropSettingsFields";
 import type { EditImageFormValues } from "../../dam/FileForm/EditFile";
-import { useDependenciesConfig } from "../../dependencies/dependenciesConfig";
+import { useEntity } from "../../entities/entitiesConfig";
 import { DamPathLazy } from "../../form/file/DamPathLazy";
 import type { GQLFocalPoint } from "../../graphql.generated";
 
@@ -75,7 +75,7 @@ const DialogContent = styled(MuiDialogContent)`
 export function EditImageDialog({ image, initialValues, onSubmit, onClose, inheritedDamSettings, damFileId }: Props) {
     const contentScope = useContentScope();
     const apolloClient = useApolloClient();
-    const { entityDependencyMap } = useDependenciesConfig();
+    const damFileEntity = useEntity("DamFile");
 
     const handleSubmit = (values: FormValues) => {
         if (values.useInheritedDamSettings) {
@@ -199,7 +199,7 @@ export function EditImageDialog({ image, initialValues, onSubmit, onClose, inher
                                             </FormSection>
                                         </Box>
 
-                                        {entityDependencyMap["DamFile"] && damFileId && (
+                                        {damFileEntity && damFileId && (
                                             <Box
                                                 sx={{
                                                     padding: 7,
@@ -222,7 +222,7 @@ export function EditImageDialog({ image, initialValues, onSubmit, onClose, inher
                                                     variant="outlined"
                                                     color="inherit"
                                                     onClick={async () => {
-                                                        const path = await entityDependencyMap["DamFile"].resolvePath({
+                                                        const path = await damFileEntity.resolvePath({
                                                             apolloClient,
                                                             id: damFileId,
                                                         });

@@ -26,9 +26,7 @@ The module builds on two PostgreSQL views that are created by running the `creat
 
 - **`EntityInfo`** — always created by the core framework (not specific to `FullTextSearchModule`). It provides display data for every entity decorated with `@EntityInfo`: `name`, `secondaryInformation`, `visible`, `id`, `entityName`, and `requiredPermission`.
 
-- **`EntityInfoFullText`** — created only when `FullTextSearchModule` is imported. It is a `UNION ALL` of all entities that have a `fullText` column referenced in their `@EntityInfo` decorator. Each row contains `id`, `entityName`, `type`, the `tsvector` value, `requiredPermission`, and `scopes`. It joins back to the `EntityInfo` view to read display data such as `name` and `secondaryInformation`.
-
-The `type` column is the entity name for entities. For page tree nodes, it is the node's `documentType` (e.g. `Page` or `Link`), so search results can be filtered by document type. Page tree nodes are always part of the view, also when their document has no full text (e.g. a `Link`). Such nodes, and nodes saved before their full text was stored, are matched by their name and slug.
+- **`EntityInfoFullText`** — created only when `FullTextSearchModule` is imported. It is a `UNION ALL` of all entities that have a `fullText` column referenced in their `@EntityInfo` decorator. Each row contains `id`, `entityName`, `type` (the entity name, or the `documentType` for page tree nodes), the `tsvector` value, `requiredPermission`, and `scopes`. It joins back to the `EntityInfo` view to read display data such as `name` and `secondaryInformation`. Page tree nodes whose document has no full text (e.g. links) are matched by their name and slug.
 
 Because both are standard PostgreSQL views (not materialized views), they always reflect the current state of the underlying tables — no manual refresh is needed when content changes.
 
@@ -89,6 +87,8 @@ The `entityToMikroOrmFullText` helper builds the weighted `tsvector` value. It a
 - A `WeightedFullTextValue` object mapping PostgreSQL weight letters (`A`–`D`) to plain-text strings. Weight `A` is the most relevant, `D` the least.
 - Zero or more block data objects (see below).
 
+The `onCreate` and `onUpdate` callbacks are also called to build snippets, so keep them pure: they must not change the entity or depend on relations that may not be loaded.
+
 #### 3. Enable full text search on the page tree (optional)
 
 If your application uses `PageTreeModule`, pass `fullText: true` to its configuration to include page tree nodes and their documents in search results:
@@ -104,11 +104,11 @@ PageTreeModule.forRoot({
 
 The `fullTextSearch` GraphQL query requires the `fullTextSearch` permission. Add it to the appropriate roles in your user permissions configuration.
 
-A user only finds an entity if they have one of the permissions its resolver requires (`@RequiredPermission`), for the scope of the entity. For example, a user who has the `pageTree` permission only for the `main` domain doesn't find pages of other domains. Entities without a scope only require the permission.
+A user only finds entities they have the required permission for, in the entity's scope. Entities without a scope only require the permission.
 
 #### 5. The GraphQL query
 
-Once the module is set up, the `fullTextSearch` query is available:
+Once the module is set up, the following query is available:
 
 ```graphql
 query Search($search: String!, $scope: JSONObject, $types: [String!]) {
@@ -116,16 +116,12 @@ query Search($search: String!, $scope: JSONObject, $types: [String!]) {
         totalCount
         types {
             type
-            entityName
             count
         }
         nodes {
             id
             entityName
             type
-            name
-            secondaryInformation
-            titleMatch
             title {
                 text
                 highlights {
@@ -135,58 +131,20 @@ query Search($search: String!, $scope: JSONObject, $types: [String!]) {
             }
             snippet {
                 text
-                truncatedStart
-                truncatedEnd
-                highlights {
-                    start
-                    end
-                }
             }
         }
     }
 }
 ```
 
-Arguments:
+- The last word of `search` matches as a prefix, so `Navig` finds `Navigation`.
+- The optional `scope` parameter restricts results to a specific content scope.
+- `types` filters the results. The `types` field returns counts per type, ignoring the filter.
+- `limit` is at most 50.
+- Highlights are UTF-16 offsets into plain text. Render the text as text, never as HTML.
+- Ids are only unique per entity. With Apollo Client, use `fetchPolicy: "no-cache"` or `keyFields: ["entityName", "id"]` for `FullTextSearchResult`.
 
-- `search`: the search text, at most 200 characters. All words must match. The last word matches as a prefix, so `Navig` finds `Navigation`.
-- `scope`: restricts the results to a content scope. Entities without a scope, for instance products, are part of every scope.
-- `types`: restricts the results to these types, for instance `["Page", "News"]`.
-- `offset` and `limit`: pagination. `limit` defaults to 25 and can be at most 50, because a snippet is built for every result.
-
-Each result contains:
-
-- `entityName`: the entity, e.g. `PageTreeNode` or `News`. Use it together with `id` to open the result.
-- `type`: the type shown to the user: the document type for page tree nodes (`Page`, `Link`, …), otherwise the entity name.
-- `title`: the name with the matching words highlighted. `titleMatch` is `true` when the name matches the search.
-- `snippet`: the paragraph of the content that matches best, cut to about 160 characters, with the matching words highlighted. It's `null` when no paragraph matches. `truncatedStart` and `truncatedEnd` tell whether the text was cut, so clients can render an ellipsis.
-
-The highlights are UTF-16 offsets into `text`, with an exclusive `end`. The text is plain text, never HTML, so render it as text.
-
-The results are ordered as follows:
-
-1. Results whose name equals the search, then results whose name contains all words, then results whose name contains some words.
-2. Within each group, by `ts_rank` of the full text, where weight `A` counts most.
-3. By the length of the name, the entity name and the id, so pagination is stable.
-
-`types` holds the number of results per type. It ignores the `types` argument, so clients can show the counts as filter options. `totalCount` is the number of results for the selected types.
-
-Ids are only unique per entity. When caching results with Apollo Client, use `fetchPolicy: "no-cache"` or `keyFields: ["entityName", "id"]` for `FullTextSearchResult`.
-
-:::note Deprecated
-The `myFullTextSearch` query is deprecated and will be removed in version 11. Use `fullTextSearch` instead. `myFullTextSearch` returns the results in the same order as `fullTextSearch`.
-:::
-
-#### 6. Snippet sources
-
-The snippet is built from the text of the entity:
-
-- The text of the root blocks of the entity (for page tree nodes: of the attached document), in the order the root blocks are declared and in the order of the content.
-- The result of the `onUpdate` (or `onCreate`) callback of the full text property. The block texts that `entityToMikroOrmFullText` appends are left out, because they are part of the root block texts already.
-
-Texts that equal the name or the secondary information are left out, because the result shows them already.
-
-The callback is called again when the snippet is built. Keep full text callbacks pure: they must not change the entity and must not depend on relations that may not be loaded.
+The `myFullTextSearch` query is deprecated and will be removed in version 11.
 
 ### How to index blocks
 
@@ -253,41 +211,19 @@ const MasterHeader = () => {
 };
 ```
 
-The header shows a search field that opens the search in a dialog. <kbd>Ctrl</kbd>+<kbd>K</kbd> (<kbd>⌘</kbd>+<kbd>K</kbd> on macOS) opens it from anywhere in the admin.
+Clicking the search field or pressing <kbd>Ctrl</kbd>+<kbd>K</kbd> (<kbd>⌘</kbd>+<kbd>K</kbd> on macOS) opens a dialog with a tab and result count per type.
 
-The dialog shows a tab per type with its number of results. Selecting a tab shows only the results of that type. The results are grouped by type, and each result shows the title and a snippet with the matching words highlighted. With the gear button next to the search field, users choose which types are searched. The choice is stored in the browser's local storage.
-
-The labels of the types and the links to the results come from the `entityDependencyMap` of the `DextinityConfigProvider`:
-
-- The label of a type is the `displayName` of `entityDependencyMap[type]`, or of `entityDependencyMap[entityName]` if there is no entry for the type. For page tree nodes, the document types (e.g. `Page`) are the keys. Without an entry, the type is shown in capital case.
-- A result is opened with the `resolvePath` of `entityDependencyMap[entityName]`. Results without an entry are shown, but can't be opened.
-
-```tsx title="App.tsx"
-<DextinityConfigProvider
-    dependencies={{
-        entityDependencyMap: {
-            Page,
-            Link,
-            PageTreeNode: PageTreeNodeDependency,
-            News: NewsDependency,
-            Product: ProductDependency,
-        },
-    }}
->
-```
+Each entity needs an entry in the `entityDependencyMap` of the `DextinityConfigProvider`, keyed by its entity name (e.g. `PageTreeNode`, `News`): its `resolvePath` opens the result, and its `displayName` is the type label. Without an entry, a result can't be opened.
 
 ### Site
 
-Unlike the admin search bar, there is no ready-to-use resolver or block for site search. You need to implement both in your application. Dextinity provides the services behind the `fullTextSearch` query, so the resolver gets the same ranking, type counts and snippets:
-
-- `FullTextSearchQueryService` finds and orders the matching rows and counts them per type.
-- `FullTextSnippetService` builds the highlighted titles and snippets for these rows.
+Unlike the admin search bar, there is no ready-to-use resolver or block for site search. You need to implement both in your application.
 
 Site search must also be publicly accessible without user authentication. The built-in `fullTextSearch` query enforces permission checks and is therefore only suitable for the admin. For site search, you expose a separate resolver that skips permission checks but explicitly restricts the result set to entities whose content is meant to be publicly visible.
 
 #### 1. Create a public resolver
 
-Create a new resolver and mark it with `@RequiredPermission(DisablePermissionCheck)` to make it accessible without authentication. `FullTextSearchQueryService` only returns rows whose entity requires one of the given `permissions`, in one of the permission's `contentScopes`. So pass the permissions of the entities that may appear in public results, for the scope of the site:
+Mark the resolver with `@RequiredPermission(DisablePermissionCheck)` so it can be used without authentication:
 
 ```typescript title="site-full-text-search.resolver.ts"
 import {

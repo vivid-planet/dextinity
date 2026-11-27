@@ -32,7 +32,7 @@ export function JobAdsTable({
     ),
 }: JobAdsTableProps) {
     return (
-        <TableRoot aria-label="Job ads" columns={[{ id: "title" }, { id: "applicants", align: "end" }]}>
+        <TableRoot aria-label="Job ads" columns={[{ id: "title" }, { id: "applicants", width: 120, align: "end" }]}>
             {header}
             {body}
         </TableRoot>

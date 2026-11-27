@@ -3,7 +3,7 @@ import { type CSSProperties, forwardRef, type ReactNode, type TableHTMLAttribute
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { useMergedRef } from "../../utils/useMergedRef";
-import { TableContext, type TableLayoutColumn } from "./tableContext";
+import { defaultColumnMinWidth, TableContext, type TableLayoutColumn } from "./tableContext";
 import styles from "./TableRoot.module.scss";
 
 /**
@@ -12,14 +12,16 @@ import styles from "./TableRoot.module.scss";
 export type TableRootOwnerState = Record<string, never>;
 
 export interface TableRootSlotProps {
-    /** Props for the root, which holds the table. */
+    /** Props for the root, which holds the scrolling area. */
     root?: SlotPropsValue<TableRootOwnerState, "div">;
+    /** Props for the `scroller` slot, the area that scrolls the table horizontally. */
+    scroller?: SlotPropsValue<TableRootOwnerState, "div">;
     /** Props for the `table` slot. */
     table?: SlotPropsValue<TableRootOwnerState, "table">;
 }
 
 export interface TableRootProps extends Omit<TableHTMLAttributes<HTMLTableElement>, "className" | "style" | "children"> {
-    /** The columns in their order, with their alignment. The header cells and cells name their column by its `id`. */
+    /** The columns in their order, with their widths and alignment. The header cells and cells name their column by its `id`. */
     columns: TableLayoutColumn[];
     /** Names the table. The table needs a name, from `aria-label` or `aria-labelledby`. */
     "aria-label"?: string;
@@ -35,8 +37,19 @@ export interface TableRootProps extends Omit<TableHTMLAttributes<HTMLTableElemen
     slotProps?: TableRootSlotProps;
 }
 
+function getColumnWidth({ width, minWidth = defaultColumnMinWidth, maxWidth = Infinity }: TableLayoutColumn) {
+    return width != null ? Math.min(Math.max(width, minWidth), maxWidth) : undefined;
+}
+
+// The columns without a `width` share the remaining space equally, so each gets as wide as the widest minimum among them
+function getMinTableWidth(columns: TableLayoutColumn[]) {
+    const fixedWidth = columns.reduce((sum, column) => sum + (getColumnWidth(column) ?? 0), 0);
+    const autoMinWidths = columns.filter((column) => column.width == null).map((column) => column.minWidth ?? defaultColumnMinWidth);
+    return fixedWidth + autoMinWidths.length * Math.max(0, ...autoMinWidths);
+}
+
 /**
- * Shows rows of data in columns.
+ * Shows rows of data in columns. When the columns don't fit, the table scrolls horizontally.
  */
 export const TableRoot = forwardRef<HTMLTableElement, TableRootProps>(function TableRoot(
     { columns, children, className, style, slotProps, ...restProps },
@@ -60,8 +73,19 @@ export const TableRoot = forwardRef<HTMLTableElement, TableRootProps>(function T
         slotProps: slotProps?.root,
         ownerState,
     });
+    const scrollerProps = resolveSlotProps<TableRootOwnerState, "div", "div">({
+        ownProps: { className: styles.scroller },
+        slotProps: slotProps?.scroller,
+        ownerState,
+    });
     const tableProps = resolveSlotProps<TableRootOwnerState, "table", "table">({
-        ownProps: { ...restProps, className: styles.table },
+        ownProps: {
+            ...restProps,
+            className: styles.table,
+            style: {
+                [columns.every((column) => column.width != null) ? "--_table-width" : "--_min-table-width"]: `${getMinTableWidth(columns)}px`,
+            } as CSSProperties,
+        },
         slotProps: slotProps?.table,
         ownerState,
     });
@@ -70,9 +94,17 @@ export const TableRoot = forwardRef<HTMLTableElement, TableRootProps>(function T
 
     return (
         <div {...rootProps}>
-            <table {...tableProps} ref={setTableRef}>
-                <TableContext.Provider value={context}>{children}</TableContext.Provider>
-            </table>
+            <div {...scrollerProps}>
+                <table {...tableProps} ref={setTableRef}>
+                    <colgroup>
+                        {columns.map((column) => {
+                            const width = getColumnWidth(column);
+                            return <col key={column.id} style={width != null ? { inlineSize: width } : undefined} />;
+                        })}
+                    </colgroup>
+                    <TableContext.Provider value={context}>{children}</TableContext.Provider>
+                </table>
+            </div>
         </div>
     );
 });

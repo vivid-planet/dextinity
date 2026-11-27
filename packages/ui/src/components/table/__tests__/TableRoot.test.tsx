@@ -11,7 +11,7 @@ import { TableRow } from "../TableRow";
 
 afterEach(cleanup);
 
-const columns: TableRootProps["columns"] = [{ id: "title" }, { id: "applicants", align: "end" }, { id: "status" }];
+const columns: TableRootProps["columns"] = [{ id: "title" }, { id: "applicants", width: 120, align: "end" }, { id: "status", width: 160 }];
 
 const defaultRow = (
     <TableRow>
@@ -37,6 +37,7 @@ function renderTable(props: Partial<TableRootProps & RefAttributes<HTMLTableElem
 describe("TableRoot", () => {
     it("renders the contract classes and passes the table props and ref to the table", () => {
         const ref = createRef<HTMLTableElement>();
+        const scrollerRef = createRef<HTMLDivElement>();
         const tableSlotRef = createRef<HTMLTableElement>();
         const { container } = renderTable({
             ref,
@@ -44,6 +45,7 @@ describe("TableRoot", () => {
             summary: "Open job ads",
             slotProps: {
                 root: { id: "root-id" },
+                scroller: { className: "consumer-scroller", ref: scrollerRef },
                 table: { className: "consumer-table", ref: tableSlotRef },
             },
         });
@@ -55,10 +57,12 @@ describe("TableRoot", () => {
         expect(root.id).toBe("root-id");
         expect(ref.current).toBe(table);
         expect(tableSlotRef.current).toBe(table);
+        expect(scrollerRef.current).toBe(table.parentElement);
         expect(table).toHaveAttribute("summary", "Open job ads");
         expect(table.className).toContain("dextinityTableRoot__table");
         expect(table.className).toContain("consumer-table");
-        expect(table.parentElement).toBe(root);
+        expect(table.parentElement?.className).toContain("dextinityTableRoot__scroller");
+        expect(table.parentElement?.className).toContain("consumer-scroller");
     });
 
     it("warns in development when the table has no name", () => {

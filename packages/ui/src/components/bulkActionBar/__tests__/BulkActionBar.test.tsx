@@ -78,6 +78,48 @@ describe("BulkActionBar", () => {
         fireEvent.keyDown(screen.getByRole("menuitem", { name: "Images" }), { key: "Escape" });
         expect(onClear).not.toHaveBeenCalled();
     });
+
+    it("offers to select all items only with `onSelectAll` while fewer are selected, outside the count's status", () => {
+        const { rerender } = render(<BulkActionBar count={20} total={78} actions={[]} onClear={noop} />);
+        expect(screen.queryByRole("button", { name: "Select all 78" })).toBeNull();
+
+        rerender(<BulkActionBar count={78} total={78} onSelectAll={noop} actions={[]} onClear={noop} />);
+        expect(screen.queryByRole("button", { name: "Select all 78" })).toBeNull();
+
+        rerender(<BulkActionBar count={20} total={78} onSelectAll={noop} actions={[]} onClear={noop} />);
+        expect(screen.getByRole("button", { name: "Select all 78" }).className).toContain("dextinityBulkActionBar__selectAll");
+        expect(screen.getByRole("status").textContent).toBe("20 selected");
+    });
+
+    it("shows while all items are selected, with a text button that clears them in place of the × button", () => {
+        render(<BulkActionBar count={0} total={78} allSelected onSelectAll={noop} actions={[]} onClear={noop} />);
+
+        const root = screen.getByRole("toolbar", { name: "Bulk actions" });
+        expect(root.hasAttribute("data-open")).toBe(true);
+        expect(root.hasAttribute("data-allselected")).toBe(true);
+        expect(screen.getByRole("status").textContent).toBe("All 78 selected");
+        const clearButtons = screen.getAllByRole("button", { name: "Clear selection" });
+        expect(clearButtons).toHaveLength(1);
+        expect(clearButtons[0].textContent).toBe("Clear selection");
+    });
+
+    it("says that all items are selected without `total`", () => {
+        const { rerender } = render(<BulkActionBar count={0} allSelected actions={[]} onClear={noop} />);
+        expect(screen.getByRole("toolbar", { name: "Bulk actions" }).hasAttribute("data-open")).toBe(true);
+        expect(screen.getByRole("status").textContent).toBe("All selected");
+
+        rerender(<BulkActionBar count={20} allSelected actions={[]} onClear={noop} />);
+        expect(screen.getByRole("status").textContent).toBe("All selected");
+    });
+
+    it("keeps showing that all items were selected while it fades out", () => {
+        const { rerender } = render(<BulkActionBar count={20} total={78} allSelected onSelectAll={noop} actions={[]} onClear={noop} />);
+        rerender(<BulkActionBar count={0} total={78} allSelected={false} onSelectAll={noop} actions={[]} onClear={noop} />);
+
+        expect(screen.getByRole("toolbar", { hidden: true }).hasAttribute("data-open")).toBe(false);
+        expect(screen.getByRole("status", { hidden: true }).textContent).toBe("All 78 selected");
+    });
+
     it("runs the cleanup returned by a forwarded callback ref on unmount", () => {
         const refCleanup = vi.fn();
         const callbackRef = vi.fn(() => refCleanup);

@@ -10,6 +10,7 @@ import type { ContentScope } from "../user-permissions/interfaces/content-scope.
 import type { Permission } from "../user-permissions/user-permissions.types.js";
 import { EntityInfoFullTextObject } from "./entities/entity-info-full-text.object.js";
 import { FullTextSearchResolver } from "./full-text-search.resolver.js";
+import type { FullTextSearchService } from "./full-text-search.service.js";
 import { FullTextSnippetService } from "./full-text-snippet.service.js";
 
 const rows = [
@@ -72,7 +73,7 @@ describe("FullTextSearchResolver", () => {
             const result = await database.query(connection.getPlatform().formatQuery(sql, params));
             return method === "get" ? result.rows[0] : result.rows;
         }) as typeof connection.execute;
-        resolver = new FullTextSearchResolver(orm.em, new AccessControlService(), new FullTextSnippetService(orm.em));
+        resolver = new FullTextSearchResolver(orm.em, new AccessControlService(), new FullTextSnippetService(orm.em), {} as FullTextSearchService);
     }, 30000);
 
     afterAll(async () => {

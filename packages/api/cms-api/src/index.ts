@@ -221,6 +221,7 @@ export { getCenteredPosition, getMaxDimensionsFromArea, type ImageDimensionsAndC
 export { FullTextSearchArgs } from "./full-text-search/dto/full-text-search.args.js";
 export { FullTextSearchHighlight, FullTextSearchResult, FullTextSearchSnippet } from "./full-text-search/dto/full-text-search-result.object.js";
 export { FullTextSearchResults, FullTextSearchTypeCount } from "./full-text-search/dto/full-text-search-results.object.js";
+export { FullTextSearchType } from "./full-text-search/dto/full-text-search-type.object.js";
 export { PaginatedEntityInfo } from "./full-text-search/dto/paginated-entity-info.js";
 export { EntityInfoFullTextObject } from "./full-text-search/entities/entity-info-full-text.object.js";
 export { FullTextSearchModule } from "./full-text-search/full-text-search.module.js";

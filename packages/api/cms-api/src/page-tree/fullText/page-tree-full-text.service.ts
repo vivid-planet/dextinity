@@ -12,6 +12,10 @@ export class PageTreeFullTextService {
         private entityManager: EntityManager,
     ) {}
 
+    getDocumentTypes(): string[] {
+        return this.documents.map((document) => document.name);
+    }
+
     async createPageTreeFullTextView(): Promise<void> {
         const indexSelects: string[] = [];
 

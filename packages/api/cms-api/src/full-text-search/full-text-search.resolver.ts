@@ -11,7 +11,9 @@ import { ACCESS_CONTROL_SERVICE } from "../user-permissions/user-permissions.con
 import type { AccessControlServiceInterface } from "../user-permissions/user-permissions.types.js";
 import { FullTextSearchArgs } from "./dto/full-text-search.args.js";
 import { FullTextSearchResults, FullTextSearchTypeCount } from "./dto/full-text-search-results.object.js";
+import { FullTextSearchType } from "./dto/full-text-search-type.object.js";
 import { EntityInfoFullTextObject } from "./entities/entity-info-full-text.object.js";
+import { FullTextSearchService } from "./full-text-search.service.js";
 import { type FullTextSearchRow, FullTextSnippetService } from "./full-text-snippet.service.js";
 import { ANY_TERM_TSQUERY_SQL, PREFIX_TSQUERY_SQL, prefixFullTextCondition } from "./prefix-full-text-query.js";
 
@@ -22,7 +24,13 @@ export class FullTextSearchResolver {
         private readonly entityManager: EntityManager,
         @Inject(ACCESS_CONTROL_SERVICE) private readonly accessControlService: AccessControlServiceInterface,
         private readonly fullTextSnippetService: FullTextSnippetService,
+        private readonly fullTextSearchService: FullTextSearchService,
     ) {}
+
+    @Query(() => [FullTextSearchType], { description: "All types the current user may search, whether they have results or not" })
+    myFullTextSearchTypes(@GetCurrentUser() user: CurrentUser): FullTextSearchType[] {
+        return this.fullTextSearchService.getFullTextSearchTypes(this.getAllowedPermissions(user));
+    }
 
     @Query(() => FullTextSearchResults)
     async myFullTextSearch(
@@ -30,9 +38,7 @@ export class FullTextSearchResolver {
         @GetCurrentUser() user: CurrentUser,
         @RequestContext() { includeInvisiblePages }: RequestContextInterface,
     ): Promise<FullTextSearchResults> {
-        const allowedPermissions = [...new Set(user.permissions.map(({ permission }) => permission))].filter(
-            (permission) => !scope || this.accessControlService.isAllowed(user, permission, scope),
-        );
+        const allowedPermissions = this.getAllowedPermissions(user, scope);
 
         if (allowedPermissions.length === 0) {
             return { nodes: [], totalCount: 0, types: [] };
@@ -66,6 +72,12 @@ export class FullTextSearchResolver {
             totalCount: typeCounts.filter(({ type }) => !types || types.includes(type)).reduce((sum, { count }) => sum + count, 0),
             types: typeCounts,
         };
+    }
+
+    private getAllowedPermissions(user: CurrentUser, scope?: ContentScope): string[] {
+        return [...new Set(user.permissions.map(({ permission }) => permission))].filter(
+            (permission) => !scope || this.accessControlService.isAllowed(user, permission, scope),
+        );
     }
 }
 

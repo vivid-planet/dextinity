@@ -2068,7 +2068,20 @@ type Query {
   userPermissionsUserById(id: String!): UserPermissionsUser!
   userPermissionsUsers(filter: UserPermissionsUserFilter, limit: Int! = 25, offset: Int! = 0, search: String, sort: [UserPermissionsUserSort!]): UserPermissionPaginatedUserList!
   warning(id: ID!): Warning!
-  warnings(filter: WarningFilter, limit: Int! = 25, offset: Int! = 0, scopes: [JSONObject!]!, search: String, sort: [WarningSort!], status: [WarningStatus!]! = [open]): PaginatedWarnings!
+  warnings(
+    filter: WarningFilter
+    limit: Int! = 25
+
+    """
+    Translated labels of the warning messages. The search matches them in addition to the stored message keys.
+    """
+    messageLabels: [WarningMessageLabelInput!]
+    offset: Int! = 0
+    scopes: [JSONObject!]!
+    search: String
+    sort: [WarningSort!]
+    status: [WarningStatus!]! = [open]
+  ): PaginatedWarnings!
   welcomeEmail(scope: WelcomeEmailScopeInput!): WelcomeEmail
 }
 
@@ -2407,6 +2420,11 @@ input WarningFilter {
   type: StringFilter
   updatedAt: DateTimeFilter
   visible: BooleanFilter
+}
+
+input WarningMessageLabelInput {
+  label: String!
+  message: String!
 }
 
 enum WarningSeverity {

@@ -25,6 +25,7 @@ import { useContentScope } from "../contentScope/Provider";
 import { DataGrid } from "../dataGrid/DataGrid";
 import { useDependenciesConfig } from "../dependencies/dependenciesConfig";
 import { getDisplayNameString } from "../dependencies/getDisplayNameString";
+import { getWarningMessageLabels } from "./getWarningMessageLabels";
 import { WarningActions } from "./WarningActions";
 import { WarningMessage } from "./WarningMessage";
 import { useWarningsConfig } from "./warningsConfig";
@@ -54,8 +55,16 @@ const warningsFragment = gql`
 `;
 
 const warningsQuery = gql`
-    query WarningsGrid($offset: Int, $limit: Int, $sort: [WarningSort!], $search: String, $filter: WarningFilter, $scopes: [JSONObject!]!) {
-        warnings(offset: $offset, limit: $limit, sort: $sort, search: $search, filter: $filter, scopes: $scopes) {
+    query WarningsGrid(
+        $offset: Int
+        $limit: Int
+        $sort: [WarningSort!]
+        $search: String
+        $messageLabels: [WarningMessageLabelInput!]
+        $filter: WarningFilter
+        $scopes: [JSONObject!]!
+    ) {
+        warnings(offset: $offset, limit: $limit, sort: $sort, search: $search, messageLabels: $messageLabels, filter: $filter, scopes: $scopes) {
             nodes {
                 ...WarningsList
             }
@@ -88,7 +97,9 @@ export function WarningsGrid({ showAllScopes = false }: WarningsGridProps) {
         ...useDataGridRemote({ initialFilter: { items: [{ field: "visible", operator: "is", value: true }] } }),
         ...usePersistentColumnState("WarningsGrid"),
     };
-    const { messages: warningMessages } = useWarningsConfig();
+    const warningsConfig = useWarningsConfig();
+    const warningMessages = warningsConfig.messages;
+    const messageLabels = getWarningMessageLabels(warningsConfig, intl);
     const { entityDependencyMap } = useDependenciesConfig();
     const { scope: currentScope, values: scopeValues } = useContentScope();
     const scopes = showAllScopes ? scopeValues.map((item) => item.scope) : [currentScope];
@@ -173,6 +184,8 @@ export function WarningsGrid({ showAllScopes = false }: WarningsGridProps) {
         {
             field: "message",
             headerName: intl.formatMessage({ id: "dextinity.warning.message", defaultMessage: "Message" }),
+            type: "singleSelect",
+            valueOptions: messageLabels.map(({ message, label }) => ({ value: message, label })),
             flex: 1,
             renderCell: (params) => <WarningMessage message={params.value} warningMessages={warningMessages} />,
         },
@@ -246,6 +259,7 @@ export function WarningsGrid({ showAllScopes = false }: WarningsGridProps) {
             scopes,
             filter: gqlFilter,
             search: gqlSearch,
+            messageLabels: gqlSearch ? messageLabels : undefined,
             offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize,
             limit: dataGridProps.paginationModel.pageSize,
             sort: muiGridSortToGql(dataGridProps.sortModel, columns),

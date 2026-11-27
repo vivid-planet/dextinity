@@ -16,6 +16,7 @@ import { PaginatedWarnings } from "./dto/paginated-warnings";
 import { WarningsArgs } from "./dto/warnings.args";
 import { Warning } from "./entities/warning.entity";
 import { referencesEntityInfo, remapWarningOrderBy, remapWarningQueryFields, type WarningQuery } from "./warning-query-fields.helper";
+import { findMessagesMatchingSearchPart } from "./warning-search.helper";
 
 @Resolver(() => Warning)
 @RequiredPermission(["warnings"], { skipScopeCheck: true })
@@ -35,7 +36,7 @@ export class WarningResolver {
 
     @Query(() => PaginatedWarnings)
     async warnings(
-        @Args() { status, search, filter, scopes, sort, offset, limit }: WarningsArgs,
+        @Args() { status, search, messageLabels, filter, scopes, sort, offset, limit }: WarningsArgs,
         @GetCurrentUser() user: CurrentUser,
     ): Promise<PaginatedWarnings> {
         // check if there are any scopes that the user does not have permission to
@@ -64,9 +65,11 @@ export class WarningResolver {
         if (search) {
             where.$and = where.$and ?? [];
             for (const searchPart of splitSearchString(search)) {
+                const messagesMatchingLabel = findMessagesMatchingSearchPart(searchPart, messageLabels ?? []);
                 where.$and.push({
                     $or: [
                         { message: { $ilike: searchPart } },
+                        ...(messagesMatchingLabel.length > 0 ? [{ message: { $in: messagesMatchingLabel } }] : []),
                         { sourceInfo: { rootEntityName: { $ilike: searchPart } } },
                         { "entityInfo.name": { $ilike: searchPart } },
                         { "entityInfo.secondaryInformation": { $ilike: searchPart } },

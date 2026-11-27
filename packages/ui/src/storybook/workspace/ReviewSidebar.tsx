@@ -69,7 +69,8 @@ const statusOptions: Array<{ value: NoteStatusFilter; label: string }> = [
 
 /**
  * A panel at the end of the Workbench's body that lists what a review tool collected. It stays open next to the frame, which gets
- * narrower; on a narrow screen, it covers the frame instead. Escape inside it closes it.
+ * narrower; where that would leave the frame too little room, it covers the frame instead, see `getReviewSidebarLayout`. Escape
+ * inside it closes it.
  */
 function WorkbenchSidebar({
     title,

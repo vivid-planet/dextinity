@@ -39,6 +39,7 @@ import { customPageList, customPagePrefix, type PageTemplate, pageTemplates } fr
 import { buildPageTree, getPrototypePageNodeId } from "./prototypePageTree";
 import { workspacePrototypes } from "./prototypes";
 import { NotesSidebar, TextChangesSidebar } from "./ReviewSidebar";
+import { getReviewSidebarLayout } from "./reviewSidebarLayout";
 import { type InspectedComponent, useCanvasInspector } from "./useCanvasInspector";
 import { useFramePage } from "./useFramePage";
 import { ViewMenu } from "./ViewMenu";
@@ -259,17 +260,10 @@ export function WorkspaceShell() {
     useEffect(() => setMeasuredPath(null), [framePage.hash]);
     const canvasSize = useElementSize(canvasElement);
     const narrow = useMediaQuery(narrowQuery);
-    // On a narrow screen, the prototypes cover the canvas, so they start closed and close again once a page is picked
+    const [bodyElement, setBodyElement] = useState<HTMLDivElement | null>(null);
+    const bodySize = useElementSize(bodyElement);
+    // Where the prototypes cover the canvas, they start closed and close again once a page is picked
     const [overlayPanelOpen, setOverlayPanelOpen] = useState(false);
-    const panelVisible = narrow ? overlayPanelOpen : state.panelOpen;
-
-    function togglePanel() {
-        if (narrow) {
-            setOverlayPanelOpen(!overlayPanelOpen);
-        } else {
-            updateState({ panelOpen: !state.panelOpen });
-        }
-    }
 
     useEffect(() => {
         async function loadStories() {
@@ -440,16 +434,45 @@ export function WorkspaceShell() {
         };
     };
     const sidebarTool = frameTool === "comment" || frameTool === "text" ? frameTool : null;
+    const sidebarLayout = getReviewSidebarLayout({ bodyWidth: bodySize.width, panelWidth: state.panelWidth });
     // Closing the sidebar lasts until its tool closes; the tool opens with its sidebar again
     const [sidebarClosedFor, setSidebarClosedFor] = useState<FrameTool | null>(null);
     if (sidebarClosedFor !== null && sidebarClosedFor !== sidebarTool) {
         setSidebarClosedFor(null);
     }
-    const sidebarOpen = sidebarTool !== null && sidebarClosedFor !== sidebarTool;
+    // A sidebar that covers the frame starts closed, like the prototypes, so that a click on the page pins a note right away
+    const [overlaySidebarOpenFor, setOverlaySidebarOpenFor] = useState<FrameTool | null>(null);
+    if (overlaySidebarOpenFor !== null && overlaySidebarOpenFor !== sidebarTool) {
+        setOverlaySidebarOpenFor(null);
+    }
+    const sidebarOpen =
+        sidebarTool !== null && (sidebarLayout.sidebarOverlay ? overlaySidebarOpenFor === sidebarTool : sidebarClosedFor !== sidebarTool);
+    const panelOverlay = narrow || (sidebarOpen && sidebarLayout.panelOverlay);
+    const panelVisible = panelOverlay ? overlayPanelOpen : state.panelOpen;
     const [noteFocusRequest, setNoteFocusRequest] = useState<NoteFocusRequest | null>(null);
     const [shownNoteId, setShownNoteId] = useState<string | null>(null);
 
+    function togglePanel() {
+        if (panelOverlay) {
+            setOverlayPanelOpen(!overlayPanelOpen);
+            setOverlaySidebarOpenFor(null);
+        } else {
+            updateState({ panelOpen: !state.panelOpen });
+        }
+    }
+
+    function setSidebarOpen(open: boolean) {
+        if (sidebarLayout.sidebarOverlay) {
+            setOverlaySidebarOpenFor(open ? sidebarTool : null);
+            setOverlayPanelOpen(false);
+        } else {
+            setSidebarClosedFor(open ? null : sidebarTool);
+        }
+    }
+
     function showNote(note: PrototypePage & { id: string }) {
+        // A sidebar that covers the frame would hide the element it shows
+        setOverlaySidebarOpenFor(null);
         setShownNoteId(note.id);
         setNoteFocusRequest({ id: note.id, requestedAt: Date.now() });
         if (note.prototypeId !== prototypeId || note.page !== currentPrototypePageId) {
@@ -956,7 +979,7 @@ export function WorkspaceShell() {
                                         size="small"
                                         aria-label={`${sidebarOpen ? "Hide" : "Show"} the ${sidebarTool === "comment" ? "notes" : "text changes"}`}
                                         aria-expanded={sidebarOpen}
-                                        onClick={() => setSidebarClosedFor(sidebarOpen ? sidebarTool : null)}
+                                        onClick={() => setSidebarOpen(!sidebarOpen)}
                                     >
                                         <Icon name={sidebarOpen ? "sidebar-close" : "sidebar-open"} />
                                     </IconButton>
@@ -980,7 +1003,7 @@ export function WorkspaceShell() {
                 </div>
 
                 {isPrototypeMode && (
-                    <div className={styles.body}>
+                    <div ref={setBodyElement} className={styles.body}>
                         {presenting && (
                             <Button
                                 className={styles.presentExit}
@@ -993,14 +1016,16 @@ export function WorkspaceShell() {
                                 Exit presentation · Esc
                             </Button>
                         )}
-                        {panelVisible && !presenting && narrow && <div className={styles.panelBackdrop} onClick={() => setOverlayPanelOpen(false)} />}
+                        {panelVisible && !presenting && panelOverlay && (
+                            <div className={styles.panelBackdrop} onClick={() => setOverlayPanelOpen(false)} />
+                        )}
                         {panelVisible && !presenting && (
                             <nav
                                 className={styles.panel}
                                 aria-label="Prototypes"
-                                data-overlay={narrow || undefined}
-                                style={{ inlineSize: narrow ? undefined : state.panelWidth }}
-                                onKeyDown={(event) => narrow && event.key === "Escape" && setOverlayPanelOpen(false)}
+                                data-overlay={panelOverlay || undefined}
+                                style={{ inlineSize: panelOverlay ? undefined : state.panelWidth }}
+                                onKeyDown={(event) => panelOverlay && event.key === "Escape" && setOverlayPanelOpen(false)}
                             >
                                 <div className={styles.panelList} data-prototypes>
                                     <TreeView
@@ -1036,7 +1061,7 @@ export function WorkspaceShell() {
                                 </div>
                             </nav>
                         )}
-                        {panelVisible && !presenting && !narrow && (
+                        {panelVisible && !presenting && !panelOverlay && (
                             <div
                                 role="separator"
                                 aria-orientation="vertical"
@@ -1149,6 +1174,9 @@ export function WorkspaceShell() {
                                 </div>
                             </div>
                         )}
+                        {sidebarOpen && prototypeId && sidebarLayout.sidebarOverlay && (
+                            <div className={styles.panelBackdrop} onClick={() => setSidebarOpen(false)} />
+                        )}
                         {sidebarOpen &&
                             prototypeId &&
                             (sidebarTool === "comment" ? (
@@ -1157,8 +1185,8 @@ export function WorkspaceShell() {
                                     describePlace={describePlace}
                                     onShow={showNote}
                                     shownId={shownNoteId}
-                                    overlay={narrow}
-                                    onClose={() => setSidebarClosedFor(sidebarTool)}
+                                    overlay={sidebarLayout.sidebarOverlay}
+                                    onClose={() => setSidebarOpen(false)}
                                 />
                             ) : (
                                 <TextChangesSidebar
@@ -1166,8 +1194,8 @@ export function WorkspaceShell() {
                                     describePlace={describePlace}
                                     onShow={showNote}
                                     shownId={shownNoteId}
-                                    overlay={narrow}
-                                    onClose={() => setSidebarClosedFor(sidebarTool)}
+                                    overlay={sidebarLayout.sidebarOverlay}
+                                    onClose={() => setSidebarOpen(false)}
                                 />
                             ))}
                     </div>

@@ -36,6 +36,13 @@ function useViewValues(): Record<ViewKey, string> {
     };
 }
 
+function resetView() {
+    for (const { setting } of viewSettings) {
+        setting.store(setting.defaultValue);
+    }
+    tokenOverrideList.set([]);
+}
+
 /** Whether the prototype is shown other than by default, for the dot on the menu's button. */
 function useViewChanged() {
     const values = useViewValues();
@@ -105,6 +112,11 @@ export function ViewMenu() {
                     },
                 ]}
             />
+            <div className={styles.viewFooter}>
+                <Button variant="text" color="secondary" size="small" startIcon={<Icon name="reset" />} disabled={!changed} onClick={resetView}>
+                    Reset to default
+                </Button>
+            </div>
         </Popover>
     );
 }

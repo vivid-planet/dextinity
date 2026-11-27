@@ -647,6 +647,30 @@ describe("createTipTapRichTextBlock", () => {
         it("should return no preview for empty content", () => {
             expect(previewContent([textBlock([])])).toEqual([]);
         });
+
+        it("should keep a non-breaking space instead of joining the words around it", () => {
+            expect(previewContent([textBlock([{ type: "text", text: "1" }, { type: "nonBreakingSpace" }, { type: "text", text: "000" }])])).toEqual([
+                { type: "text", content: `1${String.fromCharCode(0xa0)}000` },
+            ]);
+        });
+    });
+
+    describe("extractTextContents", () => {
+        it("should keep a non-breaking space instead of joining the words around it", () => {
+            const block = createTipTapRichTextBlock({});
+            const tipTapContent: JSONContent = {
+                type: "doc",
+                content: [
+                    {
+                        type: "textBlock",
+                        attrs: { textBlock: "paragraph" },
+                        content: [{ type: "text", text: "1" }, { type: "nonBreakingSpace" }, { type: "text", text: "000" }],
+                    },
+                ],
+            };
+
+            expect(block.extractTextContents?.({ tipTapContent }, { includeInvisibleContent: false })).toEqual([`1${String.fromCharCode(0xa0)}000`]);
+        });
     });
 
     describe("translateContent", () => {

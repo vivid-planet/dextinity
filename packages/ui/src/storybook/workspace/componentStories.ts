@@ -6,6 +6,7 @@ export interface IndexedStory {
 }
 
 const componentClassPattern = /^dextinity([A-Z][A-Za-z0-9]*)$/;
+const slotClassPattern = /^dextinity([A-Z][A-Za-z0-9]*)__([a-z][A-Za-z0-9]*)$/;
 // `Theme` wraps every story, and an `Icon` sits inside the button or item it belongs to, which is what's meant when pointing at it
 const ignoredComponents = new Set(["Theme", "Icon"]);
 // Pages about a pattern or a page type can end in a component's name, e.g. `Patterns/Toolbar`, but don't show the component itself
@@ -56,14 +57,50 @@ export interface ComponentLevel {
     element: Element;
     componentName: string;
     storyId: string;
+    /** The part of `componentName` the element is, e.g. `input` for `dextinityFilterBar__input`; absent for the component's root. */
+    slotName?: string;
+}
+
+/**
+ * The parts an element is a slot of, read from the part classes of the class-name contract, e.g. `FilterBar` and `input` for
+ * `dextinityFilterBar__input`.
+ */
+function getSlots(element: Element): Array<{ componentName: string; slotName: string }> {
+    const slots: Array<{ componentName: string; slotName: string }> = [];
+    for (const className of element.classList) {
+        const match = slotClassPattern.exec(className);
+        if (match != null) {
+            slots.push({ componentName: match[1], slotName: match[2] });
+        }
+    }
+    return slots;
+}
+
+/** A slot's name as words in lowercase, e.g. `start icon` for `startIcon`. */
+export function getSlotLabel(slotName: string): string {
+    return slotName.replace(/[A-Z]/g, (letter) => ` ${letter.toLowerCase()}`);
+}
+
+function findSlotWithStory(element: Element, componentStoryIds: Map<string, string>): ComponentLevel | undefined {
+    for (const { componentName, slotName } of getSlots(element)) {
+        const storyId = componentStoryIds.get(componentName);
+        if (storyId != null) {
+            return { element, componentName, slotName, storyId };
+        }
+    }
+    return undefined;
 }
 
 /**
  * The components with a story at or above `element`, outermost first, so the last one is the most specific component under the
  * pointer. An element that is the root of several components with a story gives one level for each of them.
+ *
+ * The innermost slot between the innermost component and `element`, e.g. the input of a `FilterBar`, adds a last level when it
+ * belongs to a component of the chain. Only the innermost one, so the elements a component lays out its parts with don't add levels.
  */
 export function findComponentChain(element: Element | null, componentStoryIds: Map<string, string>): ComponentLevel[] {
     const innermostFirst: ComponentLevel[] = [];
+    let innermostSlot: ComponentLevel | undefined;
     for (let current = element; current != null; current = current.parentElement) {
         for (const componentName of getComponentNames(current).reverse()) {
             const storyId = componentStoryIds.get(componentName);
@@ -71,8 +108,30 @@ export function findComponentChain(element: Element | null, componentStoryIds: M
                 innermostFirst.push({ element: current, componentName, storyId });
             }
         }
+        if (innermostFirst.length === 0 && innermostSlot == null) {
+            innermostSlot = findSlotWithStory(current, componentStoryIds);
+        }
     }
-    return innermostFirst.reverse();
+    const chain = innermostFirst.reverse();
+    if (innermostSlot != null && chain.some(({ componentName }) => componentName === innermostSlot.componentName)) {
+        chain.push(innermostSlot);
+    }
+    return chain;
+}
+
+/**
+ * The hint after the levels in the picker's label: which keys move the highlight while there is more than one level, and what a click
+ * opens, which for a slot is the story of the component it is part of.
+ */
+export function getLevelHint(chain: Array<Pick<ComponentLevel, "componentName" | "slotName">>, level: number): string {
+    const highlighted = chain.at(level);
+    const hints = chain.length > 1 ? ["↑ ↓ level"] : [];
+    if (highlighted?.slotName != null) {
+        hints.push(`part of ${highlighted.componentName}`, `click opens ${highlighted.componentName}`);
+    } else {
+        hints.push("click opens story");
+    }
+    return hints.join(" · ");
 }
 
 /**

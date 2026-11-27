@@ -91,16 +91,23 @@ function findSlotWithStory(element: Element, componentStoryIds: Map<string, stri
     return undefined;
 }
 
+const interactiveTags = new Set(["A", "BUTTON", "LABEL", "SUMMARY", "INPUT", "SELECT", "TEXTAREA"]);
+
+function isInteractive(element: Element): boolean {
+    return interactiveTags.has(element.tagName) || element.hasAttribute("tabindex");
+}
+
 /**
  * The components with a story at or above `element`, outermost first, so the last one is the most specific component under the
  * pointer. An element that is the root of several components with a story gives one level for each of them.
  *
- * The innermost slot between the innermost component and `element`, e.g. the input of a `FilterBar`, adds a last level when it
- * belongs to a component of the chain. Only the innermost one, so the elements a component lays out its parts with don't add levels.
+ * Slots between the innermost component and `element` that belong to a component of the chain add the last levels: the innermost
+ * one, e.g. the label of a `SideNav` item, and the interactive ones around it, e.g. the item itself. The elements a component only
+ * lays out its parts with, such as lists and scroll areas, don't add levels.
  */
 export function findComponentChain(element: Element | null, componentStoryIds: Map<string, string>): ComponentLevel[] {
     const innermostFirst: ComponentLevel[] = [];
-    let innermostSlot: ComponentLevel | undefined;
+    const slotsInnermostFirst: ComponentLevel[] = [];
     for (let current = element; current != null; current = current.parentElement) {
         for (const componentName of getComponentNames(current).reverse()) {
             const storyId = componentStoryIds.get(componentName);
@@ -108,15 +115,17 @@ export function findComponentChain(element: Element | null, componentStoryIds: M
                 innermostFirst.push({ element: current, componentName, storyId });
             }
         }
-        if (innermostFirst.length === 0 && innermostSlot == null) {
-            innermostSlot = findSlotWithStory(current, componentStoryIds);
+        if (innermostFirst.length === 0) {
+            const slot = findSlotWithStory(current, componentStoryIds);
+            if (slot != null && (slotsInnermostFirst.length === 0 || isInteractive(current))) {
+                slotsInnermostFirst.push(slot);
+            }
         }
     }
     const chain = innermostFirst.reverse();
-    if (innermostSlot != null && chain.some(({ componentName }) => componentName === innermostSlot.componentName)) {
-        chain.push(innermostSlot);
-    }
-    return chain;
+    const chainComponentNames = new Set(chain.map(({ componentName }) => componentName));
+    const slots = slotsInnermostFirst.filter(({ componentName }) => chainComponentNames.has(componentName)).reverse();
+    return [...chain, ...slots];
 }
 
 /**

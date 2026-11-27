@@ -56,8 +56,8 @@ export function WorkspaceGuide() {
                 elements. Escape closes the open tool.
             </p>
             <p className={styles.guideNote}>
-                Component highlights the innermost component or part of one under the pointer; ↑ or [ moves to the component around it, ↓ or ] back
-                in, and a click opens the highlighted one's story, for a part the story of its component.
+                Component highlights the innermost component or part of one under the pointer; ↑ or [ moves to the part or component around it, ↓ or ]
+                back in, and a click opens the highlighted one's story, for a part the story of its component.
             </p>
             <p className={styles.guideNote}>
                 View sets the content, text length, color scheme, theme, density, and tokens, and keeps combinations as presets.

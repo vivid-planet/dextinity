@@ -96,17 +96,38 @@ describe("findComponentChain with slots", () => {
             </div>`;
         expect(findChain("input")).toEqual([
             { id: "dextinityFilterBar", componentName: "FilterBar", slotName: undefined, storyId: "filter-bar--default" },
+            { id: "search", componentName: "FilterBar", slotName: "search", storyId: "filter-bar--default" },
             { id: "input", componentName: "FilterBar", slotName: "input", storyId: "filter-bar--default" },
         ]);
         expect(findChain("icon").at(-1)).toEqual({ id: "search", componentName: "FilterBar", slotName: "search", storyId: "filter-bar--default" });
     });
 
-    it("finds the slot from an element inside it", () => {
+    it("adds the interactive slots around the innermost one, so a SideNav item is a level of its label, icon, and chevron", () => {
         document.body.innerHTML = `
-            <nav class="dextinitySideNav"><ul class="dextinitySideNav__list"><li class="dextinitySideNav__entry">
-                <a id="item" class="dextinitySideNav__item"><span id="text">Pages</span></a>
-            </li></ul></nav>`;
-        expect(findChain("text").map(({ componentName, slotName }) => [componentName, slotName])).toEqual([
+            <nav class="dextinitySideNav"><div class="dextinitySideNav__scroll"><div class="dextinitySideNav__group">
+                <ul class="dextinitySideNav__list"><li class="dextinitySideNav__entry">
+                    <button id="item" class="dextinitySideNav__item">
+                        <span id="itemIcon" class="dextinitySideNav__itemIcon"><svg id="svg" class="dextinityIcon"></svg></span>
+                        <span id="itemLabel" class="dextinitySideNav__itemLabel">Pages</span>
+                        <svg id="itemChevron" class="dextinityIcon dextinitySideNav__itemChevron"></svg>
+                    </button>
+                </li></ul>
+            </div></div></nav>`;
+        const levelsOf = (id: string) => findChain(id).map(({ componentName, slotName }) => [componentName, slotName]);
+        expect(levelsOf("itemLabel")).toEqual([
+            ["SideNav", undefined],
+            ["SideNav", "item"],
+            ["SideNav", "itemLabel"],
+        ]);
+        expect(levelsOf("svg").slice(1)).toEqual([
+            ["SideNav", "item"],
+            ["SideNav", "itemIcon"],
+        ]);
+        expect(levelsOf("itemChevron").slice(1)).toEqual([
+            ["SideNav", "item"],
+            ["SideNav", "itemChevron"],
+        ]);
+        expect(levelsOf("item")).toEqual([
             ["SideNav", undefined],
             ["SideNav", "item"],
         ]);

@@ -396,6 +396,7 @@ export function TextLayer({
                 .find((change) => isOnPage(change, notePage.prototypeId, notePage.page) && change.path.join() === path.join());
             // The text as written, not as Text length shows it, which the designer edits and the change keeps
             const original = existing?.original ?? readWrittenText(editable);
+            const elementDescription = existing?.element ?? describeNoteElement(editable);
             const before = readOwnText(editable);
             const linesBefore = new Set(editable.querySelectorAll(":scope > br"));
 
@@ -437,7 +438,7 @@ export function TextLayer({
                                   path,
                                   original,
                                   text,
-                                  element: existing?.element ?? describeNoteElement(editable),
+                                  element: elementDescription,
                                   createdAt: existing?.createdAt ?? new Date().toISOString(),
                               },
                           ];

@@ -88,6 +88,8 @@ The `entityToMikroOrmFullText` helper builds the weighted `tsvector` value. It a
 - A `WeightedFullTextValue` object mapping PostgreSQL weight letters (`A`–`D`) to plain-text strings. Weight `A` is the most relevant, `D` the least.
 - Zero or more block data objects (see below).
 
+The search calls the `onCreate` or `onUpdate` callback again to build the snippets of the results, so the callbacks must not have side effects.
+
 #### 3. Enable full text search on the page tree (optional)
 
 If your application uses `PageTreeModule`, pass `fullText: true` to its configuration to include page tree nodes and their documents in search results:
@@ -122,13 +124,26 @@ query MySearch($search: String!, $scope: JSONObject) {
             entityName
             type
             name
+            titleHighlights {
+                start
+                end
+            }
             secondaryInformation
+            snippet {
+                text
+                highlights {
+                    start
+                    end
+                }
+                truncatedStart
+                truncatedEnd
+            }
         }
     }
 }
 ```
 
-The last word of `search` matches as a prefix, so `Navig` finds `Navigation`. Results whose name matches the search come first. `types` returns the number of results per type. The optional `scope` parameter restricts results to a specific content scope; entities without a scope are part of every scope.
+The last word of `search` matches as a prefix, so `Navig` finds `Navigation`. Results whose name matches the search come first. `titleHighlights` and `snippet` mark the search terms in the name and in the best matching part of the content. Render the texts as text, not as HTML. `types` returns the number of results per type. The optional `scope` parameter restricts results to a specific content scope; entities without a scope are part of every scope.
 
 Ids are only unique per entity. With Apollo Client, use `fetchPolicy: "no-cache"` or `keyFields: ["entityName", "id"]` for `FullTextSearchResult`.
 

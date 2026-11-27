@@ -1,6 +1,8 @@
 // Stacking order of the overlays that render in a portal on top of the page.
 @layer dextinity {
     :root {
+        // Stacking level of the bulk action bar at the bottom of the window, below drawers and dialogs that cover the page
+        --dextinity-layer-bulk-action-bar: 800;
         // Stacking level of drawers, incl. the app shell's navigation drawer on small screens
         --dextinity-layer-drawer: 900;
         // Stacking level of modal dialogs

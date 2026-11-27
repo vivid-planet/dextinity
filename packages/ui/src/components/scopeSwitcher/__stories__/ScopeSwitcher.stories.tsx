@@ -4,7 +4,6 @@ import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { ScopeSwitcher, type ScopeSwitcherDimension } from "../ScopeSwitcher";
-import scopeSwitcherTokens from "../ScopeSwitcher.tokens.scss?raw";
 import styles from "./ScopeSwitcher.stories.module.scss";
 
 const countries: ScopeSwitcherDimension = {
@@ -49,7 +48,6 @@ const meta = {
             </div>
         ),
     ],
-    parameters: { tokens: scopeSwitcherTokens },
     render: (args, context) => {
         const [value, setValue] = useControlledArg(args, "value", context);
         const [open, setOpen] = useControlledArg(args, "open", context);

@@ -2144,10 +2144,11 @@ type Query {
   redirects(active: Boolean, query: String, scope: RedirectScopeInput!, sortColumnName: String, sortDirection: SortDirection! = ASC, type: RedirectGenerationType): [Redirect!]! @deprecated(reason: "Use paginatedRedirects instead. Will be removed in the next version.")
   sitePreviewJwt(includeInvisible: Boolean!, path: String!, scope: JSONObject!): String!
   topMenu(scope: PageTreeNodeScopeInput!): [PageTreeNode!]!
+  userPermissionsAssignedContentScopes(userId: String!): UserAssignedContentScopes!
   userPermissionsAvailableContentScopeDimensions: [ContentScopeDimension!]!
   userPermissionsAvailableContentScopes: [ContentScopeWithLabel!]!
   userPermissionsAvailablePermissions: [String!]!
-  userPermissionsContentScopes(skipManual: Boolean, userId: String!): [JSONObject!]!
+  userPermissionsContentScopes(skipManual: Boolean, userId: String!): [JSONObject!]! @deprecated(reason: "Use userPermissionsAssignedContentScopes instead.")
   userPermissionsPermission(id: ID!, userId: String): UserPermission!
   userPermissionsPermissionList(userId: String!): [UserPermission!]!
   userPermissionsUserById(id: String!): UserPermissionsUser!
@@ -2383,6 +2384,11 @@ input UpdateImageFileInput {
 type UpdateProductVariantPayload {
   errors: [ProductVariantMutationError!]!
   productVariant: ProductVariant
+}
+
+type UserAssignedContentScopes {
+  byRule: [JSONObject!]!
+  manual: [JSONObject!]!
 }
 
 input UserContentScopesInput {

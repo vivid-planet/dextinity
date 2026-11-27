@@ -5,7 +5,6 @@ import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { Toolbar } from "../Toolbar";
-import toolbarTokens from "../Toolbar.tokens.scss?raw";
 import { ToolbarButton } from "../ToolbarButton";
 import styles from "./Toolbar.stories.module.scss";
 
@@ -15,17 +14,13 @@ const meta = {
     decorators: [
         (Story) => (
             <div className={styles.surface}>
-                <Toolbar aria-label="Formatting">
-                    <Story />
-                </Toolbar>
+                <Story />
             </div>
         ),
         themeDecorator,
     ],
-    parameters: { tokens: toolbarTokens },
     args: { "aria-label": "Bold", children: <Icon name="bold" />, onClick: fn(), onSelectedChange: fn() },
     argTypes: {
-        onClick: { description: "Called when the button is clicked." },
         selected: { control: "boolean" },
         disabled: { control: "boolean" },
         keepFocus: { control: "boolean" },
@@ -37,14 +32,16 @@ const meta = {
     render: (args, context) => {
         const [selected, setSelected] = useControlledArg(args, "selected", context);
         return (
-            <ToolbarButton
-                {...args}
-                selected={selected}
-                onSelectedChange={(next) => {
-                    args.onSelectedChange?.(next);
-                    setSelected(next);
-                }}
-            />
+            <Toolbar aria-label="Formatting">
+                <ToolbarButton
+                    {...args}
+                    selected={selected}
+                    onSelectedChange={(next) => {
+                        args.onSelectedChange?.(next);
+                        setSelected(next);
+                    }}
+                />
+            </Toolbar>
         );
     },
 } satisfies Meta<typeof ToolbarButton>;

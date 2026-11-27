@@ -1,43 +1,19 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import type { PropsWithChildren } from "react";
+import { useState } from "react";
 import { expect, fn, screen } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
 import { Menu } from "../Menu";
-import menuTokens from "../Menu.tokens.scss?raw";
 import { MenuItem } from "../MenuItem";
 import { MenuSeparator } from "../MenuSeparator";
 import styles from "./Menu.stories.module.scss";
-
-function InOpenMenu({ children }: PropsWithChildren) {
-    return (
-        <Menu
-            open
-            onOpenChange={() => {}}
-            trigger={
-                <Button variant="outlined" color="secondary">
-                    Actions
-                </Button>
-            }
-        >
-            {children}
-        </Menu>
-    );
-}
 
 const meta = {
     component: MenuSeparator,
     title: "Building blocks/Menus & messages/MenuSeparator",
     decorators: [
-        (Story) => (
-            <InOpenMenu>
-                <MenuItem label="Archive" icon={<Icon name="archive" />} onClick={fn()} />
-                <Story />
-                <MenuItem label="Delete" icon={<Icon name="trash" />} color="error" onClick={fn()} />
-            </InOpenMenu>
-        ),
         themeDecorator,
         (Story) => (
             <div className={styles.stage}>
@@ -45,9 +21,26 @@ const meta = {
             </div>
         ),
     ],
-    parameters: { tokens: menuTokens },
     argTypes: {
         className: { control: false },
+    },
+    render: (args) => {
+        const [isMenuOpen, setIsMenuOpen] = useState(true);
+        return (
+            <Menu
+                open={isMenuOpen}
+                onOpenChange={setIsMenuOpen}
+                trigger={
+                    <Button variant="outlined" color="secondary">
+                        Actions
+                    </Button>
+                }
+            >
+                <MenuItem label="Archive" icon={<Icon name="archive" />} onClick={fn()} />
+                <MenuSeparator {...args} />
+                <MenuItem label="Delete" icon={<Icon name="trash" />} color="error" onClick={fn()} />
+            </Menu>
+        );
     },
 } satisfies Meta<typeof MenuSeparator>;
 

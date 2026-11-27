@@ -4,7 +4,6 @@ import { expect, fn, userEvent, waitFor } from "storybook/test";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { Link } from "../Link";
-import linkTokens from "../Link.tokens.scss?raw";
 
 const iconOptions = {
     ArrowRight: <Icon name="arrow-right" />,
@@ -16,14 +15,13 @@ const meta = {
     component: Link,
     title: "Building blocks/Page header, breadcrumbs & links/Link",
     decorators: [themeDecorator],
-    parameters: { tokens: linkTokens },
     args: {
         children: "Page tree",
         href: "#page-tree",
         onClick: fn((event) => event.preventDefault()),
     },
     argTypes: {
-        onClick: { description: "Called when the link is clicked, e.g. to navigate with a client-side router." },
+        children: { control: "text" },
         color: { control: "radio", options: ["secondary", "accent"] },
         startIcon: { control: "select", options: Object.keys(iconOptions), mapping: iconOptions },
         endIcon: { control: "select", options: Object.keys(iconOptions), mapping: iconOptions },

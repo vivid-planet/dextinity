@@ -1,7 +1,7 @@
 import { AlertDialog as BaseAlertDialog } from "@base-ui/react/alert-dialog";
 import { Dialog as BaseDialog } from "@base-ui/react/dialog";
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type PropsWithChildren, type ReactNode, type RefObject } from "react";
+import { forwardRef, type HTMLAttributes, type ReactNode, type RefObject } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
@@ -45,7 +45,7 @@ export interface DialogSlotProps {
     footer?: SlotPropsValue<DialogOwnerState, "div">;
 }
 
-export interface DialogProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "title" | "role">, PropsWithChildren {
+export interface DialogProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "title" | "role"> {
     /** Whether the dialog is open. */
     open: boolean;
     /** Called when the close button, Escape, or a click on the backdrop requests to close the dialog, unless it isn't `dismissible`. */
@@ -85,6 +85,8 @@ export interface DialogProps extends Omit<HTMLAttributes<HTMLDivElement>, "class
     initialFocus?: RefObject<HTMLElement | null>;
     /** Built-in texts, e.g. the close button's accessible name. */
     labels?: Partial<typeof defaultLabels>;
+    /** The content, e.g. a short form. */
+    children?: ReactNode;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
@@ -94,8 +96,6 @@ export interface DialogProps extends Omit<HTMLAttributes<HTMLDivElement>, "class
 /**
  * A modal window for a decision or a short task that needs full attention. Focus stays in the dialog and returns to the
  * trigger on close.
- *
- * `children`: The content, e.g. a short form.
  */
 export const Dialog = forwardRef<HTMLDivElement, DialogProps>(function Dialog(
     {

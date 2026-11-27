@@ -1,6 +1,6 @@
 import { Menu as BaseMenu } from "@base-ui/react/menu";
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type PropsWithChildren } from "react";
+import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 
 import styles from "./MenuRadioGroup.module.scss";
 
@@ -11,7 +11,7 @@ export type MenuRadioGroupOwnerState = {
     disabled: boolean;
 };
 
-export interface MenuRadioGroupProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "onChange">, PropsWithChildren {
+export interface MenuRadioGroupProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "onChange"> {
     /** The `value` of the checked `MenuRadioItem`. */
     value: string;
     /** Called with the `value` of the item the user picks. */
@@ -22,14 +22,14 @@ export interface MenuRadioGroupProps extends Omit<HTMLAttributes<HTMLDivElement>
      * @defaultValue `false`
      */
     disabled?: boolean;
+    /** The options, as `MenuRadioItem`s. */
+    children: ReactNode;
     /** Added alongside the component's own classes. */
     className?: string;
 }
 
 /**
  * A choice of one option in a `Menu`, e.g. the color scheme. The checked option shows a check mark.
- *
- * `children`: The options, as `MenuRadioItem`s.
  */
 export const MenuRadioGroup = forwardRef<HTMLDivElement, MenuRadioGroupProps>(function MenuRadioGroup(
     { value, onChange, children, disabled = false, className, ...restProps },

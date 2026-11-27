@@ -52,10 +52,7 @@ function productImageUrl(image: DamImageBlockData, siteUrl: string): string | un
     return props.damFile?.fileUrl ? new URL(props.damFile.fileUrl, siteUrl).toString() : undefined;
 }
 
-// TODO: Read the currency from the site config once it carries one; the Demo only sells in EUR.
-const priceCurrency = "EUR";
-
-function productOffers(product: GQLProductJsonLdFragment, url: string): Offer | AggregateOffer | undefined {
+function productOffers(product: GQLProductJsonLdFragment, url: string, priceCurrency: string): Offer | AggregateOffer | undefined {
     const availability: ItemAvailability = product.inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock";
 
     if (product.price != null) {
@@ -80,7 +77,7 @@ export function ProductJsonLd({ product, scope }: Props) {
     const siteConfig = getSiteConfigForDomain(scope.domain);
     const url = new URL(createSitePath({ scope, path: `/product/${product.slug}` }), siteConfig.url).toString();
     const image = productImageUrl(product.image, siteConfig.url);
-    const offers = productOffers(product, url);
+    const offers = productOffers(product, url, siteConfig.currency);
 
     const data: WithContext<Product> = {
         "@context": "https://schema.org",

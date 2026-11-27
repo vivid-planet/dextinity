@@ -9,6 +9,10 @@ function parentDirCount(dir: string) {
 export default {
     meta: {
         type: "suggestion",
+        docs: {
+            description: "Require the source root alias instead of a relative path when importing from another module",
+            url: "https://github.com/vivid-planet/dextinity/blob/main/packages/eslint-plugin/docs/rules/no-other-module-relative-import.md",
+        },
         fixable: "code",
         schema: [
             {
@@ -28,7 +32,7 @@ export default {
     create(context) {
         return {
             ImportDeclaration: function (node) {
-                const options = context.options[0] ?? { sourceRoot: "./src", sourceRootAlias: "@src" };
+                const options = { sourceRoot: "./src", sourceRootAlias: "@src", ...context.options[0] };
 
                 // An import source is always a string literal
                 if (typeof node.source.value !== "string") return;

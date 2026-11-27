@@ -8,6 +8,9 @@ autoInstallPeers: false
 dedupePeerDependents: true
 strictPeerDependencies: true
 
+# Wait 3 days before installing a new release, also during Renovate's lock file maintenance
+minimumReleaseAge: 4320
+
 peerDependencyRules:
     allowedVersions:
         # mjml-core 5 depends on cssnano 7 but pins htmlnano 3.3.1, whose optional cssnano peer asks for 8.

@@ -8,7 +8,8 @@ import { CalendarPopover } from "./CalendarPopover";
 import styles from "./DatePicker.module.scss";
 import { formatDate, isIsoDate, localeWeekStart } from "./dateValues";
 import { type DateInputErrorLabels, defaultDateInputErrorLabels, readTypedDay } from "./typedDay";
-import { useTextDraft } from "./useTextDraft";
+import { useFormReset } from "./useFormReset";
+import { useRejectedTextReread, useTextDraft } from "./useTextDraft";
 
 /**
  * Texts of the date picker, for translation.
@@ -38,12 +39,18 @@ export type DatePickerOwnerState = FieldOwnerState & {
  * The calendar options shared by the date pickers.
  */
 export interface DatePickerCalendarProps {
-    /** The earliest day that can be chosen, as `YYYY-MM-DD`. */
+    /** The earliest day that can be chosen, as `YYYY-MM-DD`. A `value` before it shows no error; validate the value in the form. */
     min?: string;
-    /** The latest day that can be chosen, as `YYYY-MM-DD`. */
+    /** The latest day that can be chosen, as `YYYY-MM-DD`. A `value` after it shows no error; validate the value in the form. */
     max?: string;
     /**
-     * The locale that formats and reads typed dates, and names months and weekdays, e.g. `de-AT`.
+     * Disables days in addition to `min` and `max`, e.g. weekends or holidays. Called with each day as `YYYY-MM-DD`. A `value` it disables
+     * shows no error; validate the value in the form.
+     */
+    isDateDisabled?: (date: string) => boolean;
+    /**
+     * The locale that formats and reads typed dates, and names months and weekdays, e.g. `de-AT`. Dates always use the Gregorian calendar
+     * and the digits 0–9.
      *
      * @defaultValue the browser's locale
      */
@@ -76,8 +83,10 @@ export interface DatePickerProps extends DatePickerCalendarProps, PureControlPro
 }
 
 /**
- * A day, typed in the locale's format or chosen in a calendar. Typed text is read on blur or Enter; text that is no valid day, or lies
- * outside `min` and `max`, stays in the field with an error and leaves the value unchanged until it is corrected.
+ * A day, typed in the locale's format or chosen in a calendar. Typed text is read on blur or Enter; text that is no valid day, or a day
+ * that can't be chosen, stays in the field with an error and leaves the value unchanged until it is corrected, or until `min`, `max`, or
+ * `isDateDisabled` change to allow it. Resetting the surrounding form discards the typed text; to discard it from code, render the picker
+ * with a new `key`.
  */
 export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(function DatePicker(
     {
@@ -88,6 +97,7 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(function
         onChange,
         min,
         max,
+        isDateDisabled,
         locale,
         weekStartsOn,
         clearable = false,
@@ -117,19 +127,19 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(function
 
     const date = isIsoDate(value) ? value : null;
     const draft = useTextDraft(date == null ? "" : formatDate(date, locale), (text) => {
-        const typed = readTypedDay(text, { locale, min, max, labels });
-        if (typed.error != null) {
-            return typed.error;
-        }
-        onChange(typed.day);
+        const typed = readTypedDay(text, { locale, min, max, isDateDisabled, labels });
+        return typed.error != null ? { error: typed.error } : { apply: () => onChange(typed.day) };
     });
+    useRejectedTextReread([draft]);
+    useFormReset(inputRef, draft.reset);
     const { disabled, readOnly } = useControlState(disabledProp, readOnlyProp);
     const editable = !disabled && !readOnly;
 
     const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
         if (event.key === "Enter") {
             draft.commit();
-        } else if (event.key === "Escape") {
+        } else if (event.key === "Escape" && draft.hasDraft) {
+            event.stopPropagation();
             draft.reset();
         } else if (event.key === "ArrowDown" && event.altKey && editable) {
             event.preventDefault();
@@ -146,6 +156,7 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(function
             disabled={disabledProp}
             readOnly={readOnlyProp}
             error={draft.error}
+            errorInput={inputRef}
             className={className}
             style={style}
         >
@@ -200,6 +211,7 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(function
                         }}
                         min={min}
                         max={max}
+                        isDateDisabled={isDateDisabled}
                         locale={locale}
                         weekStartsOn={weekStartsOn ?? localeWeekStart(locale)}
                         months={1}

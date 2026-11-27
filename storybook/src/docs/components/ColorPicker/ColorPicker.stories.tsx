@@ -1,5 +1,4 @@
-import { Field, FieldContainer } from "@dextinity/admin";
-import { ColorPicker, type ColorPickerColorPreviewProps, FinalFormColorPicker } from "@dextinity/admin-color-picker";
+import { ColorPicker, type ColorPickerColorPreviewProps, Field, FieldContainer, FinalFormColorPicker } from "@dextinity/admin";
 import { StateFilled, StateRing, Warning } from "@dextinity/admin-icons";
 import { Grid } from "@mui/material";
 import { useState } from "react";

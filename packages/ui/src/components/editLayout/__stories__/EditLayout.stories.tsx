@@ -11,10 +11,9 @@ import { Button } from "../../button/Button";
 import { DevicePreview, type DevicePreviewDevice } from "../../devicePreview/DevicePreview";
 import { Field } from "../../field/Field";
 import { Icon } from "../../icon/Icon";
-import { IconButton } from "../../iconButton/IconButton";
 import { Input } from "../../input/Input";
 import { KeyValueList } from "../../keyValueList/KeyValueList";
-import { PageHeader } from "../../pageHeader/PageHeader";
+import { PageHeader, type PageHeaderAction } from "../../pageHeader/PageHeader";
 import { Panel } from "../../panel/Panel";
 import { SaveState } from "../../saveState/SaveState";
 import { SegmentedControl } from "../../segmentedControl/SegmentedControl";
@@ -24,7 +23,6 @@ import { Switch } from "../../switch/Switch";
 import { Tabs } from "../../tabs/Tabs";
 import { Textarea } from "../../textarea/Textarea";
 import { EditLayout, type EditLayoutProps } from "../EditLayout";
-import editLayoutTokens from "../EditLayout.tokens.scss?raw";
 import styles from "./EditLayout.stories.module.scss";
 
 type Variant = NonNullable<EditLayoutProps["variant"]>;
@@ -266,15 +264,11 @@ function StatusAside() {
     );
 }
 
-const editActions = (
-    <>
-        <SaveState state="dirty" />
-        <IconButton variant="text" color="secondary" aria-label="More actions">
-            <Icon name="more-horizontal" />
-        </IconButton>
-        <Button startIcon={<Icon name="check" />}>Save</Button>
-    </>
-);
+const editSecondaryActions: PageHeaderAction[] = [
+    { label: "Preview", icon: <Icon name="eye" /> },
+    { label: "Duplicate", icon: <Icon name="copy" /> },
+    { label: "Delete …", icon: <Icon name="trash" />, color: "error", separatorBefore: true },
+];
 
 function EditHeader({ kind, compact }: { kind: "page" | "jobAd"; compact: boolean }) {
     const isPage = kind === "page";
@@ -284,14 +278,16 @@ function EditHeader({ kind, compact }: { kind: "page" | "jobAd"; compact: boolea
             back={isPage ? { label: "Back to the page tree", href: "#page-tree" } : { label: "Back to job ads", href: "#job-ads" }}
             eyebrow={isPage ? "Page · Austria · German" : "Job ad · Austria · German"}
             title={isPage ? "Careers" : "Senior UX Designer"}
+            status={<StatusIndicator status="published" />}
             subtitle={
                 <span className={styles.metaLine}>
-                    <StatusIndicator status="published" />
                     <span>{isPage ? "/careers" : "JOB-041"}</span>
                     <span>Last saved by Anna Klein</span>
                 </span>
             }
-            actions={editActions}
+            actionStatus={<SaveState state="dirty" />}
+            secondaryActions={editSecondaryActions}
+            primaryAction={{ label: "Save", icon: <Icon name="check" />, keyboardShortcut: "mod+s" }}
         />
     );
 }
@@ -363,7 +359,6 @@ const meta = {
     title: "Page types/Edit",
     decorators: [themeDecorator],
     parameters: {
-        tokens: editLayoutTokens,
         layout: "fullscreen",
         docs: {
             description: {

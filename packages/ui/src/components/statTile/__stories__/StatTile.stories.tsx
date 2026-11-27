@@ -4,7 +4,6 @@ import { expect } from "storybook/test";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { StatusIndicator } from "../../statusIndicator/StatusIndicator";
 import { StatTile } from "../StatTile";
-import statTileTokens from "../StatTile.tokens.scss?raw";
 import styles from "./StatTile.stories.module.scss";
 
 const contextOptions = {
@@ -17,7 +16,6 @@ const meta = {
     component: StatTile,
     title: "Building blocks/Panels, cards & metrics/StatTile",
     decorators: [themeDecorator],
-    parameters: { tokens: statTileTokens },
     args: {
         value: 79,
         label: "Changes live",

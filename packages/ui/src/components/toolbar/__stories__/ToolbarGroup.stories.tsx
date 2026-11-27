@@ -4,7 +4,6 @@ import { expect, fn, within } from "storybook/test";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { Toolbar } from "../Toolbar";
-import toolbarTokens from "../Toolbar.tokens.scss?raw";
 import { ToolbarButton } from "../ToolbarButton";
 import { ToolbarGroup } from "../ToolbarGroup";
 import styles from "./Toolbar.stories.module.scss";
@@ -15,14 +14,11 @@ const meta = {
     decorators: [
         (Story) => (
             <div className={styles.surface}>
-                <Toolbar aria-label="Formatting">
-                    <Story />
-                </Toolbar>
+                <Story />
             </div>
         ),
         themeDecorator,
     ],
-    parameters: { tokens: toolbarTokens },
     args: {
         "aria-label": "Lists",
         children: (
@@ -41,6 +37,11 @@ const meta = {
         children: { control: false },
         className: { control: false },
     },
+    render: (args) => (
+        <Toolbar aria-label="Formatting">
+            <ToolbarGroup {...args} />
+        </Toolbar>
+    ),
 } satisfies Meta<typeof ToolbarGroup>;
 
 export default meta;

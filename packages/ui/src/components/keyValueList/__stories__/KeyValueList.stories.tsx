@@ -4,7 +4,6 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Link } from "../../link/Link";
 import { StatusIndicator } from "../../statusIndicator/StatusIndicator";
 import { KeyValueList } from "../KeyValueList";
-import keyValueListTokens from "../KeyValueList.tokens.scss?raw";
 import styles from "./KeyValueList.stories.module.scss";
 
 const meta = {
@@ -18,7 +17,6 @@ const meta = {
         ),
         themeDecorator,
     ],
-    parameters: { tokens: keyValueListTokens },
     args: {
         items: [
             { key: "Status", value: <StatusIndicator status="published" /> },

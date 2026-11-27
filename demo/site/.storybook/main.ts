@@ -7,7 +7,7 @@ const currentDirectory = dirname(fileURLToPath(import.meta.url));
 
 const config: StorybookConfig = {
     stories: ["../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
-    addons: ["@storybook/addon-docs", "@storybook/addon-a11y", "@storybook/addon-vitest"],
+    addons: ["@storybook/addon-docs", "@storybook/addon-vitest"],
     framework: {
         name: "@storybook/nextjs-vite",
         options: {
@@ -22,6 +22,9 @@ const config: StorybookConfig = {
             ...config.resolve.alias,
             "@src": resolve(currentDirectory, "../src"),
         };
+        // Since the site is `"type": "module"`, Vite 8 gives default imports of CommonJS packages such as `redraft` the whole
+        // `module.exports`, ignoring `__esModule`. Next.js's webpack build respects `__esModule`, so do the same here.
+        config.legacy = { ...config.legacy, inconsistentCjsInterop: true };
         return config;
     },
 };

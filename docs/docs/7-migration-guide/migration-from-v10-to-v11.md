@@ -1344,6 +1344,25 @@ export const TeaserVideoBlock = createDamVideoBlock({ previewImage: false }, "Te
 Then regenerate `block-meta.json` and the block types in the Admin and the Site.
 The factory carries the migrations of `DamVideoBlock`, so existing content keeps loading.
 
+### Remove `disableTypography` from `FormSection`
+
+The deprecated `disableTypography` prop of `FormSection` is removed. The title is always rendered with `SectionHeadline` now.
+
+Find the usages:
+
+```sh
+grep -rn "disableTypography" src
+```
+
+`AppHeaderButton` has a `disableTypography` prop as well, which is unchanged. Only update the matches on a `FormSection`.
+
+Remove the prop and customize the title with `slotProps.title` instead, for example to set a custom `variant` on the underlying `Typography` or to hide the divider:
+
+```diff
+- <FormSection title="General" disableTypography>
++ <FormSection title="General" slotProps={{ title: { divider: false, slotProps: { headline: { variant: "h5" } } } }}>
+```
+
 ### Update MUI to v9
 
 The admin packages now require MUI v9 and MUI X v9. See the [Material UI](https://mui.com/material-ui/migration/upgrade-to-v9/), [Data Grid](https://mui.com/x/migration/migration-data-grid-v8/) and [Date and Time Pickers](https://mui.com/x/migration/migration-pickers-v8/) migration guides for the complete list of changes.
@@ -2130,6 +2149,25 @@ The options of `useTableQuery` and `useSaveConflictQuery` are based on the Apoll
 
 `ITableQueryHookResult` is a type alias now, so you can't extend it with declaration merging.
 
+### Import the color picker from `@dextinity/admin`
+
+The `@dextinity/admin-color-picker` package has been merged into `@dextinity/admin`. Remove the package:
+
+```diff title="admin/package.json"
+{
+    "dependencies": {
+-       "@dextinity/admin-color-picker": "10.15.0",
+    }
+}
+```
+
+Import its components and types from `@dextinity/admin` instead:
+
+```diff
+- import { ColorField } from "@dextinity/admin-color-picker";
++ import { ColorField } from "@dextinity/admin";
+```
+
 <!-- "Verify lint passes" must always be the last step for this service. -->
 
 ### Verify lint passes
@@ -2252,6 +2290,15 @@ npm install mjml@^5.4.1
 ```
 
 Then verify that the package still builds and lint passes.
+
+### Add `id="body"` to mails without `MjmlMailRoot`
+
+`renderMailHtml` no longer adds `id="body"` to the `<body>` of every mail. `MjmlMailRoot` sets it on its `MjmlBody` now. If a mail renders its own `MjmlBody` instead of using `MjmlMailRoot` and its CSS targets `#body`, set the id yourself:
+
+```diff
+- <MjmlBody>
++ <MjmlBody id="body">
+```
 
 ### Test the mails in every supported mail client
 

@@ -4,9 +4,17 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import { Input } from "../../input/Input";
 import { Field } from "../Field";
-import { useFieldContext } from "../fieldContext";
+import { type ControlReport, useFieldContext } from "../fieldContext";
 
 afterEach(cleanup);
+
+function ReportingControl({ report }: { report: ControlReport }) {
+    const field = useFieldContext();
+    const setControlReport = field?.setControlReport;
+    const { error, counter } = report;
+    useEffect(() => setControlReport?.({ error, counter }), [setControlReport, error, counter]);
+    return <input {...field?.control} />;
+}
 
 describe("Field owner state", () => {
     it("emits the state, size, and booleans as data attributes", () => {
@@ -124,15 +132,9 @@ describe("Field layouts and reports", () => {
     });
 
     it("shows a control's own error over the validation message and its counter at the label", () => {
-        function ReportingControl() {
-            const field = useFieldContext();
-            const setControlReport = field?.setControlReport;
-            useEffect(() => setControlReport?.({ error: "Not a date.", counter: "3 / 10" }), [setControlReport]);
-            return <input {...field?.control} />;
-        }
         render(
             <Field label="Day" description="Help">
-                <ReportingControl />
+                <ReportingControl report={{ error: "Not a date.", counter: "3 / 10" }} />
             </Field>,
         );
 
@@ -140,5 +142,23 @@ describe("Field layouts and reports", () => {
         expect(control).toHaveAttribute("aria-invalid", "true");
         expect(control).toHaveAccessibleDescription("Not a date.");
         expect(screen.getByText("3 / 10")).toBeInTheDocument();
+    });
+
+    it("announces a control's own error in a live region that is there before it, but not the validation message", () => {
+        const { container, rerender } = render(
+            <Field label="Day" state="error" validationMessage="Enter a day.">
+                <ReportingControl report={{}} />
+            </Field>,
+        );
+        const liveRegion = container.querySelector("[aria-live='polite']");
+        expect(liveRegion).toBeEmptyDOMElement();
+
+        rerender(
+            <Field label="Day" state="error" validationMessage="Enter a day.">
+                <ReportingControl report={{ error: "Not a date." }} />
+            </Field>,
+        );
+        expect(container.querySelector("[aria-live='polite']")).toBe(liveRegion);
+        expect(liveRegion).toHaveTextContent("Not a date.");
     });
 });

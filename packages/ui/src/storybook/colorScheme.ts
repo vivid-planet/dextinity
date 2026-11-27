@@ -27,6 +27,7 @@ function getSystemColorScheme(): ThemeColorScheme {
     return "light";
 }
 
+/** The color scheme the stories show: the toolbar's choice, or the system's when the toolbar follows it. */
 function getAppliedColorScheme(): ThemeColorScheme {
     const toolbarColorScheme = colorSchemeSetting.get();
     return toolbarColorScheme === "system" ? getSystemColorScheme() : toolbarColorScheme;

@@ -6,7 +6,6 @@ import { landscapeImage } from "../../../storybook/sampleImages";
 import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { FocalPointPicker, type FocalPointPickerProps } from "../FocalPointPicker";
-import focalPointPickerTokens from "../FocalPointPicker.tokens.scss?raw";
 import styles from "./FocalPointPicker.stories.module.scss";
 
 type FocalPointPickerStoryArgs = FocalPointPickerProps & Pick<FieldStoryArgs, "label" | "description" | "validationMessage" | "state">;
@@ -48,7 +47,6 @@ const meta = {
     component: FocalPointPicker,
     title: "Building blocks/Media & upload/FocalPointPicker",
     decorators: [themeDecorator],
-    parameters: { tokens: focalPointPickerTokens },
     args: {
         src: landscapeImage,
         value: { x: 0.56, y: 0.34 },

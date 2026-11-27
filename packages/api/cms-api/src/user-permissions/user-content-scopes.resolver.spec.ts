@@ -1,6 +1,6 @@
 import { createMock } from "@golevelup/ts-vitest";
 import type { EntityManager } from "@mikro-orm/postgresql";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import type { ContentScope } from "./interfaces/content-scope.interface.js";
 import type { User } from "./interfaces/user.js";
@@ -21,6 +21,23 @@ describe("UserContentScopesResolver", () => {
             const resolver = new UserContentScopesResolver(userService, createMock<EntityManager>());
 
             expect(await resolver.userPermissionsContentScopes("1")).toEqual(contentScopes);
+        });
+    });
+
+    describe("userPermissionsAssignedContentScopes", () => {
+        it("returns the rule-based and the manually assigned content scopes separately", async () => {
+            const byRule: ContentScope[] = [{ domain: "main" }, { domain: "news" }];
+            const manual: ContentScope[] = [{ domain: "main" }];
+            const filterContentScopesForUser = vi.fn(async () => byRule);
+            const userService = createMock<UserPermissionsService>({
+                findUserOrThrow: async () => ({ id: "1", name: "User", email: "user@example.com" }) satisfies User,
+                filterContentScopesForUser,
+                getManualContentScopesForUser: async () => manual,
+            });
+            const resolver = new UserContentScopesResolver(userService, createMock<EntityManager>());
+
+            expect(await resolver.userPermissionsAssignedContentScopes("1")).toEqual({ byRule, manual });
+            expect(filterContentScopesForUser).toHaveBeenCalledWith(expect.objectContaining({ includeContentScopesManual: false }));
         });
     });
 

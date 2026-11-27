@@ -67,6 +67,8 @@ export interface ButtonProps {
      * @defaultValue `"contained"`
      */
     variant?: "contained" | "outlined" | "text";
+    /** The label: a verb for the action, e.g. "Save". */
+    children?: ReactNode;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Sets which element a named inner part renders as. */
@@ -75,6 +77,8 @@ export interface ButtonProps {
     slotProps?: ButtonSlotProps;
 }
 ```
+
+An exported component that takes `children` declares the prop in its props interface with TSDoc, as `Button` does above, so the props table shows its description. The interface omits `children` from the props it extends and doesn't use `PropsWithChildren`, and the component comment doesn't describe `children`. The prop is required when the component shows nothing useful without it.
 
 A change that makes a comment inaccurate updates it in the same change.
 
@@ -89,6 +93,7 @@ Components are pure UI and always controlled: a value comes with its change hand
 - **Colors** — a prop that picks a color is `color`, not `tone`.
 - **Values** — a value with the same meaning has the same name in every component. For example, the status colors use the words of `Field`'s `state`: `success`, `warning`, `error`.
 - **Sizes** — `size` takes `small`, `default`, and `large`, and `xlarge` when a component needs a larger one. The default is `default`. Don't use abbreviations such as `md` or `lg`.
+- **Disabled values** — an option object disables itself with a `disabled` field: `{ value, label, disabled }`. Where the values aren't such option objects, a callback named `is<Thing>Disabled` disables them: `Combobox`'s `isOptionDisabled`, the date pickers' `isDateDisabled`, `DateTimePicker`'s `isTimeDisabled`.
 
 ### Form controls and `Field`
 
@@ -98,7 +103,7 @@ Form controls are pure controls, like `Input`: `Select`, `DatePicker`, `Textarea
 
 Controls take no other HTML attributes than their name, description, `id`, `className`, and `style`: put `onFocus`, `onBlur`, and `data-*` attributes on the `Field`, whose root receives the focus events that bubble up from the control. For a control on its own, wrap it in a `Field` without `label`. In development, a control warns when the surrounding field's `layout` doesn't fit it.
 
-- **Box controls** (e.g. `Select`, `DatePicker`, `NumberInput`, `Textarea`, `RichTextEditor`) render through the internal `ControlFrame`: inside a `Field` they take the field's box; on their own they draw a box without a label and take their name from `aria-label` or `aria-labelledby`. A control that finds an error itself, such as a date picker with typed text that is no date, reports it with `setControlReport`, and the field shows it as its validation message and sets its `state` to `error`. `RichTextEditor` needs `<Field layout="stacked">`.
+- **Box controls** (e.g. `Select`, `DatePicker`, `NumberInput`, `Textarea`, `RichTextEditor`) render through the internal `ControlFrame`: inside a `Field` they take the field's box; on their own they draw a box without a label and take their name from `aria-label` or `aria-labelledby`. A control that finds an error itself, such as a date picker with typed text that is no date, reports it with `setControlReport`, and the field shows it as its validation message, announces it politely, and sets its `state` to `error`; a `validationMessage` of the app is not announced. `ControlFrame` also sets the error as the custom validity of the input that holds it, so the surrounding form can't be submitted while the error shows. `RichTextEditor` needs `<Field layout="stacked">`.
 - **Group controls** (e.g. `RadioGroup`, `CheckboxGroup`, `SegmentedControl`, `Slider`, `FileUpload`, `FocalPointPicker`) draw their own frame and go in `<Field layout="group">`, which draws no box and renders the label as the name of the control's group element (`useGroupControl`). On their own, `aria-label` names the group. They follow the field's `readOnly`: the value stays visible and focusable, and changes are ignored. `role="group"` and `role="slider"` can't take `aria-required`, so in a required field, `CheckboxGroup`, `FileUpload`, `FocalPointPicker`, and `Slider` read the field's hidden `labels.required` ("Required") as part of their description instead.
 - **A single `Checkbox` or `Switch`** keeps its text as its name, so its `Field` takes no `label`: a label would name nothing. For a validation message, it goes in a `<Field layout="group">` without `label`.
 - **`description` vs. `info`.** `description` is what everyone needs to fill in a field, e.g. the expected format; it is visible below the field until a validation message takes its place in the `success`, `warning`, or `error` state. `info` (on `Field` and `FieldLabel`) is background most users don't need; it sits behind a focusable info button right after the `<label>` element, shows in a tooltip on hover, focus, and tap, and describes the control through `aria-describedby`. The button's name comes from `labels.infoButton` ("More information"), its icon from `slots.infoIcon` and `slotProps.infoIcon`.
@@ -109,7 +114,7 @@ Component source contains no literal text (`react/jsx-no-literals`): every visib
 
 ### Root and primary element props
 
-A component's primary element is the native element that does its job — the `<button>` of a button, the `<input>` of a text field, the `<img>` of an image. A component extends the props of its primary element and passes the ones it doesn't handle itself to that element, so a consumer can set any attribute or event handler it accepts without us maintaining a dedicated prop for each. By default it doesn't re-declare or document them; they stay as the element defines them. It may still re-declare one to support it as a documented feature.
+A component's primary element is the native element that does its job — the `<button>` of a button, the `<input>` of a text field, the `<img>` of an image. A component extends the props of its primary element and passes the ones it doesn't handle itself to that element, so a consumer can set any attribute or event handler it accepts without us maintaining a dedicated prop for each. By default it doesn't re-declare or document them; they stay as the element defines them. It re-declares one with TSDoc when the component depends on it: the `aria-label` that names a component without visible text, the `onClick` of an action, `href`, `render`, `placeholder`, or a `style` for a documented custom property. A story never describes a prop through `argTypes.description`.
 
 Usually the primary element is the root. When a component wraps it, for example to place adornments next to it, `className` and `style` go to the root, where they place and size the component, and `slotProps.root` sets the root's other props. The primary element is then a slot, so `slotProps` also reaches it like any other part.
 
@@ -157,9 +162,11 @@ The contract has two parts: **structural class names** for a component's element
 
 ### Stories
 
-The Storybook sidebar mirrors the design system's areas — Foundations, Building blocks, Shell, Patterns, Page types — and each area's pages: a story title is `<Area>/<Page>/<Component>`, e.g. `Building blocks/Buttons/IconButton`. Each consumer-facing component has its own story file in an `__stories__/` directory next to its source; story-only helpers such as decorators live in [`src/storybook/`](src/storybook). The component's TSDoc and prop table (see [TSDoc](#tsdoc)) drive its autodocs page, so stories don't restate it. `parameters.tokens`, set to the component's `<ComponentName>.tokens.scss` imported with `?raw`, adds its token table with live values to the page.
+The Storybook sidebar mirrors the design system's areas — Foundations, Building blocks, Shell, Patterns, Page types — and each area's pages: a story title is `<Area>/<Page>/<Component>`, e.g. `Building blocks/Buttons/IconButton`. Each consumer-facing component has its own story file in an `__stories__/` directory next to its source; story-only helpers such as decorators live in [`src/storybook/`](src/storybook). The component's TSDoc and prop table (see [TSDoc](#tsdoc)) drive its autodocs page, so stories don't restate it. The page ends with a table of the tokens that `meta.component` reads, with their live values (see [Component tokens](#component-tokens)); a page without `meta.component` has no table.
 
-The docs show only the body of a story's `render` function, so everything the example needs goes inside it. A `render` function names its parameter `args`. To show a story's full source instead of its `render` body, set `parameters.docs.source.type` to `"code"`.
+The docs show only the body of a story's `render` function, or `meta.component` when it has none, so everything the example needs goes inside it. A `render` function names its parameter `args`.
+
+The docs don't show decorators, so a decorator only sets the stage, such as the theme or a background. A parent that the component needs, such as the `Toolbar` of a `ToolbarButton`, goes into `render`.
 
 On the docs page, each story is only as tall as its content, and its frame cuts off what overflows it. So that a popup, such as a select's options, a menu, a calendar, or a dialog, isn't cut off or shrunk, the story grows when the popup opens: it measures the open popup and makes room for it, and keeps that room once the popup closes. When the popup still lacks room because its trigger is next to the window's edge, e.g. a select at the window's bottom, the page scrolls so that the popup opens in full. No story sets a height for this. A story whose popup opens above its trigger, e.g. a menu in a bar at the bottom of the page, sets `parameters.popupRoom` to `{ side: "above" }`, so the room is made above the story and the popup doesn't flip below. `test:storybook` checks that the frame doesn't cut off or shrink a popup (see [Testing](#testing)).
 
@@ -211,6 +218,7 @@ Stories use [Component Story Format 3](https://storybook.js.org/docs/api/csf), t
 const meta = {
     component: Button,
     args: { children: "Button", onClick: fn() },
+    argTypes: { children: { control: "text" } },
 } satisfies Meta<typeof Button>;
 
 export default meta;
@@ -226,9 +234,13 @@ Each declared prop is exposed as a control through `argTypes`, by kind:
 
 - **Boolean** — a toggle.
 - **Enum** — `radio` for three options or fewer, `select` for more.
-- **`ReactNode`** — a `select` whose `options` are labels and whose `mapping` resolves each to the node. The built-in empty choice covers the unset case.
+- **Text** — a `ReactNode` prop that holds text, such as a label, a title, a description, or the text `children` of a `Button` — `control: "text"`.
+- **Elements** — a `ReactNode` prop that holds an icon, an adornment, or an action — a `select` whose `options` are labels and whose `mapping` resolves each to the element. The built-in empty choice covers the unset case.
+- **Regions and other content** — a prop that holds composed content, such as a layout region, a footer, or `children` that are other components; a prop that takes only an element, such as `Tooltip`'s `children`; and a union with a render function, such as `Field`'s `children` — `control: false`.
 - **Override-API props** (`className`, `slots`, `slotProps`, `ref`, `render`) — `control: false`, keeping the prop-table row without an unusable control.
 - **Event handlers** — `fn()` from `storybook/test`, so calls show in the Actions panel and an interaction test can verify the handler ran.
+
+A unit test fails when a story on a docs page has no control for a `ReactNode` or `ReactElement` prop of `meta.component`.
 
 #### Dev story
 
@@ -252,6 +264,16 @@ The package has two dev-pm scripts:
 | `storybook-dextinity-ui` | `storybook dev -p 26648 --no-open`                                |
 
 The `@dextinity-ui` group starts `dextinity-ui`. Start `storybook-dextinity-ui` on its own, or with the `@storybook` group. The Storybook then runs at `http://localhost:26648`.
+
+### Workbench
+
+The Workbench, `Workbench/Shell`, shows clickable prototypes of whole apps (`Workbench/Prototypes`) so that they behave like the app in the browser: by default a prototype fills all the room below the Workbench's toolbar and follows the window's width; a viewport preset or size puts it in a frame on a canvas instead, whose width its media queries see. Open it on its own at `http://localhost:26648/iframe.html?id=workspace-shell--shell&viewMode=story`.
+
+- The Prototypes tab lists the prototypes with their pages and opens a page in one click. The Storybook tab shows Storybook's own UI, unchanged, so the stories, docs, and controls are the same as in the Storybook.
+- The toolbar has one button with a menu each for the viewport, color scheme, brand, and density, and buttons to reload and to open in a new tab. Drag the frame's edges to resize it.
+- The pick button turns the prototype into a picker: a click on a component in it opens that component's story in the Storybook tab, and the back button returns to the prototype page it was picked on.
+
+Work in progress goes into `Workbench/Canvas` ([`src/storybook/workspace/__stories__/WorkspaceCanvas.stories.tsx`](src/storybook/workspace/__stories__/WorkspaceCanvas.stories.tsx)). The `design-workspace` skill in [`skills/design-workspace/`](../../skills/design-workspace/SKILL.md) covers adding prototypes and keeping a shareable link to the Workbench up to date.
 
 ## Testing
 
@@ -297,6 +319,8 @@ Every derived token is declared on each theme boundary (`[data-dextinity-color-s
 ### Component tokens
 
 Each component declares the decisions a theme may override — colors, radius, heights, paddings, shadows — in a `tokens` mixin in `src/components/<feature>/<ComponentName>.tokens.scss`, next to its `<ComponentName>.module.scss`, named `--dextinity-<component>-<property>`, and its module stylesheet reads only those plus generic tokens such as the focus ring and motion. [`src/theme/_components.scss`](src/theme/_components.scss) `@use`s each tokens file and includes its mixin in the `scope.component-tokens` block. A token is defined in the folder of the component its name starts with, and other components can read it: `IconButton` uses the `--dextinity-button-…` colors from `Button.tokens.scss`. A `//` comment directly above a token becomes its description in the docs.
+
+The docs page lists the tokens of the component's stylesheet and of the internal parts it imports, and the tokens that their values read. [`.storybook/componentTokens.ts`](.storybook/componentTokens.ts) reads them from the compiled stylesheets. It follows the component's imports of modules that [`src/index.ts`](src/index.ts) doesn't export a value from, such as `Calendar`, and stops at exported components, which list their tokens on their own page. The MCP server gives agents the same list in the component's description. A page whose tokens no component tokens file declares, such as the theme's font tokens on the Typography page, lists them in `parameters.tokens` instead. An internal part holds only what all its users need; an extra that only some components use is its own part, which only those components import.
 
 A component token whose value is a shared decision points at the semantic token instead of repeating its value, e.g. `var(--dextinity-opacity-disabled)`, `var(--dextinity-color-fill-hover)`, or `var(--dextinity-material-edge-shadow)`, so a theme that changes the decision changes it everywhere. Styles that several module stylesheets share are mixins: the eyebrow label in [`src/theme/_textStyles.scss`](src/theme/_textStyles.scss) and shared animations in [`src/theme/_keyframes.scss`](src/theme/_keyframes.scss).
 

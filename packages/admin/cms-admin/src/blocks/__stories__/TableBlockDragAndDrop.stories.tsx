@@ -84,10 +84,33 @@ export const DraggingTheMiddleColumnOntoTheLastMovesIt: Story = {
     },
 };
 
+export const ColumnDroppedOutsideTheGridKeepsItsPosition: Story = {
+    play: async ({ args }) => {
+        await screen.findByRole("gridcell", { name: "A1" }, { timeout: 5000 });
+
+        // Moving along the header row reorders the columns while dragging, so the drop outside the grid has to undo it
+        await dragAndDrop(getColumnDragHandle("A"), screen.getByRole("dialog"), {
+            steps: 30,
+            targetPosition: getRightEdgeOfTheDialogAtHeaderHeight(),
+        });
+        // The state update after the drag ends is applied in a later task
+        await new Promise((resolve) => setTimeout(resolve));
+
+        expect(getColumnOrderInGrid()).toEqual(["A", "B", "C"]);
+        expect(getLastState(args.onStateChange).columns.map(({ id }) => id)).toEqual(["A", "B", "C"]);
+    },
+};
+
 // Playwright performs a real native HTML5 drag, which storybook/test's userEvent can't trigger. Imported lazily because "vitest/browser" throws when the story is opened outside of Vitest.
 async function dragAndDrop(source: HTMLElement, target: HTMLElement, options?: Parameters<UserEvent["dragAndDrop"]>[2]) {
     const { userEvent } = await import("vitest/browser");
     await userEvent.dragAndDrop(source, target, options);
+}
+
+function getRightEdgeOfTheDialogAtHeaderHeight() {
+    const dialogBounds = screen.getByRole("dialog").getBoundingClientRect();
+    const headerBounds = getColumnHeader("A").getBoundingClientRect();
+    return { x: dialogBounds.width - 4, y: headerBounds.top + headerBounds.height / 2 - dialogBounds.top };
 }
 
 function getLastState(onStateChange: StoryProps["onStateChange"]) {

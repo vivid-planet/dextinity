@@ -43,6 +43,8 @@ The link shows one branch, usually `ui-design-workspace`: `next` with every bran
 
 Use a build directory in the scratchpad, and reuse it between updates, so that you can tell which files changed.
 
+The Workbench's designer notes post as comments on the link, or go to Claude, only when the launcher provides `window.dextinityWorkbenchHost.comments`, as described in `src/storybook/workspace/workbenchHost.ts`. `launcher.html` doesn't provide it, so the notes are copied to the clipboard instead.
+
 ### Building the static Storybook
 
 The link needs a build with few files and stable file names, so that an update sends only the files whose content changed. Storybook's own build splits the stories into hundreds of chunks with hashed names, so build it with a changed copy of its config:

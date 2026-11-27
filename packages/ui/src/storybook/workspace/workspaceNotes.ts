@@ -7,19 +7,53 @@ export interface NoteAnchor {
     path: number[];
 }
 
-export interface PinnedComment extends NoteAnchor {
+/** The view a note was written in, so that whoever reads it can see the page the same way. */
+export interface NoteViewSettings {
+    brand: string;
+    colorScheme: string;
+    density: string;
+    textLength: string;
+    /** The content scenario of the View menu, e.g. `many` or `empty`. */
+    content: string;
+    /** The size of the frame's window in CSS pixels, which its media queries see. */
+    viewportWidth: number;
+    viewportHeight: number;
+}
+
+/** Where a designer note was shared to, through the page that hosts the Workbench. */
+export type NoteShareTarget = "comment" | "claude";
+
+/**
+ * A designer note pinned to an element of a prototype's page. The optional fields came after the first stored notes, which lack them.
+ */
+export interface DesignerNote extends NoteAnchor {
     id: string;
     text: string;
     /** Where on the element the pin sits, as a share of its width and height. */
     x: number;
     y: number;
+    /** Done; stored under the name the notes had when they were called comments. */
     resolved?: boolean;
+    /** A short description of the element, e.g. `button “Save”`. */
+    element?: string;
+    view?: NoteViewSettings;
+    /** ISO date and time. */
+    createdAt?: string;
+    /** ISO date and time of the last successful share. */
+    sharedAt?: string;
+    sharedAs?: NoteShareTarget;
 }
 
 export interface TextChange extends NoteAnchor {
     id: string;
     original: string;
     text: string;
+    /** A short description of the element, e.g. `heading “Job ads”`. */
+    element?: string;
+    /** Whether the change goes into the code request; changes stored before the toggle existed are left out. */
+    inCodeRequest?: boolean;
+    /** ISO date and time. */
+    createdAt?: string;
 }
 
 /** A list kept in the browser's storage and shared by everything in the workspace that shows it, including other tabs. */
@@ -78,7 +112,8 @@ export function createStoredList<Item>(storageKey: string) {
     };
 }
 
-export const commentList = createStoredList<PinnedComment>("dextinity-ui-workspace-comments");
+// The key of the notes from when they were called comments, so that the stored ones stay
+export const designerNoteList = createStoredList<DesignerNote>("dextinity-ui-workspace-comments");
 export const textChangeList = createStoredList<TextChange>("dextinity-ui-workspace-text-changes");
 
 export function createNoteId() {
@@ -87,4 +122,12 @@ export function createNoteId() {
 
 export function isOnPage(note: NoteAnchor, prototypeId: string, page: string) {
     return note.prototypeId === prototypeId && note.page === page;
+}
+
+export function isNoteDone(note: DesignerNote) {
+    return note.resolved === true;
+}
+
+export function isInCodeRequest(change: TextChange) {
+    return change.inCodeRequest === true;
 }

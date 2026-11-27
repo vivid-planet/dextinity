@@ -14,18 +14,19 @@ interface WorkbenchComment {
 
 /**
  * Comments on the page that hosts the Workbench. The page may provide it as `window.dextinityWorkbenchHost.comments`, on itself or on
- * any same-origin window above the Workbench's frame, e.g. the launcher of the published artifact. Without it, the Workbench copies the formatted
- * comment to the clipboard instead.
+ * any same-origin window above the Workbench's frame, e.g. the launcher of the published artifact. Without it, or when its `isAvailable`
+ * resolves `false`, the Workbench copies the formatted comment to the clipboard instead.
  *
  * A host page in a claude.ai Artifact declares the `comments` capability (`{comments: {}}`) and implements it with
  * `claude.use("comments")`, anchored to the frame that shows the Workbench. The Workbench calls `post` and `sendToClaude` only from a
  * click of the viewer, as the capability requires:
  *
  * ```ts
- * const comments = await claude.use("comments"); // null: leave `dextinityWorkbenchHost` out
+ * const comments = await claude.use("comments"); // null: leave `dextinityWorkbenchHost` out, or resolve `isAvailable` to `false`
  * const frame = document.querySelector("iframe");
  * window.dextinityWorkbenchHost = {
  *     comments: {
+ *         isAvailable: async () => true,
  *         canSendToClaude: () => comments.canSendToClaude(),
  *         post: async ({ text }) => {
  *             await comments.create({ anchor: await comments.anchorFor(frame), text });
@@ -40,6 +41,8 @@ interface WorkbenchComment {
  * Each method rejects with an `Error` whose message the Workbench shows; the Workbench never retries on its own.
  */
 export interface WorkbenchCommentsHost {
+    /** Asked each time the notes sidebar opens; `false`, e.g. when the page's comments couldn't load, makes the Workbench copy instead. */
+    isAvailable(): Promise<boolean>;
     /** Asked each time the notes sidebar opens; only `available` enables “Send to Claude”. */
     canSendToClaude(): Promise<ClaudeAvailability>;
     /** Posts the comment on the artifact, where everyone who opens it sees it. */

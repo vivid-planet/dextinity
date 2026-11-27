@@ -9,8 +9,8 @@ import { colorSchemeSetting } from "../colorScheme";
 import { densitySetting } from "../density";
 import { scenarioSetting } from "../scenario";
 import { readWrittenText, textLengthSetting } from "../textLength";
-import { describeNoteElement, getNoteNumber } from "./designerNotes";
-import { findElementByPath, type FrameRect, getElementPath, getFrameRect } from "./frameElements";
+import { describeNoteElement, getFrameNoteEditResult, getNoteNumber } from "./designerNotes";
+import { findElementByPath, type FrameRect, getElementPath, getFrameRect, getFrameStoryId } from "./frameElements";
 import styles from "./FrameTools.module.scss";
 import { hotspotList } from "./hotspots";
 import {
@@ -131,7 +131,8 @@ function useNoteFocus({
 }) {
     useEffect(() => {
         const note = focusRequest && notes.find((item) => item.id === focusRequest.id);
-        if (!note || !isOnPage(note, notePage.prototypeId, notePage.page)) {
+        // Right after switching prototypes, the frame still shows the previous one, which may have a page of the same name
+        if (!note || !isOnPage(note, notePage.prototypeId, notePage.page) || getFrameStoryId(frameDocument) !== notePage.prototypeId) {
             return;
         }
         const element = findElementByPath(frameDocument, note.path);
@@ -178,16 +179,12 @@ export function NoteLayer({
     }
 
     function save({ id, draft, original }: { id: string; draft: string; original: string }) {
-        if (draft === original) {
-            if (original.trim() === "") {
-                designerNoteList.update((items) => items.filter((item) => item.id !== id));
-            }
-            return;
-        }
-        if (draft.trim() === "") {
+        const storedText = designerNoteList.get().find((item) => item.id === id)?.text;
+        const result = getFrameNoteEditResult({ storedText, draft, original });
+        if (result.action === "delete") {
             designerNoteList.update((items) => items.filter((item) => item.id !== id));
-        } else {
-            designerNoteList.update((items) => items.map((item) => (item.id === id ? { ...item, text: draft.trim() } : item)));
+        } else if (result.action === "update") {
+            designerNoteList.update((items) => items.map((item) => (item.id === id ? { ...item, text: result.text } : item)));
         }
     }
 

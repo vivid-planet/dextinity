@@ -1,27 +1,40 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { type KeyboardEvent, type PointerEvent, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import { Button } from "../../components/button/Button";
 import { Icon } from "../../components/icon/Icon";
+import { IconButton } from "../../components/iconButton/IconButton";
+import { Switch } from "../../components/switch/Switch";
+import { Tooltip } from "../../components/tooltip/Tooltip";
 import { scenarioSetting } from "../scenario";
 import { addFlowEdges, type FlowEdge, flowEdgeList } from "./flowEdges";
+import {
+    fitFlowView,
+    type FlowLink,
+    type FlowRect,
+    type FlowView,
+    layOutFlow,
+    routeFlowLinks,
+    stepFlowZoom,
+    wheelZoomFactor,
+    zoomFlowViewAt,
+} from "./flowLayout";
 import styles from "./FlowMap.module.scss";
 import { hotspotList } from "./hotspots";
 
 const nodeWidth = 200;
 const nodeHeight = 48;
-const columnGap = 96;
-const rowGap = 14;
-const padding = 24;
+const columnGap = 120;
+const rowGap = 24;
+const padding = 48;
 const scanDelay = 700;
+const lineHeightInPixels = 16;
 // Each prototype is scanned once per visit of the workspace on opening the map, its pages rarely change in between; the entries of
 // its navigation stay known for opening the map again
 const navigationByPrototype = new Map<string, string[]>();
 
-interface FlowNode {
+interface FlowNode extends FlowRect {
     id: string;
     label: string;
-    column: number;
-    row: number;
     inNavigation: boolean;
     designed: boolean;
     deadEnd: boolean;
@@ -44,33 +57,6 @@ function readLinks(frameDocument: Document) {
             .map(toPage)
             .filter(Boolean),
     };
-}
-
-/** Columns by the number of steps from the start page: links first, the app's navigation where no link leads. */
-function layOut(pageIds: string[], startPageId: string, links: Map<string, Set<string>>, navigationIds: Set<string>) {
-    const depth = new Map<string, number>();
-    function walk(roots: string[], startDepth: number) {
-        let current = roots.filter((id) => !depth.has(id));
-        current.forEach((id) => depth.set(id, startDepth));
-        let level = startDepth;
-        while (current.length > 0) {
-            level++;
-            const next: string[] = [];
-            for (const id of current) {
-                for (const target of links.get(id) ?? []) {
-                    if (!depth.has(target)) {
-                        depth.set(target, level);
-                        next.push(target);
-                    }
-                }
-            }
-            current = next;
-        }
-    }
-    walk([startPageId], 0);
-    walk([...navigationIds], 1);
-    const lastColumn = Math.max(0, ...depth.values()) + 1;
-    return pageIds.map((id) => ({ id, column: depth.get(id) ?? lastColumn }));
 }
 
 /**
@@ -145,50 +131,165 @@ export function FlowMap({
         scanStarted.current = false;
     }
 
-    const { nodes, lines, width, height } = useMemo(() => {
-        const links = new Map<string, Set<string>>();
+    const [showsNavigationLinks, setShowsNavigationLinks] = useState(false);
+    const [highlightedId, setHighlightedId] = useState<string | null>(null);
+
+    const { nodes, links, navigationLinks, width, height } = useMemo(() => {
+        const linkTargets = new Map<string, Set<string>>();
         for (const edge of edges.filter((candidate) => candidate.kind === "link")) {
-            links.set(edge.from, (links.get(edge.from) ?? new Set()).add(edge.to));
+            linkTargets.set(edge.from, (linkTargets.get(edge.from) ?? new Set()).add(edge.to));
         }
         const navigation = new Set([...navigationIds, ...edges.filter((edge) => edge.kind === "navigation").map((edge) => edge.to)]);
-        const allIds = [...new Set([...pageIds, ...links.keys(), ...[...links.values()].flatMap((targets) => [...targets])])];
-        const placed = layOut(allIds, startPageId, links, navigation);
-        const rows = new Map<number, number>();
-        const flowNodes: FlowNode[] = placed
-            .sort((a, b) => a.column - b.column || getPageLabel(a.id).localeCompare(getPageLabel(b.id)))
-            .map(({ id, column }) => {
-                const row = rows.get(column) ?? 0;
-                rows.set(column, row + 1);
-                const designed = pageIds.includes(id);
-                return { id, label: getPageLabel(id), column, row, inNavigation: navigation.has(id), designed, deadEnd: designed && !links.has(id) };
-            });
-        const position = new Map(
-            flowNodes.map((node) => [node.id, { x: padding + node.column * (nodeWidth + columnGap), y: padding + node.row * (nodeHeight + rowGap) }]),
-        );
-        const flowLines = [...links.entries()].flatMap(([from, targets]) =>
-            [...targets].map((to) => {
-                const start = position.get(from);
-                const end = position.get(to);
-                if (!start || !end) {
-                    return null;
-                }
-                const x1 = start.x + nodeWidth;
-                const y1 = start.y + nodeHeight / 2;
-                const x2 = end.x;
-                const y2 = end.y + nodeHeight / 2;
-                const bend = Math.max(48, Math.abs(x2 - x1) / 2);
-                return { key: `${from}->${to}`, backwards: x2 <= x1, path: `M ${x1} ${y1} C ${x1 + bend} ${y1}, ${x2 - bend} ${y2}, ${x2} ${y2}` };
-            }),
-        );
-        const columns = Math.max(0, ...flowNodes.map((node) => node.column)) + 1;
-        const maxRows = Math.max(1, ...rows.values());
+        const allIds = [...new Set([...pageIds, ...linkTargets.keys(), ...[...linkTargets.values()].flatMap((targets) => [...targets])])];
+        const placements = layOutFlow({
+            pageIds: allIds,
+            startPageId,
+            links: linkTargets,
+            navigationIds: navigation,
+            compare: (a, b) => getPageLabel(a).localeCompare(getPageLabel(b)),
+        });
+        const flowNodes: FlowNode[] = placements.map(({ id, column, row }) => {
+            const designed = pageIds.includes(id);
+            return {
+                id,
+                label: getPageLabel(id),
+                x: padding + column * (nodeWidth + columnGap),
+                y: padding + row * (nodeHeight + rowGap),
+                width: nodeWidth,
+                height: nodeHeight,
+                inNavigation: navigation.has(id),
+                designed,
+                deadEnd: designed && !linkTargets.has(id),
+            };
+        });
+        const rects = new Map(flowNodes.map((node) => [node.id, node]));
+        const contentLinks: FlowLink[] = [...linkTargets.entries()].flatMap(([from, targets]) => [...targets].map((to) => ({ from, to })));
+        const linkKeys = new Set(contentLinks.map((link) => `${link.from}->${link.to}`));
+        // A way through the navigation that a link on the page offers as well is that link
+        const navigationOnlyLinks = edges
+            .filter((edge) => edge.kind === "navigation" && edge.from !== edge.to && !linkKeys.has(`${edge.from}->${edge.to}`))
+            .map(({ from, to }) => ({ from, to }));
+        const uniqueNavigationLinks = [...new Map(navigationOnlyLinks.map((link) => [`${link.from}->${link.to}`, link])).values()];
+        const columns = Math.max(0, ...placements.map((placement) => placement.column)) + 1;
+        const rows = Math.max(1, ...placements.map((placement) => placement.row + 1));
         return {
             nodes: flowNodes,
-            lines: flowLines.filter((line) => line != null),
+            links: routeFlowLinks(contentLinks, rects),
+            navigationLinks: routeFlowLinks(uniqueNavigationLinks, rects),
             width: padding * 2 + columns * nodeWidth + (columns - 1) * columnGap,
-            height: padding * 2 + maxRows * nodeHeight + (maxRows - 1) * rowGap,
+            height: padding * 2 + rows * nodeHeight + (rows - 1) * rowGap,
         };
     }, [edges, navigationIds, pageIds, startPageId, getPageLabel]);
+
+    const shownLinks = useMemo(
+        () => [
+            ...(showsNavigationLinks ? navigationLinks.map((link) => ({ ...link, navigation: true })) : []),
+            ...links.map((link) => ({ ...link, navigation: false })),
+        ],
+        [links, navigationLinks, showsNavigationLinks],
+    );
+    const highlightedNeighborIds = useMemo(() => {
+        if (highlightedId == null) {
+            return null;
+        }
+        const ids = new Set([highlightedId]);
+        shownLinks.filter((link) => link.from === highlightedId || link.to === highlightedId).forEach((link) => ids.add(link.from).add(link.to));
+        return ids;
+    }, [highlightedId, shownLinks]);
+
+    const canvasRef = useRef<HTMLDivElement>(null);
+    const [viewport, setViewport] = useState({ width: 0, height: 0 });
+    const [view, setView] = useState<FlowView>({ zoom: 1, x: 0, y: 0 });
+    // Until the designer zooms or moves the map, it keeps showing all pages, also when a scan adds some
+    const viewMovedRef = useRef(false);
+    const panStartRef = useRef<{ pointerX: number; pointerY: number; viewX: number; viewY: number } | null>(null);
+
+    useLayoutEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) {
+            return;
+        }
+        const observer = new ResizeObserver(() => setViewport({ width: canvas.clientWidth, height: canvas.clientHeight }));
+        observer.observe(canvas);
+        return () => observer.disconnect();
+    }, []);
+
+    useLayoutEffect(() => {
+        if (!viewMovedRef.current && viewport.width > 0 && viewport.height > 0) {
+            setView(fitFlowView({ width, height }, viewport));
+        }
+    }, [width, height, viewport]);
+
+    function moveView(update: (current: FlowView) => FlowView) {
+        viewMovedRef.current = true;
+        setView(update);
+    }
+
+    function zoomAroundCenter(zoom: (current: FlowView) => number) {
+        moveView((current) => zoomFlowViewAt(current, zoom(current), { x: viewport.width / 2, y: viewport.height / 2 }));
+    }
+
+    function fitToScreen() {
+        viewMovedRef.current = false;
+        setView(fitFlowView({ width, height }, viewport));
+    }
+
+    // React's wheel listener is passive, so it couldn't keep the page from scrolling or the browser from zooming on a pinch
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) {
+            return;
+        }
+        const handleWheel = (event: WheelEvent) => {
+            event.preventDefault();
+            viewMovedRef.current = true;
+            if (event.ctrlKey || event.metaKey) {
+                const bounds = canvas.getBoundingClientRect();
+                const pointer = { x: event.clientX - bounds.left, y: event.clientY - bounds.top };
+                setView((current) => zoomFlowViewAt(current, current.zoom * wheelZoomFactor(event.deltaY, event.deltaMode), pointer));
+            } else {
+                const scale = event.deltaMode === 1 ? lineHeightInPixels : 1;
+                setView((current) => ({ ...current, x: current.x - event.deltaX * scale, y: current.y - event.deltaY * scale }));
+            }
+        };
+        canvas.addEventListener("wheel", handleWheel, { passive: false });
+        return () => canvas.removeEventListener("wheel", handleWheel);
+    }, []);
+
+    function startPan(event: PointerEvent<HTMLDivElement>) {
+        if (event.button !== 0 || (event.target as Element).closest("button")) {
+            return;
+        }
+        event.currentTarget.setPointerCapture(event.pointerId);
+        panStartRef.current = { pointerX: event.clientX, pointerY: event.clientY, viewX: view.x, viewY: view.y };
+    }
+
+    function pan(event: PointerEvent<HTMLDivElement>) {
+        const start = panStartRef.current;
+        if (start) {
+            moveView((current) => ({ ...current, x: start.viewX + event.clientX - start.pointerX, y: start.viewY + event.clientY - start.pointerY }));
+        }
+    }
+
+    function endPan() {
+        panStartRef.current = null;
+    }
+
+    function zoomWithKeyboard(event: KeyboardEvent<HTMLDivElement>) {
+        if (event.ctrlKey || event.metaKey || event.altKey) {
+            return;
+        }
+        if (event.key === "+" || event.key === "=") {
+            zoomAroundCenter((current) => stepFlowZoom(current.zoom, 1));
+        } else if (event.key === "-" || event.key === "_") {
+            zoomAroundCenter((current) => stepFlowZoom(current.zoom, -1));
+        } else if (event.key === "0") {
+            zoomAroundCenter(() => 1);
+        } else {
+            return;
+        }
+        event.preventDefault();
+    }
 
     useEffect(() => {
         if (scanFrameLoaded && !navigationByPrototype.has(prototypeId)) {
@@ -197,17 +298,25 @@ export function FlowMap({
         // eslint-disable-next-line react-hooks/exhaustive-deps -- once the frame has loaded
     }, [scanFrameLoaded]);
 
+    const arrowId = useId();
+
     return (
         <div className={styles.root}>
             <div className={styles.bar}>
                 <p className={styles.summary}>
-                    {nodes.length} pages · {lines.length} links · {nodes.filter((node) => node.deadEnd).length} without a way on
+                    {nodes.length} pages · {links.length} links · {nodes.filter((node) => node.deadEnd).length} without a way on
                 </p>
                 <ul className={styles.legend}>
+                    <li data-edge="link">Link</li>
+                    <li data-edge="back">Link back</li>
+                    {showsNavigationLinks && <li data-edge="navigation">Through the navigation</li>}
                     <li data-tag="navigation">In the navigation</li>
                     <li data-tag="undesigned">No design yet</li>
                     <li data-tag="deadEnd">No link on</li>
                 </ul>
+                <Switch size="small" checked={showsNavigationLinks} onChange={setShowsNavigationLinks}>
+                    Show navigation links
+                </Switch>
                 <Button
                     variant="outlined"
                     color="secondary"
@@ -227,16 +336,38 @@ export function FlowMap({
                     Forget links
                 </Button>
             </div>
-            <div className={styles.canvas}>
-                <div className={styles.map} style={{ width, height }}>
+            <div
+                ref={canvasRef}
+                className={styles.canvas}
+                role="group"
+                aria-label="Flow map. Plus and minus zoom, 0 zooms to 100%."
+                tabIndex={0}
+                onPointerDown={startPan}
+                onPointerMove={pan}
+                onPointerUp={endPan}
+                onPointerCancel={endPan}
+                onKeyDown={zoomWithKeyboard}
+            >
+                <div
+                    className={styles.map}
+                    style={{ width, height, transform: `translate(${view.x}px, ${view.y}px) scale(${view.zoom})` }}
+                    data-highlighting={highlightedId != null || undefined}
+                >
                     <svg className={styles.lines} width={width} height={height} aria-hidden>
                         <defs>
-                            <marker id="flow-arrow" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
-                                <path d="M 0 0 L 8 4 L 0 8 z" />
+                            <marker id={arrowId} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                                <path d="M 0 1 L 9 5 L 0 9 z" />
                             </marker>
                         </defs>
-                        {lines.map((line) => (
-                            <path key={line.key} d={line.path} data-backwards={line.backwards || undefined} markerEnd="url(#flow-arrow)" />
+                        {shownLinks.map((link) => (
+                            <path
+                                key={`${link.navigation ? "navigation" : "link"}:${link.key}`}
+                                d={link.path}
+                                data-direction={link.direction}
+                                data-navigation={link.navigation || undefined}
+                                data-highlighted={(highlightedId != null && (link.from === highlightedId || link.to === highlightedId)) || undefined}
+                                markerEnd={`url(#${CSS.escape(arrowId)})`}
+                            />
                         ))}
                     </svg>
                     {nodes.map((node) => (
@@ -246,13 +377,13 @@ export function FlowMap({
                             className={styles.node}
                             data-undesigned={!node.designed || undefined}
                             data-dead-end={node.deadEnd || undefined}
-                            style={{
-                                left: padding + node.column * (nodeWidth + columnGap),
-                                top: padding + node.row * (nodeHeight + rowGap),
-                                width: nodeWidth,
-                                height: nodeHeight,
-                            }}
+                            data-highlighted={highlightedNeighborIds?.has(node.id) || undefined}
+                            style={{ left: node.x, top: node.y, width: node.width, height: node.height }}
                             onClick={() => onOpenPage(node.id)}
+                            onPointerEnter={() => setHighlightedId(node.id)}
+                            onPointerLeave={() => setHighlightedId((current) => (current === node.id ? null : current))}
+                            onFocus={() => setHighlightedId(node.id)}
+                            onBlur={() => setHighlightedId((current) => (current === node.id ? null : current))}
                         >
                             <span className={styles.nodeLabel}>{node.label}</span>
                             <span className={styles.tags}>
@@ -266,6 +397,13 @@ export function FlowMap({
                 {edges.length === 0 && scan == null && (
                     <p className={styles.hint}>Click through the prototype or scan its pages to see the ways between them.</p>
                 )}
+                <FlowZoomControls
+                    zoom={view.zoom}
+                    onZoomOut={() => zoomAroundCenter((current) => stepFlowZoom(current.zoom, -1))}
+                    onZoomIn={() => zoomAroundCenter((current) => stepFlowZoom(current.zoom, 1))}
+                    onReset={() => zoomAroundCenter(() => 1)}
+                    onFit={fitToScreen}
+                />
             </div>
             <iframe
                 ref={scanFrameRef}
@@ -277,6 +415,60 @@ export function FlowMap({
                 tabIndex={-1}
                 aria-hidden
             />
+        </div>
+    );
+}
+
+function FlowZoomControls({
+    zoom,
+    onZoomOut,
+    onZoomIn,
+    onReset,
+    onFit,
+}: {
+    zoom: number;
+    onZoomOut: () => void;
+    onZoomIn: () => void;
+    onReset: () => void;
+    onFit: () => void;
+}) {
+    return (
+        <div className={styles.zoomControls}>
+            <IconButton
+                variant="text"
+                color="secondary"
+                size="small"
+                aria-label="Zoom out"
+                slotProps={{ tooltip: { placement: "top" } }}
+                onClick={onZoomOut}
+            >
+                <Icon name="minus" />
+            </IconButton>
+            <Tooltip content="Zoom to 100%" keyboardShortcut="0" placement="top">
+                <Button variant="text" color="secondary" size="small" className={styles.zoomValue} onClick={onReset}>
+                    {`${Math.round(zoom * 100)}%`}
+                </Button>
+            </Tooltip>
+            <IconButton
+                variant="text"
+                color="secondary"
+                size="small"
+                aria-label="Zoom in"
+                slotProps={{ tooltip: { placement: "top" } }}
+                onClick={onZoomIn}
+            >
+                <Icon name="plus" />
+            </IconButton>
+            <IconButton
+                variant="text"
+                color="secondary"
+                size="small"
+                aria-label="Fit to screen"
+                slotProps={{ tooltip: { placement: "top" } }}
+                onClick={onFit}
+            >
+                <Icon name="scale-to-fit-on" />
+            </IconButton>
         </div>
     );
 }

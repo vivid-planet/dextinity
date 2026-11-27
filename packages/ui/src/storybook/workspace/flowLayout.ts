@@ -51,6 +51,8 @@ const zoomSteps = [0.1, 0.25, 0.33, 0.5, 0.67, 0.75, 0.9, 1, 1.25, 1.5, 2];
 const orderingPasses = 4;
 const bundledPortCount = 5;
 const bundleStub = 16;
+// The links leaving a bundled side and those arriving at it run apart, so the two directions between two cards don't overlap
+const bundleTrunkOffset = 4;
 const firstLoopBend = 32;
 const loopBendStep = 16;
 const maxLoopBend = 144;
@@ -241,12 +243,13 @@ export function routeFlowLinks(links: FlowLink[], rects: Map<string, FlowRect>):
     }
     // The same order on both cards, also for the two directions between them, which lead to the same place
     ports.forEach((entries) => entries.sort((a, b) => a.towardY - b.towardY || a.linkKey.localeCompare(b.linkKey)));
-    const portOf = (nodeId: string, side: Side, linkKey: string, rect: FlowRect) => {
+    const portOf = (nodeId: string, side: Side, linkKey: string, rect: FlowRect, role: "start" | "end") => {
         const entries = ports.get(`${nodeId}:${side}`) ?? [];
         const outward = side === "right" ? 1 : -1;
         const x = side === "right" ? rect.x + rect.width : rect.x;
         if (entries.length > bundledPortCount) {
-            return { x, y: centerY(rect), fanX: x + outward * bundleStub, outward };
+            const trunkY = centerY(rect) + (role === "start" ? -bundleTrunkOffset : bundleTrunkOffset);
+            return { x, y: trunkY, fanX: x + outward * bundleStub, outward };
         }
         const index = entries.findIndex((entry) => entry.linkKey === linkKey);
         return { x, y: rect.y + (rect.height * (index + 1)) / (entries.length + 1), fanX: x, outward };
@@ -266,8 +269,8 @@ export function routeFlowLinks(links: FlowLink[], rects: Map<string, FlowRect>):
     );
 
     return ends.map((end) => {
-        const start = portOf(end.from, end.fromSide, end.key, end.fromRect);
-        const finish = portOf(end.to, end.toSide, end.key, end.toRect);
+        const start = portOf(end.from, end.fromSide, end.key, end.fromRect, "start");
+        const finish = portOf(end.to, end.toSide, end.key, end.toRect, "end");
         const bend = loopBends.get(end.key) ?? Math.max(40, Math.abs(finish.fanX - start.fanX) / 2);
         const segments = [
             `M ${round(start.x)} ${round(start.y)}`,

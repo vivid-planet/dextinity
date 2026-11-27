@@ -114,6 +114,31 @@ describe("routeFlowLinks", () => {
         expect(back.path).toMatch(/^M 200 \S+ C .* 100 \S+$/);
     });
 
+    it("keeps the two directions between two cards apart when both sides are bundled", () => {
+        const others = ["c0", "c1", "c2", "c3", "c4", "c5"];
+        const rects = new Map<string, FlowRect>([
+            ["a", rect(0, 400)],
+            ["b", rect(300, 400)],
+            ...others.map((id, index): [string, FlowRect] => [`to-${id}`, rect(300, index * 60)]),
+            ...others.map((id, index): [string, FlowRect] => [`from-${id}`, rect(0, index * 60)]),
+        ]);
+
+        const [forward, back] = routeFlowLinks(
+            [
+                { from: "a", to: "b" },
+                { from: "b", to: "a" },
+                ...others.map((id) => ({ from: "a", to: `to-${id}` })),
+                ...others.map((id) => ({ from: `from-${id}`, to: "b" })),
+            ],
+            rects,
+        );
+
+        const forwardStartY = /^M 100 (\S+)/.exec(forward.path)?.[1];
+        const backEndY = / 100 (\S+)$/.exec(back.path)?.[1];
+        expect(forwardStartY).toBeDefined();
+        expect(forwardStartY).not.toBe(backEndY);
+    });
+
     it("keeps the two directions between two cards apart", () => {
         const rects = new Map([
             ["a", rect(0, 0)],
@@ -165,7 +190,7 @@ describe("routeFlowLinks", () => {
         expect(startY(content.path)).not.toBe(startY(navigation.path));
     });
 
-    it("lets many links leave a card's side together from its middle and fan out after a stub", () => {
+    it("lets many links leave a card's side together from near its middle and fan out after a stub", () => {
         const targets = ["b", "c", "d", "e", "f", "g"];
         const rects = new Map([["a", rect(0, 0)], ...targets.map((id, index): [string, FlowRect] => [id, rect(300, index * 60)])]);
 
@@ -175,7 +200,7 @@ describe("routeFlowLinks", () => {
         );
 
         for (const link of routed) {
-            expect(link.path).toMatch(/^M 100 20 L 116 20 C /);
+            expect(link.path).toMatch(/^M 100 16 L 116 16 C /);
         }
     });
 

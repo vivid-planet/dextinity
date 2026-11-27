@@ -85,6 +85,11 @@ function readLinks(frameDocument: Document) {
     };
 }
 
+function pointerPosition(event: PointerEvent<HTMLDivElement>) {
+    const bounds = event.currentTarget.getBoundingClientRect();
+    return { x: event.clientX - bounds.left, y: event.clientY - bounds.top };
+}
+
 /**
  * All pages of a prototype as a map of the ways between them: the links found on its pages, and the ones the designer took while
  * clicking through it. Shows pages no link leads to, links to pages without a design, and pages without a way on.
@@ -251,7 +256,7 @@ export function FlowMap({
                 rects,
                 contentLinks: uniqueLinks(pageLinks.map(({ from, to }) => ({ from: shownIdOf(from), to: shownIdOf(to) }))),
                 navigationLinks: uniqueLinks(navigationOnlyLinks),
-                pageCount: allIds.length,
+                pageCount: countUnits(allIds),
                 linkCount: pageLinks.length,
                 deadEndCount: countUnits(allIds.filter(isDeadEnd).filter((id) => !groupOf.has(id) || groupOf.get(id)?.pageIds.every(isDeadEnd))),
                 unreachableCount: countUnits(allIds.filter((id) => !depths.has(id))),
@@ -361,11 +366,6 @@ export function FlowMap({
         canvas.addEventListener("wheel", handleWheel, { passive: false });
         return () => canvas.removeEventListener("wheel", handleWheel);
     }, []);
-
-    function pointerPosition(event: PointerEvent<HTMLDivElement>) {
-        const bounds = event.currentTarget.getBoundingClientRect();
-        return { x: event.clientX - bounds.left, y: event.clientY - bounds.top };
-    }
 
     function startPanOrPinch(currentView: FlowView) {
         const points = [...pointersRef.current.values()];

@@ -460,8 +460,12 @@
 }
 
 .inspectLevel {
-    flex: none;
+    // The other levels give way first, so a long trail of ancestors doesn't push the highlighted level and its hint out of the frame
+    flex: 0 1000 auto;
+    min-inline-size: 1em;
+    overflow: hidden;
     font-weight: 400;
+    text-overflow: ellipsis;
     opacity: 0.75;
 
     // A part of a component, which opens the component's story
@@ -470,6 +474,7 @@
     }
 
     &[data-highlighted] {
+        flex: none;
         font-weight: 600;
         opacity: 1;
     }

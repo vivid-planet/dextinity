@@ -84,6 +84,7 @@ async function search({ canvas, userEvent, text }: Pick<StoryContext, "canvas" |
 
 /**
  * Search for "ab" to see the results grouped by type, each group with the number of results of its type.
+ * The search terms are marked in the names and in the snippets of the content.
  * The product result isn't registered in `entities`, so it can't be opened.
  */
 export const Default: Story = {
@@ -101,6 +102,10 @@ export const Default: Story = {
         const pageGroup = screen.getByRole("group", { name: "Page" });
         expect(pageGroup.parentElement).toHaveTextContent(/^Page2/);
         expect(within(pageGroup).getAllByRole("button")).toHaveLength(2);
+        const homeResult = within(pageGroup).getByRole("button", { name: /Home/ });
+        expect(homeResult).toHaveTextContent("… Our team builds products that are able to grow with your business and adapt to new requirements. …");
+        expect(within(homeResult).getByText("able", { selector: "mark" })).toBeInTheDocument();
+        expect(within(screen.getByRole("group", { name: "News" })).getByText("abbey", { selector: "mark" })).toBeInTheDocument();
         expect(within(screen.getByRole("group", { name: "Product" })).getByRole("button")).toHaveAttribute("aria-disabled", "true");
 
         await userEvent.click(within(pageGroup).getByRole("button", { name: /Contact/ }));

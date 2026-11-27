@@ -1,7 +1,7 @@
 import { PGlite } from "@electric-sql/pglite";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { PREFIX_TSQUERY_SQL } from "./prefix-full-text-query.js";
+import { ANY_TERM_TSQUERY_SQL, PREFIX_TSQUERY_SQL } from "./prefix-full-text-query.js";
 
 const documents = [
     { name: "Navigation", text: "Main menu of the site" },
@@ -61,5 +61,12 @@ describe("PREFIX_TSQUERY_SQL", () => {
         for (const term of ["", "   ", " &|! ", "'\\:*"]) {
             expect(await search(term)).toEqual({ names: [], count: 0 });
         }
+    });
+
+    it("matches texts with any of the terms with ANY_TERM_TSQUERY_SQL", async () => {
+        const condition = `"fullText" @@ ${ANY_TERM_TSQUERY_SQL.replace("?", "$1")}`;
+        const results = await database.query<{ name: string }>(`SELECT "name" FROM "Document" WHERE ${condition} ORDER BY "name"`, ["menu blo"]);
+
+        expect(results.rows.map((row) => row.name)).toEqual(["Fixtures: Blocks", "Navigation"]);
     });
 });

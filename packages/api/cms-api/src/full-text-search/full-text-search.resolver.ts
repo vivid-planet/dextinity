@@ -10,10 +10,10 @@ import type { ContentScope } from "../user-permissions/interfaces/content-scope.
 import { ACCESS_CONTROL_SERVICE } from "../user-permissions/user-permissions.constants.js";
 import type { AccessControlServiceInterface } from "../user-permissions/user-permissions.types.js";
 import { FullTextSearchArgs } from "./dto/full-text-search.args.js";
-import { FullTextSearchResult } from "./dto/full-text-search-result.object.js";
 import { FullTextSearchResults, FullTextSearchTypeCount } from "./dto/full-text-search-results.object.js";
 import { EntityInfoFullTextObject } from "./entities/entity-info-full-text.object.js";
-import { PREFIX_TSQUERY_SQL, prefixFullTextCondition } from "./prefix-full-text-query.js";
+import { type FullTextSearchRow, FullTextSnippetService } from "./full-text-snippet.service.js";
+import { ANY_TERM_TSQUERY_SQL, PREFIX_TSQUERY_SQL, prefixFullTextCondition } from "./prefix-full-text-query.js";
 
 @Resolver()
 @RequiredPermission("fullTextSearch", { skipScopeCheck: true })
@@ -21,6 +21,7 @@ export class FullTextSearchResolver {
     constructor(
         private readonly entityManager: EntityManager,
         @Inject(ACCESS_CONTROL_SERVICE) private readonly accessControlService: AccessControlServiceInterface,
+        private readonly fullTextSnippetService: FullTextSnippetService,
     ) {}
 
     @Query(() => FullTextSearchResults)
@@ -40,7 +41,7 @@ export class FullTextSearchResolver {
         // A raw() fragment can only be used in one query, so each query gets its own condition
         const createWhere = () => buildWhere({ search, scope, allowedPermissions, includeInvisible: !!includeInvisiblePages?.length });
 
-        const [nodes, types] = await Promise.all([
+        const [rows, types] = await Promise.all([
             this.entityManager
                 .createQueryBuilder(EntityInfoFullTextObject, "f")
                 .join("f.entityInfo", "e")
@@ -49,7 +50,7 @@ export class FullTextSearchResolver {
                 .orderBy([...orderByNameMatchAndRank(search), { entityName: QueryOrder.ASC }, { id: QueryOrder.ASC }])
                 .offset(offset)
                 .limit(limit)
-                .execute<FullTextSearchResult[]>("all"),
+                .execute<FullTextSearchRow[]>("all"),
             this.entityManager
                 .createQueryBuilder(EntityInfoFullTextObject, "f")
                 .join("f.entityInfo", "e")
@@ -61,7 +62,7 @@ export class FullTextSearchResolver {
         ]);
 
         return {
-            nodes,
+            nodes: await this.fullTextSnippetService.addHighlights(rows, search),
             totalCount: types.reduce((sum, { count }) => sum + count, 0),
             types,
         };
@@ -99,13 +100,11 @@ function buildWhere({
 // Weights are D, C, B, A. Normalization 1 divides the rank by 1 + log(document length), so long texts don't win by repetition.
 function orderByNameMatchAndRank(search: string): QueryOrderMap<EntityInfoFullTextObject>[] {
     const nameVector = `to_tsvector('simple', e."name")`;
-    // The tsquery text quotes every lexeme, so " & " only occurs as an operator
-    const anyTermTsQuery = `replace(${PREFIX_TSQUERY_SQL}::text, ' & ', ' | ')::tsquery`;
 
     return [
         { [raw(`lower(e."name") = lower(btrim(?))`, [search])]: QueryOrder.DESC },
         { [raw(`${nameVector} @@ ${PREFIX_TSQUERY_SQL}`, [search])]: QueryOrder.DESC },
-        { [raw(`${nameVector} @@ ${anyTermTsQuery}`, [search])]: QueryOrder.DESC },
+        { [raw(`${nameVector} @@ ${ANY_TERM_TSQUERY_SQL}`, [search])]: QueryOrder.DESC },
         { [raw(`ts_rank('{0.1,0.2,0.4,1.0}', f."fullText", ${PREFIX_TSQUERY_SQL}, 1)`, [search])]: QueryOrder.DESC },
         { [raw(`length(e."name")`)]: QueryOrder.ASC },
     ];

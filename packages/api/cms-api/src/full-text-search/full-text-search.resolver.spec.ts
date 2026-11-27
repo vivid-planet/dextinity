@@ -10,6 +10,7 @@ import type { ContentScope } from "../user-permissions/interfaces/content-scope.
 import type { Permission } from "../user-permissions/user-permissions.types.js";
 import { EntityInfoFullTextObject } from "./entities/entity-info-full-text.object.js";
 import { FullTextSearchResolver } from "./full-text-search.resolver.js";
+import { FullTextSnippetService } from "./full-text-snippet.service.js";
 
 const rows = [
     { id: "main-page", type: "Page", text: "contact", requiredPermission: ["pageTree"], scopes: [{ domain: "main", language: "en" }] },
@@ -71,7 +72,7 @@ describe("FullTextSearchResolver", () => {
             const result = await database.query(connection.getPlatform().formatQuery(sql, params));
             return method === "get" ? result.rows[0] : result.rows;
         }) as typeof connection.execute;
-        resolver = new FullTextSearchResolver(orm.em, new AccessControlService());
+        resolver = new FullTextSearchResolver(orm.em, new AccessControlService(), new FullTextSnippetService(orm.em));
     }, 30000);
 
     afterAll(async () => {
@@ -110,5 +111,16 @@ describe("FullTextSearchResolver", () => {
         const result = await search("video blocks");
 
         expect(result.nodes.map(({ name }) => name)).toEqual(["Video blocks", "Video blocks guide", "Video", "Media"]);
+    });
+
+    it("marks any of the terms in the names", async () => {
+        const result = await search("video blocks");
+
+        expect(result.nodes.map(({ name, titleHighlights }) => titleHighlights.map(({ start, end }) => name.slice(start, end)))).toEqual([
+            ["Video", "blocks"],
+            ["Video", "blocks"],
+            ["Video"],
+            [],
+        ]);
     });
 });

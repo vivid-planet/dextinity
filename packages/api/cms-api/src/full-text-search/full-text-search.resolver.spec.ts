@@ -10,6 +10,7 @@ import type { ContentScope } from "../user-permissions/interfaces/content-scope.
 import type { Permission } from "../user-permissions/user-permissions.types.js";
 import { EntityInfoFullTextObject } from "./entities/entity-info-full-text.object.js";
 import { FullTextSearchResolver } from "./full-text-search.resolver.js";
+import type { FullTextSearchService } from "./full-text-search.service.js";
 import { FullTextSnippetService } from "./full-text-snippet.service.js";
 
 const rows = [
@@ -72,7 +73,7 @@ describe("FullTextSearchResolver", () => {
             const result = await database.query(connection.getPlatform().formatQuery(sql, params));
             return method === "get" ? result.rows[0] : result.rows;
         }) as typeof connection.execute;
-        resolver = new FullTextSearchResolver(orm.em, new AccessControlService(), new FullTextSnippetService(orm.em));
+        resolver = new FullTextSearchResolver(orm.em, new AccessControlService(), new FullTextSnippetService(orm.em), {} as FullTextSearchService);
     }, 30000);
 
     afterAll(async () => {
@@ -80,8 +81,8 @@ describe("FullTextSearchResolver", () => {
         await database.close();
     });
 
-    function search(search: string, scope?: ContentScope) {
-        return resolver.myFullTextSearch({ search, scope, offset: 0, limit: 25 }, user, { previewDamUrls: false });
+    function search(search: string, scope?: ContentScope, types?: string[]) {
+        return resolver.myFullTextSearch({ search, scope, types, offset: 0, limit: 25 }, user, { previewDamUrls: false });
     }
 
     async function findIds(scope?: ContentScope) {
@@ -105,6 +106,17 @@ describe("FullTextSearchResolver", () => {
             { type: "Product", count: 1 },
         ]);
         expect(result.totalCount).toBe(3);
+    });
+
+    it("returns only results of the given types, but counts the results of all types", async () => {
+        const result = await search("contact", undefined, ["Product"]);
+
+        expect(result.nodes.map(({ id }) => id)).toEqual(["product"]);
+        expect(result.totalCount).toBe(1);
+        expect(result.types).toEqual([
+            { type: "Page", count: 2 },
+            { type: "Product", count: 1 },
+        ]);
     });
 
     it("orders by exact name, all terms in the name, some terms in the name, then content matches", async () => {

@@ -335,6 +335,14 @@ type FullTextSearchResults {
   types: [FullTextSearchTypeCount!]!
 }
 
+type FullTextSearchType {
+  """
+  The document type for page tree nodes (e.g. Page, Link), the entity name otherwise
+  """
+  type: String!
+  entityName: String!
+}
+
 type UserPermissionPaginatedUserList {
   nodes: [UserPermissionsUser!]!
   totalCount: Int!
@@ -651,7 +659,22 @@ type Query {
   damMediaAlternative(id: ID!): DamMediaAlternative!
   damMediaAlternatives(offset: Int! = 0, limit: Int! = 25, search: String, sort: [DamMediaAlternativeSort!], for: ID, alternative: ID, type: DamMediaAlternativeType): PaginatedDamMediaAlternatives!
   damSettings(scope: DamScopeInput! = {}): DamSettings
-  myFullTextSearch(search: String!, scope: JSONObject, offset: Int! = 0, limit: Int! = 25): FullTextSearchResults!
+
+  """
+  All types the current user may search, whether they have results or not
+  """
+  myFullTextSearchTypes: [FullTextSearchType!]!
+  myFullTextSearch(
+    search: String!
+    scope: JSONObject
+
+    """
+    Only returns results of these types. The counts in `types` include all types.
+    """
+    types: [String!]
+    offset: Int! = 0
+    limit: Int! = 25
+  ): FullTextSearchResults!
 }
 
 input RedirectScopeInput {

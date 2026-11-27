@@ -4,6 +4,7 @@ import { styled } from "@mui/material/styles";
 
 import { MarkedMatches, type TextMatch } from "../common/MarkedMatches";
 import type { GQLFullTextSearchResultItemFragment } from "./FullTextSearchResultItem.generated";
+import { FullTextSearchTypeIcon } from "./FullTextSearchTypeIcon";
 
 export const fullTextSearchResultItemFragment = gql`
     fragment FullTextSearchResultItem on FullTextSearchResult {
@@ -38,7 +39,10 @@ export function FullTextSearchResultItem({ result, linkable, onClick }: FullText
     const { name, titleHighlights, secondaryInformation, snippet } = result;
 
     return (
-        <Root aria-disabled={!linkable} onClick={linkable ? onClick : undefined}>
+        <Root aria-disabled={!linkable} onClick={linkable ? onClick : undefined} alignItems="flex-start">
+            <TypeIconCircle>
+                <FullTextSearchTypeIcon searchType={result} />
+            </TypeIconCircle>
             <Stack spacing={1} sx={{ minWidth: 0 }}>
                 <div>
                     <Title variant="body1">
@@ -68,10 +72,25 @@ function toTextMatches(highlights: Array<{ start: number; end: number }>): TextM
 }
 
 const Root = styled(ListItemButton)`
+    gap: ${({ theme }) => theme.spacing(3)};
+    padding: ${({ theme }) => theme.spacing(2, 4)};
+
     &[aria-disabled="true"] {
         cursor: default;
         opacity: ${({ theme }) => theme.palette.action.disabledOpacity};
     }
+`;
+
+const TypeIconCircle = styled("div")`
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    color: ${({ theme }) => theme.palette.grey[600]};
+    background-color: ${({ theme }) => theme.palette.grey[50]};
 `;
 
 const Title = styled(Typography)`

@@ -1,5 +1,5 @@
 import { ArgsType, Field, Int } from "@nestjs/graphql";
-import { IsInt, IsObject, IsOptional, IsString, Max, MaxLength, Min } from "class-validator";
+import { ArrayMaxSize, IsArray, IsInt, IsObject, IsOptional, IsString, Max, MaxLength, Min } from "class-validator";
 import { GraphQLJSONObject } from "graphql-scalars";
 
 import type { ContentScope } from "../../user-permissions/interfaces/content-scope.interface.js";
@@ -15,6 +15,14 @@ export class FullTextSearchArgs {
     @IsOptional()
     @IsObject()
     scope?: ContentScope;
+
+    @Field(() => [String], { nullable: true, description: "Only returns results of these types. The counts in `types` include all types." })
+    @IsOptional()
+    @IsArray()
+    @ArrayMaxSize(50)
+    @IsString({ each: true })
+    @MaxLength(100, { each: true })
+    types?: string[];
 
     @Field(() => Int, { defaultValue: 0 })
     @IsInt()

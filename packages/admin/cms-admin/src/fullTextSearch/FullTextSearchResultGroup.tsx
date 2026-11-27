@@ -36,6 +36,6 @@ const GroupHeader = styled("div")`
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: ${({ theme }) => theme.spacing(3, 3, 1)};
+    padding: ${({ theme }) => theme.spacing(3, 4, 1)};
     line-height: ${({ theme }) => theme.typography.subtitle2.lineHeight};
 `;

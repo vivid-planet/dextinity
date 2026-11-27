@@ -1,4 +1,5 @@
 @use "../../theme/forcedColors" as forced-colors;
+@use "heldFill";
 
 .root {
     color: var(--dextinity-table-header-foreground);
@@ -8,6 +9,13 @@
 
 // Drawn by the cells, since a table with separate borders draws no box shadow of its rows
 .row > * {
+    position: sticky;
+    inset-block-start: var(--_header-inset);
+    z-index: 1;
+    translate: 0 var(--_header-shift, 0px);
+
+    @include heldFill.held-fill(var(--_header-stuck), var(--_header-backdrop-filter));
+
     box-shadow: inset 0 calc(-1 * var(--dextinity-line-width)) 0 var(--dextinity-table-header-separator-color);
 
     @include forced-colors.separator(block-end);

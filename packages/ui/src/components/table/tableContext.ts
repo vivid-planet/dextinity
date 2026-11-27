@@ -6,11 +6,21 @@ import { createContext, useContext, useEffect } from "react";
 export type TableColumnAlign = "start" | "center" | "end";
 
 /**
- * The layout of a table column: the alignment of its header and cells.
+ * The layout of a table column: its width limits and the alignment of its header and cells.
  */
 export interface TableLayoutColumn {
     /** Identifies the column; its header cell and cells name it in their `columnId`. */
     id: string;
+    /** Width in pixels. Without it, the column shares the space left by the columns that have one. */
+    width?: number;
+    /**
+     * Smallest width in pixels. A column without `width` never gets narrower; the table scrolls horizontally instead.
+     *
+     * @defaultValue `80`
+     */
+    minWidth?: number;
+    /** Largest width in pixels; a larger `width` is reduced to it. */
+    maxWidth?: number;
     /**
      * Horizontal alignment of the header and the cells, e.g. `end` for numbers.
      *
@@ -18,6 +28,8 @@ export interface TableLayoutColumn {
      */
     align?: TableColumnAlign;
 }
+
+export const defaultColumnMinWidth = 80;
 
 export const TableContext = createContext<{ columns: TableLayoutColumn[] } | null>(null);
 

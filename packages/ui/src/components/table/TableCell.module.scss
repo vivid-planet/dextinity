@@ -3,6 +3,7 @@
     // Tables treat the height of a cell as its minimum, so larger text grows the row instead of being cut off
     block-size: var(--dextinity-table-row-height);
     padding: var(--dextinity-table-cell-padding-block) var(--dextinity-table-cell-padding-inline);
+    overflow-wrap: break-word;
     hyphens: auto;
     text-align: start;
 

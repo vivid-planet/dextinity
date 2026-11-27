@@ -42,6 +42,7 @@ import { NotesSidebar, TextChangesSidebar } from "./ReviewSidebar";
 import { getReviewSidebarLayout } from "./reviewSidebarLayout";
 import { type InspectedComponent, useCanvasInspector } from "./useCanvasInspector";
 import { useFramePage } from "./useFramePage";
+import { usePopupOpen } from "./usePopupOpen";
 import { ViewMenu } from "./ViewMenu";
 import { WorkspaceGuide } from "./WorkspaceGuide";
 import { workspaceLogo } from "./workspaceLogo";
@@ -59,6 +60,8 @@ import { minFrameSize, SettingMenu, ViewportControl, zoomOptions } from "./Works
 
 const shellStoryId = "workspace-shell--shell";
 const narrowQuery = "(width < 760px)";
+// Below it, the labels of the mode's tools would push them out of the window, so the tools show their icons only
+const compactToolsQuery = "(width < 1200px)";
 const minPanelWidth = 260;
 const maxPanelWidth = 520;
 const panelKeyboardStep = 20;
@@ -260,6 +263,7 @@ export function WorkspaceShell() {
     useEffect(() => setMeasuredPath(null), [framePage.hash]);
     const canvasSize = useElementSize(canvasElement);
     const narrow = useMediaQuery(narrowQuery);
+    const compactTools = useMediaQuery(compactToolsQuery);
     const [bodyElement, setBodyElement] = useState<HTMLDivElement | null>(null);
     const bodySize = useElementSize(bodyElement);
     // Where the prototypes cover the canvas, they start closed and close again once a page is picked
@@ -316,7 +320,7 @@ export function WorkspaceShell() {
     const currentPrototype = prototypes.find((story) => story.id === prototypeId);
 
     const customPages = customPageList.useItems();
-    const [newPageMenuOpen, setNewPageMenuOpen] = useState(false);
+    const [newPageMenuOpen, setNewPageMenuOpen] = usePopupOpen();
     const prototypeTrees = useMemo(
         () =>
             prototypes.map((story) => {
@@ -957,21 +961,39 @@ export function WorkspaceShell() {
                             >
                                 {/* Comparing shows several frames, where the tools of the single frame don't work, so it takes their place */}
                                 {!isComparing &&
-                                    intentToolButtons[intent].map(({ tool, label, icon, description, key }) => (
-                                        <Button
-                                            key={tool}
-                                            variant={activeTool === tool ? "contained" : "text"}
-                                            color={activeTool === tool ? "primary" : "secondary"}
-                                            size="small"
-                                            startIcon={<Icon name={icon} />}
-                                            aria-pressed={activeTool === tool}
-                                            title={`${description} · ${key}`}
-                                            aria-keyshortcuts={key}
-                                            onClick={() => setTool(activeTool === tool ? null : tool)}
-                                        >
-                                            {label}
-                                        </Button>
-                                    ))}
+                                    intentToolButtons[intent].map(({ tool, label, icon, description, key }) => {
+                                        const active = activeTool === tool;
+                                        const toggleTool = () => setTool(active ? null : tool);
+                                        return compactTools ? (
+                                            <IconButton
+                                                key={tool}
+                                                variant={active ? "contained" : "text"}
+                                                color={active ? "primary" : "secondary"}
+                                                aria-label={label}
+                                                aria-description={description}
+                                                aria-pressed={active}
+                                                keyboardShortcut={key.toLowerCase()}
+                                                slotProps={{ tooltip: { placement: "bottom" } }}
+                                                onClick={toggleTool}
+                                            >
+                                                <Icon name={icon} />
+                                            </IconButton>
+                                        ) : (
+                                            <Button
+                                                key={tool}
+                                                variant={active ? "contained" : "text"}
+                                                color={active ? "primary" : "secondary"}
+                                                size="small"
+                                                startIcon={<Icon name={icon} />}
+                                                aria-pressed={active}
+                                                title={`${description} · ${key}`}
+                                                aria-keyshortcuts={key}
+                                                onClick={toggleTool}
+                                            >
+                                                {label}
+                                            </Button>
+                                        );
+                                    })}
                                 {sidebarTool && (
                                     <IconButton
                                         variant="text"

@@ -1,4 +1,5 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { createRef } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { MenuItem } from "../../menu/MenuItem";
@@ -76,5 +77,24 @@ describe("BulkActionBar", () => {
         );
         fireEvent.keyDown(screen.getByRole("menuitem", { name: "Images" }), { key: "Escape" });
         expect(onClear).not.toHaveBeenCalled();
+    });
+    it("runs the cleanup returned by a forwarded callback ref on unmount", () => {
+        const refCleanup = vi.fn();
+        const callbackRef = vi.fn(() => refCleanup);
+        const { unmount } = render(<BulkActionBar ref={callbackRef} count={1} actions={[]} onClear={noop} />);
+        expect(callbackRef).toHaveBeenCalledWith(screen.getByRole("toolbar"));
+
+        unmount();
+        expect(refCleanup).toHaveBeenCalledTimes(1);
+        expect(callbackRef).not.toHaveBeenCalledWith(null);
+    });
+
+    it("sets and clears a forwarded object ref", () => {
+        const objectRef = createRef<HTMLDivElement>();
+        const { unmount } = render(<BulkActionBar ref={objectRef} count={1} actions={[]} onClear={noop} />);
+        expect(objectRef.current).toBe(screen.getByRole("toolbar"));
+
+        unmount();
+        expect(objectRef.current).toBeNull();
     });
 });

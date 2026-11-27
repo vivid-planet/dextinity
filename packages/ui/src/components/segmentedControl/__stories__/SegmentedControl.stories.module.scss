@@ -3,3 +3,10 @@
     padding: var(--dextinity-space-2);
     outline: 1px dashed var(--dextinity-color-line);
 }
+
+.scrollContainer {
+    inline-size: 160px;
+    padding: var(--dextinity-space-2);
+    overflow: auto;
+    outline: 1px dashed var(--dextinity-color-line);
+}

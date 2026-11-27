@@ -219,7 +219,8 @@ const unavailableReasons: Record<Exclude<ClaudeAvailability, "available">, strin
  */
 function useCommentsHost() {
     const foundHost = useMemo(findWorkbenchCommentsHost, []);
-    const [hostAvailable, setHostAvailable] = useState(true);
+    // Until the host confirms that it can post, the notes are copied, so a click right after opening never fails
+    const [hostAvailable, setHostAvailable] = useState(false);
     const [availability, setAvailability] = useState<ClaudeAvailability | null>(null);
     useEffect(() => {
         if (!foundHost) {

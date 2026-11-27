@@ -11,7 +11,7 @@ const meta = {
     argTypes: {
         children: { control: false },
         colorScheme: { control: "radio", options: ["light", "dark", "high-contrast"] },
-        brand: { control: "select", options: ["dextinity", "ai-hub", "comet", "groupcms-ai", "vivid-planet"] },
+        brand: { control: "select", options: ["dextinity", "ai-hub"] },
         density: { control: "radio", options: ["comfortable", "standard", "compact"] },
         className: { control: false },
     },
@@ -41,28 +41,6 @@ export const HighContrast: Story = {
  */
 export const AiHub: Story = {
     args: { brand: "ai-hub" },
-};
-
-/**
- * GroupCMS AI: the teal of the GroupCMS AI logo, with blue-gray neutrals.
- */
-export const GroupCmsAi: Story = {
-    args: { brand: "groupcms-ai" },
-};
-
-/**
- * Comet: the flat look of the MUI-based admin, with its light blue, gray neutrals, Roboto, small corner radii, and
- * opaque surfaces instead of glass.
- */
-export const Comet: Story = {
-    args: { brand: "comet" },
-};
-
-/**
- * Vivid Planet: the sky blue and gray of Vivid Planet with Montserrat, and an aurora of blues.
- */
-export const VividPlanet: Story = {
-    args: { brand: "vivid-planet" },
 };
 
 export const Compact: Story = {

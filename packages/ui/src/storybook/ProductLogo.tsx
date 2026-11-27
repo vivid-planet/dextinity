@@ -1,24 +1,9 @@
 import styles from "./ProductLogo.module.scss";
-import {
-    aiHubLogo,
-    aiHubLogoNegative,
-    aiHubSign,
-    dextinityLogo,
-    dextinityLogoNegative,
-    dextinitySign,
-    groupCmsAiLogo,
-    groupCmsAiLogoNegative,
-    groupCmsSign,
-    vividPlanetLogo,
-    vividPlanetLogoNegative,
-    vividPlanetSign,
-} from "./productLogos";
+import { aiHubLogo, aiHubLogoNegative, aiHubSign, dextinityLogo, dextinityLogoNegative, dextinitySign } from "./productLogos";
 
 const logos = [
     { brand: "dextinity", name: "Dextinity", positive: dextinityLogo, negative: dextinityLogoNegative, sign: dextinitySign },
     { brand: "ai-hub", name: "Dextinity AI Hub", positive: aiHubLogo, negative: aiHubLogoNegative, sign: aiHubSign },
-    { brand: "groupcms-ai", name: "GroupCMS AI", positive: groupCmsAiLogo, negative: groupCmsAiLogoNegative, sign: groupCmsSign },
-    { brand: "vivid-planet", name: "Vivid Planet", positive: vividPlanetLogo, negative: vividPlanetLogoNegative, sign: vividPlanetSign },
 ];
 
 /**

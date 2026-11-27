@@ -221,8 +221,12 @@ export function NoteLayer({
         onFocusHandled,
     });
 
-    // Notes written before the element was recorded get it once their page shows
+    // Notes written before the element was recorded get it once their page shows; until the frame has loaded the selected
+    // prototype, an element at the same path would belong to another one
     useEffect(() => {
+        if (getFrameStoryId(frameDocument) !== notePage.prototypeId) {
+            return;
+        }
         const descriptions = new Map<string, string>();
         for (const note of pageNotes) {
             const element = note.element === undefined ? findElementByPath(frameDocument, note.path) : null;

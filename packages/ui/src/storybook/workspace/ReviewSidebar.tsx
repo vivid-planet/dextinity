@@ -37,7 +37,7 @@ async function copyText(text: string) {
     }
 }
 
-function CopyButton({ getText, label, disabled = false }: { getText: () => string; label: string; disabled?: boolean }) {
+function CopyButton({ getText, label, disabled }: { getText: () => string; label: string; disabled?: boolean }) {
     const [copied, setCopied] = useState(false);
     return (
         <Button
@@ -132,7 +132,7 @@ function SidebarEntry({
     number,
     details,
     shown,
-    done = false,
+    done,
     onShow,
     children,
 }: PropsWithChildren<{

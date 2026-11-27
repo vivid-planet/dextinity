@@ -1,8 +1,7 @@
-import { useState } from "react";
-
 import { Icon } from "../../components/icon/Icon";
 import { IconButton } from "../../components/iconButton/IconButton";
 import { Popover } from "../../components/popover/Popover";
+import { usePopupOpen } from "./usePopupOpen";
 import styles from "./WorkspaceToolbarControls.module.scss";
 
 const modes = [
@@ -28,7 +27,7 @@ const modes = [
 
 /** What the workspace's modes are for, for finding the right one without trying each. */
 export function WorkspaceGuide() {
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = usePopupOpen();
     return (
         <Popover
             open={open}

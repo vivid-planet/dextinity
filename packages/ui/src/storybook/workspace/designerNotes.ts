@@ -106,6 +106,29 @@ export function describeNoteElement(element: Element) {
     return componentName ? `${role} in ${componentName}` : role;
 }
 
+/**
+ * What closing a note's editor in the frame does to the stored note: nothing when the note was deleted or its text changed elsewhere,
+ * e.g. in the sidebar, since the editor opened; otherwise it deletes a note left empty and keeps a changed text.
+ */
+export function getFrameNoteEditResult({
+    storedText,
+    draft,
+    original,
+}: {
+    storedText: string | undefined;
+    draft: string;
+    original: string;
+}): { action: "keep" } | { action: "delete" } | { action: "update"; text: string } {
+    if (storedText !== original) {
+        return { action: "keep" };
+    }
+    const text = draft.trim();
+    if (text === "") {
+        return { action: "delete" };
+    }
+    return text === original ? { action: "keep" } : { action: "update", text };
+}
+
 /** The number of the note's pin: its place among the notes of its prototype. */
 export function getNoteNumber(notes: DesignerNote[], note: DesignerNote) {
     return notes.filter((item) => item.prototypeId === note.prototypeId).findIndex((item) => item.id === note.id) + 1;

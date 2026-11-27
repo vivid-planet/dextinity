@@ -1,4 +1,4 @@
-import { type KeyboardEvent, type ReactNode, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { type KeyboardEvent, type PropsWithChildren, type ReactNode, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import { Button } from "../../components/button/Button";
 import { ConfirmDialog } from "../../components/confirmDialog/ConfirmDialog";
@@ -81,7 +81,7 @@ function WorkbenchSidebar({
     footer,
     storageNote,
     children,
-}: {
+}: PropsWithChildren<{
     title: string;
     count: ReactNode;
     overlay: boolean;
@@ -90,8 +90,7 @@ function WorkbenchSidebar({
     footer: ReactNode;
     /** Where the items are kept, so a designer doesn't count on others seeing them. */
     storageNote: string;
-    children: ReactNode;
-}) {
+}>) {
     const titleId = useId();
     function handleKeyDown(event: KeyboardEvent) {
         // React also passes on the keys of a dialog the sidebar opened in a portal, which close the dialog only
@@ -136,15 +135,14 @@ function SidebarEntry({
     done = false,
     onShow,
     children,
-}: {
+}: PropsWithChildren<{
     text: ReactNode;
     number?: number;
     details: ReactNode;
     shown: boolean;
     done?: boolean;
     onShow: () => void;
-    children: ReactNode;
-}) {
+}>) {
     const textRef = useRef<HTMLSpanElement>(null);
     const [expanded, setExpanded] = useState(false);
     const [clipped, setClipped] = useState(false);
@@ -215,18 +213,37 @@ const unavailableReasons: Record<Exclude<ClaudeAvailability, "available">, strin
     off: "Sending to Claude is off here.",
 };
 
-/** Asks the host each time the sidebar opens, since whether Claude can receive notes changes while the Workbench is open. */
-function useClaudeAvailability() {
-    const host = useMemo(findWorkbenchCommentsHost, []);
+/**
+ * Asks the host each time the sidebar opens, since whether Claude can receive notes changes while the Workbench is open. A host whose
+ * comments aren't available counts as none, so that the notes are copied instead.
+ */
+function useCommentsHost() {
+    const foundHost = useMemo(findWorkbenchCommentsHost, []);
+    // Until the host confirms that it can post, the notes are copied, so a click right after opening never fails
+    const [hostAvailable, setHostAvailable] = useState(false);
     const [availability, setAvailability] = useState<ClaudeAvailability | null>(null);
     useEffect(() => {
-        if (!host) {
+        if (!foundHost) {
             return;
         }
+        const host = foundHost;
         let current = true;
         async function check() {
+            let available: boolean;
             try {
-                const result = await host?.canSendToClaude();
+                available = (await host.isAvailable()) === true;
+            } catch {
+                available = false;
+            }
+            if (!current) {
+                return;
+            }
+            setHostAvailable(available);
+            if (!available) {
+                return;
+            }
+            try {
+                const result = await host.canSendToClaude();
                 if (current) {
                     // A value a newer host may add counts as unavailable
                     setAvailability(result === "available" || (result !== undefined && result in unavailableReasons) ? result : "off");
@@ -241,8 +258,8 @@ function useClaudeAvailability() {
         return () => {
             current = false;
         };
-    }, [host]);
-    return { host, availability };
+    }, [foundHost]);
+    return { host: hostAvailable ? foundHost : null, availability };
 }
 
 function updateNote(id: string, changes: Partial<DesignerNote>) {
@@ -261,7 +278,7 @@ export function NotesSidebar({ current, describePlace, onShow, shownId, overlay,
     const [deletingId, setDeletingId] = useState<string | null>(null);
     const [sharing, setSharing] = useState<{ id: string; target: NoteShareTarget } | null>(null);
     const { toasts, add: addToast, dismiss: dismissToast } = useToasts();
-    const { host, availability } = useClaudeAvailability();
+    const { host, availability } = useCommentsHost();
     const shownNotes = filterNotes(notes, { scope, status }, current);
     const openCount = notes.filter((note) => !isNoteDone(note)).length;
     const deletingNote = notes.find((note) => note.id === deletingId);

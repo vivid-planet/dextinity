@@ -111,6 +111,7 @@
         }
         window.dextinityWorkbenchHost = {
             comments: {
+                isAvailable: async () => (await getComments()) != null,
                 async canSendToClaude() {
                     const comments = await getComments();
                     if (!comments) return "off";

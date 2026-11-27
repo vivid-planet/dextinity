@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { getLabelOffset, getRenderedFrameRect } from "../frameElements";
+import { getFrameStoryId, getLabelOffset, getRenderedFrameRect } from "../frameElements";
 
 function mockRect(element: Element, rect: { top: number; left: number; width: number; height: number }) {
     vi.spyOn(element, "getBoundingClientRect").mockReturnValue({ ...rect, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => rect });
@@ -51,5 +51,16 @@ describe("getLabelOffset", () => {
     it("keeps the label's start inside the frame", () => {
         expect(getLabelOffset({ preferredOffset: -2, anchorLeft: 1, labelWidth: 100, frameWidth: 400 })).toBe(-1);
         expect(getLabelOffset({ preferredOffset: -2, anchorLeft: 50, labelWidth: 500, frameWidth: 400 })).toBe(-50);
+    });
+});
+
+describe("getFrameStoryId", () => {
+    it("reads the story id from the frame's location", () => {
+        const location = { search: "?id=prototypes-career-portal--default&viewMode=story" } as Location;
+        expect(getFrameStoryId({ location })).toBe("prototypes-career-portal--default");
+    });
+
+    it("returns null for a document no longer shown", () => {
+        expect(getFrameStoryId({ location: null } as unknown as Pick<Document, "location">)).toBeNull();
     });
 });

@@ -26,6 +26,11 @@ export function findElementByPath(frameDocument: Document, path: number[]): Elem
     return current;
 }
 
+/** The id of the story the frame's document shows, or `null` for a document no longer shown, e.g. of a frame that was replaced. */
+export function getFrameStoryId(frameDocument: Pick<Document, "location">) {
+    return frameDocument.location ? new URLSearchParams(frameDocument.location.search).get("id") : null;
+}
+
 /** The element's box in the frame's pixels, which the workspace scales with the frame. */
 export function getFrameRect(element: Element) {
     const { top, left, width, height } = element.getBoundingClientRect();

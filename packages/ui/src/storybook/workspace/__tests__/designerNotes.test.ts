@@ -5,6 +5,7 @@ import {
     filterNotes,
     formatNoteComment,
     formatNotesMarkdown,
+    getFrameNoteEditResult,
     groupByPage,
     maxCommentBytes,
     maxCommentLabelBytes,
@@ -127,5 +128,31 @@ describe("formatNotesMarkdown", () => {
                 "- [x] Done one",
             ].join("\n"),
         );
+    });
+});
+
+describe("getFrameNoteEditResult", () => {
+    it("keeps a note whose text changed elsewhere since the editor opened", () => {
+        expect(getFrameNoteEditResult({ storedText: "Edited in the sidebar", draft: "", original: "" })).toEqual({ action: "keep" });
+        expect(getFrameNoteEditResult({ storedText: "Edited in the sidebar", draft: "Typed in the frame", original: "Old" })).toEqual({
+            action: "keep",
+        });
+    });
+
+    it("doesn't bring back a note deleted meanwhile", () => {
+        expect(getFrameNoteEditResult({ storedText: undefined, draft: "Typed in the frame", original: "Old" })).toEqual({ action: "keep" });
+    });
+
+    it("deletes a note left empty", () => {
+        expect(getFrameNoteEditResult({ storedText: "", draft: "", original: "" })).toEqual({ action: "delete" });
+        expect(getFrameNoteEditResult({ storedText: "Old", draft: "  ", original: "Old" })).toEqual({ action: "delete" });
+    });
+
+    it("updates a changed text, trimmed", () => {
+        expect(getFrameNoteEditResult({ storedText: "Old", draft: " New ", original: "Old" })).toEqual({ action: "update", text: "New" });
+    });
+
+    it("keeps an unchanged text", () => {
+        expect(getFrameNoteEditResult({ storedText: "Old", draft: "Old ", original: "Old" })).toEqual({ action: "keep" });
     });
 });

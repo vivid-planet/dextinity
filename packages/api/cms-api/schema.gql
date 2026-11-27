@@ -285,6 +285,24 @@ The `BigInt` scalar type represents non-fractional signed whole numeric values.
 """
 scalar BigInt
 
+type FullTextSearchHighlight {
+  start: Int!
+
+  """Exclusive"""
+  end: Int!
+}
+
+type FullTextSearchSnippet {
+  text: String!
+  highlights: [FullTextSearchHighlight!]!
+
+  """Words before the text were cut off"""
+  truncatedStart: Boolean!
+
+  """Words after the text were cut off"""
+  truncatedEnd: Boolean!
+}
+
 type FullTextSearchResult {
   id: String!
   entityName: String!
@@ -294,8 +312,14 @@ type FullTextSearchResult {
   """
   type: String!
   name: String!
+
+  """The search terms in the name"""
+  titleHighlights: [FullTextSearchHighlight!]!
   secondaryInformation: String
   visible: Boolean!
+
+  """The part of the content that matches the search best"""
+  snippet: FullTextSearchSnippet
 }
 
 type FullTextSearchTypeCount {

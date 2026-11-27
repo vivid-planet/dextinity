@@ -759,11 +759,23 @@ input FooterScopeInput {
   language: String!
 }
 
+type FullTextSearchHighlight {
+  """Exclusive"""
+  end: Int!
+  start: Int!
+}
+
 type FullTextSearchResult {
   entityName: String!
   id: String!
   name: String!
   secondaryInformation: String
+
+  """The part of the content that matches the search best"""
+  snippet: FullTextSearchSnippet
+
+  """The search terms in the name"""
+  titleHighlights: [FullTextSearchHighlight!]!
 
   """
   The document type for page tree nodes (e.g. Page, Link), the entity name otherwise
@@ -778,6 +790,17 @@ type FullTextSearchResults {
 
   """Number of results per type"""
   types: [FullTextSearchTypeCount!]!
+}
+
+type FullTextSearchSnippet {
+  highlights: [FullTextSearchHighlight!]!
+  text: String!
+
+  """Words after the text were cut off"""
+  truncatedEnd: Boolean!
+
+  """Words before the text were cut off"""
+  truncatedStart: Boolean!
 }
 
 type FullTextSearchTypeCount {

@@ -437,8 +437,12 @@
 
 .inspectLabel {
     position: absolute;
+    display: flex;
+    gap: 4px;
     inset-block-end: 100%;
     inset-inline-start: -2px;
+    box-sizing: border-box;
+    overflow: hidden;
     padding: 1px 6px;
     border-radius: 3px 3px 0 0;
     background: var(--dextinity-color-accent);
@@ -448,11 +452,46 @@
     line-height: 16px;
     white-space: nowrap;
 
-    [data-label-inside] > & {
+    // At the frame's top edge, the label goes inside the box, where the frame doesn't cut it off
+    &[data-inside] {
         inset-block: 0 auto;
-        inset-inline-start: 0;
-        border-radius: 0 0 3px;
+        border-radius: 0 0 3px 3px;
     }
+}
+
+.inspectLevel {
+    // The other levels give way first, so a long trail of ancestors doesn't push the highlighted level and its hint out of the frame
+    flex: 0 1000 auto;
+    min-inline-size: 1em;
+    overflow: hidden;
+    font-weight: 400;
+    text-overflow: ellipsis;
+    opacity: 0.75;
+
+    // A part of a component, which opens the component's story
+    &[data-slot] {
+        font-style: italic;
+    }
+
+    &[data-highlighted] {
+        flex: none;
+        font-weight: 600;
+        opacity: 1;
+    }
+}
+
+.inspectSeparator {
+    flex: none;
+    opacity: 0.6;
+}
+
+.inspectHint {
+    min-inline-size: 0;
+    overflow: hidden;
+    margin-inline-start: 8px;
+    font-weight: 400;
+    text-overflow: ellipsis;
+    opacity: 0.75;
 }
 
 .iframe {

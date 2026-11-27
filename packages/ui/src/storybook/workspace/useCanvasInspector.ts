@@ -17,6 +17,8 @@ export interface InspectedChain {
     /** The index in `levels` of the highlighted component, the one a click picks. */
     level: number;
     component: InspectedComponent;
+    /** The width of the frame's page in its own pixels, before the canvas zoom. */
+    frameWidth: number;
 }
 
 // Move the highlight to the enclosing component and back without moving the pointer
@@ -117,7 +119,7 @@ export function useCanvasInspector({
                 rect: { top: box.top, left: box.left, width: box.width, height: box.height },
             };
             const levels = chain.map(({ element, componentName }) => ({ key: `${getElementKey(element)}-${componentName}`, componentName }));
-            setHovered({ levels, level, component });
+            setHovered({ levels, level, component, frameWidth: inspectedDocument.documentElement.clientWidth });
             return component;
         }
 

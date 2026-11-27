@@ -1100,6 +1100,8 @@ export function WorkspaceShell() {
                                                 className={styles.inspectBox}
                                                 // At the frame's top edge, the label goes inside the box, where the frame doesn't cut it off
                                                 data-label-inside={inspected.component.rect.top * scale < inspectLabelHeight || undefined}
+                                                // In the frame's right half, the label grows to the left, so the frame doesn't cut off the breadcrumb
+                                                data-label-end={inspected.component.rect.left > inspected.frameWidth / 2 || undefined}
                                                 style={{
                                                     top: inspected.component.rect.top * scale,
                                                     left: inspected.component.rect.left * scale,

@@ -7,6 +7,18 @@
     --dextinity-table-line-height: var(--dextinity-typography-body-line-height);
     // Focus ring of the scrolling area
     --dextinity-table-focus-ring: var(--dextinity-focus-ring-inset);
+    // Space between the toolbar and the table
+    --dextinity-table-toolbar-spacing: var(--dextinity-space-3);
+
+    // Distance from the top of the window, or of the scroll container around the table, at which the toolbar and header stick, e.g. the
+    // height of the app's own sticky bars
+    --dextinity-table-sticky-offset: 0px;
+    // Fill of the sticky toolbar and header while the rows scroll behind them
+    --dextinity-table-sticky-background: var(--dextinity-material-glass-strong);
+    // Blur of the rows behind the sticky toolbar and header
+    --dextinity-table-sticky-blur: var(--dextinity-material-blur);
+    // Stacking level of the sticky toolbar, above the header, which slides under it at the end of the table
+    --dextinity-table-sticky-toolbar-layer: 2;
 
     // Minimum height of the header row
     --dextinity-table-header-height: var(--dextinity-density-header-height);

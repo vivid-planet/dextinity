@@ -6,6 +6,7 @@ import { useMergedRef } from "../../utils/useMergedRef";
 import { defaultColumnMinWidth, TableContext, type TableLayoutColumn } from "./tableContext";
 import styles from "./TableRoot.module.scss";
 import { useOverflowing } from "./useOverflowing";
+import { useStickyHeader } from "./useStickyHeader";
 
 /**
  * The resolved configuration that influences the component's appearance or behavior.
@@ -13,11 +14,17 @@ import { useOverflowing } from "./useOverflowing";
 export type TableRootOwnerState = {
     /** The table is wider than its container, so it scrolls horizontally. */
     overflowing: boolean;
+    /** The header row stays in view while the page scrolls. */
+    stickyHeader: boolean;
+    /** The toolbar stays in view while the page scrolls; `false` without a toolbar. */
+    stickyToolbar: boolean;
 };
 
 export interface TableRootSlotProps {
     /** Props for the root, which holds the scrolling area. */
     root?: SlotPropsValue<TableRootOwnerState, "div">;
+    /** Props for the `toolbar` slot, the area above the table. */
+    toolbar?: SlotPropsValue<TableRootOwnerState, "div">;
     /** Props for the `scrollerFrame` slot, which draws the focus ring of the scrolling area. */
     scrollerFrame?: SlotPropsValue<TableRootOwnerState, "div">;
     /** Props for the `scroller` slot, the area that scrolls the table horizontally. */
@@ -35,6 +42,21 @@ export interface TableRootProps extends Omit<TableHTMLAttributes<HTMLTableElemen
     "aria-labelledby"?: string;
     /** The `TableHeader` and the `TableBody`. */
     children: ReactNode;
+    /** Above the table, e.g. a `FilterBar`. */
+    toolbar?: ReactNode;
+    /**
+     * Keeps the header row in view at the top of the window while the page scrolls past the table, except in windows lower than
+     * 30rem. In a scroll container, e.g. the body of a `Drawer`, it stays at the top of the container.
+     *
+     * @defaultValue `true`
+     */
+    stickyHeader?: boolean;
+    /**
+     * Keeps the toolbar in view at the top of the window as well, with the header below it.
+     *
+     * @defaultValue `false`
+     */
+    stickyToolbar?: boolean;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Styles of the root. */
@@ -56,17 +78,21 @@ function getMinTableWidth(columns: TableLayoutColumn[]) {
 
 /**
  * Shows rows of data in columns. When the columns don't fit, the table scrolls horizontally, and its scrolling area takes keyboard
- * focus.
+ * focus. The header row stays in view while the page scrolls.
  */
 export const TableRoot = forwardRef<HTMLTableElement, TableRootProps>(function TableRoot(
-    { columns, children, className, style, slotProps, ...restProps },
+    { columns, children, toolbar, stickyHeader = true, stickyToolbar = false, className, style, slotProps, ...restProps },
     ref,
 ) {
+    const rootRef = useRef<HTMLDivElement>(null);
+    const toolbarRef = useRef<HTMLDivElement>(null);
     const scrollerRef = useRef<HTMLDivElement>(null);
     const tableRef = useRef<HTMLTableElement>(null);
     useImperativeHandle(ref, () => tableRef.current as HTMLTableElement);
     const overflowing = useOverflowing(scrollerRef, tableRef);
-    const ownerState: TableRootOwnerState = { overflowing };
+    const hasToolbar = toolbar != null && toolbar !== false;
+    const ownerState: TableRootOwnerState = { overflowing, stickyHeader, stickyToolbar: stickyToolbar && hasToolbar };
+    useStickyHeader({ rootRef, toolbarRef, tableRef, stickyHeader, stickyToolbar: ownerState.stickyToolbar, overflowing });
     const context = useMemo(() => ({ columns }), [columns]);
 
     const ariaLabel = restProps["aria-label"];
@@ -80,6 +106,11 @@ export const TableRoot = forwardRef<HTMLTableElement, TableRootProps>(function T
     const rootProps = resolveSlotProps<TableRootOwnerState, "div", "div">({
         ownProps: { className: clsx(styles.root, className), style },
         slotProps: slotProps?.root,
+        ownerState,
+    });
+    const toolbarProps = resolveSlotProps<TableRootOwnerState, "div", "div">({
+        ownProps: { className: styles.toolbar },
+        slotProps: slotProps?.toolbar,
         ownerState,
     });
     const scrollerFrameProps = resolveSlotProps<TableRootOwnerState, "div", "div">({
@@ -108,11 +139,24 @@ export const TableRoot = forwardRef<HTMLTableElement, TableRootProps>(function T
         ownerState,
     });
 
+    const setRootRef = useMergedRef(rootRef, rootProps.ref);
+    const setToolbarRef = useMergedRef(toolbarRef, toolbarProps.ref);
     const setScrollerRef = useMergedRef(scrollerRef, scrollerProps.ref);
     const setTableRef = useMergedRef(tableRef, tableProps.ref);
 
     return (
-        <div {...rootProps} data-overflowing={overflowing ? "" : undefined}>
+        <div
+            {...rootProps}
+            ref={setRootRef}
+            data-overflowing={overflowing ? "" : undefined}
+            data-stickyheader={stickyHeader ? "" : undefined}
+            data-stickytoolbar={ownerState.stickyToolbar ? "" : undefined}
+        >
+            {hasToolbar && (
+                <div {...toolbarProps} ref={setToolbarRef}>
+                    {toolbar}
+                </div>
+            )}
             <div {...scrollerFrameProps}>
                 <div {...scrollerProps} ref={setScrollerRef}>
                     <table {...tableProps} ref={setTableRef}>

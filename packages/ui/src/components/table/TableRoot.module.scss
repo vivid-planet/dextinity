@@ -1,11 +1,60 @@
 @use "../../theme/forcedColors" as forced-colors;
+@use "heldFill";
+
+$short-viewport: "(max-height: 30rem)";
 
 .root {
+    // Set by the table while the page scrolls, and read by its parts; declared here, so a table inside a cell doesn't inherit them
+    --_toolbar-height: 0px;
+    --_header-height: 0px;
+    --_toolbar-stuck: 0;
+    --_header-stuck: 0;
+    --_toolbar-backdrop-filter: none;
+    --_header-backdrop-filter: none;
+    --_sticky-top: calc(var(--dextinity-table-sticky-offset) + var(--_toolbar-height));
+    --_header-inset: auto;
+
     min-inline-size: 0;
     color: var(--dextinity-table-foreground);
     font-family: var(--dextinity-font-family-text);
     font-size: var(--dextinity-table-font-size);
     line-height: var(--dextinity-table-line-height);
+
+    &[data-toolbarstuck] {
+        --_toolbar-stuck: 1;
+        --_toolbar-backdrop-filter: blur(var(--dextinity-table-sticky-blur));
+    }
+
+    &[data-headerstuck] {
+        --_header-stuck: 1;
+        --_header-backdrop-filter: blur(var(--dextinity-table-sticky-blur));
+    }
+
+    // A horizontal scroll container also scrolls vertically, so the header would stick to it instead of the page; the table moves
+    // the header with the page scroll instead
+    &[data-stickyheader]:not([data-overflowing]) {
+        --_header-inset: var(--_sticky-top);
+
+        @media #{$short-viewport} {
+            --_header-inset: auto;
+        }
+    }
+}
+
+.toolbar {
+    padding-block-end: var(--dextinity-table-toolbar-spacing);
+
+    .root[data-stickytoolbar] > & {
+        position: sticky;
+        inset-block-start: var(--dextinity-table-sticky-offset);
+        z-index: var(--dextinity-table-sticky-toolbar-layer);
+
+        @include heldFill.held-fill(var(--_toolbar-stuck), var(--_toolbar-backdrop-filter));
+
+        @media #{$short-viewport} {
+            position: static;
+        }
+    }
 }
 
 .scrollerFrame {
@@ -46,4 +95,6 @@
     border-collapse: separate;
     border-spacing: 0;
     table-layout: fixed;
+    // Read by the table to move the header with the page scroll while the table scrolls horizontally
+    scroll-margin-block-start: var(--_sticky-top);
 }

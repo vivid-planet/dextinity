@@ -37,6 +37,7 @@ function renderTable(props: Partial<TableRootProps & RefAttributes<HTMLTableElem
 describe("TableRoot", () => {
     it("renders the contract classes and passes the table props and ref to the table", () => {
         const ref = createRef<HTMLTableElement>();
+        const rootRef = createRef<HTMLDivElement>();
         const scrollerRef = createRef<HTMLDivElement>();
         const tableSlotRef = createRef<HTMLTableElement>();
         const { container } = renderTable({
@@ -44,7 +45,7 @@ describe("TableRoot", () => {
             className: "consumer-class",
             summary: "Open job ads",
             slotProps: {
-                root: { id: "root-id" },
+                root: { id: "root-id", ref: rootRef },
                 scroller: { className: "consumer-scroller", ref: scrollerRef },
                 table: { className: "consumer-table", ref: tableSlotRef },
             },
@@ -55,6 +56,7 @@ describe("TableRoot", () => {
         expect(root.className).toContain("dextinityTableRoot");
         expect(root.className).toContain("consumer-class");
         expect(root.id).toBe("root-id");
+        expect(rootRef.current).toBe(root);
         expect(root.dataset.overflowing).toBeUndefined();
         expect(ref.current).toBe(table);
         expect(tableSlotRef.current).toBe(table);
@@ -65,6 +67,31 @@ describe("TableRoot", () => {
         expect(table.parentElement?.className).toContain("dextinityTableRoot__scroller");
         expect(table.parentElement?.className).toContain("consumer-scroller");
         expect(table.parentElement?.parentElement?.className).toContain("dextinityTableRoot__scrollerFrame");
+    });
+
+    it("renders the toolbar and the sticky state", () => {
+        const toolbarRef = createRef<HTMLDivElement>();
+        const { container, rerender } = renderTable({
+            toolbar: "24 job ads",
+            stickyToolbar: true,
+            slotProps: { toolbar: { className: "consumer-toolbar", ref: toolbarRef } },
+        });
+
+        const root = container.firstElementChild as HTMLElement;
+        const toolbar = screen.getByText("24 job ads");
+        expect(toolbar.className).toContain("dextinityTableRoot__toolbar");
+        expect(toolbar.className).toContain("consumer-toolbar");
+        expect(toolbarRef.current).toBe(toolbar);
+        expect(root.dataset.stickyheader).toBe("");
+        expect(root.dataset.stickytoolbar).toBe("");
+
+        rerender(
+            <TableRoot aria-label="Job ads" columns={columns} stickyHeader={false} stickyToolbar>
+                {defaultRow}
+            </TableRoot>,
+        );
+        expect(root.dataset.stickyheader).toBeUndefined();
+        expect(root.dataset.stickytoolbar).toBeUndefined();
     });
 
     it("warns in development when the table has no name", () => {

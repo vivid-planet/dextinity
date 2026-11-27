@@ -1,0 +1,14 @@
+// The fill of the sticky toolbar and header, shown only while `$held` is `1`, so they look like the surface behind the table until
+// the rows scroll behind them
+@mixin held-fill($held, $backdrop-filter) {
+    background: color-mix(in oklch, var(--dextinity-table-sticky-background) calc($held * 100%), transparent);
+    // `none` rather than `blur(0px)` while not held, as any filter makes the part the containing block of fixed elements inside it,
+    // e.g. a `BulkActionBar` in the toolbar
+    backdrop-filter: $backdrop-filter;
+    transition: background-color var(--dextinity-motion-duration-short) var(--dextinity-motion-easing);
+
+    // Forced colors keep only the alpha of the fill, which would leave the rows behind it readable
+    @media (forced-colors: active) {
+        background: color-mix(in srgb, Canvas calc($held * 100%), transparent);
+    }
+}

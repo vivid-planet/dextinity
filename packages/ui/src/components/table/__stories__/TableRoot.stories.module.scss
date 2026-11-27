@@ -5,3 +5,8 @@
 .narrow {
     max-inline-size: 480px;
 }
+
+.scrollContainer {
+    max-block-size: 360px;
+    overflow-y: auto;
+}

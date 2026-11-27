@@ -1,3 +1,8 @@
 .root {
     vertical-align: middle;
+
+    // Keeps a focused element from scrolling under the sticky toolbar and header
+    :is(a, button, input, select, textarea, [tabindex]) {
+        scroll-margin-block-start: calc(var(--_sticky-top) + var(--_header-height));
+    }
 }

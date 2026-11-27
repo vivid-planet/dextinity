@@ -13,6 +13,8 @@ import styles from "./BulkActionBar.module.scss";
  */
 export type BulkActionBarOwnerState = {
     open: boolean;
+    /** Every one of `total` items is selected, not only the ones in `count`. */
+    allSelected: boolean;
 };
 
 interface BulkActionBarActionBase {
@@ -69,12 +71,18 @@ export interface BulkActionBarLabels {
     clear: string;
     /** The accessible name of the bar. */
     toolbar: string;
+    /** The button that selects all items, e.g. "Select all 78". */
+    selectAll: (total: number) => string;
+    /** The count while all items are selected, e.g. "All 78 selected", or "All selected" without `total`. */
+    allSelected: (total?: number) => string;
 }
 
 export const defaultBulkActionBarLabels: BulkActionBarLabels = {
     count: (count) => `${count} selected`,
     clear: "Clear selection",
     toolbar: "Bulk actions",
+    selectAll: (total) => `Select all ${total}`,
+    allSelected: (total) => (total != null ? `All ${total} selected` : "All selected"),
 };
 
 export interface BulkActionBarSlotProps {
@@ -84,11 +92,30 @@ export interface BulkActionBarSlotProps {
     action?: SlotPropsValue<BulkActionBarOwnerState, typeof Toolbar.Button>;
     /** Props for the `clear` slot, the button that clears the selection. */
     clear?: SlotPropsValue<BulkActionBarOwnerState, typeof Toolbar.Button>;
+    /** Props for the `separator` slot, the dot between the count and the button that selects all items. */
+    separator?: SlotPropsValue<BulkActionBarOwnerState, "span">;
+    /** Props for the `selectAll` slot, the button that selects all items, or clears the selection while all are selected. */
+    selectAll?: SlotPropsValue<BulkActionBarOwnerState, typeof Toolbar.Button>;
 }
 
 export interface BulkActionBarProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children"> {
-    /** The number of selected items. The bar shows while it is greater than 0. */
+    /** The number of selected items. The bar shows while it is greater than 0, or while `allSelected`. */
     count: number;
+    /**
+     * The number of all items the selection could cover, e.g. all matches of the filters on every page. With `onSelectAll`, the
+     * bar offers to select them.
+     */
+    total?: number;
+    /**
+     * Every one of `total` items is selected, not only the ones in `count`, e.g. also those on other pages. The bar shows "All 78
+     * selected", and with `onSelectAll`, a "Clear selection" button in place of ✕.
+     */
+    allSelected?: boolean;
+    /**
+     * Selects all `total` items, offered as "Select all 78" while fewer are selected. Set `allSelected` in response; the button then
+     * clears the selection and keeps its focus.
+     */
+    onSelectAll?: () => void;
     /** The actions that apply to all selected items. */
     actions: BulkActionBarAction[];
     /** Clears the selection; also called on Escape. */
@@ -106,17 +133,18 @@ export interface BulkActionBarProps extends Omit<HTMLAttributes<HTMLDivElement>,
  * the window, above the page, so it stays in reach however far the list scrolls; render it anywhere in the page.
  */
 export const BulkActionBar = forwardRef<HTMLDivElement, BulkActionBarProps>(function BulkActionBar(
-    { count, actions, onClear, labels: labelsProp, className, slotProps, onKeyDown, ...restProps },
+    { count, total, allSelected = false, onSelectAll, actions, onClear, labels: labelsProp, className, slotProps, onKeyDown, ...restProps },
     ref,
 ) {
     const labels = { ...defaultBulkActionBarLabels, ...labelsProp };
     const reasonIdPrefix = useId();
-    const ownerState: BulkActionBarOwnerState = { open: count > 0 };
-    // Keeps showing the last count while the bar fades out after the selection was cleared
-    const [shownCount, setShownCount] = useState(count);
-    if (count > 0 && count !== shownCount) {
-        setShownCount(count);
+    const ownerState: BulkActionBarOwnerState = { open: count > 0 || allSelected, allSelected };
+    // Keeps showing the last selection while the bar fades out after the selection was cleared
+    const [shown, setShown] = useState({ count, allSelected });
+    if (ownerState.open && (count !== shown.count || allSelected !== shown.allSelected)) {
+        setShown({ count, allSelected });
     }
+    const offersSelectAll = onSelectAll != null && total != null && (shown.allSelected || shown.count < total);
 
     const [element, setElement] = useState<HTMLDivElement | null>(null);
     const setRefs = useCallback(
@@ -166,6 +194,17 @@ export const BulkActionBar = forwardRef<HTMLDivElement, BulkActionBarProps>(func
         slotProps: slotProps?.clear,
         ownerState,
     });
+    const separatorProps = resolveSlotProps<BulkActionBarOwnerState, "span", "span">({
+        ownProps: { className: styles.separator, "aria-hidden": true },
+        slotProps: slotProps?.separator,
+        ownerState,
+    });
+    // One button for both states, so it keeps the focus when it switches from selecting all to clearing
+    const selectAllProps = resolveSlotProps<BulkActionBarOwnerState, typeof Toolbar.Button, typeof Toolbar.Button>({
+        ownProps: { className: styles.selectAll, onClick: shown.allSelected ? onClear : onSelectAll },
+        slotProps: slotProps?.selectAll,
+        ownerState,
+    });
 
     return (
         <Toolbar.Root
@@ -173,6 +212,7 @@ export const BulkActionBar = forwardRef<HTMLDivElement, BulkActionBarProps>(func
             ref={setRefs}
             aria-label={restProps["aria-label"] ?? labels.toolbar}
             data-open={ownerState.open ? "" : undefined}
+            data-allselected={ownerState.allSelected ? "" : undefined}
             inert={!ownerState.open}
             className={clsx(styles.root, className)}
             onKeyDown={(event: KeyboardEvent<HTMLDivElement>) => {
@@ -185,7 +225,13 @@ export const BulkActionBar = forwardRef<HTMLDivElement, BulkActionBarProps>(func
                 }
             }}
         >
-            <span {...countProps}>{labels.count(shownCount)}</span>
+            <span {...countProps}>{shown.allSelected ? labels.allSelected(total) : labels.count(shown.count)}</span>
+            {offersSelectAll && (
+                <>
+                    <span {...separatorProps} />
+                    <Toolbar.Button {...selectAllProps}>{shown.allSelected ? labels.clear : labels.selectAll(total)}</Toolbar.Button>
+                </>
+            )}
             {actions.map((action, index) => {
                 const actionProps = resolveSlotProps<BulkActionBarOwnerState, typeof Toolbar.Button, typeof Toolbar.Button>({
                     ownProps: {
@@ -237,11 +283,14 @@ export const BulkActionBar = forwardRef<HTMLDivElement, BulkActionBarProps>(func
                     button
                 );
             })}
-            <Tooltip content={labels.clear}>
-                <Toolbar.Button {...clearProps}>
-                    <Icon name="close" />
-                </Toolbar.Button>
-            </Tooltip>
+            {/* While all are selected, the select-all button clears the selection under the same name */}
+            {!(offersSelectAll && shown.allSelected) && (
+                <Tooltip content={labels.clear}>
+                    <Toolbar.Button {...clearProps}>
+                        <Icon name="close" />
+                    </Toolbar.Button>
+                </Tooltip>
+            )}
         </Toolbar.Root>
     );
 });

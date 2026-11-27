@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
-import { useControlledArg } from "../../../storybook/storyArgs";
+import { recordArgsUpdates, useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
@@ -11,20 +11,30 @@ import { MenuSeparator } from "../../menu/MenuSeparator";
 import { BulkActionBar, type BulkActionBarProps } from "../BulkActionBar";
 import styles from "./BulkActionBar.stories.module.scss";
 
-/** Binds the count to the story's `count` arg: clearing sets it to 0, "Select 3" brings the bar back. */
+/**
+ * Binds the selection to the story's `count` and `allSelected` args: selecting all sets `allSelected`, clearing resets both,
+ * "Select 3" brings the bar back.
+ */
 function BulkActionBarWithArgs({ storyId, ...props }: BulkActionBarProps & { storyId: string }) {
     const [count, setCount] = useControlledArg(props, "count", { id: storyId });
+    const [allSelected, setAllSelected] = useControlledArg(props, "allSelected", { id: storyId });
     return (
         <div className={styles.stage}>
             <BulkActionBar
                 {...props}
                 count={count}
+                allSelected={allSelected}
+                onSelectAll={() => {
+                    props.onSelectAll?.();
+                    setAllSelected(true);
+                }}
                 onClear={() => {
                     props.onClear();
+                    setAllSelected(false);
                     setCount(0);
                 }}
             />
-            {count === 0 && (
+            {count === 0 && !allSelected && (
                 <Button variant="outlined" size="small" onClick={() => setCount(3)}>
                     Select 3
                 </Button>
@@ -45,6 +55,7 @@ const meta = {
             { label: "Delete", icon: <Icon name="trash" />, color: "error", onClick: fn() },
         ],
         onClear: fn(),
+        onSelectAll: fn(),
     },
     argTypes: {
         actions: { control: false },
@@ -179,5 +190,33 @@ export const WithMenu: Story = {
         await userEvent.keyboard("{Escape}");
         await waitFor(() => expect(screen.queryByRole("menu")).not.toBeInTheDocument());
         await expect(args.onClear).not.toHaveBeenCalled();
+    },
+};
+
+/**
+ * With `total` and `onSelectAll`, the bar offers to select all items, e.g. the matches on every page of a paged list. While
+ * `allSelected`, it says so, and its "Clear selection" button takes the place of ✕.
+ */
+export const SelectAll: Story = {
+    args: {
+        count: 20,
+        total: 78,
+        allSelected: false,
+    },
+    play: async ({ args, canvas, id, abortSignal }) => {
+        const updatedArgs = recordArgsUpdates({ id, abortSignal });
+        const selectAll = canvas.getByRole("button", { name: "Select all 78" });
+        await userEvent.click(selectAll);
+        await expect(args.onSelectAll).toHaveBeenCalledOnce();
+        await waitFor(() => expect(canvas.getByRole("status")).toHaveTextContent("All 78 selected"));
+        await waitFor(() => expect(updatedArgs).toEqual({ allSelected: true }));
+        await expect(selectAll).toHaveTextContent("Clear selection");
+        await expect(selectAll).toHaveFocus();
+        await expect(canvas.getAllByRole("button", { name: "Clear selection" })).toHaveLength(1);
+
+        await userEvent.keyboard("{Enter}");
+        await expect(args.onClear).toHaveBeenCalledOnce();
+        await expect(canvas.getByRole("toolbar", { hidden: true })).not.toHaveAttribute("data-open");
+        await waitFor(() => expect(updatedArgs).toEqual({ allSelected: false, count: 0 }));
     },
 };

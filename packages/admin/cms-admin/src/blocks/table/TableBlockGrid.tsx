@@ -112,16 +112,13 @@ export const TableBlockGrid = ({ state, updateState, clickedCell }: Props) => {
     };
 
     useEffect(() => {
-        const handleMoveColumn: GridEventListener<"columnHeaderDragEnd"> = ({ field: columnId }) => {
-            if (!apiRef.current) {
-                return;
-            }
-            const targetIndex = apiRef.current.getColumnIndex(columnId) - 1;
+        const handleMoveColumn: GridEventListener<"columnOrderChange"> = ({ column, targetIndex }) => {
+            const targetIndexWithoutReorderColumn = targetIndex - 1;
 
-            updateState((state) => moveColumnToIndex({ state, columnId, targetIndex }));
+            updateState((state) => moveColumnToIndex({ state, columnId: column.field, targetIndex: targetIndexWithoutReorderColumn }));
         };
 
-        return apiRef.current?.subscribeEvent("columnHeaderDragEnd", handleMoveColumn);
+        return apiRef.current?.subscribeEvent("columnOrderChange", handleMoveColumn);
     }, [apiRef, updateState]);
 
     const dataGridColumns: GridColDef[] = [

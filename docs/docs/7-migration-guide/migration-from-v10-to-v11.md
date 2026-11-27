@@ -2149,6 +2149,26 @@ The options of `useTableQuery` and `useSaveConflictQuery` are based on the Apoll
 
 `ITableQueryHookResult` is a type alias now, so you can't extend it with declaration merging.
 
+### Pass the complete content scope to `myFullTextSearch`
+
+`myFullTextSearch` only finds entities the user has the required permission for in the given `scope`.
+Before, a permission in any content scope was enough.
+The permissions are checked for the complete content scope, so a query that passes only part of it, for instance `{ domain: "main" }` without the language, can miss results.
+
+`SearchHeaderItem` already passes the complete content scope.
+Find your own queries:
+
+```sh
+grep -rn "myFullTextSearch" src
+```
+
+Pass the content scope as `useContentScope()` returns it:
+
+```diff
+- variables: { search, scope: { domain: scope.domain } },
++ variables: { search, scope },
+```
+
 ### Import the color picker from `@dextinity/admin`
 
 The `@dextinity/admin-color-picker` package has been merged into `@dextinity/admin`. Remove the package:

@@ -1,4 +1,5 @@
 import { EntityManager, type FilterQuery } from "@mikro-orm/postgresql";
+import { Inject } from "@nestjs/common";
 import { Args, Int, Query, Resolver } from "@nestjs/graphql";
 import { GraphQLJSONObject } from "graphql-scalars";
 
@@ -8,6 +9,8 @@ import { EntityInfoObject } from "../entity-info/entity-info.object.js";
 import { RequiredPermission } from "../user-permissions/decorators/required-permission.decorator.js";
 import { CurrentUser } from "../user-permissions/dto/current-user.js";
 import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface.js";
+import { ACCESS_CONTROL_SERVICE } from "../user-permissions/user-permissions.constants.js";
+import type { AccessControlServiceInterface } from "../user-permissions/user-permissions.types.js";
 import { PaginatedEntityInfo } from "./dto/paginated-entity-info.js";
 import { EntityInfoFullTextObject } from "./entities/entity-info-full-text.object.js";
 import { prefixFullTextCondition } from "./prefix-full-text-query.js";
@@ -15,7 +18,10 @@ import { prefixFullTextCondition } from "./prefix-full-text-query.js";
 @Resolver(() => EntityInfoObject)
 @RequiredPermission("fullTextSearch", { skipScopeCheck: true })
 export class FullTextSearchResolver {
-    constructor(private readonly entityManager: EntityManager) {}
+    constructor(
+        private readonly entityManager: EntityManager,
+        @Inject(ACCESS_CONTROL_SERVICE) private readonly accessControlService: AccessControlServiceInterface,
+    ) {}
 
     @Query(() => PaginatedEntityInfo)
     async myFullTextSearch(
@@ -26,7 +32,9 @@ export class FullTextSearchResolver {
         @RequestContext() { includeInvisiblePages }: RequestContextInterface,
         @Args("scope", { type: () => GraphQLJSONObject, nullable: true }) scope?: ContentScope,
     ): Promise<PaginatedEntityInfo> {
-        const allowedPermissions = user.permissions.map((p) => p.permission);
+        const allowedPermissions = [...new Set(user.permissions.map(({ permission }) => permission))].filter(
+            (permission) => !scope || this.accessControlService.isAllowed(user, permission, scope),
+        );
 
         if (allowedPermissions.length === 0) {
             return new PaginatedEntityInfo([], 0);
@@ -39,10 +47,10 @@ export class FullTextSearchResolver {
         };
 
         if (scope) {
-            // The view exposes a `scopes` array, so match rows whose scopes contain the requested scope.
+            // The view exposes a `scopes` array, so match rows whose scopes contain the requested scope. Unscoped entities are part of every scope.
             // GraphQL sends the scope object with a null prototype, which breaks MikroORM's internal hasOwnProperty calls.
             // Spreading into a plain object fixes this. See https://github.com/mikro-orm/mikro-orm/issues/2846.
-            where.scopes = { $contains: [{ ...scope }] };
+            where.$or = [{ scopes: null }, { scopes: { $contains: [{ ...scope }] } }];
         }
 
         const [matches, totalCount] = await this.entityManager.findAndCount(EntityInfoFullTextObject, where, {

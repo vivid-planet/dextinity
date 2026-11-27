@@ -103,6 +103,8 @@ PageTreeModule.forRoot({
 
 The `myFullTextSearch` GraphQL query requires the `fullTextSearch` permission. Add it to the appropriate roles in your user permissions configuration.
 
+A user only finds entities whose required permission they have. When searching in a `scope`, only the permissions the user has in that scope count. Pass the complete scope, as the admin does: a scope without some dimensions also finds entities in every value of these dimensions.
+
 #### 5. The GraphQL query
 
 Once the module is set up, the following query is available:
@@ -121,7 +123,7 @@ query MySearch($search: String!, $scope: JSONObject) {
 }
 ```
 
-The last word of `search` matches as a prefix, so `Navig` finds `Navigation`. The optional `scope` parameter restricts results to a specific content scope.
+The last word of `search` matches as a prefix, so `Navig` finds `Navigation`. The optional `scope` parameter restricts results to a specific content scope; entities without a scope are part of every scope.
 
 ### How to index blocks
 

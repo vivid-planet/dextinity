@@ -74,7 +74,7 @@ describe("lengthenText", () => {
         "AT · de",
         "de-AT",
         "photo.jpg",
-        "Annual report.pdf",
+        "annual-report_2025.pdf",
         "jane.doe@example.com",
         "12:30 PM",
         "5 min",
@@ -84,7 +84,21 @@ describe("lengthenText", () => {
         expect(lengthenText(value, 1)).toBe(value);
     });
 
-    it.each([...labels, "Ok, got it", "Read more.", "Last edited by J. Doe", "Add to", "5 items", "Version 2"])("lengthens %s", (text) => {
+    it.each([
+        ...labels,
+        "Ok, got it",
+        "Read more.",
+        "Last edited by J. Doe",
+        "Add to",
+        "5 items",
+        "Version 2",
+        "Learn more at docs.example.com",
+        "Contact us at info@example.com",
+        "Visit example.com",
+        "Uploaded report.pdf",
+        "Annual report.pdf",
+        "Built with Node.js",
+    ])("lengthens %s", (text) => {
         expect(isKeptByTranslation(text)).toBe(false);
     });
 });

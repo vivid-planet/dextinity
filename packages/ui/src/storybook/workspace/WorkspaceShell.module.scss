@@ -23,6 +23,26 @@
             cursor: ew-resize;
         }
 
+        .inspectLevel {
+            font-weight: 400;
+            opacity: 0.75;
+
+            &[data-highlighted] {
+                font-weight: 600;
+                opacity: 1;
+            }
+        }
+
+        .inspectSeparator {
+            opacity: 0.6;
+        }
+
+        .inspectHint {
+            margin-inline-start: 8px;
+            font-weight: 400;
+            opacity: 0.75;
+        }
+
         .iframe {
             pointer-events: none;
         }
@@ -432,6 +452,8 @@
 
 .inspectLabel {
     position: absolute;
+    display: flex;
+    gap: 4px;
     inset-block-end: 100%;
     inset-inline-start: -2px;
     padding: 1px 6px;

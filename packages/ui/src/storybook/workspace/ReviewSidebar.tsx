@@ -400,7 +400,7 @@ export function TextChangesSidebar({ current, describePlace, onShow, shownId, ov
     const [scope, setScope] = useState<NoteScope>("all");
     const [revertingAll, setRevertingAll] = useState(false);
     const shownChanges = filterByScope(changes, scope, current);
-    const requestChanges = getCodeRequestChanges(shownChanges);
+    const requestChanges = getCodeRequestChanges(changes);
 
     function setInCodeRequest(change: TextChange, inCodeRequest: boolean) {
         textChangeList.update((items) => items.map((item) => (item.id === change.id ? { ...item, inCodeRequest } : item)));
@@ -416,7 +416,7 @@ export function TextChangesSidebar({ current, describePlace, onShow, shownId, ov
             footer={
                 <>
                     <p className={styles.footerNote}>
-                        {requestChanges.length} of {shownChanges.length} in the code request
+                        {requestChanges.length} of {changes.length} in the code request
                     </p>
                     <CopyButton
                         label="Copy code request"
@@ -425,8 +425,8 @@ export function TextChangesSidebar({ current, describePlace, onShow, shownId, ov
                     />
                     <CopyButton
                         label="Copy all text changes"
-                        disabled={shownChanges.length === 0}
-                        getText={() => formatTextChanges(shownChanges, describePlace)}
+                        disabled={changes.length === 0}
+                        getText={() => formatTextChanges(changes, describePlace)}
                     />
                     <Button
                         variant="text"

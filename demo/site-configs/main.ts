@@ -22,6 +22,7 @@ export default ((env) => {
                 languages: ["en", "de"],
             },
             recaptchaSiteKey: process.env.RECAPTCHA_SITE_KEY ?? "",
+            currency: "EUR",
             organization: {
                 name: "Vivid Planet Software GmbH",
                 url: "https://www.vivid-planet.com",

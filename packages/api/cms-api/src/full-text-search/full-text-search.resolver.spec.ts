@@ -12,9 +12,13 @@ import { EntityInfoFullTextObject } from "./entities/entity-info-full-text.objec
 import { FullTextSearchResolver } from "./full-text-search.resolver.js";
 
 const rows = [
-    { id: "main-page", requiredPermission: ["pageTree"], scopes: [{ domain: "main", language: "en" }] },
-    { id: "secondary-page", requiredPermission: ["pageTree"], scopes: [{ domain: "secondary", language: "en" }] },
-    { id: "product", requiredPermission: ["products"], scopes: null },
+    { id: "main-page", type: "Page", text: "contact", requiredPermission: ["pageTree"], scopes: [{ domain: "main", language: "en" }] },
+    { id: "secondary-page", type: "Page", text: "contact", requiredPermission: ["pageTree"], scopes: [{ domain: "secondary", language: "en" }] },
+    { id: "product", type: "Product", text: "contact", requiredPermission: ["products"], scopes: null },
+    { id: "Media", type: "Product", text: "Video blocks, image blocks and more blocks", requiredPermission: ["products"], scopes: null },
+    { id: "Video", type: "Product", text: "Play blocks", requiredPermission: ["products"], scopes: null },
+    { id: "Video blocks guide", type: "Product", text: "How to", requiredPermission: ["products"], scopes: null },
+    { id: "Video blocks", type: "Product", text: "Overview", requiredPermission: ["products"], scopes: null },
 ];
 
 const user: CurrentUser = {
@@ -38,12 +42,14 @@ describe("FullTextSearchResolver", () => {
     beforeAll(async () => {
         database = new PGlite();
         await database.exec(`
-            CREATE TABLE "EntityInfoFullText" ("id" text, "entityName" text, "fullText" tsvector, "requiredPermission" text[], "scopes" jsonb);
+            CREATE TABLE "EntityInfoFullText" ("id" text, "entityName" text, "type" text, "fullText" tsvector, "requiredPermission" text[], "scopes" jsonb);
             CREATE TABLE "EntityInfo" ("id" text, "entityName" text, "name" text, "secondaryInformation" text, "visible" boolean, "requiredPermission" text[]);
         `);
-        for (const { id, requiredPermission, scopes } of rows) {
-            await database.query(`INSERT INTO "EntityInfoFullText" VALUES ($1, 'Entity', to_tsvector('simple', 'contact'), $2, $3)`, [
+        for (const { id, type, text, requiredPermission, scopes } of rows) {
+            await database.query(`INSERT INTO "EntityInfoFullText" VALUES ($1, 'Entity', $2, to_tsvector('simple', $1 || ' ' || $3), $4, $5)`, [
                 id,
+                type,
+                text,
                 requiredPermission,
                 scopes && JSON.stringify(scopes),
             ]);
@@ -73,9 +79,13 @@ describe("FullTextSearchResolver", () => {
         await database.close();
     });
 
+    function search(search: string, scope?: ContentScope) {
+        return resolver.myFullTextSearch({ search, scope, offset: 0, limit: 25 }, user, { previewDamUrls: false });
+    }
+
     async function findIds(scope?: ContentScope) {
-        const result = await resolver.myFullTextSearch("contact", 0, 25, user, { previewDamUrls: false }, scope);
-        return result.nodes.map(({ id }: EntityInfoObject) => id).sort();
+        const result = await search("contact", scope);
+        return result.nodes.map(({ id }) => id).sort();
     }
 
     it("doesn't find entities of a scope the user has no permission for", async () => {
@@ -84,5 +94,21 @@ describe("FullTextSearchResolver", () => {
 
     it("finds entities of a scope the user has the permission for", async () => {
         expect(await findIds({ domain: "main", language: "en" })).toEqual(["main-page", "product"]);
+    });
+
+    it("counts the results per type, with the permissions of all scopes when searching without a scope", async () => {
+        const result = await search("contact");
+
+        expect(result.types).toEqual([
+            { type: "Page", count: 2 },
+            { type: "Product", count: 1 },
+        ]);
+        expect(result.totalCount).toBe(3);
+    });
+
+    it("orders by exact name, all terms in the name, some terms in the name, then content matches", async () => {
+        const result = await search("video blocks");
+
+        expect(result.nodes.map(({ name }) => name)).toEqual(["Video blocks", "Video blocks guide", "Video", "Media"]);
     });
 });

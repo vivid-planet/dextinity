@@ -2169,6 +2169,32 @@ Pass the content scope as `useContentScope()` returns it:
 + variables: { search, scope },
 ```
 
+### Update the queries of `myFullTextSearch`
+
+`myFullTextSearch` returns `FullTextSearchResults` instead of `PaginatedEntityInfo`.
+Its results are of type `FullTextSearchResult` instead of `EntityInfo`, and `limit` is at most 50.
+`SearchHeaderItem` is already updated, so only your own queries are affected.
+
+Find them:
+
+```sh
+grep -rn "myFullTextSearch" src
+```
+
+Selections such as `nodes { id entityName name secondaryInformation } totalCount` keep working.
+Change fragments on `EntityInfo` that are spread into the results to `FullTextSearchResult`:
+
+```diff
+- fragment SearchResult on EntityInfo {
++ fragment SearchResult on FullTextSearchResult {
+      id
+      entityName
+      name
+  }
+```
+
+Lower a `limit` above 50 to 50.
+
 ### Import the color picker from `@dextinity/admin`
 
 The `@dextinity/admin-color-picker` package has been merged into `@dextinity/admin`. Remove the package:

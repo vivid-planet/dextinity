@@ -26,7 +26,7 @@ The module builds on two PostgreSQL views that are created by running the `creat
 
 - **`EntityInfo`** — always created by the core framework (not specific to `FullTextSearchModule`). It provides display data for every entity decorated with `@EntityInfo`: `name`, `secondaryInformation`, `visible`, `id`, `entityName`, and `requiredPermission`.
 
-- **`EntityInfoFullText`** — created only when `FullTextSearchModule` is imported. It is a `UNION ALL` of all entities that have a `fullText` column referenced in their `@EntityInfo` decorator. Each row contains `id`, `entityName`, the `tsvector` value, `requiredPermission`, and `scopes`. It joins back to the `EntityInfo` view to read display data such as `name` and `secondaryInformation`.
+- **`EntityInfoFullText`** — created only when `FullTextSearchModule` is imported. It is a `UNION ALL` of all entities that have a `fullText` column referenced in their `@EntityInfo` decorator. Each row contains `id`, `entityName`, `type` (the entity name, or the `documentType` for page tree nodes), the `tsvector` value, `requiredPermission`, and `scopes`. It joins back to the `EntityInfo` view to read display data such as `name` and `secondaryInformation`.
 
 Because both are standard PostgreSQL views (not materialized views), they always reflect the current state of the underlying tables — no manual refresh is needed when content changes.
 
@@ -112,18 +112,25 @@ Once the module is set up, the following query is available:
 ```graphql
 query MySearch($search: String!, $scope: JSONObject) {
     myFullTextSearch(search: $search, scope: $scope, limit: 10) {
+        totalCount
+        types {
+            type
+            count
+        }
         nodes {
             id
             entityName
+            type
             name
             secondaryInformation
         }
-        totalCount
     }
 }
 ```
 
-The last word of `search` matches as a prefix, so `Navig` finds `Navigation`. The optional `scope` parameter restricts results to a specific content scope; entities without a scope are part of every scope.
+The last word of `search` matches as a prefix, so `Navig` finds `Navigation`. Results whose name matches the search come first. `types` returns the number of results per type. The optional `scope` parameter restricts results to a specific content scope; entities without a scope are part of every scope.
+
+Ids are only unique per entity. With Apollo Client, use `fetchPolicy: "no-cache"` or `keyFields: ["entityName", "id"]` for `FullTextSearchResult`.
 
 ### How to index blocks
 

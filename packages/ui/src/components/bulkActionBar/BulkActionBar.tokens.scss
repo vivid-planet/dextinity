@@ -1,4 +1,8 @@
 @mixin tokens {
+    // Distance of the bar from the bottom of the window
+    --dextinity-bulk-action-bar-offset: 24px;
+    // Space the bar keeps to the left and right edges of the window when its actions wrap
+    --dextinity-bulk-action-bar-gutter: var(--dextinity-space-4);
     // Corner radius of the bar
     --dextinity-bulk-action-bar-radius: var(--dextinity-radius-field);
     // Fill of the bar, inverted so it stands out from the list below

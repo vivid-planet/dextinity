@@ -203,3 +203,29 @@ export const OverflowWrap: Story = {
         await expect(canvas.getByRole("radiogroup", { name: "View" })).toBeInTheDocument();
     },
 };
+
+/**
+ * While the menu replaces the options, they don't widen a scroll container, e.g. a `Popover`: it doesn't scroll sideways.
+ */
+export const OverflowInScrollContainer: Story = {
+    args: { "aria-label": "View", options: views, value: "list", size: "small" },
+    decorators: [
+        (Story) => (
+            <div className={styles.scrollContainer} data-testid="scroll-container">
+                <Story />
+            </div>
+        ),
+    ],
+    play: async ({ canvas }) => {
+        const scrollContainer = canvas.getByTestId("scroll-container");
+        await canvas.findByRole("button", { name: "View List" });
+        await expect(scrollContainer.scrollWidth).toBe(scrollContainer.clientWidth);
+        scrollContainer.style.inlineSize = "640px";
+        await expect(await canvas.findByRole("radiogroup", { name: "View" })).toBeInTheDocument();
+        scrollContainer.style.inlineSize = "";
+        await canvas.findByRole("button", { name: "View List" });
+        await expect(scrollContainer.scrollWidth).toBe(scrollContainer.clientWidth);
+        scrollContainer.dir = "rtl";
+        await expect(scrollContainer.scrollWidth).toBe(scrollContainer.clientWidth);
+    },
+};

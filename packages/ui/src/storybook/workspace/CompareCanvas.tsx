@@ -12,6 +12,7 @@ import { scenarioSetting } from "../scenario";
 import { textLengthSetting } from "../textLength";
 import styles from "./CompareCanvas.module.scss";
 import { findElementByPath, getElementPath } from "./frameElements";
+import { usePopupOpen } from "./usePopupOpen";
 import type { WorkspaceZoom } from "./workspaceState";
 
 export type CompareMode = "viewports" | "variants" | "swipe";
@@ -151,7 +152,7 @@ function VariantSetting({
     value?: string;
     onChange: (value?: string) => void;
 }) {
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = usePopupOpen();
     const current = options.find((option) => option.value === value);
     return (
         <Menu

@@ -1,4 +1,4 @@
-import { type ReactNode, useState } from "react";
+import type { ReactNode } from "react";
 
 import { Button } from "../../components/button/Button";
 import { Field } from "../../components/field/Field";
@@ -10,6 +10,7 @@ import { MenuRadioItem } from "../../components/menu/MenuRadioItem";
 import { NumberInput } from "../../components/numberInput/NumberInput";
 import { Popover } from "../../components/popover/Popover";
 import { SegmentedControl } from "../../components/segmentedControl/SegmentedControl";
+import { usePopupOpen } from "./usePopupOpen";
 import type { WorkspaceZoom } from "./workspaceState";
 import styles from "./WorkspaceToolbarControls.module.scss";
 
@@ -63,7 +64,7 @@ export function ViewportControl({
     /** Names the setting and its current size on the button, where there's room, e.g. in the middle of the bar. */
     showLabel?: boolean;
 }) {
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = usePopupOpen();
     const activePreset = responsive ? undefined : getViewportPreset(width, height);
     const triggerLabel = responsive ? "Responsive" : (activePreset?.label ?? "Custom");
 
@@ -185,7 +186,7 @@ export function SettingMenu<Value extends string>({
     /** Names the setting and its current option on the button, where there's room, e.g. in the middle of the bar. */
     showLabel?: boolean;
 }) {
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = usePopupOpen();
     const current = options.find((option) => option.value === value);
 
     return (

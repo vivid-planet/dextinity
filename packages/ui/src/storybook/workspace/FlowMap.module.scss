@@ -1,6 +1,8 @@
 $navigation: #5b3df5;
 $undesigned: #868e96;
 $dead-end: #e8590c;
+$link: color-mix(in oklch, var(--dextinity-color-text) 45%, transparent);
+$navigation-link: color-mix(in oklch, $navigation 45%, transparent);
 
 .root {
     position: relative;
@@ -46,6 +48,23 @@ $dead-end: #e8590c;
         background: currentcolor;
     }
 
+    [data-edge]::before {
+        block-size: 0;
+        border-radius: 0;
+        border-block-start: 2px solid $link;
+        background: none;
+        inline-size: 16px;
+        vertical-align: middle;
+    }
+
+    [data-edge="back"]::before {
+        border-block-start-style: dashed;
+    }
+
+    [data-edge="navigation"]::before {
+        border-block-start: 2px dotted $navigation-link;
+    }
+
     [data-tag="navigation"]::before {
         background: $navigation;
     }
@@ -60,33 +79,76 @@ $dead-end: #e8590c;
 }
 
 .canvas {
+    position: relative;
     flex: 1;
     min-block-size: 0;
-    overflow: auto;
+    // Not a scroll container: focusing a card outside the view would scroll it, and the view's offset would no longer be the map's
+    overflow: clip;
+    background: var(--dextinity-color-background);
+    cursor: grab;
+    touch-action: none;
+
+    &:active {
+        cursor: grabbing;
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--dextinity-color-accent);
+        outline-offset: -2px;
+    }
 }
 
 .map {
-    position: relative;
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    transform-origin: 0 0;
 }
 
 .lines {
     position: absolute;
     inset: 0;
     overflow: visible;
+    pointer-events: none;
 
     path {
         fill: none;
-        stroke: color-mix(in oklch, var(--dextinity-color-text) 35%, transparent);
+        stroke: $link;
         stroke-width: 1.5;
+        transition:
+            opacity 120ms,
+            stroke 120ms;
 
-        &[data-backwards] {
-            stroke-dasharray: 4 4;
+        &[data-direction="back"] {
+            stroke-dasharray: 5 4;
+        }
+
+        &[data-navigation] {
+            stroke: $navigation-link;
+            stroke-dasharray: 1 4;
+            stroke-linecap: round;
+            stroke-width: 1.25;
+        }
+
+        &[data-highlighted] {
+            stroke: var(--dextinity-color-accent);
+            stroke-width: 2;
         }
     }
 
     marker path {
-        fill: color-mix(in oklch, var(--dextinity-color-text) 50%, transparent);
+        fill: context-stroke;
         stroke: none;
+    }
+}
+
+.map[data-highlighting] {
+    .lines path:not([data-highlighted]) {
+        opacity: 0.12;
+    }
+
+    .node:not([data-highlighted]) {
+        opacity: 0.4;
     }
 }
 
@@ -105,6 +167,7 @@ $dead-end: #e8590c;
     font-size: 12px;
     text-align: start;
     cursor: pointer;
+    transition: opacity 120ms;
 
     &:hover {
         border-color: var(--dextinity-color-accent);
@@ -153,9 +216,32 @@ $dead-end: #e8590c;
 }
 
 .hint {
+    position: absolute;
+    inset-block-start: 16px;
+    inset-inline: 24px;
     margin: 0;
-    padding: 0 24px;
     color: var(--dextinity-color-text-subtle);
+    pointer-events: none;
+}
+
+.zoomControls {
+    position: absolute;
+    inset-block-end: 16px;
+    inset-inline-end: 16px;
+    display: flex;
+    gap: 2px;
+    align-items: center;
+    padding: 4px;
+    border: var(--dextinity-line-width) solid var(--dextinity-color-line);
+    border-radius: 8px;
+    background: var(--dextinity-color-surface);
+    box-shadow: var(--dextinity-shadow-3);
+    cursor: default;
+}
+
+.zoomValue {
+    min-inline-size: 56px;
+    font-variant-numeric: tabular-nums;
 }
 
 // Loads the pages one by one to read their links, out of sight

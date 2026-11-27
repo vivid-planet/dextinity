@@ -21,7 +21,8 @@ const modes = [
     {
         key: "4",
         name: "Flow",
-        description: "The flow map of all pages and their links; Link elements makes an element open another page. New pages come from the panel.",
+        description:
+            "The flow map of all pages and their links: hovering a page highlights its links, Ctrl or Cmd with the mouse wheel or a pinch zooms. Link elements makes an element open another page. New pages come from the panel.",
     },
     { key: "", name: "Library", description: "Storybook with all components and their stories." },
 ] as const;

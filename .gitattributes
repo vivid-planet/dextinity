@@ -1,2 +1,12 @@
 **/generated/** linguist-generated=true
 **/__snapshots__/** linguist-generated=true
+
+# Collapse tests, stories and documentation in GitHub pull request diffs so reviewers see the implementation first
+*.test.* linguist-generated=true
+*.spec.* linguist-generated=true
+**/__tests__/** linguist-generated=true
+*.stories.* linguist-generated=true
+**/__stories__/** linguist-generated=true
+storybook/src/** linguist-generated=true
+docs/docs/** linguist-generated=true
+docs/blog/** linguist-generated=true

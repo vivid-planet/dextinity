@@ -66,22 +66,46 @@ function hashText(text: string) {
     return hash;
 }
 
+const keptValuePatterns = [
+    // A short code, e.g. the initials of an avatar or a country code
+    /^[^a-z]{1,3}$/,
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+    /^(https?:\/\/)?([\w-]+\.)+[a-z]{2,}(\/\S*)?$/i,
+    /^\/[\w\-./]*$/,
+    /^[^\s/]+\.[a-z0-9]{2,4}$/i,
+    // Locale codes, e.g. "AT · de" or "de-AT"
+    /^[A-Za-z]{2}(\s*[·\-_/|,]\s*[A-Za-z]{2})+$/,
+    /^[\d\s.,:/+\-–%]*\d[\d\s.,:/+\-–%]*\s?(am|pm|h|min|s|ms|kb|mb|gb|px|%|€|\$)?$/i,
+];
+
+/**
+ * Whether a text is a value that a translation keeps as it is, e.g. a URL, a path, a file name, an email address, a locale code, a
+ * time, or a short code like the initials of an avatar.
+ */
+export function isKeptByTranslation(text: string) {
+    const trimmed = text.trim();
+    return !/[A-Za-z]/.test(trimmed) || keptValuePatterns.some((pattern) => pattern.test(trimmed));
+}
+
 /**
  * The text with whole sample words added, about `factor` times its length. Placeholder words rather than repeated
  * characters, so the lengthened text wraps and breaks like a real translation; each text starts at another word of the sample, so
- * the texts on a page don't all end alike.
+ * the texts on a page don't all end alike. A text that ends a sentence gets whole sentences; a label gets lowercase words without
+ * punctuation, so that it reads on as one label.
  */
 export function lengthenText(text: string, factor: number) {
     const trimmed = text.trim();
-    if (factor === 0 || trimmed.length < 2 || !/[A-Za-z]/.test(trimmed)) {
+    if (factor === 0 || trimmed.length < 2 || isKeptByTranslation(trimmed)) {
         return text;
     }
     const added = Math.ceil(trimmed.length * factor);
-    const starts = /[.!?]$/.test(trimmed) ? sentenceStarts : wordsWithinSentences;
+    const endsWithSentence = /[.!?]$/.test(trimmed);
+    const starts = endsWithSentence ? sentenceStarts : wordsWithinSentences;
     const start = starts[hashText(trimmed) % starts.length];
-    let filler = sampleWords[start];
+    const toAddedWord = (word: string) => (endsWithSentence ? word : word.replace(/[.,;:]+$/, "").toLowerCase());
+    let filler = toAddedWord(sampleWords[start]);
     for (let index = start + 1; filler.length + 1 < added; index++) {
-        filler += ` ${sampleWords[index % sampleWords.length]}`;
+        filler += ` ${toAddedWord(sampleWords[index % sampleWords.length])}`;
     }
     // A label ending in "," or ";" looks like a cut-off text rather than a longer one
     const lastWordTrimmed = filler.replace(/[.,;:]+$/, "");
@@ -111,7 +135,10 @@ export function readWrittenText(element: Element) {
 }
 
 function isSkipped(node: Text) {
-    return node.parentElement?.closest("script, style, [contenteditable], code") != null;
+    return (
+        node.parentElement?.closest('script, style, [contenteditable], code, kbd, samp, [data-text-length="fixed"], [class*="dextinityAvatar"]') !=
+        null
+    );
 }
 
 /** Lengthens every text of the document while the setting asks for it, also the ones rendered later, and restores them after. */

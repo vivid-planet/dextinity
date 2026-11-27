@@ -36,6 +36,8 @@ export function WorkspaceGuide() {
             onOpenChange={setOpen}
             title="Modes"
             placement="bottom-end"
+            // Beside the button, the guide would cover the header; below it, it gets the window's height and scrolls in itself
+            slotProps={{ positioner: { collisionAvoidance: { side: "flip", fallbackAxisSide: "none" } } }}
             trigger={
                 <IconButton variant="text" color="secondary" aria-label="What the modes do">
                     <Icon name="help-circle" />

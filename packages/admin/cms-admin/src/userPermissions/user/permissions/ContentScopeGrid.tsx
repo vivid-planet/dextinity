@@ -34,8 +34,10 @@ export const ContentScopeGrid = ({ userId }: { userId: string }) => {
     const { data, error } = useQuery<GQLContentScopesQuery, GQLContentScopesQueryVariables>(
         gql`
             query ContentScopes($userId: String!) {
-                userContentScopes: userPermissionsContentScopes(userId: $userId)
-                userContentScopesSkipManual: userPermissionsContentScopes(userId: $userId, skipManual: true)
+                assignedContentScopes: userPermissionsAssignedContentScopes(userId: $userId) {
+                    byRule
+                    manual
+                }
                 availableContentScopes: userPermissionsAvailableContentScopes {
                     scope
                     label
@@ -59,25 +61,25 @@ export const ContentScopeGrid = ({ userId }: { userId: string }) => {
         return <Loading />;
     }
 
-    // The user's content scopes are a union of rule-based and manually assigned scopes and can therefore contain duplicates.
-    const userContentScopes = deduplicateContentScopes(data.userContentScopes);
+    // A scope that is both rule-based and manually assigned is in both lists, so the union can contain duplicates.
+    const userContentScopes = deduplicateContentScopes([...data.assignedContentScopes.byRule, ...data.assignedContentScopes.manual]);
 
     // A user has all content scopes (e.g. an admin) when the rule-based scopes cover every available content scope. Such a
     // user also has all values for dimensions that are not part of the available content scopes (e.g. an optional dimension).
     const hasAllContentScopes =
         data.availableContentScopes.length > 0 &&
         data.availableContentScopes.every((availableContentScope) =>
-            data.userContentScopesSkipManual.some((scope) => deepEqual(scope, availableContentScope.scope)),
+            data.assignedContentScopes.byRule.some((scope) => deepEqual(scope, availableContentScope.scope)),
         );
 
-    // A scope is rule-based (as opposed to manually assigned) when it is part of the scopes granted by rule. Only manually
-    // assigned scopes can be deleted here.
-    const isRuleBasedScope = (scope: ContentScope) => data.userContentScopesSkipManual.some((ruleBasedScope) => deepEqual(ruleBasedScope, scope));
+    // The manually assigned scopes as persisted, taken directly from the API (not derived by subtracting the rule-based
+    // scopes), so a scope that is both manually assigned and rule-based is preserved and not silently dropped on the next edit.
+    // Only manually assigned scopes can be deleted here.
+    const manualContentScopes = deduplicateContentScopes(data.assignedContentScopes.manual);
+    const isManualScope = (scope: ContentScope) => manualContentScopes.some((manualScope) => deepEqual(manualScope, scope));
 
-    // Show manually assigned scopes before rule-based ones (sort is stable, so the order within each group is preserved).
-    const sortedContentScopes = [...userContentScopes].sort((a, b) => Number(isRuleBasedScope(a)) - Number(isRuleBasedScope(b)));
-
-    const manualContentScopes = userContentScopes.filter((contentScope) => !isRuleBasedScope(contentScope));
+    // Show manually assigned scopes before purely rule-based ones (sort is stable, so the order within each group is preserved).
+    const sortedContentScopes = [...userContentScopes].sort((a, b) => Number(isManualScope(b)) - Number(isManualScope(a)));
 
     const setManualContentScopes = async (contentScopes: ContentScope[]) => {
         await updateContentScopes({
@@ -106,10 +108,10 @@ export const ContentScopeGrid = ({ userId }: { userId: string }) => {
             filterable: false,
             headerName: intl.formatMessage({ id: "dextinity.userPermissions.source", defaultMessage: "Assignment type" }),
             renderCell: ({ row }) =>
-                isRuleBasedScope(row) ? (
-                    <FormattedMessage id="dextinity.userPermissions.assignmentType.byRule" defaultMessage="By rule" />
-                ) : (
+                isManualScope(row) ? (
                     <FormattedMessage id="dextinity.userPermissions.assignmentType.manual" defaultMessage="Manual" />
+                ) : (
+                    <FormattedMessage id="dextinity.userPermissions.assignmentType.byRule" defaultMessage="By rule" />
                 ),
         },
         {
@@ -121,11 +123,11 @@ export const ContentScopeGrid = ({ userId }: { userId: string }) => {
             sortable: false,
             filterable: false,
             renderCell: ({ row }) =>
-                isRuleBasedScope(row) ? null : (
+                isManualScope(row) ? (
                     <IconButton onClick={() => setScopeToDelete(row)} disabled={updateInProgress}>
                         <Delete />
                     </IconButton>
-                ),
+                ) : null,
         },
     ];
 

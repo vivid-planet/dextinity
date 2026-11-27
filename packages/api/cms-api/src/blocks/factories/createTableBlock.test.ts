@@ -5,6 +5,8 @@ import { ExternalLinkBlock } from "../externalLink/external-link.block.js";
 import { BlockMigration } from "../migrations/BlockMigration.js";
 import type { BlockMigrationInterface } from "../migrations/types.js";
 import { typeSafeBlockMigrationPipe } from "../migrations/typeSafeBlockMigrationPipe.js";
+import { ImageBlock } from "../transformToBlockSaveIndex/test/blocks/ImageBlock.js";
+import { transformToBlockSaveIndex } from "../transformToBlockSaveIndex/transformToBlockSaveIndex.js";
 import { createRichTextBlock } from "./createRichTextBlock.js";
 import { createTableBlock } from "./createTableBlock.js";
 
@@ -22,6 +24,8 @@ const RichTextBlock = createRichTextBlock(
 );
 
 const TableBlock = createTableBlock({ richText: RichTextBlock }, "TableMigrationTest");
+
+const ImageTableBlock = createTableBlock({ richText: ImageBlock }, "ImageTableTest");
 
 function createTableInputWithLink(targetUrl: string) {
     return TableBlock.blockInputFactory({
@@ -72,5 +76,52 @@ describe("createTableBlock", () => {
 
     it("accepts a cell with a valid rich text link", async () => {
         expect(await validate(createTableInputWithLink("https://www.dextinity.com"))).toHaveLength(0);
+    });
+
+    it("indexes the dependencies of a cell's block", () => {
+        const data = ImageTableBlock.blockInputFactory({
+            columns: [
+                { id: "first", size: "standard", highlighted: false },
+                { id: "second", size: "standard", highlighted: false },
+            ],
+            rows: [
+                {
+                    id: "firstRow",
+                    highlighted: false,
+                    cellValues: [
+                        { columnId: "first", value: { damFileId: "firstFile" } },
+                        { columnId: "second", value: { damFileId: "secondFile" } },
+                    ],
+                },
+                { id: "secondRow", highlighted: false, cellValues: [{ columnId: "first", value: { damFileId: "thirdFile" } }] },
+            ],
+        }).transformToBlockData();
+
+        expect(transformToBlockSaveIndex(ImageTableBlock, data)).toContainEqual({
+            blockname: "ImageBlock",
+            jsonPath: "root.rows.1.cellValues.0.value",
+            visible: true,
+            dependencies: [{ targetEntityName: "DamFile", id: "thirdFile" }],
+        });
+    });
+
+    it("indexes a cell without a column as invisible", () => {
+        const data = ImageTableBlock.blockInputFactory({
+            columns: [{ id: "column", size: "standard", highlighted: false }],
+            rows: [
+                {
+                    id: "row",
+                    highlighted: false,
+                    cellValues: [
+                        { columnId: "column", value: { damFileId: "firstFile" } },
+                        { columnId: "removedColumn", value: { damFileId: "secondFile" } },
+                    ],
+                },
+            ],
+        }).transformToBlockData();
+
+        expect(transformToBlockSaveIndex(ImageTableBlock, data)).toContainEqual(
+            expect.objectContaining({ jsonPath: "root.rows.0.cellValues.1.value", visible: false }),
+        );
     });
 });

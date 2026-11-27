@@ -137,9 +137,9 @@ The query must return the columns `name`, `secondaryInformation`, `visible`, `id
 Document entities do **not** need an `@EntityInfo()` decorator.
 Their entity info is derived automatically from the `PageTreeNodeEntityInfo` SQL view, which resolves the page tree name and path for you.
 
-#### 2. Admin: Implement the `DependencyInterface`
+#### 2. Admin: Implement the `EntityInterface`
 
-The DependencyInterface requires a translatable `displayName` and a `resolvePath()` method.
+The `EntityInterface` requires a translatable `displayName` and a `resolvePath()` method.
 `resolvePath` provides a URL path to the edit page of an entity or a specific block.
 
 <details>
@@ -147,16 +147,16 @@ The DependencyInterface requires a translatable `displayName` and a `resolvePath
 <summary>Example of a `resolvePath` method</summary>
 
 ```tsx
-// NewsDependency.tsx
-export const NewsDependency: DependencyInterface = {
+// NewsEntity.tsx
+export const NewsEntity: EntityInterface = {
     displayName: <FormattedMessage id="news.displayName" defaultMessage="News" />,
     resolvePath: async ({ apolloClient, id, rootColumnName, jsonPath }) => {
         const { data, error } = await apolloClient.query<
-            GQLNewsDependencyQuery,
-            GQLNewsDependencyQueryVariables
+            GQLNewsEntityQuery,
+            GQLNewsEntityQueryVariables
         >({
             query: gql`
-                query NewsDependency($id: ID!) {
+                query NewsEntity($id: ID!) {
                     news(id: $id) {
                         id
                         content
@@ -190,9 +190,9 @@ export const NewsDependency: DependencyInterface = {
 Usually, you don't have to write the `resolvePath` method yourself.
 Instead, use one of our helpers:
 
-##### `createDependencyMethods`
+##### `createEntityMethods`
 
-For most entities, you can use the `createDependencyMethods` helper.
+For most entities, you can use the `createEntityMethods` helper.
 
 The `rootQueryName` specifies the name of the GraphQL query used to load the entity.
 It should normally be the camelCase version of the entity name.
@@ -204,14 +204,14 @@ You must also specify the used Block and - if necessary - the path under which t
 The `basePath` option specifies the URL path to the entity's edit page.
 
 ```tsx
-// NewsDependency.tsx
-import { createDependencyMethods } from "@dextinity/cms-admin";
+// NewsEntity.tsx
+import { createEntityMethods } from "@dextinity/cms-admin";
 
 // ...
 
-export const NewsDependency: DependencyInterface = {
+export const NewsEntity: EntityInterface = {
     displayName: <FormattedMessage id="news.displayName" defaultMessage="News" />,
-    ...createDependencyMethods({
+    ...createEntityMethods({
         rootQueryName: "news",
         rootBlocks: { content: { block: NewsContentBlock, path: "/form" }, image: DamImageBlock },
         basePath: ({ id }) => `/structured-content/news/${id}/edit`,
@@ -219,21 +219,21 @@ export const NewsDependency: DependencyInterface = {
 };
 ```
 
-##### `createDocumentDependencyMethods`
+##### `createDocumentEntityMethods`
 
-For document types you can use the `createDocumentDependencyMethods` helper.
+For document types you can use the `createDocumentEntityMethods` helper.
 It loads the document and also the `PageTreeNode` the document is attached to.
 
 ```tsx
 // Page.tsx
-import { createDocumentDependencyMethods } from "@dextinity/cms-admin";
+import { createDocumentEntityMethods } from "@dextinity/cms-admin";
 
 // ...
 
 export const Page: DocumentInterface<Pick<GQLPage, "content" | "seo">, GQLPageInput> &
-    DependencyInterface = {
+    EntityInterface = {
     // ...
-    ...createDocumentDependencyMethods({
+    ...createDocumentEntityMethods({
         rootQueryName: "page",
         rootBlocks: {
             content: PageContentBlock,
@@ -245,23 +245,27 @@ export const Page: DocumentInterface<Pick<GQLPage, "content" | "seo">, GQLPageIn
 };
 ```
 
-#### 3. Admin: Register the `DependencyInterface` at the `DependenciesConfigProvider`
+#### 3. Admin: Register the entity at the `DextinityConfigProvider`
 
+Add the entity to the `entities` option of the `DextinityConfigProvider`.
 The key must be the name of the GraphQL object type associated with the entity.
 
 ```tsx
 // App.tsx
 // ...
-<DependenciesConfigProvider
-    entityDependencyMap={{
+<DextinityConfigProvider
+    // ...
+    entities={{
         // ...
-        News: NewsDependency,
+        News: NewsEntity,
     }}
 >
     // ...
-</DependenciesConfigProvider>
+</DextinityConfigProvider>
 // ...
 ```
+
+See [Entities](#entities) for the other features that use the registered entities.
 
 Now, the DAM's "Dependents" tab should work.
 If that was your goal, you can stop here.
@@ -349,3 +353,38 @@ Make sure to request the field in your query, otherwise the links point to the c
 
 The scope is resolved from the entity's `scope` property or its `@ScopedEntity()` decorator.
 Entities with multiple scopes report their first scope.
+
+---
+
+## Entities
+
+The `entities` option of the `DextinityConfigProvider` registers the entities the admin can link to.
+Besides the dependencies, the warnings, the DAM, the image block and the full text search use it to show an entity's name and to open it.
+
+Each entry implements the `EntityInterface`:
+
+- `displayName`: the translatable name of the entity
+- `icon` (optional): an icon component, for instance from `@dextinity/admin-icons`
+- `resolvePath()`: returns the URL path to the entity's edit page, relative to the content scope
+
+```tsx
+// RedirectEntity.tsx
+import { Link } from "@dextinity/admin-icons";
+import { createEntityMethods, type EntityInterface } from "@dextinity/cms-admin";
+
+export const RedirectEntity: EntityInterface = {
+    displayName: <FormattedMessage id="redirect.displayName" defaultMessage="Redirect" />,
+    icon: Link,
+    ...createEntityMethods({
+        rootQueryName: "redirect",
+        rootBlocks: { target: { block: RedirectsLinkBlock } },
+        basePath: ({ id }) => `/system/redirects/${id}/edit`,
+    }),
+};
+```
+
+Register files of the DAM with `DamFile: createDamFileEntity()`.
+
+Use `useEntity(entityName)` or `useEntitiesConfig()` to read the registered entities in your own components.
+
+`DependencyInterface`, `createDependencyMethods`, `createDocumentDependencyMethods` and `createDamFileDependency` are deprecated aliases of `EntityInterface`, `createEntityMethods`, `createDocumentEntityMethods` and `createDamFileEntity` and will be removed in version 12.

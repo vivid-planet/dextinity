@@ -2168,6 +2168,58 @@ Import its components and types from `@dextinity/admin` instead:
 + import { ColorField } from "@dextinity/admin";
 ```
 
+### Move the entity map to the `entities` option
+
+`DextinityConfigProvider` no longer has a `dependencies` option. Pass the map of `entityDependencyMap` directly to the new `entities` option. Find the usage:
+
+```sh
+grep -rn "entityDependencyMap" src
+```
+
+```diff title="admin/src/App.tsx"
+<DextinityConfigProvider
+    // ...
+-   dependencies={{
+-       entityDependencyMap: {
+-           Page,
+-           News: NewsDependency,
+-           DamFile: createDamFileDependency(),
+-       },
+-   }}
++   entities={{
++       Page,
++       News: NewsEntity,
++       DamFile: createDamFileEntity(),
++   }}
+>
+```
+
+These names are deprecated and will be removed in version 12. They still work, but replace them:
+
+| Deprecated                        | Replacement                   |
+| --------------------------------- | ----------------------------- |
+| `DependencyInterface`             | `EntityInterface`             |
+| `createDependencyMethods`         | `createEntityMethods`         |
+| `createDocumentDependencyMethods` | `createDocumentEntityMethods` |
+| `createDamFileDependency`         | `createDamFileEntity`         |
+
+```sh
+grep -rlE "DependencyInterface|createDependencyMethods|createDocumentDependencyMethods|createDamFileDependency" src
+```
+
+Renaming your own constants, such as `NewsDependency` to `NewsEntity`, is optional:
+
+```diff
+- import { createDependencyMethods, type DependencyInterface } from "@dextinity/cms-admin";
++ import { createEntityMethods, type EntityInterface } from "@dextinity/cms-admin";
+
+- export const NewsDependency: DependencyInterface = {
++ export const NewsEntity: EntityInterface = {
+      displayName: <FormattedMessage id="news.displayName" defaultMessage="News" />,
+-     ...createDependencyMethods({
++     ...createEntityMethods({
+```
+
 <!-- "Verify lint passes" must always be the last step for this service. -->
 
 ### Verify lint passes

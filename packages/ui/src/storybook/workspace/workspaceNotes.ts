@@ -26,6 +26,12 @@ export interface TextChange extends NoteAnchor {
 export function createStoredList<Item>(storageKey: string) {
     const listeners = new Set<() => void>();
     let cache: Item[] | null = null;
+    // Another window changed the list; read again even when nothing here shows it, e.g. a frame that only reads it on a click
+    window.addEventListener("storage", (event) => {
+        if (event.key === storageKey) {
+            cache = null;
+        }
+    });
 
     function get(): Item[] {
         if (cache === null) {

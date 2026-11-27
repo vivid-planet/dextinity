@@ -4,7 +4,13 @@ export type WorkspaceZoom = "fit" | "0.5" | "0.75" | "1" | "1.5";
 
 export type WorkspaceMode = "components" | "prototypes";
 
-export type WorkspaceCompare = "off" | "viewports" | "variants";
+export type WorkspaceCompare = "off" | "viewports" | "variants" | "swipe";
+
+/** What the designer came to do with a prototype; each has its own tools. */
+export type WorkspaceIntent = "prototype" | "inspect" | "review" | "flow";
+
+/** The tools of the modes, one active at a time; `component` picks a component to open its story, `map` shows the flow map. */
+export type WorkspaceTool = "component" | "measure" | "accessibility" | "comment" | "text" | "map" | "hotspot";
 
 export interface WorkspaceState {
     /** The tab: a clickable prototype of a whole app, or a single story of the Storybook. */
@@ -16,8 +22,11 @@ export interface WorkspaceState {
     width: number;
     height: number;
     zoom: WorkspaceZoom;
-    /** Shows the prototype in several frames side by side, at different sizes or with different settings. */
+    /** Shows the prototype in several frames side by side, at different sizes or with different settings, while inspecting. */
     compare: WorkspaceCompare;
+    intent: WorkspaceIntent;
+    /** The tool each mode had active when it was left, which it opens with again. */
+    intentTools: Partial<Record<WorkspaceIntent, WorkspaceTool | null>>;
     panelOpen: boolean;
     panelWidth: number;
 }
@@ -33,6 +42,8 @@ export const defaultWorkspaceState: WorkspaceState = {
     height: 900,
     zoom: "fit",
     compare: "off",
+    intent: "prototype",
+    intentTools: { inspect: "measure", review: "comment", flow: "map" },
     panelOpen: true,
     panelWidth: 300,
 };

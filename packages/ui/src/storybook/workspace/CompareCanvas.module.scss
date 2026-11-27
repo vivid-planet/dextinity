@@ -67,3 +67,51 @@
     block-size: 100%;
     border: 0;
 }
+
+.swipeLayer {
+    position: absolute;
+    inset: 0;
+}
+
+.swipeDivider {
+    position: absolute;
+    inset-block: 0;
+    z-index: 1;
+    inline-size: 2px;
+    margin-inline-start: -1px;
+    background: var(--dextinity-color-accent);
+    pointer-events: none;
+
+    span {
+        position: absolute;
+        inset-block-start: 8px;
+        padding: 2px 6px;
+        border-radius: 4px;
+        background: var(--dextinity-color-accent);
+        color: var(--dextinity-color-accent-foreground);
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    span:first-child {
+        inset-inline-end: 6px;
+    }
+
+    span:last-child {
+        inset-inline-start: 6px;
+    }
+}
+
+.swipeRange {
+    display: block;
+    inline-size: 100%;
+    margin-block-start: 12px;
+    accent-color: var(--dextinity-color-accent);
+}
+
+// Both variants' settings in one row above the frame, A on the left side of the divider and B on the right
+.swipeLabels {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}

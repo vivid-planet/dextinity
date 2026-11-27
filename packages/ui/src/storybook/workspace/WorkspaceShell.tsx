@@ -13,6 +13,7 @@ import {
 import { useMediaQuery } from "../../components/appShell/useMediaQuery";
 import { Button } from "../../components/button/Button";
 import { Icon } from "../../components/icon/Icon";
+import type { IconName } from "../../components/icon/iconRegistry";
 import { IconButton } from "../../components/iconButton/IconButton";
 import { Menu } from "../../components/menu/Menu";
 import { MenuItem } from "../../components/menu/MenuItem";
@@ -20,25 +21,38 @@ import { SegmentedControl } from "../../components/segmentedControl/SegmentedCon
 import { Tabs } from "../../components/tabs/Tabs";
 import { Theme } from "../../components/theme/Theme";
 import { type TreeNode, TreeView } from "../../components/treeView/TreeView";
-import type { ThemeColorScheme } from "../../theme/types";
 import { brandSetting } from "../brand";
-import { colorSchemeSetting, getAppliedColorScheme } from "../colorScheme";
+import { colorSchemeSetting } from "../colorScheme";
 import { densitySetting } from "../density";
-import { scenarioSetting, useScenario } from "../scenario";
+import { scenarioSetting } from "../scenario";
+import { textLengthSetting } from "../textLength";
 import { CompareCanvas } from "./CompareCanvas";
 import { getComponentStoryIds, type IndexedStory } from "./componentStories";
+import { flowEdgeList } from "./flowEdges";
 import { FlowMap } from "./FlowMap";
-import { type NotePage, useTextChanges } from "./FrameNotes";
+import { getElementPath } from "./frameElements";
+import type { NotePage } from "./FrameNotes";
 import { type FrameTool, FrameTools } from "./FrameTools";
+import { hotspotList } from "./hotspots";
 import { customPageList, customPagePrefix, type PageTemplate, pageTemplates } from "./pageTemplates";
+import { buildPageTree, getPrototypePageNodeId } from "./prototypePageTree";
 import { workspacePrototypes } from "./prototypes";
 import { type InspectedComponent, useCanvasInspector } from "./useCanvasInspector";
 import { useFramePage } from "./useFramePage";
+import { ViewMenu } from "./ViewMenu";
+import { WorkspaceGuide } from "./WorkspaceGuide";
 import { workspaceLogo } from "./workspaceLogo";
 import { commentList, textChangeList } from "./workspaceNotes";
 import styles from "./WorkspaceShell.module.scss";
-import { defaultWorkspaceState, useWorkspaceState, type WorkspaceCompare, type WorkspaceMode } from "./workspaceState";
-import { colorSchemeOptions, densityOptions, minFrameSize, SettingMenu, ViewportControl, zoomOptions } from "./WorkspaceToolbarControls";
+import {
+    defaultWorkspaceState,
+    useWorkspaceState,
+    type WorkspaceCompare,
+    type WorkspaceIntent,
+    type WorkspaceMode,
+    type WorkspaceTool,
+} from "./workspaceState";
+import { minFrameSize, SettingMenu, ViewportControl, zoomOptions } from "./WorkspaceToolbarControls";
 
 const shellStoryId = "workspace-shell--shell";
 const narrowQuery = "(width < 760px)";
@@ -46,21 +60,65 @@ const minPanelWidth = 260;
 const maxPanelWidth = 520;
 const panelKeyboardStep = 20;
 const inspectLabelHeight = 18;
-const prototypesTitle = "Workspace/Prototypes";
-const scenarioOptions = scenarioSetting.options.map(({ value, title }) => ({ value, "aria-label": title, icon: null }));
-const brandOptions = brandSetting.options.map(({ value, title }) => ({ value, "aria-label": title, icon: null }));
-
-const compareOptions: Array<{ value: WorkspaceCompare; icon: ReactNode; "aria-label": string }> = [
-    { value: "off", icon: <Icon name="window" />, "aria-label": "One frame" },
-    { value: "viewports", icon: <Icon name="device-tablet" />, "aria-label": "Phone, tablet, and desktop side by side" },
-    { value: "variants", icon: <Icon name="swap-boxes" />, "aria-label": "Two variants side by side" },
+const prototypesTitle = "Workbench/Prototypes";
+const compareOptions: Array<{ value: WorkspaceCompare; icon: ReactNode; "aria-label": string; shortLabel: string }> = [
+    { value: "off", icon: <Icon name="window" />, "aria-label": "One frame", shortLabel: "Off" },
+    { value: "viewports", icon: <Icon name="device-tablet" />, "aria-label": "Phone, tablet, and desktop side by side", shortLabel: "Devices" },
+    { value: "variants", icon: <Icon name="swap-boxes" />, "aria-label": "Two variants side by side", shortLabel: "Variants" },
+    { value: "swipe", icon: <Icon name="move-vertical" />, "aria-label": "Two variants on top of each other, with a divider", shortLabel: "Swipe" },
 ];
 
-const modeTabs: Array<{ value: WorkspaceMode; label: string }> = [
-    { value: "prototypes", label: "Prototypes" },
-    // The stories of the Storybook, as its sidebar lists them
-    { value: "components", label: "Storybook" },
+type ModeTab = WorkspaceIntent | "library";
+
+// The modes by what the designer came to do, then Storybook's own UI as the library of components
+const modeTabs: Array<{ value: ModeTab; label: string }> = [
+    { value: "prototype", label: "Prototype" },
+    { value: "inspect", label: "Inspect" },
+    { value: "review", label: "Review" },
+    { value: "flow", label: "Flow" },
+    { value: "library", label: "Library" },
 ];
+
+const intentKeys: Record<string, WorkspaceIntent> = { "1": "prototype", "2": "inspect", "3": "review", "4": "flow" };
+
+/** The tools of each mode, which the bar under the modes shows as labeled buttons; the key opens the tool from any mode. */
+const intentToolButtons: Record<WorkspaceIntent, Array<{ tool: WorkspaceTool; label: string; icon: IconName; description: string; key: string }>> = {
+    prototype: [],
+    inspect: [
+        { tool: "component", label: "Component", icon: "select", description: "Click a component in the page to open its story", key: "I" },
+        {
+            tool: "measure",
+            label: "Measure",
+            icon: "crop-action",
+            description: "Sizes, spacing, and tokens; point at another element for the distance",
+            key: "M",
+        },
+        { tool: "accessibility", label: "Accessibility", icon: "contrast", description: "Tab order, small targets, and contrast", key: "A" },
+    ],
+    review: [
+        { tool: "comment", label: "Comments", icon: "chat-add", description: "Pin comments to the page", key: "C" },
+        { tool: "text", label: "Edit texts", icon: "pencil-line", description: "Click a text to change it", key: "E" },
+    ],
+    flow: [
+        { tool: "map", label: "Flow map", icon: "tune-logic", description: "All pages and the links between them", key: "F" },
+        { tool: "hotspot", label: "Link elements", icon: "link-diagonal", description: "Make an element open another page", key: "L" },
+    ],
+};
+
+const toolKeys = new Map(
+    Object.entries(intentToolButtons).flatMap(([intent, buttons]) =>
+        buttons.map((button) => [button.key.toLowerCase(), { intent: intent as WorkspaceIntent, tool: button.tool }] as const),
+    ),
+);
+
+// The tools that end themselves on Escape, e.g. Measure first clears its selection
+const toolsWithOwnEscape: Array<WorkspaceTool | null> = ["measure", "component"];
+
+// Typing in a field or a text of the page doesn't switch the mode or tool, and Escape there belongs to the field
+function isTyping(target: EventTarget | null) {
+    const element = target as HTMLElement | null;
+    return element?.closest?.("input, textarea, select, [contenteditable]") != null;
+}
 
 /** A story the workspace showed before, to go back to: in the prototypes, with the prototype's page then. */
 interface HistoryEntry {
@@ -79,7 +137,7 @@ async function fetchStories(): Promise<IndexedStory[]> {
     return Object.values(index.entries)
         .filter((entry) => entry.type === "story" && entry.id !== shellStoryId && !entry.tags?.includes("development"))
         .map(({ id, title, name }) => ({ id, title, name }))
-        .sort((a, b) => Number(b.title.startsWith("Workspace/")) - Number(a.title.startsWith("Workspace/")));
+        .sort((a, b) => Number(b.title.startsWith("Workbench/")) - Number(a.title.startsWith("Workbench/")));
 }
 
 function useElementSize(element: HTMLElement | null) {
@@ -140,10 +198,6 @@ function isPrototype(story: IndexedStory) {
     return story.title === prototypesTitle || story.title.startsWith(`${prototypesTitle}/`);
 }
 
-function getPrototypePageNodeId(storyId: string, pageId: string) {
-    return `${storyId}#${pageId}`;
-}
-
 function getStoryLabel(story: IndexedStory) {
     return `${story.title.split("/").at(-1)} · ${story.name}`;
 }
@@ -181,27 +235,26 @@ function trackPointerDrag(event: ReactPointerEvent, { onMove, onEnd }: { onMove:
 export function WorkspaceShell() {
     const [state, updateState] = useWorkspaceState();
     const [stories, setStories] = useState<IndexedStory[]>([]);
-    const [colorScheme, setColorScheme] = useState(getAppliedColorScheme);
-    const [brand, setBrand] = useState(brandSetting.get);
-    const [density, setDensity] = useState(densitySetting.get);
-    const scenario = useScenario();
+    const density = densitySetting.useValue();
     const [canvasElement, setCanvasElement] = useState<HTMLDivElement | null>(null);
     const [resizing, setResizing] = useState<"frame" | "panel" | null>(null);
     const [reloadKey, setReloadKey] = useState(0);
     const [frameLoadCount, setFrameLoadCount] = useState(0);
-    const [inspecting, setInspecting] = useState(false);
-    const [frameTool, setFrameTool] = useState<FrameTool | null>(null);
     // Shows only the prototype, without the workspace around it, e.g. to walk stakeholders through it
     const [presenting, setPresenting] = useState(false);
-    const [showingFlow, setShowingFlow] = useState(false);
+    // An element to measure right away, chosen with a double click while clicking through
+    const [measuredPath, setMeasuredPath] = useState<number[] | null>(null);
     // The stories opened before the current one, most recent last, to go back to the page a component was picked on
     const [storyHistory, setStoryHistory] = useState<HistoryEntry[]>([]);
     // The prototype's page to open the frame on; the prototype keeps the page it navigates to in the frame's hash
     const [prototypeStartPage, setPrototypeStartPage] = useState("");
     const frameRef = useRef<HTMLIFrameElement>(null);
+    const [compareFrameDocuments, setCompareFrameDocuments] = useState<Document[]>([]);
     const storybookFrameRef = useRef<HTMLIFrameElement>(null);
     const storybookPage = useStorybookPage();
     const framePage = useFramePage(frameRef, frameLoadCount);
+    // The element's path belongs to the page it was double clicked on
+    useEffect(() => setMeasuredPath(null), [framePage.hash]);
     const canvasSize = useElementSize(canvasElement);
     const narrow = useMediaQuery(narrowQuery);
     // On a narrow screen, the prototypes cover the canvas, so they start closed and close again once a page is picked
@@ -216,11 +269,6 @@ export function WorkspaceShell() {
         }
     }
 
-    function changeColorScheme(value: ThemeColorScheme) {
-        colorSchemeSetting.store(value);
-        setColorScheme(value);
-    }
-
     useEffect(() => {
         async function loadStories() {
             setStories(await fetchStories());
@@ -232,11 +280,40 @@ export function WorkspaceShell() {
     const prototypes = useMemo(() => stories.filter(isPrototype), [stories]);
     const isLoading = stories.length === 0;
     const isPrototypeMode = state.mode === "prototypes";
-    const isComparing = isPrototypeMode && state.compare !== "off";
+    const intent = state.intent;
+    // Presenting shows the prototype as it is, without the tool of the mode it was started from
+    const activeTool = intent === "prototype" || presenting ? null : (state.intentTools[intent] ?? null);
+    // Comparing is a way of inspecting; the other modes show the single frame
+    const isComparing = isPrototypeMode && !presenting && intent === "inspect" && state.compare !== "off";
+    const isSingleFrame = isPrototypeMode && !isComparing && !(intent === "flow" && activeTool === "map");
+    const showingFlow = isPrototypeMode && intent === "flow" && activeTool === "map";
+    const inspecting = isPrototypeMode && !isComparing && activeTool === "component";
+    const frameTool: FrameTool | null =
+        isPrototypeMode && !isComparing && activeTool && activeTool !== "component" && activeTool !== "map" ? activeTool : null;
+
+    function setTool(tool: WorkspaceTool | null) {
+        setMeasuredPath(null);
+        // The flow map takes the single frame's place; the frame opens again on the page it was left on
+        if (tool === "map" && isSingleFrame) {
+            setPrototypeStartPage(framePage.hash);
+        }
+        if (intent !== "prototype") {
+            updateState({ intentTools: { ...state.intentTools, [intent]: tool } });
+        }
+    }
+
+    function changeIntent(next: WorkspaceIntent) {
+        setMeasuredPath(null);
+        // Only the single frame knows its page; the flow map, comparing, and Library keep it in the start page already
+        if (isSingleFrame) {
+            setPrototypeStartPage(framePage.hash);
+        }
+        updateState({ mode: "prototypes", intent: next });
+    }
 
     // A stored story may since have been removed or renamed; until the index has loaded, there's nothing to check it against
     const storedStoryId = isLoading || componentStories.some((story) => story.id === state.storyId) ? state.storyId : null;
-    const storyId = storedStoryId ?? componentStories.find((story) => story.title.startsWith("Workspace/"))?.id ?? componentStories[0]?.id ?? null;
+    const storyId = storedStoryId ?? componentStories.find((story) => story.title.startsWith("Workbench/"))?.id ?? componentStories[0]?.id ?? null;
     const currentStory = componentStories.find((story) => story.id === storyId);
     const storedPrototypeId = isLoading || prototypes.some((story) => story.id === state.prototypeId) ? state.prototypeId : null;
     const prototypeId = storedPrototypeId ?? prototypes[0]?.id ?? null;
@@ -244,20 +321,25 @@ export function WorkspaceShell() {
 
     const customPages = customPageList.useItems();
     const [newPageMenuOpen, setNewPageMenuOpen] = useState(false);
-    const prototypeNodes = useMemo<TreeNode[]>(
+    const prototypeTrees = useMemo(
         () =>
             prototypes.map((story) => {
                 const prototype = workspacePrototypes.get(story.id);
-                return {
+                const pageTree = prototype
+                    ? buildPageTree({
+                          storyId: story.id,
+                          pageIds: prototype.designedPageIds,
+                          getPageLabel: prototype.getPageLabel,
+                          getPageAncestors: prototype.getPageAncestors,
+                          groupIcon: <span className={styles.pageGroupMarker} />,
+                      })
+                    : undefined;
+                const node: TreeNode = {
                     id: story.id,
                     label: story.name,
                     icon: <Icon name="window" />,
                     children: [
-                        ...(prototype?.designedPageIds.map((pageId) => ({
-                            id: getPrototypePageNodeId(story.id, pageId),
-                            label: prototype.getPageLabel(pageId) ?? pageId,
-                            type: "page" as const,
-                        })) ?? []),
+                        ...(pageTree?.nodes ?? []),
                         ...customPages
                             .filter((page) => page.prototypeId === story.id)
                             .map((page) => ({
@@ -268,16 +350,31 @@ export function WorkspaceShell() {
                             })),
                     ],
                 };
+                return { node, pageTree };
             }),
         [prototypes, customPages],
     );
-    // Until the tree is first changed, every prototype shows its pages
+    const prototypeNodes = prototypeTrees.map((tree) => tree.node);
+    // Until the tree is first changed, the prototypes and the groups of their menus are open, the pages with detail pages closed
     const [prototypeExpandedIds, setPrototypeExpandedIds] = useState<string[] | null>(null);
-    const visiblePrototypeExpandedIds = prototypeExpandedIds ?? prototypes.map((story) => story.id);
-    // While comparing, the frames report their page to the start page, which the single frame then opens on again
-    const shownPage = isComparing ? prototypeStartPage : framePage.hash;
+    const visiblePrototypeExpandedIds = prototypeExpandedIds ?? prototypeTrees.flatMap((tree) => [tree.node.id, ...(tree.pageTree?.groupIds ?? [])]);
+    // While comparing or showing the flow map, the start page holds the page, which the single frame then opens on again
+    const shownPage = isPrototypeMode && !isSingleFrame ? prototypeStartPage : framePage.hash;
     const currentPrototypePageId = shownPage || workspacePrototypes.get(prototypeId ?? "")?.startPageId;
     const currentWorkspacePrototype = workspacePrototypes.get(prototypeId ?? "");
+    const selectedPrototypeNodeId = prototypeId && currentPrototypePageId ? getPrototypePageNodeId(prototypeId, currentPrototypePageId) : undefined;
+    // A page opened in the frame or the flow map shows in the list, also when it's in a closed part of the tree
+    const [revealedPrototypeNodeId, setRevealedPrototypeNodeId] = useState(selectedPrototypeNodeId);
+    if (selectedPrototypeNodeId !== revealedPrototypeNodeId) {
+        setRevealedPrototypeNodeId(selectedPrototypeNodeId);
+        const pageTree = prototypeTrees.find((tree) => tree.node.id === prototypeId)?.pageTree;
+        const closedIds = [prototypeId ?? "", ...(pageTree?.getAncestorIds(selectedPrototypeNodeId ?? "") ?? [])].filter(
+            (id) => id !== "" && !visiblePrototypeExpandedIds.includes(id),
+        );
+        if (closedIds.length > 0) {
+            setPrototypeExpandedIds([...visiblePrototypeExpandedIds, ...closedIds]);
+        }
+    }
     const prototypeCustomPages = customPages.filter((page) => page.prototypeId === prototypeId);
     const getPageLabel = (page: string) =>
         prototypeCustomPages.find((customPage) => customPage.id === page)?.title ?? currentWorkspacePrototype?.getPageLabel(page) ?? page;
@@ -310,6 +407,13 @@ export function WorkspaceShell() {
                 note.prototypeId === prototypeId && note.page === currentCustomPage.id;
             commentList.update((comments) => comments.filter((comment) => !isOnRemovedPage(comment)));
             textChangeList.update((changes) => changes.filter((change) => !isOnRemovedPage(change)));
+            const removedId = currentCustomPage.id;
+            hotspotList.update((hotspots) =>
+                hotspots.filter((hotspot) => !(hotspot.prototypeId === prototypeId && (hotspot.page === removedId || hotspot.target === removedId))),
+            );
+            flowEdgeList.update((edges) =>
+                edges.filter((edge) => !(edge.prototypeId === prototypeId && (edge.from === removedId || edge.to === removedId))),
+            );
             selectPrototypeNode(getPrototypePageNodeId(prototypeId, currentWorkspacePrototype?.startPageId ?? ""));
         }
     }
@@ -317,6 +421,7 @@ export function WorkspaceShell() {
     const notePage: NotePage = {
         prototypeId: prototypeId ?? "",
         page: currentPrototypePageId ?? "",
+        pageIds: [...(currentWorkspacePrototype?.designedPageIds ?? []), ...prototypeCustomPages.map((page) => page.id)],
         getPageLabel,
         onOpenPage: (page) => {
             const frameWindow = frameRef.current?.contentWindow;
@@ -325,7 +430,6 @@ export function WorkspaceShell() {
             }
         },
     };
-    useTextChanges({ frameRef, frameLoadCount, prototypeId: notePage.prototypeId, page: notePage.page });
     const storiesById = useMemo(() => new Map(componentStories.map((story) => [story.id, story])), [componentStories]);
 
     function rememberCurrentStory() {
@@ -341,7 +445,6 @@ export function WorkspaceShell() {
             return;
         }
         rememberCurrentStory();
-        setInspecting(false);
         setOverlayPanelOpen(false);
         updateState({ mode: "components", storyId: nodeId });
         openInStorybook(nodeId);
@@ -357,9 +460,12 @@ export function WorkspaceShell() {
             );
             return;
         }
-        setInspecting(false);
         setOverlayPanelOpen(false);
-        setShowingFlow(false);
+        setMeasuredPath(null);
+        // A page picked in the list opens in the frame, also from the flow map
+        if (showingFlow) {
+            setTool(null);
+        }
         const frameWindow = frameRef.current?.contentWindow;
         // The prototype in the frame navigates itself, which keeps its state, like a click in its own navigation
         if (storyId === prototypeId && isComparing) {
@@ -372,64 +478,144 @@ export function WorkspaceShell() {
         }
     }
 
-    function toggleFlow() {
-        setInspecting(false);
-        setFrameTool(null);
-        if (!showingFlow) {
-            setPrototypeStartPage(shownPage);
-        }
-        setShowingFlow(!showingFlow);
+    function startPresenting() {
+        setOverlayPanelOpen(false);
+        setPresenting(true);
     }
 
-    function startPresenting() {
-        setInspecting(false);
-        setFrameTool(null);
-        setOverlayPanelOpen(false);
-        setShowingFlow(false);
-        setPresenting(true);
+    // Comparing and the flow map come back after the presentation and open on the page it ended on
+    function stopPresenting() {
+        const frameWindow = frameRef.current?.contentWindow;
+        if (frameWindow) {
+            setPrototypeStartPage(frameWindow.location.hash.slice(1));
+        }
+        setPresenting(false);
     }
 
     useEffect(() => {
         if (!presenting) {
             return;
         }
-        const frameDocuments = [document, frameRef.current?.contentDocument].filter((target): target is Document => target != null);
+        // Also the frames of the compare modes, where the focus may be when Escape is pressed
+        const frameDocuments = [document, ...Array.from(document.querySelectorAll("iframe"), (frame) => frame.contentDocument)].filter(
+            (target): target is Document => target != null,
+        );
         const handleKey = (event: KeyboardEvent) => {
             if (event.key === "Escape") {
-                setPresenting(false);
+                stopPresenting();
             }
         };
         frameDocuments.forEach((target) => target.addEventListener("keydown", handleKey));
         return () => frameDocuments.forEach((target) => target.removeEventListener("keydown", handleKey));
     }, [presenting, frameLoadCount]);
 
-    function toggleFrameTool(tool: FrameTool) {
-        setInspecting(false);
-        setFrameTool(frameTool === tool ? null : tool);
-    }
-
     function changeCompare(compare: WorkspaceCompare) {
-        setInspecting(false);
-        setFrameTool(null);
         if (!isComparing) {
             setPrototypeStartPage(framePage.hash);
         }
         updateState({ compare });
     }
 
-    function changeMode(mode: WorkspaceMode) {
-        setInspecting(false);
-        setFrameTool(null);
-        // The prototype opens again on the page it was left on
-        setPrototypeStartPage(isPrototypeMode ? shownPage : prototypeStartPage);
-        updateState({ mode });
+    function changeModeTab(tab: ModeTab) {
+        if (tab === "library") {
+            // The prototype opens again on the page it was left on
+            setPrototypeStartPage(isPrototypeMode ? shownPage : prototypeStartPage);
+            updateState({ mode: "components" });
+        } else {
+            changeIntent(tab);
+        }
     }
+
+    /** Opens a tool, in its mode; the key of the tool that's open closes it again. */
+    function toggleToolOfMode(next: WorkspaceIntent, tool: WorkspaceTool) {
+        // The tools of Inspect work on the single frame, so their key ends comparing
+        const compare = next === "inspect" ? "off" : state.compare;
+        if (isPrototypeMode && next === intent && !isComparing) {
+            setTool(activeTool === tool ? null : tool);
+            return;
+        }
+        setMeasuredPath(null);
+        // Only the single frame knows its page; the next mode's view opens on it
+        if (isSingleFrame) {
+            setPrototypeStartPage(framePage.hash);
+        }
+        updateState({ mode: "prototypes", intent: next, compare, intentTools: { ...state.intentTools, [next]: tool } });
+    }
+
+    // 1–4 switch the mode, a tool's letter opens the tool, and Escape closes it, also while the focus is in the prototype's frame
+    useEffect(() => {
+        const handleKey = (event: KeyboardEvent) => {
+            // A key that a field, an editor, or a list already used, e.g. Escape ending a text edit or a letter jumping in a tree, is theirs
+            const target = event.target as Element | null;
+            // The workspace's page list jumps to a page by its first letter too, but there the tool's key wins
+            const inPageList = target?.closest?.("[data-prototypes]") != null;
+            if (
+                presenting ||
+                (event.defaultPrevented && !inPageList) ||
+                event.repeat ||
+                event.metaKey ||
+                event.ctrlKey ||
+                event.altKey ||
+                isTyping(event.target)
+            ) {
+                return;
+            }
+            if (event.key === "Escape") {
+                // An open menu, dialog, or overlay panel closes first
+                if (
+                    activeTool &&
+                    !toolsWithOwnEscape.includes(activeTool) &&
+                    !target?.closest?.('[role="menu"], [role="dialog"], [role="alertdialog"], [role="listbox"], nav[data-overlay]')
+                ) {
+                    setTool(null);
+                }
+                return;
+            }
+            const next = intentKeys[event.key];
+            const toolKey = toolKeys.get(event.key.toLowerCase());
+            // Lists jump to an entry by its first letter, so a letter there isn't a tool's key; the workspace's own page list is for
+            // moving around, where the keys are worth more
+            const inList =
+                target?.closest?.('[role="tree"], [role="treegrid"], [role="menu"], [role="listbox"], [role="grid"], [role="combobox"]') &&
+                !inPageList;
+            if (next) {
+                changeIntent(next);
+            } else if (toolKey && !event.shiftKey && !inList) {
+                toggleToolOfMode(toolKey.intent, toolKey.tool);
+            }
+        };
+        const documents = [document, frameRef.current?.contentDocument, ...(isComparing ? compareFrameDocuments : [])].filter(
+            (target): target is Document => target != null,
+        );
+        documents.forEach((target) => target.addEventListener("keydown", handleKey));
+        return () => documents.forEach((target) => target.removeEventListener("keydown", handleKey));
+    });
+
+    // A double click on an element while clicking through opens it in Inspect, measured
+    useEffect(() => {
+        const frameDocument = frameRef.current?.contentDocument;
+        if (!isPrototypeMode || intent !== "prototype" || presenting || !frameDocument) {
+            return;
+        }
+        const handleDoubleClick = (event: MouseEvent) => {
+            const target = event.target as Element | null;
+            // A double click in a field selects a word, one on a control uses it twice; neither asks to inspect
+            if (target?.nodeType !== Node.ELEMENT_NODE || isTyping(target) || target.closest('a, button, [role="button"], [role="link"], label')) {
+                return;
+            }
+            setMeasuredPath(getElementPath(target));
+            setPrototypeStartPage(framePage.hash);
+            // Measured in the single frame, also when comparing was on in Inspect before
+            updateState({ intent: "inspect", compare: "off", intentTools: { ...state.intentTools, inspect: "measure" } });
+        };
+        frameDocument.addEventListener("dblclick", handleDoubleClick);
+        return () => frameDocument.removeEventListener("dblclick", handleDoubleClick);
+    });
 
     function goBack() {
         const previous = storyHistory.at(-1);
         if (previous) {
             setStoryHistory((history) => history.slice(0, -1));
-            setInspecting(false);
             if (previous.mode === "prototypes") {
                 setPrototypeStartPage(previous.page ?? "");
                 updateState({ mode: "prototypes", prototypeId: previous.storyId });
@@ -475,10 +661,9 @@ export function WorkspaceShell() {
         frameLoadCount,
         componentStoryIds,
         onPick: (component: InspectedComponent) => {
-            setInspecting(false);
             openStory(component.storyId);
         },
-        onExit: () => setInspecting(false),
+        onExit: () => setTool(null),
     });
     const previousEntry = storyHistory.at(-1);
     const previousStory = previousEntry && stories.find((story) => story.id === previousEntry.storyId);
@@ -568,79 +753,35 @@ export function WorkspaceShell() {
                                     <Icon name={panelVisible ? "sidebar-close" : "sidebar-open"} />
                                 </IconButton>
                             )}
-                            <img className={styles.logo} src={workspaceLogo} alt="Next UI Workspace" />
+                            <img className={styles.logo} src={workspaceLogo} alt="Workbench" />
                         </div>
 
-                        <Tabs className={styles.modeTabs} aria-label="Workspace" items={modeTabs} value={state.mode} onChange={changeMode} />
+                        <Tabs
+                            className={styles.modeTabs}
+                            aria-label="Mode"
+                            items={modeTabs}
+                            value={isPrototypeMode ? intent : "library"}
+                            onChange={changeModeTab}
+                        />
 
                         <div className={styles.settings}>
+                            {isPrototypeMode && <ViewMenu />}
                             {isPrototypeMode && (
-                                <SettingMenu label="Compare" options={compareOptions} value={state.compare} onChange={changeCompare} />
+                                <IconButton variant="text" color="secondary" aria-label="Present the prototype" onClick={startPresenting}>
+                                    <Icon name="eye" />
+                                </IconButton>
                             )}
-                            {isComparing && (
-                                <SegmentedControl
-                                    size="small"
-                                    aria-label="Zoom"
-                                    options={zoomOptions}
-                                    value={state.zoom}
-                                    onChange={(zoom) => updateState({ zoom })}
-                                />
-                            )}
-                            {isPrototypeMode && !isComparing && !showingFlow && (
-                                <ViewportControl
-                                    responsive={state.responsive}
-                                    onResponsiveChange={() => updateState({ responsive: true })}
-                                    width={state.width}
-                                    height={state.height}
-                                    zoom={state.zoom}
-                                    onSizeChange={(size) => updateState({ ...size, responsive: false })}
-                                    onZoomChange={(zoom) => updateState({ zoom })}
-                                />
-                            )}
-                            {isPrototypeMode && (
-                                <SettingMenu
-                                    label="Content"
-                                    icon={<Icon name="file-data" />}
-                                    options={scenarioOptions}
-                                    value={scenario}
-                                    onChange={scenarioSetting.store}
-                                />
-                            )}
-                            <SettingMenu label="Color scheme" options={colorSchemeOptions} value={colorScheme} onChange={changeColorScheme} />
-                            <SettingMenu
-                                label="Theme"
-                                icon={<Icon name="layers" />}
-                                options={brandOptions}
-                                value={brand}
-                                onChange={(value) => {
-                                    brandSetting.store(value);
-                                    setBrand(brandSetting.get());
-                                }}
-                            />
-                            <SettingMenu
-                                label="Density"
-                                options={densityOptions}
-                                value={density}
-                                onChange={(value) => {
-                                    densitySetting.store(value);
-                                    setDensity(value);
-                                }}
-                            />
-                            <span className={styles.divider} />
-                            <IconButton variant="text" color="secondary" aria-label="Reload story" onClick={reloadFrame}>
-                                <Icon name="refresh" />
-                            </IconButton>
                             <IconButton
                                 variant="text"
                                 color="secondary"
-                                aria-label="Open story in a new tab"
+                                aria-label={isPrototypeMode ? "Open the prototype with this view in a new tab" : "Open the story in a new tab"}
                                 disabled={isPrototypeMode ? !storyUrl : storybookSrc == null}
                                 onClick={() => {
                                     if (!isPrototypeMode) {
                                         window.open(storybookFrameRef.current?.contentWindow?.location.href ?? storybookSrc ?? undefined, "_blank");
                                     } else if (storyUrl) {
-                                        // The link keeps the toolbar's settings, so whoever opens it sees the prototype as it's shown here
-                                        const settings = [colorSchemeSetting, brandSetting, densitySetting, scenarioSetting]
+                                        // The link keeps the view, so whoever opens it sees the prototype as it's shown here
+                                        const settings = [colorSchemeSetting, brandSetting, densitySetting, scenarioSetting, textLengthSetting]
                                             .map((setting) => `&${setting.storageKey}=${encodeURIComponent(setting.get())}`)
                                             .join("");
                                         window.open(`${storyUrl}${settings}${shownPage ? `#${shownPage}` : ""}`, "_blank");
@@ -649,83 +790,15 @@ export function WorkspaceShell() {
                             >
                                 <Icon name="external-link" />
                             </IconButton>
+                            <IconButton variant="text" color="secondary" aria-label="Reload" onClick={reloadFrame}>
+                                <Icon name="refresh" />
+                            </IconButton>
+                            {isPrototypeMode && <WorkspaceGuide />}
                         </div>
                     </div>
 
-                    <div className={styles.contextBar}>
-                        <p className={styles.location}>
-                            {isPrototypeMode ? (
-                                <>
-                                    <span className={styles.locationTrail}>{currentPrototype?.name}</span>
-                                    {currentCustomPage ? (
-                                        <input
-                                            key={`${currentCustomPage.id}-${currentCustomPage.title}`}
-                                            className={styles.locationInput}
-                                            aria-label="Page name"
-                                            title="Rename the page"
-                                            defaultValue={currentCustomPage.title}
-                                            size={Math.max(8, currentCustomPage.title.length)}
-                                            onBlur={(event) => {
-                                                renameCurrentPage(event.currentTarget.value);
-                                                // An empty name isn't kept, so the field shows the name again
-                                                if (event.currentTarget.value.trim() === "") {
-                                                    event.currentTarget.value = currentCustomPage.title;
-                                                }
-                                            }}
-                                            onKeyDown={(event) => {
-                                                if (event.key === "Enter") {
-                                                    event.currentTarget.blur();
-                                                } else if (event.key === "Escape") {
-                                                    event.currentTarget.value = currentCustomPage.title;
-                                                    event.currentTarget.blur();
-                                                }
-                                            }}
-                                        />
-                                    ) : (
-                                        prototypePageLabel && <span className={styles.locationCurrent}>{prototypePageLabel}</span>
-                                    )}
-                                </>
-                            ) : (
-                                currentStory && (
-                                    <>
-                                        <span className={styles.locationTrail}>{currentStory.title.split("/").join(" / ")}</span>
-                                        <span className={styles.locationCurrent}>{currentStory.name}</span>
-                                    </>
-                                )
-                            )}
-                        </p>
-                        <div className={styles.toolbarGroup}>
-                            {isPrototypeMode && (
-                                <IconButton
-                                    variant={showingFlow ? "contained" : "text"}
-                                    color={showingFlow ? "primary" : "secondary"}
-                                    aria-label="Show the flow map"
-                                    aria-pressed={showingFlow}
-                                    onClick={toggleFlow}
-                                >
-                                    <Icon name="tune-logic" />
-                                </IconButton>
-                            )}
-                            {isPrototypeMode && (
-                                <IconButton variant="text" color="secondary" aria-label="Present the prototype" onClick={startPresenting}>
-                                    <Icon name="eye" />
-                                </IconButton>
-                            )}
-                            {isPrototypeMode && currentCustomPage && (
-                                <IconButton
-                                    variant="text"
-                                    color="secondary"
-                                    aria-label={`Delete “${currentCustomPage.title}”`}
-                                    onClick={removeCurrentPage}
-                                >
-                                    <Icon name="trash" />
-                                </IconButton>
-                            )}
-                            {isPrototypeMode && (
-                                <IconButton variant="text" color="secondary" aria-label="Restart the prototype" onClick={restartPrototype}>
-                                    <Icon name="home" />
-                                </IconButton>
-                            )}
+                    <div className={styles.contextBar} data-centered={isPrototypeMode || undefined}>
+                        <div className={styles.contextStart}>
                             <IconButton
                                 variant="text"
                                 color="secondary"
@@ -735,65 +808,122 @@ export function WorkspaceShell() {
                             >
                                 <Icon name="back" />
                             </IconButton>
-                            {isPrototypeMode && !isComparing && !showingFlow && (
-                                <IconButton
-                                    variant={inspecting ? "contained" : "text"}
-                                    color={inspecting ? "primary" : "secondary"}
-                                    aria-label="Pick a component in the canvas"
-                                    aria-pressed={inspecting}
-                                    onClick={() => {
-                                        setFrameTool(null);
-                                        setInspecting(!inspecting);
-                                    }}
-                                >
-                                    <Icon name="select" />
+                            {isPrototypeMode && (
+                                <IconButton variant="text" color="secondary" aria-label="Restart the prototype" onClick={restartPrototype}>
+                                    <Icon name="home" />
                                 </IconButton>
                             )}
-                            {isPrototypeMode && !isComparing && !showingFlow && (
-                                <IconButton
-                                    variant={frameTool === "measure" ? "contained" : "text"}
-                                    color={frameTool === "measure" ? "primary" : "secondary"}
-                                    aria-label="Measure sizes, distances, and tokens"
-                                    aria-pressed={frameTool === "measure"}
-                                    onClick={() => toggleFrameTool("measure")}
-                                >
-                                    <Icon name="crop-action" />
-                                </IconButton>
-                            )}
-                            {isPrototypeMode && !isComparing && !showingFlow && (
-                                <IconButton
-                                    variant={frameTool === "comment" ? "contained" : "text"}
-                                    color={frameTool === "comment" ? "primary" : "secondary"}
-                                    aria-label="Pin comments to the page"
-                                    aria-pressed={frameTool === "comment"}
-                                    onClick={() => toggleFrameTool("comment")}
-                                >
-                                    <Icon name="chat-add" />
-                                </IconButton>
-                            )}
-                            {isPrototypeMode && !isComparing && !showingFlow && (
-                                <IconButton
-                                    variant={frameTool === "text" ? "contained" : "text"}
-                                    color={frameTool === "text" ? "primary" : "secondary"}
-                                    aria-label="Edit texts"
-                                    aria-pressed={frameTool === "text"}
-                                    onClick={() => toggleFrameTool("text")}
-                                >
-                                    <Icon name="pencil-line" />
-                                </IconButton>
-                            )}
-                            {isPrototypeMode && !isComparing && !showingFlow && (
-                                <IconButton
-                                    variant={frameTool === "accessibility" ? "contained" : "text"}
-                                    color={frameTool === "accessibility" ? "primary" : "secondary"}
-                                    aria-label="Check accessibility"
-                                    aria-pressed={frameTool === "accessibility"}
-                                    onClick={() => toggleFrameTool("accessibility")}
-                                >
-                                    <Icon name="contrast" />
-                                </IconButton>
-                            )}
+                            <p className={styles.location}>
+                                {isPrototypeMode ? (
+                                    <>
+                                        <span className={styles.locationTrail}>{currentPrototype?.name}</span>
+                                        {currentCustomPage ? (
+                                            <input
+                                                key={`${currentCustomPage.id}-${currentCustomPage.title}`}
+                                                className={styles.locationInput}
+                                                aria-label="Page name"
+                                                title="Rename the page"
+                                                defaultValue={currentCustomPage.title}
+                                                size={Math.max(8, currentCustomPage.title.length)}
+                                                onBlur={(event) => {
+                                                    renameCurrentPage(event.currentTarget.value);
+                                                    // An empty name isn't kept, so the field shows the name again
+                                                    if (event.currentTarget.value.trim() === "") {
+                                                        event.currentTarget.value = currentCustomPage.title;
+                                                    }
+                                                }}
+                                                onKeyDown={(event) => {
+                                                    if (event.key === "Enter") {
+                                                        event.currentTarget.blur();
+                                                    } else if (event.key === "Escape") {
+                                                        event.currentTarget.value = currentCustomPage.title;
+                                                        event.currentTarget.blur();
+                                                    }
+                                                }}
+                                            />
+                                        ) : (
+                                            prototypePageLabel && <span className={styles.locationCurrent}>{prototypePageLabel}</span>
+                                        )}
+                                        {currentCustomPage && (
+                                            <IconButton
+                                                variant="text"
+                                                color="secondary"
+                                                aria-label={`Delete “${currentCustomPage.title}”`}
+                                                onClick={removeCurrentPage}
+                                            >
+                                                <Icon name="trash" />
+                                            </IconButton>
+                                        )}
+                                    </>
+                                ) : (
+                                    currentStory && (
+                                        <>
+                                            <span className={styles.locationTrail}>{currentStory.title.split("/").join(" / ")}</span>
+                                            <span className={styles.locationCurrent}>{currentStory.name}</span>
+                                        </>
+                                    )
+                                )}
+                            </p>
                         </div>
+                        {isPrototypeMode && (
+                            <div className={styles.contextCenter}>
+                                {intent === "inspect" && (
+                                    <SettingMenu
+                                        label="Compare"
+                                        options={compareOptions}
+                                        value={state.compare}
+                                        onChange={changeCompare}
+                                        showLabel={!narrow}
+                                    />
+                                )}
+                                {isComparing && (
+                                    <SegmentedControl
+                                        size="small"
+                                        aria-label="Zoom"
+                                        options={zoomOptions}
+                                        value={state.zoom}
+                                        onChange={(zoom) => updateState({ zoom })}
+                                    />
+                                )}
+                                {!isComparing && !showingFlow && (
+                                    <ViewportControl
+                                        showLabel={!narrow}
+                                        responsive={state.responsive}
+                                        onResponsiveChange={() => updateState({ responsive: true })}
+                                        width={state.width}
+                                        height={state.height}
+                                        zoom={state.zoom}
+                                        onSizeChange={(size) => updateState({ ...size, responsive: false })}
+                                        onZoomChange={(zoom) => updateState({ zoom })}
+                                    />
+                                )}
+                            </div>
+                        )}
+                        {isPrototypeMode && (
+                            <div
+                                className={styles.toolbarGroup}
+                                role="group"
+                                aria-label={`${modeTabs.find((tab) => tab.value === intent)?.label} tools`}
+                            >
+                                {/* Comparing shows several frames, where the tools of the single frame don't work, so it takes their place */}
+                                {!isComparing &&
+                                    intentToolButtons[intent].map(({ tool, label, icon, description, key }) => (
+                                        <Button
+                                            key={tool}
+                                            variant={activeTool === tool ? "contained" : "text"}
+                                            color={activeTool === tool ? "primary" : "secondary"}
+                                            size="small"
+                                            startIcon={<Icon name={icon} />}
+                                            aria-pressed={activeTool === tool}
+                                            title={`${description} · ${key}`}
+                                            aria-keyshortcuts={key}
+                                            onClick={() => setTool(activeTool === tool ? null : tool)}
+                                        >
+                                            {label}
+                                        </Button>
+                                    ))}
+                            </div>
+                        )}
                     </div>
                 </header>
 
@@ -819,7 +949,7 @@ export function WorkspaceShell() {
                                 color="secondary"
                                 size="small"
                                 startIcon={<Icon name="close" />}
-                                onClick={() => setPresenting(false)}
+                                onClick={stopPresenting}
                             >
                                 Exit presentation · Esc
                             </Button>
@@ -839,11 +969,7 @@ export function WorkspaceShell() {
                                         nodes={prototypeNodes}
                                         expandedIds={visiblePrototypeExpandedIds}
                                         onExpandedChange={setPrototypeExpandedIds}
-                                        selectedId={
-                                            prototypeId && currentPrototypePageId
-                                                ? getPrototypePageNodeId(prototypeId, currentPrototypePageId)
-                                                : undefined
-                                        }
+                                        selectedId={selectedPrototypeNodeId}
                                         onSelect={selectPrototypeNode}
                                     />
                                 </div>
@@ -896,18 +1022,19 @@ export function WorkspaceShell() {
                                 getPageLabel={getPageLabel}
                                 onOpenPage={(page) => {
                                     setPrototypeStartPage(page);
-                                    setShowingFlow(false);
+                                    setTool(null);
                                 }}
                             />
                         ) : isComparing && storyUrl ? (
                             <CompareCanvas
-                                mode={state.compare === "variants" ? "variants" : "viewports"}
+                                mode={state.compare === "off" ? "viewports" : state.compare}
                                 storyUrl={storyUrl}
                                 startPage={prototypeStartPage}
                                 density={density}
                                 zoom={state.zoom}
                                 reloadKey={reloadKey}
                                 onPageChange={setPrototypeStartPage}
+                                onFrameDocumentsChange={setCompareFrameDocuments}
                             />
                         ) : (
                             <div ref={setCanvasElement} className={styles.canvas} data-responsive={state.responsive || undefined}>
@@ -967,7 +1094,8 @@ export function WorkspaceShell() {
                                             frameLoadCount={frameLoadCount}
                                             scale={scale}
                                             notePage={notePage}
-                                            onExit={() => setFrameTool(null)}
+                                            measuredPath={measuredPath ?? undefined}
+                                            onExit={() => setTool(null)}
                                         />
                                     )}
                                     {!state.responsive && (

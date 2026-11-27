@@ -1,17 +1,21 @@
-import { type RefObject, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Button } from "../../components/button/Button";
 import { Icon } from "../../components/icon/Icon";
 import { IconButton } from "../../components/iconButton/IconButton";
 import { Textarea } from "../../components/textarea/Textarea";
-import { findElementByPath, getElementPath, getFrameRect, useFrameDocument } from "./frameElements";
+import { readWrittenText } from "../textLength";
+import { findElementByPath, type FrameRect, getElementPath, getFrameRect } from "./frameElements";
 import styles from "./FrameTools.module.scss";
+import { hotspotList } from "./hotspots";
 import { commentList, createNoteId, isOnPage, type PinnedComment, type TextChange, textChangeList } from "./workspaceNotes";
 
 /** The page of a prototype the notes belong to, and how to open another one. */
 export interface NotePage {
     prototypeId: string;
     page: string;
+    /** The pages a hotspot can open: the ones with a design and the ones the designer added. */
+    pageIds: string[];
     getPageLabel: (page: string) => string;
     onOpenPage: (page: string) => void;
 }
@@ -304,6 +308,17 @@ export function CommentLayer({ frameDocument, scale, notePage }: { frameDocument
     );
 }
 
+// A request to paste into the chat with Claude, which changes the texts in the prototype's code, where they then stay for everyone
+function formatCodeRequest(changes: TextChange[], notePage: NotePage) {
+    return [
+        `Please change these texts in the code of the workspace prototype \`${notePage.prototypeId}\` (packages/ui/src/storybook/workspace):`,
+        ...changes.map(
+            (change) => `- Page “${notePage.getPageLabel(change.page)}” (\`${change.page}\`): “${change.original.trim()}” → “${change.text.trim()}”`,
+        ),
+        "Then remove them from the text changes in the workspace, since the prototype shows them itself.",
+    ].join("\n");
+}
+
 function formatTextChanges(changes: TextChange[], getPageLabel: (page: string) => string) {
     return changes.map((change) => `- [${getPageLabel(change.page)}] “${change.original.trim()}” → “${change.text.trim()}”`).join("\n");
 }
@@ -328,7 +343,8 @@ export function TextLayer({ frameDocument, notePage }: { frameDocument: Document
             const existing = textChangeList
                 .get()
                 .find((change) => isOnPage(change, notePage.prototypeId, notePage.page) && change.path.join() === path.join());
-            const original = existing?.original ?? readOwnText(editable);
+            // The text as written, not as Text length shows it, which the designer edits and the change keeps
+            const original = existing?.original ?? readWrittenText(editable);
             const before = readOwnText(editable);
             const linesBefore = new Set(editable.querySelectorAll(":scope > br"));
 
@@ -336,8 +352,18 @@ export function TextLayer({ frameDocument, notePage }: { frameDocument: Document
                 editable.removeEventListener("blur", handleBlur);
                 editable.removeEventListener("keydown", handleKey);
                 editable.removeAttribute("contenteditable");
-                // Emptying a text while editing can leave a line break in place of it, and no text node to write to again
-                editable.querySelectorAll(":scope > br").forEach((line) => !linesBefore.has(line) && line.remove());
+                // A line break pasted into the text becomes a space; one left in place of an emptied text goes, and an emptied text
+                // gets a text node to write to again
+                editable.querySelectorAll(":scope > br").forEach((line) => {
+                    if (linesBefore.has(line)) {
+                        return;
+                    }
+                    if (readOwnText(editable).trim() === "") {
+                        line.remove();
+                    } else {
+                        line.replaceWith(editable.ownerDocument.createTextNode(" "));
+                    }
+                });
                 if (getOwnTextNodes(editable).length === 0) {
                     writeOwnText(editable, "");
                 }
@@ -358,7 +384,8 @@ export function TextLayer({ frameDocument, notePage }: { frameDocument: Document
             }
             const handleBlur = () => finish(true);
             const handleKey = (keyEvent: KeyboardEvent) => {
-                if (keyEvent.key === "Enter" && !keyEvent.shiftKey) {
+                // A label is a single line, so Enter with or without Shift keeps the change
+                if (keyEvent.key === "Enter") {
                     keyEvent.preventDefault();
                     editable.blur();
                 } else if (keyEvent.key === "Escape") {
@@ -367,6 +394,7 @@ export function TextLayer({ frameDocument, notePage }: { frameDocument: Document
                 }
             };
             editable.setAttribute("contenteditable", "plaintext-only");
+            writeOwnText(editable, readWrittenText(editable));
             editable.addEventListener("blur", handleBlur);
             editable.addEventListener("keydown", handleKey);
             editable.focus();
@@ -381,13 +409,8 @@ export function TextLayer({ frameDocument, notePage }: { frameDocument: Document
         };
     }, [frameDocument]);
 
+    // The prototype restores the original text itself, since it would otherwise write the change back before it learns of the revert
     function revert(change: TextChange) {
-        if (isOnPage(change, notePage.prototypeId, notePage.page)) {
-            const element = findElementByPath(frameDocument, change.path);
-            if (element) {
-                writeOwnText(element, change.original);
-            }
-        }
         textChangeList.update((items) => items.filter((item) => item.id !== change.id));
     }
 
@@ -417,6 +440,7 @@ export function TextLayer({ frameDocument, notePage }: { frameDocument: Document
                     </ul>
                     <div className={styles.cardActions}>
                         <CopyButton label="Copy as list" getText={() => formatTextChanges(prototypeChanges, notePage.getPageLabel)} />
+                        <CopyButton label="Copy as code request" getText={() => formatCodeRequest(prototypeChanges, notePage)} />
                     </div>
                 </>
             )}
@@ -424,41 +448,169 @@ export function TextLayer({ frameDocument, notePage }: { frameDocument: Document
     );
 }
 
-/** Puts the edited texts back on the page whenever it renders them again, e.g. after a reload or when it opens the page again. */
-export function useTextChanges({
-    frameRef,
-    frameLoadCount,
-    prototypeId,
-    page,
-}: {
-    frameRef: RefObject<HTMLIFrameElement | null>;
-    frameLoadCount: number;
-    prototypeId: string;
-    page: string;
-}) {
-    const frameDocument = useFrameDocument(frameRef, frameLoadCount);
+/**
+ * Puts the edited texts back on the page whenever it renders them again, e.g. after a reload or when it opens the page again. The
+ * prototype runs it itself, so that every frame shows them, also the ones of the compare modes.
+ */
+export function usePageTextChanges(prototypeId: string, page: string) {
     const changes = textChangeList.useItems();
+    const previousChangesRef = useRef(changes);
     useEffect(() => {
+        // Until this effect follows a page change, the document already shows the next page, which the changes aren't for
+        const showsPage = () => {
+            const shownPage = decodeURIComponent(window.location.hash.slice(1));
+            return shownPage === "" || shownPage === page;
+        };
+        const removedChanges = previousChangesRef.current.filter(
+            (previous) => isOnPage(previous, prototypeId, page) && !changes.some((change) => change.id === previous.id),
+        );
+        previousChangesRef.current = changes;
+        if (showsPage()) {
+            for (const change of removedChanges) {
+                const element = findElementByPath(document, change.path);
+                if (element && !(element as HTMLElement).isContentEditable && readWrittenText(element) === change.text) {
+                    writeOwnText(element, change.original);
+                }
+            }
+        }
         const pageChanges = changes.filter((change) => isOnPage(change, prototypeId, page));
-        if (!frameDocument?.body || pageChanges.length === 0) {
+        if (pageChanges.length === 0) {
             return;
         }
         const apply = () => {
-            // Until the workspace follows a page change, the frame already shows the next page, which the changes aren't for
-            const shownPage = decodeURIComponent(frameDocument.defaultView?.location.hash.slice(1) ?? "");
-            if (shownPage !== "" && shownPage !== page) {
+            if (!showsPage()) {
                 return;
             }
             for (const change of pageChanges) {
-                const element = findElementByPath(frameDocument, change.path);
-                if (element && !(element as HTMLElement).isContentEditable && readOwnText(element) === change.original) {
+                const element = findElementByPath(document, change.path);
+                if (element && !(element as HTMLElement).isContentEditable && readWrittenText(element) === change.original) {
                     writeOwnText(element, change.text);
                 }
             }
         };
         apply();
         const observer = new MutationObserver(apply);
-        observer.observe(frameDocument.body, { subtree: true, childList: true, characterData: true });
+        observer.observe(document.body, { subtree: true, childList: true, characterData: true });
         return () => observer.disconnect();
-    }, [frameDocument, changes, prototypeId, page]);
+    }, [changes, prototypeId, page]);
+}
+
+// Opens toward the larger part of the frame, so that the layer, which clips everything outside the frame, doesn't cut the picker off
+function getPickerPosition({ rect, frameWidth, frameHeight }: { rect: FrameRect; frameWidth: number; frameHeight: number }, scale: number) {
+    const below = rect.top + rect.height / 2 < frameHeight / 2;
+    const fromLeft = rect.left + rect.width / 2 < frameWidth / 2;
+    return {
+        ...(below ? { top: (rect.top + rect.height) * scale + 6 } : { bottom: (frameHeight - rect.top) * scale + 6 }),
+        ...(fromLeft ? { left: rect.left * scale } : { right: (frameWidth - rect.left - rect.width) * scale }),
+    };
+}
+
+/**
+ * Links an element of the page to another page, without code: a click on an element offers the pages, and the prototype then
+ * opens the chosen page on a click there, also outside the tool. Shown as boxes with the page they open.
+ */
+export function HotspotLayer({ frameDocument, scale, notePage }: { frameDocument: Document; scale: number; notePage: NotePage }) {
+    const hotspots = hotspotList.useItems();
+    const [picking, setPicking] = useState<{ path: number[]; rect: FrameRect; frameWidth: number; frameHeight: number } | null>(null);
+    const prototypeHotspots = hotspots.filter((hotspot) => hotspot.prototypeId === notePage.prototypeId);
+    const pageHotspots = prototypeHotspots.filter((hotspot) => isOnPage(hotspot, notePage.prototypeId, notePage.page));
+
+    useBlockedClicks(frameDocument, (event) => {
+        const element = asElement(event.target);
+        // The page's background would take every click of the page
+        if (!element || element === frameDocument.body || element === frameDocument.documentElement) {
+            return;
+        }
+        const { clientWidth, clientHeight } = frameDocument.documentElement;
+        setPicking({ path: getElementPath(element), rect: getFrameRect(element), frameWidth: clientWidth, frameHeight: clientHeight });
+    });
+
+    function link(target: string) {
+        if (!picking) {
+            return;
+        }
+        const path = picking.path;
+        hotspotList.update((items) => [
+            ...items.filter((item) => !(isOnPage(item, notePage.prototypeId, notePage.page) && item.path.join() === path.join())),
+            { id: createNoteId(), prototypeId: notePage.prototypeId, page: notePage.page, path, target },
+        ]);
+        setPicking(null);
+    }
+
+    return (
+        <>
+            <div className={styles.layer}>
+                {pageHotspots.map((hotspot) => {
+                    const element = findElementByPath(frameDocument, hotspot.path);
+                    if (!element) {
+                        return null;
+                    }
+                    const rect = getFrameRect(element);
+                    return (
+                        <div
+                            key={hotspot.id}
+                            className={styles.hotspot}
+                            style={{ top: rect.top * scale, left: rect.left * scale, width: rect.width * scale, height: rect.height * scale }}
+                        >
+                            <span className={styles.hotspotLabel}>→ {notePage.getPageLabel(hotspot.target)}</span>
+                        </div>
+                    );
+                })}
+                {picking && (
+                    <div className={styles.commentEditor} style={getPickerPosition(picking, scale)}>
+                        <p className={styles.cardTitle}>Opens on a click</p>
+                        <ul className={styles.pagePicker}>
+                            {notePage.pageIds
+                                .filter((pageId) => pageId !== notePage.page)
+                                .map((pageId) => (
+                                    <li key={pageId}>
+                                        <button type="button" className={styles.noteLink} onClick={() => link(pageId)}>
+                                            {notePage.getPageLabel(pageId)}
+                                        </button>
+                                    </li>
+                                ))}
+                        </ul>
+                        <div className={styles.editorActions}>
+                            <Button variant="text" color="secondary" size="small" onClick={() => setPicking(null)}>
+                                Cancel
+                            </Button>
+                        </div>
+                    </div>
+                )}
+            </div>
+            <aside className={styles.card} aria-label="Hotspots">
+                <p className={styles.cardTitle}>
+                    Hotspots
+                    <span>
+                        {pageHotspots.length} here · {prototypeHotspots.length} in all
+                    </span>
+                </p>
+                {prototypeHotspots.length === 0 ? (
+                    <p className={styles.hint}>Click an element to choose the page it opens, e.g. a button of a page that isn&apos;t built yet.</p>
+                ) : (
+                    <ul className={styles.noteList}>
+                        {prototypeHotspots.map((hotspot) => (
+                            <li key={hotspot.id}>
+                                <button type="button" className={styles.noteLink} onClick={() => notePage.onOpenPage(hotspot.page)}>
+                                    <span>
+                                        <span className={styles.notePage}>{notePage.getPageLabel(hotspot.page)}</span>
+                                        Opens {notePage.getPageLabel(hotspot.target)}
+                                    </span>
+                                </button>
+                                <IconButton
+                                    variant="text"
+                                    color="secondary"
+                                    size="small"
+                                    aria-label="Remove hotspot"
+                                    onClick={() => hotspotList.update((items) => items.filter((item) => item.id !== hotspot.id))}
+                                >
+                                    <Icon name="trash" />
+                                </IconButton>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+            </aside>
+        </>
+    );
 }

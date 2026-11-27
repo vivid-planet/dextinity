@@ -43,7 +43,8 @@
     grid-template-areas:
         "brand settings"
         "tabs tabs";
-    grid-template-columns: minmax(0, 1fr) auto;
+    // On a phone the settings take the room the logo leaves and scroll sideways, instead of covering the logo
+    grid-template-columns: auto minmax(0, 1fr);
     column-gap: 12px;
     align-items: center;
     min-inline-size: 0;
@@ -65,12 +66,38 @@
     min-block-size: var(--workspace-bar-height);
 }
 
-.settings {
-    grid-area: settings;
+%scrolling-bar {
     display: flex;
     gap: 4px;
     align-items: center;
-    justify-content: flex-end;
+    min-inline-size: 0;
+    // Room for the focus ring, which the scrolling would cut off, without moving the buttons
+    margin: -4px;
+    padding: 4px;
+    overflow-x: auto;
+    // A mouse needs the scrollbar to reach buttons out of view; a finger swipes
+    scrollbar-width: thin;
+
+    @media (pointer: coarse) {
+        scrollbar-width: none;
+    }
+
+    // Aligned to the end while everything fits; a scrolling bar starts at its first button. A pseudo-element, since an open menu puts
+    // focus guards before its button, which would otherwise take the first place and let the buttons jump to the start
+    &::before {
+        content: "";
+        margin-inline-start: auto;
+    }
+
+    > * {
+        flex: none;
+    }
+}
+
+.settings {
+    @extend %scrolling-bar;
+
+    grid-area: settings;
 }
 
 .divider {
@@ -94,11 +121,20 @@
 }
 
 // The row for what the canvas shows: where it is, and the tools for the frame
+// Where the canvas is, how it's shown in the middle, and the mode's tools at the end
 .contextBar {
     display: flex;
     gap: 8px;
     align-items: center;
     justify-content: space-between;
+
+    // The view controls in the middle, where the location and the tools on either side leave them the same room
+    @media (width >= 760px) {
+        &[data-centered] {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+        }
+    }
     min-inline-size: 0;
     min-block-size: var(--workspace-bar-height);
     padding-inline: 16px 8px;
@@ -109,10 +145,25 @@
     }
 }
 
+// Where the canvas is, and the zoom while comparing frames: on the left, so the tools on the right keep their place
+.contextCenter {
+    display: flex;
+    flex: none;
+    gap: 8px;
+    align-items: center;
+}
+
+.contextStart {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    min-inline-size: 0;
+}
+
 .location {
     display: flex;
     gap: 6px;
-    align-items: baseline;
+    align-items: center;
     min-inline-size: 0;
     margin: 0;
     white-space: nowrap;
@@ -164,10 +215,7 @@
 }
 
 .toolbarGroup {
-    display: flex;
-    gap: 4px;
-    align-items: center;
-    min-inline-size: 0;
+    @extend %scrolling-bar;
 }
 
 .logo {
@@ -279,6 +327,16 @@
     min-block-size: 0;
     overflow: auto;
     padding: 0 6px 12px;
+}
+
+// A group of the app's menu or an asset folder opens no page, so it has no icon and a lighter text than the pages
+.panelList :has(> * > .pageGroupMarker) {
+    color: var(--dextinity-color-text-subtle);
+
+    // The name starts where the pages' icons start
+    > :has(> .pageGroupMarker) {
+        display: none;
+    }
 }
 
 .panelFooter {

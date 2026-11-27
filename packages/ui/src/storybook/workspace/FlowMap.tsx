@@ -1,4 +1,4 @@
-import { type KeyboardEvent, type PointerEvent, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { type KeyboardEvent, type MouseEvent, type PointerEvent, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import { Button } from "../../components/button/Button";
 import { Icon } from "../../components/icon/Icon";
@@ -298,7 +298,8 @@ export function FlowMap({
     const [view, setView] = useState<FlowView>({ zoom: 1, x: 0, y: 0 });
     // Until the designer zooms or moves the map, it keeps showing all pages, also when a scan adds some
     const viewMovedRef = useRef(false);
-    const pointersRef = useRef(new Map<number, { x: number; y: number }>());
+    const pointersRef = useRef(new Map<number, { x: number; y: number; onCard: boolean }>());
+    const pinchedRef = useRef(false);
     const panStartRef = useRef<{ pointerX: number; pointerY: number; viewX: number; viewY: number } | null>(null);
     const pinchStartRef = useRef<{ view: FlowView; points: [{ x: number; y: number }, { x: number; y: number }] } | null>(null);
 
@@ -369,9 +370,10 @@ export function FlowMap({
     function startPanOrPinch(currentView: FlowView) {
         const points = [...pointersRef.current.values()];
         if (points.length >= 2) {
+            pinchedRef.current = true;
             panStartRef.current = null;
             pinchStartRef.current = { view: currentView, points: [points[0], points[1]] };
-        } else if (points.length === 1) {
+        } else if (points.length === 1 && !points[0].onCard) {
             pinchStartRef.current = null;
             panStartRef.current = { pointerX: points[0].x, pointerY: points[0].y, viewX: currentView.x, viewY: currentView.y };
         } else {
@@ -381,20 +383,36 @@ export function FlowMap({
     }
 
     function startPan(event: PointerEvent<HTMLDivElement>) {
-        if (event.button !== 0 || (event.target as Element).closest("button, [data-floating]")) {
+        const target = event.target as Element;
+        if (event.button !== 0 || target.closest("[data-floating]")) {
             return;
         }
-        event.currentTarget.setPointerCapture(event.pointerId);
-        pointersRef.current.set(event.pointerId, pointerPosition(event));
+        // A touch on a card is tracked without panning, so that a second finger can still start a pinch and a tap still opens the card
+        const onCard = target.closest("button") != null;
+        if (onCard && event.pointerType !== "touch") {
+            return;
+        }
+        if (!onCard) {
+            event.currentTarget.setPointerCapture(event.pointerId);
+        }
+        pointersRef.current.set(event.pointerId, { ...pointerPosition(event), onCard });
         startPanOrPinch(view);
     }
 
+    function ignoreClickAfterPinch(event: MouseEvent<HTMLDivElement>) {
+        if (pinchedRef.current) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    }
+
     function pan(event: PointerEvent<HTMLDivElement>) {
-        if (!pointersRef.current.has(event.pointerId)) {
+        const pointer = pointersRef.current.get(event.pointerId);
+        if (!pointer) {
             return;
         }
         const position = pointerPosition(event);
-        pointersRef.current.set(event.pointerId, position);
+        pointersRef.current.set(event.pointerId, { ...position, onCard: pointer.onCard });
         const pinchStart = pinchStartRef.current;
         const panStart = panStartRef.current;
         if (pinchStart) {
@@ -412,6 +430,10 @@ export function FlowMap({
     function endPan(event: PointerEvent<HTMLDivElement>) {
         if (pointersRef.current.delete(event.pointerId)) {
             startPanOrPinch(view);
+            if (pointersRef.current.size === 0 && pinchedRef.current) {
+                // The click that follows the last pointerup is dispatched before this timeout runs
+                setTimeout(() => (pinchedRef.current = false));
+            }
         }
     }
 
@@ -525,6 +547,7 @@ export function FlowMap({
                 onPointerMove={pan}
                 onPointerUp={endPan}
                 onPointerCancel={endPan}
+                onClickCapture={ignoreClickAfterPinch}
                 onKeyDown={zoomWithKeyboard}
             >
                 <div

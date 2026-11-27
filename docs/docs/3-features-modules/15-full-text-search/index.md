@@ -112,8 +112,8 @@ A user only finds entities whose required permission they have. When searching i
 Once the module is set up, the following query is available:
 
 ```graphql
-query MySearch($search: String!, $scope: JSONObject) {
-    myFullTextSearch(search: $search, scope: $scope, limit: 10) {
+query MySearch($search: String!, $scope: JSONObject, $types: [String!]) {
+    myFullTextSearch(search: $search, scope: $scope, types: $types, limit: 10) {
         totalCount
         types {
             type
@@ -143,7 +143,7 @@ query MySearch($search: String!, $scope: JSONObject) {
 }
 ```
 
-The last word of `search` matches as a prefix, so `Navig` finds `Navigation`. Results whose name matches the search come first. `titleHighlights` and `snippet` mark the search terms in the name and in the best matching part of the content. Render the texts as text, not as HTML. `types` returns the number of results per type. The optional `scope` parameter restricts results to a specific content scope; entities without a scope are part of every scope.
+The last word of `search` matches as a prefix, so `Navig` finds `Navigation`. Results whose name matches the search come first. `titleHighlights` and `snippet` mark the search terms in the name and in the best matching part of the content. Render the texts as text, not as HTML. `types` returns the number of results per type. The optional `types` parameter returns only results of these types, the counts include all types. `myFullTextSearchTypes` returns all types the user may search, the page tree document types first. The optional `scope` parameter restricts results to a specific content scope; entities without a scope are part of every scope.
 
 Ids are only unique per entity. With Apollo Client, use `fetchPolicy: "no-cache"` or `keyFields: ["entityName", "id"]` for `FullTextSearchResult`.
 
@@ -212,7 +212,7 @@ const MasterHeader = () => {
 };
 ```
 
-The search bar groups the results by type. It labels a group with the `displayName` of the type in [`entities`](../../2-core-concepts/7-dependencies/index.md#entities) or in the document types of the page tree, and opens a result with the `resolvePath()` of its entity in `entities`. Results of entities that aren't registered in `entities` can't be opened.
+The search opens in a dialog, also with Ctrl+K or ⌘K. It groups the results by type. It labels a type and shows its icon with the `displayName` and `icon` of the type in [`entities`](../../2-core-concepts/7-dependencies/index.md#entities) or with the `displayName` and `menuIcon` of the page tree document type, and opens a result with the `resolvePath()` of its entity in `entities`. Results of entities that aren't registered in `entities` can't be opened.
 
 ### Site
 

@@ -29,11 +29,11 @@ import { densitySetting } from "../density";
 import { scenarioSetting } from "../scenario";
 import { textLengthSetting } from "../textLength";
 import { CompareCanvas } from "./CompareCanvas";
-import { getComponentStoryIds, type IndexedStory } from "./componentStories";
+import { getComponentStoryIds, getLevelHint, getSlotLabel, type IndexedStory } from "./componentStories";
 import type { DescribeNotePlace, PrototypePage } from "./designerNotes";
 import { flowEdgeList } from "./flowEdges";
 import { FlowMap } from "./FlowMap";
-import { getElementPath } from "./frameElements";
+import { getElementPath, getLabelOffset } from "./frameElements";
 import type { NoteFocusRequest, NotePage } from "./FrameNotes";
 import { type FrameTool, FrameTools } from "./FrameTools";
 import { hotspotList } from "./hotspots";
@@ -67,6 +67,8 @@ const minPanelWidth = 260;
 const maxPanelWidth = 520;
 const panelKeyboardStep = 20;
 const inspectLabelHeight = 18;
+// Matches the border of the highlight in the stylesheet
+const inspectBoxBorder = 2;
 const prototypesTitle = "Workbench/Prototypes";
 const compareOptions: Array<{ value: WorkspaceCompare; icon: ReactNode; "aria-label": string; shortLabel: string }> = [
     { value: "off", icon: <Icon name="window" />, "aria-label": "One frame", shortLabel: "Off" },
@@ -241,19 +243,42 @@ function trackPointerDrag(event: ReactPointerEvent, { onMove, onEnd }: { onMove:
     window.addEventListener("pointercancel", handleEnd);
 }
 
-/** The components with a story under the pointer, outermost first with the highlighted one emphasized, and how to move the highlight. */
-function InspectLabel({ chain }: { chain: InspectedChain }) {
+/**
+ * The components with a story under the pointer, outermost first with the highlighted one emphasized, and how to move the highlight.
+ * It sits above the highlight's box, or inside it at the frame's top edge, and moves sideways to stay inside the frame, where it
+ * shortens the hint when the frame is narrow.
+ */
+function InspectLabel({ chain, scale }: { chain: InspectedChain; scale: number }) {
+    const labelRef = useRef<HTMLSpanElement>(null);
+    const isInside = chain.component.rect.top * scale < inspectLabelHeight;
+    const frameWidth = chain.frameWidth * scale;
+    const anchorLeft = chain.component.rect.left * scale + inspectBoxBorder;
+
+    useLayoutEffect(() => {
+        const label = labelRef.current;
+        if (!label) {
+            return;
+        }
+        label.style.maxInlineSize = `${frameWidth}px`;
+        const offset = getLabelOffset({ preferredOffset: isInside ? 0 : -inspectBoxBorder, anchorLeft, labelWidth: label.offsetWidth, frameWidth });
+        label.style.insetInlineStart = `${offset}px`;
+    });
+
     return (
-        <span className={styles.inspectLabel}>
+        <span ref={labelRef} className={styles.inspectLabel} data-inside={isInside || undefined}>
             {chain.levels.map((level, index) => (
                 <Fragment key={level.key}>
                     {index > 0 && <span className={styles.inspectSeparator}>›</span>}
-                    <span className={styles.inspectLevel} data-highlighted={index === chain.level || undefined}>
-                        {level.componentName}
+                    <span
+                        className={styles.inspectLevel}
+                        data-highlighted={index === chain.level || undefined}
+                        data-slot={level.slotName != null || undefined}
+                    >
+                        {level.slotName != null ? getSlotLabel(level.slotName) : level.componentName}
                     </span>
                 </Fragment>
             ))}
-            {chain.levels.length > 1 && <span className={styles.inspectHint}>↑ ↓ to pick the enclosing component</span>}
+            <span className={styles.inspectHint}>{getLevelHint(chain.levels, chain.level)}</span>
         </span>
     );
 }
@@ -1164,10 +1189,6 @@ export function WorkspaceShell() {
                                         <div className={styles.inspectLayer}>
                                             <div
                                                 className={styles.inspectBox}
-                                                // At the frame's top edge, the label goes inside the box, where the frame doesn't cut it off
-                                                data-label-inside={inspected.component.rect.top * scale < inspectLabelHeight || undefined}
-                                                // In the frame's right half, the label grows to the left, so the frame doesn't cut off the breadcrumb
-                                                data-label-end={inspected.component.rect.left > inspected.frameWidth / 2 || undefined}
                                                 style={{
                                                     top: inspected.component.rect.top * scale,
                                                     left: inspected.component.rect.left * scale,
@@ -1175,7 +1196,7 @@ export function WorkspaceShell() {
                                                     height: inspected.component.rect.height * scale,
                                                 }}
                                             >
-                                                <InspectLabel chain={inspected} />
+                                                <InspectLabel chain={inspected} scale={scale} />
                                             </div>
                                         </div>
                                     )}

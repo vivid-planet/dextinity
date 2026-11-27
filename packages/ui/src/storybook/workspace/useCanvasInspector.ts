@@ -1,10 +1,14 @@
 import { type RefObject, useEffect, useRef, useState } from "react";
 
 import { type ComponentLevel, findComponentChain, getLevelAfterMove } from "./componentStories";
+import { getRenderedFrameRect } from "./frameElements";
 import { toolAttribute } from "./hotspots";
 
 export interface InspectedComponent {
     componentName: string;
+    /** The part of the component that is highlighted, e.g. `input`; absent for the whole component. */
+    slotName?: string;
+    /** The component's story, also for a part of it, which has no story of its own. */
     storyId: string;
     /** The component's box in the frame's own pixels, before the canvas zoom. */
     rect: { top: number; left: number; width: number; height: number };
@@ -12,8 +16,8 @@ export interface InspectedComponent {
 
 /** The highlighted component and the components with a story it sits in, for showing the levels a click can pick. */
 export interface InspectedChain {
-    /** The components with a story under the pointer, outermost first. */
-    levels: Array<{ key: string; componentName: string }>;
+    /** The components with a story under the pointer, outermost first, possibly ending in a part of one of them. */
+    levels: Array<{ key: string; componentName: string; slotName?: string }>;
     /** The index in `levels` of the highlighted component, the one a click picks. */
     level: number;
     component: InspectedComponent;
@@ -25,7 +29,8 @@ export interface InspectedChain {
 const enclosingKeys = new Set(["ArrowUp", "["]);
 const innerKeys = new Set(["ArrowDown", "]"]);
 
-// Swallowed while inspecting, so pointing at the page doesn't also press its buttons, open its menus, or show its hover states
+// Swallowed while inspecting, so pointing at the page doesn't also press its buttons, open its menus, or run its hover handlers. The
+// page's CSS `:hover` styles still apply, since the pointer events that drive them are needed for picking.
 const blockedEvents = [
     "pointerdown",
     "mousedown",
@@ -52,8 +57,8 @@ function asElement(target: EventTarget | null): Element | null {
 }
 
 /**
- * While `active`, turns the frame's page into a picker: the innermost component with a story under the pointer is reported for
- * highlighting, and a click calls `onPick` with it instead of reaching the page. ArrowUp or `[` moves the highlight to the enclosing
+ * While `active`, turns the frame's page into a picker: the innermost component with a story under the pointer, or the part of it
+ * under the pointer, is reported for highlighting, and a click calls `onPick` with it instead of reaching the page. ArrowUp or `[` moves the highlight to the enclosing
  * component, ArrowDown or `]` back in. Escape calls `onExit`.
  */
 export function useCanvasInspector({
@@ -112,19 +117,24 @@ export function useCanvasInspector({
                 setHovered(null);
                 return undefined;
             }
-            const box = selected.element.getBoundingClientRect();
-            const component = {
-                componentName: selected.componentName,
-                storyId: selected.storyId,
-                rect: { top: box.top, left: box.left, width: box.width, height: box.height },
-            };
-            const levels = chain.map(({ element, componentName }) => ({ key: `${getElementKey(element)}-${componentName}`, componentName }));
+            const rect = getRenderedFrameRect(selected.element);
+            if (!rect) {
+                setHovered(null);
+                return undefined;
+            }
+            const component = { componentName: selected.componentName, slotName: selected.slotName, storyId: selected.storyId, rect };
+            const levels = chain.map(({ element, componentName, slotName }) => ({
+                key: `${getElementKey(element)}-${componentName}-${slotName ?? ""}`,
+                componentName,
+                slotName,
+            }));
             setHovered({ levels, level, component, frameWidth: inspectedDocument.documentElement.clientWidth });
             return component;
         }
 
         function inspect(target: EventTarget | null) {
-            const nextChain = findComponentChain(asElement(target), componentStoryIds);
+            // An element without a box and without contents that have one, e.g. an empty wrapper, can't be highlighted
+            const nextChain = findComponentChain(asElement(target), componentStoryIds).filter(({ element }) => getRenderedFrameRect(element) != null);
             level = getLevelAfterMove(chain, level, nextChain);
             chain = nextChain;
             return showLevel();
@@ -179,8 +189,10 @@ export function useCanvasInspector({
             }
         }
 
+        // The page's own fields can't take the focus while picking, so only a field of the workspace keeps its arrow keys
         function handleLevelKey(event: KeyboardEvent) {
-            if (pointer == null || chain.length === 0 || event.metaKey || event.ctrlKey || event.altKey || isTyping(event.target)) {
+            const isTypingInWorkspace = isTyping(event.target) && asElement(event.target)?.ownerDocument !== inspectedDocument;
+            if (pointer == null || chain.length === 0 || event.metaKey || event.ctrlKey || event.altKey || isTypingInWorkspace) {
                 return;
             }
             const step = enclosingKeys.has(event.key) ? -1 : innerKeys.has(event.key) ? 1 : 0;
@@ -213,6 +225,11 @@ export function useCanvasInspector({
         }
 
         frameRoot.setAttribute(toolAttribute, "pick");
+        // A focused field of the page would keep the arrow keys for itself, and clicks can't focus another element while picking
+        const focused = asElement(frameDocument.activeElement);
+        if (focused && "blur" in focused && typeof focused.blur === "function") {
+            focused.blur();
+        }
 
         return () => {
             frameRoot.removeAttribute(toolAttribute);

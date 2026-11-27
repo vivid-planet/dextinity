@@ -11,8 +11,9 @@ interface FullTextSearchResultGroupProps {
 export function FullTextSearchResultGroup({ label, count, children }: PropsWithChildren<FullTextSearchResultGroupProps>) {
     const labelId = useId();
 
+    // A listbox group may only contain options, so the header is placed next to the group and labels it
     return (
-        <Root>
+        <Root role="presentation">
             <GroupHeader aria-hidden>
                 <Typography id={labelId} variant="subtitle2" component="span" sx={{ color: "text.secondary" }}>
                     {label}
@@ -21,9 +22,9 @@ export function FullTextSearchResultGroup({ label, count, children }: PropsWithC
                     <FormattedNumber value={count} />
                 </Typography>
             </GroupHeader>
-            <div role="group" aria-labelledby={labelId}>
+            <Group role="group" aria-labelledby={labelId}>
                 {children}
-            </div>
+            </Group>
         </Root>
     );
 }
@@ -38,4 +39,11 @@ const GroupHeader = styled("div")`
     justify-content: space-between;
     padding: ${({ theme }) => theme.spacing(3, 4, 1)};
     line-height: ${({ theme }) => theme.typography.subtitle2.lineHeight};
+`;
+
+const Group = styled("div")`
+    /* Scrolling the first result into view also shows the group header above it */
+    & > :first-of-type {
+        scroll-margin-top: calc(${({ theme }) => theme.spacing(4)} + ${({ theme }) => theme.typography.subtitle2.lineHeight});
+    }
 `;

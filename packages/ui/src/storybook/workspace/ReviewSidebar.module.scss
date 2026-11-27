@@ -73,6 +73,21 @@ $pin: #f59f00;
     color: var(--dextinity-color-text-subtle);
 }
 
+.storageNote {
+    display: flex;
+    flex-basis: 100%;
+    gap: 6px;
+    align-items: flex-start;
+    margin: 4px 0 0;
+    color: var(--dextinity-color-text-subtle);
+    font-size: 12px;
+
+    > :first-child {
+        flex-shrink: 0;
+        margin-block-start: 1px;
+    }
+}
+
 .hint {
     margin: 8px 6px;
     color: var(--dextinity-color-text-subtle);

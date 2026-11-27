@@ -78,6 +78,7 @@ function WorkbenchSidebar({
     onClose,
     filters,
     footer,
+    storageNote,
     children,
 }: {
     title: string;
@@ -86,6 +87,8 @@ function WorkbenchSidebar({
     onClose: () => void;
     filters: ReactNode;
     footer: ReactNode;
+    /** Where the items are kept, so a designer doesn't count on others seeing them. */
+    storageNote: string;
     children: ReactNode;
 }) {
     const titleId = useId();
@@ -109,7 +112,13 @@ function WorkbenchSidebar({
             </div>
             <div className={styles.filters}>{filters}</div>
             <div className={styles.body}>{children}</div>
-            <div className={styles.footer}>{footer}</div>
+            <div className={styles.footer}>
+                {footer}
+                <p className={styles.storageNote}>
+                    <Icon name="info" />
+                    {storageNote}
+                </p>
+            </div>
         </aside>
     );
 }
@@ -232,6 +241,7 @@ export function NotesSidebar({ current, describePlace, onShow, shownId, overlay,
                     <SegmentedControl size="small" aria-label="Status" options={statusOptions} value={status} onChange={setStatus} />
                 </>
             }
+            storageNote="Saved in this browser only: not on other devices, and gone when the site data is cleared. Others see a note once you post it as a comment."
             footer={
                 <CopyButton
                     label="Copy all as Markdown"
@@ -413,6 +423,7 @@ export function TextChangesSidebar({ current, describePlace, onShow, shownId, ov
             overlay={overlay}
             onClose={onClose}
             filters={<SegmentedControl size="small" aria-label="Pages" options={scopeOptions} value={scope} onChange={setScope} />}
+            storageNote="Saved in this browser only: not on other devices, and gone when the site data is cleared. Others see the changes once you send them."
             footer={
                 <>
                     <p className={styles.footerNote}>

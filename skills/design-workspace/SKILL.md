@@ -43,7 +43,7 @@ The link shows one branch, usually `ui-design-workspace`: `next` with every bran
 
 Use a build directory in the scratchpad, and reuse it between updates, so that you can tell which files changed.
 
-The Workbench's designer notes post as comments on the link, or go to Claude, only when the launcher provides `window.dextinityWorkbenchHost.comments`, as described in `src/storybook/workspace/workbenchHost.ts`. `launcher.html` doesn't provide it, so the notes are copied to the clipboard instead.
+The Workbench's designer notes post as comments on the link, or go to Claude, through `window.dextinityWorkbenchHost.comments`, which `launcher.html` provides as described in `src/storybook/workspace/workbenchHost.ts`. It needs the link's `comments` capability: publish with `capabilities: {comments: {}}` once, and leave `capabilities` out of later publishes so the link keeps it. Without it, the notes are copied to the clipboard instead.
 
 ### Building the static Storybook
 

@@ -20,7 +20,6 @@ import { MenuItem } from "../../components/menu/MenuItem";
 import { SegmentedControl } from "../../components/segmentedControl/SegmentedControl";
 import { Tabs } from "../../components/tabs/Tabs";
 import { Theme } from "../../components/theme/Theme";
-import { Tooltip } from "../../components/tooltip/Tooltip";
 import { type TreeNode, TreeView } from "../../components/treeView/TreeView";
 import { brandSetting } from "../brand";
 import { colorSchemeSetting } from "../colorScheme";
@@ -916,23 +915,19 @@ export function WorkspaceShell() {
                                         const active = activeTool === tool;
                                         const toggleTool = () => setTool(active ? null : tool);
                                         return compactTools ? (
-                                            <Tooltip
+                                            <IconButton
                                                 key={tool}
-                                                content={`${label}: ${description}`}
+                                                variant={active ? "contained" : "text"}
+                                                color={active ? "primary" : "secondary"}
+                                                aria-label={label}
+                                                aria-description={description}
+                                                aria-pressed={active}
                                                 keyboardShortcut={key.toLowerCase()}
-                                                placement="bottom"
+                                                slotProps={{ tooltip: { placement: "bottom" } }}
+                                                onClick={toggleTool}
                                             >
-                                                <IconButton
-                                                    variant={active ? "contained" : "text"}
-                                                    color={active ? "primary" : "secondary"}
-                                                    aria-label={label}
-                                                    aria-pressed={active}
-                                                    aria-keyshortcuts={key}
-                                                    onClick={toggleTool}
-                                                >
-                                                    <Icon name={icon} />
-                                                </IconButton>
-                                            </Tooltip>
+                                                <Icon name={icon} />
+                                            </IconButton>
                                         ) : (
                                             <Button
                                                 key={tool}

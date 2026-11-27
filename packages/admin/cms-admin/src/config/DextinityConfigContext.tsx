@@ -7,6 +7,7 @@ import { type ComponentType, createContext, type ErrorInfo, type PropsWithChildr
 import { type BlocksConfig, BlocksConfigProvider } from "../blocks/config/BlocksConfigContext";
 import type { BlockContext } from "../blocks/context/BlockContext";
 import { BlockContextProvider } from "../blocks/context/BlockContextProvider";
+import { type AdminLanguageConfig, AdminLanguageProvider } from "../common/adminLanguage/AdminLanguage";
 import type { BuildInformation } from "../common/header/about/build-information/buildInformation";
 import type { ContentLanguageConfig } from "../contentLanguage/contentLanguageConfig";
 import type { DamConfig } from "../dam/config/damConfig";
@@ -27,6 +28,7 @@ export interface DextinityConfig<SiteConfigs = unknown> {
     siteConfigs?: SiteConfigsConfig<SiteConfigs>;
     buildInformation?: BuildInformation;
     contentLanguage?: ContentLanguageConfig;
+    adminLanguage?: AdminLanguageConfig;
     blocks?: BlocksConfig & {
         context?: Omit<BlockContext, "apiUrl" | "apolloClient">;
     };
@@ -46,7 +48,9 @@ export function DextinityConfigProvider<SiteConfigs = unknown>({ children, ...co
         <DextinityConfigContext.Provider value={config as DextinityConfig<unknown>}>
             <ErrorHandlerProvider onError={config.onError}>
                 <BlockContextProvider value={blockContext}>
-                    <BlocksConfigProvider {...blocksConfig}>{children}</BlocksConfigProvider>
+                    <BlocksConfigProvider {...blocksConfig}>
+                        <AdminLanguageProvider config={config.adminLanguage}>{children}</AdminLanguageProvider>
+                    </BlocksConfigProvider>
                 </BlockContextProvider>
             </ErrorHandlerProvider>
         </DextinityConfigContext.Provider>

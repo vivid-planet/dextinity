@@ -121,6 +121,7 @@ export { VimeoVideoBlock } from "./blocks/VimeoVideoBlock";
 export { YouTubeVideoBlock } from "./blocks/YouTubeVideoBlock";
 export { BuildEntry } from "./builds/BuildEntry";
 export { PublisherPage } from "./builds/PublisherPage";
+export { type AdminLanguage, type AdminLanguageOverrides, useAdminLanguage } from "./common/adminLanguage/AdminLanguage";
 export { includeInvisibleContentContext } from "./common/apollo/links/includeInvisibleContentContext";
 export { DropdownMenuItem } from "./common/DropdownMenuItem";
 export { useBuildInformation } from "./common/header/about/build-information/useBuildInformation";

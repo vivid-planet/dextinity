@@ -61,4 +61,4 @@ After making changes, run `pnpm run lint:fix` and then `pnpm run lint` to verify
 
 ## See also
 
-- Usage guide: `src/docs/` — patterns and conventions for building emails with this package, served in the Storybook and its MCP server
+- Usage guide: `src/docs/` — patterns and conventions for building emails with this package, served in the Storybook, its MCP server and the `dextinity-mail-react` skill

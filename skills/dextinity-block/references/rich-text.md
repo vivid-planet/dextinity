@@ -208,7 +208,7 @@ blocktypeMap: {
 
 When `standardBlockType` is set to something other than `"unstyled"`, the `"unstyled"` block type is hidden from the dropdown.
 
-A custom block type that should render as a **list** needs a `renderConfig` with its own `wrapper` element and `element: "li"`. When the field renders into an email, it also needs a matching `list` entry in the mail block's `blockTypes`. See "Custom List Block Types" on the "Blocks" page of the `@dextinity/mail-react` Storybook. The `dextinity-mail-react` skill explains how to read it.
+A custom block type that should render as a **list** needs a `renderConfig` with its own `wrapper` element and `element: "li"`. When the field renders into an email, it also needs a matching `list` entry in the mail block's `blockTypes`. See "Custom List Block Types" on the "Blocks" page of the `@dextinity/mail-react` Storybook. The `dextinity-mail-react` skill contains it.
 
 ### Relabeling Existing Block Types
 

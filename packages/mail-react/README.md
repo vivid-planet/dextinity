@@ -57,10 +57,10 @@ When a custom component replaces a re-export, describe the change against the pr
 
 ## Usage documentation
 
-The MDX pages in [src/docs/](src/docs/) are the guide to _using_ this package: what it is for, how to build emails with it, the patterns to reach for, and the email-client pitfalls — markup that's fine in a browser can render wrong in clients like Outlook. People read them in the Storybook, and AI agents through its MCP server. The component pages and their props come from the stories and the TSDoc, so the guide doesn't restate type signatures, prop lists, or defaults.
+The MDX pages in [src/docs/](src/docs/) are the guide to _using_ this package: what it is for, how to build emails with it, the patterns to reach for, and the email-client pitfalls — markup that's fine in a browser can render wrong in clients like Outlook. People read them in the Storybook, and AI agents through its MCP server or the `dextinity-mail-react` skill. The component pages and their props come from the stories and the TSDoc, so the guide doesn't restate type signatures, prop lists, or defaults.
 
-Put every code example in a fenced code block or a `<Source code="…">` string. Show a story with `<Canvas of>` only when the MCP server serves it, so agents can open its code: don't tag it `!manifest`. Write such a story without helpers from the rest of its file: agents get only the story's own code.
+Put every code example in a fenced code block or a `<Source code="…">` string. Show a story with `<Canvas of>` only when the Storybook manifest includes it, so agents can open its code: don't tag it `!manifest`. Write such a story without helpers from the rest of its file: agents get only the story's own code.
 
 When a change affects how the package is used — components added/removed/renamed, changed behavior, new usage patterns, or styling conventions — update the pages in the same PR.
 
-The [docs site page](../../docs/docs/3-features-modules/13-building-html-emails/index.md) and the [`dextinity-mail-react` skill](../../skills/dextinity-mail-react/SKILL.md) only point to the Storybook.
+The [docs site page](../../docs/docs/3-features-modules/13-building-html-emails/index.md) only points to the Storybook. The `dextinity-mail-react` skill is generated from the Storybook manifests, the same ones the MCP server reads, when `@dextinity/agent-features` is built for a release (see [generate-mail-react-skill.ts](../agent-features/generate-mail-react-skill.ts)).

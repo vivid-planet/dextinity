@@ -254,6 +254,7 @@ export { type TableColumnAlign, type TableLayoutColumn } from "./components/tabl
 export { TableHeader, type TableHeaderOwnerState, type TableHeaderProps, type TableHeaderSlotProps } from "./components/table/TableHeader";
 export { TableHeaderCell, type TableHeaderCellOwnerState, type TableHeaderCellProps } from "./components/table/TableHeaderCell";
 export { TableRoot, type TableRootOwnerState, type TableRootProps, type TableRootSlotProps } from "./components/table/TableRoot";
+export { type TableRootLabels } from "./components/table/TableRoot";
 export { TableRow, type TableRowOwnerState, type TableRowProps } from "./components/table/TableRow";
 export { Tabs, type TabsItem, type TabsOwnerState, type TabsProps, type TabsSlotProps } from "./components/tabs/Tabs";
 export { type TabsLabels, type TabsSlots } from "./components/tabs/Tabs";

@@ -1,4 +1,4 @@
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { act, cleanup, render, screen, within } from "@testing-library/react";
 import { createRef, type RefAttributes } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -100,6 +100,59 @@ describe("TableRoot", () => {
 
         expect(warn).toHaveBeenCalledWith(expect.stringContaining("aria-label"));
         warn.mockRestore();
+    });
+
+    it("links to the end of the table with a skip link named after the table", () => {
+        const skipTargetRef = createRef<HTMLSpanElement>();
+        const { container } = renderTable({ slotProps: { skipLink: { className: "consumer-skip-link" }, skipTarget: { ref: skipTargetRef } } });
+
+        const skipLink = screen.getByRole("link", { name: "Skip table Job ads" });
+        const skipTarget = container.querySelector(".dextinityTableRoot__skipTarget");
+        expect(skipLink.className).toContain("dextinityTableRoot__skipLink");
+        expect(skipLink.className).toContain("consumer-skip-link");
+        expect(skipLink.getAttribute("href")).toBe(`#${skipTarget?.id}`);
+        expect(skipTarget?.textContent).toBe("End of table Job ads");
+        expect(skipTargetRef.current).toBe(skipTarget);
+    });
+
+    it("names the skip link after the elements that name the table, with the labels", () => {
+        render(
+            <>
+                <h2 id="jobs-heading">Open jobs</h2>
+                <TableRoot
+                    aria-labelledby="jobs-heading"
+                    columns={columns}
+                    labels={{ skipTable: (tableName) => `Tabelle ${tableName} überspringen` }}
+                >
+                    <TableBody>{defaultRow}</TableBody>
+                </TableRoot>
+            </>,
+        );
+
+        expect(screen.getByRole("link", { name: "Tabelle Open jobs überspringen" })).toBeInTheDocument();
+        expect(screen.getByText("End of table Open jobs")).toBeInTheDocument();
+    });
+
+    it("keeps the skip link's name in step with the elements that name the table", async () => {
+        const renderWithHeading = (hasHeading: boolean) => (
+            <>
+                {hasHeading && <h2 id="jobs-heading">Open jobs (0)</h2>}
+                <TableRoot aria-labelledby="jobs-heading" columns={columns}>
+                    <TableBody>{defaultRow}</TableBody>
+                </TableRoot>
+            </>
+        );
+        const { rerender } = render(renderWithHeading(false));
+        expect(screen.getByRole("link", { name: "Skip table" })).toBeInTheDocument();
+
+        rerender(renderWithHeading(true));
+        expect(screen.getByRole("link", { name: "Skip table Open jobs (0)" })).toBeInTheDocument();
+
+        await act(async () => {
+            screen.getByRole("heading").textContent = "Open jobs (24)";
+        });
+        expect(screen.getByRole("link", { name: "Skip table Open jobs (24)" })).toBeInTheDocument();
+        expect(screen.getByText("End of table Open jobs (24)")).toBeInTheDocument();
     });
 });
 

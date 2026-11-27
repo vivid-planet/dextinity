@@ -19,6 +19,7 @@ import {
     type FlowView,
     groupUnreachableFlowPages,
     layOutFlow,
+    pinchFlowView,
     revealFlowRect,
     routeFlowLinks,
     stepFlowZoom,
@@ -297,7 +298,9 @@ export function FlowMap({
     const [view, setView] = useState<FlowView>({ zoom: 1, x: 0, y: 0 });
     // Until the designer zooms or moves the map, it keeps showing all pages, also when a scan adds some
     const viewMovedRef = useRef(false);
+    const pointersRef = useRef(new Map<number, { x: number; y: number }>());
     const panStartRef = useRef<{ pointerX: number; pointerY: number; viewX: number; viewY: number } | null>(null);
+    const pinchStartRef = useRef<{ view: FlowView; points: [{ x: number; y: number }, { x: number; y: number }] } | null>(null);
 
     useLayoutEffect(() => {
         const canvas = canvasRef.current;
@@ -358,23 +361,58 @@ export function FlowMap({
         return () => canvas.removeEventListener("wheel", handleWheel);
     }, []);
 
+    function pointerPosition(event: PointerEvent<HTMLDivElement>) {
+        const bounds = event.currentTarget.getBoundingClientRect();
+        return { x: event.clientX - bounds.left, y: event.clientY - bounds.top };
+    }
+
+    function startPanOrPinch(currentView: FlowView) {
+        const points = [...pointersRef.current.values()];
+        if (points.length >= 2) {
+            panStartRef.current = null;
+            pinchStartRef.current = { view: currentView, points: [points[0], points[1]] };
+        } else if (points.length === 1) {
+            pinchStartRef.current = null;
+            panStartRef.current = { pointerX: points[0].x, pointerY: points[0].y, viewX: currentView.x, viewY: currentView.y };
+        } else {
+            pinchStartRef.current = null;
+            panStartRef.current = null;
+        }
+    }
+
     function startPan(event: PointerEvent<HTMLDivElement>) {
         if (event.button !== 0 || (event.target as Element).closest("button, [data-floating]")) {
             return;
         }
         event.currentTarget.setPointerCapture(event.pointerId);
-        panStartRef.current = { pointerX: event.clientX, pointerY: event.clientY, viewX: view.x, viewY: view.y };
+        pointersRef.current.set(event.pointerId, pointerPosition(event));
+        startPanOrPinch(view);
     }
 
     function pan(event: PointerEvent<HTMLDivElement>) {
-        const start = panStartRef.current;
-        if (start) {
-            moveView((current) => ({ ...current, x: start.viewX + event.clientX - start.pointerX, y: start.viewY + event.clientY - start.pointerY }));
+        if (!pointersRef.current.has(event.pointerId)) {
+            return;
+        }
+        const position = pointerPosition(event);
+        pointersRef.current.set(event.pointerId, position);
+        const pinchStart = pinchStartRef.current;
+        const panStart = panStartRef.current;
+        if (pinchStart) {
+            const [first, second] = pointersRef.current.values();
+            moveView(() => pinchFlowView(pinchStart.view, pinchStart.points, [first, second]));
+        } else if (panStart) {
+            moveView((current) => ({
+                ...current,
+                x: panStart.viewX + position.x - panStart.pointerX,
+                y: panStart.viewY + position.y - panStart.pointerY,
+            }));
         }
     }
 
-    function endPan() {
-        panStartRef.current = null;
+    function endPan(event: PointerEvent<HTMLDivElement>) {
+        if (pointersRef.current.delete(event.pointerId)) {
+            startPanOrPinch(view);
+        }
     }
 
     function zoomWithKeyboard(event: KeyboardEvent<HTMLDivElement>) {

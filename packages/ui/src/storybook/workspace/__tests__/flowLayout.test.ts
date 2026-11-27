@@ -8,6 +8,7 @@ import {
     layOutFlow,
     maxFlowZoom,
     minFlowZoom,
+    pinchFlowView,
     revealFlowRect,
     routeFlowLinks,
     stepFlowZoom,
@@ -268,5 +269,51 @@ describe("zoom", () => {
         expect(wheelZoomFactor(-10, 0)).toBeGreaterThan(1);
         expect(wheelZoomFactor(10, 0)).toBeLessThan(1);
         expect(wheelZoomFactor(4, 1)).toBe(wheelZoomFactor(500, 0));
+    });
+});
+
+describe("pinchFlowView", () => {
+    const start = { zoom: 1, x: 10, y: 20 };
+
+    it("zooms by how much the fingers moved apart around the point between them", () => {
+        const view = pinchFlowView(
+            start,
+            [
+                { x: 90, y: 100 },
+                { x: 110, y: 100 },
+            ],
+            [
+                { x: 80, y: 100 },
+                { x: 120, y: 100 },
+            ],
+        );
+
+        expect(view).toEqual({ zoom: 2, x: -80, y: -60 });
+    });
+
+    it("moves the map with the fingers when their distance stays the same", () => {
+        const view = pinchFlowView(
+            start,
+            [
+                { x: 0, y: 0 },
+                { x: 100, y: 0 },
+            ],
+            [
+                { x: 30, y: 40 },
+                { x: 130, y: 40 },
+            ],
+        );
+
+        expect(view).toEqual({ zoom: 1, x: 40, y: 60 });
+    });
+
+    it("stays within the zoom limits", () => {
+        const fingers = (spread: number): [{ x: number; y: number }, { x: number; y: number }] => [
+            { x: 0, y: 0 },
+            { x: spread, y: 0 },
+        ];
+
+        expect(pinchFlowView(start, fingers(10), fingers(1000)).zoom).toBe(maxFlowZoom);
+        expect(pinchFlowView(start, fingers(1000), fingers(1)).zoom).toBe(minFlowZoom);
     });
 });

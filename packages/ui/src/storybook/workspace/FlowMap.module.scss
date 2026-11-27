@@ -146,7 +146,7 @@ $bar-height: 48px;
     overflow: visible;
     pointer-events: none;
 
-    path {
+    > path {
         fill: none;
         stroke: $link;
         stroke-width: 1.5;
@@ -172,12 +172,12 @@ $bar-height: 48px;
 
     marker path {
         fill: context-stroke;
-        stroke: none;
     }
 }
 
 .map[data-highlighting] {
-    .lines path:not([data-highlighted]) {
+    // A link's opacity also fades its arrowhead; the marker is shared, so fading its path would fade the highlighted arrowheads too
+    .lines > path:not([data-highlighted]) {
         opacity: 0.12;
     }
 

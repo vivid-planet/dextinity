@@ -313,6 +313,23 @@ export function zoomFlowViewAt(view: FlowView, zoom: number, point: { x: number;
     return { zoom: nextZoom, x: point.x - (point.x - view.x) * scale, y: point.y - (point.y - view.y) * scale };
 }
 
+type FlowPoint = { x: number; y: number };
+
+/**
+ * Follows a two-finger pinch: zooms by how much the fingers moved apart and keeps the map point that was between them at the start
+ * between them, so that the map also moves with the fingers. Points are in viewport coordinates.
+ */
+export function pinchFlowView(startView: FlowView, startPoints: [FlowPoint, FlowPoint], points: [FlowPoint, FlowPoint]): FlowView {
+    const distance = ([a, b]: [FlowPoint, FlowPoint]) => Math.max(1, Math.hypot(b.x - a.x, b.y - a.y));
+    const midpoint = ([a, b]: [FlowPoint, FlowPoint]) => ({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 });
+    const zoom = clampFlowZoom((startView.zoom * distance(points)) / distance(startPoints));
+    const startMidpoint = midpoint(startPoints);
+    const currentMidpoint = midpoint(points);
+    const mapX = (startMidpoint.x - startView.x) / startView.zoom;
+    const mapY = (startMidpoint.y - startView.y) / startView.zoom;
+    return { zoom, x: currentMidpoint.x - mapX * zoom, y: currentMidpoint.y - mapY * zoom };
+}
+
 /**
  * Shows the whole map in the middle of the viewport, never larger than at 100%. `reservedBottom` keeps room at the bottom free, e.g.
  * for controls that float over the map.

@@ -2,12 +2,15 @@ import { createContext, useContext } from "react";
 
 import type { SideNavGroup } from "../../components/sideNav/SideNav";
 
+/** How the user got from one page to another: a link or control on the page, or the app's navigation. */
+export type FlowEdgeKind = "link" | "navigation";
+
 /** Asks before the prototype leaves a page, e.g. with unsaved changes; `leave` goes on to the page the user chose. */
 export type LeaveGuard = (leave: () => void) => void;
 
 export interface PrototypeNavigation {
-    /** Opens the page of a navigation entry, e.g. `job-ads`. */
-    navigate: (id: string) => void;
+    /** Opens a page, e.g. `job-ads`; `via` tells a click in the app's navigation from a link on the page, for the flow map. */
+    navigate: (id: string, via?: FlowEdgeKind) => void;
     /** The navigation shows only icons; kept across pages, as in the app. */
     navCollapsed: boolean;
     onNavCollapsedChange: (collapsed: boolean) => void;

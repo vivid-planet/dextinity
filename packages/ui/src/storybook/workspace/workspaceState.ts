@@ -4,6 +4,8 @@ export type WorkspaceZoom = "fit" | "0.5" | "0.75" | "1" | "1.5";
 
 export type WorkspaceMode = "components" | "prototypes";
 
+export type WorkspaceCompare = "off" | "viewports" | "variants";
+
 export interface WorkspaceState {
     /** The tab: a clickable prototype of a whole app, or a single story of the Storybook. */
     mode: WorkspaceMode;
@@ -14,6 +16,8 @@ export interface WorkspaceState {
     width: number;
     height: number;
     zoom: WorkspaceZoom;
+    /** Shows the prototype in several frames side by side, at different sizes or with different settings. */
+    compare: WorkspaceCompare;
     panelOpen: boolean;
     panelWidth: number;
 }
@@ -28,6 +32,7 @@ export const defaultWorkspaceState: WorkspaceState = {
     width: 1440,
     height: 900,
     zoom: "fit",
+    compare: "off",
     panelOpen: true,
     panelWidth: 300,
 };

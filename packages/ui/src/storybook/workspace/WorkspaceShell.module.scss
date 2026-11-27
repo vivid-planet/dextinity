@@ -140,6 +140,29 @@
     text-overflow: ellipsis;
 }
 
+// A page the designer added keeps its name editable where the other pages show theirs
+.locationInput {
+    min-inline-size: 0;
+    max-inline-size: 100%;
+    margin-block: -2px;
+    padding: 2px 4px;
+    border: var(--dextinity-line-width) solid transparent;
+    border-radius: 4px;
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-weight: 600;
+
+    &:hover {
+        border-color: var(--dextinity-color-line);
+    }
+
+    &:focus-visible {
+        border-color: var(--dextinity-color-accent);
+        outline: none;
+    }
+}
+
 .toolbarGroup {
     display: flex;
     gap: 4px;
@@ -158,6 +181,29 @@
 
     @media (width >= 900px) {
         inline-size: auto;
+    }
+}
+
+.root[data-presenting] {
+    grid-template-rows: minmax(0, 1fr);
+
+    .header {
+        display: none;
+    }
+}
+
+// At the bottom, where it covers less of an app than over its top bar
+.presentExit {
+    position: absolute;
+    inset-block-end: 12px;
+    inset-inline-end: 12px;
+    z-index: 3;
+    opacity: 0.4;
+    transition: opacity 150ms;
+
+    &:hover,
+    &:focus-visible {
+        opacity: 1;
     }
 }
 
@@ -233,6 +279,11 @@
     min-block-size: 0;
     overflow: auto;
     padding: 0 6px 12px;
+}
+
+.panelFooter {
+    padding: 8px 12px 12px;
+    border-block-start: var(--dextinity-line-width) solid var(--dextinity-color-line);
 }
 
 .canvas {

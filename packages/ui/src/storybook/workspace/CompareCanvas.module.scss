@@ -1,0 +1,69 @@
+.canvas {
+    flex: 1;
+    min-inline-size: 0;
+    overflow: auto;
+    padding: 24px 16px 16px;
+
+    @media (width >= 760px) {
+        padding: 32px 48px 48px;
+    }
+}
+
+.frames {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    inline-size: max-content;
+    min-inline-size: 100%;
+}
+
+.item {
+    flex: none;
+    min-inline-size: 0;
+}
+
+.label {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    align-items: center;
+    justify-content: space-between;
+    min-block-size: 28px;
+    padding-block-end: 8px;
+    color: var(--dextinity-color-text-subtle);
+    font-family: var(--dextinity-font-family-mono);
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.name {
+    color: var(--dextinity-color-text);
+}
+
+.variantSettings {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    font-family: var(--dextinity-font-family-text);
+}
+
+.sheet {
+    position: relative;
+}
+
+.frame {
+    overflow: hidden;
+    border-radius: 4px;
+    background: var(--dextinity-color-surface);
+    box-shadow:
+        0 0 0 1px color-mix(in oklch, var(--dextinity-color-text) 12%, transparent),
+        0 8px 32px color-mix(in oklch, var(--dextinity-color-text) 14%, transparent);
+    transform-origin: 0 0;
+}
+
+.iframe {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    border: 0;
+}

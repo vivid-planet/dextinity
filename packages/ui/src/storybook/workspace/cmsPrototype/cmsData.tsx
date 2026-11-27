@@ -3,6 +3,7 @@ import { Icon } from "../../../components/icon/Icon";
 import type { SideNavGroup, SideNavItem } from "../../../components/sideNav/SideNav";
 import type { TreeNode } from "../../../components/treeView/TreeView";
 import { documentImage, interiorImage, landscapeImage, portraitImage } from "../../sampleImages";
+import { getOriginalId } from "../../scenario";
 import { libraryAssets } from "./assetLibrary/assetLibraryData";
 
 export const cmsNavGroups: SideNavGroup[] = [
@@ -113,7 +114,7 @@ export function flattenPages(pages: SitePage[]): SitePage[] {
 const allSitePages = flattenPages(siteTree);
 
 export function findPage(id: string) {
-    return allSitePages.find((page) => page.id === id);
+    return allSitePages.find((page) => page.id === getOriginalId(id));
 }
 
 /** The pages above a page, from the root. */
@@ -176,7 +177,7 @@ export const newsArticles: NewsArticle[] = Array.from({ length: 24 }, (_, index)
 });
 
 export function findArticle(id: string) {
-    return newsArticles.find((article) => article.id === id);
+    return newsArticles.find((article) => article.id === getOriginalId(id));
 }
 
 export interface Asset {
@@ -345,7 +346,7 @@ export function getCmsPageLabel(pageId: string): string | undefined {
     }
     if (section === "assets") {
         // Assets added in the prototype, e.g. by an upload, aren't in the mock data
-        return libraryAssets.find((asset) => asset.id === id)?.name ?? "Asset";
+        return libraryAssets.find((asset) => asset.id === getOriginalId(id))?.name ?? "Asset";
     }
     return undefined;
 }

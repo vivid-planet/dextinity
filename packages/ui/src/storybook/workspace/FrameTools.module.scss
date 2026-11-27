@@ -1,0 +1,344 @@
+// Fixed colors: the overlay has to stand out on any brand and color scheme of the page below it
+$measure: #f0337a;
+$hover: #2f7cf6;
+$tab: #5b3df5;
+$target: #e8590c;
+$contrast: #d6336c;
+
+.layer {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 2;
+    font-family: var(--dextinity-font-family-mono);
+    font-size: 10px;
+    line-height: 1;
+}
+
+%box {
+    position: absolute;
+    box-sizing: border-box;
+}
+
+.selectedBox {
+    @extend %box;
+
+    outline: 1.5px solid $measure;
+    background: color-mix(in srgb, $measure 8%, transparent);
+}
+
+.hoveredBox {
+    @extend %box;
+
+    outline: 1px dashed $hover;
+}
+
+%tag {
+    padding: 2px 4px;
+    border-radius: 3px;
+    color: #fff;
+    white-space: nowrap;
+}
+
+.size {
+    @extend %tag;
+
+    position: absolute;
+    inset-block-start: calc(100% + 4px);
+    inset-inline-start: 50%;
+    translate: -50% 0;
+    background: $measure;
+
+    .hoveredBox & {
+        background: $hover;
+    }
+}
+
+.distance {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    background: $measure;
+
+    &[data-orientation="horizontal"] {
+        block-size: 1px;
+    }
+
+    &[data-orientation="vertical"] {
+        inline-size: 1px;
+    }
+}
+
+.distanceLabel {
+    @extend %tag;
+
+    background: $measure;
+}
+
+.finding {
+    @extend %box;
+
+    &[data-check="smallTargets"] {
+        outline: 1.5px solid $target;
+    }
+
+    &[data-check="lowContrast"] {
+        outline: 1.5px dashed $contrast;
+    }
+}
+
+.findingLabel {
+    @extend %tag;
+
+    position: absolute;
+    inset-block-end: calc(100% + 2px);
+    inset-inline-end: 0;
+
+    [data-check="smallTargets"] > & {
+        background: $target;
+    }
+
+    [data-check="lowContrast"] > & {
+        background: $contrast;
+    }
+}
+
+.tabBadge {
+    @extend %tag;
+
+    position: absolute;
+    display: grid;
+    place-items: center;
+    min-inline-size: 16px;
+    block-size: 16px;
+    padding: 0 3px;
+    border-radius: 8px;
+    translate: -40% -40%;
+    background: $tab;
+    font-weight: 600;
+}
+
+.card {
+    position: absolute;
+    inset-block-end: 12px;
+    inset-inline-end: 12px;
+    z-index: 3;
+    inline-size: min(300px, calc(100% - 24px));
+    max-block-size: calc(100% - 24px);
+    overflow: auto;
+    padding: 12px;
+    border-radius: 8px;
+    background: var(--dextinity-color-surface);
+    box-shadow:
+        0 0 0 1px var(--dextinity-color-line),
+        0 8px 24px color-mix(in oklch, var(--dextinity-color-text) 16%, transparent);
+    font-size: 12px;
+}
+
+.cardTitle {
+    display: flex;
+    gap: 8px;
+    justify-content: space-between;
+    margin: 0 0 8px;
+    font-weight: 600;
+
+    span {
+        color: var(--dextinity-color-text-subtle);
+        font-family: var(--dextinity-font-family-mono);
+        font-weight: 400;
+    }
+}
+
+.rows {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: 80px minmax(0, 1fr);
+    gap: 8px;
+
+    dt {
+        color: var(--dextinity-color-text-subtle);
+    }
+
+    dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+        font-family: var(--dextinity-font-family-mono);
+        font-size: 11px;
+    }
+}
+
+.token {
+    display: block;
+    color: $tab;
+}
+
+.hint {
+    margin: 8px 0 0;
+    color: var(--dextinity-color-text-subtle);
+}
+
+.checks {
+    display: grid;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.check {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    cursor: pointer;
+
+    strong {
+        margin-inline-start: auto;
+        font-family: var(--dextinity-font-family-mono);
+    }
+}
+
+.swatch {
+    inline-size: 10px;
+    block-size: 10px;
+    border-radius: 50%;
+
+    [data-check="tabOrder"] > & {
+        background: $tab;
+    }
+
+    [data-check="smallTargets"] > & {
+        background: $target;
+    }
+
+    [data-check="lowContrast"] > & {
+        background: $contrast;
+    }
+}
+
+$pin: #f59f00;
+
+.pin {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    inline-size: 24px;
+    block-size: 24px;
+    padding: 0;
+    border: 2px solid #fff;
+    border-radius: 50% 50% 50% 0;
+    background: $pin;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 30%);
+    color: #1d1f24;
+    font: 600 11px/1 var(--dextinity-font-family-text);
+    translate: 0 -100%;
+    cursor: pointer;
+    pointer-events: auto;
+
+    &[data-resolved] {
+        opacity: 0.5;
+    }
+
+    &[data-open] {
+        outline: 2px solid $pin;
+        outline-offset: 2px;
+    }
+}
+
+.commentEditor {
+    position: absolute;
+    display: grid;
+    box-sizing: border-box;
+    gap: 8px;
+    inline-size: 260px;
+    max-inline-size: 100%;
+    padding: 8px;
+    border-radius: 8px;
+    background: var(--dextinity-color-surface);
+    box-shadow:
+        0 0 0 1px var(--dextinity-color-line),
+        0 8px 24px color-mix(in oklch, var(--dextinity-color-text) 18%, transparent);
+    font-family: var(--dextinity-font-family-text);
+    font-size: 12px;
+    pointer-events: auto;
+}
+
+.editorActions,
+.cardActions {
+    display: flex;
+    gap: 4px;
+    justify-content: flex-end;
+}
+
+.cardActions {
+    margin-block-start: 8px;
+}
+
+.noteList {
+    display: grid;
+    gap: 2px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+        display: flex;
+        gap: 4px;
+        align-items: center;
+
+        &[data-resolved] {
+            opacity: 0.6;
+        }
+    }
+
+    del {
+        color: var(--dextinity-color-text-subtle);
+    }
+}
+
+.noteLink {
+    display: flex;
+    flex: 1;
+    gap: 8px;
+    align-items: flex-start;
+    min-inline-size: 0;
+    padding: 4px;
+    border: 0;
+    border-radius: 4px;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+
+    &:is(button) {
+        cursor: pointer;
+    }
+
+    &:is(button):hover {
+        background: color-mix(in oklch, var(--dextinity-color-text) 6%, transparent);
+    }
+}
+
+.noteNumber {
+    display: grid;
+    flex: none;
+    place-items: center;
+    inline-size: 18px;
+    block-size: 18px;
+    border-radius: 50%;
+    background: $pin;
+    color: #1d1f24;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.notePage {
+    display: block;
+    color: var(--dextinity-color-text-subtle);
+    font-size: 11px;
+}

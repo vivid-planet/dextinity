@@ -16,6 +16,7 @@ import { Pagination } from "../../../components/pagination/Pagination";
 import { StatusIndicator } from "../../../components/statusIndicator/StatusIndicator";
 import { PageTypeShell } from "../../pageTypes/PageTypeShell";
 import { usePrototypeNavigation } from "../../pageTypes/prototypeNavigation";
+import { applyScenario, getCopyId, lengthen, ScenarioContent, useScenario } from "../../scenario";
 import { StoryTable, type StoryTableColumn } from "../../StoryTable";
 import { type ContentStatus, type NewsArticle, newsArticles, newsCategories } from "./cmsData";
 import styles from "./cmsPrototype.module.scss";
@@ -78,8 +79,13 @@ export function CmsNews() {
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
+    const scenario = useScenario();
+    const articles = applyScenario(newsArticles, scenario, {
+        copy: (article, round) => ({ ...article, id: getCopyId(article.id, round), title: `${article.title} (${round + 1})` }),
+        stretch: (article) => ({ ...article, title: lengthen(article.title), author: lengthen(article.author) }),
+    });
 
-    const matches = newsArticles.filter(
+    const matches = articles.filter(
         (article) => article.title.toLowerCase().includes(search.toLowerCase()) && (category == null || article.category === category),
     );
     const countFor = (value: ContentStatus | "all") => matches.filter((article) => value === "all" || article.status === value).length;
@@ -100,7 +106,7 @@ export function CmsNews() {
                     <PageHeader
                         eyebrow="Structured data"
                         title="News"
-                        subtitle={`${newsArticles.length} articles in Austria · German`}
+                        subtitle={`${articles.length} articles in Austria · German`}
                         secondaryActions={[{ label: "Export", icon: <Icon name="download" /> }]}
                         primaryAction={{ label: "New article", icon: <Icon name="plus" />, href: "#news/new" }}
                     />
@@ -143,52 +149,67 @@ export function CmsNews() {
                     </FilterBar>
                 }
             >
-                <div className={styles.list}>
-                    <StoryTable
-                        aria-label="News"
-                        columns={columns}
-                        rows={pageRows}
-                        getRowId={(article) => article.id}
-                        getRowLabel={(article) => article.title}
-                        selectedIds={selectedIds}
-                        onSelectionChange={setSelectedIds}
-                        onRowClick={(article) => prototype?.navigate(`news/${article.id}`)}
-                        rowActions={(article) => <RowMenu article={article} />}
-                        emptyState={
-                            <EmptyState
-                                icon={<Icon name="search" />}
-                                title="No matching articles"
-                                description="Check the spelling or reset the filters."
-                                actions={
-                                    <Button variant="outlined" color="secondary" size="small" onClick={resetFilters}>
-                                        Reset filters
-                                    </Button>
-                                }
-                            />
-                        }
-                    />
-                    {selectedIds.length > 0 && (
-                        <BulkActionBar
-                            className={styles.bulkActionBar}
-                            count={selectedIds.length}
-                            onClear={() => setSelectedIds([])}
-                            actions={[
-                                { label: "Publish", icon: <Icon name="check" />, onClick: () => setSelectedIds([]) },
-                                { label: "Archive", icon: <Icon name="archive" />, onClick: () => setSelectedIds([]) },
-                            ]}
+                <ScenarioContent scenario={scenario}>
+                    <div className={styles.list}>
+                        <StoryTable
+                            aria-label="News"
+                            columns={columns}
+                            rows={pageRows}
+                            getRowId={(article) => article.id}
+                            getRowLabel={(article) => article.title}
+                            selectedIds={selectedIds}
+                            onSelectionChange={setSelectedIds}
+                            onRowClick={(article) => prototype?.navigate(`news/${article.id}`)}
+                            rowActions={(article) => <RowMenu article={article} />}
+                            emptyState={
+                                articles.length === 0 ? (
+                                    <EmptyState
+                                        icon={<Icon name="news" />}
+                                        title="No articles yet"
+                                        description="Articles appear here once they are created, newest first."
+                                        actions={
+                                            <Button size="small" startIcon={<Icon name="plus" />} href="#news/new">
+                                                New article
+                                            </Button>
+                                        }
+                                    />
+                                ) : (
+                                    <EmptyState
+                                        icon={<Icon name="search" />}
+                                        title="No matching articles"
+                                        description="Check the spelling or reset the filters."
+                                        actions={
+                                            <Button variant="outlined" color="secondary" size="small" onClick={resetFilters}>
+                                                Reset filters
+                                            </Button>
+                                        }
+                                    />
+                                )
+                            }
                         />
-                    )}
-                    <Pagination
-                        page={page}
-                        pageSize={pageSize}
-                        total={results.length}
-                        onPageChange={setPage}
-                        onPageSizeChange={(nextPageSize) => {
-                            setPageSize(nextPageSize);
-                            setPage(1);
-                        }}
-                    />
-                </div>
+                        {selectedIds.length > 0 && (
+                            <BulkActionBar
+                                className={styles.bulkActionBar}
+                                count={selectedIds.length}
+                                onClear={() => setSelectedIds([])}
+                                actions={[
+                                    { label: "Publish", icon: <Icon name="check" />, onClick: () => setSelectedIds([]) },
+                                    { label: "Archive", icon: <Icon name="archive" />, onClick: () => setSelectedIds([]) },
+                                ]}
+                            />
+                        )}
+                        <Pagination
+                            page={page}
+                            pageSize={pageSize}
+                            total={results.length}
+                            onPageChange={setPage}
+                            onPageSizeChange={(nextPageSize) => {
+                                setPageSize(nextPageSize);
+                                setPage(1);
+                            }}
+                        />
+                    </div>
+                </ScenarioContent>
             </ListLayout>
         </PageTypeShell>
     );

@@ -11,18 +11,24 @@ import { useContentScope } from "../contentScope/Provider";
 import { useEntitiesConfig } from "../entities/entitiesConfig";
 import type { EntityInterface } from "../entities/types";
 import { useUserPermissionCheck } from "../userPermissions/hooks/currentUser";
+import { FullTextSearchResultGroup } from "./FullTextSearchResultGroup";
 import type { GQLSearchHeaderItemQuery, GQLSearchHeaderItemQueryVariables } from "./SearchHeaderItem.generated";
+import { useFullTextSearchTypeLabel } from "./useFullTextSearchTypeLabel";
 
 const searchQuery = gql`
     query SearchHeaderItem($search: String!, $scope: JSONObject) {
-        myFullTextSearch(search: $search, scope: $scope, limit: 10) {
+        myFullTextSearch(search: $search, scope: $scope, limit: 20) {
             nodes {
                 id
                 entityName
+                type
                 name
                 secondaryInformation
             }
-            totalCount
+            types {
+                type
+                count
+            }
         }
     }
 `;
@@ -33,6 +39,7 @@ export function SearchHeaderItem() {
     const contentScope = useContentScope();
     const entities = useEntitiesConfig();
     const isAllowed = useUserPermissionCheck();
+    const getTypeLabel = useFullTextSearchTypeLabel();
 
     const [search, setSearch] = useState("");
     const [open, setOpen] = useState(false);
@@ -40,9 +47,11 @@ export function SearchHeaderItem() {
 
     const [debouncedSearch] = useDebounce(search, 250);
 
-    const { data, loading } = useQuery<GQLSearchHeaderItemQuery, GQLSearchHeaderItemQueryVariables>(searchQuery, {
+    const { data, loading, error } = useQuery<GQLSearchHeaderItemQuery, GQLSearchHeaderItemQueryVariables>(searchQuery, {
         variables: { search: debouncedSearch, scope: contentScope.scope },
         skip: debouncedSearch.length === 0 || !isAllowed("fullTextSearch"),
+        // Ids are only unique per entity, so results of different entities would be merged in the cache
+        fetchPolicy: "no-cache",
     });
 
     if (!isAllowed("fullTextSearch")) {
@@ -50,6 +59,8 @@ export function SearchHeaderItem() {
     }
 
     const results = data?.myFullTextSearch.nodes ?? [];
+    const resultGroups = groupByType(results);
+    const typeCounts = data?.myFullTextSearch.types ?? [];
 
     const navigateToResult = async (result: { id: string; entityName: string }) => {
         const entity = entities[result.entityName] as EntityInterface | undefined;
@@ -88,6 +99,10 @@ export function SearchHeaderItem() {
                             <Box sx={{ display: "flex", justifyContent: "center", p: 2 }}>
                                 <CircularProgress size={20} />
                             </Box>
+                        ) : error ? (
+                            <Typography variant="body2" color="error" sx={{ p: 2 }}>
+                                <FormattedMessage id="dextinity.fullTextSearch.error" defaultMessage="The search failed. Please try again." />
+                            </Typography>
                         ) : results.length === 0 ? (
                             <Typography
                                 variant="body2"
@@ -99,24 +114,43 @@ export function SearchHeaderItem() {
                                 <FormattedMessage id="dextinity.fullTextSearch.noResults" defaultMessage="No results found" />
                             </Typography>
                         ) : (
-                            <List disablePadding>
-                                {results.map((result) => {
-                                    const isLinkable = entities[result.entityName] !== undefined;
-                                    return (
-                                        <ListItemButton
-                                            key={`${result.entityName}:${result.id}`}
-                                            disabled={!isLinkable}
-                                            onClick={() => navigateToResult(result)}
-                                        >
-                                            <ListItemText primary={result.name} secondary={result.secondaryInformation} />
-                                        </ListItemButton>
-                                    );
-                                })}
-                            </List>
+                            resultGroups.map(({ type, results }) => (
+                                <FullTextSearchResultGroup
+                                    key={type}
+                                    label={getTypeLabel({ type, entityName: results[0].entityName })}
+                                    count={typeCounts.find((typeCount) => typeCount.type === type)?.count ?? results.length}
+                                >
+                                    <List disablePadding>
+                                        {results.map((result) => {
+                                            const isLinkable = entities[result.entityName] !== undefined;
+                                            return (
+                                                <ListItemButton
+                                                    key={`${result.entityName}:${result.id}`}
+                                                    disabled={!isLinkable}
+                                                    onClick={() => navigateToResult(result)}
+                                                >
+                                                    <ListItemText primary={result.name} secondary={result.secondaryInformation} />
+                                                </ListItemButton>
+                                            );
+                                        })}
+                                    </List>
+                                </FullTextSearchResultGroup>
+                            ))
                         )}
                     </Paper>
                 </Popper>
             </Box>
         </ClickAwayListener>
     );
+}
+
+type SearchResult = GQLSearchHeaderItemQuery["myFullTextSearch"]["nodes"][number];
+
+// Groups keep the order of their best result, so the best matches stay on top
+function groupByType(results: SearchResult[]): Array<{ type: string; results: SearchResult[] }> {
+    const groups = new Map<string, SearchResult[]>();
+    for (const result of results) {
+        groups.set(result.type, [...(groups.get(result.type) ?? []), result]);
+    }
+    return Array.from(groups, ([type, results]) => ({ type, results }));
 }

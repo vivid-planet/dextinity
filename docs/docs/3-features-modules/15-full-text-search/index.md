@@ -197,6 +197,8 @@ const MasterHeader = () => {
 };
 ```
 
+The search bar groups the results by type. It labels a group with the `displayName` of the type in [`entities`](../../2-core-concepts/7-dependencies/index.md#entities) or in the document types of the page tree, and opens a result with the `resolvePath()` of its entity in `entities`. Results of entities that aren't registered in `entities` can't be opened.
+
 ### Site
 
 Unlike the admin search bar, there is no ready-to-use resolver or block for site search. You need to implement both in your application. Dextinity does provide the underlying PostgreSQL views (`EntityInfoFullTextObject`) and the GraphQL types (`PaginatedEntityInfo`, `EntityInfoObject`) that you can build on, so the integration is straightforward.

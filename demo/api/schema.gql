@@ -759,6 +759,32 @@ input FooterScopeInput {
   language: String!
 }
 
+type FullTextSearchResult {
+  entityName: String!
+  id: String!
+  name: String!
+  secondaryInformation: String
+
+  """
+  The document type for page tree nodes (e.g. Page, Link), the entity name otherwise
+  """
+  type: String!
+  visible: Boolean!
+}
+
+type FullTextSearchResults {
+  nodes: [FullTextSearchResult!]!
+  totalCount: Int!
+
+  """Number of results per type"""
+  types: [FullTextSearchTypeCount!]!
+}
+
+type FullTextSearchTypeCount {
+  count: Int!
+  type: String!
+}
+
 input IdFilter {
   equal: ID
   isAnyOf: [ID!]
@@ -1342,11 +1368,6 @@ type PaginatedDependencies {
 
 type PaginatedEmailCampaigns {
   nodes: [BrevoEmailCampaign!]!
-  totalCount: Int!
-}
-
-type PaginatedEntityInfo {
-  nodes: [EntityInfo!]!
   totalCount: Int!
 }
 
@@ -2024,7 +2045,7 @@ type Query {
   manufacturer(id: ID!): Manufacturer!
   manufacturerCountries(filter: ManufacturerCountryFilter, limit: Int! = 25, offset: Int! = 0, search: String): PaginatedManufacturerCountries!
   manufacturers(filter: ManufacturerFilter, limit: Int! = 25, offset: Int! = 0, search: String, sort: [ManufacturerSort!]! = [{direction: ASC, field: id}]): PaginatedManufacturers!
-  myFullTextSearch(limit: Int! = 25, offset: Int! = 0, scope: JSONObject, search: String!): PaginatedEntityInfo!
+  myFullTextSearch(limit: Int! = 25, offset: Int! = 0, scope: JSONObject, search: String!): FullTextSearchResults!
   news(id: ID!): News!
   newsBySlug(scope: NewsContentScopeInput!, slug: String!): News
   newsList(filter: NewsFilter, limit: Int! = 25, offset: Int! = 0, scope: NewsContentScopeInput!, search: String, sort: [NewsSort!]! = [{direction: ASC, field: createdAt}]): PaginatedNews!

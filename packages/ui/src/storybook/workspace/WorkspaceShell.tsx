@@ -57,8 +57,6 @@ import { minFrameSize, SettingMenu, ViewportControl, zoomOptions } from "./Works
 
 const shellStoryId = "workspace-shell--shell";
 const narrowQuery = "(width < 760px)";
-// Below it, the labels of Inspect's tools don't fit next to the compare and zoom controls
-const compactInspectToolsQuery = "(width < 1100px)";
 const minPanelWidth = 260;
 const maxPanelWidth = 520;
 const panelKeyboardStep = 20;
@@ -308,7 +306,6 @@ export function WorkspaceShell() {
     useEffect(() => setMeasuredPath(null), [framePage.hash]);
     const canvasSize = useElementSize(canvasElement);
     const narrow = useMediaQuery(narrowQuery);
-    const compactInspectTools = useMediaQuery(compactInspectToolsQuery);
     // On a narrow screen, the prototypes cover the canvas, so they start closed and close again once a page is picked
     const [overlayPanelOpen, setOverlayPanelOpen] = useState(false);
     const panelVisible = narrow ? overlayPanelOpen : state.panelOpen;
@@ -959,37 +956,21 @@ export function WorkspaceShell() {
                             >
                                 {/* Comparing shows several frames, where the tools of the single frame don't work, so it takes their place */}
                                 {!isComparing &&
-                                    intentToolButtons[intent].map(({ tool, label, icon, description, key }) =>
-                                        intent === "inspect" && compactInspectTools ? (
-                                            <IconButton
-                                                key={tool}
-                                                variant={activeTool === tool ? "contained" : "text"}
-                                                color={activeTool === tool ? "primary" : "secondary"}
-                                                size="small"
-                                                aria-label={label}
-                                                aria-pressed={activeTool === tool}
-                                                keyboardShortcut={key}
-                                                aria-keyshortcuts={key}
-                                                onClick={() => setTool(activeTool === tool ? null : tool)}
-                                            >
-                                                <Icon name={icon} />
-                                            </IconButton>
-                                        ) : (
-                                            <Button
-                                                key={tool}
-                                                variant={activeTool === tool ? "contained" : "text"}
-                                                color={activeTool === tool ? "primary" : "secondary"}
-                                                size="small"
-                                                startIcon={<Icon name={icon} />}
-                                                aria-pressed={activeTool === tool}
-                                                title={`${description} · ${key}`}
-                                                aria-keyshortcuts={key}
-                                                onClick={() => setTool(activeTool === tool ? null : tool)}
-                                            >
-                                                {label}
-                                            </Button>
-                                        ),
-                                    )}
+                                    intentToolButtons[intent].map(({ tool, label, icon, description, key }) => (
+                                        <Button
+                                            key={tool}
+                                            variant={activeTool === tool ? "contained" : "text"}
+                                            color={activeTool === tool ? "primary" : "secondary"}
+                                            size="small"
+                                            startIcon={<Icon name={icon} />}
+                                            aria-pressed={activeTool === tool}
+                                            title={`${description} · ${key}`}
+                                            aria-keyshortcuts={key}
+                                            onClick={() => setTool(activeTool === tool ? null : tool)}
+                                        >
+                                            {label}
+                                        </Button>
+                                    ))}
                             </div>
                         )}
                     </div>

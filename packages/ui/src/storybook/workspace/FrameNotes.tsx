@@ -4,11 +4,24 @@ import { Button } from "../../components/button/Button";
 import { Icon } from "../../components/icon/Icon";
 import { IconButton } from "../../components/iconButton/IconButton";
 import { Textarea } from "../../components/textarea/Textarea";
-import { readWrittenText } from "../textLength";
-import { findElementByPath, type FrameRect, getElementPath, getFrameRect } from "./frameElements";
+import { brandSetting } from "../brand";
+import { colorSchemeSetting } from "../colorScheme";
+import { densitySetting } from "../density";
+import { scenarioSetting } from "../scenario";
+import { readWrittenText, textLengthSetting } from "../textLength";
+import { describeNoteElement, getFrameNoteEditResult, getNoteNumber } from "./designerNotes";
+import { findElementByPath, type FrameRect, getElementPath, getFrameRect, getFrameStoryId } from "./frameElements";
 import styles from "./FrameTools.module.scss";
 import { hotspotList } from "./hotspots";
-import { commentList, createNoteId, isOnPage, type PinnedComment, type TextChange, textChangeList } from "./workspaceNotes";
+import {
+    createNoteId,
+    type DesignerNote,
+    designerNoteList,
+    isOnPage,
+    type NoteAnchor,
+    type NoteViewSettings,
+    textChangeList,
+} from "./workspaceNotes";
 
 /** The page of a prototype the notes belong to, and how to open another one. */
 export interface NotePage {
@@ -55,33 +68,6 @@ function writeOwnText(element: Element, text: string) {
     }
 }
 
-async function copyText(text: string) {
-    try {
-        await navigator.clipboard.writeText(text);
-        return true;
-    } catch {
-        return false;
-    }
-}
-
-function CopyButton({ getText, label }: { getText: () => string; label: string }) {
-    const [copied, setCopied] = useState(false);
-    return (
-        <Button
-            variant="outlined"
-            color="secondary"
-            size="small"
-            startIcon={<Icon name={copied ? "check-circle" : "copy"} />}
-            onClick={async () => {
-                setCopied(await copyText(getText()));
-                window.setTimeout(() => setCopied(false), 1500);
-            }}
-        >
-            {copied ? "Copied" : label}
-        </Button>
-    );
-}
-
 /** Blocks the page's own reaction to clicks while a tool uses them, e.g. following a link. */
 function useBlockedClicks(frameDocument: Document, onClick: (event: MouseEvent) => void, blockPointerDown = true) {
     const onClickRef = useRef(onClick);
@@ -109,56 +95,151 @@ function useBlockedClicks(frameDocument: Document, onClick: (event: MouseEvent) 
     }, [frameDocument, blockPointerDown]);
 }
 
-function formatComments(comments: PinnedComment[], getPageLabel: (page: string) => string) {
-    return comments.map((comment) => `- [${getPageLabel(comment.page)}]${comment.resolved ? " (resolved)" : ""} ${comment.text}`).join("\n");
+/** A note or text change the sidebar asked the frame to show; `requestedAt` tells two requests for the same one apart. */
+export interface NoteFocusRequest {
+    id: string;
+    requestedAt: number;
+}
+
+function captureViewSettings(frameDocument: Document): NoteViewSettings {
+    return {
+        brand: brandSetting.get(),
+        colorScheme: colorSchemeSetting.get(),
+        density: densitySetting.get(),
+        textLength: textLengthSetting.get(),
+        content: scenarioSetting.get(),
+        viewportWidth: frameDocument.defaultView?.innerWidth ?? 0,
+        viewportHeight: frameDocument.defaultView?.innerHeight ?? 0,
+    };
+}
+
+/** Shows the element of a note the sidebar asked for, once the frame shows its page and the page has rendered it. */
+function useNoteFocus({
+    frameDocument,
+    focusRequest,
+    notes,
+    notePage,
+    onFound,
+    onFocusHandled,
+}: {
+    frameDocument: Document;
+    focusRequest: NoteFocusRequest | null;
+    notes: Array<NoteAnchor & { id: string }>;
+    notePage: NotePage;
+    onFound: (id: string, element: Element) => void;
+    onFocusHandled: () => void;
+}) {
+    useEffect(() => {
+        const note = focusRequest && notes.find((item) => item.id === focusRequest.id);
+        // Right after switching prototypes, the frame still shows the previous one, which may have a page of the same name
+        if (!note || !isOnPage(note, notePage.prototypeId, notePage.page) || getFrameStoryId(frameDocument) !== notePage.prototypeId) {
+            return;
+        }
+        const element = findElementByPath(frameDocument, note.path);
+        if (!element) {
+            return;
+        }
+        element.scrollIntoView({ block: "center", inline: "nearest" });
+        onFound(note.id, element);
+        onFocusHandled();
+    });
 }
 
 /**
- * Comments pinned to the page: a click puts a pin on the element under the pointer, which keeps the comment. The pins stay where
- * they were put across reloads, and the list copies all comments of the prototype, e.g. into a ticket.
+ * Designer notes pinned to the page: a click puts a pin on the element under the pointer, which keeps the note. The pins stay where
+ * they were put across reloads; the notes sidebar lists all notes.
  */
-export function CommentLayer({ frameDocument, scale, notePage }: { frameDocument: Document; scale: number; notePage: NotePage }) {
-    const comments = commentList.useItems();
-    const [openId, setOpenId] = useState<string | null>(null);
-    const [draft, setDraft] = useState("");
-    const prototypeComments = comments.filter((comment) => comment.prototypeId === notePage.prototypeId);
-    const pageComments = prototypeComments.filter((comment) => isOnPage(comment, notePage.prototypeId, notePage.page));
+export function NoteLayer({
+    frameDocument,
+    scale,
+    notePage,
+    focusRequest,
+    onFocusHandled,
+}: {
+    frameDocument: Document;
+    scale: number;
+    notePage: NotePage;
+    focusRequest: NoteFocusRequest | null;
+    onFocusHandled: () => void;
+}) {
+    const notes = designerNoteList.useItems();
+    // The text the open note had when it opened, so that closing it doesn't overwrite an edit made in the sidebar meanwhile
+    const [editing, setEditing] = useState<{ id: string; draft: string; original: string } | null>(null);
+    const openId = editing?.id ?? null;
+    const pageNotes = notes.filter((note) => isOnPage(note, notePage.prototypeId, notePage.page));
 
-    function open(comment: PinnedComment) {
-        if (comment.id === openId) {
+    function open(note: DesignerNote) {
+        if (note.id === openId) {
             return;
         }
-        if (openId) {
-            save(openId, draft);
+        if (editing) {
+            save(editing);
         }
-        setOpenId(comment.id);
-        setDraft(comment.text);
+        setEditing({ id: note.id, draft: note.text, original: note.text });
     }
 
-    function save(id: string | null, text: string) {
-        if (text.trim() === "") {
-            commentList.update((items) => items.filter((item) => item.id !== id));
-        } else {
-            commentList.update((items) => items.map((item) => (item.id === id ? { ...item, text: text.trim() } : item)));
+    function save({ id, draft, original }: { id: string; draft: string; original: string }) {
+        const storedText = designerNoteList.get().find((item) => item.id === id)?.text;
+        const result = getFrameNoteEditResult({ storedText, draft, original });
+        if (result.action === "delete") {
+            designerNoteList.update((items) => items.filter((item) => item.id !== id));
+        } else if (result.action === "update") {
+            designerNoteList.update((items) => items.map((item) => (item.id === id ? { ...item, text: result.text } : item)));
         }
     }
 
     function close() {
-        save(openId, draft);
-        setOpenId(null);
+        if (editing) {
+            save(editing);
+        }
+        setEditing(null);
     }
 
-    // Switching to another tool keeps what was typed, and drops a pin that never got a comment
-    const openDraftRef = useRef({ openId, draft });
-    openDraftRef.current = { openId, draft };
+    // Switching to another tool keeps what was typed, and drops a pin that never got a note
+    const editingRef = useRef(editing);
+    editingRef.current = editing;
     useEffect(
         () => () => {
-            if (openDraftRef.current.openId) {
-                save(openDraftRef.current.openId, openDraftRef.current.draft);
+            if (editingRef.current) {
+                save(editingRef.current);
             }
         },
         [],
     );
+
+    useNoteFocus({
+        frameDocument,
+        focusRequest,
+        notes,
+        notePage,
+        onFound: (id) => {
+            const note = notes.find((item) => item.id === id);
+            if (note) {
+                open(note);
+            }
+        },
+        onFocusHandled,
+    });
+
+    // Notes written before the element was recorded get it once their page shows; until the frame has loaded the selected
+    // prototype, an element at the same path would belong to another one
+    useEffect(() => {
+        if (getFrameStoryId(frameDocument) !== notePage.prototypeId) {
+            return;
+        }
+        const descriptions = new Map<string, string>();
+        for (const note of pageNotes) {
+            const element = note.element === undefined ? findElementByPath(frameDocument, note.path) : null;
+            if (element) {
+                descriptions.set(note.id, describeNoteElement(element));
+            }
+        }
+        if (descriptions.size > 0) {
+            designerNoteList.update((items) =>
+                items.map((item) => (descriptions.has(item.id) ? { ...item, element: descriptions.get(item.id) } : item)),
+            );
+        }
+    });
 
     useBlockedClicks(frameDocument, (event) => {
         const element = asElement(event.target);
@@ -167,7 +248,7 @@ export function CommentLayer({ frameDocument, scale, notePage }: { frameDocument
         }
         close();
         const rect = element.getBoundingClientRect();
-        const comment: PinnedComment = {
+        const note: DesignerNote = {
             id: createNoteId(),
             prototypeId: notePage.prototypeId,
             page: notePage.page,
@@ -175,21 +256,24 @@ export function CommentLayer({ frameDocument, scale, notePage }: { frameDocument
             x: rect.width > 0 ? (event.clientX - rect.left) / rect.width : 0,
             y: rect.height > 0 ? (event.clientY - rect.top) / rect.height : 0,
             text: "",
+            element: describeNoteElement(element),
+            view: captureViewSettings(frameDocument),
+            createdAt: new Date().toISOString(),
         };
-        commentList.update((items) => [...items, comment]);
-        open(comment);
+        designerNoteList.update((items) => [...items, note]);
+        setEditing({ id: note.id, draft: "", original: "" });
     });
 
-    const pins = pageComments.map((comment, index) => {
-        const element = findElementByPath(frameDocument, comment.path);
+    const pins = pageNotes.map((note) => {
+        const element = findElementByPath(frameDocument, note.path);
         const rect = element ? getFrameRect(element) : null;
         return {
-            comment,
-            number: prototypeComments.indexOf(comment) + 1 || index + 1,
-            position: rect ? { top: (rect.top + comment.y * rect.height) * scale, left: (rect.left + comment.x * rect.width) * scale } : null,
+            note,
+            number: getNoteNumber(notes, note),
+            position: rect ? { top: (rect.top + note.y * rect.height) * scale, left: (rect.left + note.x * rect.width) * scale } : null,
         };
     });
-    const openPin = pins.find((pin) => pin.comment.id === openId);
+    const openPin = pins.find((pin) => pin.note.id === openId);
     const layerHeight = (frameDocument.defaultView?.innerHeight ?? 0) * scale;
     // The layer clips what leaves the frame, so the editor stays inside it and opens above pins in the lower half
     const editorPosition = openPin?.position && {
@@ -198,138 +282,106 @@ export function CommentLayer({ frameDocument, scale, notePage }: { frameDocument
     };
 
     return (
-        <>
-            <div className={styles.layer}>
-                {pins.map(
-                    ({ comment, number, position }) =>
-                        position && (
-                            <button
-                                key={comment.id}
-                                type="button"
-                                className={styles.pin}
-                                data-resolved={comment.resolved || undefined}
-                                data-open={comment.id === openId || undefined}
-                                style={position}
-                                aria-label={`Comment ${number}: ${comment.text || "new"}`}
-                                onClick={() => (comment.id === openId ? close() : open(comment))}
-                            >
-                                {number}
-                            </button>
-                        ),
-                )}
-                {openPin && editorPosition && (
-                    <div className={styles.commentEditor} style={editorPosition}>
-                        <Textarea
-                            name="comment"
-                            aria-label="Comment"
-                            value={draft}
-                            rows={3}
-                            autoFocus
-                            placeholder="What should change here?"
-                            onChange={(event) => setDraft(event.target.value)}
-                            onKeyDown={(event) => {
-                                if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
-                                    close();
-                                } else if (event.key === "Escape") {
-                                    close();
-                                }
+        <div className={styles.layer}>
+            {pins.map(
+                ({ note, number, position }) =>
+                    position && (
+                        <button
+                            key={note.id}
+                            type="button"
+                            className={styles.pin}
+                            data-resolved={note.resolved || undefined}
+                            data-open={note.id === openId || undefined}
+                            style={position}
+                            aria-label={`Note ${number}: ${note.text || "new"}`}
+                            onClick={() => (note.id === openId ? close() : open(note))}
+                        >
+                            {number}
+                        </button>
+                    ),
+            )}
+            {editing && openPin && editorPosition && (
+                <div className={styles.noteEditor} style={editorPosition}>
+                    <Textarea
+                        name="note"
+                        aria-label="Note"
+                        value={editing.draft}
+                        rows={3}
+                        autoFocus
+                        placeholder="What should change here?"
+                        onChange={(event) => setEditing({ ...editing, draft: event.target.value })}
+                        onKeyDown={(event) => {
+                            if ((event.key === "Enter" && (event.metaKey || event.ctrlKey)) || event.key === "Escape") {
+                                close();
+                            }
+                        }}
+                    />
+                    <div className={styles.editorActions}>
+                        <IconButton
+                            variant="text"
+                            color="secondary"
+                            size="small"
+                            aria-label="Delete note"
+                            onClick={() => {
+                                designerNoteList.update((items) => items.filter((item) => item.id !== openPin.note.id));
+                                setEditing(null);
                             }}
-                        />
-                        <div className={styles.editorActions}>
-                            <IconButton
-                                variant="text"
-                                color="secondary"
-                                size="small"
-                                aria-label="Delete comment"
-                                onClick={() => {
-                                    commentList.update((items) => items.filter((item) => item.id !== openPin.comment.id));
-                                    setOpenId(null);
-                                }}
-                            >
-                                <Icon name="trash" />
-                            </IconButton>
-                            <Button
-                                variant="outlined"
-                                color="secondary"
-                                size="small"
-                                onClick={() =>
-                                    commentList.update((items) =>
-                                        items.map((item) => (item.id === openPin.comment.id ? { ...item, resolved: !item.resolved } : item)),
-                                    )
-                                }
-                            >
-                                {openPin.comment.resolved ? "Reopen" : "Resolve"}
-                            </Button>
-                            <Button size="small" onClick={close}>
-                                Save
-                            </Button>
-                        </div>
+                        >
+                            <Icon name="trash" />
+                        </IconButton>
+                        <Button
+                            variant="outlined"
+                            color="secondary"
+                            size="small"
+                            onClick={() =>
+                                designerNoteList.update((items) =>
+                                    items.map((item) => (item.id === openPin.note.id ? { ...item, resolved: !item.resolved } : item)),
+                                )
+                            }
+                        >
+                            {openPin.note.resolved ? "Reopen" : "Mark done"}
+                        </Button>
+                        <Button size="small" onClick={close}>
+                            Save
+                        </Button>
                     </div>
-                )}
-            </div>
-            <aside className={styles.card} aria-label="Comments">
-                <p className={styles.cardTitle}>
-                    Comments
-                    <span>
-                        {pageComments.length} here · {prototypeComments.length} in all
-                    </span>
-                </p>
-                {prototypeComments.length === 0 ? (
-                    <p className={styles.hint}>Click on the page to pin a comment to an element.</p>
-                ) : (
-                    <>
-                        <ol className={styles.noteList}>
-                            {prototypeComments.map((comment, index) => (
-                                <li key={comment.id} data-resolved={comment.resolved || undefined}>
-                                    <button
-                                        type="button"
-                                        className={styles.noteLink}
-                                        onClick={() => {
-                                            notePage.onOpenPage(comment.page);
-                                            open(comment);
-                                        }}
-                                    >
-                                        <span className={styles.noteNumber}>{index + 1}</span>
-                                        <span>
-                                            <span className={styles.notePage}>{notePage.getPageLabel(comment.page)}</span>
-                                            {comment.text || "…"}
-                                        </span>
-                                    </button>
-                                </li>
-                            ))}
-                        </ol>
-                        <div className={styles.cardActions}>
-                            <CopyButton label="Copy as list" getText={() => formatComments(prototypeComments, notePage.getPageLabel)} />
-                        </div>
-                    </>
-                )}
-            </aside>
-        </>
+                </div>
+            )}
+        </div>
     );
 }
 
-// A request to paste into the chat with Claude, which changes the texts in the prototype's code, where they then stay for everyone
-function formatCodeRequest(changes: TextChange[], notePage: NotePage) {
-    return [
-        `Please change these texts in the code of the workspace prototype \`${notePage.prototypeId}\` (packages/ui/src/storybook/workspace):`,
-        ...changes.map(
-            (change) => `- Page “${notePage.getPageLabel(change.page)}” (\`${change.page}\`): “${change.original.trim()}” → “${change.text.trim()}”`,
-        ),
-        "Then remove them from the text changes in the workspace, since the prototype shows them itself.",
-    ].join("\n");
-}
-
-function formatTextChanges(changes: TextChange[], getPageLabel: (page: string) => string) {
-    return changes.map((change) => `- [${getPageLabel(change.page)}] “${change.original.trim()}” → “${change.text.trim()}”`).join("\n");
-}
+const highlightDuration = 1600;
 
 /**
  * Edits the page's texts in place: a click on a text makes it editable, and the change stays on the page across reloads until it's
- * reverted. The list copies all changes of the prototype, e.g. for the copywriter.
+ * reverted. The text sidebar lists all changes.
  */
-export function TextLayer({ frameDocument, notePage }: { frameDocument: Document; notePage: NotePage }) {
+export function TextLayer({
+    frameDocument,
+    scale,
+    notePage,
+    focusRequest,
+    onFocusHandled,
+}: {
+    frameDocument: Document;
+    scale: number;
+    notePage: NotePage;
+    focusRequest: NoteFocusRequest | null;
+    onFocusHandled: () => void;
+}) {
     const changes = textChangeList.useItems();
-    const prototypeChanges = changes.filter((change) => change.prototypeId === notePage.prototypeId);
+    const [highlighted, setHighlighted] = useState<Element | null>(null);
+
+    useNoteFocus({ frameDocument, focusRequest, notes: changes, notePage, onFound: (_id, element) => setHighlighted(element), onFocusHandled });
+
+    useEffect(() => {
+        if (!highlighted) {
+            return;
+        }
+        const timeout = window.setTimeout(() => setHighlighted(null), highlightDuration);
+        return () => window.clearTimeout(timeout);
+    }, [highlighted]);
 
     useBlockedClicks(
         frameDocument,
@@ -345,6 +397,7 @@ export function TextLayer({ frameDocument, notePage }: { frameDocument: Document
                 .find((change) => isOnPage(change, notePage.prototypeId, notePage.page) && change.path.join() === path.join());
             // The text as written, not as Text length shows it, which the designer edits and the change keeps
             const original = existing?.original ?? readWrittenText(editable);
+            const elementDescription = existing?.element ?? describeNoteElement(editable);
             const before = readOwnText(editable);
             const linesBefore = new Set(editable.querySelectorAll(":scope > br"));
 
@@ -378,7 +431,17 @@ export function TextLayer({ frameDocument, notePage }: { frameDocument: Document
                         ? others
                         : [
                               ...others,
-                              { id: existing?.id ?? createNoteId(), prototypeId: notePage.prototypeId, page: notePage.page, path, original, text },
+                              {
+                                  ...existing,
+                                  id: existing?.id ?? createNoteId(),
+                                  prototypeId: notePage.prototypeId,
+                                  page: notePage.page,
+                                  path,
+                                  original,
+                                  text,
+                                  element: elementDescription,
+                                  createdAt: existing?.createdAt ?? new Date().toISOString(),
+                              },
                           ];
                 });
             }
@@ -409,42 +472,21 @@ export function TextLayer({ frameDocument, notePage }: { frameDocument: Document
         };
     }, [frameDocument]);
 
-    // The prototype restores the original text itself, since it would otherwise write the change back before it learns of the revert
-    function revert(change: TextChange) {
-        textChangeList.update((items) => items.filter((item) => item.id !== change.id));
-    }
-
+    const highlightedRect = highlighted?.isConnected ? getFrameRect(highlighted) : null;
     return (
-        <aside className={styles.card} aria-label="Text changes">
-            <p className={styles.cardTitle}>
-                Text changes <span>{prototypeChanges.length}</span>
-            </p>
-            {prototypeChanges.length === 0 ? (
-                <p className={styles.hint}>Click a text to edit it. Enter keeps the change, Escape discards it.</p>
-            ) : (
-                <>
-                    <ul className={styles.noteList}>
-                        {prototypeChanges.map((change) => (
-                            <li key={change.id}>
-                                <span className={styles.noteLink}>
-                                    <span>
-                                        <span className={styles.notePage}>{notePage.getPageLabel(change.page)}</span>
-                                        <del>{change.original}</del> {change.text}
-                                    </span>
-                                </span>
-                                <IconButton variant="text" color="secondary" size="small" aria-label="Revert" onClick={() => revert(change)}>
-                                    <Icon name="undo" />
-                                </IconButton>
-                            </li>
-                        ))}
-                    </ul>
-                    <div className={styles.cardActions}>
-                        <CopyButton label="Copy as list" getText={() => formatTextChanges(prototypeChanges, notePage.getPageLabel)} />
-                        <CopyButton label="Copy as code request" getText={() => formatCodeRequest(prototypeChanges, notePage)} />
-                    </div>
-                </>
+        <div className={styles.layer}>
+            {highlightedRect && (
+                <div
+                    className={styles.highlightBox}
+                    style={{
+                        top: highlightedRect.top * scale,
+                        left: highlightedRect.left * scale,
+                        width: highlightedRect.width * scale,
+                        height: highlightedRect.height * scale,
+                    }}
+                />
             )}
-        </aside>
+        </div>
     );
 }
 
@@ -557,7 +599,7 @@ export function HotspotLayer({ frameDocument, scale, notePage }: { frameDocument
                     );
                 })}
                 {picking && (
-                    <div className={styles.commentEditor} style={getPickerPosition(picking, scale)}>
+                    <div className={styles.noteEditor} style={getPickerPosition(picking, scale)}>
                         <p className={styles.cardTitle}>Opens on a click</p>
                         <ul className={styles.pagePicker}>
                             {notePage.pageIds

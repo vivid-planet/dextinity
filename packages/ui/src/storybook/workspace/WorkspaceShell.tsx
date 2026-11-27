@@ -28,22 +28,25 @@ import { scenarioSetting } from "../scenario";
 import { textLengthSetting } from "../textLength";
 import { CompareCanvas } from "./CompareCanvas";
 import { getComponentStoryIds, type IndexedStory } from "./componentStories";
+import type { DescribeNotePlace, PrototypePage } from "./designerNotes";
 import { flowEdgeList } from "./flowEdges";
 import { FlowMap } from "./FlowMap";
 import { getElementPath } from "./frameElements";
-import type { NotePage } from "./FrameNotes";
+import type { NoteFocusRequest, NotePage } from "./FrameNotes";
 import { type FrameTool, FrameTools } from "./FrameTools";
 import { hotspotList } from "./hotspots";
 import { customPageList, customPagePrefix, type PageTemplate, pageTemplates } from "./pageTemplates";
 import { buildPageTree, getPrototypePageNodeId } from "./prototypePageTree";
 import { workspacePrototypes } from "./prototypes";
+import { NotesSidebar, TextChangesSidebar } from "./ReviewSidebar";
+import { getReviewSidebarLayout } from "./reviewSidebarLayout";
 import { type InspectedComponent, useCanvasInspector } from "./useCanvasInspector";
 import { useFramePage } from "./useFramePage";
 import { usePopupOpen } from "./usePopupOpen";
 import { ViewMenu } from "./ViewMenu";
 import { WorkspaceGuide } from "./WorkspaceGuide";
 import { workspaceLogo } from "./workspaceLogo";
-import { commentList, textChangeList } from "./workspaceNotes";
+import { designerNoteList, textChangeList } from "./workspaceNotes";
 import styles from "./WorkspaceShell.module.scss";
 import {
     defaultWorkspaceState,
@@ -99,8 +102,8 @@ const intentToolButtons: Record<WorkspaceIntent, Array<{ tool: WorkspaceTool; la
         { tool: "accessibility", label: "Accessibility", icon: "contrast", description: "Tab order, small targets, and contrast", key: "A" },
     ],
     review: [
-        { tool: "comment", label: "Comments", icon: "chat-add", description: "Pin comments to the page", key: "C" },
-        { tool: "text", label: "Edit texts", icon: "pencil-line", description: "Click a text to change it", key: "E" },
+        { tool: "comment", label: "Designer Notes", icon: "chat-add", description: "Pin notes to the page; the sidebar lists them", key: "N" },
+        { tool: "text", label: "Edit texts", icon: "pencil-line", description: "Click a text to change it; the sidebar lists the changes", key: "E" },
     ],
     flow: [
         { tool: "map", label: "Flow map", icon: "tune-logic", description: "All pages and the links between them", key: "F" },
@@ -261,17 +264,10 @@ export function WorkspaceShell() {
     const canvasSize = useElementSize(canvasElement);
     const narrow = useMediaQuery(narrowQuery);
     const compactTools = useMediaQuery(compactToolsQuery);
-    // On a narrow screen, the prototypes cover the canvas, so they start closed and close again once a page is picked
+    const [bodyElement, setBodyElement] = useState<HTMLDivElement | null>(null);
+    const bodySize = useElementSize(bodyElement);
+    // Where the prototypes cover the canvas, they start closed and close again once a page is picked
     const [overlayPanelOpen, setOverlayPanelOpen] = useState(false);
-    const panelVisible = narrow ? overlayPanelOpen : state.panelOpen;
-
-    function togglePanel() {
-        if (narrow) {
-            setOverlayPanelOpen(!overlayPanelOpen);
-        } else {
-            updateState({ panelOpen: !state.panelOpen });
-        }
-    }
 
     useEffect(() => {
         async function loadStories() {
@@ -406,10 +402,10 @@ export function WorkspaceShell() {
     function removeCurrentPage() {
         if (currentCustomPage && prototypeId) {
             customPageList.update((pages) => pages.filter((page) => page !== currentCustomPage));
-            // Its comments and text changes would otherwise stay in the lists, pointing to a page that's gone
+            // Its notes and text changes would otherwise stay in the lists, pointing to a page that's gone
             const isOnRemovedPage = (note: { prototypeId: string; page: string }) =>
                 note.prototypeId === prototypeId && note.page === currentCustomPage.id;
-            commentList.update((comments) => comments.filter((comment) => !isOnRemovedPage(comment)));
+            designerNoteList.update((notes) => notes.filter((note) => !isOnRemovedPage(note)));
             textChangeList.update((changes) => changes.filter((change) => !isOnRemovedPage(change)));
             const removedId = currentCustomPage.id;
             hotspotList.update((hotspots) =>
@@ -434,6 +430,60 @@ export function WorkspaceShell() {
             }
         },
     };
+    const describePlace: DescribeNotePlace = (anchor) => {
+        const customPage = customPages.find((page) => page.prototypeId === anchor.prototypeId && page.id === anchor.page);
+        return {
+            prototypeName: prototypes.find((story) => story.id === anchor.prototypeId)?.name ?? anchor.prototypeId,
+            pageLabel: customPage?.title ?? workspacePrototypes.get(anchor.prototypeId)?.getPageLabel(anchor.page) ?? anchor.page,
+        };
+    };
+    const sidebarTool = frameTool === "comment" || frameTool === "text" ? frameTool : null;
+    const sidebarLayout = getReviewSidebarLayout({ bodyWidth: bodySize.width, panelWidth: state.panelWidth });
+    // Closing the sidebar lasts until its tool closes; the tool opens with its sidebar again
+    const [sidebarClosedFor, setSidebarClosedFor] = useState<FrameTool | null>(null);
+    if (sidebarClosedFor !== null && sidebarClosedFor !== sidebarTool) {
+        setSidebarClosedFor(null);
+    }
+    // A sidebar that covers the frame starts closed, like the prototypes, so that a click on the page pins a note right away
+    const [overlaySidebarOpenFor, setOverlaySidebarOpenFor] = useState<FrameTool | null>(null);
+    if (overlaySidebarOpenFor !== null && overlaySidebarOpenFor !== sidebarTool) {
+        setOverlaySidebarOpenFor(null);
+    }
+    const sidebarOpen =
+        sidebarTool !== null && (sidebarLayout.sidebarOverlay ? overlaySidebarOpenFor === sidebarTool : sidebarClosedFor !== sidebarTool);
+    const panelOverlay = narrow || (sidebarOpen && sidebarLayout.panelOverlay);
+    const panelVisible = panelOverlay ? overlayPanelOpen : state.panelOpen;
+    const [noteFocusRequest, setNoteFocusRequest] = useState<NoteFocusRequest | null>(null);
+    const [shownNoteId, setShownNoteId] = useState<string | null>(null);
+
+    function togglePanel() {
+        if (panelOverlay) {
+            setOverlayPanelOpen(!overlayPanelOpen);
+            setOverlaySidebarOpenFor(null);
+        } else {
+            updateState({ panelOpen: !state.panelOpen });
+        }
+    }
+
+    function setSidebarOpen(open: boolean) {
+        if (sidebarLayout.sidebarOverlay) {
+            setOverlaySidebarOpenFor(open ? sidebarTool : null);
+            setOverlayPanelOpen(false);
+        } else {
+            setSidebarClosedFor(open ? null : sidebarTool);
+        }
+    }
+
+    function showNote(note: PrototypePage & { id: string }) {
+        // A sidebar that covers the frame would hide the element it shows
+        setOverlaySidebarOpenFor(null);
+        setShownNoteId(note.id);
+        setNoteFocusRequest({ id: note.id, requestedAt: Date.now() });
+        if (note.prototypeId !== prototypeId || note.page !== currentPrototypePageId) {
+            selectPrototypeNode(getPrototypePageNodeId(note.prototypeId, note.page));
+        }
+    }
+
     const storiesById = useMemo(() => new Map(componentStories.map((story) => [story.id, story])), [componentStories]);
 
     function rememberCurrentStory() {
@@ -944,6 +994,18 @@ export function WorkspaceShell() {
                                             </Button>
                                         );
                                     })}
+                                {sidebarTool && (
+                                    <IconButton
+                                        variant="text"
+                                        color="secondary"
+                                        size="small"
+                                        aria-label={`${sidebarOpen ? "Hide" : "Show"} the ${sidebarTool === "comment" ? "notes" : "text changes"}`}
+                                        aria-expanded={sidebarOpen}
+                                        onClick={() => setSidebarOpen(!sidebarOpen)}
+                                    >
+                                        <Icon name={sidebarOpen ? "sidebar-close" : "sidebar-open"} />
+                                    </IconButton>
+                                )}
                             </div>
                         )}
                     </div>
@@ -963,7 +1025,7 @@ export function WorkspaceShell() {
                 </div>
 
                 {isPrototypeMode && (
-                    <div className={styles.body}>
+                    <div ref={setBodyElement} className={styles.body}>
                         {presenting && (
                             <Button
                                 className={styles.presentExit}
@@ -976,14 +1038,16 @@ export function WorkspaceShell() {
                                 Exit presentation · Esc
                             </Button>
                         )}
-                        {panelVisible && !presenting && narrow && <div className={styles.panelBackdrop} onClick={() => setOverlayPanelOpen(false)} />}
+                        {panelVisible && !presenting && panelOverlay && (
+                            <div className={styles.panelBackdrop} onClick={() => setOverlayPanelOpen(false)} />
+                        )}
                         {panelVisible && !presenting && (
                             <nav
                                 className={styles.panel}
                                 aria-label="Prototypes"
-                                data-overlay={narrow || undefined}
-                                style={{ inlineSize: narrow ? undefined : state.panelWidth }}
-                                onKeyDown={(event) => narrow && event.key === "Escape" && setOverlayPanelOpen(false)}
+                                data-overlay={panelOverlay || undefined}
+                                style={{ inlineSize: panelOverlay ? undefined : state.panelWidth }}
+                                onKeyDown={(event) => panelOverlay && event.key === "Escape" && setOverlayPanelOpen(false)}
                             >
                                 <div className={styles.panelList} data-prototypes>
                                     <TreeView
@@ -1019,7 +1083,7 @@ export function WorkspaceShell() {
                                 </div>
                             </nav>
                         )}
-                        {panelVisible && !presenting && !narrow && (
+                        {panelVisible && !presenting && !panelOverlay && (
                             <div
                                 role="separator"
                                 aria-orientation="vertical"
@@ -1117,6 +1181,8 @@ export function WorkspaceShell() {
                                             scale={scale}
                                             notePage={notePage}
                                             measuredPath={measuredPath ?? undefined}
+                                            focusRequest={noteFocusRequest}
+                                            onFocusHandled={() => setNoteFocusRequest(null)}
                                             onExit={() => setTool(null)}
                                         />
                                     )}
@@ -1130,6 +1196,30 @@ export function WorkspaceShell() {
                                 </div>
                             </div>
                         )}
+                        {sidebarOpen && prototypeId && sidebarLayout.sidebarOverlay && (
+                            <div className={styles.panelBackdrop} onClick={() => setSidebarOpen(false)} />
+                        )}
+                        {sidebarOpen &&
+                            prototypeId &&
+                            (sidebarTool === "comment" ? (
+                                <NotesSidebar
+                                    current={{ prototypeId, page: currentPrototypePageId ?? "" }}
+                                    describePlace={describePlace}
+                                    onShow={showNote}
+                                    shownId={shownNoteId}
+                                    overlay={sidebarLayout.sidebarOverlay}
+                                    onClose={() => setSidebarOpen(false)}
+                                />
+                            ) : (
+                                <TextChangesSidebar
+                                    current={{ prototypeId, page: currentPrototypePageId ?? "" }}
+                                    describePlace={describePlace}
+                                    onShow={showNote}
+                                    shownId={shownNoteId}
+                                    overlay={sidebarLayout.sidebarOverlay}
+                                    onClose={() => setSidebarOpen(false)}
+                                />
+                            ))}
                     </div>
                 )}
             </div>

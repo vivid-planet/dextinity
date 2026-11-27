@@ -30,7 +30,11 @@ export const customPageList = createStoredList<CustomPage>("dextinity-ui-workspa
 function EmptyPage() {
     return (
         <PageTypeShell currentId="">
-            <EmptyState icon={<Icon name="window" />} title="An empty page" description="Pin comments or edit texts to sketch what goes here." />
+            <EmptyState
+                icon={<Icon name="window" />}
+                title="An empty page"
+                description="Pin designer notes or edit texts to sketch what goes here."
+            />
         </PageTypeShell>
     );
 }

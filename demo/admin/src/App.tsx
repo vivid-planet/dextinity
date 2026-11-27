@@ -48,6 +48,8 @@ import { NewsLinkBlock } from "./news/blocks/NewsLinkBlock";
 import { NewsListBlock } from "./news/blocks/NewsListBlock";
 import { NewsEntity } from "./news/NewsEntity";
 import { pageTreeCategories } from "./pageTree/pageTreeCategories";
+import { ManufacturerEntity } from "./products/ManufacturerEntity";
+import { ProductEntity } from "./products/ProductEntity";
 import { RedirectEntity } from "./redirects/RedirectEntity";
 
 const GlobalStyle = () => (
@@ -132,6 +134,8 @@ export function App() {
                 News: NewsEntity,
                 Redirect: RedirectEntity,
                 PageTreeNode: PageTreeNodeEntity,
+                Product: ProductEntity,
+                Manufacturer: ManufacturerEntity,
                 DamFile: createDamFileEntity(),
             }}
             siteConfigs={{

@@ -21,6 +21,17 @@ export interface WorkspacePrototype {
     getPageAncestors: (pageId: string) => PageAncestor[];
 }
 
+/** A label for a page the prototype doesn't know, made from the last part of its id, e.g. `Old news` for `news/old-news`. */
+export function humanizePageId(pageId: string) {
+    const words = (pageId.split("/").at(-1) ?? "").replace(/[-_]+/g, " ").trim();
+    return words === "" ? pageId : `${words.charAt(0).toUpperCase()}${words.slice(1)}`;
+}
+
+/** For a page whose prototype has no menu, e.g. one that isn't a prototype the workspace knows. */
+export function noPageAncestors(): PageAncestor[] {
+    return [];
+}
+
 function findNavItem(items: SideNavItem[], id: string): SideNavItem | undefined {
     for (const item of items) {
         const found = item.id === id ? item : findNavItem(item.children ?? [], id);

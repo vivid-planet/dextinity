@@ -36,7 +36,7 @@ import { type FrameTool, FrameTools } from "./FrameTools";
 import { hotspotList } from "./hotspots";
 import { customPageList, customPagePrefix, type PageTemplate, pageTemplates } from "./pageTemplates";
 import { buildPageTree, getPrototypePageNodeId } from "./prototypePageTree";
-import { workspacePrototypes } from "./prototypes";
+import { humanizePageId, noPageAncestors, workspacePrototypes } from "./prototypes";
 import { type InspectedComponent, useCanvasInspector } from "./useCanvasInspector";
 import { useFramePage } from "./useFramePage";
 import { usePopupOpen } from "./usePopupOpen";
@@ -381,7 +381,9 @@ export function WorkspaceShell() {
     }
     const prototypeCustomPages = customPages.filter((page) => page.prototypeId === prototypeId);
     const getPageLabel = (page: string) =>
-        prototypeCustomPages.find((customPage) => customPage.id === page)?.title ?? currentWorkspacePrototype?.getPageLabel(page) ?? page;
+        prototypeCustomPages.find((customPage) => customPage.id === page)?.title ??
+        currentWorkspacePrototype?.getPageLabel(page) ??
+        humanizePageId(page);
     const currentCustomPage = prototypeCustomPages.find((page) => page.id === currentPrototypePageId);
 
     function addPage(template: PageTemplate) {
@@ -1042,6 +1044,7 @@ export function WorkspaceShell() {
                                 startPageId={currentWorkspacePrototype?.startPageId ?? ""}
                                 pageIds={[...(currentWorkspacePrototype?.designedPageIds ?? []), ...prototypeCustomPages.map((page) => page.id)]}
                                 getPageLabel={getPageLabel}
+                                getPageAncestors={currentWorkspacePrototype?.getPageAncestors ?? noPageAncestors}
                                 onOpenPage={(page) => {
                                     setPrototypeStartPage(page);
                                     setTool(null);

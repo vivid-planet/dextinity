@@ -78,6 +78,20 @@ const results = [
     },
 ];
 
+const searchTypes = [
+    { type: "Page", entityName: "PageTreeNode" },
+    { type: "Link", entityName: "PageTreeNode" },
+    { type: "PredefinedPage", entityName: "PageTreeNode" },
+    { type: "News", entityName: "News" },
+    { type: "Product", entityName: "Product" },
+];
+
+export const fullTextSearchTypesHandler = graphqlApi.query("FullTextSearchTypes", () =>
+    HttpResponse.json({
+        data: { myFullTextSearchTypes: searchTypes.map((searchType) => ({ __typename: "FullTextSearchType", ...searchType })) },
+    }),
+);
+
 function matchingResults(search: string) {
     if (search.startsWith("nothing")) {
         return [];
@@ -90,8 +104,8 @@ function matchingResults(search: string) {
     return results;
 }
 
-export const fullTextSearchHandler = graphqlApi.query("SearchHeaderItem", ({ variables }) => {
-    const { search } = variables as { search: string };
+export const fullTextSearchHandler = graphqlApi.query("FullTextSearchDialog", ({ variables }) => {
+    const { search, types } = variables as { search: string; types?: string[] };
 
     if (search.startsWith("error")) {
         return HttpResponse.json({ errors: [{ message: "Search failed" }] });
@@ -109,7 +123,7 @@ export const fullTextSearchHandler = graphqlApi.query("SearchHeaderItem", ({ var
             myFullTextSearch: {
                 __typename: "FullTextSearchResults",
                 types: typeCounts,
-                nodes: matches.map((result) => ({ __typename: "FullTextSearchResult", ...result })),
+                nodes: matches.filter((result) => !types || types.includes(result.type)).map((result) => ({ __typename: "FullTextSearchResult", ...result })),
             },
         },
     });

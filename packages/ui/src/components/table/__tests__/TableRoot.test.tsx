@@ -55,6 +55,7 @@ describe("TableRoot", () => {
         expect(root.className).toContain("dextinityTableRoot");
         expect(root.className).toContain("consumer-class");
         expect(root.id).toBe("root-id");
+        expect(root.dataset.overflowing).toBeUndefined();
         expect(ref.current).toBe(table);
         expect(tableSlotRef.current).toBe(table);
         expect(scrollerRef.current).toBe(table.parentElement);
@@ -63,6 +64,7 @@ describe("TableRoot", () => {
         expect(table.className).toContain("consumer-table");
         expect(table.parentElement?.className).toContain("dextinityTableRoot__scroller");
         expect(table.parentElement?.className).toContain("consumer-scroller");
+        expect(table.parentElement?.parentElement?.className).toContain("dextinityTableRoot__scrollerFrame");
     });
 
     it("warns in development when the table has no name", () => {

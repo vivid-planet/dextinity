@@ -5,15 +5,21 @@ import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { useMergedRef } from "../../utils/useMergedRef";
 import { defaultColumnMinWidth, TableContext, type TableLayoutColumn } from "./tableContext";
 import styles from "./TableRoot.module.scss";
+import { useOverflowing } from "./useOverflowing";
 
 /**
  * The resolved configuration that influences the component's appearance or behavior.
  */
-export type TableRootOwnerState = Record<string, never>;
+export type TableRootOwnerState = {
+    /** The table is wider than its container, so it scrolls horizontally. */
+    overflowing: boolean;
+};
 
 export interface TableRootSlotProps {
     /** Props for the root, which holds the scrolling area. */
     root?: SlotPropsValue<TableRootOwnerState, "div">;
+    /** Props for the `scrollerFrame` slot, which draws the focus ring of the scrolling area. */
+    scrollerFrame?: SlotPropsValue<TableRootOwnerState, "div">;
     /** Props for the `scroller` slot, the area that scrolls the table horizontally. */
     scroller?: SlotPropsValue<TableRootOwnerState, "div">;
     /** Props for the `table` slot. */
@@ -49,15 +55,18 @@ function getMinTableWidth(columns: TableLayoutColumn[]) {
 }
 
 /**
- * Shows rows of data in columns. When the columns don't fit, the table scrolls horizontally.
+ * Shows rows of data in columns. When the columns don't fit, the table scrolls horizontally, and its scrolling area takes keyboard
+ * focus.
  */
 export const TableRoot = forwardRef<HTMLTableElement, TableRootProps>(function TableRoot(
     { columns, children, className, style, slotProps, ...restProps },
     ref,
 ) {
+    const scrollerRef = useRef<HTMLDivElement>(null);
     const tableRef = useRef<HTMLTableElement>(null);
     useImperativeHandle(ref, () => tableRef.current as HTMLTableElement);
-    const ownerState: TableRootOwnerState = {};
+    const overflowing = useOverflowing(scrollerRef, tableRef);
+    const ownerState: TableRootOwnerState = { overflowing };
     const context = useMemo(() => ({ columns }), [columns]);
 
     const ariaLabel = restProps["aria-label"];
@@ -73,8 +82,17 @@ export const TableRoot = forwardRef<HTMLTableElement, TableRootProps>(function T
         slotProps: slotProps?.root,
         ownerState,
     });
+    const scrollerFrameProps = resolveSlotProps<TableRootOwnerState, "div", "div">({
+        ownProps: { className: styles.scrollerFrame },
+        slotProps: slotProps?.scrollerFrame,
+        ownerState,
+    });
     const scrollerProps = resolveSlotProps<TableRootOwnerState, "div", "div">({
-        ownProps: { className: styles.scroller },
+        ownProps: {
+            className: styles.scroller,
+            // Lets keyboard users scroll a table that holds nothing else to focus
+            ...(overflowing && { tabIndex: 0, role: "region", "aria-label": ariaLabel, "aria-labelledby": ariaLabelledBy }),
+        },
         slotProps: slotProps?.scroller,
         ownerState,
     });
@@ -90,20 +108,23 @@ export const TableRoot = forwardRef<HTMLTableElement, TableRootProps>(function T
         ownerState,
     });
 
+    const setScrollerRef = useMergedRef(scrollerRef, scrollerProps.ref);
     const setTableRef = useMergedRef(tableRef, tableProps.ref);
 
     return (
-        <div {...rootProps}>
-            <div {...scrollerProps}>
-                <table {...tableProps} ref={setTableRef}>
-                    <colgroup>
-                        {columns.map((column) => {
-                            const width = getColumnWidth(column);
-                            return <col key={column.id} style={width != null ? { inlineSize: width } : undefined} />;
-                        })}
-                    </colgroup>
-                    <TableContext.Provider value={context}>{children}</TableContext.Provider>
-                </table>
+        <div {...rootProps} data-overflowing={overflowing ? "" : undefined}>
+            <div {...scrollerFrameProps}>
+                <div {...scrollerProps} ref={setScrollerRef}>
+                    <table {...tableProps} ref={setTableRef}>
+                        <colgroup>
+                            {columns.map((column) => {
+                                const width = getColumnWidth(column);
+                                return <col key={column.id} style={width != null ? { inlineSize: width } : undefined} />;
+                            })}
+                        </colgroup>
+                        <TableContext.Provider value={context}>{children}</TableContext.Provider>
+                    </table>
+                </div>
             </div>
         </div>
     );

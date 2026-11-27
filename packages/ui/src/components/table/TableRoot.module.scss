@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .root {
     min-inline-size: 0;
     color: var(--dextinity-table-foreground);
@@ -6,8 +8,36 @@
     line-height: var(--dextinity-table-line-height);
 }
 
+.scrollerFrame {
+    position: relative;
+
+    // Drawn on the frame rather than the scrolling area, so the scrolling doesn't move it and the table's parts don't cover it
+    &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        border-radius: var(--dextinity-table-row-radius);
+        pointer-events: none;
+    }
+
+    &:has(> .scroller:focus-visible)::after {
+        box-shadow: var(--dextinity-table-focus-ring);
+
+        @include forced-colors.focus-ring(-2px);
+    }
+}
+
 .scroller {
-    overflow-x: auto;
+    overflow-x: clip;
+
+    .root[data-overflowing] & {
+        overflow-x: auto;
+
+        &:focus-visible {
+            outline: none;
+        }
+    }
 }
 
 .table {

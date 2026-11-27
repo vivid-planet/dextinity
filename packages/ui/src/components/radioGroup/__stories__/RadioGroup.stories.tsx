@@ -5,7 +5,6 @@ import { type FieldStoryArgs, groupFieldArgTypes, hasFieldArgs, splitFieldArgs, 
 import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { RadioGroup, type RadioGroupProps } from "../RadioGroup";
-import radioGroupTokens from "../RadioGroup.tokens.scss?raw";
 
 type RadioGroupStoryArgs = RadioGroupProps & FieldStoryArgs;
 
@@ -39,7 +38,6 @@ const meta = {
     component: RadioGroup,
     title: "Building blocks/Selection & toggles/RadioGroup",
     decorators: [themeDecorator],
-    parameters: { tokens: radioGroupTokens },
     render: (args, context) => <ControlledRadioGroup {...args} storyId={context.id} />,
     args: {
         label: "Employment",

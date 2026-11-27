@@ -9,7 +9,6 @@ import { SegmentedControl } from "../../segmentedControl/SegmentedControl";
 import { Tooltip } from "../../tooltip/Tooltip";
 import { Block } from "../Block";
 import { BlockList, type BlockListProps } from "../BlockList";
-import blockListTokens from "../BlockList.tokens.scss?raw";
 import { BlockListHeader } from "../BlockListHeader";
 import styles from "./BlockList.stories.module.scss";
 
@@ -92,7 +91,6 @@ const meta = {
     component: BlockList,
     title: "Building blocks/Blocks & preview/BlockList",
     decorators: [themeDecorator],
-    parameters: { tokens: blockListTokens },
     args: {
         "aria-label": "Blocks",
         onReorder: fn(),

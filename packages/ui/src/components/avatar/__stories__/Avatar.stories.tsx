@@ -3,7 +3,6 @@ import { expect, screen, userEvent } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Avatar } from "../Avatar";
-import avatarTokens from "../Avatar.tokens.scss?raw";
 import styles from "./Avatar.stories.module.scss";
 
 const pictureUrl = `data:image/svg+xml;utf8,${encodeURIComponent(
@@ -14,7 +13,6 @@ const meta = {
     component: Avatar,
     title: "Building blocks/Status, tags & badges/Avatar",
     decorators: [themeDecorator],
-    parameters: { tokens: avatarTokens },
     args: {
         name: "Anna König",
     },

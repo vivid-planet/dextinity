@@ -61,10 +61,6 @@ See [Replacement of `@comet/admin-date-time`](../7-migration-guide/migration-fro
 
 Provides components for selecting date and time or a range or combination of date and time.
 
-#### @dextinity/admin-color-picker
-
-Provides a component for selecting colors in forms, built with react-final-form.
-
 ## Site {#sitePackage}
 
 ### @dextinity/site-nextjs

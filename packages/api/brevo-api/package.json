@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/brevo-api",
-    "version": "10.15.0",
+    "version": "10.16.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/vivid-planet/dextinity",
@@ -80,7 +80,7 @@
         "rxjs": "^7.8.2",
         "typescript": "^6.0.3",
         "unplugin-swc": "^2.0.0",
-        "vitest": "^5.1.0"
+        "vitest": "^5.1.1"
     },
     "peerDependencies": {
         "@mikro-orm/cli": "^7.1.8",

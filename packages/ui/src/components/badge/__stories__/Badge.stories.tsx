@@ -4,14 +4,12 @@ import { expect, screen, userEvent } from "storybook/test";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Typography } from "../../typography/Typography";
 import { Badge } from "../Badge";
-import badgeTokens from "../Badge.tokens.scss?raw";
 import styles from "./Badge.stories.module.scss";
 
 const meta = {
     component: Badge,
     title: "Building blocks/Status, tags & badges/Badge",
     decorators: [themeDecorator],
-    parameters: { tokens: badgeTokens },
     args: {
         variant: "warning",
         tooltip: "Alt text missing",

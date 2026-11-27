@@ -1,7 +1,9 @@
 import type { ArgTypes } from "@storybook/react-vite";
 import type { PropsWithChildren } from "react";
+import type { InputType } from "storybook/internal/types";
 
 import { Field, type FieldLayout, type FieldProps } from "../components/field/Field";
+import { Icon } from "../components/icon/Icon";
 
 const fieldArgNames = [
     "label",
@@ -24,25 +26,52 @@ const fieldArgNames = [
  */
 export type FieldStoryArgs = Partial<Pick<FieldProps, (typeof fieldArgNames)[number]>>;
 
+const adornmentOptions = {
+    Domain: "example.com",
+    Unit: "€ / year",
+    Search: <Icon name="search" />,
+};
+
+const adornmentArgType = { control: "select", options: Object.keys(adornmentOptions), mapping: adornmentOptions } satisfies InputType;
+
+/**
+ * The `argTypes` of the field args, for the stories of `Field` itself.
+ */
+export const fieldPropArgTypes = {
+    label: { control: "text" },
+    required: { control: "boolean" },
+    info: { control: "text" },
+    description: { control: "text" },
+    validationMessage: { control: "text" },
+    state: { control: "select", options: ["default", "success", "warning", "error"] },
+    disabled: { control: "boolean" },
+    readOnly: { control: "boolean" },
+    loading: { control: "boolean" },
+    size: { control: "radio", options: ["small", "default", "large"] },
+    prefix: adornmentArgType,
+    suffix: adornmentArgType,
+    actions: { control: false },
+} satisfies ArgTypes;
+
 const fieldCategory = { category: "Field" };
 
 /**
- * The `argTypes` of the field args, listed in their own "Field" section of the props table.
+ * The `argTypes` of the field args, listed in their own "Field" section of a control's props table.
  */
 export const fieldArgTypes = {
-    label: { control: "text", table: fieldCategory },
-    required: { control: "boolean", table: fieldCategory },
-    info: { control: "text", table: fieldCategory },
-    description: { control: "text", table: fieldCategory },
-    validationMessage: { control: "text", table: fieldCategory },
-    state: { control: "select", options: ["default", "success", "warning", "error"], table: fieldCategory },
-    disabled: { control: "boolean", table: fieldCategory },
-    readOnly: { control: "boolean", table: fieldCategory },
-    loading: { control: "boolean", table: fieldCategory },
-    size: { control: "radio", options: ["small", "default", "large"], table: fieldCategory },
-    prefix: { control: false, table: fieldCategory },
-    suffix: { control: false, table: fieldCategory },
-    actions: { control: false, table: fieldCategory },
+    label: { ...fieldPropArgTypes.label, table: fieldCategory },
+    required: { ...fieldPropArgTypes.required, table: fieldCategory },
+    info: { ...fieldPropArgTypes.info, table: fieldCategory },
+    description: { ...fieldPropArgTypes.description, table: fieldCategory },
+    validationMessage: { ...fieldPropArgTypes.validationMessage, table: fieldCategory },
+    state: { ...fieldPropArgTypes.state, table: fieldCategory },
+    disabled: { ...fieldPropArgTypes.disabled, table: fieldCategory },
+    readOnly: { ...fieldPropArgTypes.readOnly, table: fieldCategory },
+    loading: { ...fieldPropArgTypes.loading, table: fieldCategory },
+    size: { ...fieldPropArgTypes.size, table: fieldCategory },
+    prefix: { ...fieldPropArgTypes.prefix, table: fieldCategory },
+    suffix: { ...fieldPropArgTypes.suffix, table: fieldCategory },
+    actions: { ...fieldPropArgTypes.actions, table: fieldCategory },
 } satisfies ArgTypes;
 
 /**

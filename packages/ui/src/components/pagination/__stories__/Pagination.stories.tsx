@@ -4,13 +4,12 @@ import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Pagination } from "../Pagination";
-import paginationTokens from "../Pagination.tokens.scss?raw";
 
 const meta = {
     component: Pagination,
     title: "Building blocks/Tables & paging/Pagination",
     decorators: [themeDecorator],
-    parameters: { tokens: paginationTokens, popupRoom: { side: "above" } },
+    parameters: { popupRoom: { side: "above" } },
     args: {
         page: 1,
         pageSize: 10,

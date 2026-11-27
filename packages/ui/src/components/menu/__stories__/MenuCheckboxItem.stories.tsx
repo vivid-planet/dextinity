@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import type { PropsWithChildren } from "react";
+import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
 import { useControlledArg } from "../../../storybook/storyArgs";
@@ -7,25 +7,8 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
 import { Menu } from "../Menu";
-import menuTokens from "../Menu.tokens.scss?raw";
 import { MenuCheckboxItem } from "../MenuCheckboxItem";
 import styles from "./Menu.stories.module.scss";
-
-function InOpenMenu({ children }: PropsWithChildren) {
-    return (
-        <Menu
-            open
-            onOpenChange={() => {}}
-            trigger={
-                <Button variant="outlined" color="secondary">
-                    Columns
-                </Button>
-            }
-        >
-            {children}
-        </Menu>
-    );
-}
 
 const iconOptions = {
     Globe: <Icon name="globe" />,
@@ -36,11 +19,6 @@ const meta = {
     component: MenuCheckboxItem,
     title: "Building blocks/Menus & messages/MenuCheckboxItem",
     decorators: [
-        (Story) => (
-            <InOpenMenu>
-                <Story />
-            </InOpenMenu>
-        ),
         themeDecorator,
         (Story) => (
             <div className={styles.stage}>
@@ -48,7 +26,6 @@ const meta = {
             </div>
         ),
     ],
-    parameters: { tokens: menuTokens },
     args: {
         label: "Location",
         checked: true,
@@ -65,16 +42,27 @@ const meta = {
         slotProps: { control: false },
     },
     render: (args, context) => {
+        const [isMenuOpen, setIsMenuOpen] = useState(true);
         const [checked, setChecked] = useControlledArg(args, "checked", context);
         return (
-            <MenuCheckboxItem
-                {...args}
-                checked={checked}
-                onChange={(nextChecked) => {
-                    args.onChange(nextChecked);
-                    setChecked(nextChecked);
-                }}
-            />
+            <Menu
+                open={isMenuOpen}
+                onOpenChange={setIsMenuOpen}
+                trigger={
+                    <Button variant="outlined" color="secondary">
+                        Columns
+                    </Button>
+                }
+            >
+                <MenuCheckboxItem
+                    {...args}
+                    checked={checked}
+                    onChange={(nextChecked) => {
+                        args.onChange(nextChecked);
+                        setChecked(nextChecked);
+                    }}
+                />
+            </Menu>
         );
     },
 } satisfies Meta<typeof MenuCheckboxItem>;

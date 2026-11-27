@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/brevo-admin",
-    "version": "10.15.0",
+    "version": "10.16.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/vivid-planet/dextinity",
@@ -44,7 +44,7 @@
         "@dextinity/admin-icons": "workspace:*",
         "@dextinity/cms-admin": "workspace:*",
         "date-fns": "^4.4.0",
-        "react-dropzone": "^20.2.0"
+        "react-dropzone": "^20.2.1"
     },
     "devDependencies": {
         "@apollo/client": "^4.3.5",

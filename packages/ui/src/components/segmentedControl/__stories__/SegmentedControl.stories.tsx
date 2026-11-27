@@ -6,7 +6,6 @@ import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { SegmentedControl, type SegmentedControlOption, type SegmentedControlProps } from "../SegmentedControl";
-import segmentedControlTokens from "../SegmentedControl.tokens.scss?raw";
 import styles from "./SegmentedControl.stories.module.scss";
 
 const employment: SegmentedControlOption[] = [
@@ -60,7 +59,6 @@ const meta = {
     component: SegmentedControl,
     title: "Building blocks/Selection & toggles/SegmentedControl",
     decorators: [themeDecorator],
-    parameters: { tokens: segmentedControlTokens },
     args: {
         "aria-label": "Employment",
         options: employment,
@@ -203,5 +201,31 @@ export const OverflowWrap: Story = {
     ],
     play: async ({ canvas }) => {
         await expect(canvas.getByRole("radiogroup", { name: "View" })).toBeInTheDocument();
+    },
+};
+
+/**
+ * While the menu replaces the options, they don't widen a scroll container, e.g. a `Popover`: it doesn't scroll sideways.
+ */
+export const OverflowInScrollContainer: Story = {
+    args: { "aria-label": "View", options: views, value: "list", size: "small" },
+    decorators: [
+        (Story) => (
+            <div className={styles.scrollContainer} data-testid="scroll-container">
+                <Story />
+            </div>
+        ),
+    ],
+    play: async ({ canvas }) => {
+        const scrollContainer = canvas.getByTestId("scroll-container");
+        await canvas.findByRole("button", { name: "View List" });
+        await expect(scrollContainer.scrollWidth).toBe(scrollContainer.clientWidth);
+        scrollContainer.style.inlineSize = "640px";
+        await expect(await canvas.findByRole("radiogroup", { name: "View" })).toBeInTheDocument();
+        scrollContainer.style.inlineSize = "";
+        await canvas.findByRole("button", { name: "View List" });
+        await expect(scrollContainer.scrollWidth).toBe(scrollContainer.clientWidth);
+        scrollContainer.dir = "rtl";
+        await expect(scrollContainer.scrollWidth).toBe(scrollContainer.clientWidth);
     },
 };

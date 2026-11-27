@@ -55,13 +55,6 @@ jobs:
                   path: packages/admin/admin/lib
                   key: ${{ runner.os }}-build-admin-${{ hashFiles('packages/admin/admin/src/**', 'packages/admin/admin/package.json', 'packages/admin/admin/tsconfig*.json', 'pnpm-lock.yaml') }}
 
-            - name: Cache @dextinity/admin-color-picker build
-              id: cache-admin-color-picker
-              uses: actions/cache@v6
-              with:
-                  path: packages/admin/admin-color-picker/lib
-                  key: ${{ runner.os }}-build-admin-color-picker-${{ hashFiles('packages/admin/admin-color-picker/src/**', 'packages/admin/admin-color-picker/package.json', 'packages/admin/admin-color-picker/tsconfig*.json', 'pnpm-lock.yaml') }}
-
             - name: Cache @dextinity/admin-date-time build
               id: cache-admin-date-time
               uses: actions/cache@v6
@@ -165,7 +158,6 @@ jobs:
               run: |
                   FILTERS=""
                   [ "${{ steps.cache-admin.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/admin"
-                  [ "${{ steps.cache-admin-color-picker.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/admin-color-picker"
                   [ "${{ steps.cache-admin-date-time.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/admin-date-time"
                   [ "${{ steps.cache-admin-icons.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/admin-icons"
                   [ "${{ steps.cache-admin-rte.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/admin-rte"

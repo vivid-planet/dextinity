@@ -103,6 +103,7 @@ Where a rule depends on an item's position, set a modifier class while rendering
 A flex `gap` does not stand in for this — see [Multi-Column Symmetric Layouts](?path=/docs/docs-layout-patterns--docs#multi-column-symmetric-layouts-3-columns).
 
 Target the mail's body with `#body`. Some clients replace the `<body>` tag with a `<div>`, which a `body` selector no longer reaches.
+`MjmlMailRoot` sets the id. A mail that renders its own `MjmlBody` sets it itself: `<MjmlBody id="body">`.
 
 ### Gmail Drops Head CSS Past 16 kB
 

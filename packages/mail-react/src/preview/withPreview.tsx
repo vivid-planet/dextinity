@@ -5,7 +5,7 @@ import type { PropsWithData } from "../blocks/helpers/PropsWithData.js";
 import { createBlockPreviewClassName, getBlockAdminRoute } from "./blockPreviewClassName.js";
 
 type PropsWithClassName<Props> = Props & {
-    /** Apply to the block's root element to make the block selectable in the block preview. */
+    /** Apply to the block's root element to make the block selectable in the block preview. For a block without one, apply it to each of its elements. */
     className?: string;
 };
 

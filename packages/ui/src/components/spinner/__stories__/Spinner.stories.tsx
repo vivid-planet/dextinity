@@ -3,13 +3,11 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Spinner } from "../Spinner";
-import spinnerTokens from "../Spinner.tokens.scss?raw";
 
 const meta = {
     component: Spinner,
     title: "Building blocks/Loading & save state/Spinner",
     decorators: [themeDecorator],
-    parameters: { tokens: spinnerTokens },
     args: {
         "aria-label": "Loading",
     },

@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type KeyboardEvent, type PropsWithChildren, type ReactNode, useId, useRef } from "react";
+import { forwardRef, type HTMLAttributes, type KeyboardEvent, type ReactNode, useId, useRef } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { FilterChip } from "../filterChip/FilterChip";
@@ -74,7 +74,7 @@ export interface BlockPickerSlotProps {
     item?: SlotPropsValue<BlockPickerOwnerState, "button">;
 }
 
-export interface BlockPickerProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "onSelect">, PropsWithChildren {
+export interface BlockPickerProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "onSelect"> {
     /** The block types that can be added here. */
     items: BlockPickerItem[];
     /** Called with the `value` of the chosen block type. */
@@ -93,6 +93,8 @@ export interface BlockPickerProps extends Omit<HTMLAttributes<HTMLDivElement>, "
     recent?: string[];
     /** Texts for translation; missing keys fall back to `defaultBlockPickerLabels`. */
     labels?: Partial<BlockPickerLabels>;
+    /** Shown between the search field and the block types, e.g. a `Checkbox` "Edit after adding" and where the block will be inserted. */
+    children?: ReactNode;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
@@ -114,9 +116,6 @@ function matches(item: BlockPickerItem, query: string) {
 /**
  * Chooses the type of a new block: search by name, filter by category, or take one of the recently used. Show it in a `Drawer` or
  * `Popover` opened from the add buttons of a `BlockList`. Enter in the search field adds the first match.
- *
- * `children`: Shown between the search field and the block types, e.g. a `Checkbox` "Edit after adding" and where the block will be
- * inserted.
  */
 export const BlockPicker = forwardRef<HTMLDivElement, BlockPickerProps>(function BlockPicker(
     {

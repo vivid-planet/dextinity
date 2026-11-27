@@ -1,6 +1,5 @@
 ---
 "@dextinity/admin": major
-"@dextinity/admin-color-picker": major
 ---
 
 Replace the MUI props removed in MUI v9 in the props of the admin components

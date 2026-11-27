@@ -6,7 +6,6 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Field } from "../../field/Field";
 import { Icon } from "../../icon/Icon";
 import { Input } from "../Input";
-import inputTokens from "../Input.tokens.scss?raw";
 
 const adornmentOptions = {
     Euro: "€",
@@ -16,7 +15,6 @@ const adornmentOptions = {
 const meta = {
     component: Input,
     title: "Building blocks/Form fields/Input",
-    parameters: { tokens: inputTokens },
     decorators: [themeDecorator],
     args: {
         "aria-label": "Title",
@@ -24,9 +22,6 @@ const meta = {
         onChange: fn(),
     },
     argTypes: {
-        "aria-label": { description: "Names the input when no `Field` label does." },
-        placeholder: { description: "An example of the expected value, shown while the input is empty." },
-        onChange: { description: "Called with the change event on every edit; set `value` from `event.target.value`." },
         state: {
             control: "select",
             options: ["default", "success", "warning", "error"],
@@ -44,10 +39,7 @@ const meta = {
         className: { control: false },
         slots: { control: false },
         slotProps: { control: false },
-        render: {
-            control: false,
-            description: "Replaces the rendered `<input>` element, e.g. with a masked input, which receives the input's props.",
-        },
+        render: { control: false },
     },
 } satisfies Meta<typeof Input>;
 

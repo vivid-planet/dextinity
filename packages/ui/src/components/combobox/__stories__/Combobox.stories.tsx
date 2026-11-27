@@ -4,8 +4,6 @@ import { expect, fn, screen, userEvent, waitFor, within } from "storybook/test";
 import { fieldArgTypes, type FieldStoryArgs, splitFieldArgs, StoryField } from "../../../storybook/fieldStoryArgs";
 import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import fieldTokens from "../../field/Field.tokens.scss?raw";
-import selectTokens from "../../select/Select.tokens.scss?raw";
 import { Combobox, type ComboboxProps } from "../Combobox";
 import styles from "./Combobox.stories.module.scss";
 
@@ -85,7 +83,6 @@ const meta = {
     component: Combobox,
     title: "Building blocks/Form fields/Combobox",
     decorators: [themeDecorator],
-    parameters: { tokens: `${selectTokens}\n${fieldTokens}` },
     args: {
         name: "category",
         label: "Category",

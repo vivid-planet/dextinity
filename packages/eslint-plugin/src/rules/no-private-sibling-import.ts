@@ -4,6 +4,10 @@ import path from "path";
 export default {
     meta: {
         type: "suggestion",
+        docs: {
+            description: "Allow a private sibling file (`Foo.gql.ts`, `Foo.sc.ts`) to be imported only by the file it belongs to",
+            url: "https://github.com/vivid-planet/dextinity/blob/main/packages/eslint-plugin/docs/rules/no-private-sibling-import.md",
+        },
         schema: [
             {
                 type: "array",

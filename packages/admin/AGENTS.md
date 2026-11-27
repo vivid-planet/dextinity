@@ -8,7 +8,6 @@ This directory contains all admin-related packages for the Dextinity framework.
 | ------------------------------- | -------------------------------------------------------------------- |
 | `@dextinity/admin`              | Core admin components and framework (React, MUI, Apollo, Final Form) |
 | `@dextinity/admin-babel-preset` | Shared Babel preset for transpiling admin packages                   |
-| `@dextinity/admin-color-picker` | Color picker form field component                                    |
 | `@dextinity/admin-date-time`    | Date/time picker form field components                               |
 | `@dextinity/admin-icons`        | SVG icon library as React components                                 |
 | `@dextinity/admin-rte`          | Rich text editor component (Draft.js-based)                          |
@@ -55,9 +54,9 @@ All packages use **Vitest** as the test framework.
 | ---------------------- | ---------------- | --------------- |
 | `@dextinity/admin`     | jsdom            | vitest.setup.ts |
 | `@dextinity/admin-rte` | jsdom            | —               |
-| `@dextinity/cms-admin` | jsdom            | vitest.setup.ts |
+| `@dextinity/cms-admin` | jsdom            | —               |
 
-The remaining packages (`admin-babel-preset`, `admin-color-picker`, `admin-date-time`, `admin-icons`, `brevo-admin`) do not have tests.
+The remaining packages (`admin-babel-preset`, `admin-date-time`, `admin-icons`, `brevo-admin`) do not have tests.
 
 ### Running tests
 

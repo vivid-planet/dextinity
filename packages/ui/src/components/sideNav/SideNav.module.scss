@@ -26,11 +26,18 @@
 }
 
 .header {
+    position: relative;
     display: flex;
     flex: none;
     flex-direction: column;
     gap: var(--dextinity-space-3);
     padding: var(--dextinity-side-nav-header-padding);
+    // Inset by the edge's width, so the fill doesn't cover the edge the navigation draws as an inner shadow
+    margin: var(--dextinity-line-width) var(--dextinity-line-width) 0;
+    border-block-end: var(--dextinity-line-width) solid var(--dextinity-side-nav-header-border-color);
+    border-start-start-radius: calc(var(--dextinity-side-nav-radius) - var(--dextinity-line-width));
+    border-start-end-radius: calc(var(--dextinity-side-nav-radius) - var(--dextinity-line-width));
+    background: var(--dextinity-side-nav-header-background);
 
     .root[data-collapsed] & {
         align-items: center;
@@ -58,6 +65,13 @@
     }
 }
 
+// Half the header's padding from its corner, so that it neither takes room from the logo's row nor widens the collapsed navigation
+.environment {
+    position: absolute;
+    inset-block-start: calc(var(--dextinity-side-nav-header-padding) / 2);
+    inset-inline-end: calc(var(--dextinity-side-nav-header-padding) / 2);
+}
+
 .title {
     overflow-wrap: anywhere;
     color: var(--dextinity-side-nav-title-color);
@@ -80,7 +94,7 @@
     position: relative;
     flex: 1;
     min-block-size: 0;
-    padding: var(--dextinity-space-0-5) var(--dextinity-space-3) var(--dextinity-space-3);
+    padding: var(--dextinity-space-3);
     overflow: hidden auto;
     scrollbar-color: var(--dextinity-color-line-strong) transparent;
     scrollbar-width: thin;
@@ -295,6 +309,8 @@ $children-room-end: 12px;
             position: absolute;
             inset-block: calc(#{$children-room} + 2px) calc(#{$children-room-end} + 6px);
             inset-inline-start: calc(#{$children-room} + 19px);
+            // Above the sub-entries, so their hover and current fills don't hide it
+            z-index: 1;
             inline-size: var(--dextinity-line-width);
             background: var(--dextinity-side-nav-guide-color);
 

@@ -1,8 +1,9 @@
 {
     "name": "@dextinity/eslint-plugin",
-    "version": "10.15.0",
+    "version": "10.16.0",
     "description": "A set of ESLint rules and configurations for Dextinity projects",
     "type": "module",
+    "main": "./lib/index.js",
     "exports": {
         ".": {
             "types": "./lib/index.d.ts",
@@ -18,13 +19,15 @@
         "build": "pnpm run clean && tsc --project ./tsconfig.build.json",
         "clean": "rimraf lib",
         "dev": "tsc --watch",
-        "lint": "run-p lint:prettier lint:eslint lint:tsc",
+        "docs:generate": "eslint-doc-generator",
+        "lint": "run-p lint:prettier lint:eslint lint:tsc lint:docs",
         "lint:ci": "pnpm run lint",
+        "lint:docs": "eslint-doc-generator --check",
         "lint:eslint": "eslint --max-warnings 0 src/ '**/*.json' --no-warn-ignored",
         "lint:fix": "run-p lint:fix:eslint lint:fix:prettier",
         "lint:fix:eslint": "pnpm run lint:eslint --fix",
         "lint:fix:prettier": "pnpm run lint:prettier --write",
-        "lint:prettier": "pnpm exec prettier --check '*.{ts,js,json,md,yml,yaml}'",
+        "lint:prettier": "pnpm exec prettier --check '*.{ts,js,json,md,yml,yaml}' 'docs/**/*.md'",
         "lint:tsc": "tsc --noEmit",
         "test": "pnpm run test:unit",
         "test:unit": "vitest --run",
@@ -34,6 +37,7 @@
         "@eslint/js": "^9.39.5",
         "eslint": "^9.39.5",
         "eslint-config-prettier": "^10.1.8",
+        "eslint-doc-generator": "^3.7.1",
         "eslint-plugin-import": "^2.32.0",
         "eslint-plugin-jsonc": "^2.21.1",
         "eslint-plugin-package-json": "^0.91.2",
@@ -41,11 +45,11 @@
         "eslint-plugin-simple-import-sort": "^12.1.1",
         "eslint-plugin-unused-imports": "^4.4.1",
         "globals": "^17.14.0",
-        "npm-run-all2": "^9.0.4",
+        "npm-run-all2": "^9.1.0",
         "prettier": "^3.10.1",
         "typescript": "^6.0.3",
-        "typescript-eslint": "^8.72.2",
-        "vitest": "^5.1.0"
+        "typescript-eslint": "^8.73.0",
+        "vitest": "^5.1.1"
     },
     "peerDependencies": {
         "eslint": ">=9",

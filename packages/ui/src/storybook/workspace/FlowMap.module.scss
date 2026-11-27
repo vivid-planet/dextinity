@@ -1,0 +1,171 @@
+$navigation: #5b3df5;
+$undesigned: #868e96;
+$dead-end: #e8590c;
+
+.root {
+    position: relative;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-inline-size: 0;
+    min-block-size: 0;
+}
+
+.bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    align-items: center;
+    padding: 10px 16px;
+    border-block-end: var(--dextinity-line-width) solid var(--dextinity-color-line);
+    background: var(--dextinity-color-surface);
+    font-size: 12px;
+}
+
+.summary {
+    margin: 0;
+    font-weight: 600;
+}
+
+.legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 0 auto 0 0;
+    padding: 0;
+    color: var(--dextinity-color-text-subtle);
+    list-style: none;
+
+    li::before {
+        content: "";
+        display: inline-block;
+        inline-size: 8px;
+        block-size: 8px;
+        margin-inline-end: 6px;
+        border-radius: 50%;
+        background: currentcolor;
+    }
+
+    [data-tag="navigation"]::before {
+        background: $navigation;
+    }
+
+    [data-tag="undesigned"]::before {
+        background: $undesigned;
+    }
+
+    [data-tag="deadEnd"]::before {
+        background: $dead-end;
+    }
+}
+
+.canvas {
+    flex: 1;
+    min-block-size: 0;
+    overflow: auto;
+}
+
+.map {
+    position: relative;
+}
+
+.lines {
+    position: absolute;
+    inset: 0;
+    overflow: visible;
+
+    path {
+        fill: none;
+        stroke: color-mix(in oklch, var(--dextinity-color-text) 35%, transparent);
+        stroke-width: 1.5;
+
+        &[data-backwards] {
+            stroke-dasharray: 4 4;
+        }
+    }
+
+    marker path {
+        fill: color-mix(in oklch, var(--dextinity-color-text) 50%, transparent);
+        stroke: none;
+    }
+}
+
+.node {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    justify-content: center;
+    padding: 4px 10px;
+    border: var(--dextinity-line-width) solid var(--dextinity-color-line);
+    border-radius: 8px;
+    background: var(--dextinity-color-surface);
+    color: inherit;
+    font: inherit;
+    font-size: 12px;
+    text-align: start;
+    cursor: pointer;
+
+    &:hover {
+        border-color: var(--dextinity-color-accent);
+    }
+
+    &[data-undesigned] {
+        border-style: dashed;
+        background: transparent;
+        color: var(--dextinity-color-text-subtle);
+    }
+
+    &[data-dead-end] {
+        border-color: $dead-end;
+    }
+}
+
+.nodeLabel {
+    overflow: hidden;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tags {
+    display: flex;
+    gap: 4px;
+    font-size: 10px;
+
+    span {
+        padding: 0 4px;
+        border-radius: 3px;
+        color: #fff;
+    }
+
+    [data-tag="navigation"] {
+        background: $navigation;
+    }
+
+    [data-tag="undesigned"] {
+        background: $undesigned;
+    }
+
+    [data-tag="deadEnd"] {
+        background: $dead-end;
+    }
+}
+
+.hint {
+    margin: 0;
+    padding: 0 24px;
+    color: var(--dextinity-color-text-subtle);
+}
+
+// Loads the pages one by one to read their links, out of sight
+.scanFrame {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    inline-size: 1440px;
+    block-size: 900px;
+    border: 0;
+    visibility: hidden;
+    pointer-events: none;
+}

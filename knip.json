@@ -46,9 +46,6 @@
             "ignore": [".storybook/public/mockServiceWorker.js"],
             "ignoreDependencies": ["@mui/x-data-grid-premium"]
         },
-        "packages/admin/admin-color-picker": {
-            "project": ["./src/**/*.{ts,tsx}"]
-        },
         "packages/admin/admin-date-time": {
             "project": ["./src/**/*.{ts,tsx}"]
         },

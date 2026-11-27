@@ -5,7 +5,6 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
 import { EmptyState } from "../EmptyState";
-import emptyStateTokens from "../EmptyState.tokens.scss?raw";
 
 const onResetFilters = fn();
 
@@ -32,7 +31,6 @@ const meta = {
     component: EmptyState,
     title: "Building blocks/Menus & messages/EmptyState",
     decorators: [themeDecorator],
-    parameters: { tokens: emptyStateTokens },
     args: {
         title: "No results for “Marketing Lead”",
     },

@@ -5,6 +5,8 @@
     --dextinity-table-font-size: var(--dextinity-typography-body-size);
     // Line height of the cell text
     --dextinity-table-line-height: var(--dextinity-typography-body-line-height);
+    // Focus ring of the scrolling area
+    --dextinity-table-focus-ring: var(--dextinity-focus-ring-inset);
 
     // Minimum height of the header row
     --dextinity-table-header-height: var(--dextinity-density-header-height);

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { expect } from "storybook/test";
+import { expect, userEvent } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Panel } from "../../panel/Panel";
@@ -113,18 +113,31 @@ export const FixedColumnWidths: Story = {
 };
 
 /**
- * When the columns don't fit, the table scrolls horizontally and no column gets narrower than its `minWidth`.
+ * When the columns don't fit, the table scrolls horizontally and no column gets narrower than its `minWidth`. The scrolling area can
+ * then be focused and scrolled with the arrow keys, also when the table holds nothing else to focus.
  */
 export const HorizontalScroll: Story = {
+    tags: ["forced-colors"],
     args: { columns: columns.map((column) => ({ ...column, minWidth: 200 })) },
     render: (args) => (
         <Panel className={styles.narrow}>
             <TableRoot {...args} />
         </Panel>
     ),
-    play: async ({ canvas, step }) => {
+    play: async ({ canvas, canvasElement, step }) => {
+        const region = await canvas.findByRole("region", { name: "Job ads" });
+        await expect(canvasElement.querySelector(".dextinityTableRoot")).toHaveAttribute("data-overflowing");
+
         await step("Each column is at least as wide as its minimum", async () => {
             await expect(canvas.getByRole("columnheader", { name: "Location" }).getBoundingClientRect().width).toBeGreaterThanOrEqual(199.5);
+        });
+
+        await step("The scrolling area takes keyboard focus", async () => {
+            await userEvent.tab();
+            await expect(region).toHaveFocus();
+            if (window.matchMedia("(forced-colors: active)").matches && region.parentElement != null) {
+                await expect(getComputedStyle(region.parentElement, "::after").outlineStyle).toBe("solid");
+            }
         });
     },
 };

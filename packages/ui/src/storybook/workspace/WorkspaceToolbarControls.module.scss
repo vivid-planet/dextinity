@@ -129,6 +129,13 @@
     overflow-x: clip;
 }
 
+.viewFooter {
+    display: flex;
+    justify-content: flex-end;
+    padding-block-start: 8px;
+    border-block-start: var(--dextinity-line-width) solid var(--dextinity-color-line);
+}
+
 .viewPanel {
     display: grid;
     gap: 14px;

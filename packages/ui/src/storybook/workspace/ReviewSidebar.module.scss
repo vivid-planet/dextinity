@@ -67,8 +67,17 @@ $pin: #f59f00;
     border-block-start: var(--dextinity-line-width) solid var(--dextinity-color-line);
 }
 
-.footerNote {
+// One deliberate row per kind of action, each with its button at the end, so the rows don't wrap into each other
+.footerRow {
+    display: flex;
     flex-basis: 100%;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.footerNote {
     margin: 0;
     color: var(--dextinity-color-text-subtle);
 }
@@ -190,6 +199,21 @@ $pin: #f59f00;
 .entryText {
     overflow-wrap: anywhere;
     white-space: pre-wrap;
+
+    &[data-clamped] {
+        display: -webkit-box;
+        overflow: hidden;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 4;
+    }
+}
+
+.more {
+    padding-inline-start: 4px;
+
+    .entry:has(.number) > & {
+        padding-inline-start: 30px;
+    }
 }
 
 .meta {
@@ -207,6 +231,9 @@ $pin: #f59f00;
 }
 
 .actions {
+    // The actions show icons only, so they take the text color of a secondary `Button` instead of the lighter default
+    --dextinity-icon-button-foreground: var(--dextinity-color-text);
+
     display: flex;
     flex-wrap: wrap;
     gap: 2px;

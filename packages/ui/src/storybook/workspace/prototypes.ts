@@ -1,12 +1,14 @@
 import { sideNavGroups } from "../../components/sideNav/__stories__/sideNavStoryData";
 import type { SideNavItem } from "../../components/sideNav/SideNav";
+import { getCmsPageLabel } from "./cmsPrototype/cmsData";
 
-interface WorkspacePrototype {
+export interface WorkspacePrototype {
     storyId: string;
     appName: string;
     startPageId: string;
     /** The pages with a design, in the order of the navigation; the other entries of the navigation show a placeholder. */
     designedPageIds: string[];
+    /** The label of a page the prototype knows, `undefined` for any other id. */
     getPageLabel: (pageId: string) => string | undefined;
 }
 
@@ -32,5 +34,36 @@ export const careerPortalPrototype: WorkspacePrototype = {
         )?.label,
 };
 
+export const cmsPrototype: WorkspacePrototype = {
+    storyId: "workspace-prototypes--cms",
+    appName: "Website CMS",
+    startPageId: "dashboard",
+    designedPageIds: [
+        "dashboard",
+        "page-tree",
+        "page-tree/home",
+        "news",
+        "news/article-1",
+        "assets",
+        // The asset detail page in every format, from the library's demo folder
+        "assets/landscape-3x2-6000x4000",
+        "assets/landscape-16x9-1920x1080",
+        "assets/ultrawide-21x9-5040x2160",
+        "assets/panorama-10x3-4000x1200",
+        "assets/square-1x1-3000x3000",
+        "assets/portrait-3x4-3000x4000",
+        "assets/portrait-2x3-4000x6000",
+        "assets/portrait-9x16-1080x1920",
+        "assets/small-icon-128x128",
+        "assets/transparent-png-2400x1200",
+        "assets/document-portrait-a4-3-pages",
+        "assets/document-landscape-slides-12-pages",
+        "assets/video-landscape-16x9-0-42",
+        "assets/video-portrait-9x16-0-15",
+        "assets/audio-0-34",
+    ],
+    getPageLabel: getCmsPageLabel,
+};
+
 /** The prototypes by their story's id, for the workspace to list their pages. */
-export const workspacePrototypes = new Map([careerPortalPrototype].map((prototype) => [prototype.storyId, prototype]));
+export const workspacePrototypes = new Map([careerPortalPrototype, cmsPrototype].map((prototype) => [prototype.storyId, prototype]));

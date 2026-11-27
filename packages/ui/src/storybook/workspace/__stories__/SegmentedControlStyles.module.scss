@@ -1,0 +1,71 @@
+.page {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+    gap: var(--dextinity-space-6);
+    padding: var(--dextinity-space-8);
+}
+
+.variant {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-space-4);
+}
+
+.name {
+    margin: 0;
+    font-size: var(--dextinity-typography-body-size);
+    font-weight: 600;
+}
+
+.description {
+    margin: 0;
+    color: var(--dextinity-color-text-subtle);
+    font-size: var(--dextinity-typography-small-size);
+}
+
+// The proposals override the control's tokens; the theme sets them on the control itself, so they go there too
+
+.softGray :global(.dextinitySegmentedControl) {
+    --dextinity-segmented-control-background: var(--dextinity-color-fill-subtle);
+    --dextinity-segmented-control-shadow: none;
+    --dextinity-segmented-control-selected-shadow: var(--dextinity-shadow-1);
+}
+
+.outlineAccent :global(.dextinitySegmentedControl) {
+    --dextinity-segmented-control-background: transparent;
+    --dextinity-segmented-control-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-control-line);
+    --dextinity-segmented-control-selected-background: var(--dextinity-color-accent-soft);
+    --dextinity-segmented-control-selected-foreground: var(--dextinity-color-accent-text);
+    --dextinity-segmented-control-selected-shadow: none;
+}
+
+.accentFill :global(.dextinitySegmentedControl) {
+    --dextinity-segmented-control-background: var(--dextinity-color-surface);
+    --dextinity-segmented-control-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-control-line);
+    --dextinity-segmented-control-selected-background: var(--dextinity-color-accent);
+    --dextinity-segmented-control-selected-foreground: var(--dextinity-color-accent-foreground);
+    --dextinity-segmented-control-selected-shadow: none;
+}
+
+.ink :global(.dextinitySegmentedControl) {
+    --dextinity-segmented-control-background: transparent;
+    --dextinity-segmented-control-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-control-line);
+    --dextinity-segmented-control-selected-background: var(--dextinity-color-text);
+    --dextinity-segmented-control-selected-foreground: var(--dextinity-color-canvas);
+    --dextinity-segmented-control-selected-shadow: none;
+}
+
+.separate :global(.dextinitySegmentedControl) {
+    --dextinity-segmented-control-background: transparent;
+    --dextinity-segmented-control-shadow: none;
+    --dextinity-segmented-control-inset: 0px;
+    --dextinity-segmented-control-gap: var(--dextinity-space-1-5);
+    --dextinity-segmented-control-option-radius: var(--dextinity-radius-field);
+    --dextinity-segmented-control-selected-background: var(--dextinity-color-accent-soft);
+    --dextinity-segmented-control-selected-foreground: var(--dextinity-color-accent-text);
+    --dextinity-segmented-control-selected-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-accent);
+
+    :global(.dextinitySegmentedControl__option):not([data-checked]) {
+        box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-control-line);
+    }
+}

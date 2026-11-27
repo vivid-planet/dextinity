@@ -1,17 +1,19 @@
 import { gql } from "@apollo/client";
 import { messages } from "@dextinity/admin";
+import { Image } from "@dextinity/admin-icons";
 import { FormattedMessage } from "react-intl";
 
-import type { DependencyInterface } from "../../dependencies/types";
-import type { GQLFileDependencyQuery, GQLFileDependencyQueryVariables } from "./createDamFileDependency.generated";
+import type { EntityInterface } from "../entities/types";
+import type { GQLDamFileEntityQuery, GQLDamFileEntityQueryVariables } from "./createDamFileEntity.generated";
 
-function createDamFileDependency(basePath = "/assets"): DependencyInterface {
+function createDamFileEntity(basePath = "/assets"): EntityInterface {
     return {
         displayName: <FormattedMessage {...messages.file} />,
+        icon: Image,
         resolvePath: async ({ apolloClient, id }) => {
-            const { data, error } = await apolloClient.query<GQLFileDependencyQuery, GQLFileDependencyQueryVariables>({
+            const { data, error } = await apolloClient.query<GQLDamFileEntityQuery, GQLDamFileEntityQueryVariables>({
                 query: gql`
-                    query FileDependency($id: ID!) {
+                    query DamFileEntity($id: ID!) {
                         damFile(id: $id) {
                             id
                             folder {
@@ -45,4 +47,10 @@ function createDamFileDependency(basePath = "/assets"): DependencyInterface {
     };
 }
 
-export { createDamFileDependency };
+export { createDamFileEntity };
+
+/**
+ * @deprecated Use `createDamFileEntity` instead. Will be removed in version 12.
+ * @alias
+ */
+export const createDamFileDependency = createDamFileEntity;

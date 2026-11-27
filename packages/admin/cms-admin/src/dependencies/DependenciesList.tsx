@@ -25,10 +25,10 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { useContentScope } from "../contentScope/Provider";
 import { getContentScopeLabel } from "../contentScope/utils/getContentScopeLabel";
 import { DataGrid } from "../dataGrid/DataGrid";
+import { useEntitiesConfig } from "../entities/entitiesConfig";
+import { getDisplayNameString } from "../entities/getDisplayNameString";
 import type { GQLDependency } from "../graphql.generated";
-import { useDependenciesConfig } from "./dependenciesConfig";
 import { DependencyActions } from "./DependencyActions";
-import { getDisplayNameString } from "./getDisplayNameString";
 
 type DependencyItem = Pick<GQLDependency, "name" | "secondaryInformation" | "visible" | "rootColumnName" | "jsonPath"> &
     Partial<Pick<GQLDependency, "scope">> & {
@@ -96,7 +96,7 @@ export interface DependenciesListProps {
 
 export const DependenciesList = ({ query, variables }: DependenciesListProps) => {
     const intl = useIntl();
-    const { entityDependencyMap } = useDependenciesConfig();
+    const entities = useEntitiesConfig();
     const contentScope = useContentScope();
 
     const dataGridProps = {
@@ -138,13 +138,11 @@ export const DependenciesList = ({ query, variables }: DependenciesListProps) =>
                 headerName: intl.formatMessage({ id: "dextinity.dependencies.dataGrid.type", defaultMessage: "Type" }),
                 type: "singleSelect",
                 sortBy: "graphqlObjectType",
-                valueOptions: Object.entries(entityDependencyMap).map(([value, dep]) => ({
+                valueOptions: Object.entries(entities).map(([value, dep]) => ({
                     value,
                     label: getDisplayNameString(dep.displayName, intl, value),
                 })),
-                renderCell: ({ row }) => (
-                    <Chip label={entityDependencyMap[row.targetGraphqlObjectType]?.displayName ?? row.targetGraphqlObjectType} />
-                ),
+                renderCell: ({ row }) => <Chip label={entities[row.targetGraphqlObjectType]?.displayName ?? row.targetGraphqlObjectType} />,
             },
             {
                 field: "visible",
@@ -182,7 +180,7 @@ export const DependenciesList = ({ query, variables }: DependenciesListProps) =>
                 ),
             },
         ],
-        [intl, entityDependencyMap, shouldShowScopeColumn, contentScope.values],
+        [intl, entities, shouldShowScopeColumn, contentScope.values],
     );
 
     const { filter: gqlFilter } = muiGridFilterToGql(columns, dataGridProps.filterModel);

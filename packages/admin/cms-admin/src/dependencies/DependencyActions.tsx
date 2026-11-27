@@ -6,9 +6,8 @@ import { FormattedMessage } from "react-intl";
 import { useNavigate } from "react-router";
 
 import { type ContentScope, useContentScope } from "../contentScope/Provider";
-import { useDependenciesConfig } from "./dependenciesConfig";
+import { useEntity } from "../entities/entitiesConfig";
 import { resolveDependencyScope } from "./resolveDependencyScope";
-import type { DependencyInterface } from "./types";
 
 interface DependencyActionsProps {
     graphqlObjectType: string;
@@ -23,18 +22,14 @@ interface DependencyActionsProps {
 }
 
 export const DependencyActions = ({ graphqlObjectType, id, rootColumnName, jsonPath, scope }: DependencyActionsProps) => {
-    const { entityDependencyMap } = useDependenciesConfig();
+    const entity = useEntity(graphqlObjectType);
     const apolloClient = useApolloClient();
     const navigate = useNavigate();
     const contentScope = useContentScope();
 
-    const dependencyObject = entityDependencyMap[graphqlObjectType] as DependencyInterface | undefined;
-
-    if (dependencyObject === undefined) {
+    if (entity === undefined) {
         if (process.env.NODE_ENV === "development") {
-            console.warn(
-                `Cannot load URL because no implementation of DependencyInterface for ${graphqlObjectType} was provided via the DependenciesConfig`,
-            );
+            console.warn(`Cannot load URL because no entity ${graphqlObjectType} was registered in DextinityConfig.entities`);
         }
         return <FormattedMessage id="dextinity.dependencies.dataGrid.cannotLoadUrl" defaultMessage="Cannot determine URL" />;
     }
@@ -68,7 +63,7 @@ export const DependencyActions = ({ graphqlObjectType, id, rootColumnName, jsonP
     }
 
     const loadUrl = async () => {
-        const path = await dependencyObject.resolvePath({
+        const path = await entity.resolvePath({
             rootColumnName,
             jsonPath,
             apolloClient,

@@ -6,8 +6,7 @@ import { FormattedMessage } from "react-intl";
 import { useNavigate } from "react-router";
 
 import { type ContentScope, useContentScope } from "../contentScope/Provider";
-import { useDependenciesConfig } from "../dependencies/dependenciesConfig";
-import type { DependencyInterface } from "../dependencies/types";
+import { useEntity } from "../entities/entitiesConfig";
 
 interface Props {
     sourceInfo: {
@@ -21,28 +20,18 @@ interface Props {
 
 export function WarningActions({ sourceInfo, scope }: Props) {
     const navigate = useNavigate();
-    const { entityDependencyMap } = useDependenciesConfig();
     const apolloClient = useApolloClient();
     const contentScope = useContentScope();
     const { createUrl } = useContentScope();
 
-    const dependencyObject = entityDependencyMap[sourceInfo.rootEntityName] as DependencyInterface | undefined;
+    const entity = useEntity(sourceInfo.rootEntityName);
 
-    if (!dependencyObject) {
+    if (!entity) {
         return null;
     } // to some warnings it cannot be linked to. When missing a dependency or for example a failing job cannot be resolved in the admin and therefore cannot have a link
 
-    if (dependencyObject === undefined) {
-        if (process.env.NODE_ENV === "development") {
-            console.warn(
-                `Cannot load URL because no implementation of DependencyInterface for ${sourceInfo.rootEntityName} was provided via the DependenciesConfig`,
-            );
-        }
-        return <FormattedMessage id="dextinity.dependencies.dataGrid.cannotLoadUrl" defaultMessage="Cannot determine URL" />;
-    }
-
     const loadUrl = async () => {
-        const path = await dependencyObject.resolvePath({
+        const path = await entity.resolvePath({
             rootColumnName: sourceInfo.rootColumnName ?? undefined,
             jsonPath: sourceInfo.jsonPath ?? undefined,
             apolloClient,

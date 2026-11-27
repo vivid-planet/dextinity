@@ -1,15 +1,17 @@
 import { gql } from "@apollo/client";
-import type { DependencyInterface } from "@dextinity/cms-admin";
+import { PageTree } from "@dextinity/admin-icons";
+import type { EntityInterface } from "@dextinity/cms-admin";
 import { categoryToUrlParam } from "@src/pageTree/pageTreeCategories";
-import type { GQLpageTreeNodeDependencyQuery, GQLpageTreeNodeDependencyQueryVariables } from "@src/pageTree/PageTreeNodeDependency.generated";
+import type { GQLPageTreeNodeEntityQuery, GQLPageTreeNodeEntityQueryVariables } from "@src/pageTree/PageTreeNodeEntity.generated";
 import { FormattedMessage } from "react-intl";
 
-export const PageTreeNodeDependency: DependencyInterface = {
+export const PageTreeNodeEntity: EntityInterface = {
     displayName: <FormattedMessage id="pageTreeNode.displayName" defaultMessage="PageTreeNode" />,
+    icon: PageTree,
     resolvePath: async ({ apolloClient, id }) => {
-        const { data, error } = await apolloClient.query<GQLpageTreeNodeDependencyQuery, GQLpageTreeNodeDependencyQueryVariables>({
+        const { data, error } = await apolloClient.query<GQLPageTreeNodeEntityQuery, GQLPageTreeNodeEntityQueryVariables>({
             query: gql`
-                query pageTreeNodeDependency($id: ID!) {
+                query PageTreeNodeEntity($id: ID!) {
                     pageTreeNode(id: $id) {
                         id
                         category

@@ -1,34 +1,46 @@
 import { gql } from "@apollo/client";
 
 import type { BlockInputApi, BlockInterface } from "../blocks/types";
-import type { Maybe } from "../graphql.generated";
-import type { DependencyInterface } from "./types";
+import type { GQLPageTreeNode, Maybe } from "../graphql.generated";
+import type { EntityInterface } from "./types";
 
 interface Query<RootBlocks extends Record<string, BlockInterface>> {
-    node: Maybe<{ id: string } & { [Key in keyof RootBlocks]: BlockInputApi<RootBlocks[Key]> }>;
+    node: Maybe<
+        { id: string; pageTreeNode: Maybe<Pick<GQLPageTreeNode, "id" | "category">> } & { [Key in keyof RootBlocks]: BlockInputApi<RootBlocks[Key]> }
+    >;
 }
 
 interface QueryVariables {
     id: string;
 }
 
-export function createDependencyMethods<RootBlocks extends Record<string, BlockInterface>>({
+export function createDocumentEntityMethods<RootBlocks extends Record<string, BlockInterface>>({
     rootQueryName,
     rootBlocks,
     basePath,
 }: {
     rootQueryName: string;
     rootBlocks: { [Key in keyof RootBlocks]: RootBlocks[Key] | { block: RootBlocks[Key]; path?: string } };
-    basePath: string | ((node: NonNullable<Query<RootBlocks>["node"]>) => string);
-}): Pick<DependencyInterface, "resolvePath"> {
+    basePath:
+        | string
+        | ((
+              node: { id: string; pageTreeNode: Pick<GQLPageTreeNode, "id" | "category"> } & {
+                  [Key in keyof RootBlocks]: BlockInputApi<RootBlocks[Key]>;
+              },
+          ) => string);
+}): Pick<EntityInterface, "resolvePath"> {
     return {
         resolvePath: async ({ rootColumnName, jsonPath, apolloClient, id }) => {
             const { data, error } = await apolloClient.query<Query<RootBlocks>, QueryVariables>({
                 query: gql`
-                    query ${rootQueryName}Dependency($id: ID!) {
+                    query ${rootQueryName}Entity($id: ID!) {
                         node: ${rootQueryName}(id: $id) {
                             id
                             ${Object.keys(rootBlocks).join("\n")}
+                            pageTreeNode {
+                                id
+                                category
+                            }
                         }    
                     }    
                 `,
@@ -39,6 +51,10 @@ export function createDependencyMethods<RootBlocks extends Record<string, BlockI
 
             if (error || !data || data.node === null) {
                 throw new Error(`Error for document ${id}: ${error?.message ?? "Document is undefined"}`);
+            }
+
+            if (!hasPageTreeNode(data.node)) {
+                throw new Error(`Error for document ${id}: No page tree node found`);
             }
 
             let url: string;
@@ -63,7 +79,12 @@ export function createDependencyMethods<RootBlocks extends Record<string, BlockI
                 }
 
                 url += `${path ?? ""}/`;
-                url += block.resolveDependencyPath(block.input2State(data.node[rootColumnName]), jsonPath.substring("root.".length));
+
+                const jsonPathSubstring = jsonPath.substring("root.".length);
+
+                if (jsonPathSubstring) {
+                    url += block.resolveDependencyPath(block.input2State(data.node[rootColumnName]), jsonPathSubstring);
+                }
             }
 
             return url;
@@ -74,3 +95,15 @@ export function createDependencyMethods<RootBlocks extends Record<string, BlockI
 function isBlockInterface(block: unknown): block is BlockInterface {
     return typeof block === "object" && block !== null && "name" in block;
 }
+
+function hasPageTreeNode(node: {
+    pageTreeNode: Maybe<Pick<GQLPageTreeNode, "id" | "category">>;
+}): node is { pageTreeNode: Pick<GQLPageTreeNode, "id" | "category"> } {
+    return node.pageTreeNode !== null;
+}
+
+/**
+ * @deprecated Use `createDocumentEntityMethods` instead. Will be removed in version 12.
+ * @alias
+ */
+export const createDocumentDependencyMethods = createDocumentEntityMethods;

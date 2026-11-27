@@ -26,8 +26,8 @@ import ReactSplit from "react-split";
 
 import { fullCropArea } from "../../common/image/cropArea";
 import { useContentScope } from "../../contentScope/Provider";
-import { useDependenciesConfig } from "../../dependencies/dependenciesConfig";
 import { DependentsList } from "../../dependencies/DependentsList";
+import { useEntitiesConfig } from "../../entities/entitiesConfig";
 import type { GQLDamFileAiContentType, GQLFocalPoint, GQLImageCropAreaInput, GQLLicenseInput } from "../../graphql.generated";
 import { useUserPermissionCheck } from "../../userPermissions/hooks/currentUser";
 import { useDamConfig, useVideoPerformanceWarning } from "../config/damConfig";
@@ -115,7 +115,7 @@ interface EditFileInnerProps {
 }
 
 const EditFileInner = ({ file, id, contentScopeIndicator }: EditFileInnerProps) => {
-    const { entityDependencyMap } = useDependenciesConfig();
+    const entities = useEntitiesConfig();
     const acceptedMimeTypes = useDamAcceptedMimeTypes();
     const intl = useIntl();
     const damConfig = useDamConfig();
@@ -296,7 +296,7 @@ const EditFileInner = ({ file, id, contentScopeIndicator }: EditFileInnerProps) 
                                 >
                                     <Duplicates fileId={file.id} />
                                 </RouterTab>
-                                {isAllowed("dependencies") && Object.keys(entityDependencyMap).length > 0 && (
+                                {isAllowed("dependencies") && Object.keys(entities).length > 0 && (
                                     <RouterTab
                                         key="dependents"
                                         label={intl.formatMessage({ id: "dextinity.dam.file.dependents", defaultMessage: "Dependents" })}

@@ -2,11 +2,11 @@ import { gql } from "@apollo/client";
 import { messages } from "@dextinity/admin";
 import { Link as LinkIcon } from "@dextinity/admin-icons";
 import {
-    createDocumentDependencyMethods,
+    createDocumentEntityMethods,
     createDocumentRootBlocksMethods,
     createDocumentTranslationMethods,
-    type DependencyInterface,
     type DocumentInterface,
+    type EntityInterface,
     type InfoTagProps,
     type TranslatableInterface,
 } from "@dextinity/cms-admin";
@@ -25,7 +25,7 @@ const rootBlocks = {
 
 export const Link: DocumentInterface<Pick<GQLLink, "content">, GQLLinkInput> &
     TranslatableInterface<Pick<GQLLink, "content">, GQLLinkInput> &
-    DependencyInterface = {
+    EntityInterface = {
     displayName: <FormattedMessage {...messages.link} />,
     editComponent: EditLink,
     getQuery: gql`
@@ -67,7 +67,7 @@ export const Link: DocumentInterface<Pick<GQLLink, "content">, GQLLinkInput> &
     hasNoSitePreview: true,
     ...createDocumentRootBlocksMethods(rootBlocks),
     ...createDocumentTranslationMethods(rootBlocks),
-    ...createDocumentDependencyMethods({
+    ...createDocumentEntityMethods({
         rootQueryName: "link",
         rootBlocks,
         basePath: ({ pageTreeNode }) => `/pages/pagetree/${categoryToUrlParam(pageTreeNode.category)}/${pageTreeNode.id}/edit`,

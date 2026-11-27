@@ -10,7 +10,7 @@ import { BlockContextProvider } from "../blocks/context/BlockContextProvider";
 import type { BuildInformation } from "../common/header/about/build-information/buildInformation";
 import type { ContentLanguageConfig } from "../contentLanguage/contentLanguageConfig";
 import type { DamConfig } from "../dam/config/damConfig";
-import type { DependenciesConfig } from "../dependencies/dependenciesConfig";
+import type { EntitiesConfig } from "../entities/entitiesConfig";
 import type { PageTreeConfig } from "../pages/pageTreeConfig";
 import type { RedirectsConfig } from "../redirects/redirectsConfig";
 import type { SiteConfigsConfig } from "../siteConfigs/siteConfigsConfig";
@@ -23,7 +23,7 @@ export interface DextinityConfig<SiteConfigs = unknown> {
     pageTree?: PageTreeConfig;
     dam?: DamConfig;
     redirects?: RedirectsConfig;
-    dependencies?: DependenciesConfig;
+    entities?: EntitiesConfig;
     siteConfigs?: SiteConfigsConfig<SiteConfigs>;
     buildInformation?: BuildInformation;
     contentLanguage?: ContentLanguageConfig;

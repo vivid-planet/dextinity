@@ -1,11 +1,13 @@
-import { createDependencyMethods, type DependencyInterface } from "@dextinity/cms-admin";
+import { Link } from "@dextinity/admin-icons";
+import { createEntityMethods, type EntityInterface } from "@dextinity/cms-admin";
 import { FormattedMessage } from "react-intl";
 
 import { RedirectsLinkBlock } from "./RedirectsPage";
 
-export const RedirectDependency: DependencyInterface = {
+export const RedirectEntity: EntityInterface = {
     displayName: <FormattedMessage id="redirect.displayName" defaultMessage="Redirect" />,
-    ...createDependencyMethods({
+    icon: Link,
+    ...createEntityMethods({
         rootQueryName: "redirect",
         rootBlocks: {
             target: {

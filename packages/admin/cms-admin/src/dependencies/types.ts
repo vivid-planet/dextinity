@@ -1,17 +1,6 @@
-import type { ApolloClient } from "@apollo/client";
-import type { ReactNode } from "react";
+import type { EntityInterface } from "../entities/types";
 
-export interface DependencyInterface {
-    displayName: ReactNode;
-    resolvePath: ({
-        rootColumnName,
-        jsonPath,
-        apolloClient,
-        id,
-    }: {
-        rootColumnName?: string;
-        jsonPath?: string;
-        apolloClient: ApolloClient;
-        id: string;
-    }) => Promise<string>;
-}
+/**
+ * @deprecated Use `EntityInterface` instead. Will be removed in version 12.
+ */
+export type DependencyInterface = EntityInterface;

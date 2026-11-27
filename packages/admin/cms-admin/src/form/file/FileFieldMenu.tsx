@@ -5,7 +5,7 @@ import { type ComponentProps, isValidElement, type ReactElement, type ReactNode 
 import { FormattedMessage } from "react-intl";
 
 import { useContentScope } from "../../contentScope/Provider";
-import { useDependenciesConfig } from "../../dependencies/dependenciesConfig";
+import { useEntity } from "../../entities/entitiesConfig";
 
 export interface ActionItem extends ComponentProps<typeof MenuItem> {
     label: ReactNode;
@@ -23,16 +23,15 @@ interface FileFieldMenuProps {
 export const FileFieldMenu = ({ fileId, anchorEl, onClose, menuActions, keepMounted }: FileFieldMenuProps) => {
     const contentScope = useContentScope();
     const apolloClient = useApolloClient();
-    const { entityDependencyMap } = useDependenciesConfig();
-    const damDependency = entityDependencyMap["DamFile"];
+    const damFileEntity = useEntity("DamFile");
 
     return (
         <Menu anchorEl={anchorEl} keepMounted={keepMounted} open={Boolean(anchorEl)} onClose={onClose}>
-            {damDependency && (
+            {damFileEntity && (
                 <MenuItem
                     onClick={async () => {
                         onClose();
-                        const path = await damDependency.resolvePath({ apolloClient, id: fileId });
+                        const path = await damFileEntity.resolvePath({ apolloClient, id: fileId });
                         window.open(contentScope.match.url + path, "_blank");
                     }}
                 >
@@ -62,6 +61,6 @@ export const FileFieldMenu = ({ fileId, anchorEl, onClose, menuActions, keepMoun
 };
 
 export const useHasFileFieldMenu = (menuActions: FileFieldMenuProps["menuActions"]): boolean => {
-    const { entityDependencyMap } = useDependenciesConfig();
-    return Boolean(entityDependencyMap["DamFile"]) || (menuActions !== undefined && menuActions.length > 0);
+    const damFileEntity = useEntity("DamFile");
+    return Boolean(damFileEntity) || (menuActions !== undefined && menuActions.length > 0);
 };

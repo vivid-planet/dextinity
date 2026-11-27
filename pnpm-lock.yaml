@@ -712,8 +712,8 @@ importers:
   demo/site:
     dependencies:
       '@aws-sdk/client-s3':
-        specifier: ^3.1175.0
-        version: 3.1175.0
+        specifier: ^3.1176.0
+        version: 3.1176.0
       '@base-ui/react':
         specifier: ^1.9.0
         version: 1.9.0(@types/react@19.3.0)(date-fns@4.4.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -2238,11 +2238,11 @@ importers:
   packages/api/cms-api:
     dependencies:
       '@aws-sdk/client-s3':
-        specifier: ^3.1175.0
-        version: 3.1175.0
+        specifier: ^3.1176.0
+        version: 3.1176.0
       '@aws-sdk/lib-storage':
-        specifier: ^3.1175.0
-        version: 3.1175.0(@aws-sdk/client-s3@3.1175.0)
+        specifier: ^3.1176.0
+        version: 3.1176.0(@aws-sdk/client-s3@3.1176.0)
       '@azure-rest/ai-translation-text':
         specifier: ^2.0.0
         version: 2.0.0(supports-color@8.1.1)
@@ -2777,8 +2777,8 @@ importers:
         version: 3.1.1(react@19.3.1)
     devDependencies:
       '@aws-sdk/client-s3':
-        specifier: ^3.1175.0
-        version: 3.1175.0
+        specifier: ^3.1176.0
+        version: 3.1176.0
       '@azure/storage-blob':
         specifier: ^12.34.0
         version: 12.34.0(supports-color@8.1.1)
@@ -3422,8 +3422,8 @@ packages:
     resolution: {integrity: sha512-OgxgE64MkHNGtt7YJc2Q+d1maGnYcEkCw5r+UO7cM78iVzyMhXFVMgm5un1FZzk4XB8lv436zYduIWLH9ibdBg==}
     engines: {node: '>=20.0.0'}
 
-  '@aws-sdk/client-s3@3.1175.0':
-    resolution: {integrity: sha512-vBbIL3dsLsCLfoq7M8PXAybnPkFz7hbGiy6l+RCA81z6vXS88HfxPuxT+e3iuNjR4gXS7QxRSJa/4oSbsEc/Ag==}
+  '@aws-sdk/client-s3@3.1176.0':
+    resolution: {integrity: sha512-ZD0T/34Rx8cyCF7KjT9DpKbeeUjPvdDTgcOzdn/NOHQIQ3GdMc7NIdfea3GUBI+rFaxvlLsQ4auV1eNR8pvkAQ==}
     engines: {node: '>=20.0.0'}
 
   '@aws-sdk/core@3.981.1':
@@ -3462,11 +3462,11 @@ packages:
     resolution: {integrity: sha512-4k4beWSkxhwKeGMVfgppv/LwCfCd1zAycWgqop7GHkdvdNK9TTkWn299LjUQOgDMfBX2Sv08t+J1mAWKHatttw==}
     engines: {node: '>=20.0.0'}
 
-  '@aws-sdk/lib-storage@3.1175.0':
-    resolution: {integrity: sha512-lEox/KQ9sJEMsVcpf9likYDustvecaY48vRyFazFvDBTOu41c35+yYu4RmR8qnFLYt4/slpr4ER8bDUl8NJ9Eg==}
+  '@aws-sdk/lib-storage@3.1176.0':
+    resolution: {integrity: sha512-+i1L3pgn9iMWigRPqsjTnKegGI0Oac2lP91yyl/NDnFWAq5jg3nMuNJqfJgj+yZW6+MEQReAuVhBqyV34oYjbA==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
-      '@aws-sdk/client-s3': ^3.1175.0
+      '@aws-sdk/client-s3': ^3.1176.0
 
   '@aws-sdk/middleware-sdk-s3@3.972.91':
     resolution: {integrity: sha512-L4rY9o4i85P/UJ8rGiHH4JYC/PnFwdAbCrXAs3g1UCxnyrnKboYm6blgx38xbOzVaZ1odpkrBRlMNMWI+aTfgg==}
@@ -19286,7 +19286,7 @@ snapshots:
       '@smithy/types': 4.20.0
       tslib: 2.9.1
 
-  '@aws-sdk/client-s3@3.1175.0':
+  '@aws-sdk/client-s3@3.1176.0':
     dependencies:
       '@aws-sdk/checksums': 3.1002.6
       '@aws-sdk/core': 3.981.1
@@ -19395,9 +19395,9 @@ snapshots:
       '@smithy/types': 4.20.0
       tslib: 2.9.1
 
-  '@aws-sdk/lib-storage@3.1175.0(@aws-sdk/client-s3@3.1175.0)':
+  '@aws-sdk/lib-storage@3.1176.0(@aws-sdk/client-s3@3.1176.0)':
     dependencies:
-      '@aws-sdk/client-s3': 3.1175.0
+      '@aws-sdk/client-s3': 3.1176.0
       '@smithy/core': 3.41.0
       '@smithy/types': 4.20.0
       buffer: 5.6.0

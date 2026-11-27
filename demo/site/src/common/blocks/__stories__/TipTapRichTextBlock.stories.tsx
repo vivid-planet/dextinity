@@ -30,7 +30,7 @@ const meta: Meta<typeof TipTapRichTextBlock> = {
                 ],
             },
             createTipTapParagraph("A small paragraph.", "paragraph200"),
-            createTipTapBulletList("List item", "Another list item"),
+            createTipTapBulletList(["List item", "Another list item"]),
         ),
     },
 };

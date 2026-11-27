@@ -81,10 +81,10 @@ export function createTipTapHeading(text: string, level: 1 | 2 | 3 | 4 | 5 = 2):
     return { type: "textBlock", attrs: { textBlock: `heading-${level}` }, content: [{ type: "text", text }] };
 }
 
-export function createTipTapBulletList(...items: string[]): TipTapNode {
+export function createTipTapBulletList(items: string[], textBlockStyle?: string): TipTapNode {
     return {
         type: "bulletList",
-        content: items.map((text) => ({ type: "listItem", content: [createTipTapParagraph(text)] })),
+        content: items.map((text) => ({ type: "listItem", content: [createTipTapParagraph(text, textBlockStyle)] })),
     };
 }
 
@@ -144,7 +144,7 @@ export function createDamImage(options?: Parameters<typeof createPixelImage>[0])
 
 export const emptyDamImage: DamImageBlockData = { attachedBlocks: [] };
 
-function createSvgImage(fileUrl = "/assets/dextinity-logo.svg"): SvgImageBlockData {
+export function createSvgImage(fileUrl = "/assets/dextinity-logo.svg"): SvgImageBlockData {
     return {
         damFile: {
             id: "storybook-svg",

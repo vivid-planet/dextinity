@@ -5,6 +5,7 @@
     "type": "module",
     "scripts": {
         "build": "pnpm run intl:compile && run-p gql:types generate-block-types && NODE_ENV=production vite build",
+        "build-storybook": "storybook build --disable-telemetry",
         "check-node-version": "check-node-version --node $(cat ../../.nvmrc)",
         "generate-block-types": "dextinity generate-block-types --inputs",
         "generate-block-types:watch": "chokidar -s \"block-meta.json\" -c \"pnpm run generate-block-types\"",
@@ -22,12 +23,14 @@
         "lint:fix:eslint": "pnpm run lint:eslint --fix",
         "lint:fix:oxlint": "pnpm run lint:oxlint --fix",
         "lint:fix:prettier": "pnpm run lint:prettier --write",
-        "lint:oxlint": "oxlint --config oxlint.config.mts --max-warnings 0 src/",
+        "lint:oxlint": "oxlint --config oxlint.config.mts --max-warnings 0 src/ .storybook/ vitest.config.ts",
         "lint:prettier": "pnpm exec prettier --check \"*.{ts,js,json,md,yml,yaml}\" \"src/**/*.{ts,tsx,js,jsx,json}\" \"!src/**/*.generated.ts\"",
-        "lint:tsc": "tsc --project . && tsc --project server",
+        "lint:tsc": "tsc --project . && tsc --project server && tsc --project tsconfig.storybook.json",
         "preview": "pnpm run build && vite preview",
         "serve": "node server/index.ts",
-        "start": "pnpm check-node-version && pnpm run intl:compile && run-p gql:types generate-block-types && dotenv -e .env.secrets -e .env.local -e .env -e .env.site-configs -- vite"
+        "start": "pnpm check-node-version && pnpm run intl:compile && run-p gql:types generate-block-types && dotenv -e .env.secrets -e .env.local -e .env -e .env.site-configs -- vite",
+        "storybook": "storybook dev -p 26649 --no-open --disable-telemetry",
+        "test:storybook": "vitest --run --project storybook --outputFile.junit=./junit-storybook.xml"
     },
     "dependencies": {
         "@apollo/client": "^4.3.5",
@@ -68,7 +71,7 @@
         "@dextinity/cli": "workspace:*",
         "@dextinity/eslint-config": "workspace:*",
         "@dextinity/oxlint-config": "workspace:*",
-        "@formatjs/cli": "^6.20.0",
+        "@formatjs/cli": "^6.23.0",
         "@graphql-codegen/add": "^7.1.1",
         "@graphql-codegen/cli": "^7.4.6",
         "@graphql-codegen/fragment-matcher": "^7.1.0",
@@ -78,11 +81,15 @@
         "@graphql-codegen/typescript": "^6.1.2",
         "@graphql-codegen/typescript-operations": "^6.1.10",
         "@parcel/watcher": "^2.6.0",
+        "@storybook/addon-docs": "^10.6.8",
+        "@storybook/addon-vitest": "10.6.8",
+        "@storybook/react-vite": "10.6.8",
         "@swc/plugin-emotion": "^20.0.3",
         "@types/node": "^24.19.2",
         "@types/react": "^19.3.0",
         "@types/react-dom": "^19.3.0",
         "@vitejs/plugin-react-swc": "^4.3.3",
+        "@vitest/browser-playwright": "5.1.1",
         "check-node-version": "^4.2.1",
         "chokidar-cli": "^3.0.0",
         "cosmiconfig-toml-loader": "^1.0.0",
@@ -91,9 +98,12 @@
         "npm-run-all2": "^9.1.0",
         "oxlint": "1.89.0",
         "oxlint-tsgolint": "7.0.2004",
+        "playwright": "^1.65.1",
         "prettier": "^3.10.1",
+        "storybook": "^10.6.8",
         "typescript": "^6.0.3",
         "vite": "^8.3.8",
-        "vite-plugin-compression2": "^2.5.4"
+        "vite-plugin-compression2": "^2.5.4",
+        "vitest": "^5.1.1"
     }
 }

@@ -736,67 +736,65 @@ export const NestedFormInGridInTabsInGrid = {
         );
 
         return (
-            <>
-                <StackSwitch>
-                    <StackPage name="grid">
-                        <StackToolbar>
-                            <ToolbarBackButton />
-                            <ToolbarAutomaticTitleItem />
-                        </StackToolbar>
-                        <StackMainContent fullHeight>
-                            <DataGrid rows={rows} columns={columns} loading={loading} slots={{ toolbar: GridToolbar }} showToolbar />
-                        </StackMainContent>
-                    </StackPage>
-                    <StackPage name="edit">
-                        {(id) => {
-                            return (
-                                <SaveBoundary>
-                                    <StackPageTitle title={rows.find((row) => row.id === id)?.title}>{formToolbar}</StackPageTitle>
-                                    <StackMainContent>
-                                        <RouterTabs>
-                                            <RouterTab path="" label="Details Form">
-                                                <FieldSet>
-                                                    <Form id={id} />
-                                                </FieldSet>
-                                            </RouterTab>
-                                            <RouterTab path="/child-items" label="Child items in Grid">
-                                                <StackSwitch>
-                                                    <StackPage name="grid">
-                                                        <FullHeightContent>
-                                                            <DataGrid rows={rows} columns={columns} loading={loading} />
-                                                        </FullHeightContent>
-                                                    </StackPage>
-                                                    <StackPage name="edit">
-                                                        {(id) => {
-                                                            return (
-                                                                <>
-                                                                    <StackPageTitle title={rows.find((row) => row.id === id)?.title}>
-                                                                        {formToolbar}
-                                                                    </StackPageTitle>
-                                                                    <StackMainContent>
-                                                                        <FieldSet>
-                                                                            <Form id={id} />
-                                                                        </FieldSet>
-                                                                    </StackMainContent>
-                                                                </>
-                                                            );
-                                                        }}
-                                                    </StackPage>
-                                                </StackSwitch>
-                                            </RouterTab>
-                                        </RouterTabs>
-                                    </StackMainContent>
-                                </SaveBoundary>
-                            );
-                        }}
-                    </StackPage>
-                </StackSwitch>
-                <EditDialog title="Add new item">
-                    <DialogContent>
-                        <Form />
-                    </DialogContent>
-                </EditDialog>
-            </>
+            <StackSwitch>
+                <StackPage name="grid">
+                    <StackToolbar>
+                        <ToolbarBackButton />
+                        <ToolbarAutomaticTitleItem />
+                    </StackToolbar>
+                    <StackMainContent fullHeight>
+                        <DataGrid rows={rows} columns={columns} loading={loading} slots={{ toolbar: GridToolbar }} showToolbar />
+                    </StackMainContent>
+                    <EditDialog title="Add new item">
+                        <DialogContent>
+                            <Form />
+                        </DialogContent>
+                    </EditDialog>
+                </StackPage>
+                <StackPage name="edit">
+                    {(id) => {
+                        return (
+                            <SaveBoundary>
+                                <StackPageTitle title={rows.find((row) => row.id === id)?.title}>{formToolbar}</StackPageTitle>
+                                <StackMainContent>
+                                    <RouterTabs>
+                                        <RouterTab path="" label="Details Form">
+                                            <FieldSet>
+                                                <Form id={id} />
+                                            </FieldSet>
+                                        </RouterTab>
+                                        <RouterTab path="/child-items" label="Child items in Grid">
+                                            <StackSwitch>
+                                                <StackPage name="grid">
+                                                    <FullHeightContent>
+                                                        <DataGrid rows={rows} columns={columns} loading={loading} />
+                                                    </FullHeightContent>
+                                                </StackPage>
+                                                <StackPage name="edit">
+                                                    {(id) => {
+                                                        return (
+                                                            <>
+                                                                <StackPageTitle title={rows.find((row) => row.id === id)?.title}>
+                                                                    {formToolbar}
+                                                                </StackPageTitle>
+                                                                <StackMainContent>
+                                                                    <FieldSet>
+                                                                        <Form id={id} />
+                                                                    </FieldSet>
+                                                                </StackMainContent>
+                                                            </>
+                                                        );
+                                                    }}
+                                                </StackPage>
+                                            </StackSwitch>
+                                        </RouterTab>
+                                    </RouterTabs>
+                                </StackMainContent>
+                            </SaveBoundary>
+                        );
+                    }}
+                </StackPage>
+            </StackSwitch>
         );
     },
 };

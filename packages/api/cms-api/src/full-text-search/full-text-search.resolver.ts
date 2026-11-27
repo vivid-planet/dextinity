@@ -41,7 +41,7 @@ export class FullTextSearchResolver {
         return new FullTextSearchResults({ nodes, totalCount: result.totalCount, types: result.types });
     }
 
-    @Query(() => PaginatedEntityInfo, { deprecationReason: "Use fullTextSearch" })
+    @Query(() => PaginatedEntityInfo, { deprecationReason: "Use fullTextSearch. Will be removed in version 11." })
     async myFullTextSearch(
         @Args("search") search: string,
         @Args("offset", { type: () => Int, defaultValue: 0 }) offset: number,

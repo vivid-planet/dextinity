@@ -2080,7 +2080,7 @@ type Query {
   manufacturer(id: ID!): Manufacturer!
   manufacturerCountries(filter: ManufacturerCountryFilter, limit: Int! = 25, offset: Int! = 0, search: String): PaginatedManufacturerCountries!
   manufacturers(filter: ManufacturerFilter, limit: Int! = 25, offset: Int! = 0, search: String, sort: [ManufacturerSort!]! = [{direction: ASC, field: id}]): PaginatedManufacturers!
-  myFullTextSearch(limit: Int! = 25, offset: Int! = 0, scope: JSONObject, search: String!): PaginatedEntityInfo! @deprecated(reason: "Use fullTextSearch")
+  myFullTextSearch(limit: Int! = 25, offset: Int! = 0, scope: JSONObject, search: String!): PaginatedEntityInfo! @deprecated(reason: "Use fullTextSearch. Will be removed in version 11.")
   news(id: ID!): News!
   newsBySlug(scope: NewsContentScopeInput!, slug: String!): News
   newsList(filter: NewsFilter, limit: Int! = 25, offset: Int! = 0, scope: NewsContentScopeInput!, search: String, sort: [NewsSort!]! = [{direction: ASC, field: createdAt}]): PaginatedNews!

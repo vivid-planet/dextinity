@@ -174,7 +174,7 @@ The results are ordered as follows:
 Ids are only unique per entity. When caching results with Apollo Client, use `fetchPolicy: "no-cache"` or `keyFields: ["entityName", "id"]` for `FullTextSearchResult`.
 
 :::note Deprecated
-The `myFullTextSearch` query is deprecated. Use `fullTextSearch` instead. `myFullTextSearch` returns the results in the same order as `fullTextSearch`.
+The `myFullTextSearch` query is deprecated and will be removed in version 11. Use `fullTextSearch` instead. `myFullTextSearch` returns the results in the same order as `fullTextSearch`.
 :::
 
 #### 6. Snippet sources

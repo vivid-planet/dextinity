@@ -662,7 +662,7 @@ type Query {
   damMediaAlternatives(offset: Int! = 0, limit: Int! = 25, search: String, sort: [DamMediaAlternativeSort!], for: ID, alternative: ID, type: DamMediaAlternativeType): PaginatedDamMediaAlternatives!
   damSettings(scope: DamScopeInput! = {}): DamSettings
   fullTextSearch(offset: Int! = 0, limit: Int! = 25, search: String!, scope: JSONObject, types: [String!]): FullTextSearchResults!
-  myFullTextSearch(search: String!, offset: Int! = 0, limit: Int! = 25, scope: JSONObject): PaginatedEntityInfo! @deprecated(reason: "Use fullTextSearch")
+  myFullTextSearch(search: String!, offset: Int! = 0, limit: Int! = 25, scope: JSONObject): PaginatedEntityInfo! @deprecated(reason: "Use fullTextSearch. Will be removed in version 11.")
 }
 
 input RedirectScopeInput {

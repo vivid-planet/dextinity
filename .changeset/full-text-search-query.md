@@ -10,4 +10,4 @@ For each result, the query returns its type (the document type for page tree nod
 
 Both `fullTextSearch` and `myFullTextSearch` now check the content scopes of the user's permissions: a user who has the `pageTree` permission only for one domain no longer finds pages of other domains. Entities without a scope, such as products, are now found when searching in a scope.
 
-`myFullTextSearch` is deprecated. Use `fullTextSearch` instead. `myFullTextSearch` now returns its results in the same order as `fullTextSearch`.
+`myFullTextSearch` is deprecated and will be removed in version 11. Use `fullTextSearch` instead. `myFullTextSearch` now returns its results in the same order as `fullTextSearch`.

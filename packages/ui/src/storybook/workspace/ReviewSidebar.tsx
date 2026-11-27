@@ -1,4 +1,4 @@
-import { type KeyboardEvent, type ReactNode, useEffect, useId, useMemo, useState } from "react";
+import { type KeyboardEvent, type ReactNode, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import { Button } from "../../components/button/Button";
 import { ConfirmDialog } from "../../components/confirmDialog/ConfirmDialog";
@@ -69,7 +69,8 @@ const statusOptions: Array<{ value: NoteStatusFilter; label: string }> = [
 
 /**
  * A panel at the end of the Workbench's body that lists what a review tool collected. It stays open next to the frame, which gets
- * narrower; on a narrow screen, it covers the frame instead. Escape inside it closes it.
+ * narrower; where that would leave the frame too little room, it covers the frame instead, see `getReviewSidebarLayout`. Escape
+ * inside it closes it.
  */
 function WorkbenchSidebar({
     title,
@@ -120,6 +121,80 @@ function WorkbenchSidebar({
                 </p>
             </div>
         </aside>
+    );
+}
+
+/**
+ * An item of a sidebar's list: its text shows the item's element in the frame, and a long text shows its first lines until the
+ * designer shows more of it. The children are the item's actions.
+ */
+function SidebarEntry({
+    text,
+    number,
+    details,
+    shown,
+    done = false,
+    onShow,
+    children,
+}: {
+    text: ReactNode;
+    number?: number;
+    details: ReactNode;
+    shown: boolean;
+    done?: boolean;
+    onShow: () => void;
+    children: ReactNode;
+}) {
+    const textRef = useRef<HTMLSpanElement>(null);
+    const [expanded, setExpanded] = useState(false);
+    const [clipped, setClipped] = useState(false);
+    const textId = useId();
+
+    // An expanded text keeps its toggle, since it can't tell whether its first lines would cut it off
+    function measure() {
+        const element = textRef.current;
+        if (element && !expanded) {
+            setClipped(element.scrollHeight > element.clientHeight);
+        }
+    }
+    useLayoutEffect(measure);
+    useEffect(() => {
+        const element = textRef.current;
+        if (!element) {
+            return;
+        }
+        const observer = new ResizeObserver(measure);
+        observer.observe(element);
+        return () => observer.disconnect();
+    });
+
+    return (
+        <li className={styles.entry} data-done={done || undefined} data-shown={shown || undefined}>
+            <button type="button" className={styles.entryMain} onClick={onShow}>
+                {number !== undefined && <span className={styles.number}>{number}</span>}
+                <span className={styles.entryBody}>
+                    <span ref={textRef} id={textId} className={styles.entryText} data-clamped={!expanded || undefined}>
+                        {text}
+                    </span>
+                    {details}
+                </span>
+            </button>
+            {(clipped || expanded) && (
+                <div className={styles.more}>
+                    <Button
+                        variant="text"
+                        color="secondary"
+                        size="small"
+                        aria-expanded={expanded}
+                        aria-controls={textId}
+                        onClick={() => setExpanded(!expanded)}
+                    >
+                        {expanded ? "Show less" : "Show more"}
+                    </Button>
+                </div>
+            )}
+            {children}
+        </li>
     );
 }
 
@@ -264,16 +339,15 @@ export function NotesSidebar({ current, describePlace, onShow, shownId, overlay,
                             </h3>
                             <ol className={styles.list}>
                                 {group.items.map((note) => (
-                                    <li
+                                    <SidebarEntry
                                         key={note.id}
-                                        className={styles.entry}
-                                        data-done={isNoteDone(note) || undefined}
-                                        data-shown={note.id === shownId || undefined}
-                                    >
-                                        <button type="button" className={styles.entryMain} onClick={() => onShow(note)}>
-                                            <span className={styles.number}>{getNoteNumber(notes, note)}</span>
-                                            <span className={styles.entryBody}>
-                                                <span className={styles.entryText}>{note.text || "Empty note"}</span>
+                                        text={note.text || "Empty note"}
+                                        number={getNoteNumber(notes, note)}
+                                        shown={note.id === shownId}
+                                        done={isNoteDone(note)}
+                                        onShow={() => onShow(note)}
+                                        details={
+                                            <>
                                                 {note.element && <span className={styles.meta}>{note.element}</span>}
                                                 {note.view && <span className={styles.meta}>{formatViewSettings(note.view)}</span>}
                                                 <span className={styles.meta}>
@@ -287,8 +361,9 @@ export function NotesSidebar({ current, describePlace, onShow, shownId, overlay,
                                                         {formatNoteTime(note.sharedAt)}
                                                     </span>
                                                 )}
-                                            </span>
-                                        </button>
+                                            </>
+                                        }
+                                    >
                                         {editing?.id === note.id ? (
                                             <div className={styles.editor}>
                                                 <Textarea
@@ -346,32 +421,32 @@ export function NotesSidebar({ current, describePlace, onShow, shownId, overlay,
                                                     <Icon name="trash" />
                                                 </IconButton>
                                                 <span className={styles.actionsEnd}>
-                                                    <Button
+                                                    <IconButton
                                                         variant="text"
                                                         color="secondary"
                                                         size="small"
-                                                        startIcon={<Icon name="chats" />}
+                                                        aria-label={host ? "Post as comment" : "Copy as comment"}
                                                         disabled={note.text.trim() === "" || sharing !== null}
                                                         loading={sharing?.id === note.id && sharing.target === "comment"}
                                                         onClick={() => share(note, "comment")}
                                                     >
-                                                        {host ? "Post as comment" : "Copy as comment"}
-                                                    </Button>
-                                                    <Button
+                                                        <Icon name="chats" />
+                                                    </IconButton>
+                                                    <IconButton
                                                         variant="text"
                                                         color="secondary"
                                                         size="small"
-                                                        startIcon={<Icon name="spark" />}
+                                                        aria-label={host ? "Send to Claude" : "Copy for Claude"}
                                                         disabled={note.text.trim() === "" || sharing !== null || !canSendToClaude}
                                                         loading={sharing?.id === note.id && sharing.target === "claude"}
                                                         onClick={() => share(note, "claude")}
                                                     >
-                                                        {host ? "Send to Claude" : "Copy for Claude"}
-                                                    </Button>
+                                                        <Icon name="spark" />
+                                                    </IconButton>
                                                 </span>
                                             </div>
                                         )}
-                                    </li>
+                                    </SidebarEntry>
                                 ))}
                             </ol>
                         </section>
@@ -426,29 +501,33 @@ export function TextChangesSidebar({ current, describePlace, onShow, shownId, ov
             storageNote="Saved in this browser only: not on other devices, and gone when the site data is cleared. Others see the changes once you send them."
             footer={
                 <>
-                    <p className={styles.footerNote}>
-                        {requestChanges.length} of {changes.length} in the code request
-                    </p>
-                    <CopyButton
-                        label="Copy code request"
-                        disabled={requestChanges.length === 0}
-                        getText={() => formatCodeRequest(requestChanges, describePlace)}
-                    />
-                    <CopyButton
-                        label="Copy all text changes"
-                        disabled={changes.length === 0}
-                        getText={() => formatTextChanges(changes, describePlace)}
-                    />
-                    <Button
-                        variant="text"
-                        color="secondary"
-                        size="small"
-                        startIcon={<Icon name="undo" />}
-                        disabled={shownChanges.length === 0}
-                        onClick={() => setRevertingAll(true)}
-                    >
-                        Revert all
-                    </Button>
+                    <div className={styles.footerRow}>
+                        <p className={styles.footerNote}>
+                            {requestChanges.length} of {changes.length} in the code request
+                        </p>
+                        <CopyButton
+                            label="Copy code request"
+                            disabled={requestChanges.length === 0}
+                            getText={() => formatCodeRequest(requestChanges, describePlace)}
+                        />
+                    </div>
+                    <div className={styles.footerRow}>
+                        <Button
+                            variant="text"
+                            color="secondary"
+                            size="small"
+                            startIcon={<Icon name="undo" />}
+                            disabled={shownChanges.length === 0}
+                            onClick={() => setRevertingAll(true)}
+                        >
+                            Revert all
+                        </Button>
+                        <CopyButton
+                            label="Copy all text changes"
+                            disabled={changes.length === 0}
+                            getText={() => formatTextChanges(changes, describePlace)}
+                        />
+                    </div>
                 </>
             }
         >
@@ -469,15 +548,17 @@ export function TextChangesSidebar({ current, describePlace, onShow, shownId, ov
                             </h3>
                             <ul className={styles.list}>
                                 {group.items.map((change) => (
-                                    <li key={change.id} className={styles.entry} data-shown={change.id === shownId || undefined}>
-                                        <button type="button" className={styles.entryMain} onClick={() => onShow(change)}>
-                                            <span className={styles.entryBody}>
-                                                <span className={styles.entryText}>
-                                                    <del>{change.original}</del> → {change.text}
-                                                </span>
-                                                {change.element && <span className={styles.meta}>{change.element}</span>}
-                                            </span>
-                                        </button>
+                                    <SidebarEntry
+                                        key={change.id}
+                                        text={
+                                            <>
+                                                <del>{change.original}</del> → {change.text}
+                                            </>
+                                        }
+                                        shown={change.id === shownId}
+                                        onShow={() => onShow(change)}
+                                        details={change.element && <span className={styles.meta}>{change.element}</span>}
+                                    >
                                         <div className={styles.actions}>
                                             <Switch
                                                 size="small"
@@ -498,7 +579,7 @@ export function TextChangesSidebar({ current, describePlace, onShow, shownId, ov
                                                 </IconButton>
                                             </span>
                                         </div>
-                                    </li>
+                                    </SidebarEntry>
                                 ))}
                             </ul>
                         </section>

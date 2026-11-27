@@ -10,3 +10,4 @@
 storybook/src/** linguist-generated=true
 docs/docs/** linguist-generated=true
 docs/blog/** linguist-generated=true
+docs/docs/7-migration-guide/** -linguist-generated

@@ -3,6 +3,15 @@
 
 $short-viewport: "(max-height: 30rem)";
 
+@mixin visually-hidden {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
 .root {
     // Set by the table while the page scrolls, and read by its parts; declared here, so a table inside a cell doesn't inherit them
     --_toolbar-height: 0px;
@@ -74,6 +83,35 @@ $short-viewport: "(max-height: 30rem)";
         box-shadow: var(--dextinity-table-focus-ring);
 
         @include forced-colors.focus-ring(-2px);
+    }
+}
+
+.skipLink {
+    @include visually-hidden;
+
+    &:focus {
+        inset-block-start: var(--dextinity-space-2);
+        inset-inline-start: var(--dextinity-space-2);
+        z-index: var(--dextinity-table-skip-link-layer);
+        inline-size: auto;
+        block-size: auto;
+        padding: var(--dextinity-space-1) var(--dextinity-space-3);
+        clip-path: none;
+        border-radius: var(--dextinity-table-skip-link-radius);
+        outline: none;
+        background: var(--dextinity-table-skip-link-background);
+        box-shadow: var(--dextinity-focus-ring);
+        color: var(--dextinity-table-skip-link-foreground);
+
+        @include forced-colors.focus-ring;
+    }
+}
+
+.skipTarget {
+    @include visually-hidden;
+
+    &:focus {
+        outline: none;
     }
 }
 

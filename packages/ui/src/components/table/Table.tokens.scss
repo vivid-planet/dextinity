@@ -10,6 +10,15 @@
     // Space between the toolbar and the table
     --dextinity-table-toolbar-spacing: var(--dextinity-space-3);
 
+    // Fill of the skip link while it has focus
+    --dextinity-table-skip-link-background: var(--dextinity-color-surface);
+    // Text color of the skip link
+    --dextinity-table-skip-link-foreground: var(--dextinity-color-text);
+    // Corner radius of the skip link
+    --dextinity-table-skip-link-radius: var(--dextinity-radius-item);
+    // Stacking level of the skip link while it has focus, above the header and the sticky toolbar
+    --dextinity-table-skip-link-layer: 3;
+
     // Distance from the top of the window, or of the scroll container around the table, at which the toolbar and header stick, e.g. the
     // height of the app's own sticky bars
     --dextinity-table-sticky-offset: 0px;

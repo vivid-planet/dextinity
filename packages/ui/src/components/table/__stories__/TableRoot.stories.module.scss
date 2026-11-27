@@ -6,6 +6,10 @@
     max-inline-size: 480px;
 }
 
+.loadMore {
+    margin-block-start: var(--dextinity-space-3);
+}
+
 .scrollContainer {
     max-block-size: 360px;
     overflow-y: auto;

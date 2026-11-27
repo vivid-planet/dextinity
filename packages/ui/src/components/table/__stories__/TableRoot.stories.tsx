@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
+import { Button } from "../../button/Button";
 import { Link } from "../../link/Link";
 import { Panel } from "../../panel/Panel";
 import { StatusIndicator } from "../../statusIndicator/StatusIndicator";
@@ -98,6 +99,7 @@ const meta = {
         toolbar: { control: false },
         stickyHeader: { control: "boolean" },
         stickyToolbar: { control: "boolean" },
+        labels: { control: false },
         className: { control: false },
         style: { control: false },
         slotProps: { control: false },
@@ -169,7 +171,9 @@ export const HorizontalScroll: Story = {
             await expect(canvas.getByRole("columnheader", { name: "Location" }).getBoundingClientRect().width).toBeGreaterThanOrEqual(199.5);
         });
 
-        await step("The scrolling area takes keyboard focus", async () => {
+        await step("The scrolling area takes keyboard focus after the skip link", async () => {
+            await userEvent.tab();
+            await expect(canvas.getByRole("link", { name: "Skip table Job ads" })).toHaveFocus();
             await userEvent.tab();
             await expect(region).toHaveFocus();
             if (window.matchMedia("(forced-colors: active)").matches && region.parentElement != null) {
@@ -276,5 +280,41 @@ export const StickyToolbar: Story = {
             canvasElement.style.removeProperty("padding-block-end");
             await scrollWindowTo(0);
         }
+    },
+};
+
+/**
+ * A link before the table, shown while it has focus, moves focus past the table, e.g. to the button below it, so keyboard users
+ * don't have to tab through every row. It is named after the table, so each table on a page has its own.
+ */
+export const SkipLink: Story = {
+    tags: ["forced-colors"],
+    args: { children: manyJobAdsContent },
+    render: (args) => (
+        <Panel>
+            <TableRoot {...args} />
+            <Button variant="outlined" color="secondary" size="small" className={styles.loadMore}>
+                Load more
+            </Button>
+        </Panel>
+    ),
+    play: async ({ canvas, step }) => {
+        const skipLink = canvas.getByRole("link", { name: "Skip table Job ads" });
+
+        await step("The skip link is the first tab stop and shows while it has focus", async () => {
+            await userEvent.tab();
+            await expect(skipLink).toHaveFocus();
+            await expect(skipLink.getBoundingClientRect().width).toBeGreaterThan(1);
+            if (window.matchMedia("(forced-colors: active)").matches) {
+                await expect(getComputedStyle(skipLink).outlineStyle).toBe("solid");
+            }
+        });
+
+        await step("Enter moves focus past the table, so the next tab stop follows the table", async () => {
+            await userEvent.keyboard("{Enter}");
+            await expect(canvas.getByText("End of table Job ads")).toHaveFocus();
+            await userEvent.tab();
+            await expect(canvas.getByRole("button", { name: "Load more" })).toHaveFocus();
+        });
     },
 };

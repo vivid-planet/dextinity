@@ -1,5 +1,18 @@
 import { clsx } from "clsx";
-import { type CSSProperties, forwardRef, type ReactNode, type TableHTMLAttributes, useEffect, useImperativeHandle, useMemo, useRef } from "react";
+import {
+    type CSSProperties,
+    forwardRef,
+    type MouseEvent,
+    type ReactNode,
+    type TableHTMLAttributes,
+    useEffect,
+    useId,
+    useImperativeHandle,
+    useLayoutEffect,
+    useMemo,
+    useRef,
+    useState,
+} from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { useMergedRef } from "../../utils/useMergedRef";
@@ -31,7 +44,23 @@ export interface TableRootSlotProps {
     scroller?: SlotPropsValue<TableRootOwnerState, "div">;
     /** Props for the `table` slot. */
     table?: SlotPropsValue<TableRootOwnerState, "table">;
+    /** Props for the `skipLink` slot, the link before the table that moves focus past it. It shows only while it has focus. */
+    skipLink?: SlotPropsValue<TableRootOwnerState, "a">;
+    /** Props for the `skipTarget` slot after the table, where the skip link moves focus. Its text is visually hidden. */
+    skipTarget?: SlotPropsValue<TableRootOwnerState, "span">;
 }
+
+export interface TableRootLabels {
+    /** The link before the table that moves focus past it, with the table's name when it has one. */
+    skipTable: (tableName?: string) => string;
+    /** Read when the skip link moved focus past the table, with the table's name when it has one. */
+    tableEnd: (tableName?: string) => string;
+}
+
+const defaultLabels: TableRootLabels = {
+    skipTable: (tableName) => (tableName != null ? `Skip table ${tableName}` : "Skip table"),
+    tableEnd: (tableName) => (tableName != null ? `End of table ${tableName}` : "End of table"),
+};
 
 export interface TableRootProps extends Omit<TableHTMLAttributes<HTMLTableElement>, "className" | "style" | "children"> {
     /** The columns in their order, with their widths and alignment. The header cells and cells name their column by its `id`. */
@@ -57,6 +86,8 @@ export interface TableRootProps extends Omit<TableHTMLAttributes<HTMLTableElemen
      * @defaultValue `false`
      */
     stickyToolbar?: boolean;
+    /** Built-in text for assistive technology. */
+    labels?: Partial<TableRootLabels>;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Styles of the root. */
@@ -78,16 +109,20 @@ function getMinTableWidth(columns: TableLayoutColumn[]) {
 
 /**
  * Shows rows of data in columns. When the columns don't fit, the table scrolls horizontally, and its scrolling area takes keyboard
- * focus. The header row stays in view while the page scrolls.
+ * focus. The header row stays in view while the page scrolls. A link before the table, shown while it has focus, moves focus past
+ * it.
  */
 export const TableRoot = forwardRef<HTMLTableElement, TableRootProps>(function TableRoot(
-    { columns, children, toolbar, stickyHeader = true, stickyToolbar = false, className, style, slotProps, ...restProps },
+    { columns, children, toolbar, stickyHeader = true, stickyToolbar = false, labels: labelsProp, className, style, slotProps, ...restProps },
     ref,
 ) {
     const rootRef = useRef<HTMLDivElement>(null);
     const toolbarRef = useRef<HTMLDivElement>(null);
     const scrollerRef = useRef<HTMLDivElement>(null);
     const tableRef = useRef<HTMLTableElement>(null);
+    const skipTargetRef = useRef<HTMLSpanElement>(null);
+    const skipTargetId = useId();
+    const labels = { ...defaultLabels, ...labelsProp };
     useImperativeHandle(ref, () => tableRef.current as HTMLTableElement);
     const overflowing = useOverflowing(scrollerRef, tableRef);
     const hasToolbar = toolbar != null && toolbar !== false;
@@ -97,6 +132,30 @@ export const TableRoot = forwardRef<HTMLTableElement, TableRootProps>(function T
 
     const ariaLabel = restProps["aria-label"];
     const ariaLabelledBy = restProps["aria-labelledby"];
+    const [labelledByText, setLabelledByText] = useState<string>();
+    // Runs after every render and observes the naming elements, as they may render later than the table or change their text alone
+    useLayoutEffect(() => {
+        const ownerDocument = rootRef.current?.ownerDocument;
+        const elements = (ariaLabelledBy?.split(/\s+/) ?? []).flatMap((id) => ownerDocument?.getElementById(id) ?? []);
+        const updateLabelledByText = () => {
+            const text = elements
+                .map((element) => element.textContent.trim())
+                .filter((part) => part !== "")
+                .join(" ");
+            setLabelledByText(text !== "" ? text : undefined);
+        };
+        updateLabelledByText();
+        if (elements.length === 0 || typeof MutationObserver === "undefined") {
+            return;
+        }
+        const observer = new MutationObserver(updateLabelledByText);
+        for (const element of elements) {
+            observer.observe(element, { characterData: true, childList: true, subtree: true });
+        }
+        return () => observer.disconnect();
+    });
+    const tableName = ariaLabel != null && ariaLabel !== "" ? ariaLabel : labelledByText;
+
     useEffect(() => {
         if (process.env.NODE_ENV !== "production" && ariaLabel == null && ariaLabelledBy == null) {
             console.warn("TableRoot: name the table with `aria-label` or `aria-labelledby`.");
@@ -144,6 +203,26 @@ export const TableRoot = forwardRef<HTMLTableElement, TableRootProps>(function T
     const setScrollerRef = useMergedRef(scrollerRef, scrollerProps.ref);
     const setTableRef = useMergedRef(tableRef, tableProps.ref);
 
+    const skipLinkProps = resolveSlotProps<TableRootOwnerState, "a", "a">({
+        ownProps: {
+            href: `#${skipTargetId}`,
+            className: styles.skipLink,
+            // Moves focus without changing the address, which a router may take for a navigation
+            onClick: (event: MouseEvent<HTMLAnchorElement>) => {
+                event.preventDefault();
+                skipTargetRef.current?.focus();
+            },
+        },
+        slotProps: slotProps?.skipLink,
+        ownerState,
+    });
+    const skipTargetProps = resolveSlotProps<TableRootOwnerState, "span", "span">({
+        ownProps: { id: skipTargetId, tabIndex: -1, className: styles.skipTarget },
+        slotProps: slotProps?.skipTarget,
+        ownerState,
+    });
+    const setSkipTargetRef = useMergedRef(skipTargetRef, skipTargetProps.ref);
+
     return (
         <div
             {...rootProps}
@@ -158,6 +237,7 @@ export const TableRoot = forwardRef<HTMLTableElement, TableRootProps>(function T
                 </div>
             )}
             <div {...scrollerFrameProps}>
+                <a {...skipLinkProps}>{labels.skipTable(tableName)}</a>
                 <div {...scrollerProps} ref={setScrollerRef}>
                     <table {...tableProps} ref={setTableRef}>
                         <colgroup>
@@ -170,6 +250,9 @@ export const TableRoot = forwardRef<HTMLTableElement, TableRootProps>(function T
                     </table>
                 </div>
             </div>
+            <span {...skipTargetProps} ref={setSkipTargetRef}>
+                {labels.tableEnd(tableName)}
+            </span>
         </div>
     );
 });

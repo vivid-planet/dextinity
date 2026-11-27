@@ -1,8 +1,7 @@
-import { useState } from "react";
-
 import { Icon } from "../../components/icon/Icon";
 import { IconButton } from "../../components/iconButton/IconButton";
 import { Popover } from "../../components/popover/Popover";
+import { usePopupOpen } from "./usePopupOpen";
 import styles from "./WorkspaceToolbarControls.module.scss";
 
 const modes = [
@@ -28,13 +27,15 @@ const modes = [
 
 /** What the workspace's modes are for, for finding the right one without trying each. */
 export function WorkspaceGuide() {
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = usePopupOpen();
     return (
         <Popover
             open={open}
             onOpenChange={setOpen}
             title="Modes"
             placement="bottom-end"
+            // Beside the button, the guide would cover the header; below it, it gets the window's height and scrolls in itself
+            slotProps={{ positioner: { collisionAvoidance: { side: "flip", fallbackAxisSide: "none" } } }}
             trigger={
                 <IconButton variant="text" color="secondary" aria-label="What the modes do">
                     <Icon name="help-circle" />

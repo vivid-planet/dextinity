@@ -12,10 +12,6 @@
     gap: var(--dextinity-space-3);
 }
 
-.bulkActionBar {
-    align-self: center;
-}
-
 .structure {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));

@@ -1,4 +1,5 @@
 import {
+    Fragment,
     type KeyboardEvent as ReactKeyboardEvent,
     type PointerEvent as ReactPointerEvent,
     type ReactNode,
@@ -37,7 +38,7 @@ import { hotspotList } from "./hotspots";
 import { customPageList, customPagePrefix, type PageTemplate, pageTemplates } from "./pageTemplates";
 import { buildPageTree, getPrototypePageNodeId } from "./prototypePageTree";
 import { workspacePrototypes } from "./prototypes";
-import { type InspectedComponent, useCanvasInspector } from "./useCanvasInspector";
+import { type InspectedChain, type InspectedComponent, useCanvasInspector } from "./useCanvasInspector";
 import { useFramePage } from "./useFramePage";
 import { usePopupOpen } from "./usePopupOpen";
 import { ViewMenu } from "./ViewMenu";
@@ -86,7 +87,13 @@ const intentKeys: Record<string, WorkspaceIntent> = { "1": "prototype", "2": "in
 const intentToolButtons: Record<WorkspaceIntent, Array<{ tool: WorkspaceTool; label: string; icon: IconName; description: string; key: string }>> = {
     prototype: [],
     inspect: [
-        { tool: "component", label: "Component", icon: "select", description: "Click a component in the page to open its story", key: "I" },
+        {
+            tool: "component",
+            label: "Component",
+            icon: "select",
+            description: "Click a component in the page to open its story; ↑ and ↓ move to the enclosing component and back",
+            key: "I",
+        },
         {
             tool: "measure",
             label: "Measure",
@@ -227,6 +234,23 @@ function trackPointerDrag(event: ReactPointerEvent, { onMove, onEnd }: { onMove:
     window.addEventListener("pointermove", handleMove);
     window.addEventListener("pointerup", handleEnd);
     window.addEventListener("pointercancel", handleEnd);
+}
+
+/** The components with a story under the pointer, outermost first with the highlighted one emphasized, and how to move the highlight. */
+function InspectLabel({ chain }: { chain: InspectedChain }) {
+    return (
+        <span className={styles.inspectLabel}>
+            {chain.levels.map((level, index) => (
+                <Fragment key={level.key}>
+                    {index > 0 && <span className={styles.inspectSeparator}>›</span>}
+                    <span className={styles.inspectLevel} data-highlighted={index === chain.level || undefined}>
+                        {level.componentName}
+                    </span>
+                </Fragment>
+            ))}
+            {chain.levels.length > 1 && <span className={styles.inspectHint}>↑ ↓ to pick the enclosing component</span>}
+        </span>
+    );
 }
 
 /**
@@ -1076,15 +1100,17 @@ export function WorkspaceShell() {
                                             <div
                                                 className={styles.inspectBox}
                                                 // At the frame's top edge, the label goes inside the box, where the frame doesn't cut it off
-                                                data-label-inside={inspected.rect.top * scale < inspectLabelHeight || undefined}
+                                                data-label-inside={inspected.component.rect.top * scale < inspectLabelHeight || undefined}
+                                                // In the frame's right half, the label grows to the left, so the frame doesn't cut off the breadcrumb
+                                                data-label-end={inspected.component.rect.left > inspected.frameWidth / 2 || undefined}
                                                 style={{
-                                                    top: inspected.rect.top * scale,
-                                                    left: inspected.rect.left * scale,
-                                                    width: inspected.rect.width * scale,
-                                                    height: inspected.rect.height * scale,
+                                                    top: inspected.component.rect.top * scale,
+                                                    left: inspected.component.rect.left * scale,
+                                                    width: inspected.component.rect.width * scale,
+                                                    height: inspected.component.rect.height * scale,
                                                 }}
                                             >
-                                                <span className={styles.inspectLabel}>{inspected.componentName}</span>
+                                                <InspectLabel chain={inspected} />
                                             </div>
                                         </div>
                                     )}

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { findComponentWithStory, getComponentNames, getComponentStoryIds } from "../componentStories";
+import { findComponentChain, getComponentNames, getComponentStoryIds, getLevelAfterMove } from "../componentStories";
 
 const stories = [
     { id: "topbar--with-scope", title: "Shell/Top bar & scope/TopBar", name: "With Scope" },
@@ -11,6 +11,8 @@ const stories = [
     { id: "patterns-toolbar--default", title: "Patterns/Toolbar", name: "Default" },
     { id: "icon-button--default", title: "Building blocks/Buttons/IconButton", name: "Default" },
     { id: "toolbar-button--default", title: "Building blocks/Buttons/ToolbarButton", name: "Default" },
+    { id: "filter-bar--default", title: "Building blocks/Data/FilterBar", name: "Default" },
+    { id: "input--default", title: "Building blocks/Inputs/Input", name: "Default" },
 ];
 
 describe("getComponentStoryIds", () => {
@@ -22,6 +24,8 @@ describe("getComponentStoryIds", () => {
                 ["Toolbar", "toolbar--vertical"],
                 ["IconButton", "icon-button--default"],
                 ["ToolbarButton", "toolbar-button--default"],
+                ["FilterBar", "filter-bar--default"],
+                ["Input", "input--default"],
             ]),
         );
     });
@@ -38,20 +42,58 @@ describe("getComponentNames", () => {
     });
 });
 
-describe("findComponentWithStory", () => {
-    it("returns the closest component with a story, skipping components without one", () => {
+describe("findComponentChain", () => {
+    it("lists the components with a story around the element, outermost first, skipping components without one", () => {
         document.body.innerHTML = `
-            <div class="dextinityTopBar">
-                <div class="dextinityUnknownPart"><span id="target">Search</span></div>
+            <div class="dextinityFilterBar">
+                <div class="dextinityUnknownPart"><div class="dextinityInput"><input id="target" /></div></div>
             </div>`;
-        const result = findComponentWithStory(document.getElementById("target"), getComponentStoryIds(stories));
-        expect(result?.componentName).toBe("TopBar");
-        expect(result?.storyId).toBe("topbar--default");
-        expect(result?.element).toBe(document.querySelector(".dextinityTopBar"));
+        const chain = findComponentChain(document.getElementById("target"), getComponentStoryIds(stories));
+        expect(chain.map(({ componentName, storyId }) => ({ componentName, storyId }))).toEqual([
+            { componentName: "FilterBar", storyId: "filter-bar--default" },
+            { componentName: "Input", storyId: "input--default" },
+        ]);
+        expect(chain.map(({ element }) => element)).toEqual([
+            document.querySelector(".dextinityFilterBar"),
+            document.querySelector(".dextinityInput"),
+        ]);
     });
 
-    it("prefers the outer component when an element is the root of several", () => {
-        document.body.innerHTML = `<button id="target" class="dextinityIconButton dextinityToolbarButton">B</button>`;
-        expect(findComponentWithStory(document.getElementById("target"), getComponentStoryIds(stories))?.componentName).toBe("ToolbarButton");
+    it("gives each component with a story of an element its own level, the outer one first", () => {
+        document.body.innerHTML = `
+            <div class="dextinityToolbar">
+                <button id="target" class="dextinityIconButton dextinityToolbarButton">B</button>
+            </div>`;
+        const chain = findComponentChain(document.getElementById("target"), getComponentStoryIds(stories));
+        expect(chain.map(({ componentName }) => componentName)).toEqual(["Toolbar", "ToolbarButton", "IconButton"]);
+    });
+
+    it("is empty outside of components with a story", () => {
+        document.body.innerHTML = `<div class="dextinityUnknownPart"><span id="target">Text</span></div>`;
+        expect(findComponentChain(document.getElementById("target"), getComponentStoryIds(stories))).toEqual([]);
+        expect(findComponentChain(null, getComponentStoryIds(stories))).toEqual([]);
+    });
+});
+
+describe("getLevelAfterMove", () => {
+    function renderFilterBar() {
+        document.body.innerHTML = `
+            <div class="dextinityFilterBar">
+                <div class="dextinityInput"><input id="input" /></div>
+                <button id="button" class="dextinityIconButton">B</button>
+            </div>`;
+        const componentStoryIds = getComponentStoryIds(stories);
+        return (id: string) => findComponentChain(document.getElementById(id), componentStoryIds);
+    }
+
+    it("keeps the chosen level while the pointer stays on the same innermost component", () => {
+        const findChain = renderFilterBar();
+        expect(getLevelAfterMove(findChain("input"), 0, findChain("input"))).toBe(0);
+    });
+
+    it("starts at the innermost level on another component", () => {
+        const findChain = renderFilterBar();
+        expect(getLevelAfterMove(findChain("input"), 0, findChain("button"))).toBe(1);
+        expect(getLevelAfterMove([], -1, findChain("input"))).toBe(1);
     });
 });

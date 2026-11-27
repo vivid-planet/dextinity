@@ -52,15 +52,35 @@ export function getComponentNames(element: Element): string[] {
     return names;
 }
 
-/** The closest element at or above `element` that is the root of a component with a story, preferring the outermost component. */
-export function findComponentWithStory(element: Element | null, componentStoryIds: Map<string, string>) {
+export interface ComponentLevel {
+    element: Element;
+    componentName: string;
+    storyId: string;
+}
+
+/**
+ * The components with a story at or above `element`, outermost first, so the last one is the most specific component under the
+ * pointer. An element that is the root of several components with a story gives one level for each of them.
+ */
+export function findComponentChain(element: Element | null, componentStoryIds: Map<string, string>): ComponentLevel[] {
+    const innermostFirst: ComponentLevel[] = [];
     for (let current = element; current != null; current = current.parentElement) {
-        for (const componentName of getComponentNames(current)) {
+        for (const componentName of getComponentNames(current).reverse()) {
             const storyId = componentStoryIds.get(componentName);
             if (storyId != null) {
-                return { element: current, componentName, storyId };
+                innermostFirst.push({ element: current, componentName, storyId });
             }
         }
     }
-    return undefined;
+    return innermostFirst.reverse();
+}
+
+/**
+ * The level to highlight in `nextChain` after the pointer moved: the level chosen in `previousChain` while the pointer stays on the
+ * same innermost component, else the innermost level.
+ */
+export function getLevelAfterMove(previousChain: ComponentLevel[], previousLevel: number, nextChain: ComponentLevel[]): number {
+    const isSameChain =
+        previousChain.length === nextChain.length && previousChain.every((level, index) => level.element === nextChain[index].element);
+    return isSameChain ? previousLevel : nextChain.length - 1;
 }

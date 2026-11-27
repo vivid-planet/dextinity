@@ -55,6 +55,10 @@ export function WorkspaceGuide() {
                 elements. Escape closes the open tool.
             </p>
             <p className={styles.guideNote}>
+                Component highlights the innermost component under the pointer; ↑ or [ moves to the component around it, ↓ or ] back in, and a click
+                opens the highlighted one.
+            </p>
+            <p className={styles.guideNote}>
                 View sets the content, text length, color scheme, theme, density, and tokens, and keeps combinations as presets.
             </p>
             <p className={styles.guideNote}>New pages, comments, text changes, hotspots, and tokens are kept in this browser only.</p>

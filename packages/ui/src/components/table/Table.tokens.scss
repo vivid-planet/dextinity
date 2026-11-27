@@ -1,0 +1,37 @@
+@mixin tokens {
+    // Text color of the cells
+    --dextinity-table-foreground: var(--dextinity-color-text);
+    // Size of the cell text
+    --dextinity-table-font-size: var(--dextinity-typography-body-size);
+    // Line height of the cell text
+    --dextinity-table-line-height: var(--dextinity-typography-body-line-height);
+
+    // Minimum height of the header row
+    --dextinity-table-header-height: var(--dextinity-density-header-height);
+    // Text color of the column headers
+    --dextinity-table-header-foreground: var(--dextinity-color-text-subtle);
+    // Size of the column header text
+    --dextinity-table-header-font-size: var(--dextinity-typography-small-size);
+    // Weight of the column header text
+    --dextinity-table-header-font-weight: var(--dextinity-font-weight-medium);
+    // Line below the header
+    --dextinity-table-header-separator-color: var(--dextinity-color-line-strong);
+
+    // Minimum height of a row; rows grow with their content
+    --dextinity-table-row-height: var(--dextinity-density-table-row-height);
+    // Corner radius of the fill of a hovered row
+    --dextinity-table-row-radius: var(--dextinity-radius-row);
+    // Fill of a hovered row
+    --dextinity-table-row-background-hover: var(--dextinity-color-fill-subtle);
+    // Outline of a hovered row, drawn only in high contrast
+    --dextinity-table-row-outline-color-hover: transparent;
+    // Space at the start and end of a cell
+    --dextinity-table-cell-padding-inline: var(--dextinity-space-3);
+    // Space above and below the content of a cell
+    --dextinity-table-cell-padding-block: var(--dextinity-space-2);
+}
+
+@mixin high-contrast-tokens {
+    --dextinity-table-row-background-hover: transparent;
+    --dextinity-table-row-outline-color-hover: var(--dextinity-color-text);
+}

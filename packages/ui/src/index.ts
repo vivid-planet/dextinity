@@ -248,6 +248,13 @@ export { defaultStatusIndicatorLabels, type StatusIndicatorStatus } from "./comp
 export { type StatusIndicatorLabels } from "./components/statusIndicator/StatusIndicator";
 export { type StatusIndicatorSlotProps, type StatusIndicatorSlots } from "./components/statusIndicator/StatusIndicator";
 export { Switch, type SwitchOwnerState, type SwitchProps, type SwitchSlotProps } from "./components/switch/Switch";
+export { TableBody, type TableBodyOwnerState, type TableBodyProps } from "./components/table/TableBody";
+export { TableCell, type TableCellOwnerState, type TableCellProps } from "./components/table/TableCell";
+export { type TableColumnAlign, type TableLayoutColumn } from "./components/table/tableContext";
+export { TableHeader, type TableHeaderOwnerState, type TableHeaderProps, type TableHeaderSlotProps } from "./components/table/TableHeader";
+export { TableHeaderCell, type TableHeaderCellOwnerState, type TableHeaderCellProps } from "./components/table/TableHeaderCell";
+export { TableRoot, type TableRootOwnerState, type TableRootProps, type TableRootSlotProps } from "./components/table/TableRoot";
+export { TableRow, type TableRowOwnerState, type TableRowProps } from "./components/table/TableRow";
 export { Tabs, type TabsItem, type TabsOwnerState, type TabsProps, type TabsSlotProps } from "./components/tabs/Tabs";
 export { type TabsLabels, type TabsSlots } from "./components/tabs/Tabs";
 export { Textarea, type TextareaOwnerState, type TextareaProps } from "./components/textarea/Textarea";

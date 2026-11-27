@@ -86,6 +86,10 @@ A change that makes a comment inaccurate updates it in the same change.
 
 Components are pure UI and always controlled: a value comes with its change handler (`value` + `onChange`, `checked` + `onChange`, `open` + `onOpenChange`), and there is no `defaultValue`. A value prop is required when the component always has that value (`Checkbox`'s `checked`), and optional when the component also works without it (`ToolbarButton`'s `selected`).
 
+### Parts
+
+Parts that only work inside a parent, such as `TableCell` inside `TableRoot`, are separate components named with the family's prefix; the parent passes what they need, such as a column's alignment, through a context, a part outside it warns in development, and the family shares one tokens file, e.g. `Table.tokens.scss`.
+
 ### Prop names
 
 - **Ids** — a prop that holds one id ends in `Id`, one that holds a list of ids ends in `Ids`: `currentId`, `expandedIds`.

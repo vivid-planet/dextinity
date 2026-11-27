@@ -1,0 +1,12 @@
+.root {
+    color: var(--dextinity-table-foreground);
+    font-family: var(--dextinity-font-family-text);
+    font-size: var(--dextinity-table-font-size);
+    line-height: var(--dextinity-table-line-height);
+}
+
+.table {
+    inline-size: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}

@@ -1,0 +1,46 @@
+// The cells draw the row's fill and outline, since a row draws no rounded corners
+.root {
+    --_row-fill: transparent;
+    --_row-outline: var(--dextinity-table-row-outline-color-hover);
+
+    @media (forced-colors: active) {
+        --_row-outline: CanvasText;
+    }
+
+    > * {
+        position: relative;
+        background: var(--_row-fill);
+        transition: background var(--dextinity-motion-duration-short);
+    }
+
+    > :first-child {
+        border-start-start-radius: var(--dextinity-table-row-radius);
+        border-end-start-radius: var(--dextinity-table-row-radius);
+    }
+
+    > :last-child {
+        border-start-end-radius: var(--dextinity-table-row-radius);
+        border-end-end-radius: var(--dextinity-table-row-radius);
+    }
+
+    &:hover {
+        --_row-fill: var(--dextinity-table-row-background-hover);
+
+        > *::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-block: 1px solid var(--_row-outline);
+            border-radius: inherit;
+            pointer-events: none;
+        }
+
+        > :first-child::after {
+            border-inline-start: 1px solid var(--_row-outline);
+        }
+
+        > :last-child::after {
+            border-inline-end: 1px solid var(--_row-outline);
+        }
+    }
+}

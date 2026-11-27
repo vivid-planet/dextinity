@@ -80,6 +80,24 @@ enum FocalPoint {
   SOUTHEAST
 }
 
+type FullTextSearchResult {
+  id: String!
+  entityName: String!
+
+  """
+  The document type for page tree nodes (e.g. Page, Link), the entity name otherwise
+  """
+  type: String!
+  name: String!
+  secondaryInformation: String
+  visible: Boolean!
+}
+
+type FullTextSearchTypeCount {
+  type: String!
+  count: Int!
+}
+
 type WarningSourceInfo {
   rootEntityName: String!
   targetId: String!

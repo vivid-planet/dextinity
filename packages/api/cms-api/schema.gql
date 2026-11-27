@@ -285,9 +285,30 @@ The `BigInt` scalar type represents non-fractional signed whole numeric values.
 """
 scalar BigInt
 
-type PaginatedEntityInfo {
-  nodes: [EntityInfo!]!
+type FullTextSearchResult {
+  id: String!
+  entityName: String!
+
+  """
+  The document type for page tree nodes (e.g. Page, Link), the entity name otherwise
+  """
+  type: String!
+  name: String!
+  secondaryInformation: String
+  visible: Boolean!
+}
+
+type FullTextSearchTypeCount {
+  type: String!
+  count: Int!
+}
+
+type FullTextSearchResults {
+  nodes: [FullTextSearchResult!]!
   totalCount: Int!
+
+  """Number of results per type"""
+  types: [FullTextSearchTypeCount!]!
 }
 
 type UserPermissionPaginatedUserList {
@@ -606,7 +627,7 @@ type Query {
   damMediaAlternative(id: ID!): DamMediaAlternative!
   damMediaAlternatives(offset: Int! = 0, limit: Int! = 25, search: String, sort: [DamMediaAlternativeSort!], for: ID, alternative: ID, type: DamMediaAlternativeType): PaginatedDamMediaAlternatives!
   damSettings(scope: DamScopeInput! = {}): DamSettings
-  myFullTextSearch(search: String!, offset: Int! = 0, limit: Int! = 25, scope: JSONObject): PaginatedEntityInfo!
+  myFullTextSearch(search: String!, scope: JSONObject, offset: Int! = 0, limit: Int! = 25): FullTextSearchResults!
 }
 
 input RedirectScopeInput {

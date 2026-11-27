@@ -218,6 +218,9 @@ export type { FileUploadInput, FileUploadInterface } from "./file-utils/file-upl
 export { createFileUploadInputFromUrl, slugifyFilename } from "./file-utils/files.utils.js";
 export { FocalPoint } from "./file-utils/focal-point.enum.js";
 export { getCenteredPosition, getMaxDimensionsFromArea, type ImageDimensionsAndCoordinates } from "./file-utils/images.util.js";
+export { FullTextSearchArgs } from "./full-text-search/dto/full-text-search.args.js";
+export { FullTextSearchResult } from "./full-text-search/dto/full-text-search-result.object.js";
+export { FullTextSearchResults, FullTextSearchTypeCount } from "./full-text-search/dto/full-text-search-results.object.js";
 export { PaginatedEntityInfo } from "./full-text-search/dto/paginated-entity-info.js";
 export { EntityInfoFullTextObject } from "./full-text-search/entities/entity-info-full-text.object.js";
 export { FullTextSearchModule } from "./full-text-search/full-text-search.module.js";

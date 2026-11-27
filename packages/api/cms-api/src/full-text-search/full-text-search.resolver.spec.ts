@@ -80,8 +80,8 @@ describe("FullTextSearchResolver", () => {
         await database.close();
     });
 
-    function search(search: string, scope?: ContentScope) {
-        return resolver.myFullTextSearch({ search, scope, offset: 0, limit: 25 }, user, { previewDamUrls: false });
+    function search(search: string, scope?: ContentScope, types?: string[]) {
+        return resolver.myFullTextSearch({ search, scope, types, offset: 0, limit: 25 }, user, { previewDamUrls: false });
     }
 
     async function findIds(scope?: ContentScope) {
@@ -105,6 +105,17 @@ describe("FullTextSearchResolver", () => {
             { type: "Product", count: 1 },
         ]);
         expect(result.totalCount).toBe(3);
+    });
+
+    it("returns only results of the given types, but counts the results of all types", async () => {
+        const result = await search("contact", undefined, ["Product"]);
+
+        expect(result.nodes.map(({ id }) => id)).toEqual(["product"]);
+        expect(result.totalCount).toBe(1);
+        expect(result.types).toEqual([
+            { type: "Page", count: 2 },
+            { type: "Product", count: 1 },
+        ]);
     });
 
     it("orders by exact name, all terms in the name, some terms in the name, then content matches", async () => {

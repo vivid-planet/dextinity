@@ -9,6 +9,9 @@ describe("FullTextSearchArgs", () => {
         { args: { scope: { domain: "main" } }, invalidProperties: [] },
         { args: { search: "a".repeat(201) }, invalidProperties: ["search"] },
         { args: { scope: "main" }, invalidProperties: ["scope"] },
+        { args: { types: ["Page", "News"] }, invalidProperties: [] },
+        { args: { types: "Page" }, invalidProperties: ["types"] },
+        { args: { types: ["a".repeat(101)] }, invalidProperties: ["types"] },
         { args: { limit: 51 }, invalidProperties: ["limit"] },
         { args: { offset: -1 }, invalidProperties: ["offset"] },
     ])("validates $args", async ({ args, invalidProperties }) => {

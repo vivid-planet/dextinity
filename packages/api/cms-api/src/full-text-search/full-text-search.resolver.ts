@@ -26,7 +26,7 @@ export class FullTextSearchResolver {
 
     @Query(() => FullTextSearchResults)
     async myFullTextSearch(
-        @Args() { search, scope, offset, limit }: FullTextSearchArgs,
+        @Args() { search, scope, types, offset, limit }: FullTextSearchArgs,
         @GetCurrentUser() user: CurrentUser,
         @RequestContext() { includeInvisiblePages }: RequestContextInterface,
     ): Promise<FullTextSearchResults> {
@@ -41,12 +41,12 @@ export class FullTextSearchResolver {
         // A raw() fragment can only be used in one query, so each query gets its own condition
         const createWhere = () => buildWhere({ search, scope, allowedPermissions, includeInvisible: !!includeInvisiblePages?.length });
 
-        const [rows, types] = await Promise.all([
+        const [rows, typeCounts] = await Promise.all([
             this.entityManager
                 .createQueryBuilder(EntityInfoFullTextObject, "f")
                 .join("f.entityInfo", "e")
                 .select(["id", "entityName", "type", "e.name", "e.secondaryInformation", "e.visible"])
-                .where(createWhere())
+                .where({ ...createWhere(), ...(types ? { type: { $in: types } } : {}) })
                 .orderBy([...orderByNameMatchAndRank(search), { entityName: QueryOrder.ASC }, { id: QueryOrder.ASC }])
                 .offset(offset)
                 .limit(limit)
@@ -63,8 +63,8 @@ export class FullTextSearchResolver {
 
         return {
             nodes: await this.fullTextSnippetService.addHighlights(rows, search),
-            totalCount: types.reduce((sum, { count }) => sum + count, 0),
-            types,
+            totalCount: typeCounts.filter(({ type }) => !types || types.includes(type)).reduce((sum, { count }) => sum + count, 0),
+            types: typeCounts,
         };
     }
 }

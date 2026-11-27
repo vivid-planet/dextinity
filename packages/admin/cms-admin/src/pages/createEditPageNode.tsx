@@ -1,7 +1,18 @@
 import { gql, useApolloClient, useQuery } from "@apollo/client";
-import { CheckboxField, ErrorScope, Field, FieldContainer, FinalForm, FinalFormInput, FinalFormSelect, Loading, Tooltip } from "@dextinity/admin";
+import {
+    CheckboxField,
+    EditDialogActions,
+    ErrorScope,
+    Field,
+    FieldContainer,
+    FinalForm,
+    FinalFormInput,
+    FinalFormSelect,
+    Loading,
+    Tooltip,
+} from "@dextinity/admin";
 import { Info } from "@dextinity/admin-icons";
-import { Box, Divider, IconButton, MenuItem, Typography } from "@mui/material";
+import { Box, DialogContent, Divider, IconButton, MenuItem, Typography } from "@mui/material";
 import type { Mutator } from "final-form";
 import setFieldTouched from "final-form-set-field-touched";
 import type { DocumentNode } from "graphql";
@@ -224,7 +235,11 @@ export function createEditPageNode({
         const debouncedValidateSlug = debounce(validateSlug, 500);
 
         if (mode === "edit" && (loading || !data?.page)) {
-            return <Loading />;
+            return (
+                <DialogContent>
+                    <Loading />
+                </DialogContent>
+            );
         }
 
         return (
@@ -291,214 +306,217 @@ export function createEditPageNode({
                     render={({ form }) => {
                         return (
                             <>
-                                {!manuallyChangedSlug && (
-                                    <SyncFields<string, string>
-                                        sourceField="name"
-                                        targetField="slug"
-                                        onChange={(name) => {
-                                            const slug = transformToSlug(name, language);
-                                            if (!form.getFieldState("slug")?.touched) {
-                                                // Set field touched because otherwise no validation errors are shown
-                                                form.mutators.setFieldTouched("slug", true);
-                                            }
-                                            return slug;
-                                        }}
-                                    />
-                                )}
-                                <Field
-                                    label={intl.formatMessage({
-                                        id: "dextinity.pages.pages.page.name",
-                                        defaultMessage: "Name",
-                                    })}
-                                    name="name"
-                                    required
-                                    component={FinalFormInput}
-                                    autoFocus
-                                    fullWidth
-                                    variant="horizontal"
-                                />
-                                {slug !== "home" && (
+                                <DialogContent>
+                                    {!manuallyChangedSlug && (
+                                        <SyncFields<string, string>
+                                            sourceField="name"
+                                            targetField="slug"
+                                            onChange={(name) => {
+                                                const slug = transformToSlug(name, language);
+                                                if (!form.getFieldState("slug")?.touched) {
+                                                    // Set field touched because otherwise no validation errors are shown
+                                                    form.mutators.setFieldTouched("slug", true);
+                                                }
+                                                return slug;
+                                            }}
+                                        />
+                                    )}
                                     <Field
                                         label={intl.formatMessage({
-                                            id: "dextinity.pages.pages.page.slug",
-                                            defaultMessage: "Slug",
+                                            id: "dextinity.pages.pages.page.name",
+                                            defaultMessage: "Name",
                                         })}
-                                        name="slug"
+                                        name="name"
                                         required
+                                        component={FinalFormInput}
+                                        autoFocus
                                         fullWidth
-                                        validate={debouncedValidateSlug}
                                         variant="horizontal"
-                                    >
-                                        {(fieldRenderProps) => {
+                                    />
+                                    {slug !== "home" && (
+                                        <Field
+                                            label={intl.formatMessage({
+                                                id: "dextinity.pages.pages.page.slug",
+                                                defaultMessage: "Slug",
+                                            })}
+                                            name="slug"
+                                            required
+                                            fullWidth
+                                            validate={debouncedValidateSlug}
+                                            variant="horizontal"
+                                        >
+                                            {(fieldRenderProps) => {
+                                                return (
+                                                    <FinalFormInput
+                                                        {...fieldRenderProps}
+                                                        onChange={(event) => {
+                                                            setManuallyChangedSlug(true);
+                                                            fieldRenderProps.input.onChange(event.target.value);
+                                                        }}
+                                                        fullWidth
+                                                        disableContentTranslation
+                                                    />
+                                                );
+                                            }}
+                                        </Field>
+                                    )}
+
+                                    <FormSpy subscription={{ values: true, dirtyFields: true }}>
+                                        {({ values, dirtyFields }) => {
+                                            if (!values.slug) {
+                                                return null;
+                                            }
+
+                                            const numberOfDescendants = data?.page?.numberOfDescendants ?? 0;
+
                                             return (
-                                                <FinalFormInput
-                                                    {...fieldRenderProps}
-                                                    onChange={(event) => {
-                                                        setManuallyChangedSlug(true);
-                                                        fieldRenderProps.input.onChange(event.target.value);
-                                                    }}
-                                                    fullWidth
-                                                    disableContentTranslation
-                                                />
-                                            );
-                                        }}
-                                    </Field>
-                                )}
-
-                                <FormSpy subscription={{ values: true, dirtyFields: true }}>
-                                    {({ values, dirtyFields }) => {
-                                        if (!values.slug) {
-                                            return null;
-                                        }
-
-                                        const numberOfDescendants = data?.page?.numberOfDescendants ?? 0;
-
-                                        return (
-                                            <>
-                                                <FieldContainer
-                                                    label={intl.formatMessage({
-                                                        id: "dextinity.pages.pages.page.path",
-                                                        defaultMessage: "Complete Path",
-                                                    })}
-                                                    variant="horizontal"
-                                                >
-                                                    <Typography>
-                                                        {values.slug === "home" && parentPath === null
-                                                            ? "/"
-                                                            : parentPath === null
-                                                              ? `/${values.slug}`
-                                                              : `${parentPath}/${values.slug}`}
-                                                    </Typography>
-                                                </FieldContainer>
-                                                {mode === "edit" && dirtyFields.slug && isRedirectSourceAvailable && (
-                                                    <Box mt={3}>
-                                                        <FieldContainer
-                                                            variant="horizontal"
-                                                            label={
-                                                                <>
-                                                                    <FormattedMessage
-                                                                        id="dextinity.pages.pages.page.createAutomaticRedirects.headline"
-                                                                        defaultMessage="Redirects"
-                                                                    />
-                                                                    <Tooltip
-                                                                        title={
-                                                                            <>
-                                                                                <Typography variant="body2">
-                                                                                    <strong>
+                                                <>
+                                                    <FieldContainer
+                                                        label={intl.formatMessage({
+                                                            id: "dextinity.pages.pages.page.path",
+                                                            defaultMessage: "Complete Path",
+                                                        })}
+                                                        variant="horizontal"
+                                                    >
+                                                        <Typography>
+                                                            {values.slug === "home" && parentPath === null
+                                                                ? "/"
+                                                                : parentPath === null
+                                                                  ? `/${values.slug}`
+                                                                  : `${parentPath}/${values.slug}`}
+                                                        </Typography>
+                                                    </FieldContainer>
+                                                    {mode === "edit" && dirtyFields.slug && isRedirectSourceAvailable && (
+                                                        <Box mt={3}>
+                                                            <FieldContainer
+                                                                variant="horizontal"
+                                                                label={
+                                                                    <>
+                                                                        <FormattedMessage
+                                                                            id="dextinity.pages.pages.page.createAutomaticRedirects.headline"
+                                                                            defaultMessage="Redirects"
+                                                                        />
+                                                                        <Tooltip
+                                                                            title={
+                                                                                <>
+                                                                                    <Typography variant="body2">
+                                                                                        <strong>
+                                                                                            <FormattedMessage
+                                                                                                id="dextinity.pages.pages.page.createAutomaticRedirects.tooltip.title"
+                                                                                                defaultMessage="Generate redirects"
+                                                                                            />
+                                                                                        </strong>
+                                                                                    </Typography>
+                                                                                    <Typography variant="body2">
                                                                                         <FormattedMessage
-                                                                                            id="dextinity.pages.pages.page.createAutomaticRedirects.tooltip.title"
-                                                                                            defaultMessage="Generate redirects"
+                                                                                            id="dextinity.pages.pages.page.createAutomaticRedirects.tooltip.text"
+                                                                                            defaultMessage="You have changed the slug. Therefore redirects should be created, so that users and search engines automatically land at the correct page, even if they visit the old path. Check this box, if you already have published or shared {numberOfDescendants, plural, =0 {this page} other {these pages}}."
+                                                                                            values={{
+                                                                                                numberOfDescendants,
+                                                                                            }}
                                                                                         />
-                                                                                    </strong>
-                                                                                </Typography>
-                                                                                <Typography variant="body2">
+                                                                                    </Typography>
+                                                                                </>
+                                                                            }
+                                                                        >
+                                                                            <Box component="span" marginLeft={1}>
+                                                                                <IconButton>
+                                                                                    <Info />
+                                                                                </IconButton>
+                                                                            </Box>
+                                                                        </Tooltip>
+                                                                    </>
+                                                                }
+                                                            >
+                                                                <CheckboxField
+                                                                    initialValue={isActivePage}
+                                                                    label={
+                                                                        <Typography display="flex" alignItems="center">
+                                                                            <div>
+                                                                                <Typography variant="body1">
                                                                                     <FormattedMessage
-                                                                                        id="dextinity.pages.pages.page.createAutomaticRedirects.tooltip.text"
-                                                                                        defaultMessage="You have changed the slug. Therefore redirects should be created, so that users and search engines automatically land at the correct page, even if they visit the old path. Check this box, if you already have published or shared {numberOfDescendants, plural, =0 {this page} other {these pages}}."
+                                                                                        tagName="span"
+                                                                                        id="dextinity.pages.pages.page.createAutomaticRedirects.label"
+                                                                                        defaultMessage="Create {numberOfDescendants, plural, =0 {a redirect} other {redirects}}"
                                                                                         values={{
                                                                                             numberOfDescendants,
                                                                                         }}
                                                                                     />
                                                                                 </Typography>
-                                                                            </>
-                                                                        }
-                                                                    >
-                                                                        <Box component="span" marginLeft={1}>
-                                                                            <IconButton>
-                                                                                <Info />
-                                                                            </IconButton>
-                                                                        </Box>
-                                                                    </Tooltip>
-                                                                </>
-                                                            }
-                                                        >
-                                                            <CheckboxField
-                                                                initialValue={isActivePage}
-                                                                label={
-                                                                    <Typography display="flex" alignItems="center">
-                                                                        <div>
-                                                                            <Typography variant="body1">
-                                                                                <FormattedMessage
-                                                                                    tagName="span"
-                                                                                    id="dextinity.pages.pages.page.createAutomaticRedirects.label"
-                                                                                    defaultMessage="Create {numberOfDescendants, plural, =0 {a redirect} other {redirects}}"
-                                                                                    values={{
-                                                                                        numberOfDescendants,
-                                                                                    }}
-                                                                                />
-                                                                            </Typography>
-                                                                            {numberOfDescendants > 0 && (
-                                                                                <Typography variant="body2" color="rgba(0, 0, 0, 0.6)">
-                                                                                    <FormattedMessage
-                                                                                        tagName="span"
-                                                                                        id="dextinity.pages.pages.page.createAutomaticRedirects.labelSubline"
-                                                                                        defaultMessage="for this page and all its child pages"
-                                                                                    />
-                                                                                </Typography>
-                                                                            )}
-                                                                        </div>
-                                                                    </Typography>
-                                                                }
-                                                                name="createAutomaticRedirectsOnSlugChange"
-                                                            />
+                                                                                {numberOfDescendants > 0 && (
+                                                                                    <Typography variant="body2" color="rgba(0, 0, 0, 0.6)">
+                                                                                        <FormattedMessage
+                                                                                            tagName="span"
+                                                                                            id="dextinity.pages.pages.page.createAutomaticRedirects.labelSubline"
+                                                                                            defaultMessage="for this page and all its child pages"
+                                                                                        />
+                                                                                    </Typography>
+                                                                                )}
+                                                                            </div>
+                                                                        </Typography>
+                                                                    }
+                                                                    name="createAutomaticRedirectsOnSlugChange"
+                                                                />
+                                                            </FieldContainer>
+                                                        </Box>
+                                                    )}
+                                                    {mode === "edit" && dirtyFields.slug && !isRedirectSourceAvailable && (
+                                                        <FieldContainer variant="horizontal">
+                                                            <Typography>
+                                                                <FormattedMessage
+                                                                    id="dextinity.pages.pages.page.redirectAlreadyExists"
+                                                                    defaultMessage="The slug was changed, but a redirect for the old path already exists."
+                                                                />
+                                                            </Typography>
                                                         </FieldContainer>
-                                                    </Box>
-                                                )}
-                                                {mode === "edit" && dirtyFields.slug && !isRedirectSourceAvailable && (
-                                                    <FieldContainer variant="horizontal">
-                                                        <Typography>
-                                                            <FormattedMessage
-                                                                id="dextinity.pages.pages.page.redirectAlreadyExists"
-                                                                defaultMessage="The slug was changed, but a redirect for the old path already exists."
-                                                            />
-                                                        </Typography>
-                                                    </FieldContainer>
-                                                )}
-                                            </>
-                                        );
-                                    }}
-                                </FormSpy>
+                                                    )}
+                                                </>
+                                            );
+                                        }}
+                                    </FormSpy>
 
-                                <Box marginY={6}>
-                                    <Divider />
-                                </Box>
+                                    <Box marginY={6}>
+                                        <Divider />
+                                    </Box>
 
-                                <Field
-                                    label={intl.formatMessage({
-                                        id: "dextinity.pages.pages.page.documentType",
-                                        defaultMessage: "Document Type",
-                                    })}
-                                    name="documentType"
-                                    variant="horizontal"
-                                    required
-                                    fullWidth
-                                >
-                                    {(props) => (
-                                        <FinalFormSelect {...props} fullWidth>
-                                            {options.map((option) => (
-                                                <MenuItem value={option.value} key={option.value}>
-                                                    {option.label}
-                                                </MenuItem>
-                                            ))}
-                                        </FinalFormSelect>
-                                    )}
-                                </Field>
-                                {!disableHideInMenu && (
-                                    <CheckboxField
-                                        fieldLabel={intl.formatMessage({
-                                            id: "dextinity.pages.pages.page.menuVisibility",
-                                            defaultMessage: "Menu Visibility",
-                                        })}
+                                    <Field
                                         label={intl.formatMessage({
-                                            id: "dextinity.pages.pages.page.hideInMenu",
-                                            defaultMessage: "Hide in Menu",
+                                            id: "dextinity.pages.pages.page.documentType",
+                                            defaultMessage: "Document Type",
                                         })}
-                                        name="hideInMenu"
+                                        name="documentType"
                                         variant="horizontal"
-                                    />
-                                )}
+                                        required
+                                        fullWidth
+                                    >
+                                        {(props) => (
+                                            <FinalFormSelect {...props} fullWidth>
+                                                {options.map((option) => (
+                                                    <MenuItem value={option.value} key={option.value}>
+                                                        {option.label}
+                                                    </MenuItem>
+                                                ))}
+                                            </FinalFormSelect>
+                                        )}
+                                    </Field>
+                                    {!disableHideInMenu && (
+                                        <CheckboxField
+                                            fieldLabel={intl.formatMessage({
+                                                id: "dextinity.pages.pages.page.menuVisibility",
+                                                defaultMessage: "Menu Visibility",
+                                            })}
+                                            label={intl.formatMessage({
+                                                id: "dextinity.pages.pages.page.hideInMenu",
+                                                defaultMessage: "Hide in Menu",
+                                            })}
+                                            name="hideInMenu"
+                                            variant="horizontal"
+                                        />
+                                    )}
 
-                                {additionalFormFields}
+                                    {additionalFormFields}
+                                </DialogContent>
+                                <EditDialogActions />
                             </>
                         );
                     }}

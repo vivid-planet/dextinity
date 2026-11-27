@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 
 import {
+    expandFlowGroups,
     fitFlowView,
     type FlowRect,
+    groupUnreachableFlowPages,
     layOutFlow,
     maxFlowZoom,
     minFlowZoom,
@@ -51,6 +53,40 @@ describe("layOutFlow", () => {
         });
 
         expect(columnsOf(placements)).toEqual([["start"], ["a", "b"], ["b-child", "a-child"]]);
+    });
+});
+
+describe("groupUnreachableFlowPages", () => {
+    const parentOf = (id: string) => (id.includes("/") ? { id: id.split("/")[0], label: id.split("/")[0] } : undefined);
+
+    it("groups the pages without a way in that share a parent when there are more than a few", () => {
+        const assets = ["assets/a", "assets/b", "assets/c", "assets/d", "assets/e"];
+
+        expect(groupUnreachableFlowPages({ pageIds: [...assets, "news/a", "news/b", "orphan"], getParent: parentOf })).toEqual([
+            { id: "group:assets", parentLabel: "assets", pageIds: assets },
+        ]);
+    });
+
+    it("leaves a few pages with the same parent on their own", () => {
+        expect(groupUnreachableFlowPages({ pageIds: ["assets/a", "assets/b"], getParent: parentOf, maxUngrouped: 2 })).toEqual([]);
+    });
+});
+
+describe("expandFlowGroups", () => {
+    it("puts an open group's pages below its card and moves the cards below down", () => {
+        const placements = [
+            { id: "start", column: 0, row: 0 },
+            { id: "group", column: 1, row: 0 },
+            { id: "other", column: 1, row: 1 },
+        ];
+
+        expect(expandFlowGroups(placements, new Map([["group", ["a", "b"]]]))).toEqual([
+            { id: "start", column: 0, row: 0 },
+            { id: "group", column: 1, row: 0 },
+            { id: "a", column: 1, row: 1 },
+            { id: "b", column: 1, row: 2 },
+            { id: "other", column: 1, row: 3 },
+        ]);
     });
 });
 
@@ -128,6 +164,59 @@ describe("routeFlowLinks", () => {
         expect(startY(content.path)).not.toBe(startY(navigation.path));
     });
 
+    it("lets many links leave a card's side together from its middle and fan out after a stub", () => {
+        const targets = ["b", "c", "d", "e", "f", "g"];
+        const rects = new Map([["a", rect(0, 0)], ...targets.map((id, index): [string, FlowRect] => [id, rect(300, index * 60)])]);
+
+        const routed = routeFlowLinks(
+            targets.map((to) => ({ from: "a", to })),
+            rects,
+        );
+
+        for (const link of routed) {
+            expect(link.path).toMatch(/^M 100 20 L 116 20 C /);
+        }
+    });
+
+    it("loops a longer link farther out than a shorter one in the same column", () => {
+        const rects = new Map([
+            ["a", rect(0, 0)],
+            ["b", rect(0, 60)],
+            ["c", rect(0, 120)],
+        ]);
+
+        const [short, long] = routeFlowLinks(
+            [
+                { from: "a", to: "b" },
+                { from: "a", to: "c" },
+            ],
+            rects,
+        );
+
+        const firstControlX = (path: string) => Number(path.split(" ")[4]);
+        expect(firstControlX(long.path)).toBeGreaterThan(firstControlX(short.path));
+    });
+
+    it("marks links to an earlier column and up the same column as backward", () => {
+        const rects = new Map([
+            ["a", rect(0, 0)],
+            ["b", rect(200, 0)],
+            ["c", rect(200, 60)],
+        ]);
+
+        const [forward, back, up, down] = routeFlowLinks(
+            [
+                { from: "a", to: "b" },
+                { from: "b", to: "a" },
+                { from: "c", to: "b" },
+                { from: "b", to: "c" },
+            ],
+            rects,
+        );
+
+        expect([forward.backward, back.backward, up.backward, down.backward]).toEqual([false, true, true, false]);
+    });
+
     it("leaves out links to cards that aren't on the map", () => {
         expect(routeFlowLinks([{ from: "a", to: "missing" }], new Map([["a", rect(0, 0)]]))).toEqual([]);
     });
@@ -142,6 +231,12 @@ describe("zoom", () => {
         expect(stepFlowZoom(minFlowZoom, -1)).toBe(minFlowZoom);
     });
 
+    it("keeps the room at the bottom free when fitting the map", () => {
+        expect(fitFlowView({ width: 100, height: 100 }, { width: 500, height: 300 }, { reservedBottom: 100 })).toEqual({ zoom: 1, x: 200, y: 50 });
+        expect(fitFlowView({ width: 100, height: 300 }, { width: 500, height: 400 }, { margin: 0, reservedBottom: 100 }).zoom).toBe(1);
+        expect(fitFlowView({ width: 100, height: 600 }, { width: 500, height: 400 }, { margin: 0, reservedBottom: 100 }).zoom).toBe(0.5);
+    });
+
     it("keeps the point under the pointer in place and clamps the zoom", () => {
         const view = zoomFlowViewAt({ zoom: 1, x: 0, y: 0 }, 2, { x: 100, y: 50 });
         expect(view).toEqual({ zoom: 2, x: -100, y: -50 });
@@ -151,7 +246,7 @@ describe("zoom", () => {
     });
 
     it("fits the whole map into the viewport, centered and never larger than 100%", () => {
-        expect(fitFlowView({ width: 1000, height: 200 }, { width: 548, height: 400 }, 24)).toEqual({ zoom: 0.5, x: 24, y: 150 });
+        expect(fitFlowView({ width: 1000, height: 200 }, { width: 548, height: 400 }, { margin: 24 })).toEqual({ zoom: 0.5, x: 24, y: 150 });
         expect(fitFlowView({ width: 100, height: 100 }, { width: 500, height: 300 }).zoom).toBe(1);
         expect(fitFlowView({ width: 100_000, height: 100 }, { width: 500, height: 300 }).zoom).toBe(minFlowZoom);
     });

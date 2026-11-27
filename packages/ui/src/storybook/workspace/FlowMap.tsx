@@ -3,15 +3,21 @@ import { type KeyboardEvent, type PointerEvent, useEffect, useId, useLayoutEffec
 import { Button } from "../../components/button/Button";
 import { Icon } from "../../components/icon/Icon";
 import { IconButton } from "../../components/iconButton/IconButton";
+import { Menu } from "../../components/menu/Menu";
+import { MenuCheckboxItem } from "../../components/menu/MenuCheckboxItem";
+import { MenuItem } from "../../components/menu/MenuItem";
 import { Switch } from "../../components/switch/Switch";
 import { Tooltip } from "../../components/tooltip/Tooltip";
 import { scenarioSetting } from "../scenario";
 import { addFlowEdges, type FlowEdge, flowEdgeList } from "./flowEdges";
 import {
+    expandFlowGroups,
+    findFlowDepths,
     fitFlowView,
     type FlowLink,
     type FlowRect,
     type FlowView,
+    groupUnreachableFlowPages,
     layOutFlow,
     revealFlowRect,
     routeFlowLinks,
@@ -21,14 +27,19 @@ import {
 } from "./flowLayout";
 import styles from "./FlowMap.module.scss";
 import { hotspotList } from "./hotspots";
+import type { PageAncestor } from "./prototypes";
 
 const nodeWidth = 200;
-const nodeHeight = 48;
+const nodeHeight = 56;
 const columnGap = 120;
 const rowGap = 24;
 const padding = 48;
 const scanDelay = 700;
 const lineHeightInPixels = 16;
+const compactBarWidth = 720;
+// The zoom controls float over the map's bottom edge, so fitting the map keeps their height free
+const zoomControlsRoom = 64;
+const recordNavigationHint = "Click through the app's navigation in Prototype mode to record them";
 // Each prototype is scanned once per visit of the workspace on opening the map, its pages rarely change in between; the entries of
 // its navigation stay known for opening the map again
 const navigationByPrototype = new Map<string, string[]>();
@@ -39,6 +50,19 @@ interface FlowNode extends FlowRect {
     inNavigation: boolean;
     designed: boolean;
     deadEnd: boolean;
+    unreachable: boolean;
+    /** Set on the card of a group of pages without a way in. */
+    group?: { pageCount: number; open: boolean };
+}
+
+/** The page above a page that a group of pages without a way in is named after, e.g. the list of a detail page. */
+function getGroupParent(ancestors: PageAncestor[]) {
+    const parent = ancestors.findLast((ancestor) => ancestor.pageId != null) ?? ancestors.at(-1);
+    return parent ? { id: parent.pageId ?? parent.id, label: parent.label } : undefined;
+}
+
+function uniqueLinks<Link extends FlowLink>(links: Link[]) {
+    return [...new Map(links.filter((link) => link.from !== link.to).map((link) => [`${link.from}->${link.to}`, link])).values()];
 }
 
 function wait(milliseconds: number) {
@@ -70,6 +94,7 @@ export function FlowMap({
     startPageId,
     pageIds,
     getPageLabel,
+    getPageAncestors,
     onOpenPage,
 }: {
     prototypeId: string;
@@ -78,6 +103,8 @@ export function FlowMap({
     /** The pages with a design, including the ones the designer added. */
     pageIds: string[];
     getPageLabel: (pageId: string) => string;
+    /** The steps above a page, which group the pages without a way in by their parent. */
+    getPageAncestors: (pageId: string) => PageAncestor[];
     onOpenPage: (pageId: string) => void;
 }) {
     const recordedEdges = flowEdgeList.useItems();
@@ -134,60 +161,128 @@ export function FlowMap({
 
     const [showsNavigationLinks, setShowsNavigationLinks] = useState(false);
     const [highlightedId, setHighlightedId] = useState<string | null>(null);
+    const [openGroupIds, setOpenGroupIds] = useState<string[]>([]);
 
-    const { nodes, rects, contentLinks, navigationLinks, width, height } = useMemo(() => {
-        const linkTargets = new Map<string, Set<string>>();
-        for (const edge of edges.filter((candidate) => candidate.kind === "link")) {
-            linkTargets.set(edge.from, (linkTargets.get(edge.from) ?? new Set()).add(edge.to));
-        }
-        const navigation = new Set([...navigationIds, ...edges.filter((edge) => edge.kind === "navigation").map((edge) => edge.to)]);
-        const allIds = [...new Set([...pageIds, ...linkTargets.keys(), ...[...linkTargets.values()].flatMap((targets) => [...targets])])];
-        const placements = layOutFlow({
-            pageIds: allIds,
-            startPageId,
-            links: linkTargets,
-            navigationIds: navigation,
-            compare: (a, b) => getPageLabel(a).localeCompare(getPageLabel(b)),
-        });
-        const flowNodes: FlowNode[] = placements.map(({ id, column, row }) => {
-            const designed = pageIds.includes(id);
-            return {
-                id,
-                label: getPageLabel(id),
-                x: padding + column * (nodeWidth + columnGap),
-                y: padding + row * (nodeHeight + rowGap),
-                width: nodeWidth,
-                height: nodeHeight,
-                inNavigation: navigation.has(id),
-                designed,
-                deadEnd: designed && !linkTargets.has(id),
+    const { nodes, rects, contentLinks, navigationLinks, pageCount, linkCount, deadEndCount, unreachableCount, unreachableColumnX, width, height } =
+        useMemo(() => {
+            const linkTargets = new Map<string, Set<string>>();
+            for (const edge of edges.filter((candidate) => candidate.kind === "link")) {
+                linkTargets.set(edge.from, (linkTargets.get(edge.from) ?? new Set()).add(edge.to));
+            }
+            const navigationEdges = edges.filter((edge) => edge.kind === "navigation" && edge.from !== edge.to);
+            const navigation = new Set([...navigationIds, ...navigationEdges.map((edge) => edge.to)]);
+            const allIds = [
+                ...new Set([
+                    ...pageIds,
+                    ...linkTargets.keys(),
+                    ...[...linkTargets.values()].flatMap((targets) => [...targets]),
+                    ...navigationEdges.flatMap((edge) => [edge.from, edge.to]),
+                ]),
+            ];
+            const compareLabels = (a: string, b: string) => getPageLabel(a).localeCompare(getPageLabel(b));
+            const depths = findFlowDepths({ startPageId, links: linkTargets, navigationIds: navigation, compare: compareLabels });
+            const isDeadEnd = (id: string) => pageIds.includes(id) && !linkTargets.has(id);
+            const groups = groupUnreachableFlowPages({
+                pageIds: allIds.filter((id) => !depths.has(id)),
+                getParent: (id) => getGroupParent(getPageAncestors(id)),
+            });
+            const groupOf = new Map(groups.flatMap((group) => group.pageIds.map((id) => [id, group])));
+            const groupsById = new Map(groups.map((group) => [group.id, group]));
+            const groupLabel = (id: string) => {
+                const group = groupsById.get(id);
+                return group ? `${group.pageIds.length} pages under ${group.parentLabel}` : undefined;
             };
-        });
-        const rects = new Map(flowNodes.map((node) => [node.id, node]));
-        const contentLinks: FlowLink[] = [...linkTargets.entries()].flatMap(([from, targets]) => [...targets].map((to) => ({ from, to })));
-        const linkKeys = new Set(contentLinks.map((link) => `${link.from}->${link.to}`));
-        // A way through the navigation that a link on the page offers as well is that link
-        const navigationOnlyLinks = edges
-            .filter((edge) => edge.kind === "navigation" && edge.from !== edge.to && !linkKeys.has(`${edge.from}->${edge.to}`))
-            .map(({ from, to }) => ({ from, to, navigation: true }));
-        const uniqueNavigationLinks = [...new Map(navigationOnlyLinks.map((link) => [`${link.from}->${link.to}`, link])).values()];
-        const columns = Math.max(0, ...placements.map((placement) => placement.column)) + 1;
-        const rows = Math.max(1, ...placements.map((placement) => placement.row + 1));
-        return {
-            nodes: flowNodes,
-            rects,
-            contentLinks,
-            navigationLinks: uniqueNavigationLinks,
-            width: padding * 2 + columns * nodeWidth + (columns - 1) * columnGap,
-            height: padding * 2 + rows * nodeHeight + (rows - 1) * rowGap,
-        };
-    }, [edges, navigationIds, pageIds, startPageId, getPageLabel]);
+            const labelOf = (id: string) => groupLabel(id) ?? getPageLabel(id);
+            // An open group keeps its card, the pages go below it
+            const layoutIdOf = (id: string) => groupOf.get(id)?.id ?? id;
+            const shownIdOf = (id: string) => {
+                const group = groupOf.get(id);
+                return group && !openGroupIds.includes(group.id) ? group.id : id;
+            };
+
+            const layoutLinks = new Map<string, Set<string>>();
+            for (const [from, targets] of linkTargets) {
+                for (const to of targets) {
+                    layoutLinks.set(layoutIdOf(from), (layoutLinks.get(layoutIdOf(from)) ?? new Set()).add(layoutIdOf(to)));
+                }
+            }
+            const placements = expandFlowGroups(
+                layOutFlow({
+                    pageIds: [...new Set(allIds.map(layoutIdOf))],
+                    startPageId,
+                    links: layoutLinks,
+                    navigationIds: navigation,
+                    compare: (a, b) => labelOf(a).localeCompare(labelOf(b)),
+                }),
+                new Map(groups.filter((group) => openGroupIds.includes(group.id)).map((group) => [group.id, [...group.pageIds].sort(compareLabels)])),
+            );
+            const flowNodes: FlowNode[] = placements.map(({ id, column, row }) => {
+                const group = groupsById.get(id);
+                const designed = group != null || pageIds.includes(id);
+                return {
+                    id,
+                    label: labelOf(id),
+                    x: padding + column * (nodeWidth + columnGap),
+                    y: padding + row * (nodeHeight + rowGap),
+                    width: nodeWidth,
+                    height: nodeHeight,
+                    inNavigation: navigation.has(id),
+                    designed,
+                    deadEnd: group ? group.pageIds.every(isDeadEnd) : isDeadEnd(id),
+                    unreachable: !depths.has(id),
+                    group: group && { pageCount: group.pageIds.length, open: openGroupIds.includes(group.id) },
+                };
+            });
+            const rects = new Map(flowNodes.map((node) => [node.id, node]));
+            const pageLinks: FlowLink[] = [...linkTargets.entries()].flatMap(([from, targets]) => [...targets].map((to) => ({ from, to })));
+            const linkKeys = new Set(pageLinks.map((link) => `${link.from}->${link.to}`));
+            // A way through the navigation that a link on the page offers as well is that link
+            const navigationOnlyLinks = navigationEdges
+                .filter((edge) => !linkKeys.has(`${edge.from}->${edge.to}`))
+                .map(({ from, to }) => ({ from: shownIdOf(from), to: shownIdOf(to), navigation: true }));
+            // A group counts once, so that many pages of one kind don't make up most of the count
+            const countUnits = (ids: string[]) => new Set(ids.map(layoutIdOf)).size;
+            const unreachableNodes = flowNodes.filter((node) => node.unreachable);
+            const columns = Math.max(0, ...placements.map((placement) => placement.column)) + 1;
+            const rows = Math.max(1, ...placements.map((placement) => placement.row + 1));
+            return {
+                nodes: flowNodes,
+                rects,
+                contentLinks: uniqueLinks(pageLinks.map(({ from, to }) => ({ from: shownIdOf(from), to: shownIdOf(to) }))),
+                navigationLinks: uniqueLinks(navigationOnlyLinks),
+                pageCount: allIds.length,
+                linkCount: pageLinks.length,
+                deadEndCount: countUnits(allIds.filter(isDeadEnd).filter((id) => !groupOf.has(id) || groupOf.get(id)?.pageIds.every(isDeadEnd))),
+                unreachableCount: countUnits(allIds.filter((id) => !depths.has(id))),
+                unreachableColumnX: unreachableNodes.length > 0 ? Math.max(...unreachableNodes.map((node) => node.x)) : null,
+                width: padding * 2 + columns * nodeWidth + (columns - 1) * columnGap,
+                height: padding * 2 + rows * nodeHeight + (rows - 1) * rowGap,
+            };
+        }, [edges, navigationIds, pageIds, startPageId, getPageLabel, getPageAncestors, openGroupIds]);
+    const hasNavigationEdges = edges.some((edge) => edge.kind === "navigation" && edge.from !== edge.to);
 
     // Routed together, so that a navigation link and a link on the page get their own places on a card's side
     const shownLinks = useMemo(
         () => routeFlowLinks([...contentLinks, ...(showsNavigationLinks ? navigationLinks : [])], rects),
         [contentLinks, navigationLinks, rects, showsNavigationLinks],
     );
+    const isHighlightedLink = (link: FlowLink) => highlightedId != null && (link.from === highlightedId || link.to === highlightedId);
+    // Drawn last, so that a highlighted link runs on top of the links it shares a card's side with
+    const orderedLinks = [...shownLinks].sort((a, b) => Number(isHighlightedLink(a)) - Number(isHighlightedLink(b)));
+    const legendEntries = [
+        { key: "link", kind: "edge", label: "Link", shown: shownLinks.some((link) => !link.navigation && !link.backward) },
+        {
+            key: "back",
+            kind: "edge",
+            label: "Link back or up",
+            shown: shownLinks.some((link) => !link.navigation && link.backward),
+        },
+        { key: "navigation", kind: "edge", label: "Through the navigation", shown: shownLinks.some((link) => link.navigation) },
+        { key: "navigation", kind: "tag", label: "In the navigation", shown: nodes.some((node) => node.inNavigation) },
+        { key: "undesigned", kind: "tag", label: "No design yet", shown: nodes.some((node) => !node.designed) },
+        { key: "deadEnd", kind: "tag", label: "No link on", shown: nodes.some((node) => node.deadEnd) },
+        { key: "unreachable", kind: "tag", label: "No way in", shown: nodes.some((node) => node.unreachable) },
+    ].filter((entry) => entry.shown);
     const highlightedNeighborIds = useMemo(() => {
         if (highlightedId == null) {
             return null;
@@ -216,7 +311,7 @@ export function FlowMap({
 
     useLayoutEffect(() => {
         if (!viewMovedRef.current && viewport.width > 0 && viewport.height > 0) {
-            setView(fitFlowView({ width, height }, viewport));
+            setView(fitFlowView({ width, height }, viewport, { reservedBottom: zoomControlsRoom }));
         }
     }, [width, height, viewport]);
 
@@ -238,7 +333,7 @@ export function FlowMap({
 
     function fitToScreen() {
         viewMovedRef.current = false;
-        setView(fitFlowView({ width, height }, viewport));
+        setView(fitFlowView({ width, height }, viewport, { reservedBottom: zoomControlsRoom }));
     }
 
     // React's wheel listener is passive, so it couldn't keep the page from scrolling or the browser from zooming on a pinch
@@ -264,7 +359,7 @@ export function FlowMap({
     }, []);
 
     function startPan(event: PointerEvent<HTMLDivElement>) {
-        if (event.button !== 0 || (event.target as Element).closest("button")) {
+        if (event.button !== 0 || (event.target as Element).closest("button, [data-floating]")) {
             return;
         }
         event.currentTarget.setPointerCapture(event.pointerId);
@@ -306,42 +401,81 @@ export function FlowMap({
     }, [scanFrameLoaded]);
 
     const arrowId = useId();
+    const compact = viewport.width > 0 && viewport.width < compactBarWidth;
+    // Until the designer opens or closes it, the legend is open where it leaves enough of the map in sight
+    const [legendOpenChoice, setLegendOpenChoice] = useState<boolean | null>(null);
+    const legendOpen = legendOpenChoice ?? !compact;
+    const [actionsMenuOpen, setActionsMenuOpen] = useState(false);
+    const scanLabel = scan ? `Scanning ${scan.done + 1} of ${scan.total}` : "Scan pages";
+    const forgetLinks = () => flowEdgeList.update((items) => items.filter((edge) => edge.prototypeId !== prototypeId));
+
+    function openNode(node: FlowNode) {
+        if (node.group) {
+            setOpenGroupIds((current) => (current.includes(node.id) ? current.filter((id) => id !== node.id) : [...current, node.id]));
+        } else {
+            onOpenPage(node.id);
+        }
+    }
 
     return (
         <div className={styles.root}>
             <div className={styles.bar}>
-                <p className={styles.summary}>
-                    {nodes.length} pages · {contentLinks.length} links · {nodes.filter((node) => node.deadEnd).length} without a way on
+                <p className={styles.summary} title="A group of pages counts once">
+                    {pageCount} pages · {linkCount} links · {deadEndCount} without a way on · {unreachableCount} without a way in
+                    {compact && scan && ` · ${scanLabel}`}
                 </p>
-                <ul className={styles.legend}>
-                    <li data-edge="link">Link</li>
-                    <li data-edge="back">Link back</li>
-                    {showsNavigationLinks && <li data-edge="navigation">Through the navigation</li>}
-                    <li data-tag="navigation">In the navigation</li>
-                    <li data-tag="undesigned">No design yet</li>
-                    <li data-tag="deadEnd">No link on</li>
-                </ul>
-                <Switch size="small" checked={showsNavigationLinks} onChange={setShowsNavigationLinks}>
-                    Show navigation links
-                </Switch>
-                <Button
-                    variant="outlined"
-                    color="secondary"
-                    size="small"
-                    startIcon={<Icon name="refresh" />}
-                    disabled={scan != null || !scanFrameLoaded}
-                    onClick={() => void scanPages()}
-                >
-                    {scan ? `Scanning ${scan.done + 1} of ${scan.total}` : "Scan pages"}
-                </Button>
-                <Button
-                    variant="text"
-                    color="secondary"
-                    size="small"
-                    onClick={() => flowEdgeList.update((items) => items.filter((edge) => edge.prototypeId !== prototypeId))}
-                >
-                    Forget links
-                </Button>
+                {compact ? (
+                    <Menu
+                        open={actionsMenuOpen}
+                        onOpenChange={setActionsMenuOpen}
+                        placement="bottom-end"
+                        trigger={
+                            <IconButton variant="text" color="secondary" size="small" aria-label="Flow map actions">
+                                <Icon name="more-horizontal" />
+                            </IconButton>
+                        }
+                    >
+                        <MenuCheckboxItem
+                            label="Show navigation links"
+                            checked={showsNavigationLinks && hasNavigationEdges}
+                            disabled={!hasNavigationEdges}
+                            onChange={setShowsNavigationLinks}
+                        />
+                        <MenuItem
+                            label={scanLabel}
+                            icon={<Icon name="refresh" />}
+                            disabled={scan != null || !scanFrameLoaded}
+                            onClick={() => void scanPages()}
+                        />
+                        <MenuItem label="Forget links" icon={<Icon name="trash" />} onClick={forgetLinks} />
+                    </Menu>
+                ) : (
+                    <>
+                        <Tooltip content={recordNavigationHint} disabled={hasNavigationEdges}>
+                            <Switch
+                                size="small"
+                                checked={showsNavigationLinks && hasNavigationEdges}
+                                disabled={!hasNavigationEdges}
+                                onChange={setShowsNavigationLinks}
+                            >
+                                Show navigation links
+                            </Switch>
+                        </Tooltip>
+                        <Button
+                            variant="outlined"
+                            color="secondary"
+                            size="small"
+                            startIcon={<Icon name="refresh" />}
+                            disabled={scan != null || !scanFrameLoaded}
+                            onClick={() => void scanPages()}
+                        >
+                            {scanLabel}
+                        </Button>
+                        <Button variant="text" color="secondary" size="small" onClick={forgetLinks}>
+                            Forget links
+                        </Button>
+                    </>
+                )}
             </div>
             <div
                 ref={canvasRef}
@@ -366,27 +500,35 @@ export function FlowMap({
                                 <path d="M 0 1 L 9 5 L 0 9 z" />
                             </marker>
                         </defs>
-                        {shownLinks.map((link) => (
+                        {orderedLinks.map((link) => (
                             <path
                                 key={link.key}
                                 d={link.path}
-                                data-direction={link.direction}
+                                data-backward={link.backward || undefined}
                                 data-navigation={link.navigation || undefined}
-                                data-highlighted={(highlightedId != null && (link.from === highlightedId || link.to === highlightedId)) || undefined}
+                                data-highlighted={isHighlightedLink(link) || undefined}
                                 markerEnd={`url(#${CSS.escape(arrowId)})`}
                             />
                         ))}
                     </svg>
+                    {unreachableColumnX != null && (
+                        <p className={styles.columnCaption} style={{ left: unreachableColumnX, width: nodeWidth }}>
+                            No way in
+                        </p>
+                    )}
                     {nodes.map((node) => (
                         <button
                             key={node.id}
                             type="button"
                             className={styles.node}
+                            title={node.label}
+                            aria-expanded={node.group?.open}
+                            data-group={node.group != null || undefined}
                             data-undesigned={!node.designed || undefined}
                             data-dead-end={node.deadEnd || undefined}
                             data-highlighted={highlightedNeighborIds?.has(node.id) || undefined}
                             style={{ left: node.x, top: node.y, width: node.width, height: node.height }}
-                            onClick={() => onOpenPage(node.id)}
+                            onClick={() => openNode(node)}
                             onPointerEnter={() => setHighlightedId(node.id)}
                             onPointerLeave={() => setHighlightedId((current) => (current === node.id ? null : current))}
                             onFocus={() => {
@@ -395,10 +537,14 @@ export function FlowMap({
                             }}
                             onBlur={() => setHighlightedId((current) => (current === node.id ? null : current))}
                         >
-                            <span className={styles.nodeLabel}>{node.label}</span>
+                            <span className={styles.nodeLabel}>
+                                {node.group && <Icon name={node.group.open ? "chevron-up" : "chevron-down"} className={styles.groupIcon} />}
+                                {node.label}
+                            </span>
                             <span className={styles.tags}>
                                 {node.inNavigation && <span data-tag="navigation">Nav</span>}
                                 {!node.designed && <span data-tag="undesigned">No design</span>}
+                                {node.unreachable && <span data-tag="unreachable">No way in</span>}
                                 {node.deadEnd && <span data-tag="deadEnd">No link on</span>}
                             </span>
                         </button>
@@ -406,6 +552,33 @@ export function FlowMap({
                 </div>
                 {edges.length === 0 && scan == null && (
                     <p className={styles.hint}>Click through the prototype or scan its pages to see the ways between them.</p>
+                )}
+                {legendEntries.length > 0 && (
+                    <div className={styles.legend} data-floating>
+                        <Button
+                            variant="text"
+                            color="secondary"
+                            size="small"
+                            endIcon={<Icon name={legendOpen ? "chevron-down" : "chevron-up"} />}
+                            aria-expanded={legendOpen}
+                            onClick={() => setLegendOpenChoice(!legendOpen)}
+                        >
+                            Legend
+                        </Button>
+                        {legendOpen && (
+                            <ul className={styles.legendList}>
+                                {legendEntries.map((entry) => (
+                                    <li
+                                        key={`${entry.kind}:${entry.key}`}
+                                        data-edge={entry.kind === "edge" ? entry.key : undefined}
+                                        data-tag={entry.kind === "tag" ? entry.key : undefined}
+                                    >
+                                        {entry.label}
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </div>
                 )}
                 <FlowZoomControls
                     zoom={view.zoom}
@@ -443,7 +616,7 @@ function FlowZoomControls({
     onFit: () => void;
 }) {
     return (
-        <div className={styles.zoomControls}>
+        <div className={styles.zoomControls} data-floating>
             <IconButton
                 variant="text"
                 color="secondary"

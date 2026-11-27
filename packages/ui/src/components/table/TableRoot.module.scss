@@ -1,12 +1,19 @@
 .root {
+    min-inline-size: 0;
     color: var(--dextinity-table-foreground);
     font-family: var(--dextinity-font-family-text);
     font-size: var(--dextinity-table-font-size);
     line-height: var(--dextinity-table-line-height);
 }
 
+.scroller {
+    overflow-x: auto;
+}
+
 .table {
-    inline-size: 100%;
+    // Without a column that takes the remaining space, a fixed table layout would widen every column to fill it
+    inline-size: var(--_table-width, max(100%, var(--_min-table-width, 0px)));
     border-collapse: separate;
     border-spacing: 0;
+    table-layout: fixed;
 }

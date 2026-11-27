@@ -6,6 +6,7 @@ import {
     layOutFlow,
     maxFlowZoom,
     minFlowZoom,
+    revealFlowRect,
     routeFlowLinks,
     stepFlowZoom,
     wheelZoomFactor,
@@ -106,6 +107,27 @@ describe("routeFlowLinks", () => {
         expect(link.path).toMatch(/^M 100 \S+ C 1\d\d\.?\d* \S+, 1\d\d\.?\d* \S+, 100 \S+$/);
     });
 
+    it("gives a navigation link and a link on the page their own places on a card's side", () => {
+        const rects = new Map([
+            ["a", rect(0, 0)],
+            ["b", rect(200, 0)],
+            ["c", rect(200, 60)],
+        ]);
+
+        const [content, navigation] = routeFlowLinks(
+            [
+                { from: "a", to: "b" },
+                { from: "a", to: "c", navigation: true },
+            ],
+            rects,
+        );
+
+        const startY = (path: string) => Number(path.split(" ")[2]);
+        expect(navigation.navigation).toBe(true);
+        expect(content.navigation).toBeUndefined();
+        expect(startY(content.path)).not.toBe(startY(navigation.path));
+    });
+
     it("leaves out links to cards that aren't on the map", () => {
         expect(routeFlowLinks([{ from: "a", to: "missing" }], new Map([["a", rect(0, 0)]]))).toEqual([]);
     });
@@ -132,6 +154,19 @@ describe("zoom", () => {
         expect(fitFlowView({ width: 1000, height: 200 }, { width: 548, height: 400 }, 24)).toEqual({ zoom: 0.5, x: 24, y: 150 });
         expect(fitFlowView({ width: 100, height: 100 }, { width: 500, height: 300 }).zoom).toBe(1);
         expect(fitFlowView({ width: 100_000, height: 100 }, { width: 500, height: 300 }).zoom).toBe(minFlowZoom);
+    });
+
+    it("moves the map as little as needed to show a card, and not at all when it is in sight", () => {
+        const viewport = { width: 500, height: 300 };
+        const view = { zoom: 0.5, x: 0, y: 0 };
+
+        expect(revealFlowRect(view, { x: 100, y: 100, width: 200, height: 40 }, viewport)).toBe(view);
+        expect(revealFlowRect(view, { x: 1000, y: 100, width: 200, height: 40 }, viewport, 24)).toEqual({ zoom: 0.5, x: -124, y: 0 });
+        expect(revealFlowRect({ zoom: 1, x: 0, y: -200 }, { x: 100, y: 100, width: 200, height: 40 }, viewport, 24)).toEqual({
+            zoom: 1,
+            x: 0,
+            y: -76,
+        });
     });
 
     it("zooms in on scrolling up and out on scrolling down, a mouse wheel notch by a bounded step", () => {

@@ -16,6 +16,8 @@ export interface FlowRect {
 export interface FlowLink {
     from: string;
     to: string;
+    /** A way through the app's navigation rather than a link on the page. */
+    navigation?: boolean;
 }
 
 /** `back` leads to an earlier column, `sideways` to a card in the same column. */
@@ -141,7 +143,17 @@ export function routeFlowLinks(links: FlowLink[], rects: Map<string, FlowRect>):
         const direction: FlowDirection = to.x >= from.x + from.width ? "forward" : to.x + to.width <= from.x ? "back" : "sideways";
         const fromSide: Side = direction === "back" ? "left" : "right";
         const toSide: Side = direction === "forward" ? "left" : "right";
-        return [{ ...link, key: `${link.from}->${link.to}`, direction, fromRect: from, toRect: to, fromSide, toSide }];
+        return [
+            {
+                ...link,
+                key: `${link.navigation ? "navigation:" : ""}${link.from}->${link.to}`,
+                direction,
+                fromRect: from,
+                toRect: to,
+                fromSide,
+                toSide,
+            },
+        ];
     });
 
     const ports = new Map<string, { linkKey: string; towardY: number }[]>();
@@ -173,6 +185,7 @@ export function routeFlowLinks(links: FlowLink[], rects: Map<string, FlowRect>):
             key: end.key,
             from: end.from,
             to: end.to,
+            navigation: end.navigation,
             direction: end.direction,
             path: `M ${round(x1)} ${round(y1)} C ${round(x1 + outward1 * bend)} ${round(y1)}, ${round(x2 + outward2 * bend)} ${round(y2)}, ${round(x2)} ${round(y2)}`,
         };
@@ -207,6 +220,24 @@ export function fitFlowView(content: { width: number; height: number }, viewport
         Math.min(1, (viewport.width - margin * 2) / Math.max(1, content.width), (viewport.height - margin * 2) / Math.max(1, content.height)),
     );
     return { zoom, x: (viewport.width - content.width * zoom) / 2, y: (viewport.height - content.height * zoom) / 2 };
+}
+
+/** Moves the map as little as needed to show the whole card, e.g. one focused with the keyboard; the same view when it is in sight. */
+export function revealFlowRect(view: FlowView, rect: FlowRect, viewport: { width: number; height: number }, margin = 24): FlowView {
+    const revealedOffset = (offset: number, start: number, size: number, viewportSize: number) => {
+        const screenStart = offset + start * view.zoom;
+        const screenEnd = offset + (start + size) * view.zoom;
+        if (screenStart < margin || screenEnd - screenStart > viewportSize - margin * 2) {
+            return margin - start * view.zoom;
+        }
+        if (screenEnd > viewportSize - margin) {
+            return viewportSize - margin - (start + size) * view.zoom;
+        }
+        return offset;
+    };
+    const x = revealedOffset(view.x, rect.x, rect.width, viewport.width);
+    const y = revealedOffset(view.y, rect.y, rect.height, viewport.height);
+    return x === view.x && y === view.y ? view : { zoom: view.zoom, x, y };
 }
 
 /**

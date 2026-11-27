@@ -82,7 +82,8 @@ $navigation-link: color-mix(in oklch, $navigation 45%, transparent);
     position: relative;
     flex: 1;
     min-block-size: 0;
-    overflow: hidden;
+    // Not a scroll container: focusing a card outside the view would scroll it, and the view's offset would no longer be the map's
+    overflow: clip;
     background: var(--dextinity-color-background);
     cursor: grab;
     touch-action: none;

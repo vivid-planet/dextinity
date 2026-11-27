@@ -13,6 +13,7 @@ import {
     type FlowRect,
     type FlowView,
     layOutFlow,
+    revealFlowRect,
     routeFlowLinks,
     stepFlowZoom,
     wheelZoomFactor,
@@ -134,7 +135,7 @@ export function FlowMap({
     const [showsNavigationLinks, setShowsNavigationLinks] = useState(false);
     const [highlightedId, setHighlightedId] = useState<string | null>(null);
 
-    const { nodes, links, navigationLinks, width, height } = useMemo(() => {
+    const { nodes, rects, contentLinks, navigationLinks, width, height } = useMemo(() => {
         const linkTargets = new Map<string, Set<string>>();
         for (const edge of edges.filter((candidate) => candidate.kind === "link")) {
             linkTargets.set(edge.from, (linkTargets.get(edge.from) ?? new Set()).add(edge.to));
@@ -168,25 +169,24 @@ export function FlowMap({
         // A way through the navigation that a link on the page offers as well is that link
         const navigationOnlyLinks = edges
             .filter((edge) => edge.kind === "navigation" && edge.from !== edge.to && !linkKeys.has(`${edge.from}->${edge.to}`))
-            .map(({ from, to }) => ({ from, to }));
+            .map(({ from, to }) => ({ from, to, navigation: true }));
         const uniqueNavigationLinks = [...new Map(navigationOnlyLinks.map((link) => [`${link.from}->${link.to}`, link])).values()];
         const columns = Math.max(0, ...placements.map((placement) => placement.column)) + 1;
         const rows = Math.max(1, ...placements.map((placement) => placement.row + 1));
         return {
             nodes: flowNodes,
-            links: routeFlowLinks(contentLinks, rects),
-            navigationLinks: routeFlowLinks(uniqueNavigationLinks, rects),
+            rects,
+            contentLinks,
+            navigationLinks: uniqueNavigationLinks,
             width: padding * 2 + columns * nodeWidth + (columns - 1) * columnGap,
             height: padding * 2 + rows * nodeHeight + (rows - 1) * rowGap,
         };
     }, [edges, navigationIds, pageIds, startPageId, getPageLabel]);
 
+    // Routed together, so that a navigation link and a link on the page get their own places on a card's side
     const shownLinks = useMemo(
-        () => [
-            ...(showsNavigationLinks ? navigationLinks.map((link) => ({ ...link, navigation: true })) : []),
-            ...links.map((link) => ({ ...link, navigation: false })),
-        ],
-        [links, navigationLinks, showsNavigationLinks],
+        () => routeFlowLinks([...contentLinks, ...(showsNavigationLinks ? navigationLinks : [])], rects),
+        [contentLinks, navigationLinks, rects, showsNavigationLinks],
     );
     const highlightedNeighborIds = useMemo(() => {
         if (highlightedId == null) {
@@ -227,6 +227,13 @@ export function FlowMap({
 
     function zoomAroundCenter(zoom: (current: FlowView) => number) {
         moveView((current) => zoomFlowViewAt(current, zoom(current), { x: viewport.width / 2, y: viewport.height / 2 }));
+    }
+
+    function revealNode(node: FlowRect) {
+        const revealedView = revealFlowRect(view, node, viewport);
+        if (revealedView !== view) {
+            moveView(() => revealedView);
+        }
     }
 
     function fitToScreen() {
@@ -304,7 +311,7 @@ export function FlowMap({
         <div className={styles.root}>
             <div className={styles.bar}>
                 <p className={styles.summary}>
-                    {nodes.length} pages · {links.length} links · {nodes.filter((node) => node.deadEnd).length} without a way on
+                    {nodes.length} pages · {contentLinks.length} links · {nodes.filter((node) => node.deadEnd).length} without a way on
                 </p>
                 <ul className={styles.legend}>
                     <li data-edge="link">Link</li>
@@ -361,7 +368,7 @@ export function FlowMap({
                         </defs>
                         {shownLinks.map((link) => (
                             <path
-                                key={`${link.navigation ? "navigation" : "link"}:${link.key}`}
+                                key={link.key}
                                 d={link.path}
                                 data-direction={link.direction}
                                 data-navigation={link.navigation || undefined}
@@ -382,7 +389,10 @@ export function FlowMap({
                             onClick={() => onOpenPage(node.id)}
                             onPointerEnter={() => setHighlightedId(node.id)}
                             onPointerLeave={() => setHighlightedId((current) => (current === node.id ? null : current))}
-                            onFocus={() => setHighlightedId(node.id)}
+                            onFocus={() => {
+                                setHighlightedId(node.id);
+                                revealNode(node);
+                            }}
                             onBlur={() => setHighlightedId((current) => (current === node.id ? null : current))}
                         >
                             <span className={styles.nodeLabel}>{node.label}</span>

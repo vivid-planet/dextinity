@@ -1,14 +1,16 @@
 import { Inject, UseGuards } from "@nestjs/common";
-import { Args, Query, Resolver } from "@nestjs/graphql";
+import { Args, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 
 import { GetCurrentUser } from "../auth/decorators/get-current-user.decorator";
 import { KubernetesService } from "../kubernetes/kubernetes.service";
 import { KubernetesAuthenticationGuard } from "../kubernetes/kubernetes-authentication.guard";
+import { getJobAttempts } from "../kubernetes/kubernetes-job-attempts";
 import { RequiredPermission } from "../user-permissions/decorators/required-permission.decorator";
 import { CurrentUser } from "../user-permissions/dto/current-user";
 import { ACCESS_CONTROL_SERVICE } from "../user-permissions/user-permissions.constants";
 import { AccessControlServiceInterface } from "../user-permissions/user-permissions.types";
 import { Job } from "./dto/job.object";
+import { JobAttempt } from "./dto/job-attempt.object";
 import { JobsService } from "./jobs.service";
 
 @Resolver(() => Job)
@@ -30,7 +32,8 @@ export class JobsResolver {
         }
 
         const jobs = await this.kubernetesService.getAllJobsForCronJob(cronJobName);
-        return jobs.map((job) => this.jobsService.convertKuberneteJobToJobObjectType(job));
+        const podsByJobName = await this.kubernetesService.getPodsForJobs(jobs);
+        return jobs.map((job) => this.jobsService.convertKuberneteJobToJobObjectType(job, podsByJobName.get(job.metadata?.name ?? "") ?? []));
     }
 
     @Query(() => Job)
@@ -53,5 +56,17 @@ export class JobsResolver {
         }
 
         return this.kubernetesService.getJobLogs(job);
+    }
+
+    @ResolveField(() => [JobAttempt], {
+        description: "Attempts (Pods) of the Job sorted by creation time. More than one attempt means the Job was retried",
+    })
+    async attempts(@Parent() job: Job): Promise<JobAttempt[]> {
+        if (job.attempts) {
+            return job.attempts;
+        }
+
+        const pods = await this.kubernetesService.getPodsForJob({ metadata: { name: job.name } });
+        return getJobAttempts(pods);
     }
 }

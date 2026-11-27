@@ -6,7 +6,6 @@ import {
     BlobStorageModule,
     BlocksModule,
     BlocksTransformerMiddlewareFactory,
-    BuildsModule,
     ContentGenerationModule,
     CronJobsModule,
     DamModule,
@@ -146,7 +145,6 @@ export class AppModule {
                 KubernetesModule.register({
                     helmRelease: config.helmRelease,
                 }),
-                BuildsModule,
                 LinksModule,
                 PagesModule,
                 PageTreeModule.forRoot({

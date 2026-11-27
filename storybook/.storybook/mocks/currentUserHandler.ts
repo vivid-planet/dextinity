@@ -3,7 +3,6 @@ import type { GraphQLFieldResolver } from "graphql";
 import { sleep } from "./handlers";
 
 enum GQLPermission {
-    builds = "builds",
     dam = "dam",
     pageTree = " pageTree",
     cronJobs = " cronJobs",

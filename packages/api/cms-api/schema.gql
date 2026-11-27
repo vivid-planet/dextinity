@@ -17,7 +17,6 @@ enum UserPermissionSource {
 }
 
 enum Permission {
-  builds
   dam
   pageTree
   cronJobs
@@ -179,44 +178,6 @@ type DamSettings {
   invalidLicenseFallbackImage: DamFile
 }
 
-type BuildTemplate {
-  id: ID!
-  name: String!
-
-  """
-  Human readable label provided by dextinity.com/label (or the legacy comet-dxp.com/label) annotation. Use name as fallback if not present
-  """
-  label: String
-}
-
-type AutoBuildStatus {
-  hasChangesSinceLastBuild: Boolean!
-  lastCheck: DateTime
-  nextCheck: DateTime!
-}
-
-type Build {
-  id: ID!
-  status: KubernetesJobStatus!
-  name: String
-
-  """
-  Human readable label provided by dextinity.com/label (or the legacy comet-dxp.com/label) annotation. Use name as fallback if not present
-  """
-  label: String
-  trigger: String
-  startTime: DateTime
-  completionTime: DateTime
-  estimatedCompletionTime: DateTime
-}
-
-enum KubernetesJobStatus {
-  pending
-  active
-  succeeded
-  failed
-}
-
 type SeoTags {
   htmlTitle: String!
   metaDescription: String!
@@ -249,6 +210,13 @@ type KubernetesJob {
   status: KubernetesJobStatus!
   startTime: DateTime
   completionTime: DateTime
+}
+
+enum KubernetesJobStatus {
+  pending
+  active
+  succeeded
+  failed
 }
 
 type PaginatedDamMediaAlternatives {
@@ -544,9 +512,6 @@ input WarningSourceInfoInput {
 }
 
 type Query {
-  builds(limit: Float): [Build!]!
-  autoBuildStatus: AutoBuildStatus!
-  buildTemplates: [BuildTemplate!]!
   redirects(scope: RedirectScopeInput! = {}, query: String, type: RedirectGenerationType, active: Boolean, sortColumnName: String, sortDirection: SortDirection! = ASC): [Redirect!]! @deprecated(reason: "Use paginatedRedirects instead. Will be removed in the next version.")
   paginatedRedirects(scope: RedirectScopeInput! = {}, search: String, filter: RedirectFilter, sort: [RedirectSort!], offset: Int! = 0, limit: Int! = 25): PaginatedRedirects!
   redirect(id: ID!): Redirect!
@@ -824,7 +789,6 @@ enum DamMediaAlternativeSortField {
 }
 
 type Mutation {
-  createBuilds(input: CreateBuildsInput!): Boolean!
   createRedirect(scope: RedirectScopeInput! = {}, input: RedirectInput!): Redirect!
   updateRedirect(id: ID!, input: RedirectInput!, lastUpdatedAt: DateTime): Redirect!
   updateRedirectActiveness(id: ID!, input: RedirectUpdateActivenessInput!): Redirect!
@@ -864,10 +828,6 @@ type Mutation {
   updateDamMediaAlternative(id: ID!, input: DamMediaAlternativeUpdateInput!): DamMediaAlternative!
   deleteDamMediaAlternative(id: ID!): Boolean!
   updateDamSettings(scope: DamScopeInput! = {}, input: DamSettingsInput!): DamSettings!
-}
-
-input CreateBuildsInput {
-  names: [String!]!
 }
 
 input RedirectInput {

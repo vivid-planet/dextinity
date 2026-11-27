@@ -716,7 +716,6 @@ import {
     MasterMenuData,
     MasterMenuRoutes,
     PagesPage,
-    PublisherPage,
 } from "@dextinity/cms-admin";
 import {
     BrevoContactConfig,
@@ -894,15 +893,6 @@ const getMasterMenuData = ({
             primary: <FormattedMessage id="menu.system" defaultMessage="System" />,
             icon: <Wrench />,
             items: [
-                {
-                    type: "route",
-                    primary: <FormattedMessage id="menu.publisher" defaultMessage="Publisher" />,
-                    route: {
-                        path: "/system/publisher",
-                        element: <PublisherPage />,
-                    },
-                    requiredPermission: "builds",
-                },
                 {
                     type: "route",
                     primary: <FormattedMessage id="menu.redirects" defaultMessage="Redirects" />,

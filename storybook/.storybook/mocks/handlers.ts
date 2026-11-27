@@ -74,7 +74,6 @@ type CurrentUserPermission {
 }
 
 enum Permission {
-  builds
   dam
   pageTree
   cronJobs

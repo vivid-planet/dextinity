@@ -5,7 +5,6 @@ import { IncomingMessage } from "http";
 import { basename, extname } from "path";
 
 import { GetCurrentUser } from "../../auth/decorators/get-current-user.decorator.js";
-import { SkipBuild } from "../../builds/skip-build.decorator.js";
 import { PaginatedResponseFactory } from "../../common/pagination/paginated-response.factory.js";
 import { slugifyFilename } from "../../file-utils/files.utils.js";
 import { AffectedEntity } from "../../user-permissions/decorators/affected-entity.decorator.js";
@@ -93,7 +92,6 @@ export function createFilesResolver({
         @Mutation(() => [File])
         @AffectedEntity(Folder, { idArg: "targetFolderId", nullable: true })
         @AffectedEntity(File, { idArg: "fileIds" })
-        @SkipBuild()
         async moveDamFiles(
             @Args({ type: () => MoveDamFilesArgs }) { fileIds, targetFolderId }: MoveDamFilesArgs,
             @GetCurrentUser() user: CurrentUser,
@@ -111,7 +109,6 @@ export function createFilesResolver({
         @Mutation(() => CopyFilesResponse)
         @AffectedEntity(File, { idArg: "fileIds" })
         @AffectedEntity(Folder, { idArg: "inboxFolderId" })
-        @SkipBuild()
         async copyFilesToScope(
             @GetCurrentUser() user: CurrentUser,
             @Args("fileIds", { type: () => [ID] }) fileIds: string[],
@@ -128,7 +125,6 @@ export function createFilesResolver({
 
         @Mutation(() => File)
         @AffectedEntity(File)
-        @SkipBuild()
         async archiveDamFile(@Args("id", { type: () => ID }) id: string): Promise<FileInterface> {
             const entity = await this.entityManager.findOneOrFail(resolveFileEntity(), id);
             entity.archived = true;
@@ -139,7 +135,6 @@ export function createFilesResolver({
 
         @Mutation(() => [File])
         @AffectedEntity(File, { idArg: "ids" })
-        @SkipBuild()
         async archiveDamFiles(@Args("ids", { type: () => [ID] }) ids: string[]): Promise<FileInterface[]> {
             const entities = await this.entityManager.find(resolveFileEntity(), { id: { $in: ids } });
 
@@ -153,7 +148,6 @@ export function createFilesResolver({
 
         @Mutation(() => File)
         @AffectedEntity(File)
-        @SkipBuild()
         async restoreDamFile(@Args("id", { type: () => ID }) id: string): Promise<FileInterface> {
             const entity = await this.entityManager.findOneOrFail(resolveFileEntity(), id);
             entity.archived = false;
@@ -164,7 +158,6 @@ export function createFilesResolver({
 
         @Mutation(() => [File])
         @AffectedEntity(File, { idArg: "ids" })
-        @SkipBuild()
         async restoreDamFiles(@Args("ids", { type: () => [ID] }) ids: string[]): Promise<FileInterface[]> {
             const entities = await this.entityManager.find(resolveFileEntity(), { id: { $in: ids } });
 
@@ -178,7 +171,6 @@ export function createFilesResolver({
 
         @Mutation(() => Boolean)
         @AffectedEntity(File)
-        @SkipBuild()
         async deleteDamFile(@Args("id", { type: () => ID }) id: string): Promise<boolean> {
             return this.filesService.delete(id);
         }

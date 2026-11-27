@@ -1,7 +1,6 @@
 import { NotFoundException, type Type } from "@nestjs/common";
 import { Args, ID, Mutation, ObjectType, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 
-import { SkipBuild } from "../../builds/skip-build.decorator.js";
 import { PaginatedResponseFactory } from "../../common/pagination/paginated-response.factory.js";
 import { AffectedEntity } from "../../user-permissions/decorators/affected-entity.decorator.js";
 import { RequiredPermission } from "../../user-permissions/decorators/required-permission.decorator.js";
@@ -77,7 +76,6 @@ export function createFoldersResolver({
         }
 
         @Mutation(() => Folder)
-        @SkipBuild()
         async createDamFolder(
             @Args("input", { type: () => CreateFolderInput }) input: CreateFolderInput,
             @Args("scope", { type: () => Scope, defaultValue: hasNonEmptyScope ? undefined : {} }) scope: typeof Scope,
@@ -87,7 +85,6 @@ export function createFoldersResolver({
 
         @Mutation(() => Folder)
         @AffectedEntity(Folder)
-        @SkipBuild()
         async updateDamFolder(
             @Args("id", { type: () => ID }) id: string,
             @Args("input", { type: () => UpdateFolderInput }) input: UpdateFolderInput,
@@ -96,7 +93,6 @@ export function createFoldersResolver({
         }
 
         @Mutation(() => [Folder])
-        @SkipBuild()
         async moveDamFolders(
             @Args("folderIds", { type: () => [ID] }) folderIds: string[],
             @Args("targetFolderId", { type: () => ID, nullable: true }) targetFolderId: string,
@@ -107,7 +103,6 @@ export function createFoldersResolver({
 
         @Mutation(() => Boolean)
         @AffectedEntity(Folder)
-        @SkipBuild()
         async deleteDamFolder(@Args("id", { type: () => ID }) id: string): Promise<boolean> {
             return this.foldersService.delete(id);
         }

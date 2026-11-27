@@ -56,7 +56,6 @@
         "@tiptap/pm": "^3.35.0",
         "@tiptap/starter-kit": "^3.35.0",
         "content-disposition": "^3.1.0",
-        "cron-parser": "^5.10.6",
         "dataloader": "^2.2.3",
         "date-fns": "^4.4.0",
         "dompurify": "^3.5.0",

@@ -174,14 +174,13 @@ Child blocks do not need to collect their children's text manually — the trave
 `@dextinity/cms-admin` exports a ready-to-use `SearchHeaderItem` component. Add it to your application's `Header`:
 
 ```tsx title="MasterHeader.tsx"
-import { BuildEntry, ContentScopeControls, Header, SearchHeaderItem, UserHeaderItem } from "@dextinity/cms-admin";
+import { ContentScopeControls, Header, SearchHeaderItem, UserHeaderItem } from "@dextinity/cms-admin";
 
 const MasterHeader = () => {
     return (
         <Header>
             <SearchHeaderItem />
             <ContentScopeControls />
-            <BuildEntry />
             <UserHeaderItem />
         </Header>
     );

@@ -2,7 +2,6 @@ import { EntityManager } from "@mikro-orm/postgresql";
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { GraphQLJSONObject } from "graphql-scalars";
 
-import { SkipBuild } from "../builds/skip-build.decorator.js";
 import { RequiredPermission } from "./decorators/required-permission.decorator.js";
 import { ContentScopeDimension, ContentScopeWithLabel, UserAssignedContentScopes } from "./dto/content-scope.js";
 import { UserContentScopesInput } from "./dto/user-content-scopes.input.js";
@@ -19,7 +18,6 @@ export class UserContentScopesResolver {
     ) {}
 
     @Mutation(() => Boolean)
-    @SkipBuild()
     async userPermissionsUpdateContentScopes(
         @Args("userId", { type: () => String }) userId: string,
         @Args("input", { type: () => UserContentScopesInput }) { contentScopes }: UserContentScopesInput,

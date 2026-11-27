@@ -13,7 +13,6 @@ import { AFFECTED_ENTITY_METADATA_KEY, type AffectedEntityMeta } from "./decorat
 import { AFFECTED_SCOPE_METADATA_KEY, type AffectedScopeMeta } from "./decorators/affected-scope.decorator.js";
 import { getScopesForScopedEntity } from "./get-scopes-for-scoped-entity.js";
 
-// TODO Remove service and move into UserPermissionsGuard once ChangesCheckerInterceptor is removed
 @Injectable()
 export class ContentScopeService {
     constructor(
@@ -55,10 +54,6 @@ export class ContentScopeService {
         }
 
         return contentScopes;
-    }
-
-    async inferScopesFromExecutionContext(context: ExecutionContext): Promise<ContentScope[]> {
-        return this.getUniqueScopes(await this.getScopesForPermissionCheck(context));
     }
 
     getUniqueScopes(scopes: ContentScope[][]): ContentScope[] {

@@ -118,13 +118,6 @@ export { transformToBlockSaveIndex } from "./blocks/transformToBlockSaveIndex/tr
 export { IsLinkTarget } from "./blocks/validator/is-link-target.validator.js";
 export { VimeoVideoBlock } from "./blocks/vimeo-video.block.js";
 export { YouTubeVideoBlock } from "./blocks/YouTubeVideoBlock/you-tube-video.block.js";
-export { BUILDS_CONFIG, BUILDS_MODULE_OPTIONS } from "./builds/builds.constants.js";
-export { BuildsModule } from "./builds/builds.module.js";
-export { BuildsResolver } from "./builds/builds.resolver.js";
-export { BuildsService } from "./builds/builds.service.js";
-export { AutoBuildStatus } from "./builds/dto/auto-build-status.object.js";
-export { ChangesSinceLastBuild } from "./builds/entities/changes-since-last-build.entity.js";
-export { SKIP_BUILD_METADATA_KEY, SkipBuild } from "./builds/skip-build.decorator.js";
 export { getRequestContextHeadersFromRequest, RequestContext, type RequestContextInterface } from "./common/decorators/request-context.decorator.js";
 export { Searchable } from "./common/decorators/searchable.decorator.js";
 export { getRequestFromExecutionContext } from "./common/decorators/utils.js";

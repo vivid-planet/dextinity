@@ -2,6 +2,75 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type ActionLog {
+  createdAt: DateTime!
+  entityId: ID!
+  entityName: String!
+  id: ID!
+
+  """
+  The most recent earlier action log entry for the same entity. Null when this is the first version, or when the earlier entry is scoped and lacks one of this entry's scopes.
+  """
+  previousVersion: ActionLog
+  scope: [JSONObject!]
+  snapshot: JSONObject
+
+  """
+  Derived from snapshot and version: snapshot null → deleted, version 1 → created, otherwise → updated.
+  """
+  type: ActionLogType!
+  user: ActionLogsUser!
+  version: Int!
+}
+
+input ActionLogFilter {
+  and: [ActionLogFilter!]
+  createdAt: DateTimeFilter
+  entityId: IdFilter
+  entityName: StringFilter
+  or: [ActionLogFilter!]
+  scope: ActionLogScopeFilter
+  type: ActionLogTypeEnumFilter
+  userId: StringFilter
+  version: NumberFilter
+}
+
+input ActionLogScopeFilter {
+  equal: JSONObject
+  isAnyOf: [JSONObject!]
+  isGlobal: Boolean
+  notEqual: JSONObject
+}
+
+input ActionLogSort {
+  direction: SortDirection! = ASC
+  field: ActionLogSortField!
+}
+
+enum ActionLogSortField {
+  createdAt
+  entityName
+  scope
+  version
+}
+
+enum ActionLogType {
+  created
+  deleted
+  updated
+}
+
+input ActionLogTypeEnumFilter {
+  equal: ActionLogType
+  isAnyOf: [ActionLogType!]
+  notEqual: ActionLogType
+}
+
+type ActionLogsUser {
+  id: ID!
+  name: String
+}
+
 input AddBrevoContactsInput {
   brevoContactIds: [Int!]!
 }
@@ -1310,6 +1379,11 @@ enum PageTreeNodeVisibility {
   Unpublished
 }
 
+type PaginatedActionLogs {
+  nodes: [ActionLog!]!
+  totalCount: Int!
+}
+
 type PaginatedBrevoContacts {
   nodes: [BrevoContact!]!
   totalCount: Int!
@@ -1411,6 +1485,7 @@ type PaginatedWarnings {
 }
 
 enum Permission {
+  actionLog
   blockPreview
   brevoNewsletter
   brevoNewsletterConfig
@@ -1967,6 +2042,7 @@ input ProductVariantUpdateInput {
 }
 
 type Query {
+  actionLogs(entity: String!, filter: ActionLogFilter, limit: Int! = 25, offset: Int! = 0, scope: JSONObject!, sort: [ActionLogSort!]): PaginatedActionLogs!
   autoBuildStatus: AutoBuildStatus!
   blockPreviewJwt(includeInvisible: Boolean!, scope: JSONObject!, url: String!): String!
   brevoConfig(scope: EmailCampaignContentScopeInput!): BrevoConfig
@@ -2024,6 +2100,16 @@ type Query {
   manufacturer(id: ID!): Manufacturer!
   manufacturerCountries(filter: ManufacturerCountryFilter, limit: Int! = 25, offset: Int! = 0, search: String): PaginatedManufacturerCountries!
   manufacturers(filter: ManufacturerFilter, limit: Int! = 25, offset: Int! = 0, search: String, sort: [ManufacturerSort!]! = [{direction: ASC, field: id}]): PaginatedManufacturers!
+
+  """
+  Returns the names of the entities that occur in the entries of `myActionLogs`, for instance to offer them as a filter.
+  """
+  myActionLogEntityNames: [String!]!
+
+  """
+  Returns the action log of all entities, restricted to the entries the current user could read in the action log of each entity.
+  """
+  myActionLogs(filter: ActionLogFilter, limit: Int! = 25, offset: Int! = 0, sort: [ActionLogSort!]): PaginatedActionLogs!
   myFullTextSearch(limit: Int! = 25, offset: Int! = 0, scope: JSONObject, search: String!): PaginatedEntityInfo!
   news(id: ID!): News!
   newsBySlug(scope: NewsContentScopeInput!, slug: String!): News

@@ -1,6 +1,9 @@
 import "reflect-metadata";
 
 export { AccessLogModule } from "./access-log/access-log.module.js";
+export { ActionLogs } from "./action-logs/action-logs.decorator.js";
+export { ActionLogsModule } from "./action-logs/action-logs.module.js";
+export { ActionLogType } from "./action-logs/dto/action-log-type.enum.js";
 export { DisableDextinityGuards } from "./auth/decorators/disable-dextinity-guards.decorator.js";
 export { GetCurrentUser } from "./auth/decorators/get-current-user.decorator.js";
 export { DextinityAuthGuard } from "./auth/guards/dextinity.guard.js";
@@ -309,5 +312,6 @@ export {
     type UserPermissionsUserServiceInterface,
     type Users,
 } from "./user-permissions/user-permissions.types.js";
+export { UserPermissionsStorageService } from "./user-permissions/user-permissions-storage.service.js";
 export { CreateWarnings } from "./warnings/decorators/create-warnings.decorator.js";
 export { WarningsModule } from "./warnings/warning.module.js";

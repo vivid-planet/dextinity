@@ -36,6 +36,7 @@ import { Migration20250531565157 } from "./migrations/Migration20250531565157.js
 import { Migration20250612134629 } from "./migrations/Migration20250612134629.js";
 import { Migration20250623085054 } from "./migrations/Migration20250623085054.js";
 import { Migration20250623113026 } from "./migrations/Migration20250623113026.js";
+import { Migration20250827053944 } from "./migrations/Migration20250827053944.js";
 import { Migration20251013081751 } from "./migrations/Migration20251013081751.js";
 import { Migration20251118143418 } from "./migrations/Migration20251118143418.js";
 import { Migration20251126093305 } from "./migrations/Migration20251126093305.js";
@@ -46,6 +47,7 @@ import { Migration20260803090000 } from "./migrations/Migration20260803090000.js
 import { Migration20260917094500 } from "./migrations/Migration20260917094500.js";
 import { Migration20261019090000 } from "./migrations/Migration20261019090000.js";
 import { Migration20261103090000 } from "./migrations/Migration20261103090000.js";
+import { Migration20261117090000 } from "./migrations/Migration20261117090000.js";
 
 export interface MikroOrmModuleOptions {
     ormConfig: MikroOrmNestjsOptions;
@@ -116,6 +118,7 @@ export function createOrmConfig({ migrations, ...defaults }: MikroOrmNestjsOptio
                 { name: "Migration20250612134629", class: Migration20250612134629 },
                 { name: "Migration20250623085054", class: Migration20250623085054 },
                 { name: "Migration20250623113026", class: Migration20250623113026 },
+                { name: "Migration20250827053944", class: Migration20250827053944 },
                 { name: "Migration20251118143418", class: Migration20251118143418 },
                 { name: "Migration20260707120000", class: Migration20260707120000 },
                 { name: "Migration20251013081751", class: Migration20251013081751 },
@@ -128,6 +131,7 @@ export function createOrmConfig({ migrations, ...defaults }: MikroOrmNestjsOptio
                 { name: "Migration20260917094500", class: Migration20260917094500 },
                 { name: "Migration20261019090000", class: Migration20261019090000 },
                 { name: "Migration20261103090000", class: Migration20261103090000 },
+                { name: "Migration20261117090000", class: Migration20261117090000 },
                 ...(migrations?.migrationsList || []),
             ].sort((migrationA, migrationB) => {
                 if (migrationA.name < migrationB.name) {

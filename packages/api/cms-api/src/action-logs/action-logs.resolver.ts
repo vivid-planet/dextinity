@@ -1,0 +1,232 @@
+import { type AnyEntity, EntityManager, type ObjectQuery, PostgreSqlDriver, type QBFilterQuery, raw } from "@mikro-orm/postgresql";
+import { BadRequestException, ForbiddenException, Inject, type Type } from "@nestjs/common";
+import { Args, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
+
+import { GetCurrentUser } from "../auth/decorators/get-current-user.decorator.js";
+import { gqlSortToMikroOrmOrderBy } from "../common/filter/mikro-orm.js";
+import {
+    DisablePermissionCheck,
+    REQUIRED_PERMISSION_METADATA_KEY,
+    RequiredPermission,
+    type RequiredPermissionMetadata,
+} from "../user-permissions/decorators/required-permission.decorator.js";
+import { CurrentUser } from "../user-permissions/dto/current-user.js";
+import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface.js";
+import { ACCESS_CONTROL_SERVICE } from "../user-permissions/user-permissions.constants.js";
+import { UserPermissionsService } from "../user-permissions/user-permissions.service.js";
+import type { AccessControlServiceInterface, Permission, SystemUser } from "../user-permissions/user-permissions.types.js";
+import { ActionLogsAclService } from "./action-logs.acl.service.js";
+import { ActionLogsService } from "./action-logs.service.js";
+import { actionLogFilterToWhere } from "./action-logs-filter.utils.js";
+import { ActionLogsUserLoaderService } from "./action-logs-user-loader.service.js";
+import { containsAllScopes } from "./contains-all-scopes.js";
+import { ActionLogType } from "./dto/action-log-type.enum.js";
+import { ActionLogsArgs } from "./dto/action-logs.args.js";
+import { ActionLogsUser } from "./dto/action-logs-user.js";
+import { MyActionLogsArgs } from "./dto/my-action-logs.args.js";
+import { PaginatedActionLogs } from "./dto/paginated-action-logs.js";
+import { ActionLog } from "./entities/action-log.entity.js";
+import { entityChecksScope } from "./entity-checks-scope.js";
+import { PreviousActionLogLoaderService } from "./previous-action-log-loader.service.js";
+
+@Resolver(() => ActionLog)
+export class ActionLogsResolver {
+    constructor(
+        private readonly entityManager: EntityManager<PostgreSqlDriver>,
+        private readonly userPermissionsService: UserPermissionsService,
+        private readonly previousActionLogLoader: PreviousActionLogLoaderService,
+        private readonly actionLogsUserLoader: ActionLogsUserLoaderService,
+        private readonly actionLogsService: ActionLogsService,
+        private readonly actionLogsAclService: ActionLogsAclService,
+        @Inject(ACCESS_CONTROL_SERVICE) private readonly accessControlService: AccessControlServiceInterface,
+    ) {}
+
+    /**
+     * The permission check cannot run in the guard: it depends on the `entity` argument, while the
+     * guard resolves a permission statically from the resolver's entity binding. `DisablePermissionCheck`
+     * therefore only gets past the guard — access is decided below, against the permission the
+     * requested entity declares.
+     */
+    @Query(() => PaginatedActionLogs)
+    @RequiredPermission(DisablePermissionCheck, { skipScopeCheck: true })
+    async actionLogs(
+        @Args() { entity, scope, filter, offset, limit, sort }: ActionLogsArgs,
+        @GetCurrentUser() user: CurrentUser | SystemUser,
+    ): Promise<PaginatedActionLogs> {
+        const entityClass = this.getLoggedEntity(entity);
+        this.checkPermission({ entityClass, scope, user });
+
+        const andFilters: ObjectQuery<ActionLog>[] = [{ entityName: entity }];
+
+        // A scoped row must hold the requested scope exactly: `$contains` alone would also match a scope
+        // with fewer dimensions, which passes the permission check for a user who holds only one of the
+        // scopes it covers. `$contains` stays in the query for the GIN index.
+        const rowHoldsRequestedScope: ObjectQuery<ActionLog> = {
+            scope: { $contains: [scope] },
+            [raw(
+                (alias) => `exists (select 1 from jsonb_array_elements(${alias}."scope") as "rowScope" where "rowScope" = ?::jsonb)`,
+                [JSON.stringify(scope)],
+            )]: true,
+        };
+
+        // Rows of entities that don't check the scope have scope=NULL; match those too so unscoped entities
+        // still surface their logs when the page is rendered inside a scoped layout. The scope of such a row
+        // of an entity that checks the scope is unknown, so nobody may read it.
+        andFilters.push(entityChecksScope(entityClass) ? rowHoldsRequestedScope : { $or: [{ scope: null }, rowHoldsRequestedScope] });
+
+        if (filter) {
+            andFilters.push(actionLogFilterToWhere(filter));
+        }
+
+        const [entities, totalCount] = await this.entityManager.findAndCount(
+            ActionLog,
+            { $and: andFilters },
+            {
+                offset,
+                limit,
+                orderBy: sort ? gqlSortToMikroOrmOrderBy(sort) : { createdAt: "DESC" },
+            },
+        );
+        return new PaginatedActionLogs(entities, totalCount);
+    }
+
+    @Query(() => PaginatedActionLogs, {
+        description:
+            "Returns the action log of all entities, restricted to the entries the current user could read in the action log of each entity.",
+    })
+    @RequiredPermission("actionLog", { skipScopeCheck: true })
+    async myActionLogs(
+        @Args() { filter, offset, limit, sort }: MyActionLogsArgs,
+        @GetCurrentUser() user: CurrentUser | SystemUser,
+    ): Promise<PaginatedActionLogs> {
+        const readableActionLogsFilter = await this.actionLogsAclService.getReadableActionLogsFilter(user);
+        if (readableActionLogsFilter === null) {
+            return new PaginatedActionLogs([], 0);
+        }
+
+        const andFilters: ObjectQuery<ActionLog>[] = [readableActionLogsFilter];
+
+        if (filter) {
+            andFilters.push(actionLogFilterToWhere(filter));
+        }
+
+        const [entities, totalCount] = await this.entityManager.findAndCount(
+            ActionLog,
+            { $and: andFilters },
+            {
+                offset,
+                limit,
+                orderBy: sort ? gqlSortToMikroOrmOrderBy(sort) : { createdAt: "DESC" },
+            },
+        );
+        return new PaginatedActionLogs(entities, totalCount);
+    }
+
+    @Query(() => [String], {
+        description: "Returns the names of the entities that occur in the entries of `myActionLogs`, for instance to offer them as a filter.",
+    })
+    @RequiredPermission("actionLog", { skipScopeCheck: true })
+    async myActionLogEntityNames(@GetCurrentUser() user: CurrentUser | SystemUser): Promise<string[]> {
+        const readableActionLogsFilter = await this.actionLogsAclService.getReadableActionLogsFilter(user);
+        if (readableActionLogsFilter === null) {
+            return [];
+        }
+
+        const rows = await this.entityManager
+            .createQueryBuilder(ActionLog)
+            .select("entityName", true)
+            .where(readableActionLogsFilter as QBFilterQuery<ActionLog>)
+            .orderBy({ entityName: "ASC" })
+            .execute<Array<{ entityName: string }>>();
+        return rows.map(({ entityName }) => entityName);
+    }
+
+    private getLoggedEntity(entity: string): Type<AnyEntity> {
+        const loggedEntities = this.actionLogsService.getLoggedEntities();
+        const entityClass = loggedEntities.find(({ name }) => name === entity);
+        if (!entityClass) {
+            const known = loggedEntities.map(({ name }) => name).join(", ");
+            throw new BadRequestException(`"${entity}" is not logged. Entities decorated with @ActionLogs(): ${known || "none"}.`);
+        }
+        return entityClass;
+    }
+
+    private loggedEntityChecksScope(entityName: string): boolean {
+        const entityClass = this.actionLogsService.getLoggedEntities().find(({ name }) => name === entityName);
+        return !entityClass || entityChecksScope(entityClass);
+    }
+
+    private checkPermission({
+        entityClass,
+        scope,
+        user,
+    }: {
+        entityClass: Type<AnyEntity>;
+        scope: ContentScope;
+        user: CurrentUser | SystemUser;
+    }): void {
+        const entity = entityClass.name;
+
+        if (typeof user === "string" && this.userPermissionsService.isSystemUser(user)) {
+            return;
+        }
+
+        const metadata = Reflect.getMetadata(REQUIRED_PERMISSION_METADATA_KEY, entityClass) as RequiredPermissionMetadata | undefined;
+        const requiredPermissions = metadata?.requiredPermission ?? [];
+
+        if (requiredPermissions.includes(DisablePermissionCheck)) {
+            throw new ForbiddenException(
+                `The action log of ${entity} is only readable by system users: ${entity} disables the permission check, so its access is decided by a resolver the action log doesn't know about.`,
+            );
+        }
+
+        const permissionScope = metadata?.options?.skipScopeCheck ? undefined : scope;
+        const isAllowed = requiredPermissions
+            .filter((permission): permission is Permission => permission !== DisablePermissionCheck)
+            .some((permission) => this.accessControlService.isAllowed(user, permission, permissionScope));
+
+        if (!isAllowed) {
+            throw new ForbiddenException(`No permission to read the action log of ${entity} in this scope.`);
+        }
+    }
+
+    @ResolveField(() => ActionLog, {
+        nullable: true,
+        description:
+            "The most recent earlier action log entry for the same entity. Null when this is the first version, or when the earlier entry is scoped and lacks one of this entry's scopes.",
+    })
+    async previousVersion(@Parent() actionLog: ActionLog): Promise<ActionLog | null> {
+        if (actionLog.version <= 1) {
+            return null;
+        }
+        const previous = await this.previousActionLogLoader.load(actionLog);
+        if (!previous) {
+            return null;
+        }
+        // An unscoped row of an entity that checks the scope is listed in no scope, so it stays hidden here too.
+        if (previous.scope == null) {
+            return this.loggedEntityChecksScope(previous.entityName) ? null : previous;
+        }
+        // Access to a row is checked against one of its own scopes. A previous version that lacks one of the
+        // current row's scopes could hold content the user may not read, so it is not returned.
+        return containsAllScopes(previous.scope, actionLog.scope) ? previous : null;
+    }
+
+    @ResolveField(() => ActionLogType, {
+        description: "Derived from snapshot and version: snapshot null → deleted, version 1 → created, otherwise → updated.",
+    })
+    type(@Parent() actionLog: ActionLog): ActionLogType {
+        if (actionLog.snapshot == null) {
+            return ActionLogType.deleted;
+        }
+        if (actionLog.version === 1) {
+            return ActionLogType.created;
+        }
+        return ActionLogType.updated;
+    }
+
+    @ResolveField(() => ActionLogsUser)
+    async user(@Parent() actionLog: ActionLog): Promise<ActionLogsUser> {
+        return this.actionLogsUserLoader.load(actionLog.userId);
+    }
+}

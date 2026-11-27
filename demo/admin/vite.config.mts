@@ -82,6 +82,7 @@ export default defineConfig(({ mode }) => {
             global: "globalThis",
         },
         resolve: {
+            conditions: ["import"],
             alias: {
                 "@src": resolve(import.meta.dirname, "./src"),
             },

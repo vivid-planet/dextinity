@@ -1,4 +1,5 @@
 import {
+    Button,
     FieldSet,
     FillSpace,
     FullHeightContent,
@@ -7,6 +8,7 @@ import {
     SaveBoundary,
     SaveBoundarySaveButton,
     Stack,
+    StackLink,
     StackMainContent,
     StackPage,
     StackSwitch,
@@ -16,8 +18,9 @@ import {
     ToolbarBackButton,
     useStackSwitch,
 } from "@dextinity/admin";
-import { ContentScopeIndicator } from "@dextinity/cms-admin";
-import { useIntl } from "react-intl";
+import { Time } from "@dextinity/admin-icons";
+import { ActionLogButton, ActionLogsGrid, ContentScopeIndicator } from "@dextinity/cms-admin";
+import { FormattedMessage, useIntl } from "react-intl";
 
 import { ProductForm } from "./ProductForm";
 import { ProductPriceForm } from "./ProductPriceForm";
@@ -25,12 +28,13 @@ import { ProductsGrid } from "./ProductsGrid";
 import { ProductVariantForm } from "./ProductVariantForm";
 import { ProductVariantsGrid } from "./ProductVariantsGrid";
 
-const FormToolbar = () => (
+const FormToolbar = ({ id }: { id?: string }) => (
     <StackToolbar>
         <ToolbarBackButton />
         <ToolbarAutomaticTitleItem />
         <FillSpace />
         <ToolbarActions>
+            {id && <ActionLogButton entityId={id} entity="Product" />}
             <SaveBoundarySaveButton />
         </ToolbarActions>
     </StackToolbar>
@@ -45,7 +49,15 @@ const ProductsPage = () => {
         <Stack topLevelTitle={intl.formatMessage({ id: "products.products", defaultMessage: "Products" })}>
             <ProductsStackSwitch initialPage="grid">
                 <StackPage name="grid">
-                    <StackToolbar scopeIndicator={<ContentScopeIndicator global />} />
+                    <StackToolbar scopeIndicator={<ContentScopeIndicator global />}>
+                        <ToolbarAutomaticTitleItem />
+                        <FillSpace />
+                        <ToolbarActions>
+                            <Button variant="textDark" startIcon={<Time />} component={StackLink} pageName="action-log" payload="action-log">
+                                <FormattedMessage id="products.actionLog" defaultMessage="Action Log" />
+                            </Button>
+                        </ToolbarActions>
+                    </StackToolbar>
                     <StackMainContent fullHeight>
                         <ProductsGrid />
                     </StackMainContent>
@@ -53,7 +65,7 @@ const ProductsPage = () => {
                 <StackPage name="edit" title={intl.formatMessage({ id: "products.editProduct", defaultMessage: "Edit product" })}>
                     {(selectedProductId) => (
                         <SaveBoundary>
-                            <FormToolbar />
+                            <FormToolbar id={selectedProductId} />
                             <StackMainContent>
                                 <RouterTabs>
                                     <RouterTab
@@ -149,6 +161,13 @@ const ProductsPage = () => {
                             </FieldSet>
                         </StackMainContent>
                     </SaveBoundary>
+                </StackPage>
+                <StackPage name="action-log" title={intl.formatMessage({ id: "products.actionLog", defaultMessage: "Action Log" })}>
+                    <StackToolbar scopeIndicator={<ContentScopeIndicator global />}>
+                        <ToolbarBackButton />
+                        <ToolbarAutomaticTitleItem />
+                    </StackToolbar>
+                    <ActionLogsGrid entity="Product" />
                 </StackPage>
             </ProductsStackSwitch>
         </Stack>

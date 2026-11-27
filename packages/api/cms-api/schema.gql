@@ -1,3 +1,38 @@
+type EntityInfo {
+  id: String!
+  entityName: String!
+  name: String!
+  secondaryInformation: String
+  visible: Boolean!
+}
+
+type Dependency {
+  rootId: String!
+  rootGraphqlObjectType: String!
+  rootColumnName: String!
+  jsonPath: String!
+  visible: Boolean!
+  targetGraphqlObjectType: String!
+  targetId: String!
+  name: String
+  secondaryInformation: String
+
+  """
+  Scope of the root entity for dependents, of the target entity for dependencies. Entities with multiple scopes return their first.
+  """
+  scope: JSONObject
+}
+
+"""
+The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSONObject @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
+
+type PaginatedDependencies {
+  nodes: [Dependency!]!
+  totalCount: Int!
+}
+
 type UserPermission {
   id: ID!
   source: UserPermissionSource!
@@ -31,6 +66,7 @@ enum Permission {
   sitePreview
   blockPreview
   fullTextSearch
+  actionLog
 }
 
 """
@@ -38,24 +74,31 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
-"""
-The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
-"""
-scalar JSONObject @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
+type ActionLog {
+  id: ID!
+  scope: [JSONObject!]
+  entityName: String!
+  entityId: ID!
+  version: Int!
+  snapshot: JSONObject
+  createdAt: DateTime!
 
-type ContentScopeWithLabel {
-  scope: JSONObject!
-  label: JSONObject!
+  """
+  The most recent earlier action log entry for the same entity. Null when this is the first version, or when the earlier entry is scoped and lacks one of this entry's scopes.
+  """
+  previousVersion: ActionLog
+
+  """
+  Derived from snapshot and version: snapshot null → deleted, version 1 → created, otherwise → updated.
+  """
+  type: ActionLogType!
+  user: ActionLogsUser!
 }
 
-type UserAssignedContentScopes {
-  byRule: [JSONObject!]!
-  manual: [JSONObject!]!
-}
-
-type ContentScopeDimension {
-  name: String!
-  label: String!
+enum ActionLogType {
+  created
+  updated
+  deleted
 }
 
 type UserPermissionsUser {
@@ -84,34 +127,29 @@ type CurrentUser {
   allowedContentScopes: [ContentScopeWithLabel!]!
 }
 
-type EntityInfo {
-  id: String!
-  entityName: String!
-  name: String!
-  secondaryInformation: String
-  visible: Boolean!
-}
-
-type Dependency {
-  rootId: String!
-  rootGraphqlObjectType: String!
-  rootColumnName: String!
-  jsonPath: String!
-  visible: Boolean!
-  targetGraphqlObjectType: String!
-  targetId: String!
+type ActionLogsUser {
+  id: ID!
   name: String
-  secondaryInformation: String
-
-  """
-  Scope of the root entity for dependents, of the target entity for dependencies. Entities with multiple scopes return their first.
-  """
-  scope: JSONObject
 }
 
-type PaginatedDependencies {
-  nodes: [Dependency!]!
+type PaginatedActionLogs {
+  nodes: [ActionLog!]!
   totalCount: Int!
+}
+
+type ContentScopeWithLabel {
+  scope: JSONObject!
+  label: JSONObject!
+}
+
+type UserAssignedContentScopes {
+  byRule: [JSONObject!]!
+  manual: [JSONObject!]!
+}
+
+type ContentScopeDimension {
+  name: String!
+  label: String!
 }
 
 type DamMediaAlternative {
@@ -544,6 +582,17 @@ input WarningSourceInfoInput {
 }
 
 type Query {
+  actionLogs(offset: Int! = 0, limit: Int! = 25, entity: String!, scope: JSONObject!, filter: ActionLogFilter, sort: [ActionLogSort!]): PaginatedActionLogs!
+
+  """
+  Returns the action log of all entities, restricted to the entries the current user could read in the action log of each entity.
+  """
+  myActionLogs(offset: Int! = 0, limit: Int! = 25, filter: ActionLogFilter, sort: [ActionLogSort!]): PaginatedActionLogs!
+
+  """
+  Returns the names of the entities that occur in the entries of `myActionLogs`, for instance to offer them as a filter.
+  """
+  myActionLogEntityNames: [String!]!
   builds(limit: Float): [Build!]!
   autoBuildStatus: AutoBuildStatus!
   buildTemplates: [BuildTemplate!]!
@@ -609,6 +658,72 @@ type Query {
   myFullTextSearch(search: String!, offset: Int! = 0, limit: Int! = 25, scope: JSONObject): PaginatedEntityInfo!
 }
 
+input ActionLogFilter {
+  userId: StringFilter
+  entityId: IdFilter
+  entityName: StringFilter
+  version: NumberFilter
+  createdAt: DateTimeFilter
+  scope: ActionLogScopeFilter
+  type: ActionLogTypeEnumFilter
+  and: [ActionLogFilter!]
+  or: [ActionLogFilter!]
+}
+
+input IdFilter {
+  isAnyOf: [ID!]
+  equal: ID
+  notEqual: ID
+}
+
+input NumberFilter {
+  equal: Float
+  lowerThan: Float
+  greaterThan: Float
+  lowerThanEqual: Float
+  greaterThanEqual: Float
+  notEqual: Float
+  isAnyOf: [Float!]
+  isEmpty: Boolean
+  isNotEmpty: Boolean
+}
+
+input DateTimeFilter {
+  equal: DateTime
+  lowerThan: DateTime
+  greaterThan: DateTime
+  lowerThanEqual: DateTime
+  greaterThanEqual: DateTime
+  notEqual: DateTime
+  isEmpty: Boolean
+  isNotEmpty: Boolean
+}
+
+input ActionLogScopeFilter {
+  isAnyOf: [JSONObject!]
+  equal: JSONObject
+  notEqual: JSONObject
+  isGlobal: Boolean
+}
+
+input ActionLogTypeEnumFilter {
+  isAnyOf: [ActionLogType!]
+  equal: ActionLogType
+  notEqual: ActionLogType
+}
+
+input ActionLogSort {
+  field: ActionLogSortField!
+  direction: SortDirection! = ASC
+}
+
+enum ActionLogSortField {
+  version
+  createdAt
+  entityName
+  scope
+}
+
 input RedirectScopeInput {
   thisScopeHasNoFields____: String
 }
@@ -637,17 +752,6 @@ input RedirectTypeEnumFilter {
   isAnyOf: [RedirectType!]
   equal: RedirectType
   notEqual: RedirectType
-}
-
-input DateTimeFilter {
-  equal: DateTime
-  lowerThan: DateTime
-  greaterThan: DateTime
-  lowerThanEqual: DateTime
-  greaterThanEqual: DateTime
-  notEqual: DateTime
-  isEmpty: Boolean
-  isNotEmpty: Boolean
 }
 
 input RedirectSort {

@@ -1,4 +1,5 @@
 import {
+    ActionLogs,
     type BlockDataInterface,
     DamImageBlock,
     EntityInfo,
@@ -58,6 +59,7 @@ export class NewsContentScope {
 @RootBlockEntity()
 @ObjectType()
 @Entity()
+@ActionLogs()
 export class News extends BaseEntity {
     [OptionalProps]?: "createdAt" | "updatedAt" | "status";
 

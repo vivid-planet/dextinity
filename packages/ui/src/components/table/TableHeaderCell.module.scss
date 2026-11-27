@@ -1,0 +1,17 @@
+.root {
+    box-sizing: border-box;
+    block-size: var(--dextinity-table-header-height);
+    padding: var(--dextinity-table-cell-padding-block) var(--dextinity-table-cell-padding-inline);
+    hyphens: auto;
+    font: inherit;
+    text-align: start;
+    vertical-align: middle;
+
+    &[data-align="center"] {
+        text-align: center;
+    }
+
+    &[data-align="end"] {
+        text-align: end;
+    }
+}

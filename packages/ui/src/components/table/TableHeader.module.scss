@@ -1,0 +1,14 @@
+@use "../../theme/forcedColors" as forced-colors;
+
+.root {
+    color: var(--dextinity-table-header-foreground);
+    font-size: var(--dextinity-table-header-font-size);
+    font-weight: var(--dextinity-table-header-font-weight);
+}
+
+// Drawn by the cells, since a table with separate borders draws no box shadow of its rows
+.row > * {
+    box-shadow: inset 0 calc(-1 * var(--dextinity-line-width)) 0 var(--dextinity-table-header-separator-color);
+
+    @include forced-colors.separator(block-end);
+}

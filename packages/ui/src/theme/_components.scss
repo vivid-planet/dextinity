@@ -73,6 +73,7 @@
 @use "../components/statTile/StatTile.tokens" as statTile;
 @use "../components/statusIndicator/StatusIndicator.tokens" as statusIndicator;
 @use "../components/switch/Switch.tokens" as switch;
+@use "../components/table/Table.tokens" as table;
 @use "../components/tabs/Tabs.tokens" as tabs;
 @use "../components/textarea/Textarea.tokens" as textarea;
 @use "../components/toast/Toast.tokens" as toast;
@@ -158,6 +159,7 @@
     @include statTile.tokens;
     @include statusIndicator.tokens;
     @include switch.tokens;
+    @include table.tokens;
     @include tabs.tokens;
     @include textarea.tokens;
     @include toast.tokens;
@@ -199,6 +201,7 @@
     @include slider.high-contrast-tokens;
     @include statusIndicator.high-contrast-tokens;
     @include switch.high-contrast-tokens;
+    @include table.high-contrast-tokens;
     @include tabs.high-contrast-tokens;
     @include toolbar.high-contrast-tokens;
     @include treeView.high-contrast-tokens;

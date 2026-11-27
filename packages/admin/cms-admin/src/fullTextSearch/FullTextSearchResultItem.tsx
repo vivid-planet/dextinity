@@ -1,6 +1,7 @@
 import { gql } from "@apollo/client";
-import { ListItemButton, Stack, Typography } from "@mui/material";
+import { ListItemButton, listItemButtonClasses, Stack, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { type MouseEvent, useEffect, useRef } from "react";
 
 import { MarkedMatches, type TextMatch } from "../common/MarkedMatches";
 import type { GQLFullTextSearchResultItemFragment } from "./FullTextSearchResultItem.generated";
@@ -30,16 +31,47 @@ export const fullTextSearchResultItemFragment = gql`
 `;
 
 interface FullTextSearchResultItemProps {
+    id: string;
     result: GQLFullTextSearchResultItemFragment;
-    linkable?: boolean;
+    linkable: boolean;
+    active: boolean;
+    scrollIntoViewWhenActive?: boolean;
     onClick: () => void;
+    onHover: () => void;
 }
 
-export function FullTextSearchResultItem({ result, linkable, onClick }: FullTextSearchResultItemProps) {
+export function FullTextSearchResultItem({
+    id,
+    result,
+    linkable,
+    active,
+    scrollIntoViewWhenActive,
+    onClick,
+    onHover,
+}: FullTextSearchResultItemProps) {
+    const itemRef = useRef<HTMLDivElement>(null);
     const { name, titleHighlights, secondaryInformation, snippet } = result;
 
+    useEffect(() => {
+        if (active && scrollIntoViewWhenActive) {
+            itemRef.current?.scrollIntoView({ block: "nearest" });
+        }
+    }, [active, scrollIntoViewWhenActive]);
+
     return (
-        <Root aria-disabled={!linkable} onClick={linkable ? onClick : undefined} alignItems="flex-start">
+        <Root
+            ref={itemRef}
+            id={id}
+            role="option"
+            aria-selected={active}
+            aria-disabled={!linkable}
+            selected={active}
+            tabIndex={-1}
+            alignItems="flex-start"
+            onMouseDown={keepFocusInSearchInput}
+            onMouseMove={onHover}
+            onClick={linkable ? onClick : undefined}
+        >
             <TypeIconCircle>
                 <FullTextSearchTypeIcon searchType={result} />
             </TypeIconCircle>
@@ -71,9 +103,22 @@ function toTextMatches(highlights: Array<{ start: number; end: number }>): TextM
     return highlights.map(({ start, end }) => ({ start, end: end - 1, focused: false }));
 }
 
+function keepFocusInSearchInput(event: MouseEvent) {
+    event.preventDefault();
+}
+
 const Root = styled(ListItemButton)`
     gap: ${({ theme }) => theme.spacing(3)};
     padding: ${({ theme }) => theme.spacing(2, 4)};
+
+    /* Hovering makes a result the active one, so only the active result is highlighted */
+    &:hover {
+        background-color: transparent;
+    }
+
+    &.${listItemButtonClasses.selected}, &.${listItemButtonClasses.selected}:hover {
+        background-color: ${({ theme }) => theme.palette.grey[50]};
+    }
 
     &[aria-disabled="true"] {
         cursor: default;
@@ -91,6 +136,10 @@ const TypeIconCircle = styled("div")`
     border-radius: 50%;
     color: ${({ theme }) => theme.palette.grey[600]};
     background-color: ${({ theme }) => theme.palette.grey[50]};
+
+    .${listItemButtonClasses.selected} & {
+        background-color: ${({ theme }) => theme.palette.common.white};
+    }
 `;
 
 const Title = styled(Typography)`

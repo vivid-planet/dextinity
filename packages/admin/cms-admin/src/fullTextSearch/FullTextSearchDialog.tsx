@@ -6,7 +6,7 @@ import { InputBase, inputBaseClasses, LinearProgress, Link, Stack } from "@mui/m
 // eslint-disable-next-line no-restricted-imports -- the Dextinity Dialog always renders a title bar, the search input replaces it here
 import Dialog from "@mui/material/Dialog";
 import { styled } from "@mui/material/styles";
-import { type RefObject, useRef, useState } from "react";
+import { type KeyboardEvent, type RefObject, useId, useRef, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useNavigate } from "react-router";
 import { useDebounce } from "use-debounce";
@@ -15,6 +15,7 @@ import { useContentScope } from "../contentScope/Provider";
 import { useEntitiesConfig } from "../entities/entitiesConfig";
 import type { EntityInterface } from "../entities/types";
 import type { GQLFullTextSearchDialogQuery, GQLFullTextSearchDialogQueryVariables } from "./FullTextSearchDialog.generated";
+import { FullTextSearchKeyHints } from "./FullTextSearchKeyHints";
 import { FullTextSearchMessage } from "./FullTextSearchMessage";
 import { FullTextSearchResultGroup } from "./FullTextSearchResultGroup";
 import { FullTextSearchResultItem, fullTextSearchResultItemFragment } from "./FullTextSearchResultItem";
@@ -41,6 +42,15 @@ const searchQuery = gql`
 const minimumSearchLength = 2;
 // The API rejects longer searches
 const maximumSearchLength = 200;
+
+interface ActiveResult {
+    key: string;
+    scrollIntoView: boolean;
+}
+
+function getResultKey(result: GQLFullTextSearchResultItemFragment) {
+    return `${result.entityName}:${result.id}`;
+}
 
 interface FullTextSearchDialogProps {
     open: boolean;
@@ -84,6 +94,8 @@ function FullTextSearchDialogContent({ inputRef, onClose }: FullTextSearchDialog
 
     const [search, setSearch] = useState("");
     const [activeType, setActiveType] = useState<string>();
+    const [activeResult, setActiveResult] = useState<ActiveResult | null>(null);
+    const listboxId = useId();
 
     const [debouncedSearch] = useDebounce(search.trim(), 250);
     const hasSearch = search.trim().length >= minimumSearchLength;
@@ -98,9 +110,56 @@ function FullTextSearchDialogContent({ inputRef, onClose }: FullTextSearchDialog
     const results = hasSearch ? (data ?? previousData)?.myFullTextSearch : undefined;
     const isSearchPending = loading || debouncedSearch !== search.trim();
 
+    const resultGroups = results && !error ? groupByType(results.nodes) : [];
+    const options = resultGroups.flatMap((group) => group.nodes);
+    const isListboxShown = options.length > 0;
+    // The results shown while the next search is loading belong to the previous search, so none of them can be selected
+    const activeIndex = activeResult && !isSearchPending ? options.findIndex((result) => getResultKey(result) === activeResult.key) : -1;
+    const getOptionId = (index: number) => `${listboxId}-option-${index}`;
+
+    const changeSearch = (value: string) => {
+        setSearch(value);
+        setActiveResult(null);
+    };
+
+    const changeActiveType = (type: string | undefined) => {
+        setActiveType(type);
+        setActiveResult(null);
+    };
+
     const clearSearch = () => {
-        setSearch("");
+        changeSearch("");
         inputRef.current?.focus();
+    };
+
+    const moveActiveResult = (step: 1 | -1) => {
+        const nextIndex = activeIndex === -1 ? (step === 1 ? 0 : options.length - 1) : (activeIndex + step + options.length) % options.length;
+        setActiveResult({ key: getResultKey(options[nextIndex]), scrollIntoView: true });
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+        // Escape closes the dialog only when there's no search to clear. During an IME composition, it cancels the composition.
+        if (event.key === "Escape" && search.length > 0 && !event.nativeEvent.isComposing) {
+            event.stopPropagation();
+            clearSearch();
+        }
+    };
+
+    const handleInputKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+        // Safari reports the key that confirms an IME composition only through the key code
+        if (event.nativeEvent.isComposing || event.keyCode === 229) {
+            return;
+        }
+
+        if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+            event.preventDefault();
+            if (!isSearchPending && options.length > 0) {
+                moveActiveResult(event.key === "ArrowDown" ? 1 : -1);
+            }
+        } else if (event.key === "Enter" && activeIndex !== -1) {
+            event.preventDefault();
+            navigateToResult(options[activeIndex]);
+        }
     };
 
     const navigateToResult = async (result: GQLFullTextSearchResultItemFragment) => {
@@ -176,28 +235,46 @@ function FullTextSearchDialogContent({ inputRef, onClose }: FullTextSearchDialog
 
         return (
             <ResultsContainer>
-                {groupByType(results.nodes).map((group) => (
-                    <FullTextSearchResultGroup
-                        key={group.type}
-                        label={getTypeLabel(group.nodes[0])}
-                        count={results.types.find(({ type }) => type === group.type)?.count ?? group.nodes.length}
-                    >
-                        {group.nodes.map((result) => (
-                            <FullTextSearchResultItem
-                                key={`${result.entityName}:${result.id}`}
-                                result={result}
-                                linkable={entities[result.entityName] !== undefined}
-                                onClick={() => navigateToResult(result)}
-                            />
-                        ))}
-                    </FullTextSearchResultGroup>
-                ))}
+                <div
+                    id={listboxId}
+                    role="listbox"
+                    aria-label={intl.formatMessage({ id: "dextinity.fullTextSearch.resultsLabel", defaultMessage: "Search results" })}
+                >
+                    {resultGroups.map((group) => (
+                        <FullTextSearchResultGroup
+                            key={group.type}
+                            label={getTypeLabel(group.nodes[0])}
+                            count={results.types.find(({ type }) => type === group.type)?.count ?? group.nodes.length}
+                        >
+                            {group.nodes.map((result) => {
+                                const resultKey = getResultKey(result);
+                                const index = options.indexOf(result);
+                                return (
+                                    <FullTextSearchResultItem
+                                        key={resultKey}
+                                        id={getOptionId(index)}
+                                        result={result}
+                                        linkable={entities[result.entityName] !== undefined}
+                                        active={index === activeIndex}
+                                        scrollIntoViewWhenActive={activeResult?.scrollIntoView}
+                                        onClick={() => navigateToResult(result)}
+                                        onHover={() => {
+                                            if (index !== activeIndex) {
+                                                setActiveResult({ key: resultKey, scrollIntoView: false });
+                                            }
+                                        }}
+                                    />
+                                );
+                            })}
+                        </FullTextSearchResultGroup>
+                    ))}
+                </div>
             </ResultsContainer>
         );
     };
 
     return (
-        <Root>
+        <Root onKeyDown={handleKeyDown}>
             <SearchRow direction="row" spacing={3}>
                 <Search fontSize="large" />
                 <SearchInput
@@ -205,12 +282,18 @@ function FullTextSearchDialogContent({ inputRef, onClose }: FullTextSearchDialog
                     autoFocus
                     fullWidth
                     value={search}
-                    onChange={(event) => setSearch(event.target.value)}
+                    onChange={(event) => changeSearch(event.target.value)}
+                    onKeyDown={handleInputKeyDown}
                     placeholder={intl.formatMessage({ id: "dextinity.fullTextSearch.placeholder", defaultMessage: "Search…" })}
                     autoComplete="off"
                     inputProps={{
                         "aria-label": intl.formatMessage({ id: "dextinity.fullTextSearch.searchLabel", defaultMessage: "Search" }),
                         maxLength: maximumSearchLength,
+                        role: "combobox",
+                        "aria-autocomplete": "list",
+                        "aria-expanded": isListboxShown,
+                        "aria-controls": isListboxShown ? listboxId : undefined,
+                        "aria-activedescendant": activeIndex !== -1 ? getOptionId(activeIndex) : undefined,
                     }}
                 />
                 {search.length > 0 && (
@@ -219,11 +302,12 @@ function FullTextSearchDialogContent({ inputRef, onClose }: FullTextSearchDialog
                     </ClearButton>
                 )}
             </SearchRow>
-            <FullTextSearchTypeTabs tabs={tabs} totalCount={totalCount} activeType={activeType} onChange={setActiveType} />
+            <FullTextSearchTypeTabs tabs={tabs} totalCount={totalCount} activeType={activeType} onChange={changeActiveType} />
             <Body>
                 {hasSearch && isSearchPending && <LoadingBar />}
                 {renderBody()}
             </Body>
+            <FullTextSearchKeyHints hasSearch={search.length > 0} hasResults={isListboxShown} />
         </Root>
     );
 }

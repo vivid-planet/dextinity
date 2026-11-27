@@ -212,7 +212,7 @@ const MasterHeader = () => {
 };
 ```
 
-The search opens in a dialog, also with Ctrl+K or ⌘K. It groups the results by type. It labels a type and shows its icon with the `displayName` and `icon` of the type in [`entities`](../../2-core-concepts/7-dependencies/index.md#entities) or with the `displayName` and `menuIcon` of the page tree document type, and opens a result with the `resolvePath()` of its entity in `entities`. Results of entities that aren't registered in `entities` can't be opened.
+The search opens in a dialog, also with Ctrl+K or ⌘K. The arrow keys move through the results, and Enter opens the active one. It groups the results by type. It labels a type and shows its icon with the `displayName` and `icon` of the type in [`entities`](../../2-core-concepts/7-dependencies/index.md#entities) or with the `displayName` and `menuIcon` of the page tree document type, and opens a result with the `resolvePath()` of its entity in `entities`. Results of entities that aren't registered in `entities` can't be opened.
 
 ### Site
 

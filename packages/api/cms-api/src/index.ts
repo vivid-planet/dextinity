@@ -228,9 +228,17 @@ export { FileUploadInput, FileUploadInterface } from "./file-utils/file-upload.i
 export { createFileUploadInputFromUrl, slugifyFilename } from "./file-utils/files.utils";
 export { FocalPoint } from "./file-utils/focal-point.enum";
 export { getCenteredPosition, getMaxDimensionsFromArea, ImageDimensionsAndCoordinates } from "./file-utils/images.util";
+export { FullTextSearchPermission, FullTextSearchWhereOptions } from "./full-text-search/build-full-text-search-where";
+export { FullTextSearchArgs } from "./full-text-search/dto/full-text-search.args";
+export { FullTextSearchHighlight, FullTextSearchHighlightedText, FullTextSearchResult } from "./full-text-search/dto/full-text-search-result.object";
+export { FullTextSearchResults, FullTextSearchTypeCount } from "./full-text-search/dto/full-text-search-results.object";
+export { FullTextSearchType } from "./full-text-search/dto/full-text-search-type.object";
 export { PaginatedEntityInfo } from "./full-text-search/dto/paginated-entity-info";
 export { EntityInfoFullTextObject } from "./full-text-search/entities/entity-info-full-text.object";
+export { prefixFullTextCondition } from "./full-text-search/full-text-query";
 export { FullTextSearchModule } from "./full-text-search/full-text-search.module";
+export { FullTextSearchQueryResult, FullTextSearchQueryService, FullTextSearchRow } from "./full-text-search/full-text-search-query.service";
+export { FullTextSnippetService } from "./full-text-search/full-text-snippet.service";
 export { IMGPROXY_CONFIG } from "./imgproxy/imgproxy.constants";
 export { Extension, Gravity, ResizingType } from "./imgproxy/imgproxy.enum";
 export { ImgproxyModule } from "./imgproxy/imgproxy.module";

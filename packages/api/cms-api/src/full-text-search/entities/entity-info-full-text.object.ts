@@ -24,6 +24,10 @@ export class EntityInfoFullTextObject {
     @Property({ type: "json", nullable: true })
     scopes?: ContentScope[];
 
+    // The document type for page tree nodes (e.g. Page, Link), the entity name otherwise.
+    @Property({ type: "text" })
+    type: string;
+
     // Read-only join to the EntityInfo view (shares the id + entityName columns) to reuse its name, secondaryInformation and visible.
     @OneToOne(() => EntityInfoObject, {
         joinColumns: ["id", "entityName"],

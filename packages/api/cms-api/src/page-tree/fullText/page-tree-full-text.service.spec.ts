@@ -4,7 +4,7 @@ import type { Type } from "@nestjs/common";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import type { DocumentInterface } from "../../document/dto/document-interface";
-import { PREFIX_TSQUERY_SQL } from "../../full-text-search/prefix-full-text-query";
+import { ALL_TERMS_TSQUERY_SQL } from "../../full-text-search/full-text-query";
 import { PageTreeFullTextService } from "./page-tree-full-text.service";
 
 class Page {}
@@ -88,7 +88,7 @@ describe("PageTreeFullTextService", () => {
 
     async function search(term: string) {
         const result = await database.query<{ pageTreeNodeId: string }>(
-            `SELECT "pageTreeNodeId" FROM "PageTreeNodeFullText" WHERE "fullText" @@ ${PREFIX_TSQUERY_SQL.replace("?", "$1")} ORDER BY "pageTreeNodeId"`,
+            `SELECT "pageTreeNodeId" FROM "PageTreeNodeFullText" WHERE "fullText" @@ ${ALL_TERMS_TSQUERY_SQL.replace("?", "$1")} ORDER BY "pageTreeNodeId"`,
             [term],
         );
         return result.rows.map((row) => row.pageTreeNodeId);

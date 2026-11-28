@@ -759,6 +759,70 @@ input FooterScopeInput {
   language: String!
 }
 
+type FullTextSearchHighlight {
+  """UTF-16 offset after the last highlighted character (exclusive)"""
+  end: Int!
+
+  """UTF-16 offset of the first highlighted character"""
+  start: Int!
+}
+
+type FullTextSearchHighlightedText {
+  highlights: [FullTextSearchHighlight!]!
+  text: String!
+
+  """The text was cut at the end, clients should render a trailing ellipsis"""
+  truncatedEnd: Boolean!
+
+  """
+  The text was cut at the start, clients should render a leading ellipsis
+  """
+  truncatedStart: Boolean!
+}
+
+type FullTextSearchResult {
+  entityName: String!
+  id: String!
+  name: String!
+  secondaryInformation: String
+  snippet: FullTextSearchHighlightedText
+  title: FullTextSearchHighlightedText!
+
+  """Some or all search terms occur in the name"""
+  titleMatch: Boolean!
+
+  """
+  The document type for page tree nodes (e.g. Page, Link), the entity name otherwise
+  """
+  type: String!
+  visible: Boolean!
+}
+
+type FullTextSearchResults {
+  nodes: [FullTextSearchResult!]!
+
+  """Number of results matching the types filter"""
+  totalCount: Int!
+
+  """Number of results per type, ignoring the types filter"""
+  types: [FullTextSearchTypeCount!]!
+}
+
+type FullTextSearchType {
+  entityName: String!
+
+  """
+  The document type for page tree nodes (e.g. Page, Link), the entity name otherwise
+  """
+  type: String!
+}
+
+type FullTextSearchTypeCount {
+  count: Int!
+  entityName: String!
+  type: String!
+}
+
 input IdFilter {
   equal: ID
   isAnyOf: [ID!]
@@ -2011,6 +2075,12 @@ type Query {
   damSettings(scope: DamScopeInput!): DamSettings
   findCopiesOfFileInScope(id: ID!, imageCropArea: ImageCropAreaInput, scope: DamScopeInput!): [DamFile!]!
   footer(scope: FooterScopeInput!): Footer
+  fullTextSearch(limit: Int! = 25, offset: Int! = 0, scope: JSONObject, search: String!, types: [String!]): FullTextSearchResults!
+
+  """
+  All types the current user may search, whether they have results or not
+  """
+  fullTextSearchTypes: [FullTextSearchType!]!
   isBrevoConfigDefined(scope: EmailCampaignContentScopeInput!): Boolean!
   kubernetesCronJob(name: String!): KubernetesCronJob!
   kubernetesCronJobs: [KubernetesCronJob!]!
@@ -2024,7 +2094,7 @@ type Query {
   manufacturer(id: ID!): Manufacturer!
   manufacturerCountries(filter: ManufacturerCountryFilter, limit: Int! = 25, offset: Int! = 0, search: String): PaginatedManufacturerCountries!
   manufacturers(filter: ManufacturerFilter, limit: Int! = 25, offset: Int! = 0, search: String, sort: [ManufacturerSort!]! = [{direction: ASC, field: id}]): PaginatedManufacturers!
-  myFullTextSearch(limit: Int! = 25, offset: Int! = 0, scope: JSONObject, search: String!): PaginatedEntityInfo!
+  myFullTextSearch(limit: Int! = 25, offset: Int! = 0, scope: JSONObject, search: String!): PaginatedEntityInfo! @deprecated(reason: "Use fullTextSearch instead. Will be removed in version 11.")
   news(id: ID!): News!
   newsBySlug(scope: NewsContentScopeInput!, slug: String!): News
   newsList(filter: NewsFilter, limit: Int! = 25, offset: Int! = 0, scope: NewsContentScopeInput!, search: String, sort: [NewsSort!]! = [{direction: ASC, field: createdAt}]): PaginatedNews!

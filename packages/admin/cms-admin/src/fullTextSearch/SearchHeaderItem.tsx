@@ -1,115 +1,110 @@
-import { gql, useApolloClient, useQuery } from "@apollo/client";
 import { Search } from "@dextinity/admin-icons";
-import { Box, CircularProgress, ClickAwayListener, InputBase, List, ListItemButton, ListItemText, Paper, Popper, Typography } from "@mui/material";
-import { useRef, useState } from "react";
-import { FormattedMessage } from "react-intl";
-import { useHistory } from "react-router";
-import { useDebounce } from "use-debounce";
+import { ButtonBase, Typography } from "@mui/material";
+import { alpha, styled } from "@mui/material/styles";
+import { useEffect, useState } from "react";
+import { FormattedMessage, useIntl } from "react-intl";
 
-import { useContentScope } from "../contentScope/Provider";
-import { useDependenciesConfig } from "../dependencies/dependenciesConfig";
-import type { DependencyInterface } from "../dependencies/types";
 import { useUserPermissionCheck } from "../userPermissions/hooks/currentUser";
-import type { GQLSearchHeaderItemQuery, GQLSearchHeaderItemQueryVariables } from "./SearchHeaderItem.generated";
+import { FullTextSearchDialog } from "./FullTextSearchDialog";
+import { KeyboardKey } from "./KeyboardKey";
+import { useFullTextSearchTypes } from "./useFullTextSearchTypes";
+import { shortcutKey, useShortcutModifierKey } from "./useShortcutModifierKey";
 
-const searchQuery = gql`
-    query SearchHeaderItem($search: String!, $scope: JSONObject) {
-        myFullTextSearch(search: $search, scope: $scope, limit: 10) {
-            nodes {
-                id
-                entityName
-                name
-                secondaryInformation
+export function SearchHeaderItem() {
+    const intl = useIntl();
+    const isAllowed = useUserPermissionCheck();
+    const modifierKey = useShortcutModifierKey();
+    const [open, setOpen] = useState(false);
+    const isSearchAllowed = isAllowed("fullTextSearch");
+    // Loaded before the dialog opens, so its tabs and settings are complete when it shows
+    useFullTextSearchTypes({ skip: !isSearchAllowed });
+
+    useEffect(() => {
+        if (!isSearchAllowed) {
+            return;
+        }
+
+        const openOnShortcut = (event: KeyboardEvent) => {
+            if ((event.metaKey || event.ctrlKey) && !event.altKey && !event.shiftKey && event.key.toLowerCase() === "k") {
+                event.preventDefault();
+                setOpen(true);
             }
-            totalCount
+        };
+
+        document.addEventListener("keydown", openOnShortcut);
+        return () => document.removeEventListener("keydown", openOnShortcut);
+    }, [isSearchAllowed]);
+
+    if (!isSearchAllowed) {
+        return null;
+    }
+
+    return (
+        <>
+            <SearchTrigger
+                onClick={() => setOpen(true)}
+                aria-label={intl.formatMessage({ id: "dextinity.fullTextSearch.searchLabel", defaultMessage: "Search" })}
+                aria-haspopup="dialog"
+                aria-keyshortcuts={`${modifierKey.ariaKeyName}+K`}
+            >
+                <Search />
+                <TriggerText variant="body2">
+                    <FormattedMessage id="dextinity.fullTextSearch.placeholder" defaultMessage="Search…" />
+                </TriggerText>
+                <ShortcutKeys aria-hidden>
+                    <TriggerKey>{modifierKey.label}</TriggerKey>
+                    <TriggerKey>{shortcutKey}</TriggerKey>
+                </ShortcutKeys>
+            </SearchTrigger>
+            <FullTextSearchDialog open={open} onClose={() => setOpen(false)} />
+        </>
+    );
+}
+
+const SearchTrigger = styled(ButtonBase)`
+    height: 100%;
+    gap: ${({ theme }) => theme.spacing(2)};
+    padding: ${({ theme }) => theme.spacing(0, 3)};
+    color: ${({ theme }) => theme.palette.common.white};
+
+    ${({ theme }) => theme.breakpoints.up("md")} {
+        width: 240px;
+        height: auto;
+        margin: ${({ theme }) => theme.spacing(0, 2)};
+        padding: ${({ theme }) => theme.spacing(1, 2)};
+        border: 1px solid ${({ theme }) => alpha(theme.palette.common.white, 0.2)};
+        border-radius: ${({ theme }) => theme.shape.borderRadius}px;
+        background-color: ${({ theme }) => alpha(theme.palette.common.white, 0.1)};
+
+        &:hover,
+        &.Mui-focusVisible {
+            background-color: ${({ theme }) => alpha(theme.palette.common.white, 0.2)};
         }
     }
 `;
 
-export function SearchHeaderItem() {
-    const history = useHistory();
-    const apolloClient = useApolloClient();
-    const contentScope = useContentScope();
-    const { entityDependencyMap } = useDependenciesConfig();
-    const isAllowed = useUserPermissionCheck();
+const TriggerText = styled(Typography)`
+    display: none;
+    flex-grow: 1;
+    text-align: left;
+    color: ${({ theme }) => alpha(theme.palette.common.white, 0.7)};
 
-    const [search, setSearch] = useState("");
-    const [open, setOpen] = useState(false);
-    const anchorRef = useRef<HTMLDivElement>(null);
-
-    const [debouncedSearch] = useDebounce(search, 250);
-
-    const { data, loading } = useQuery<GQLSearchHeaderItemQuery, GQLSearchHeaderItemQueryVariables>(searchQuery, {
-        variables: { search: debouncedSearch, scope: contentScope.scope },
-        skip: debouncedSearch.length === 0 || !isAllowed("fullTextSearch"),
-    });
-
-    if (!isAllowed("fullTextSearch")) {
-        return null;
+    ${({ theme }) => theme.breakpoints.up("md")} {
+        display: block;
     }
+`;
 
-    const results = data?.myFullTextSearch.nodes ?? [];
+const ShortcutKeys = styled("span")`
+    display: none;
+    gap: ${({ theme }) => theme.spacing(0.5)};
 
-    const navigateToResult = async (result: { id: string; entityName: string }) => {
-        const dependency = entityDependencyMap[result.entityName] as DependencyInterface | undefined;
-        if (!dependency) {
-            return;
-        }
-        const path = await dependency.resolvePath({ apolloClient, id: result.id });
-        setOpen(false);
-        history.push(contentScope.match.url + path);
-    };
+    ${({ theme }) => theme.breakpoints.up("md")} {
+        display: flex;
+    }
+`;
 
-    return (
-        <ClickAwayListener onClickAway={() => setOpen(false)}>
-            <Box ref={anchorRef} sx={{ position: "relative" }}>
-                <InputBase
-                    value={search}
-                    onChange={(event) => {
-                        setSearch(event.target.value);
-                        setOpen(true);
-                    }}
-                    onFocus={() => setOpen(true)}
-                    placeholder=""
-                    startAdornment={<Search sx={{ mr: 1 }} />}
-                    sx={{
-                        backgroundColor: "rgba(255, 255, 255, 0.15)",
-                        borderRadius: 1,
-                        color: "white",
-                        px: 2,
-                        py: 0.5,
-                        width: 240,
-                    }}
-                />
-                <Popper open={open && search.length > 0} anchorEl={anchorRef.current} placement="bottom-end" sx={{ zIndex: "tooltip" }}>
-                    <Paper elevation={4} sx={{ mt: 1, width: 360, maxHeight: 400, overflowY: "auto" }}>
-                        {loading ? (
-                            <Box sx={{ display: "flex", justifyContent: "center", p: 2 }}>
-                                <CircularProgress size={20} />
-                            </Box>
-                        ) : results.length === 0 ? (
-                            <Typography variant="body2" color="text.secondary" sx={{ p: 2 }}>
-                                <FormattedMessage id="dextinity.fullTextSearch.noResults" defaultMessage="No results found" />
-                            </Typography>
-                        ) : (
-                            <List disablePadding>
-                                {results.map((result) => {
-                                    const isLinkable = entityDependencyMap[result.entityName] !== undefined;
-                                    return (
-                                        <ListItemButton
-                                            key={`${result.entityName}:${result.id}`}
-                                            disabled={!isLinkable}
-                                            onClick={() => navigateToResult(result)}
-                                        >
-                                            <ListItemText primary={result.name} secondary={result.secondaryInformation} />
-                                        </ListItemButton>
-                                    );
-                                })}
-                            </List>
-                        )}
-                    </Paper>
-                </Popper>
-            </Box>
-        </ClickAwayListener>
-    );
-}
+const TriggerKey = styled(KeyboardKey)`
+    border-color: ${({ theme }) => alpha(theme.palette.common.white, 0.3)};
+    background-color: transparent;
+    color: ${({ theme }) => alpha(theme.palette.common.white, 0.7)};
+`;

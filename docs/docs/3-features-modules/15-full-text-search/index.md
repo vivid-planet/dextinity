@@ -26,7 +26,7 @@ The module builds on two PostgreSQL views that are created by running the `creat
 
 - **`EntityInfo`** — always created by the core framework (not specific to `FullTextSearchModule`). It provides display data for every entity decorated with `@EntityInfo`: `name`, `secondaryInformation`, `visible`, `id`, `entityName`, and `requiredPermission`.
 
-- **`EntityInfoFullText`** — created only when `FullTextSearchModule` is imported. It is a `UNION ALL` of all entities that have a `fullText` column referenced in their `@EntityInfo` decorator. Each row contains `id`, `entityName`, the `tsvector` value, `requiredPermission`, and `scopes`. It joins back to the `EntityInfo` view to read display data such as `name` and `secondaryInformation`.
+- **`EntityInfoFullText`** — created only when `FullTextSearchModule` is imported. It is a `UNION ALL` of all entities that have a `fullText` column referenced in their `@EntityInfo` decorator. Each row contains `id`, `entityName`, `type` (the entity name, or the `documentType` for page tree nodes), the `tsvector` value, `requiredPermission`, and `scopes`. It joins back to the `EntityInfo` view to read display data such as `name` and `secondaryInformation`. Page tree nodes whose document has no full text (e.g. links) are matched by their name and slug.
 
 Because both are standard PostgreSQL views (not materialized views), they always reflect the current state of the underlying tables — no manual refresh is needed when content changes.
 
@@ -87,6 +87,8 @@ The `entityToMikroOrmFullText` helper builds the weighted `tsvector` value. It a
 - A `WeightedFullTextValue` object mapping PostgreSQL weight letters (`A`–`D`) to plain-text strings. Weight `A` is the most relevant, `D` the least.
 - Zero or more block data objects (see below).
 
+The `onCreate` and `onUpdate` callbacks are also called to build snippets, so keep them pure: they must not change the entity or depend on relations that may not be loaded.
+
 #### 3. Enable full text search on the page tree (optional)
 
 If your application uses `PageTreeModule`, pass `fullText: true` to its configuration to include page tree nodes and their documents in search results:
@@ -100,27 +102,50 @@ PageTreeModule.forRoot({
 
 #### 4. Grant the permission
 
-The `myFullTextSearch` GraphQL query requires the `fullTextSearch` permission. Add it to the appropriate roles in your user permissions configuration.
+The `fullTextSearch` GraphQL query requires the `fullTextSearch` permission. Add it to the appropriate roles in your user permissions configuration.
+
+A user only finds entities they have the required permission for, in the entity's scope. Entities without a scope only require the permission.
 
 #### 5. The GraphQL query
 
 Once the module is set up, the following query is available:
 
 ```graphql
-query MySearch($search: String!, $scope: JSONObject) {
-    myFullTextSearch(search: $search, scope: $scope, limit: 10) {
+query Search($search: String!, $scope: JSONObject, $types: [String!]) {
+    fullTextSearch(search: $search, scope: $scope, types: $types, limit: 10) {
+        totalCount
+        types {
+            type
+            count
+        }
         nodes {
             id
             entityName
-            name
-            secondaryInformation
+            type
+            title {
+                text
+                highlights {
+                    start
+                    end
+                }
+            }
+            snippet {
+                text
+            }
         }
-        totalCount
     }
 }
 ```
 
-The last word of `search` matches as a prefix, so `Navig` finds `Navigation`. The optional `scope` parameter restricts results to a specific content scope.
+- The last word of `search` matches as a prefix, so `Navig` finds `Navigation`.
+- The optional `scope` parameter restricts results to a specific content scope.
+- `types` filters the results. The `types` field returns counts per type, ignoring the filter.
+- The `fullTextSearchTypes` query returns every type the user may search, including types without results.
+- `limit` is at most 50.
+- Highlights are UTF-16 offsets into plain text. Render the text as text, never as HTML.
+- Ids are only unique per entity. With Apollo Client, use `fetchPolicy: "no-cache"` or `keyFields: ["entityName", "id"]` for `FullTextSearchResult`.
+
+The `myFullTextSearch` query is deprecated and will be removed in version 11.
 
 ### How to index blocks
 
@@ -187,69 +212,66 @@ const MasterHeader = () => {
 };
 ```
 
+Clicking the search field or pressing <kbd>Ctrl</kbd>+<kbd>K</kbd> (<kbd>⌘</kbd>+<kbd>K</kbd> on macOS) opens a dialog with a tab and result count per type.
+
+Each entity needs an entry in the `entityDependencyMap` of the `DextinityConfigProvider`, keyed by its entity name (e.g. `PageTreeNode`, `News`): its `resolvePath` opens the result, and its `displayName` is the type label. Without an entry, a result can't be opened.
+
 ### Site
 
-Unlike the admin search bar, there is no ready-to-use resolver or block for site search. You need to implement both in your application. Dextinity does provide the underlying PostgreSQL views (`EntityInfoFullTextObject`) and the GraphQL types (`PaginatedEntityInfo`, `EntityInfoObject`) that you can build on, so the integration is straightforward.
+Unlike the admin search bar, there is no ready-to-use resolver or block for site search. You need to implement both in your application.
 
-Site search must also be publicly accessible without user authentication. The built-in `myFullTextSearch` query enforces permission checks and is therefore only suitable for the admin. For site search, you expose a separate resolver that skips permission checks but explicitly restricts the result set to entities whose content is meant to be publicly visible.
+Site search must also be publicly accessible without user authentication. The built-in `fullTextSearch` query enforces permission checks and is therefore only suitable for the admin. For site search, you expose a separate resolver that skips permission checks but explicitly restricts the result set to entities whose content is meant to be publicly visible.
 
 #### 1. Create a public resolver
 
-Create a new resolver that uses `EntityInfoFullTextObject` and `PaginatedEntityInfo` from `@dextinity/cms-api`. Mark it with `@RequiredPermission(DisablePermissionCheck)` to make it accessible without authentication, and explicitly list which entity types may appear in results:
+Mark the resolver with `@RequiredPermission(DisablePermissionCheck)` so it can be used without authentication:
 
 ```typescript title="site-full-text-search.resolver.ts"
 import {
     ContentScope,
     DisablePermissionCheck,
-    EntityInfoFullTextObject,
-    EntityInfoObject,
-    PaginatedEntityInfo,
+    FullTextSearchQueryService,
+    FullTextSearchResults,
+    FullTextSnippetService,
     RequiredPermission,
 } from "@dextinity/cms-api";
-import { EntityManager, type FilterQuery } from "@mikro-orm/postgresql";
 import { Args, Int, Query, Resolver } from "@nestjs/graphql";
 import { GraphQLJSONObject } from "graphql-scalars";
 
-// Only list entities whose content is meant to be publicly searchable.
-const searchableEntityNames = ["PageTreeNode", "News"];
+// The required permissions of the entities whose content is meant to be publicly searchable
+const publiclySearchablePermissions = ["pageTree", "news"];
 
-@Resolver(() => EntityInfoObject)
+@Resolver(() => FullTextSearchResults)
 export class SiteFullTextSearchResolver {
-    constructor(private readonly entityManager: EntityManager) {}
+    constructor(
+        private readonly fullTextSearchQueryService: FullTextSearchQueryService,
+        private readonly fullTextSnippetService: FullTextSnippetService,
+    ) {}
 
-    @Query(() => PaginatedEntityInfo)
+    @Query(() => FullTextSearchResults)
     @RequiredPermission(DisablePermissionCheck)
     async siteFullTextSearch(
         @Args("search") search: string,
         @Args("offset", { type: () => Int, defaultValue: 0 }) offset: number,
         @Args("limit", { type: () => Int, defaultValue: 25 }) limit: number,
-        @Args("scope", { type: () => GraphQLJSONObject, nullable: true }) scope?: ContentScope,
-    ): Promise<PaginatedEntityInfo> {
-        const where: FilterQuery<EntityInfoFullTextObject> = {
-            fullText: { $fulltext: search },
-            entityName: { $in: searchableEntityNames },
-            entityInfo: { visible: true },
-        };
-
-        if (scope) {
-            // GraphQL sends the scope object with a null prototype, which breaks MikroORM's
-            // internal hasOwnProperty calls. Spreading into a plain object fixes this.
-            where.scopes = { $contains: [{ ...scope }] };
-        }
-
-        const [matches, totalCount] = await this.entityManager.findAndCount(EntityInfoFullTextObject, where, {
+        @Args("scope", { type: () => GraphQLJSONObject }) scope: ContentScope,
+    ): Promise<FullTextSearchResults> {
+        const { rows, totalCount, types } = await this.fullTextSearchQueryService.search({
+            search,
+            scope,
             offset,
-            limit,
-            populate: ["entityInfo"],
+            limit: Math.min(limit, 50),
+            permissions: publiclySearchablePermissions.map((permission) => ({ permission, contentScopes: [scope] })),
+            includeInvisible: false,
         });
+        const nodes = await this.fullTextSnippetService.buildResults(rows, search);
 
-        return new PaginatedEntityInfo(
-            matches.map((match) => match.entityInfo),
-            totalCount,
-        );
+        return new FullTextSearchResults({ nodes, totalCount, types });
     }
 }
 ```
+
+Validate `search` in a real application, for instance with an `@ArgsType` that limits its length like `FullTextSearchArgs` does.
 
 Register the resolver in its own module and import it in `AppModule` alongside `FullTextSearchModule`:
 

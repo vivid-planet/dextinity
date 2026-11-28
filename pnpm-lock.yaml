@@ -2337,8 +2337,8 @@ importers:
         specifier: ^10.6.1
         version: 10.6.1
       openai:
-        specifier: ^7.63.0
-        version: 7.63.0(@aws-sdk/credential-provider-node@3.972.99)(@smithy/signature-v4@5.7.5)(google-auth-library@11.3.4(supports-color@8.1.1))(undici@8.13.1)(ws@8.23.0)(zod@4.6.7)
+        specifier: ^7.64.0
+        version: 7.64.0(@aws-sdk/credential-provider-node@3.972.99)(@smithy/signature-v4@5.7.5)(google-auth-library@11.3.4(supports-color@8.1.1))(undici@8.13.1)(ws@8.23.0)(zod@4.6.7)
       probe-image-size:
         specifier: ^7.5.0
         version: 7.5.0(supports-color@8.1.1)
@@ -15278,8 +15278,8 @@ packages:
     resolution: {integrity: sha512-7x81NCL719oNbsq/3mh+hVrAWmFuEYUqrq/Iw3kUzH8ReypT9QQ0BLoJS7/G9k6N81XjW4qHWtjWwe/9eLy1EQ==}
     engines: {node: '>=12'}
 
-  openai@7.63.0:
-    resolution: {integrity: sha512-bTRCHcdcYHu9k+2+jjPuzWTNaCORLBCNLrYkTFGmotQIec2D/lIWWMZ6uc9AIazc0MA4lYw62xpdcjUMjt98xg==}
+  openai@7.64.0:
+    resolution: {integrity: sha512-2CpWvKic4bayEcX1uHhYc1KWauVIlV9e/8K8VVnvbosqL4En0OtesbY2qFCZHFF9X4dT1BKW4Dr+ncep9bh3Dw==}
     engines: {node: '>=22.0.0'}
     peerDependencies:
       '@aws-sdk/credential-provider-node': '>=3.972.0 <4'
@@ -33698,7 +33698,7 @@ snapshots:
       is-docker: 2.2.1
       is-wsl: 2.2.0
 
-  openai@7.63.0(@aws-sdk/credential-provider-node@3.972.99)(@smithy/signature-v4@5.7.5)(google-auth-library@11.3.4(supports-color@8.1.1))(undici@8.13.1)(ws@8.23.0)(zod@4.6.7):
+  openai@7.64.0(@aws-sdk/credential-provider-node@3.972.99)(@smithy/signature-v4@5.7.5)(google-auth-library@11.3.4(supports-color@8.1.1))(undici@8.13.1)(ws@8.23.0)(zod@4.6.7):
     optionalDependencies:
       '@aws-sdk/credential-provider-node': 3.972.99
       '@smithy/signature-v4': 5.7.5

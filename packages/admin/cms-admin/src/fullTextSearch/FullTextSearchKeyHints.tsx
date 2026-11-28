@@ -8,9 +8,11 @@ import { shortcutKey, useShortcutModifierKey } from "./useShortcutModifierKey";
 
 interface FullTextSearchKeyHintsProps {
     hasSearch: boolean;
+    hasResults: boolean;
+    canSwitchTabs: boolean;
 }
 
-export function FullTextSearchKeyHints({ hasSearch }: FullTextSearchKeyHintsProps) {
+export function FullTextSearchKeyHints({ hasSearch, hasResults, canSwitchTabs }: FullTextSearchKeyHintsProps) {
     const intl = useIntl();
     const modifierKey = useShortcutModifierKey();
 
@@ -19,6 +21,21 @@ export function FullTextSearchKeyHints({ hasSearch }: FullTextSearchKeyHintsProp
             <OpenSearchKeyHint keys={[modifierKey.label, shortcutKey]}>
                 <FormattedMessage id="dextinity.fullTextSearch.keyHint.open" defaultMessage="Open search" />
             </OpenSearchKeyHint>
+            {hasResults && (
+                <>
+                    <KeyHint keys={["↓", "↑"]}>
+                        <FormattedMessage id="dextinity.fullTextSearch.keyHint.move" defaultMessage="Move" />
+                    </KeyHint>
+                    <KeyHint keys={["↵"]}>
+                        <FormattedMessage id="dextinity.fullTextSearch.keyHint.select" defaultMessage="Select" />
+                    </KeyHint>
+                </>
+            )}
+            {canSwitchTabs && (
+                <KeyHint keys={[intl.formatMessage({ id: "dextinity.fullTextSearch.tabKey", defaultMessage: "Tab" })]}>
+                    <FormattedMessage id="dextinity.fullTextSearch.keyHint.filter" defaultMessage="Filter" />
+                </KeyHint>
+            )}
             <KeyHint keys={[intl.formatMessage({ id: "dextinity.fullTextSearch.escapeKey", defaultMessage: "Esc" })]}>
                 {hasSearch ? (
                     <FormattedMessage id="dextinity.fullTextSearch.keyHint.clear" defaultMessage="Clear" />

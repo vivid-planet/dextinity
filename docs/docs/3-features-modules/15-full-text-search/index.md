@@ -212,7 +212,7 @@ const MasterHeader = () => {
 };
 ```
 
-Clicking the search field or pressing <kbd>Ctrl</kbd>+<kbd>K</kbd> (<kbd>⌘</kbd>+<kbd>K</kbd> on macOS) opens a dialog with a tab and result count per type.
+Clicking the search field or pressing <kbd>Ctrl</kbd>+<kbd>K</kbd> (<kbd>⌘</kbd>+<kbd>K</kbd> on macOS) opens a dialog with a tab and result count per type. The dialog can be used with the keyboard.
 
 Each entity needs an entry in the `entityDependencyMap` of the `DextinityConfigProvider`, keyed by its entity name (e.g. `PageTreeNode`, `News`): its `resolvePath` opens the result, and its `displayName` is the type label. Without an entry, a result can't be opened.
 

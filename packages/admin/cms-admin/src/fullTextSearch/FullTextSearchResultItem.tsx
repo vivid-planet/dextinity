@@ -2,6 +2,7 @@ import { gql } from "@apollo/client";
 import { Tooltip } from "@dextinity/admin";
 import { ListItemButton, listItemButtonClasses, Stack, Typography } from "@mui/material";
 import { alpha, styled } from "@mui/material/styles";
+import { type MouseEvent, useEffect, useRef } from "react";
 import { FormattedMessage } from "react-intl";
 
 import { MarkedMatches } from "../common/MarkedMatches";
@@ -36,16 +37,47 @@ export const fullTextSearchResultItemFragment = gql`
 `;
 
 interface FullTextSearchResultItemProps {
+    id: string;
     result: GQLFullTextSearchResultItemFragment;
     linkable: boolean;
+    active: boolean;
+    scrollIntoViewWhenActive?: boolean;
     onClick: () => void;
+    onHover: () => void;
 }
 
-export function FullTextSearchResultItem({ result, linkable, onClick }: FullTextSearchResultItemProps) {
+export function FullTextSearchResultItem({
+    id,
+    result,
+    linkable,
+    active,
+    scrollIntoViewWhenActive,
+    onClick,
+    onHover,
+}: FullTextSearchResultItemProps) {
+    const itemRef = useRef<HTMLDivElement>(null);
     const { title, snippet } = result;
 
+    useEffect(() => {
+        if (active && scrollIntoViewWhenActive) {
+            itemRef.current?.scrollIntoView({ block: "nearest" });
+        }
+    }, [active, scrollIntoViewWhenActive]);
+
     const item = (
-        <ResultOption alignItems="flex-start" aria-disabled={!linkable} onClick={linkable ? onClick : undefined}>
+        <ResultOption
+            ref={itemRef}
+            id={id}
+            role="option"
+            aria-selected={active}
+            aria-disabled={!linkable}
+            selected={active}
+            tabIndex={-1}
+            alignItems="flex-start"
+            onMouseDown={keepFocusInSearchInput}
+            onMouseMove={onHover}
+            onClick={linkable ? onClick : undefined}
+        >
             <TypeIconCircle colorVariant={getIconColorVariant(result.entityName)}>
                 <FullTextSearchTypeIcon searchType={result} />
             </TypeIconCircle>
@@ -77,11 +109,28 @@ export function FullTextSearchResultItem({ result, linkable, onClick }: FullText
         return item;
     }
 
+    // The focus stays in the search input, so the tooltip is shown for the active result instead of on focus
     return (
-        <Tooltip title={<FormattedMessage id="dextinity.fullTextSearch.notLinkable" defaultMessage="This result can't be opened" />} placement="left">
+        <Tooltip
+            open={active}
+            title={<FormattedMessage id="dextinity.fullTextSearch.notLinkable" defaultMessage="This result can't be opened" />}
+            placement="left"
+            slotProps={{ popper: { sx: hideWhenResultIsScrolledOutOfView } }}
+        >
             {item}
         </Tooltip>
     );
+}
+
+// Popper's hide modifier marks the tooltip when the result is outside the visible area of the scrolled list
+const hideWhenResultIsScrolledOutOfView = {
+    "&[data-popper-reference-hidden]": {
+        visibility: "hidden",
+    },
+};
+
+function keepFocusInSearchInput(event: MouseEvent) {
+    event.preventDefault();
 }
 
 const snippetClassName = "FullTextSearchResultItem-snippet";
@@ -115,19 +164,20 @@ const ResultOption = styled(ListItemButton)`
         border-top: 1px solid ${({ theme }) => theme.palette.divider};
     }
 
-    &:hover,
-    &.Mui-focusVisible {
+    /* Hovering makes a result the active one, so a hovered result that isn't active anymore isn't highlighted */
+    &:hover {
+        background-color: transparent;
+    }
+
+    &.${listItemButtonClasses.selected}, &.${listItemButtonClasses.selected}:hover {
         background-color: ${({ theme }) => theme.palette.grey[50]};
     }
 
-    &:hover::before,
-    &.Mui-focusVisible::before,
-    &:hover + &::before,
-    &.Mui-focusVisible + &::before {
+    &.${listItemButtonClasses.selected}::before, &.${listItemButtonClasses.selected} + &::before {
         border-top-color: transparent;
     }
 
-    &:hover .${snippetClassName}, &.Mui-focusVisible .${snippetClassName} {
+    &.${listItemButtonClasses.selected} .${snippetClassName} {
         background-color: ${({ theme }) => theme.palette.background.paper};
     }
 `;
@@ -144,8 +194,7 @@ const TypeIconCircle = styled("div", { shouldForwardProp: (prop) => prop !== "co
     background-color: ${({ theme, colorVariant }) =>
         colorVariant === "default" ? theme.palette.grey[50] : alpha(theme.palette[colorVariant].main, 0.1)};
 
-    .${listItemButtonClasses.root}:hover &,
-    .${listItemButtonClasses.focusVisible} & {
+    .${listItemButtonClasses.selected} & {
         background-color: ${({ theme, colorVariant }) =>
             colorVariant === "default" ? theme.palette.grey[100] : alpha(theme.palette[colorVariant].main, 0.2)};
     }

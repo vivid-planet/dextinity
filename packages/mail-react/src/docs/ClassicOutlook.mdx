@@ -1,0 +1,88 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+
+import * as ClassicOutlookStories from "./__stories__/ClassicOutlook.stories";
+
+<Meta
+    title="Docs/Client Issues/Classic Outlook"
+    summary="Classic Outlook for Windows: `line-height` and `mso-line-height-rule`, a small `line-height` around images, `background-image`, and `border-radius` with VML."
+/>
+
+# Classic Outlook
+
+## Set `mso-line-height-rule: exactly` on Every Manual `line-height`
+
+Outlook calculates line-height using its own rules, causing unexpected vertical spacing. **Every time** you set `line-height` on a raw HTML element inside an ending tag (`MjmlRaw`, `MjmlText`, etc.), you must also set `mso-line-height-rule: exactly` as an inline style on the same element. This applies to `<span>`, `<td>`, `<div>`, or any other element where you manually control line height. `HtmlText` and built-in MJML components handle this automatically — but any hand-written HTML needs it explicitly.
+
+## Leave `line-height` Unset Around Images
+
+Classic Outlook cuts an image to a small `line-height` on the `<td>` that holds it, or on its `<table>`:
+
+- `line-height: 0` cuts off about `4px` at the top of the image.
+- Inside an MJML section, `line-height: 1px` shows the image only about `1px` high. MJML puts every section in an Outlook-only `<td>` with `mso-line-height-rule: exactly`, so classic Outlook does not treat the value as a minimum.
+
+Leave `line-height` unset on the `<td>` that holds an image, or set it to `100%`. A `line-height: 0` on a `<span>` or link inside that `<td>` does not prevent the cut.
+
+- `MjmlTable` has a default `line-height` of `22px`, and that value does no harm. Do not set `lineHeight={0}` on `MjmlTable`.
+- `HtmlText` sets the theme `line-height` (`20px` by default) with `mso-line-height-rule: exactly`, so do not put images in it.
+
+### Example: Image in a Table Cell
+
+An image in a `<td>` with `font-size: 0`.
+
+#### Problem
+
+The `<td>` has `line-height: 1px`. Inside an MJML section, classic Outlook shows the image only about `1px` high.
+
+<Canvas of={ClassicOutlookStories.ImageLineHeightProblem} />
+
+#### Fix
+
+The `<td>` has no `line-height`. Classic Outlook shows the full image.
+
+<Canvas of={ClassicOutlookStories.ImageLineHeightFix} />
+
+## No CSS `background-image` in Outlook
+
+Classic Outlook ignores `background-image` entirely. Use a VML-based workaround for Outlook support, or provide a `background-color` fallback for graceful degradation. See [Bulletproof Backgrounds](https://www.backgrounds.cm/).
+
+## No CSS `border-radius` in Outlook
+
+Classic Outlook ignores `border-radius` entirely — rounded corners on buttons, containers, or any other element render as sharp rectangles.
+
+`MjmlImage` and `HtmlImage` handle images for you, as long as `width` and `height` are given in pixels and `borderRadius` is a single pixel value or `"50%"`. Other values — a percentage width, `1em`, `16px 4px` — leave the image square in Outlook.
+
+Everything else, buttons and containers included, needs a VML `v:roundrect` written by hand, inside a conditional comment. Give the shape a fixed pixel `width` and `height` — it cannot be fluid:
+
+```html
+<!--[if mso]>
+    <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" arcsize="19%" stroked="f" style="width:199px;height:43px;">
+        <center>Button label</center>
+    </v:roundrect>
+<![endif]-->
+```
+
+Set `arcsize` to the corner radius divided by the shorter declared side, capped at `50%` — `8px` on a `44px`-high button, declared `43px`, gives `19%`. Do not take the value from the VML specification; it is twice what Outlook needs.
+
+More rules for a hand-written VML shape:
+
+- Declare a `v:roundrect` or `v:oval` `1px` smaller in `width` and `height` than the size it must have, and compute `arcsize` from that declared size. Classic Outlook draws the shape `1px` larger, even with `stroked="f"`.
+- Copy the link (`href` on the shape), the alignment and the padding from the HTML element that the shape replaces, and hide that element from classic Outlook with `<!--[if !mso]><!-->…<!--<![endif]-->`.
+- Give the shape a width that fits its column. Classic Outlook does not shrink VML to its container, so a wider shape makes the whole mail wider.
+
+See the [Litmus VML button snippet](https://litmus.com/community/snippets/7-bulletproof-button-vml-approach).
+
+### Example: Button With Rounded Corners
+
+A link styled as a `200px` by `44px` button, with a corner radius of `8px`.
+
+#### Problem
+
+The link has rounded corners from CSS `border-radius` only. Classic Outlook ignores `border-radius` and shows a button with square corners.
+
+<Canvas of={ClassicOutlookStories.RoundedButtonProblem} />
+
+#### Fix
+
+A VML `v:roundrect` in a conditional comment draws the button for classic Outlook. The shape is declared `1px` smaller, `199px` by `43px`, because classic Outlook draws it `1px` larger. Its `arcsize` is `19%`: the `8px` radius divided by the declared `43px` height. The shape has the link of the HTML button, and `<!--[if !mso]><!-->…<!--<![endif]-->` hides the HTML button from classic Outlook.
+
+<Canvas of={ClassicOutlookStories.RoundedButtonFix} />

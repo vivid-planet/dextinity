@@ -1,7 +1,7 @@
 import { Meta } from "@storybook/addon-docs/blocks";
 
 <Meta
-    title="Docs/Blocks"
+    title="Docs/Building Mails/Blocks"
     summary="Components that render Dextinity CMS block data in mails: pixel images, Tip-Tap and draft-js rich text, and the block preview in the admin."
 />
 
@@ -16,7 +16,7 @@ import { Meta } from "@storybook/addon-docs/blocks";
 | `MjmlPixelImageBlock` | re-exported `MjmlImage` | an `MjmlColumn` (standard MJML layout)         | `.mjmlPixelImageBlock` |
 | `HtmlPixelImageBlock` | raw `<img>`             | raw HTML or MJML ending tags such as `MjmlRaw` | `.htmlPixelImageBlock` |
 
-Inside `MjmlRaw` in an `MjmlColumn`, `HtmlPixelImageBlock` needs its own `<tr>` and `<td>`. See [Start Raw Content Inside a Column With `<tr>`](?path=/docs/docs-email-client-pitfalls--docs#start-raw-content-inside-a-column-with-tr).
+Inside `MjmlRaw` in an `MjmlColumn`, `HtmlPixelImageBlock` needs its own `<tr>` and `<td>`. See [Start Raw Content Inside a Column With `<tr>`](?path=/docs/docs-building-mails-components--docs#start-raw-content-inside-a-column-with-tr).
 
 ```tsx
 <MjmlSection indent>
@@ -82,7 +82,7 @@ export const { MjmlTipTapRichTextBlock, HtmlTipTapRichTextBlock } = createTipTap
 | `MjmlTipTapRichTextBlock` / `MjmlRichTextBlock` | `MjmlText`                 | an `MjmlColumn` (standard MJML layout)         |
 | `HtmlTipTapRichTextBlock` / `HtmlRichTextBlock` | `HtmlText` (`<div>`)       | raw HTML or MJML ending tags such as `MjmlRaw` |
 
-Inside `MjmlRaw` in an `MjmlColumn`, the `Html*` component needs its own `<tr>` and `<td>`. See [Start Raw Content Inside a Column With `<tr>`](?path=/docs/docs-email-client-pitfalls--docs#start-raw-content-inside-a-column-with-tr).
+Inside `MjmlRaw` in an `MjmlColumn`, the `Html*` component needs its own `<tr>` and `<td>`. See [Start Raw Content Inside a Column With `<tr>`](?path=/docs/docs-building-mails-components--docs#start-raw-content-inside-a-column-with-tr).
 
 Usage sites pass only `data`:
 
@@ -164,7 +164,7 @@ const { MjmlTipTapRichTextBlock, HtmlTipTapRichTextBlock } = createTipTapRichTex
 
 A list renders as a table inside one text component, with a row per item, a marker cell and a text cell.
 
-List spacing comes from the theme's `list.indent`, `list.markerGap` and `list.itemSpacing`, and the markers come from `list.unorderedMarker` and `list.orderedMarker`. See [Lists](?path=/docs/docs-theme-and-configuration--docs#lists) in Theme and Configuration. To override the spacing, register a rule scoped to a list's type, depth or variant modifier with `{ inline: true }`, so it also reaches Outlook. See [Spacing per Variant](#spacing-per-variant).
+List spacing comes from the theme's `list.indent`, `list.markerGap` and `list.itemSpacing`, and the markers come from `list.unorderedMarker` and `list.orderedMarker`. See [Lists](?path=/docs/docs-building-mails-theme-and-configuration--docs#lists) in Theme and Configuration. To override the spacing, register a rule scoped to a list's type, depth or variant modifier with `{ inline: true }`, so it also reaches Outlook. See [Spacing per Variant](#spacing-per-variant).
 
 ### Empty Content and Spacing
 

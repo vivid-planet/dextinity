@@ -1,7 +1,7 @@
 import { Meta } from "@storybook/addon-docs/blocks";
 
 <Meta
-    title="Docs/Components"
+    title="Docs/Building Mails/Components"
     summary="Lookup for all components: where each may be placed, their CSS class names, Mjml vs Html pairs, head contributions, client behavior, and MJML re-exports from @dextinity/mail-react."
 />
 
@@ -11,34 +11,34 @@ This page lists where each component goes, its CSS class names, and how it behav
 
 ## MJML Components (Layout Level)
 
-| Component             | Purpose                                                                                                    | CSS Classes                                                       |
-| --------------------- | ---------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| `MjmlMailRoot`        | Root element, provides theme, renders `<mjml>` skeleton                                                    | —                                                                 |
-| `MjmlWrapper`         | Groups sections sharing a background; theme-aware default bg                                               | —                                                                 |
-| `MjmlSection`         | Full-width row; theme indentation, columns stack on mobile                                                 | `.mjmlSection`, `.mjmlSection--indented` (when `indent` is set)   |
-| `MjmlColumn`          | Vertical column inside a section                                                                           | —                                                                 |
-| `MjmlText`            | Themed text block with typography variants                                                                 | `.mjmlText`, `.mjmlText--{variant}`, `.mjmlText--bottomSpacing`   |
-| `MjmlImage`           | Responsive image                                                                                           | `.mjmlImage`                                                      |
-| `MjmlPixelImageBlock` | Renders a Dextinity CMS `PixelImageBlockData` via `MjmlImage`, see [Blocks](?path=/docs/docs-blocks--docs) | `.mjmlPixelImageBlock`                                            |
-| `MjmlButton`          | Themed button (ending tag), theme styling and variants                                                     | `.mjmlButton`, `.mjmlButton--{variant}`, `.mjmlButton--fullWidth` |
-| `MjmlDivider`         | Themed horizontal divider, configurable through theme and variants                                         | `.mjmlDivider`, `.mjmlDivider--{variant}`                         |
-| `MjmlSpacer`          | Vertical spacing                                                                                           | —                                                                 |
-| `MjmlRaw`             | Raw HTML escape hatch (ending tag)                                                                         | —                                                                 |
+| Component             | Purpose                                                                                                                   | CSS Classes                                                       |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| `MjmlMailRoot`        | Root element, provides theme, renders `<mjml>` skeleton                                                                   | —                                                                 |
+| `MjmlWrapper`         | Groups sections sharing a background; theme-aware default bg                                                              | —                                                                 |
+| `MjmlSection`         | Full-width row; theme indentation, columns stack on mobile                                                                | `.mjmlSection`, `.mjmlSection--indented` (when `indent` is set)   |
+| `MjmlColumn`          | Vertical column inside a section                                                                                          | —                                                                 |
+| `MjmlText`            | Themed text block with typography variants                                                                                | `.mjmlText`, `.mjmlText--{variant}`, `.mjmlText--bottomSpacing`   |
+| `MjmlImage`           | Responsive image                                                                                                          | `.mjmlImage`                                                      |
+| `MjmlPixelImageBlock` | Renders a Dextinity CMS `PixelImageBlockData` via `MjmlImage`, see [Blocks](?path=/docs/docs-building-mails-blocks--docs) | `.mjmlPixelImageBlock`                                            |
+| `MjmlButton`          | Themed button (ending tag), theme styling and variants                                                                    | `.mjmlButton`, `.mjmlButton--{variant}`, `.mjmlButton--fullWidth` |
+| `MjmlDivider`         | Themed horizontal divider, configurable through theme and variants                                                        | `.mjmlDivider`, `.mjmlDivider--{variant}`                         |
+| `MjmlSpacer`          | Vertical spacing                                                                                                          | —                                                                 |
+| `MjmlRaw`             | Raw HTML escape hatch (ending tag)                                                                                        | —                                                                 |
 
 ## HTML Components (Inside Ending Tags)
 
-| Component             | Purpose                                                                                               | CSS Classes                                                       |
-| --------------------- | ----------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| `HtmlText`            | Themed text rendered as an HTML element                                                               | `.htmlText`, `.htmlText--{variant}`, `.htmlText--bottomSpacing`   |
-| `HtmlInlineLink`      | `<a>` that inherits parent text styles, works in Outlook                                              | `.htmlInlineLink`                                                 |
-| `HtmlImage`           | Responsive image (`<img>`)                                                                            | `.htmlImage`                                                      |
-| `HtmlPixelImageBlock` | Renders a Dextinity CMS `PixelImageBlockData` as `<img>`, see [Blocks](?path=/docs/docs-blocks--docs) | `.htmlPixelImageBlock`                                            |
-| `HtmlButton`          | Themed button for ending tags or non-MJML contexts                                                    | `.htmlButton`, `.htmlButton--{variant}`, `.htmlButton--fullWidth` |
-| `HtmlDivider`         | Themed horizontal divider, configurable through theme and variants                                    | `.htmlDivider`, `.htmlDivider--{variant}`                         |
+| Component             | Purpose                                                                                                              | CSS Classes                                                       |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| `HtmlText`            | Themed text rendered as an HTML element                                                                              | `.htmlText`, `.htmlText--{variant}`, `.htmlText--bottomSpacing`   |
+| `HtmlInlineLink`      | `<a>` that inherits parent text styles, works in Outlook                                                             | `.htmlInlineLink`                                                 |
+| `HtmlImage`           | Responsive image (`<img>`)                                                                                           | `.htmlImage`                                                      |
+| `HtmlPixelImageBlock` | Renders a Dextinity CMS `PixelImageBlockData` as `<img>`, see [Blocks](?path=/docs/docs-building-mails-blocks--docs) | `.htmlPixelImageBlock`                                            |
+| `HtmlButton`          | Themed button for ending tags or non-MJML contexts                                                                   | `.htmlButton`, `.htmlButton--{variant}`, `.htmlButton--fullWidth` |
+| `HtmlDivider`         | Themed horizontal divider, configurable through theme and variants                                                   | `.htmlDivider`, `.htmlDivider--{variant}`                         |
 
-The class names of the rich-text blocks are on the [Blocks](?path=/docs/docs-blocks--docs) page.
+The class names of the rich-text blocks are on the [Blocks](?path=/docs/docs-building-mails-blocks--docs) page.
 
-Variants are named typography presets (font size, weight, line height, color) defined in the theme; their values can change per breakpoint. See [Variants](?path=/docs/docs-theme-and-configuration--docs#variants).
+Variants are named typography presets (font size, weight, line height, color) defined in the theme; their values can change per breakpoint. See [Variants](?path=/docs/docs-building-mails-theme-and-configuration--docs#variants).
 
 ## MjmlMailRoot
 
@@ -55,7 +55,7 @@ Root element for every email template. Renders the full MJML skeleton (`<mjml>`,
 
 Without a `theme` prop, `MjmlMailRoot` uses the default theme, the same as `createTheme()` without arguments.
 
-When to wrap content in `MjmlMailRoot` yourself is described in [Rendering to HTML](?path=/docs/docs-rendering-and-preview--docs#rendering-to-html).
+When to wrap content in `MjmlMailRoot` yourself is described in [Rendering to HTML](?path=/docs/docs-getting-started-rendering-and-preview--docs#rendering-to-html).
 
 ### Contributing to `<MjmlHead>` and `<MjmlAttributes>`
 
@@ -91,9 +91,9 @@ Full-width horizontal row with theme integration.
 </MjmlSection>
 ```
 
-`disableResponsiveBehavior` wraps the columns in an `MjmlGroup`. Every multi-column section needs it, because the group is what makes MJML write the column widths inline — see [Column Widths Must Be Inline](?path=/docs/docs-layout-patterns--docs#column-widths-must-be-inline). A group never stacks by itself: write the mobile stacking yourself, in `theme.breakpoints.mobile.belowMediaQuery`.
+`disableResponsiveBehavior` wraps the columns in an `MjmlGroup`. Every multi-column section needs it, because the group is what makes MJML write the column widths inline — see [Column Widths Must Be Inline](?path=/docs/docs-building-mails-layout-patterns--docs#column-widths-must-be-inline). A group never stacks by itself: write the mobile stacking yourself, in `theme.breakpoints.mobile.belowMediaQuery`.
 
-`MjmlSection` exposes `slotProps.group` for forwarding props to the internal `MjmlGroup` when `disableResponsiveBehavior` is enabled. For `direction="rtl"` on the group, see [Controlling Mobile Stack Order with `direction="rtl"`](?path=/docs/docs-layout-patterns--docs#controlling-mobile-stack-order-with-directionrtl).
+`MjmlSection` exposes `slotProps.group` for forwarding props to the internal `MjmlGroup` when `disableResponsiveBehavior` is enabled. For `direction="rtl"` on the group, see [Controlling Mobile Stack Order with `direction="rtl"`](?path=/docs/docs-building-mails-layout-patterns--docs#controlling-mobile-stack-order-with-directionrtl).
 
 Indentation values come from `theme.sizes.contentIndentation`, which supports responsive values.
 
@@ -122,7 +122,7 @@ The wrapper takes the theme's content background by default. Inner `MjmlSection`
 </MjmlWrapper>
 ```
 
-Typical uses: multi-section footers with their own color, or grouping sections behind a shared outer padding (e.g., the `direction="rtl"` workaround in [Layout Patterns](?path=/docs/docs-layout-patterns--docs#controlling-mobile-stack-order-with-directionrtl)). The full pattern is in [Grouping Sections with a Shared Background](?path=/docs/docs-layout-patterns--docs#grouping-sections-with-a-shared-background). For a region that also needs different default text color or variants, combine `MjmlWrapper` with a scoped `ThemeProvider` — see [Scoped Theming](?path=/docs/docs-theme-and-configuration--docs#scoped-theming).
+Typical uses: multi-section footers with their own color, or grouping sections behind a shared outer padding (e.g., the `direction="rtl"` workaround in [Layout Patterns](?path=/docs/docs-building-mails-layout-patterns--docs#controlling-mobile-stack-order-with-directionrtl)). The full pattern is in [Grouping Sections with a Shared Background](?path=/docs/docs-building-mails-layout-patterns--docs#grouping-sections-with-a-shared-background). For a region that also needs different default text color or variants, combine `MjmlWrapper` with a scoped `ThemeProvider` — see [Scoped Theming](?path=/docs/docs-building-mails-theme-and-configuration--docs#scoped-theming).
 
 ## Text Components
 
@@ -204,7 +204,7 @@ Use `!important` when setting a custom link color — the responsive reset uses 
 
 Themed horizontal line, styled from `theme.divider` (base styles plus variants). Falls back to a built-in default when no theme is in scope; only `variant` requires a theme.
 
-A dark divider can almost disappear in dark mode, see [Keep a Line Visible](?path=/docs/docs-dark-mode--docs#keep-a-line-visible).
+A dark divider can almost disappear in dark mode, see [Keep a Line Visible](?path=/docs/docs-client-issues-dark-mode--docs#keep-a-line-visible).
 
 - **`MjmlDivider`** — inside `MjmlColumn`.
 - **`HtmlDivider`** — inside ending tags (`MjmlRaw`) or raw HTML.
@@ -220,7 +220,7 @@ Themed button, styled from `theme.button` (base styles plus variants). Falls bac
 - **`MjmlButton`** — inside `MjmlColumn`.
 - **`HtmlButton`** — inside ending tags (`MjmlRaw`) or any non-MJML context.
 
-`theme.button.padding` is the inner spacing around the label; `MjmlButton`'s `padding` prop is the outer spacing. `fullWidth` makes the button span its container. A gradient `backgroundImage` overlays the solid `backgroundColor`, which stays the fallback for clients that drop `background-image` (Outlook). Outlook ignores `border-radius`, so rounded buttons render with square corners there, see [No CSS `border-radius` in Outlook](?path=/docs/docs-email-client-pitfalls--docs#no-css-border-radius-in-outlook).
+`theme.button.padding` is the inner spacing around the label; `MjmlButton`'s `padding` prop is the outer spacing. `fullWidth` makes the button span its container. A gradient `backgroundImage` overlays the solid `backgroundColor`, which stays the fallback for clients that drop `background-image` (Outlook). Outlook ignores `border-radius`, so rounded buttons render with square corners there, see [No CSS `border-radius` in Outlook](?path=/docs/docs-client-issues-classic-outlook--docs#no-css-border-radius-in-outlook).
 
 ```tsx
 <MjmlButton variant="primary" fullWidth href="https://example.com">
@@ -228,7 +228,7 @@ Themed button, styled from `theme.button` (base styles plus variants). Falls bac
 </MjmlButton>
 ```
 
-For a hand-written full-width button, see [No CSS `box-sizing` in Yahoo Mail](?path=/docs/docs-email-client-pitfalls--docs#no-css-box-sizing-in-yahoo-mail).
+For a hand-written full-width button, see [No CSS `box-sizing` in Yahoo Mail](?path=/docs/docs-client-issues-yahoo-mail-and-outlook-com--docs#no-css-box-sizing-in-yahoo-mail).
 
 ## MJML Component Re-exports
 
@@ -237,3 +237,27 @@ For a hand-written full-width button, see [No CSS `box-sizing` in Yahoo Mail](?p
 Common re-exports: `MjmlColumn`, `MjmlSpacer`, `MjmlTable`, `MjmlRaw`, `MjmlGroup`, `MjmlAttributes`, `MjmlAll`, `MjmlClass`, `MjmlStyle`, `MjmlComment`, `MjmlConditionalComment`.
 
 For the full MJML tag reference: https://documentation.mjml.io/
+
+## Raw HTML in MJML
+
+### Start Raw Content Inside a Column With `<tr>`
+
+`mj-column` wraps every child in its own `<tr><td>` — except `MjmlRaw` content, which goes straight into the column's table unwrapped. A `<table>`, `<div>`, or `<img>` in that position ends up outside the column's table instead, and MJML reports no error. This covers the `Html*` components. Open with a `<tr>` and put the markup in a `<td>`:
+
+```tsx
+<MjmlColumn>
+    <MjmlRaw>
+        <tr>
+            <td>{/* your raw markup */}</td>
+        </tr>
+    </MjmlRaw>
+</MjmlColumn>
+```
+
+`HtmlText` is the exception: it renders the `<td>` itself, so a surrounding `<tr>` is all it needs — unless its `element` prop renders something else, which needs a `<td>` again.
+
+`MjmlColumn` and `MjmlHero` are both affected — `MjmlSection` and `MjmlWrapper` already place their children inside a shared cell, so any root element is safe there. `MjmlDivider` supplies both the row and the cell; use it instead of a hand-wrapped `HtmlDivider` whenever you are in an `MjmlColumn`.
+
+### Avoid Block-Level HTML Elements Inside Ending Tags
+
+Don't use `<p>`, `<h1>`, `<h2>`, or other block-level HTML elements inside ending tags. They have wildly inconsistent default margins and spacing across email clients and add no rendering value in email HTML. Instead, use `<td>`, `<div>`, and `<span>` for structure, and build your typography hierarchy through `MjmlText`/`HtmlText` variants rather than HTML semantics. If a block-level element is truly unavoidable, always reset its margins inline: `style={{ margin: 0 }}`.

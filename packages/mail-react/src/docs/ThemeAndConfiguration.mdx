@@ -1,7 +1,7 @@
 import { Meta } from "@storybook/addon-docs/blocks";
 
 <Meta
-    title="Docs/Theme and Configuration"
+    title="Docs/Building Mails/Theme and Configuration"
     summary="createTheme and its augmentation: text/button/divider variants, breakpoints and belowMediaQuery, responsive values, colors, list tokens, ThemeProvider scopes, and Config."
 />
 
@@ -213,7 +213,7 @@ declare module "@dextinity/mail-react" {
 
 ## Lists
 
-List spacing comes from the theme's `list.indent` (before the marker), `list.markerGap` (between the marker and the text) and `list.itemSpacing` (between items, and above a nested level's first item), all responsive and all applying to every list the RichText block renders. To change the spacing for one variant only, see [Spacing per Variant](?path=/docs/docs-blocks--docs#spacing-per-variant).
+List spacing comes from the theme's `list.indent` (before the marker), `list.markerGap` (between the marker and the text) and `list.itemSpacing` (between items, and above a nested level's first item), all responsive and all applying to every list the RichText block renders. To change the spacing for one variant only, see [Spacing per Variant](?path=/docs/docs-building-mails-blocks--docs#spacing-per-variant).
 
 ### List Markers
 
@@ -235,7 +235,7 @@ A marker wider than the others widens the marker column and moves the text edge 
 
 `ThemeProvider` applies a different theme to a subtree. A common use is a section with a dark background.
 
-**Prefer `MjmlWrapper` when only the background color changes.** Use `ThemeProvider` when the text color, the variants, or other theme values must also change. A cloned theme is too much for a background-only change. See [Grouping Sections with a Shared Background](?path=/docs/docs-layout-patterns--docs#grouping-sections-with-a-shared-background).
+**Prefer `MjmlWrapper` when only the background color changes.** Use `ThemeProvider` when the text color, the variants, or other theme values must also change. A cloned theme is too much for a background-only change. See [Grouping Sections with a Shared Background](?path=/docs/docs-building-mails-layout-patterns--docs#grouping-sections-with-a-shared-background).
 
 ```tsx
 import { ThemeProvider } from "@dextinity/mail-react";
@@ -283,7 +283,7 @@ Theme-aware `registerStyles` entries always resolve against the **root theme** f
 
 ## Configuration
 
-`Config` gives environment-specific values, such as asset base URLs, to every component in the tree. For `config.pixelImageBlock`, see [Configuration](?path=/docs/docs-blocks--docs#configuration) in Blocks. For `config.rewriteImageSrc`, see [Rewriting Image Sources](?path=/docs/docs-rendering-and-preview--docs#rewriting-image-sources) in Rendering and Preview.
+`Config` gives environment-specific values, such as asset base URLs, to every component in the tree. For `config.pixelImageBlock`, see [Configuration](?path=/docs/docs-building-mails-blocks--docs#configuration) in Blocks. For `config.rewriteImageSrc`, see [Rewriting Image Sources](?path=/docs/docs-getting-started-rendering-and-preview--docs#rewriting-image-sources) in Rendering and Preview.
 
 Add your own keys with module augmentation:
 

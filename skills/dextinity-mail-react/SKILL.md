@@ -12,7 +12,7 @@ The usage guide for `@dextinity/mail-react` is in its Storybook. Read the releva
 When the `dextinity-mail-react` MCP server is connected:
 
 1. Call `docs-list`.
-2. Call `docs-show` for "Email Client Pitfalls", and for each page that covers the task, for example "Layout Patterns" for columns or "Dark Mode" for colors.
+2. Call `docs-show` for the "Client Issues" pages of the clients you support, and for each page that covers the task, for example "Layout Patterns" for columns or "Dark Mode" for colors.
 3. Call `docs-show` on a component for its props and example stories.
 
 ## Without the MCP server

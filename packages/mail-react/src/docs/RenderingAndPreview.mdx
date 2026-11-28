@@ -1,7 +1,7 @@
 import { Meta } from "@storybook/addon-docs/blocks";
 
 <Meta
-    title="Docs/Rendering and Preview"
+    title="Docs/Getting Started/Rendering and Preview"
     summary="renderMailHtml on the server or client, rewriting image sources, use in the Mail Templates Module, MJML warnings, the Storybook addon, writing stories, and cross-client testing."
 />
 
@@ -69,7 +69,7 @@ The rendering is synchronous, so the function can't fetch an image itself.
 
 With the [Mail Templates Module](https://cms-docs.dextinity.com/docs/features-modules/mail-templates-module/), call `renderMailHtml` in the `generateMail` method of the `.mail.tsx` file. See [Using React](https://cms-docs.dextinity.com/docs/features-modules/mail-templates-module/#using-react) for a complete example.
 
-For the `config.pixelImageBlock` that the pixel-image blocks need, see [Blocks › Configuration](?path=/docs/docs-blocks--docs#configuration).
+For the `config.pixelImageBlock` that the pixel-image blocks need, see [Blocks › Configuration](?path=/docs/docs-building-mails-blocks--docs#configuration).
 
 ## Logging MJML Warnings
 
@@ -87,7 +87,7 @@ if (process.env.NODE_ENV === "development" && mjmlWarnings.length) {
 
 ## Block Preview in the Admin
 
-See [Blocks › Block Preview in the Admin](?path=/docs/docs-blocks--docs#block-preview-in-the-admin).
+See [Blocks › Block Preview in the Admin](?path=/docs/docs-building-mails-blocks--docs#block-preview-in-the-admin).
 
 ## Previewing in Storybook
 

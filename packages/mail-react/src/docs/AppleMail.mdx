@@ -1,0 +1,9 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Docs/Client Issues/Apple Mail and Safari" summary="Apple Mail and Safari: fixed-width cells in a row become wider." />
+
+# Apple Mail and Safari
+
+## Fixed-Width Cells in a Row
+
+`MjmlTable` writes `width: 100%` by default. When the cells of a row are narrower than the table together, Apple Mail and Safari spread the free table width over all cells, so fixed-width cells become wider than declared. An empty filler cell at the end of the row does not help. For a row of fixed-width items, such as icons, set `width="auto"` on the table.

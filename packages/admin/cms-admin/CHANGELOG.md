@@ -1,5 +1,33 @@
 # @comet/cms-admin
 
+## 10.17.0
+
+### Minor Changes
+
+- 69ce735: Support TipTap rich text blocks in `createTextImageBlock`
+
+    The `text` option now accepts any text block, for instance one created with `createTipTapRichTextBlock`. The data, state and input types of the returned block are derived from the passed text block.
+
+    ```tsx
+    export const TextImageBlock = createTextImageBlock({ text: TipTapRichTextBlock, image: DamImageBlock });
+    ```
+
+    Also export the `TipTapRichTextBlockInterface` type.
+
+- 0c6f6fa: Keep manually assigned content scopes that are also granted by a rule
+
+    A content scope that was both manually assigned and granted by a rule could not be removed in the assigned-scopes grid and was silently dropped when another scope was added or removed. The admin derived the manual scopes by subtracting the rule-based scopes from the union, which loses a scope that is present in both.
+
+    The API now exposes both lists directly via the new query `userPermissionsAssignedContentScopes(userId)`, which returns `byRule` and `manual`. The assigned-scopes grid uses them instead of deriving the manual scopes. Such a scope is now shown as "Manual", stays removable, and is preserved when editing other scopes.
+
+    `userPermissionsContentScopes` is deprecated. Use `userPermissionsAssignedContentScopes` instead.
+
+### Patch Changes
+
+- @dextinity/admin@10.17.0
+    - @dextinity/admin-icons@10.17.0
+    - @dextinity/admin-rte@10.17.0
+
 ## 10.16.0
 
 ### Minor Changes

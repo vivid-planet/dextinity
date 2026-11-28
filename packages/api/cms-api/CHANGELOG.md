@@ -1,5 +1,36 @@
 # @comet/cms-api
 
+## 10.17.0
+
+### Minor Changes
+
+- 0c6f6fa: Keep manually assigned content scopes that are also granted by a rule
+
+    A content scope that was both manually assigned and granted by a rule could not be removed in the assigned-scopes grid and was silently dropped when another scope was added or removed. The admin derived the manual scopes by subtracting the rule-based scopes from the union, which loses a scope that is present in both.
+
+    The API now exposes both lists directly via the new query `userPermissionsAssignedContentScopes(userId)`, which returns `byRule` and `manual`. The assigned-scopes grid uses them instead of deriving the manual scopes. Such a scope is now shown as "Manual", stays removable, and is preserved when editing other scopes.
+
+    `userPermissionsContentScopes` is deprecated. Use `userPermissionsAssignedContentScopes` instead.
+
+### Patch Changes
+
+- 7648709: Index the content of table cells
+
+    The table block didn't report its cells as child blocks, so the dependencies, the search text and the block warnings left out everything inside a cell, for example a link to another page.
+
+    For existing content, the dependencies are updated when the `migrateBlocks` command runs after the deployment.
+    The search text of a page is only updated when the page is saved again, and its warnings when it's saved or on the next run of the `check-warnings` command.
+
+- 64c79f6: Find page tree nodes by name in the full-text search
+
+    The name and slug of a page tree node were only indexed when the node was updated, so new nodes couldn't be found by their name. Nodes without an indexed document, such as links, were missing from the search entirely. Both are now found by name. Existing nodes don't need to be saved again.
+
+- 3f8d5dc: Enforce content-scope boundaries when attaching documents and nesting page tree nodes
+
+    `PageTreeService` now rejects operations that the argument-level scope check didn't cover, because the relevant ids are nested inside input objects: attaching a document that is already attached to another node (`attachDocument`, `createNode`, `updateNode`) and placing a node below a parent in a different scope (`createNode`, `updateNodePosition`).
+
+    Without these checks an editor restricted to one scope could read and overwrite documents of another scope, for instance by passing a foreign `pageId` to `savePage`, a foreign `attachedDocument.id` to `createPageTreeNode`/`updatePageTreeNode`, or a foreign `parentId` to `movePageTreeNodesByPos`.
+
 ## 10.16.0
 
 ### Minor Changes

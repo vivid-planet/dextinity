@@ -1,5 +1,17 @@
 # @comet/site-react
 
+## 10.17.0
+
+### Patch Changes
+
+- 0a218e4: Fix the block preview box of a block with a hidden element
+
+    An element with `display: none`, for instance a desktop-only image on mobile, stretched the box to the top left corner of the window.
+
+- 15b3b55: Show one box per mail block in the block preview
+
+    A block with its `className` on several elements, for instance a rich text in a column, got a separate box for each element.
+
 ## 10.16.0
 
 ### Minor Changes

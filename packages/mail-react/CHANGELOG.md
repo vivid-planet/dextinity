@@ -1,5 +1,13 @@
 # @comet/mail-react
 
+## 10.17.0
+
+### Patch Changes
+
+- 15b3b55: Show one box per mail block in the block preview
+
+    A block with its `className` on several elements, for instance a rich text in a column, got a separate box for each element.
+
 ## 10.16.0
 
 ### Minor Changes

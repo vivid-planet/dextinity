@@ -1,5 +1,14 @@
 # @comet/agent-features
 
+## 10.17.0
+
+### Patch Changes
+
+- 7059b1b: Remove the rule about relative imports from the TypeScript rule
+
+    The ESLint rule `@dextinity/no-other-module-relative-import` checks import paths.
+    The removed rule asked for `@src/…` imports that the ESLint rule doesn't require, so agents and review bots reported relative imports such as `../entities/product.entity` within a module.
+
 ## 10.16.0
 
 ### Minor Changes

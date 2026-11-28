@@ -64,7 +64,7 @@
         "@mui/x-data-grid": "^8.29.6",
         "@mui/x-data-grid-pro": "^8.29.6",
         "@mui/x-date-pickers": "^8.29.6",
-        "@types/react": "^19.3.1",
+        "@types/react": "^19.3.2",
         "@types/react-dom": "^19.3.0",
         "@types/react-router": "^5.1.20",
         "chokidar-cli": "^3.0.0",
